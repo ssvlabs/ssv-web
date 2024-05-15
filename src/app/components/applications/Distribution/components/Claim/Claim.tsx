@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDistributionStore } from '~app/hooks/useDistributionStore';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 import EligibleScreen from '~app/components/applications/Distribution/components/Claim/EligibleScreen';

@@ -1,21 +1,20 @@
 import * as _ from 'lodash';
 import { makeObservable, observable } from 'mobx';
 import { translations } from '~app/common/config';
-import BaseStore from '~app/common/stores/BaseStore';
-import { checkSpecialCharacters } from '~lib/utils/strings';
 import {
-  camelToSnakeFieldsMapping,
   CountryType,
-  exceptions,
+  FIELDS,
   FIELD_CONDITIONS,
   FIELD_KEYS,
-  FIELDS,
   HTTPS_PREFIX,
-  isLink,
   MetadataEntity,
   OPERATOR_NODE_TYPES,
-  validateDkgAddress,
+  camelToSnakeFieldsMapping,
+  exceptions,
+  isLink,
+  validateDkgAddress
 } from '~lib/utils/operatorMetadataHelper';
+import { checkSpecialCharacters } from '~lib/utils/strings';
 import { getOperatorAvailableLocations, getOperatorNodes } from '~root/services/operator.service';
 
 export const fieldsToValidateSignature = [
@@ -30,51 +29,50 @@ export const fieldsToValidateSignature = [
   FIELD_KEYS.TWITTER_URL,
   FIELD_KEYS.LINKEDIN_URL,
   FIELD_KEYS.DKG_ADDRESS,
-  FIELD_KEYS.OPERATOR_IMAGE,
+  FIELD_KEYS.OPERATOR_IMAGE
 ];
 
-class OperatorMetadataStore extends BaseStore {
+class OperatorMetadataStore {
   metadata: Map<string, MetadataEntity> = new Map<string, MetadataEntity>();
   locationsData: CountryType[] = [];
   locationsList: Record<string, string> = {};
 
   constructor() {
-    super();
     makeObservable(this, {
       locationsList: observable,
       locationsData: observable,
       metadata: observable,
       getMetadataValue: observable,
-      setMetadataValue: observable,
+      setMetadataValue: observable
     });
   }
 
   // Init operator metadata
   async initMetadata(operator: any) {
     const metadata = new Map<string, MetadataEntity>();
-    Object.values(FIELD_KEYS).forEach(metadataFieldName => {
+    Object.values(FIELD_KEYS).forEach((metadataFieldName) => {
       if (camelToSnakeFieldsMapping.includes(metadataFieldName)) {
         if (metadataFieldName === FIELD_KEYS.MEV_RELAYS) {
           metadata.set(metadataFieldName, {
             ...FIELDS[metadataFieldName],
-            value: operator[exceptions[metadataFieldName]].split(',') || '',
+            value: operator[exceptions[metadataFieldName]].split(',') || ''
           });
         } else {
           metadata.set(metadataFieldName, {
             ...FIELDS[metadataFieldName],
-            value: operator[exceptions[metadataFieldName]] || '',
+            value: operator[exceptions[metadataFieldName]] || ''
           });
         }
       } else {
         if (metadataFieldName === FIELD_KEYS.OPERATOR_IMAGE) {
           metadata.set(metadataFieldName, {
             ...FIELDS[metadataFieldName],
-            imageFileName: operator[metadataFieldName] || '',
+            imageFileName: operator[metadataFieldName] || ''
           });
         } else {
           metadata.set(metadataFieldName, {
             ...FIELDS[metadataFieldName],
-            value: operator[_.snakeCase(metadataFieldName)] || '',
+            value: operator[_.snakeCase(metadataFieldName)] || ''
           });
         }
       }
@@ -93,7 +91,7 @@ class OperatorMetadataStore extends BaseStore {
 
   async updateOperatorLocations() {
     const options: CountryType[] = await getOperatorAvailableLocations();
-    options.forEach((option: CountryType) => this.locationsList[`${option.name} (${option['alpha-3']})`] = option.name);
+    options.forEach((option: CountryType) => (this.locationsList[`${option.name} (${option['alpha-3']})`] = option.name));
     this.locationsData = options;
   }
 
@@ -156,12 +154,12 @@ class OperatorMetadataStore extends BaseStore {
 
   // return payload for transaction
   createMetadataPayload() {
-    let payload: Record<string, string> = {};
+    const payload: Record<string, string> = {};
     fieldsToValidateSignature.forEach((field: string) => {
       let value = this.getMetadataValue(field);
       if (field === FIELD_KEYS.MEV_RELAYS && typeof value !== 'string') {
         value = this.sortMevRelays(value);
-      } else if (field === FIELD_KEYS.DKG_ADDRESS &&  value === HTTPS_PREFIX) {
+      } else if (field === FIELD_KEYS.DKG_ADDRESS && value === HTTPS_PREFIX) {
         value = '';
       }
       payload[field] = value || '';
@@ -171,7 +169,7 @@ class OperatorMetadataStore extends BaseStore {
 
   // validate metadata values
   validateOperatorMetaData() {
-    let metadataContainsError: boolean = false;
+    let metadataContainsError = false;
     for (const [metadataFieldName, fieldEntity] of this.metadata.entries()) {
       if (metadataFieldName === FIELD_KEYS.OPERATOR_IMAGE) {
         metadataContainsError = !!fieldEntity.errorMessage || metadataContainsError;
@@ -186,23 +184,25 @@ class OperatorMetadataStore extends BaseStore {
     const condition = FIELD_CONDITIONS[metadataFieldName];
     const response = {
       result: false,
-      errorMessage: '',
+      errorMessage: ''
     };
 
     if (condition) {
       const innerConditions = [
         {
           condition: metadataFieldName === FIELD_KEYS.OPERATOR_NAME && fieldEntity.value?.length === 0,
-          response: translations.OPERATOR_METADATA.REQUIRED_FIELD_ERROR,
-        }, {
-          condition: fieldEntity.value?.length > condition.maxLength,
-          response: condition.errorMessage,
-        }, {
-          condition: fieldEntity.value && !checkSpecialCharacters(fieldEntity.value),
-          response: translations.OPERATOR_METADATA.SPECIAL_CHARACTERS_ERROR,
+          response: translations.OPERATOR_METADATA.REQUIRED_FIELD_ERROR
         },
+        {
+          condition: fieldEntity.value?.length > condition.maxLength,
+          response: condition.errorMessage
+        },
+        {
+          condition: fieldEntity.value && !checkSpecialCharacters(fieldEntity.value),
+          response: translations.OPERATOR_METADATA.SPECIAL_CHARACTERS_ERROR
+        }
       ];
-      for (let innerCondition of innerConditions) {
+      for (const innerCondition of innerConditions) {
         if (innerCondition.condition) {
           response.result = innerCondition.condition;
           response.errorMessage = innerCondition.response;
@@ -220,22 +220,19 @@ class OperatorMetadataStore extends BaseStore {
     if (metadataFieldName === FIELD_KEYS.DKG_ADDRESS) {
       return {
         result: validateDkgAddress(fieldValue, true),
-        errorMessage: translations.OPERATOR_METADATA.DKG_ADDRESS_ERROR,
+        errorMessage: translations.OPERATOR_METADATA.DKG_ADDRESS_ERROR
       };
     } else {
       return {
         result: isLink(fieldValue),
-        errorMessage: translations.OPERATOR_METADATA.LINK_ERROR,
+        errorMessage: translations.OPERATOR_METADATA.LINK_ERROR
       };
     }
   }
 
   processField(metadataFieldName: string, fieldEntity: MetadataEntity, metadataContainsError: boolean) {
     const exceptionField = this.checkExceptionFields(metadataFieldName, fieldEntity.value);
-    const {
-      result,
-      errorMessage,
-    } = exceptionField ? this.checkFieldValue(metadataFieldName, fieldEntity.value) : this.checkWithConditions(metadataFieldName, fieldEntity);
+    const { result, errorMessage } = exceptionField ? this.checkFieldValue(metadataFieldName, fieldEntity.value) : this.checkWithConditions(metadataFieldName, fieldEntity);
 
     if (fieldEntity.value && result) {
       this.setErrorMessage(metadataFieldName, errorMessage);
@@ -247,4 +244,5 @@ class OperatorMetadataStore extends BaseStore {
   }
 }
 
+export const operatorMetadataStore = new OperatorMetadataStore();
 export default OperatorMetadataStore;

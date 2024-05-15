@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import Typography from '@mui/material/Typography';
@@ -27,7 +27,6 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import { SsvStore } from '~app/common/stores/applications/SsvWeb';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import {
   useStyles,
@@ -41,7 +40,7 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { useAppSelector } from '~app/hooks/redux.hook';
 import { getValidator } from '~root/services/validator.service';
 import { getOperatorsByIds } from '~root/services/operator.service';
 import { getClusterData, getClusterHash } from '~root/services/cluster.service';
@@ -50,11 +49,13 @@ import { getOwnerNonce } from '~root/services/account.service';
 import { ProcessType, SingleCluster } from '~app/model/processes.model';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { isJsonFile } from '~root/utils/dkg.utils';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
+  const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
     const stores = useStores();
     const classes = useStyles();
     const navigate = useNavigate();
@@ -63,7 +64,6 @@ const KeyShareFlow = () => {
     const removeButtons = useRef(null);
     const processStore: ProcessStore = stores.Process;
     const operatorStore: OperatorStore = stores.Operator;
-    const ssvStore: SsvStore = stores.SSV;
     const validatorStore: ValidatorStore = stores.Validator;
     const [warningMessage, setWarningMessage] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -119,7 +119,7 @@ const KeyShareFlow = () => {
           operatorStore.setClusterSize(selectedOperators.length);
         }
 
-        for (let keyShare of shares) {
+        for (const keyShare of shares) {
           if (keyShare.data.operators?.some((operatorData: { id: number, operatorKey: string }) => {
             const selectedOperator = Object.values(operatorStore.selectedOperators).find((selected: IOperator) => selected.id === operatorData.id);
             return !selectedOperator || selectedOperator.public_key.toLowerCase() !== operatorData.operatorKey.toLowerCase();
@@ -134,6 +134,7 @@ const KeyShareFlow = () => {
     }
 
     async function storeKeyShareData(keyShareMulti: KeyShares) {
+      // eslint-disable-next-line no-useless-catch
       try {
         validatorStore.setProcessedKeyShare(keyShareMulti);
         const keyShares = keyShareMulti.list();
@@ -148,6 +149,7 @@ const KeyShareFlow = () => {
           return;
         }
 
+        // eslint-disable-next-line no-async-promise-executor
         const promises = Object.values(validators).map((validator: ValidatorType) => new Promise(async (resolve, reject) => {
           try {
             const res = await getValidator(validator.publicKey);
@@ -396,7 +398,7 @@ const KeyShareFlow = () => {
           validatorStore.setKeySharePublicKey(validatorStore.registerValidatorsPublicKeys[0]);
         }
         if (!processStore.secondRegistration) {
-          await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), ssvStore.liquidationCollateralPeriod, ssvStore.minimumLiquidationCollateral, true).then((clusterData) => {
+          await getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true).then((clusterData) => {
             if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
               processStore.setProcess({
                 item: { ...clusterData, operators: Object.values(operatorStore.selectedOperators) },

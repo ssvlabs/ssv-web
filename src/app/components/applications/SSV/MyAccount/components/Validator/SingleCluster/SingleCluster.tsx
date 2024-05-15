@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import styled from 'styled-components';
@@ -20,11 +20,12 @@ import ActionsButton
 import { SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
 import ValidatorsList
   from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { ButtonSize } from '~app/enums/Button.enum';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { getIsDarkMode } from '~app/redux/appState.slice';
+import { getSelectedCluster, setSelectedClusterId } from '~app/redux/account.slice';
 
 const ValidatorsWrapper = styled.div`
     width: 872px;
@@ -62,15 +63,23 @@ const SingleCluster = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const processStore: ProcessStore = stores.Process;
   const operatorStore: OperatorStore = stores.Operator;
   const process: SingleClusterProcess = processStore.getProcess;
-  const cluster = process.item;
+  const cluster = useAppSelector(getSelectedCluster);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const accountAddress = useAppSelector(getAccountAddress);
+
   const hasPrivateOperator = cluster.operators.some((operator: any) => operator.address_whitelist && !isEqualsAddresses(operator.address_whitelist, accountAddress) && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
   const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated || hasPrivateOperator;
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
+
+  useEffect(() => {
+    return () => {
+      dispatch(setSelectedClusterId(''));
+    };
+  }, []);
 
   const addToCluster = () => {
     process.processName = 'cluster_registration';
@@ -81,24 +90,20 @@ const SingleCluster = () => {
   };
 
   const backToClustersDashboard = () => {
+    dispatch(setSelectedClusterId(''));
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };
 
-  const moveToReactivateCluster = () => {
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.REACTIVATE, { state: { clusterId: cluster.clusterId } });
+  const moveToReactivateCluster = ()=> {
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.REACTIVATE);
   };
 
   const moveToDeposit = () => {
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.DEPOSIT, { state: { clusterId: cluster.clusterId } });
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.DEPOSIT);
   };
 
-  const moveToWithdraw = () => {
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.WITHDRAW, {
-      state: {
-        clusterId: cluster.clusterId,
-        isValidatorFlow: true,
-      },
-    });
+  const moveToWithdraw = ()=> {
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.WITHDRAW);
   };
 
   return (
@@ -109,7 +114,7 @@ const SingleCluster = () => {
         header={'Cluster'}
       />
       <Grid container item className={classes.Section}>
-        {(cluster?.operators).map((operator: any, index: number) => {
+        {(cluster.operators).map((operator: any, index: number) => {
           return <OperatorBox key={index} operator={operator}/>;
         })}
       </Grid>

@@ -1,27 +1,26 @@
+import { useState } from 'react';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import Decimal from 'decimal.js';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './ReactivateCluster.styles';
 import TextInput from '~app/components/common/TextInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import FundingSummary from '~app/components/common/FundingSummary';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
-import MyAccountStore from '~app/common/stores/applications/SsvWeb/MyAccount.store';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { fromWei } from '~root/services/conversions.service';
-import { useAppSelector } from '~app/hooks/redux.hook';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { getAccountAddress, getIsContractWallet } from '~app/redux/wallet.slice';
-import { reactivateCluster } from '~root/services/cluster.service';
+import { reactivateCluster } from '~root/services/clusterContract.service';
+import { getSelectedCluster } from '~app/redux/account.slice';
+import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
+import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 import AllowanceButton from '~app/components/AllowanceButton';
 
 const options = [
@@ -31,18 +30,17 @@ const options = [
 ];
 
 const ReactivateCluster = () => {
-  const accountAddress = useAppSelector(getAccountAddress);
-  const isContractWallet = useAppSelector(getIsContractWallet);
-  const location = useLocation();
-  const stores = useStores();
-  const classes = useStyles();
-  const navigate = useNavigate();
-  const ssvStore: SsvStore = stores.SSV;
-  const myAccountStore: MyAccountStore = stores.MyAccount;
   const [customPeriod, setCustomPeriod] = useState(config.GLOBAL_VARIABLE.DEFAULT_CLUSTER_PERIOD);
   const [checkedOption, setCheckedOption] = useState(options[1]);
+  const accountAddress = useAppSelector(getAccountAddress);
+  const isContractWallet = useAppSelector(getIsContractWallet);
+  const { networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
+  const cluster = useAppSelector(getSelectedCluster);
+  const dispatch = useAppDispatch();
+  const { walletSsvBalance } = useFetchWalletBalance();
+  const classes = useStyles();
+  const navigate = useNavigate();
   const timePeriodNotValid = customPeriod < 30;
-  const cluster = myAccountStore.ownerAddressClusters.find(({ clusterId }: { clusterId: string }) => clusterId === location.state.clusterId);
   const validatorsCount = cluster.validatorCount || 1;
   const checkBox = (option: any) => setCheckedOption(option);
 
@@ -52,18 +50,18 @@ const ReactivateCluster = () => {
     0,
   );
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
-  const networkCost = propertyCostByPeriod(ssvStore.networkFee, periodOfTime);
+  const networkCost = propertyCostByPeriod(networkFee, periodOfTime);
   const operatorsCost = propertyCostByPeriod(operatorsFee, periodOfTime);
 
-  let liquidationCollateralCost = getLiquidationCollateralPerValidator({
+  const liquidationCollateralCost = getLiquidationCollateralPerValidator({
     operatorsFee,
-    networkFee: ssvStore.networkFee,
-    liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
+    networkFee,
+    liquidationCollateralPeriod,
     validatorsCount,
-    minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
+    minimumLiquidationCollateral,
   });
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost).mul(validatorsCount);
-  const insufficientBalance = totalCost.comparedTo(ssvStore.walletSsvBalance) === 1;
+  const insufficientBalance = totalCost.comparedTo(walletSsvBalance) === 1;
   const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
   const disableCondition = insufficientBalance || customPeriod <= 0 || isNaN(customPeriod);
 
@@ -75,9 +73,9 @@ const ReactivateCluster = () => {
       accountAddress,
       isContractWallet,
       amount: totalCost.toString(),
-      liquidationCollateralPeriod: ssvStore.liquidationCollateralPeriod,
-      minimumLiquidationCollateral: ssvStore.minimumLiquidationCollateral,
-      callbackAfterExecution: myAccountStore.refreshOperatorsAndClusters,
+      liquidationCollateralPeriod,
+      minimumLiquidationCollateral,
+      dispatch,
     });
     if (response) navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };
@@ -168,4 +166,4 @@ const ReactivateCluster = () => {
     </Grid>
   );
 };
-export default observer(ReactivateCluster);
+export default ReactivateCluster;

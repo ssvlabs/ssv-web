@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
@@ -8,7 +8,7 @@ type CopyButtonProps = {
     onClickHandler: any;
 };
 
-export const CopyButton = ({ textCopied, classes, onClickHandler }: CopyButtonProps) => {
+const CopyButton = ({ textCopied, classes, onClickHandler }: CopyButtonProps) => {
     if (!textCopied) {
         return ( <Grid item className={classes.CopyButton} onClick={onClickHandler}>Copy</Grid>);
     }
@@ -20,3 +20,4 @@ export const CopyButton = ({ textCopied, classes, onClickHandler }: CopyButtonPr
     );
 };
 
+export default CopyButton;

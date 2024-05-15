@@ -1,6 +1,7 @@
 import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material/styles';
 
+//@ts-ignore
 export const useStyles = makeStyles((theme: Theme) => {
     return {
         PlaceholderColor: {

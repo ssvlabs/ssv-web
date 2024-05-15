@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
-import Typography from '@mui/material/Typography';
-import config from '~app/common/config';
-import BorderScreen from '~app/components/common/BorderScreen';
-import { useStyles } from '~app/components/applications/Faucet/SuccessPage/SuccessPage.styles';
-import { useAppDispatch } from '~app/hooks/redux.hook';
-import { registerSSVTokenInMetamask } from '~root/services/distribution.service';
 import { AlertColor } from '@mui/material/Alert';
-import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import { useConnectWallet } from '@web3-onboard/react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import config from '~app/common/config';
+import { useStyles } from '~app/components/applications/Faucet/SuccessPage/SuccessPage.styles';
+import BorderScreen from '~app/components/common/BorderScreen';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { registerSSVTokenInMetamask } from '~root/services/distribution.service';
 
 const SuccessPage = () => {
   const classes = useStyles();

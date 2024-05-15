@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import config from '~app/common/config';
@@ -21,7 +21,7 @@ import Settings
   from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 
-const TableWrapper = styled.div`
+const TableWrapper = styled.div<{ children: React.ReactNode; id: string; }>`
     margin-top: 12px;
     width: 808px;
     max-height: 600px;
@@ -38,22 +38,21 @@ const TableHeader = styled.div`
     align-items: center;
 `;
 
-const TableHeaderTitle = styled.h6<{ theme: any, marginLeft?: number }>`
-    margin: 0;
+const TableHeaderTitle = styled.h6<{ theme: any, marginLeft?: number; children: React.ReactNode; }>`
     font-size: 12px;
     font-weight: 500;
     color: ${({ theme }) => theme.colors.gray40};
     display: flex;
     gap: 4px;
     align-items: center;
-    margin-left: ${({ marginLeft }) => `${marginLeft}px`};
+    margin: 0 0 0 ${({ marginLeft }) => `${marginLeft}px`};
 `;
 
 const ValidatorsListWrapper = styled.div`
     overflow-y: auto;
 `;
 
-const ValidatorWrapper = styled.div`
+const ValidatorWrapper = styled.div<{ children?: React.ReactNode }>`
     height: 58px;
     border: ${({ theme }) => `1px solid ${theme.colors.gray20}`};
     padding: 14px 32px;
@@ -71,7 +70,7 @@ const PublicKeyWrapper = styled.div`
     gap: 8px;
 `;
 
-const PublicKey = styled.p<{ marginLeft?: number }>`
+const PublicKey = styled.p<{ marginLeft?: number; children: React.ReactNode; }>`
     font-size: 16px;
     font-weight: 500;
     color: ${({ theme }) => theme.colors.gray90};
@@ -89,7 +88,7 @@ const LinksWrapper = styled.div`
     position: static;
 `;
 
-const Link = styled.div<{ isDarkMode: boolean; logo: string }>`
+const Link = styled.div<{ isDarkMode: boolean; logo: string; onClick: Function; }>`
     width: 24px;
     height: 24px;
     cursor: pointer;

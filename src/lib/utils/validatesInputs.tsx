@@ -1,10 +1,12 @@
-import React from 'react';
+
 import Decimal from 'decimal.js';
 import config from '~app/common/config';
 import { compareNumbers, formatNumberToUi } from '~lib/utils/numbers';
 import { getFeeForYear, isAddress } from '~root/services/conversions.service';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import { getOperatorByPublicKey } from '~root/services/operator.service';
+
+const OPERATOR_VALID_KEY_LENGTH = 612;
 
 interface ErrorObject {
   errorMessage: any,
@@ -16,7 +18,7 @@ export const validatePublicKeyInput = (value: string, callback: React.Dispatch<E
   const regx = /^[A-Za-z0-9]+$/;
   if (value.length === 0) {
     response.errorMessage = 'Please enter an operator key.';
-  } else if (value.length !== config.FEATURE.OPERATORS.VALID_KEY_LENGTH) {
+  } else if (value.length !== OPERATOR_VALID_KEY_LENGTH) {
     response.errorMessage = <>Invalid operator key - see our <LinkText text={'documentation.'}
                                                                        link={'https://docs.ssv.network/run-a-node/operator-node/installation#generate-operator-keys'}/> to
       generate your key.</>;

@@ -18,5 +18,8 @@
     "npm-debug.log.*": true,
     "test/**/__snapshots__": true,
     "yarn.lock": true
-  }
+  },
+  "cSpell.words": [
+    "Wagmi"
+  ]
 }

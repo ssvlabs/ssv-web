@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import  { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
@@ -14,8 +14,7 @@ import { useStyles } from '~app/components/common/WhiteWrapper/WhiteWrapper.styl
 import ValidatorStore from '../../../common/stores/applications/SsvWeb/Validator.store';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading } from '~app/redux/appState.slice';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 type Props = {
@@ -53,7 +52,7 @@ const WhiteWrapper = (props: Props) => {
   const validatorStore: ValidatorStore = stores.Validator;
   const settingsRef = useRef(null);
 
-  const [openDialog, setOpenDialog] = React.useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const isLoading = useAppSelector(getIsLoading);
 
@@ -146,12 +145,7 @@ const WhiteWrapper = (props: Props) => {
         <Grid item xs={12} className={classes.ChildWrapper}>
           {children}
         </Grid>
-        <Dialog
-          open={openDialog}
-          PaperProps={{
-            style: { borderRadius: 16, backgroundColor: 'transparent' },
-          }}
-        >
+        <Dialog open={openDialog} PaperProps={{ style: { borderRadius: 16, backgroundColor: 'transparent' } }}>
           <Grid container item className={classes.DialogWrapper}>
             <HeaderSubHeader title={'Cancel Update Operators'} subtitle={'Are you sure you want to cancel'}/>
             <Grid container className={classes.ButtonsWrapper}>

@@ -9,23 +9,19 @@ import { removeFromLocalStorageByKey } from '~root/providers/localStorage.provid
 import { store } from '~app/store';
 import { setStrategyRedirect } from '~app/redux/navigation.slice';
 import { useStores } from '~app/hooks/useStores';
-import SsvStore from '../common/stores/applications/SsvWeb/SSV.store';
 import OperatorStore from '../common/stores/applications/SsvWeb/Operator.store';
 
 const useWalletDisconnector = () => {
-  const [_, __, disconnect] = useConnectWallet();
+  const [,, disconnect] = useConnectWallet();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const label = useAppSelector(getWalletLabel);
 
   const stores = useStores();
-  const ssvStore: SsvStore = stores.SSV;
   const operatorStore: OperatorStore = stores.Operator;
 
   const resetWalletAndStores = async () => {
-    ssvStore.clearUserSyncInterval();
     dispatch(resetWallet());
-    ssvStore.clearSettings();
     operatorStore.clearSettings();
     removeFromLocalStorageByKey('params');
     store.dispatch(setStrategyRedirect(config.routes.SSV.ROOT));

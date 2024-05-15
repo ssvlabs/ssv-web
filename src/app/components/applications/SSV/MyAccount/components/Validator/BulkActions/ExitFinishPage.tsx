@@ -1,9 +1,9 @@
-import React from 'react';
+
 import styled from 'styled-components';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import Summary from '~app/components/applications/SSV/MyAccount/components/Validator/SummaryValidators/Summary';
 import ExitIndicator from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ExitIndicator';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const Wrapper = styled.div`

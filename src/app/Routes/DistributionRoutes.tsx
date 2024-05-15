@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Route, Routes as Wrapper } from 'react-router-dom';
 import config from '~app/common/config';
 import Layout from '~app/components/common/Layout/Layout';

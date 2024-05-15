@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';

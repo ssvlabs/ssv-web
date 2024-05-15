@@ -1,5 +1,5 @@
 import Grid from '@mui/material/Grid';
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import BackNavigation from '~app/components/common/BackNavigation';
 import { useStyles } from './BorderScreen.styles';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';

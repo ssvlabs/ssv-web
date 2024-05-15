@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import LinkText from '~app/components/common/LinkText';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -7,7 +7,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useStyles } from '~app/components/applications/SSV/CountryNotSupported/CountryNotSupported.styles';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getRestrictedUserGeo, getStrategyName } from '~app/redux/appState.slice';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
+import { SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const CountryNotSupported = () => {

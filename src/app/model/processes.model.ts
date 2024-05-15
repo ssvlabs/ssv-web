@@ -1,11 +1,11 @@
 interface SingleOperator {
-  processName: string,
-  item?: any,
+  processName: string;
+  item?: any;
 }
 
 interface SingleCluster {
-  processName: string,
-  item?: any,
+  processName: string;
+  item?: any;
   currentBulkFlow?: BULK_FLOWS;
   operators?: any;
   validator?: any;
@@ -17,34 +17,35 @@ interface RegisterValidator {
 }
 
 interface RegisterOperator {
-  processName: string,
-  item?: any,
+  processName: string;
+  item?: any;
 }
 
-enum BULK_FLOWS  {
+enum BULK_FLOWS {
   BULK_REMOVE = 'BULK_REMOVE',
-  BULK_EXIT = 'BULK_EXIT',
+  BULK_EXIT = 'BULK_EXIT'
 }
 
 enum RegistrationType {
   // eslint-disable-next-line no-unused-vars
   Online = 1,
   // eslint-disable-next-line no-unused-vars
-  Offline = 2,
+  Offline = 2
 }
 
 interface RegisterValidator {
-  processName: string,
-  validator?: any,
+  processName: string;
+  validator?: any;
   fundingPeriod?: any;
   totalRegistrationCost?: string;
-  registrationType: RegistrationType,
-  depositAmount: number
+  registrationType: RegistrationType;
+  depositAmount: number;
 }
 
 enum ProcessType {
   Operator = 1,
-  Validator = 2,
+  Validator = 2
 }
 
-export { SingleCluster, SingleOperator, RegisterOperator, RegisterValidator, BULK_FLOWS, RegistrationType, ProcessType };
+export { BULK_FLOWS, RegistrationType, ProcessType };
+export type { SingleCluster, SingleOperator, RegisterOperator, RegisterValidator };

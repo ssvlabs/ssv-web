@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import OperatorType from '~app/components/common/OperatorType/OperatorType';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';

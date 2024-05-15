@@ -1,11 +1,10 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import AppBar from '~app/components/common/AppBar/AppBar';
-import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { getIsLoading, getRestrictedUserGeo } from '~app/redux/appState.slice';
 import { getAccountClusters, getAccountOperators } from '~app/redux/account.slice';
+import { getIsLoading, getRestrictedUserGeo } from '~app/redux/appState.slice';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 
 const SsvAppBar = () => {
   const navigate = useNavigate();

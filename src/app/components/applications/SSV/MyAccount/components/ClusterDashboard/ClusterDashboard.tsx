@@ -1,34 +1,33 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
+import { observer } from 'mobx-react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useStores } from '~app/hooks/useStores';
-import { formatNumberToUi } from '~lib/utils/numbers';
-import { longStringShorten } from '~lib/utils/strings';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
+import config, { translations } from '~app/common/config';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
+import ClusterWarnings from '~app/components/applications/SSV/MyAccount/components/ClusterDashboard/components/ClusterWarnings';
+import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
+import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards';
 import LinkText from '~app/components/common/LinkText';
 import NaDisplay from '~app/components/common/NaDisplay';
-import config, { translations } from '~app/common/config';
 import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
 import OperatorCircleImage from '~app/components/common/OperatorCircleImage';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
-import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards';
-import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
-import ClusterWarnings
-  from '~app/components/applications/SSV/MyAccount/components/ClusterDashboard/components/ClusterWarnings';
+import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getIsDarkMode } from '~app/redux/appState.slice';
-import { getClusterHash } from '~root/services/cluster.service';
-import { getAccountAddress } from '~app/redux/wallet.slice';
+import { useStores } from '~app/hooks/useStores';
+import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import {
   fetchClusters,
   getAccountClusters,
   getClustersPagination,
   setSelectedClusterId,
 } from '~app/redux/account.slice';
-import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
-import { ButtonSize } from '~app/enums/Button.enum';
+import { getIsDarkMode } from '~app/redux/appState.slice';
+import { getAccountAddress } from '~app/redux/wallet.slice';
+import { formatNumberToUi } from '~lib/utils/numbers';
+import { longStringShorten } from '~lib/utils/strings';
+import { getClusterHash } from '~root/services/cluster.service';
 
 const ClusterDashboard = () => {
   const stores = useStores();

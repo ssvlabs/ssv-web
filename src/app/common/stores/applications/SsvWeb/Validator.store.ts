@@ -1,22 +1,21 @@
 /* eslint-disable no-async-promise-executor */
 import Decimal from 'decimal.js';
-import { KeySharesItem } from 'ssv-keys';
-import { SSVKeys, KeyShares } from 'ssv-keys';
 import { action, makeObservable, observable } from 'mobx';
-import { propertyCostByPeriod } from '~lib/utils/numbers';
-import { EContractName } from '~app/model/contracts.model';
-import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
-import { getContractByName } from '~root/services/contracts.service';
+import { KeyShares, KeySharesItem, SSVKeys } from 'ssv-keys';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import { EContractName } from '~app/model/contracts.model';
 import { IOperator } from '~app/model/operator.model';
-import { getClusterData, getClusterHash } from '~root/services/cluster.service';
-import { getLiquidationCollateralPerValidator, getValidator } from '~root/services/validator.service';
+import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
+import { propertyCostByPeriod } from '~lib/utils/numbers';
 import { getOwnerNonce } from '~root/services/account.service';
-import { SingleCluster, RegisterValidator } from '~app/model/processes.model';
+import { getClusterData, getClusterHash } from '~root/services/cluster.service';
+import { getContractByName } from '~root/services/contracts.service';
+import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { transactionExecutor } from '~root/services/transaction.service';
-import { createPayload } from '~root/utils/dkg.utils';
+import { getLiquidationCollateralPerValidator, getValidator } from '~root/services/validator.service';
 import { rootStore } from '~root/stores.ts';
+import { createPayload } from '~root/utils/dkg.utils';
 
 const annotations = {
   keyStoreFile: observable,
@@ -186,12 +185,13 @@ class ValidatorStore {
           `${totalCost}`,
           await getClusterData(getClusterHash(operators as unknown as IOperator[], accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral));
 
-        resolve(payload);
-      } catch (e: any) {
-        console.log(e.message);
-        resolve(null);
+          resolve(payload);
+        } catch (e: any) {
+          console.log(e.message);
+          resolve(null);
+        }
       }
-    });
+    );
   }
 
   async createKeySharePayload({ accountAddress, networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral }:
@@ -211,13 +211,23 @@ class ValidatorStore {
           liquidationCollateralPeriod,
           minimumLiquidationCollateral,
         });
-        totalCost = prepareSsvAmountToTransfer(toWei(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(this.isMultiSharesMode ? this.validatorsCount : 1).toString()));
+        totalCost = prepareSsvAmountToTransfer(
+          toWei(
+            liquidationCollateralCost
+              .add(networkCost)
+              .add(operatorsCost)
+              .mul(this.isMultiSharesMode ? this.validatorsCount : 1)
+              .toString()
+          )
+        );
       }
       try {
         const keysharePayload = this.processedKeyShare?.list().find((keyShare: any) => this.registerValidatorsPublicKeys.includes(keyShare.payload.publicKey))?.payload;
         let publicKeys;
         let sharesData;
-        const operatorIds = Object.values(operatorStore.selectedOperators).map((operator: IOperator) => operator.id).sort((a: number, b: number) => a - b);
+        const operatorIds = Object.values(operatorStore.selectedOperators)
+          .map((operator: IOperator) => operator.id)
+          .sort((a: number, b: number) => a - b);
 
         const keyShares = this.processedKeyShare?.list();
 

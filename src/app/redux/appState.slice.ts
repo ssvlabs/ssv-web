@@ -8,6 +8,7 @@ export interface AppState {
   isDarkMode: boolean;
   isLoading: boolean;
   isShowWalletPopup: boolean;
+  isShowConnectWallet: boolean;
   isShowTxPendingPopup: boolean;
   isShowSsvLoader: boolean;
   txHash: string;
@@ -18,7 +19,8 @@ export interface AppState {
 const getInitialStrategyName = () => {
   if (import.meta.env.VITE_FAUCET_PAGE) {
     return 'faucet';
-  } if (import.meta.env.VITE_CLAIM_PAGE) {
+  }
+  if (import.meta.env.VITE_CLAIM_PAGE) {
     return 'distribution';
   }
   return 'ssv-web';
@@ -29,11 +31,12 @@ const initialState: AppState = {
   isDarkMode: !!getFromLocalStorageByKey('isDarkMode') /* ?? (window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches) */,
   isLoading: false,
   isShowWalletPopup: false,
+  isShowConnectWallet: false,
   isShowTxPendingPopup: false,
   isShowSsvLoader: true,
   txHash: '',
   restrictedUserGeo: '',
-  shouldCheckCountryRestriction: getStoredNetwork().networkId === MAINNET_NETWORK_ID,
+  shouldCheckCountryRestriction: getStoredNetwork().networkId === MAINNET_NETWORK_ID
 };
 
 export const slice = createSlice({
@@ -63,18 +66,31 @@ export const slice = createSlice({
     setIsShowWalletPopup: (state, action: { payload: boolean }) => {
       state.isShowWalletPopup = action.payload;
     },
+    setIsShowConnectWallet: (state, action: { payload: boolean }) => {
+      state.isShowConnectWallet = action.payload;
+    },
     setIsShowTxPendingPopup: (state, action: { payload: boolean }) => {
       state.isShowTxPendingPopup = action.payload;
     },
     setTxHash: (state, action: { payload: string }) => {
       state.txHash = action.payload;
-    },
-  },
+    }
+  }
 });
 
 export const appStateReducer = slice.reducer;
 
-export const { toggleDarkMode, setIsShowSsvLoader, setRestrictedUserGeo, setIsLoading, setIsShowWalletPopup, setIsShowTxPendingPopup, setTxHash, setShouldCheckCountryRestriction } = slice.actions;
+export const {
+  toggleDarkMode,
+  setIsShowSsvLoader,
+  setRestrictedUserGeo,
+  setIsLoading,
+  setIsShowWalletPopup,
+  setIsShowTxPendingPopup,
+  setTxHash,
+  setShouldCheckCountryRestriction,
+  setIsShowConnectWallet
+} = slice.actions;
 
 export const getStrategyName = (state: RootState) => state.appState.strategyName;
 export const getIsDarkMode = (state: RootState) => state.appState.isDarkMode;
@@ -83,5 +99,6 @@ export const getRestrictedUserGeo = (state: RootState) => state.appState.restric
 export const getIsShowSsvLoader = (state: RootState) => state.appState.isShowSsvLoader;
 export const getIsLoading = (state: RootState) => state.appState.isLoading;
 export const getIsShowWalletPopup = (state: RootState) => state.appState.isShowWalletPopup;
+export const getIsShowConnectWallet = (state: RootState) => state.appState.isShowConnectWallet;
 export const getIsShowTxPendingPopup = (state: RootState) => state.appState.isShowTxPendingPopup;
 export const getTxHash = (state: RootState) => state.appState.txHash;

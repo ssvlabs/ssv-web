@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import IntegerInput from '~app/components/common/IntegerInput';
-import BorderScreen from '~app/components/common/BorderScreen';
+import { PrimaryButton } from '~app/atomicComponents';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
+import BorderScreen from '~app/components/common/BorderScreen';
+import IntegerInput from '~app/components/common/IntegerInput';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
+import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import { PrimaryButton } from '~app/atomicComponents';
-import { ButtonSize } from '~app/enums/Button.enum';
+import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { withdrawRewards } from '~root/services/operatorContract.service';
 
 const OperatorFlow = ({ operator }: { operator: IOperator; }) => {
@@ -54,6 +54,7 @@ const OperatorFlow = ({ operator }: { operator: IOperator; }) => {
         <Grid item container xs={12}>
           <Grid item xs={6}>
             <IntegerInput
+            // @ts-ignore
               type="number"
               value={inputValue}
               onChange={inputHandler}

@@ -1,11 +1,11 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { EIP1193Provider } from '@web3-onboard/core';
-import { RootState } from '~app/store';
-import { changeNetwork, getStoredNetwork, MAINNET_NETWORK_ID, NetworkInfo } from '~root/providers/networkInfo.provider';
-import { checkIfWalletIsContract } from '~root/services/wallet.service';
-import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
-import { TEST_WALLET_ADDRESS } from '~lib/utils/developerHelper';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { ethers } from 'ethers';
 import { METAMASK_LABEL } from '~app/constants/constants';
+import { RootState } from '~app/store';
+import { TEST_WALLET_ADDRESS } from '~lib/utils/developerHelper';
+import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
+import { MAINNET_NETWORK_ID, NetworkInfo, changeNetwork, getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { checkIfWalletIsContract } from '~root/services/wallet.service';
 
 export interface WalletSliceState {
   accountAddress: string;
@@ -22,10 +22,10 @@ const initialState: WalletSliceState = {
   isNotMetamask: false,
   isContractWallet: false,
   connectedNetwork: getStoredNetwork(),
-  isMainnet: getStoredNetwork().networkId === MAINNET_NETWORK_ID,
+  isMainnet: getStoredNetwork().networkId === MAINNET_NETWORK_ID
 };
 
-const checkIfWalletIsContractAction = createAsyncThunk('wallet/checkIfWalletIsContractStatus', async (provider: EIP1193Provider, thunkAPI) => {
+const checkIfWalletIsContractAction = createAsyncThunk('wallet/checkIfWalletIsContractStatus', async (provider: ethers.providers.JsonRpcProvider, thunkAPI) => {
   const walletState = (thunkAPI.getState() as RootState).walletState;
   if (walletState.accountAddress && walletState.isNotMetamask) {
     return await checkIfWalletIsContract({ provider, walletAddress: walletState.accountAddress });
@@ -37,7 +37,7 @@ export const slice = createSlice({
   name: 'walletState',
   initialState,
   reducers: {
-    setWallet: (state, action: { payload: { label: string, address: string } }) => {
+    setWallet: (state, action: { payload: { label: string; address: string } }) => {
       state.label = action.payload.label;
       const testWalletAddress = getFromLocalStorageByKey(TEST_WALLET_ADDRESS);
       state.accountAddress = testWalletAddress ?? action.payload.address;
@@ -52,13 +52,13 @@ export const slice = createSlice({
     setConnectedNetwork: (state, action: { payload: number }) => {
       state.connectedNetwork = changeNetwork(action.payload);
       state.isMainnet = state.connectedNetwork.networkId === MAINNET_NETWORK_ID;
-    },
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(checkIfWalletIsContractAction.fulfilled, (state, action: { payload: boolean }) => {
       state.isContractWallet = action.payload;
     });
-  },
+  }
 });
 
 export const walletStateReducer = slice.reducer;

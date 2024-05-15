@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useStores } from '~app/hooks/useStores';
 import { translations } from '~app/common/config';
-import NewBulkActions from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/NewBulkActions';
-import ExitFinishPage from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ExitFinishPage';
-import ConfirmationStep
-  from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ConfirmationStep';
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
-import { BulkValidatorData, IValidator } from '~app/model/validator.model';
+import ConfirmationStep from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ConfirmationStep';
+import ExitFinishPage from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ExitFinishPage';
+import NewBulkActions from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/NewBulkActions';
+import { useAppSelector, useAppDispatch } from '~app/hooks/redux.hook';
+import { useStores } from '~app/hooks/useStores';
 import { IOperator } from '~app/model/operator.model';
-import { formatValidatorPublicKey } from '~lib/utils/strings';
-import { MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
-import { SingleCluster, BULK_FLOWS } from '~app/model/processes.model';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getAccountAddress, getIsContractWallet } from '~app/redux/wallet.slice';
+import { BULK_FLOWS, SingleCluster } from '~app/model/processes.model';
+import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
+import { getAccountAddress, getIsContractWallet } from '~app/redux/wallet.slice';
+import { MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
+import { formatValidatorPublicKey } from '~lib/utils/strings';
 import { exitValidators, removeValidators } from '~root/services/validatorContract.service';
 
 enum BULK_STEPS {

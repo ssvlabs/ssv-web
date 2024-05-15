@@ -1,30 +1,31 @@
-import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { formatNumberToUi } from '~lib/utils/numbers';
-import IntegerInput from '~app/components/common/IntegerInput';
-import BorderScreen from '~app/components/common/BorderScreen';
-import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import AllowanceButton from '~app/components/AllowanceButton';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Deposit/Deposit.styles';
+import BorderScreen from '~app/components/common/BorderScreen';
+import IntegerInput from '~app/components/common/IntegerInput';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import { fromWei, toWei } from '~root/services/conversions.service';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getClusterRunWay } from '~root/services/cluster.service';
-import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { EClusterOperation } from '~app/enums/clusterOperation.enum';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 import { getSelectedCluster } from '~app/redux/account.slice';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
-import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
+import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import { formatNumberToUi } from '~lib/utils/numbers';
+import { getClusterRunWay } from '~root/services/cluster.service';
 import { depositOrWithdraw } from '~root/services/clusterContract.service';
-import AllowanceButton from '~app/components/AllowanceButton';
+import { fromWei, toWei } from '~root/services/conversions.service';
 
 const Deposit = () => {
   const [inputValue, setInputValue] = useState('');
   const [wasAllowanceApproved, setAllowanceWasApproved] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const { walletSsvBalance } = useFetchWalletBalance();
+
   const navigate = useNavigate();
   const classes = useStyles();
   const accountAddress = useAppSelector(getAccountAddress);
@@ -44,20 +45,20 @@ const Deposit = () => {
       liquidationCollateralPeriod,
       minimumLiquidationCollateral,
       operation: EClusterOperation.DEPOSIT,
-      dispatch,
+      dispatch
     });
     if (success) {
       GoogleTagManager.getInstance().sendEvent({
         category: 'my_account',
         action: 'deposit_tx',
-        label: 'success',
+        label: 'success'
       });
       navigate(-1);
     } else {
       GoogleTagManager.getInstance().sendEvent({
         category: 'my_account',
         action: 'deposit_tx',
-        label: 'error',
+        label: 'error'
       });
     }
     setInputValue('');
@@ -81,57 +82,61 @@ const Deposit = () => {
 
   return (
     <Grid container>
-      <NewWhiteWrapper
-        type={0}
-        header={'Cluster'}
-      />
+      <NewWhiteWrapper type={0} header={'Cluster'} />
       <BorderScreen
         withoutNavigation
         header={'Deposit'}
         body={[
-          (
-            <Grid item container>
-              <Grid container item xs={12} className={classes.BalanceWrapper}>
-                <Grid item container xs={12}>
-                  <Grid item xs={6}>
-                    <IntegerInput
-                      min={'0'}
-                      type="number"
-                      value={inputValue}
-                      placeholder={'0.0'}
-                      onChange={inputHandler}
-                      disabled={wasAllowanceApproved}
-                      className={classes.Balance}
-                    />
-                  </Grid>
-                  <Grid item container xs={6} className={classes.MaxButtonWrapper}>
-                    <Grid item onClick={maxDeposit} className={classes.MaxButton}>
-                      MAX
-                    </Grid>
-                    <Grid item className={classes.MaxButtonText}>SSV</Grid>
-                  </Grid>
+          <Grid item container>
+            <Grid container item xs={12} className={classes.BalanceWrapper}>
+              <Grid item container xs={12}>
+                <Grid item xs={6}>
+                  <IntegerInput
+                    // @ts-ignore
+                    min={'0'}
+                    type="number"
+                    value={inputValue}
+                    placeholder={'0.0'}
+                    onChange={inputHandler}
+                    disabled={wasAllowanceApproved}
+                    className={classes.Balance}
+                  />
                 </Grid>
-                <Grid item xs={12} className={classes.WalletBalance}>
-                  Wallet Balance: {formatNumberToUi(walletSsvBalance)} SSV
+                <Grid item container xs={6} className={classes.MaxButtonWrapper}>
+                  <Grid item onClick={maxDeposit} className={classes.MaxButton}>
+                    MAX
+                  </Grid>
+                  <Grid item className={classes.MaxButtonText}>
+                    SSV
+                  </Grid>
                 </Grid>
               </Grid>
+              <Grid item xs={12} className={classes.WalletBalance}>
+                Wallet Balance: {formatNumberToUi(walletSsvBalance)} SSV
+              </Grid>
             </Grid>
-          ),
-          (
-            <>
-              <NewRemainingDays isInputFilled={!!inputValue} cluster={{
+          </Grid>,
+          <>
+            <NewRemainingDays
+              isInputFilled={!!inputValue}
+              cluster={{
                 ...cluster,
-                newRunWay: !inputValue ? undefined : getClusterRunWay({
-                  ...cluster,
-                  balance: toWei(newBalance),
-                }, liquidationCollateralPeriod, minimumLiquidationCollateral),
-              }}/>
-            </>
-          ),
+                newRunWay: !inputValue
+                  ? undefined
+                  : getClusterRunWay(
+                      {
+                        ...cluster,
+                        balance: toWei(newBalance)
+                      },
+                      liquidationCollateralPeriod,
+                      minimumLiquidationCollateral
+                    )
+              }}
+            />
+          </>
         ]}
-        bottom={[(
-          <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)}
-                                      isMainnet={isMainnet}>
+        bottom={[
+          <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
             <AllowanceButton
               withAllowance
               text={'Deposit'}
@@ -141,7 +146,7 @@ const Deposit = () => {
               allowanceApprovedCB={() => setAllowanceWasApproved(true)}
             />
           </TermsAndConditionsCheckbox>
-        )]}
+        ]}
       />
     </Grid>
   );

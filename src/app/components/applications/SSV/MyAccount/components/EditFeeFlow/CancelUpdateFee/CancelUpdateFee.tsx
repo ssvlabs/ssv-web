@@ -1,28 +1,25 @@
-import { useState } from 'react';
-import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
-import { useNavigate } from 'react-router-dom';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
-import { formatNumberToUi } from '~lib/utils/numbers';
-import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import {
-  useStyles,
-} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee/CancelUpdateFee.styles';
-import { fromWei, getFeeForYear } from '~root/services/conversions.service';
-import { useAppSelector, useAppDispatch } from '~app/hooks/redux.hook';
-import { getStrategyRedirect } from '~app/redux/navigation.slice';
-import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
-import { SingleOperator } from '~app/model/processes.model';
-import { IOperator } from '~app/model/operator.model';
-import { getIsContractWallet } from '~app/redux/wallet.slice';
+import { observer } from 'mobx-react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PrimaryButton } from '~app/atomicComponents';
+import config from '~app/common/config';
+import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
+import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
+import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee/CancelUpdateFee.styles';
 import { ButtonSize } from '~app/enums/Button.enum';
+import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { useStores } from '~app/hooks/useStores';
+import { IOperator } from '~app/model/operator.model';
+import { SingleOperator } from '~app/model/processes.model';
+import { getStrategyRedirect } from '~app/redux/navigation.slice';
+import { getIsContractWallet } from '~app/redux/wallet.slice';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 
 const CancelUpdateFee = () => {
   const stores = useStores();
@@ -46,7 +43,7 @@ const CancelUpdateFee = () => {
       setFutureFee(operatorStore.operatorFutureFee);
       GoogleTagManager.getInstance().sendEvent({
         category: 'cancel',
-        action: 'click',
+        action: 'click'
       });
       showSuccessPage(true);
     }
@@ -89,37 +86,32 @@ const CancelUpdateFee = () => {
               </Grid>
             </Grid>
           </Grid>
-          <PrimaryButton
-            isDisabled={false}
-            text={'Back to My Account'}
-            onClick={backToMyAccount}
-            size={ButtonSize.XL}
-          />
+          <PrimaryButton isDisabled={false} text={'Back to My Account'} onClick={backToMyAccount} size={ButtonSize.XL} />
         </Grid>
       </Dialog>
     );
   }
 
   return (
-    <Dialog className={classes.DialogWrapper} PaperProps={{ style: { overflow: 'unset', borderRadius: 16 } }}
-      open={operatorStore.openCancelDialog}>
+    <Dialog className={classes.DialogWrapper} PaperProps={{ style: { overflow: 'unset', borderRadius: 16 } }} open={operatorStore.openCancelDialog}>
       <Grid className={classes.CloseDialog} onClick={operatorStore.switchCancelDialog} />
       <Grid className={classes.GridWrapper} container>
         <HeaderSubHeader title={'Cancel Update Fee'} />
         <Grid className={classes.Text}>
           <b>Canceling</b> the fee update process will notify <br />
-          your managed validators and your <b>current fee <br />
-            will remain</b>
+          your managed validators and your{' '}
+          <b>
+            current fee <br />
+            will remain
+          </b>
         </Grid>
         <Grid className={classes.Line} />
         <Grid className={classes.Text}>
           <b>Declaring a new fee</b> will reset the current <br />
           process and start the process anew.
         </Grid>
-        <PrimaryButton isDisabled={false} text={'Cancel Update Fee'}
-                       onClick={cancelUpdateProcess} size={ButtonSize.XL} />
-        <PrimaryButton isDisabled={false} text={'Declare a New Fee'}
-                       onClick={declareNewFee} size={ButtonSize.XL} />
+        <PrimaryButton isDisabled={false} text={'Cancel Update Fee'} onClick={cancelUpdateProcess} size={ButtonSize.XL} />
+        <PrimaryButton isDisabled={false} text={'Declare a New Fee'} onClick={declareNewFee} size={ButtonSize.XL} />
       </Grid>
     </Dialog>
   );

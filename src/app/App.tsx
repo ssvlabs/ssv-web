@@ -1,10 +1,8 @@
 import CssBaseline from '@mui/material/CssBaseline';
 import { StyledEngineProvider, ThemeProvider, createTheme } from '@mui/material/styles';
 import { ThemeProvider as ThemeProviderLegacy } from '@mui/styles';
-import { OnboardAPI } from '@web3-onboard/core';
-import { Web3OnboardProvider, init } from '@web3-onboard/react';
 import { configure } from 'mobx';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { BrowserView, MobileView } from 'react-device-detect';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -15,17 +13,15 @@ import BarMessage from '~app/components/common/BarMessage';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import { GlobalStyle } from '~app/globalStyle';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import {
-  getIsDarkMode,
-  getIsShowSsvLoader, getRestrictedUserGeo,
-  getShouldCheckCountryRestriction,
-  setRestrictedUserGeo} from '~app/redux/appState.slice';
+import { getIsDarkMode, getIsShowSsvLoader, getRestrictedUserGeo, getShouldCheckCountryRestriction, setRestrictedUserGeo } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
+import { cn } from '~lib/utils/tailwind';
 import { AppTheme } from '~root/Theme';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
-import { initOnboardOptions } from '~root/providers/onboardSettings.provider';
 import { getColors } from '~root/themes';
+import './globals.css';
+import { useWalletConnectivity } from '~app/hooks/useWalletConnectivity';
 
 const LoaderWrapper = styled.div<{ theme: any }>`
   display: flex;
@@ -46,8 +42,6 @@ const Loader = styled.img<{ src: string }>`
   width: 200px;
 `;
 
-const onboardInstance = init(initOnboardOptions);
-
 configure({ enforceActions: 'never' });
 
 document.title = 'SSV Network';
@@ -64,19 +58,11 @@ const App = () => {
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const isShowSsvLoader = useAppSelector(getIsShowSsvLoader);
   const shouldCheckCountryRestriction = useAppSelector(getShouldCheckCountryRestriction);
-  const [theme, setTheme] = useState<{ colors: any }>({ colors: getColors({ isDarkMode }) });
-  const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
+  const theme = { colors: getColors({ isDarkMode }) };
   const isRestrictedCountry = useAppSelector(getRestrictedUserGeo);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setWeb3Onboard(onboardInstance);
-  }, []);
-
-  useEffect(() => {
-    setTheme({ colors: getColors({ isDarkMode }) });
-    web3Onboard?.state.actions.updateTheme(isDarkMode ? 'dark' : 'light');
-  }, [isDarkMode]);
+  useWalletConnectivity();
 
   useEffect(() => {
     if (getFromLocalStorageByKey('locationRestrictionDisabled')) {
@@ -111,24 +97,27 @@ const App = () => {
       <ThemeProvider theme={MuiTheme}>
         <ThemeProviderLegacy theme={MuiTheme}>
           <ScThemeProvider theme={theme}>
-            <GlobalStyle />
-            {isShowSsvLoader && (
-              <LoaderWrapper>
-                <Loader src={'/images/ssv-loader.svg'} />
-              </LoaderWrapper>
-            )}
-            <BarMessage />
-            <BrowserView>
-              {web3Onboard && (
-                <Web3OnboardProvider web3Onboard={web3Onboard}>
-                  <Routes />
-                </Web3OnboardProvider>
+            <div
+              className={cn({ dark: isDarkMode })}
+              style={{
+                color: theme.colors.black
+              }}
+            >
+              <GlobalStyle />
+              {isShowSsvLoader && (
+                <LoaderWrapper>
+                  <Loader src={'/images/ssv-loader.svg'} />
+                </LoaderWrapper>
               )}
-            </BrowserView>
-            <MobileView>
-              <MobileNotSupported />
-            </MobileView>
-            <CssBaseline />
+              <BarMessage />
+              <BrowserView>
+                <Routes />
+              </BrowserView>
+              <MobileView>
+                <MobileNotSupported />
+              </MobileView>
+              <CssBaseline />
+            </div>
           </ScThemeProvider>
         </ThemeProviderLegacy>
       </ThemeProvider>

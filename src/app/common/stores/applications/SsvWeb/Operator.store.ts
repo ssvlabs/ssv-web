@@ -12,10 +12,10 @@ import { transactionExecutor } from '~root/services/transaction.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
 
 export interface NewOperator {
-  id: number,
-  fee: number,
-  publicKey: string,
-  address: string,
+  id: number;
+  fee: number;
+  publicKey: string;
+  address: string;
 }
 
 export interface Operators {
@@ -23,8 +23,8 @@ export interface Operators {
 }
 
 interface OperatorFee {
-  ssv: number,
-  dollar: number,
+  ssv: number;
+  dollar: number;
 }
 
 interface OperatorsFees {
@@ -37,17 +37,17 @@ interface SelectedOperators {
 
 class OperatorStore {
   // Process data
-  processOperatorId: number = 0;
+  processOperatorId = 0;
 
   // Cancel dialog switcher
-  openCancelDialog: boolean = false;
+  openCancelDialog = false;
 
   operators: IOperator[] = [];
   operatorsFees: OperatorsFees = {};
   selectedOperators: SelectedOperators = {};
 
   // Operator update fee process
-  maxFeeIncrease: number = 0;
+  maxFeeIncrease = 0;
   operatorCurrentFee: null | number = null;
   operatorFutureFee: null | number = null;
   getSetOperatorFeePeriod: null | number = null;
@@ -56,12 +56,12 @@ class OperatorStore {
   operatorApprovalBeginTime: null | number = null;
 
   newOperatorKeys: NewOperator = { publicKey: '', address: '', fee: 0, id: 0 };
-  newOperatorRegisterSuccessfully: string = '';
+  newOperatorRegisterSuccessfully = '';
 
-  estimationGas: number = 0;
-  dollarEstimationGas: number = 0;
+  estimationGas = 0;
+  dollarEstimationGas = 0;
 
-  loadingOperators: boolean = false;
+  loadingOperators = false;
 
   operatorValidatorsLimit: number = 0;
   maxOperatorFeePerYear: number = 0;
@@ -114,7 +114,7 @@ class OperatorStore {
       refreshAndGetOperatorFeeInfo: action.bound,
       newOperatorRegisterSuccessfully: observable,
       updateOperatorValidatorsLimit: action.bound,
-      hasOperatorReachedValidatorLimit: action.bound,
+      hasOperatorReachedValidatorLimit: action.bound
     });
   }
 
@@ -125,10 +125,7 @@ class OperatorStore {
   }
 
   get getSelectedOperatorsFee(): number {
-    return Object.values(this.selectedOperators).reduce(
-      (previousValue: number, currentValue: IOperator) => previousValue + fromWei(currentValue.fee),
-      0,
-    );
+    return Object.values(this.selectedOperators).reduce((previousValue: number, currentValue: IOperator) => previousValue + fromWei(currentValue.fee), 0);
   }
 
   get selectedEnoughOperators(): boolean {
@@ -140,19 +137,19 @@ class OperatorStore {
     return {
       operatorFutureFee: this.operatorFutureFee,
       operatorApprovalBeginTime: this.operatorApprovalBeginTime,
-      operatorApprovalEndTime: this.operatorApprovalEndTime,
+      operatorApprovalEndTime: this.operatorApprovalEndTime
     };
   }
 
   /**
    * Get selection stats
    */
-  get stats(): { total: number, selected: number, selectedPercents: number } {
+  get stats(): { total: number; selected: number; selectedPercents: number } {
     const selected = Object.values(this.selectedOperators).length;
     return {
       selected,
       total: this.operators.length,
-      selectedPercents: ((selected / this.operators.length) * 100.0),
+      selectedPercents: (selected / this.operators.length) * 100.0
     };
   }
 
@@ -262,7 +259,7 @@ class OperatorStore {
     }
   }
 
-  async cancelChangeFeeProcess({ operator, isContractWallet, dispatch }: { operator: IOperator, isContractWallet: boolean; dispatch: Function }): Promise<any> {
+  async cancelChangeFeeProcess({ operator, isContractWallet, dispatch }: { operator: IOperator; isContractWallet: boolean; dispatch: Function }): Promise<any> {
     const contract: Contract = getContractByName(EContractName.SETTER);
     if (!contract) {
       return false;
@@ -274,7 +271,7 @@ class OperatorStore {
       isContractWallet,
       getterTransactionState: async () => await this.refreshAndGetOperatorFeeInfo(operator.id),
       prevState: await this.refreshAndGetOperatorFeeInfo(operator.id),
-      dispatch,
+      dispatch
     });
   }
 
@@ -295,7 +292,7 @@ class OperatorStore {
       fee: 0,
       id: 0,
       publicKey: '',
-      address: '',
+      address: ''
     };
     this.newOperatorRegisterSuccessfully = '';
   }
@@ -329,21 +326,12 @@ class OperatorStore {
     this.newOperatorKeys = transaction;
   }
 
-  async updateOperatorFee({ operator, newFee, isContractWallet, dispatch }: {
-    operator: IOperator,
-    newFee: any,
-    isContractWallet: boolean,
-    dispatch: Function,
-  }): Promise<boolean> {
+  async updateOperatorFee({ operator, newFee, isContractWallet, dispatch }: { operator: IOperator; newFee: any; isContractWallet: boolean; dispatch: Function }): Promise<boolean> {
     const contract: Contract = getContractByName(EContractName.SETTER);
     if (!contract) {
       return false;
     }
-    const formattedFee = prepareSsvAmountToTransfer(
-      toWei(
-        new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString(),
-      ),
-    );
+    const formattedFee = prepareSsvAmountToTransfer(toWei(new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString()));
 
     return await transactionExecutor({
       contractMethod: contract.declareOperatorFee,
@@ -351,15 +339,20 @@ class OperatorStore {
       isContractWallet,
       getterTransactionState: async () => await this.refreshAndGetOperatorFeeInfo(operator.id),
       prevState: await this.refreshAndGetOperatorFeeInfo(operator.id),
-      dispatch,
+      dispatch
     });
   }
 
-  async decreaseOperatorFee({ operator, newFee, isContractWallet, dispatch }: {
-    operator: IOperator,
-    newFee: any,
-    isContractWallet: boolean,
-    dispatch: Function,
+  async decreaseOperatorFee({
+    operator,
+    newFee,
+    isContractWallet,
+    dispatch
+  }: {
+    operator: IOperator;
+    newFee: any;
+    isContractWallet: boolean;
+    dispatch: Function;
   }): Promise<boolean> {
     const contract: Contract = getContractByName(EContractName.SETTER);
     if (!contract) {
@@ -376,15 +369,11 @@ class OperatorStore {
         return { id, fee };
       },
       prevState: { id: operator.id, fee: operator.fee },
-      dispatch,
+      dispatch
     });
   }
 
-  async approveOperatorFee({ operator, isContractWallet, dispatch }: {
-    operator: IOperator,
-    isContractWallet: boolean,
-    dispatch: Function,
-  }): Promise<boolean> {
+  async approveOperatorFee({ operator, isContractWallet, dispatch }: { operator: IOperator; isContractWallet: boolean; dispatch: Function }): Promise<boolean> {
     const contract: Contract = getContractByName(EContractName.SETTER);
     if (!contract) {
       return false;
@@ -400,9 +389,9 @@ class OperatorStore {
       },
       prevState: {
         id: operator.id,
-        fee: operator.fee,
+        fee: operator.fee
       },
-      dispatch,
+      dispatch
     });
   }
 
@@ -419,7 +408,7 @@ class OperatorStore {
       payload: [transaction.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock))],
       isContractWallet,
       getterTransactionState: async (txHash: string) => (await getEventByTxHash(txHash)).data,
-      dispatch,
+      dispatch
     });
   }
 
@@ -459,9 +448,11 @@ class OperatorStore {
    */
   selectOperators(operators: IOperator[]) {
     this.selectedOperators = {};
-    operators.sort((operator: IOperator) => operator.id).forEach((value: IOperator, index: number) => {
-      this.selectedOperators[index] = value;
-    });
+    operators
+      .sort((operator: IOperator) => operator.id)
+      .forEach((value: IOperator, index: number) => {
+        this.selectedOperators[index] = value;
+      });
   }
 
   /**
@@ -488,4 +479,3 @@ class OperatorStore {
 
 export const operatorStore = new OperatorStore();
 export default OperatorStore;
-

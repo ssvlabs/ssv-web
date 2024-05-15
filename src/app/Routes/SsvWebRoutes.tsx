@@ -4,8 +4,6 @@ import config from '~app/common/config';
 import Announcement from '~app/components/common/Annotation/Announcement';
 import SsvAppBar from '~app/components/common/AppBar/SsvAppBar';
 import Layout from '~app/components/common/Layout';
-import { useAppSelector } from '~app/hooks/redux.hook';
-import { getIsShowSsvLoader } from '~app/redux/appState.slice';
 
 const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
 const FeeRecipient = lazy(() => import('~app/components/applications/SSV/FeeRecipient'));
@@ -45,7 +43,6 @@ const MetadataConfirmationPage = lazy(() => import('~app/components/applications
 
 const SsvWebRoutes: any = () => {
   const ssvRoutes = config.routes.SSV;
-  const isShowSsvLoader = useAppSelector(getIsShowSsvLoader);
 
   const dashboardRoutes: any = [
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DEPOSIT, Component: Deposit },
@@ -70,14 +67,14 @@ const SsvWebRoutes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DISTRIBUTE_OFFLINE, Component: OfflineKeyShareGeneration },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DISTRIBUTION_METHOD_START, Component: GenerateKeyShares },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION, Component: MetadataConfirmationPage },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE, Component: ValidatorTransactionConfirmation },
+    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE, Component: ValidatorTransactionConfirmation }
   ];
 
   const operatorRoutes = [
     { path: ssvRoutes.OPERATOR.SET_FEE_PAGE, Component: SetOperatorFee },
     { path: ssvRoutes.OPERATOR.SUCCESS_PAGE, Component: OperatorSuccessPage },
     { path: ssvRoutes.OPERATOR.GENERATE_KEYS, Component: GenerateOperatorKeys },
-    { path: ssvRoutes.OPERATOR.CONFIRMATION_PAGE, Component: OperatorTransactionConfirmation },
+    { path: ssvRoutes.OPERATOR.CONFIRMATION_PAGE, Component: OperatorTransactionConfirmation }
   ];
 
   const validatorsRoutes = [
@@ -93,39 +90,39 @@ const SsvWebRoutes: any = () => {
     { path: ssvRoutes.VALIDATOR.CONFIRMATION_PAGE, Component: ValidatorTransactionConfirmation },
     { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_OFFLINE, Component: OfflineKeyShareGeneration },
     { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY, Component: OfflineKeyShareCeremony },
-    { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true },
+    { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true }
   ];
 
   return (
     <Layout>
       <Announcement />
       <SsvAppBar />
-      {!isShowSsvLoader && <Suspense fallback={<div className="container"></div>}>
+      <Suspense fallback={<div className="container"></div>}>
         <Wrapper>
-          <Route path={'/'} element={<Welcome/>}/>
-          <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported/>}/>
-          <Route path={ssvRoutes.ROOT} element={<Welcome/>}/>
+          <Route path={'/'} element={<Welcome />} />
+          <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
+          <Route path={ssvRoutes.ROOT} element={<Welcome />} />
           <Route path={ssvRoutes.MY_ACCOUNT.ROOT}>
             {dashboardRoutes.map((route: any, index: number) => {
-              if (!route.keyShares) return <Route key={index} path={route.path} element={<route.Component/>}/>;
-              return <Route key={index} path={route.path} element={<route.Component type={2}/>}/>;
+              if (!route.keyShares) return <Route key={index} path={route.path} element={<route.Component />} />;
+              return <Route key={index} path={route.path} element={<route.Component type={2} />} />;
             })}
           </Route>
           <Route path={ssvRoutes.OPERATOR.HOME}>
-            <Route index element={<RegisterOperatorHome/>}/>
+            <Route index element={<RegisterOperatorHome />} />
             {operatorRoutes.map((route, index: number) => {
-              return <Route key={index} path={route.path} element={<route.Component/>}/>;
+              return <Route key={index} path={route.path} element={<route.Component />} />;
             })}
           </Route>
           <Route path={ssvRoutes.VALIDATOR.HOME}>
-            <Route index element={<RegisterValidatorHome/>}/>
+            <Route index element={<RegisterValidatorHome />} />
             {validatorsRoutes.map((route, index: number) => {
-              if (!route.keyShares) return <Route key={index} path={route.path} element={<route.Component/>}/>;
-              return <Route key={index} path={route.path} element={<route.Component type={2}/>}/>;
+              if (!route.keyShares) return <Route key={index} path={route.path} element={<route.Component />} />;
+              return <Route key={index} path={route.path} element={<route.Component type={2} />} />;
             })}
           </Route>
         </Wrapper>
-      </Suspense>}
+      </Suspense>
     </Layout>
   );
 };

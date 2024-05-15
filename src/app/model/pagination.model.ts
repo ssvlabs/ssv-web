@@ -5,4 +5,4 @@ interface IPagination {
   per_page: number;
 }
 
-export { IPagination };
+export type { IPagination };

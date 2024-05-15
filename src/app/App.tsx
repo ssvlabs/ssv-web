@@ -13,7 +13,7 @@ import BarMessage from '~app/components/common/BarMessage';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import { GlobalStyle } from '~app/globalStyle';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { getIsDarkMode, getIsShowSsvLoader, getShouldCheckCountryRestriction, setRestrictedUserGeo } from '~app/redux/appState.slice';
+import { getIsDarkMode, getIsShowSsvLoader, getRestrictedUserGeo, getShouldCheckCountryRestriction, setRestrictedUserGeo } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import { cn } from '~lib/utils/tailwind';
@@ -59,6 +59,7 @@ const App = () => {
   const isShowSsvLoader = useAppSelector(getIsShowSsvLoader);
   const shouldCheckCountryRestriction = useAppSelector(getShouldCheckCountryRestriction);
   const theme = { colors: getColors({ isDarkMode }) };
+  const isRestrictedCountry = useAppSelector(getRestrictedUserGeo);
   const navigate = useNavigate();
 
   useWalletConnectivity();
@@ -84,7 +85,9 @@ const App = () => {
   }, [shouldCheckCountryRestriction]);
 
   useEffect(() => {
-    navigate(strategyRedirect);
+    if (!isRestrictedCountry) {
+      navigate(strategyRedirect);
+    }
   }, [strategyRedirect]);
 
   const MuiTheme = useMemo(() => createTheme(AppTheme({ isDarkMode })), [isDarkMode]);

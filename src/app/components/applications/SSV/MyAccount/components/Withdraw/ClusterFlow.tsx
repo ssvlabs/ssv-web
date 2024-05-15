@@ -80,7 +80,7 @@ const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollate
       dispatch,
     });
     if (success) {
-      navigate(-1);
+      navigate(isClusterLiquidation && !cluster.validatorCount ? -2 : -1);
     }
     setIsLoading(false);
   };

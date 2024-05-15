@@ -1,10 +1,8 @@
 import CssBaseline from '@mui/material/CssBaseline';
 import { StyledEngineProvider, ThemeProvider, createTheme } from '@mui/material/styles';
 import { ThemeProvider as ThemeProviderLegacy } from '@mui/styles';
-import { OnboardAPI } from '@web3-onboard/core';
-import { Web3OnboardProvider, init } from '@web3-onboard/react';
 import { configure } from 'mobx';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { BrowserView, MobileView } from 'react-device-detect';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -21,11 +19,9 @@ import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import { cn } from '~lib/utils/tailwind';
 import { AppTheme } from '~root/Theme';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
-import { initOnboardOptions } from '~root/providers/onboardSettings.provider';
 import { getColors } from '~root/themes';
 import './globals.css';
-import { useSwitchChain } from 'wagmi';
-import { useContractInitiator } from './hooks/useContractInitiator';
+import { useWalletConnectivity } from '~app/hooks/useWalletConnectivity';
 
 const LoaderWrapper = styled.div<{ theme: any }>`
   display: flex;
@@ -46,8 +42,6 @@ const Loader = styled.img<{ src: string }>`
   width: 200px;
 `;
 
-const onboardInstance = init(initOnboardOptions);
-
 configure({ enforceActions: 'never' });
 
 document.title = 'SSV Network';
@@ -65,26 +59,9 @@ const App = () => {
   const isShowSsvLoader = useAppSelector(getIsShowSsvLoader);
   const shouldCheckCountryRestriction = useAppSelector(getShouldCheckCountryRestriction);
   const theme = { colors: getColors({ isDarkMode }) };
-  const [web3Onboard, setWeb3Onboard] = useState<OnboardAPI | null>(null);
   const navigate = useNavigate();
 
-  useContractInitiator();
-
-  useSwitchChain({
-    mutation: {
-      onSuccess: (data) => {
-        console.log('Switched to chain:', data);
-      }
-    }
-  });
-
-  useEffect(() => {
-    setWeb3Onboard(onboardInstance);
-  }, []);
-
-  useEffect(() => {
-    web3Onboard?.state.actions.updateTheme(isDarkMode ? 'dark' : 'light');
-  }, [isDarkMode]);
+  useWalletConnectivity();
 
   useEffect(() => {
     if (getFromLocalStorageByKey('locationRestrictionDisabled')) {
@@ -131,11 +108,7 @@ const App = () => {
               )}
               <BarMessage />
               <BrowserView>
-                {web3Onboard && (
-                  <Web3OnboardProvider web3Onboard={web3Onboard}>
-                    <Routes />
-                  </Web3OnboardProvider>
-                )}
+                <Routes />
               </BrowserView>
               <MobileView>
                 <MobileNotSupported />

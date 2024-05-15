@@ -28,7 +28,7 @@ type InitProps = {
   provider: ethers.providers.JsonRpcProvider;
 };
 
-export const useContractInitiator = () => {
+export const useWalletConnectivity = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 

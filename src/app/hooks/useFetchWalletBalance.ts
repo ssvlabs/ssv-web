@@ -16,7 +16,7 @@ const useFetchWalletBalance = () => {
       dispatch(setIsShowSsvLoader(false));
     };
     fetchWalletBalance();
-  }, [/* accountAddress */ dispatch]);
+  }, [accountAddress, dispatch]);
 
   return { walletSsvBalance };
 };

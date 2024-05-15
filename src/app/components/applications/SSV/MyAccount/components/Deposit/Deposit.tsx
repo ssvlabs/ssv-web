@@ -25,6 +25,7 @@ const Deposit = () => {
   const [wasAllowanceApproved, setAllowanceWasApproved] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const { walletSsvBalance } = useFetchWalletBalance();
+
   const navigate = useNavigate();
   const classes = useStyles();
   const accountAddress = useAppSelector(getAccountAddress);

@@ -90,5 +90,5 @@ export const useContractInitiator = () => {
         });
       }
     }
-  }, [account.address, account.chainId, account.connector?.name, account.isConnected, provider]);
+  }, [account.address, account.chainId, account.connector?.name, account.isConnected /* provider */]);
 };

@@ -5,6 +5,9 @@ import { useAccount, useAccountEffect } from 'wagmi';
 import config from '~app/common/config';
 import { OperatorStore } from '~app/common/stores/applications/SsvWeb';
 import { METAMASK_LABEL } from '~app/constants/constants';
+import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useEthersProvider } from '~app/hooks/useEthersProvider';
+import { useStores } from '~app/hooks/useStores';
 import { fetchClusters, fetchOperators } from '~app/redux/account.slice';
 import { setIsShowSsvLoader } from '~app/redux/appState.slice';
 import { setStrategyRedirect } from '~app/redux/navigation.slice';
@@ -17,9 +20,6 @@ import { cleanLocalStorageAndCookie } from '~root/providers/onboardSettings.prov
 import { initContracts, resetContracts } from '~root/services/contracts.service';
 import notifyService from '~root/services/notify.service';
 import { isChainSupported } from '~root/wagmi/config';
-import { useAppDispatch } from './redux.hook';
-import { useEthersProvider } from './useEthersProvider';
-import { useStores } from './useStores';
 
 type InitProps = {
   walletAddress: string;
@@ -90,5 +90,5 @@ export const useContractInitiator = () => {
         });
       }
     }
-  }, [account.address, account.chainId, account.connector?.name, account.isConnected /* provider */]);
+  }, [account.address, account.chainId, account.connector?.name, account.isConnected, provider]);
 };

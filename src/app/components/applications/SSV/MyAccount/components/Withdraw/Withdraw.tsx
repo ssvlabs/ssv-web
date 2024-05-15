@@ -13,8 +13,8 @@ import { getAccountAddress } from '~app/redux/wallet.slice';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { getClusterBalance } from '~root/services/cluster.service';
 import { fromWei, toDecimalNumber } from '~root/services/conversions.service';
-import ClusterFlow from './ClusterFlow';
-import OperatorFlow from './OperatorFlow';
+import OperatorFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/OperatorFlow';
+import ClusterFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/ClusterFlow';
 
 let interval: NodeJS.Timeout;
 

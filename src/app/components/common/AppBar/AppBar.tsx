@@ -121,7 +121,6 @@ const AppBar = ({ buttons }: { buttons?: Button[] }) => {
       </Grid>
       <Grid item className={classes.GridItem}>
         <Grid item container style={{ alignItems: 'center' }}>
-          <Grid item>{/* <NetworkToggle excludeNetworks={excludeNetworks} /> */}</Grid>
           {!restrictedUserGeo && (
             <Grid item>
               <WalletButton />

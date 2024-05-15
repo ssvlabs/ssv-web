@@ -4,7 +4,7 @@ import config from '~app/common/config';
 import AppBar from '~app/components/common/AppBar/AppBar';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { getIsLoading } from '~app/redux/appState.slice';
+import { getIsLoading, getRestrictedUserGeo } from '~app/redux/appState.slice';
 import { getAccountClusters, getAccountOperators } from '~app/redux/account.slice';
 
 const SsvAppBar = () => {
@@ -12,9 +12,10 @@ const SsvAppBar = () => {
   const isLoading = useAppSelector(getIsLoading);
   const operators = useAppSelector(getAccountOperators);
   const clusters = useAppSelector(getAccountClusters);
+  const isRestrictedCountry = useAppSelector(getRestrictedUserGeo);
 
   const moveToDashboard = () => {
-    if (isLoading) return;
+    if (isLoading || isRestrictedCountry) return;
     if (clusters.length > 0) {
       navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
     } else if (operators.length > 0) {

@@ -1,8 +1,6 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import { Button } from '~app/components/ui/button';
-import { useDispatch } from 'react-redux';
-import { setIsShowSsvLoader } from '~app/redux/appState.slice.ts';
 
 type WalletType = 'ledger' | 'trezor' | 'walletconnect' | 'metamask';
 
@@ -19,20 +17,15 @@ const getWalletIconSrc = (connectorName?: string) => {
 
 export const WalletButton = () => {
   const { connector } = useAccount();
-  const dispatch = useDispatch();
 
   return (
     <ConnectButton.Custom>
-      {({ account, chain, openAccountModal, openChainModal, openConnectModal, authenticationStatus, mounted }) => {
-        const ready = mounted && authenticationStatus !== 'loading';
+      {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
         const connected = mounted && account && chain;
-        if (!connected) {
-          dispatch(setIsShowSsvLoader(false));
-        }
 
         return (
           <div
-            {...(!ready && {
+            {...(!mounted && {
               'aria-hidden': true,
               style: {
                 opacity: 0,

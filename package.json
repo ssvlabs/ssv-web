@@ -146,7 +146,7 @@
     "type-check": "tsc --noEmit",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "dev": "rm -rf node_modules/.vite/ && vite",
-    "start": "vite --port 3000 --open",
+    "start": "vite",
     "build": "vite build",
     "cy:open": "yarn local-node && cross-env NODE_ENV=test cypress open --config-file cypress.json",
     "cy:open:local": "yarn local-node && cross-env NODE_ENV=test cypress open --config-file cypress.json --config baseUrl=http://localhost:3000",

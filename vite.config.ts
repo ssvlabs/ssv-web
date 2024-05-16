@@ -8,6 +8,12 @@ export default defineConfig(({ mode }) => {
     publicDir: 'public',
     build: {
       outDir: 'build',
+      sourcemap: true,
+      rollupOptions: {
+        output: {
+          sourcemapExcludeSources: true  // Ignore sources in node_modules
+        }
+      }
     },
     server: {
       port: 3000,

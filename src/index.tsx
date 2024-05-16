@@ -10,12 +10,15 @@ import GTMFrame from '~lib/analytics/GoogleTag/components/GTMFrame';
 import * as serviceWorker from '~root/serviceWorker';
 import { rootStore } from '~root/stores';
 import { RainbowKitProvider } from './RainbowKitProvider';
-import { config } from './wagmi/config';
+import { config } from '~root/wagmi/config';
+
+import { Buffer } from 'buffer';
+// @ts-ignore
+globalThis.Buffer = Buffer;
 
 const queryClient = new QueryClient();
 
-const container = document.getElementById('root');
-// @ts-ignore
+const container = document.getElementById('root')!;
 const root = createRoot(container);
 root.render(
   <WagmiProvider config={config}>

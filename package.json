@@ -147,7 +147,7 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "dev": "rm -rf node_modules/.vite/ && vite",
     "start": "vite",
-    "build": "vite build",
+    "build": "node --max_old_space_size=16384 ./node_modules/vite/bin/vite.js build",
     "cy:open": "yarn local-node && cross-env NODE_ENV=test cypress open --config-file cypress.json",
     "cy:open:local": "yarn local-node && cross-env NODE_ENV=test cypress open --config-file cypress.json --config baseUrl=http://localhost:3000",
     "cy:headless": "cross-env NODE_ENV=test cypress run --config-file cypress-headless.json",

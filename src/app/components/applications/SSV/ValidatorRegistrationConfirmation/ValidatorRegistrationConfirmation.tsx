@@ -13,6 +13,7 @@ import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import FundingSummary from '~app/components/common/FundingSummary';
+import LinkText from '~app/components/common/LinkText';
 import NameAndAddress from '~app/components/common/NameAndAddress/NameAndAddress';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
@@ -119,7 +120,6 @@ const ValidatorRegistrationConfirmation = () => {
             Insufficient SSV balance. There is not enough SSV in your wallet.
           </Grid>
           <Grid item>
-            {/* @ts-ignore */}
             <LinkText text={'Need SSV?'} link={getStoredNetwork().insufficientBalanceUrl} />
           </Grid>
         </Grid>

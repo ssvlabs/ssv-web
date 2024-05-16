@@ -8,7 +8,10 @@ export default defineConfig(({ mode }) => {
     publicDir: 'public',
     build: {
       outDir: 'build',
-      sourcemap: true
+    },
+    server: {
+      port: 3000,
+      open: true,
     },
     plugins: [
       react(),

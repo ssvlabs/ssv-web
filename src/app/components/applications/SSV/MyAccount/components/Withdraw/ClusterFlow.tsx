@@ -50,15 +50,15 @@ const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollate
       ...cluster,
       balance: toWei(balance),
     }, liquidationCollateralPeriod, minimumLiquidationCollateral);
-    const showCheckboxCondition = runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM;
+    const showCheckboxCondition = runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !!cluster.validatorCount;
 
     setNewBalance(balance);
-    setIsClusterLiquidation(runWay <= 0);
+    setIsClusterLiquidation(runWay <= 0 && !!cluster.validatorCount);
     setShowCheckBox(showCheckboxCondition);
-    setButtonDisableCondition(runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !hasUserAgreed || Number(withdrawValue) === 0 || (isMainnet && !isChecked));
+    setButtonDisableCondition(runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !!cluster.validatorCount && !hasUserAgreed || Number(withdrawValue) === 0 || (isMainnet && !isChecked));
 
     setCheckBoxText(isClusterLiquidation && showCheckboxCondition ? translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATE_MY_CLUSTER : translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATION_RISK);
-    if (runWay <= 0) {
+    if (runWay <= 0 && !!cluster.validatorCount) {
       setButtonText(translations.VALIDATOR.WITHDRAW.BUTTON.LIQUIDATE_MY_CLUSTER);
     } else if (withdrawValue === clusterBalance) {
       setButtonText(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW_ALL);
@@ -139,6 +139,10 @@ const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollate
       }}/>
   )];
 
+  if (!cluster.validatorCount) {
+    secondBorderScreen.pop();
+  }
+
   return (
     <BorderScreen
       marginTop={0}
@@ -149,18 +153,16 @@ const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollate
         <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)}
                                     isMainnet={isMainnet}>
           <div>
-          {showCheckBox && (
-              <CheckBox toggleIsChecked={() => setHasUserAgreed(!hasUserAgreed)} text={checkBoxText} isChecked={hasUserAgreed}/>
-          )}
-          <Button
-            text={buttonText}
-            onClick={withdrawSsv}
-            isLoading={isLoading}
-            // checkboxText={showCheckBox ? checkBoxText : null}
-            // checkBoxCallBack={showCheckBox ? () => setHasUserAgreed(!hasUserAgreed) : null}
-            // isCheckboxChecked={hasUserAgreed}
-            isDisabled={buttonDisableCondition}
-            size={ButtonSize.XL}/>
+            {showCheckBox && (
+              <CheckBox toggleIsChecked={() => setHasUserAgreed(!hasUserAgreed)} text={checkBoxText}
+                        isChecked={hasUserAgreed}/>
+            )}
+            <Button
+              text={buttonText}
+              onClick={withdrawSsv}
+              isLoading={isLoading}
+              isDisabled={buttonDisableCondition}
+              size={ButtonSize.XL}/>
           </div>
         </TermsAndConditionsCheckbox>,
       ]}

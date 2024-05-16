@@ -91,6 +91,8 @@ export const useWalletConnectivity = () => {
           provider: provider,
           walletAddress: account.address as string
         });
+      } else {
+        dispatch(setIsShowSsvLoader(false));
       }
     }
   }, [account.address, account.chainId, account.connector?.name, account.isConnected, provider]);

@@ -4,7 +4,7 @@ import { HOLESKY_RPC_URL, MAINNET_RPC_URL } from '~app/common/config/config';
 import { EContractName } from '~app/model/contracts.model';
 import { HOLESKY_NETWORK_ID, MAINNET_NETWORK_ID, NetworkInfo } from '~root/providers/networkInfo.provider';
 
-type Provider = ethers.providers.JsonRpcProvider;
+type Provider = ethers.providers.Web3Provider;
 let contracts: Record<EContractName, Contract> = {} as Record<EContractName, Contract>;
 let shouldUseRpcUrlFlag = false;
 

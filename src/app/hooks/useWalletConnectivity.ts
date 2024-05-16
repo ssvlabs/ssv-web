@@ -6,7 +6,7 @@ import config from '~app/common/config';
 import { OperatorStore } from '~app/common/stores/applications/SsvWeb';
 import { METAMASK_LABEL } from '~app/constants/constants';
 import { useAppDispatch } from '~app/hooks/redux.hook';
-import { useEthersProvider } from '~app/hooks/useEthersProvider';
+import { useEthersSignerProvider } from '~app/hooks/useEthersSigner';
 import { useStores } from '~app/hooks/useStores';
 import { fetchClusters, fetchOperators } from '~app/redux/account.slice';
 import { setIsShowSsvLoader } from '~app/redux/appState.slice';
@@ -25,7 +25,7 @@ type InitProps = {
   walletAddress: string;
   connectorName: string;
   chainId: number;
-  provider: ethers.providers.JsonRpcProvider;
+  provider: ethers.providers.Web3Provider;
 };
 
 export const useWalletConnectivity = () => {
@@ -33,7 +33,7 @@ export const useWalletConnectivity = () => {
   const navigate = useNavigate();
 
   const account = useAccount();
-  const provider = useEthersProvider();
+  const provider = useEthersSignerProvider();
 
   const stores = useStores();
   const operatorStore: OperatorStore = stores.Operator;
@@ -78,15 +78,17 @@ export const useWalletConnectivity = () => {
   };
 
   useEffect(() => {
+    if (account.status === 'disconnected') dispatch(setIsShowSsvLoader(false));
+  }, [account.status, dispatch]);
+
+  useEffect(() => {
     if (provider && account.isConnected && account.chainId) {
-      console.count('initiating wallet');
       reset();
       if (isChainSupported(account.chainId)) {
-        dispatch(setIsShowSsvLoader(true));
         initiateWallet({
           chainId: account.chainId!,
           connectorName: account.connector?.name ?? '',
-          provider: provider as ethers.providers.JsonRpcProvider,
+          provider: provider,
           walletAddress: account.address as string
         });
       }

@@ -30,6 +30,7 @@ import { isEqualsAddresses } from '~lib/utils/strings';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
+import LinkText from "~app/components/common/LinkText";
 
 const ValidatorRegistrationConfirmation = () => {
   const navigate = useNavigate();

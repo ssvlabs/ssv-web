@@ -19,18 +19,17 @@ const clusterDataDTO = ({ cluster }: { cluster: ICluster }) => ({
 const extendClusterEntity = async (cluster: ICluster, ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number) => {
   const operatorIds = cluster.operators.map((operator) => operator.id);
   const clusterData = clusterDataDTO({ cluster });
-  const isLiquidated = await isClusterLiquidated(operatorIds, ownerAddress, clusterData);
-  const balance = isLiquidated ? 0 : await getClusterBalance(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, false, clusterData);
-  const burnRate = isLiquidated ? '' : await getClusterBurnRate(operatorIds, ownerAddress, clusterData);
-  const runWay: number = isLiquidated ? 0 : getClusterRunWay({ balance, burnRate }, liquidationCollateralPeriod, minimumLiquidationCollateral);
-  return { ...cluster, runWay, burnRate: burnRate.toString(), balance: balance.toString(), isLiquidated, clusterData };
+  const balance = await getClusterBalance(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, false, clusterData);
+  const burnRate = await getClusterBurnRate(operatorIds, ownerAddress, clusterData);
+  const runWay: number = getClusterRunWay({ balance, burnRate }, liquidationCollateralPeriod, minimumLiquidationCollateral);
+  return { ...cluster, runWay, burnRate: burnRate.toString(), balance: balance.toString(), clusterData };
 };
 
 const getClustersByOwnerAddress = async ({ page, perPage, accountAddress, liquidationCollateralPeriod, minimumLiquidationCollateral }: { page: number; perPage: number; accountAddress: string; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number; }): Promise<any> => {
   const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/owner/${accountAddress}?page=${page}&perPage=${perPage}&operatorDetails=operatorDetails&ts=${new Date().getTime()}`;
   const res = await getRequest(url);
   const clusters = await Promise.all(res.clusters.map((cluster: any) => extendClusterEntity(cluster, accountAddress, liquidationCollateralPeriod, minimumLiquidationCollateral)));
-  return { clusters: clusters.filter((cluster: any) => cluster.validatorCount > 0 || !cluster.isLiquidated), pagination: res.pagination };
+  return { clusters, pagination: res.pagination };
 };
 
 const getSortedOperatorsIds = (operators: IOperator[]) => {

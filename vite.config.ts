@@ -7,7 +7,17 @@ export default defineConfig(({ mode }) => {
   return {
     publicDir: 'public',
     build: {
-      outDir: 'build'
+      outDir: 'build',
+      sourcemap: true,
+      rollupOptions: {
+        output: {
+          sourcemapExcludeSources: true  // Ignore sources in node_modules
+        }
+      }
+    },
+    server: {
+      port: 3000,
+      open: true,
     },
     plugins: [
       react(),

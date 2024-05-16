@@ -59,21 +59,22 @@ export const useWalletConnectivity = () => {
     notifyService.init(chainId.toString());
     const index = getNetworkInfoIndexByNetworkId(Number(chainId));
     dispatch(setConnectedNetwork(index));
+
     initContracts({ provider: provider, network: getStoredNetwork(), shouldUseRpcUrl: connectorName !== METAMASK_LABEL });
-    await dispatch(fetchAndSetNetworkFeeAndLiquidationCollateral());
-    await operatorStore.initUser();
-    const accountClusters = await dispatch(fetchClusters({}));
-    const accountOperators = await dispatch(fetchOperators({}));
+
+    await Promise.all([await dispatch(fetchAndSetNetworkFeeAndLiquidationCollateral()), await operatorStore.initUser()]);
+    const [accountClusters, accountOperators] = await Promise.all([dispatch(fetchClusters({})), dispatch(fetchOperators({}))]);
+
     if (accountClusters.payload?.clusters.length) {
       dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD));
-      // @ts-ignore
+      // @ts-expect-error payload is not typed
     } else if (accountOperators.payload?.operators.length) {
       dispatch(setStrategyRedirect(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD));
     } else {
       dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
     }
-    await operatorStore.updateOperatorMaxFee();
-    await operatorStore.updateOperatorValidatorsLimit();
+
+    await Promise.all([await operatorStore.updateOperatorMaxFee(), await operatorStore.updateOperatorValidatorsLimit()]);
     dispatch(setIsShowSsvLoader(false));
   };
 

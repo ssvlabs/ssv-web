@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
@@ -10,8 +10,7 @@ import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
 import { SingleOperator } from '~app/model/processes.model';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 

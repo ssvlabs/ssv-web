@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Switch from '@mui/material/Switch';
 import { useNavigate } from 'react-router-dom';
@@ -11,23 +11,23 @@ import InputLabel from '~app/components/common/InputLabel';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { validateAddressInput } from '~lib/utils/validatesInputs';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/OperatorAccessSettings/OperatorAccessSettings.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { SingleOperator } from '~app/model/processes.model';
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
-import { useAppSelector } from '~app/hooks/redux.hook';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { updateOperatorAddressWhitelist } from '~root/services/operatorContract.service';
 
 const INITIAL_ERROR_STATE = { shouldDisplay: false, errorMessage: '' };
 
 const OperatorAccessSettings = () => {
+    const dispatch = useAppDispatch();
     const stores = useStores();
     const navigate = useNavigate();
     const processStore: ProcessStore = stores.Process;
-    const operatorStore: OperatorStore = stores.Operator;
     const process: SingleOperator = processStore.getProcess;
     const operator = process?.item;
     const whiteListAddress = operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator.address_whitelist : '';
@@ -50,7 +50,7 @@ const OperatorAccessSettings = () => {
     };
 
     const updateAddressHandler = async () => {
-        const res = await operatorStore.updateOperatorAddressWhitelist({ operator, address, isContractWallet });
+        const res = await updateOperatorAddressWhitelist({ operator, address, isContractWallet, dispatch });
         if (res) {
             navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
         }

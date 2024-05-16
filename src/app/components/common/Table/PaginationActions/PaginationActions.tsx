@@ -1,6 +1,6 @@
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import IntegerInput from '~app/components/common/IntegerInput';
 import { useStyles } from '~app/components/common/Table/PaginationActions/PaginationAction.styles';
 

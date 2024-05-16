@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { observer } from 'mobx-react';
 import { KeyStoreFlow, KeyShareFlow } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows';
 

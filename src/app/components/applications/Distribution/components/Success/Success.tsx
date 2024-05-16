@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import LinkText from '~app/components/common/LinkText';
@@ -14,7 +14,7 @@ import { getIsMainnet } from '~app/redux/wallet.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { AlertColor } from '@mui/material/Alert';
 import { useConnectWallet } from '@web3-onboard/react';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
+import { SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const Success = () => {

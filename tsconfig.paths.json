@@ -5,7 +5,6 @@
       "~app/*": ["./src/app/*"],
       "~lib/*": ["./src/lib/*"],
       "~root/*": ["./src/*"],
-      "~config/*": ["./config/*"],
       "~images/*": ["./src/images/*"],
       "~redux/*": ["./src/redux/*"]
     }

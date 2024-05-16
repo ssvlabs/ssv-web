@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import config from '~app/common/config';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +7,7 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useStyles } from '~app/components/applications/SSV/Welcome/Welcome.styles';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
+import { SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const Welcome = () => {

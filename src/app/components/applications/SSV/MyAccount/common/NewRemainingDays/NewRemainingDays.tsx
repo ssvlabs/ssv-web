@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -23,7 +23,7 @@ const NewRemainingDays = ({ cluster, withdrawState, isInputFilled = null }: Prop
   let showError: boolean;
   let warningLiquidationState: boolean;
   const clusterRunWay = cluster.newRunWay ?? cluster.runWay;
-  let remainingDays: number = clusterRunWay;
+  const remainingDays: number = clusterRunWay;
   const typeOfiIsInputFilled = !!isInputFilled;
   const remainingDaysValue = formatNumberToUi(remainingDays, true);
 

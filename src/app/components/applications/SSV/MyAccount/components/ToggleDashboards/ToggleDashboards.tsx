@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useRef, useState } from 'react';
+import  { useEffect, useRef, useState } from 'react';
 import { useStyles } from './ToggleDashboards.styles';
 import config from '~app/common/config';
 

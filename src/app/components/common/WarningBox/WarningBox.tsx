@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import { useStyles } from './WarningBox.styles';
 import LinkText from '~app/components/common/LinkText';

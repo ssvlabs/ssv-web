@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
@@ -13,7 +13,7 @@ import {
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator/CreateValidator.styles';
 import { getBeaconChainLink, getLaunchpadLink } from '~root/providers/networkInfo.provider';
 import { ButtonSize } from '~app/enums/Button.enum';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 
 const DepositViaLaunchpad = () => {
   const stores = useStores();

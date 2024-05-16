@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import NaDisplay from '~app/components/common/NaDisplay';
@@ -8,9 +8,8 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 import ErrorText from '~app/components/applications/SSV/MyAccount/common/LiquidationStateError/LiquidationStateError';
 import { fromWei } from '~root/services/conversions.service';
 import { ICluster } from '~app/model/cluster.model';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
-import SecondaryButton from '~app/atomicComponents/SecondaryButton';
 import styled from 'styled-components';
 
 const OperationRunwayWrapper = styled.div`

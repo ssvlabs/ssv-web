@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -25,7 +25,6 @@ const ConnectWallet = () => {
   const connectToWallet = () => {
     if (accountAddress) {
       dispatch(setIsShowWalletPopup(true));
-    } else {
     }
   };
 

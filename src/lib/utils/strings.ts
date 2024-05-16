@@ -3,11 +3,11 @@ import { utils } from 'ethers';
 export const longStringShorten = (value: string, firstFriction: number = 10, secondFriction: number = firstFriction, replacements: Record<string, any> | null = null) => {
   if (!value) return '';
   if (replacements) {
-    for (let key in replacements) {
+    for (const key in replacements) {
       value = value.replace(replacements[key], key);
     }
   }
-  let str = `${value.slice(0, firstFriction)}...${value.slice(value.length - secondFriction, value.length)}`;
+  const str = `${value.slice(0, firstFriction)}...${value.slice(value.length - secondFriction, value.length)}`;
 
   return str;
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
@@ -15,7 +15,7 @@ const ClusterSize = ({ currentClusterSize, changeClusterSize }: { currentCluster
 
     const clusterSizeHandler = (clusterSize: number) => {
         changeClusterSize(clusterSize);
-        for (let key of Object.keys(operatorStore.selectedOperators)) {
+        for (const key of Object.keys(operatorStore.selectedOperators)) {
             if (Number(key) > clusterSize) {
                 operatorStore.unselectOperator(Number(key));
             }

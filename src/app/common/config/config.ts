@@ -2,48 +2,25 @@ import { ABI_VERSION } from '~app/common/config/abi';
 import { distributionHelper } from '~lib/utils/distributionHelper';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
-const {
-  networkId,
-  api,
-  tokenAddress,
-  setterContractAddress,
-  getterContractAddress,
-  explorerUrl,
-  apiVersion,
-} = getStoredNetwork();
+const { networkId, tokenAddress, setterContractAddress, getterContractAddress, apiVersion } = getStoredNetwork();
 
 const {
-  abi,
+  abi
   // contract,
 } = distributionHelper(networkId);
 
-const config = {
-  DEBUG: process.env.REACT_APP_DEBUG || false,
-  retry: {
-    default: {
-      maxAttempts: 5,
-      backOff: 500,
-      exponentialOption: {
-        maxInterval: 5000,
-        multiplier: 2,
-      },
-      doRetry: (e: Error) => {
-        console.error(`Error: ${e.message || e.stack || e}. Retrying..`);
-        return true;
-      },
-    },
-  },
+export const config = {
   routes: {
     COUNTRY_NOT_SUPPORTED: '/compliance',
     DISTRIBUTION: {
       ROOT: '/',
       CLAIM: '/',
-      SUCCESS: '/success',
+      SUCCESS: '/success'
     },
     FAUCET: {
       ROOT: '/',
       SUCCESS: '/success',
-      DEPLETED: '/depleted',
+      DEPLETED: '/depleted'
     },
     SSV: {
       ROOT: '/join',
@@ -60,7 +37,7 @@ const config = {
           META_DATA_CONFIRMATION: '/my-account/operator/edit-metadata/confirmation',
           REMOVE: {
             ROOT: '/my-account/operator/remove',
-            SUCCESS: '/my-account/operator/remove/success',
+            SUCCESS: '/my-account/operator/remove/success'
           },
           UPDATE_FEE: {
             ROOT: '/my-account/operator/fee-update',
@@ -68,8 +45,8 @@ const config = {
             UPDATE: '/my-account/operator/fee-update/update',
             PENDING: '/my-account/operator/fee-update/pending',
             SUCCESS: '/my-account/operator/fee-update/success',
-            EXPIRED: '/my-account/operator/fee-update/expired',
-          },
+            EXPIRED: '/my-account/operator/fee-update/expired'
+          }
         },
         CLUSTER: {
           ROOT: '/my-account/cluster',
@@ -90,25 +67,25 @@ const config = {
             ENTER_KEYSTORE: '/my-account/validator/update/enter-key',
             CHOOSE_OPERATORS: '/my-account/validator/update/choose-operators',
             CONFIRM_TRANSACTION: '/my-account/validator/update/confirm-transaction',
-            SUCCESS: '/my-account/validator/update/success',
+            SUCCESS: '/my-account/validator/update/success'
           },
           VALIDATOR_REMOVE: {
             REMOVED: '/my-account/cluster/removed',
-            BULK: '/my-account/cluster/bulk',
-          },
+            BULK: '/my-account/cluster/bulk'
+          }
         },
         // EDIT_VALIDATOR: '/my-account/validator/:public_key/edit',
         REMOVE_VALIDATOR: '/my-account/validator/:public_key/remove',
         VALIDATOR_REMOVED: '/my-account/validator/:public_key/removed',
         CONFIRM_OPERATORS: '/my-account/validator/:public_key/confirm',
-        UPLOAD_KEY_STORE: '/my-account/validator/:public_key/upload_key_store',
+        UPLOAD_KEY_STORE: '/my-account/validator/:public_key/upload_key_store'
       },
       OPERATOR: {
         HOME: '/join/operator',
         GENERATE_KEYS: '/join/operator/register',
         SET_FEE_PAGE: '/join/operator/register-fee',
         CONFIRMATION_PAGE: '/join/operator/confirm-transaction',
-        SUCCESS_PAGE: '/join/operator/success',
+        SUCCESS_PAGE: '/join/operator/success'
       },
       VALIDATOR: {
         HOME: '/join/validator',
@@ -119,36 +96,31 @@ const config = {
           START: '/join/validator/distribution-method',
           DISTRIBUTE_OFFLINE: '/join/validator/distribute-offline',
           DISTRIBUTE_SUMMARY: '/join/validator/ceremony-summary',
-          UPLOAD_KEYSHARES: '/join/validator/upload-keyshares',
+          UPLOAD_KEYSHARES: '/join/validator/upload-keyshares'
         },
         FUNDING_PERIOD_PAGE: '/join/validator/funding',
         SELECT_OPERATORS: '/join/validator/choose-operators',
         SLASHING_WARNING: '/join/validator/slashing-warning',
         DEPOSIT_VALIDATOR: '/join/validator/deposit-validator',
         CONFIRMATION_PAGE: '/join/validator/confirm-transaction',
-        ACCOUNT_BALANCE_AND_FEE: '/join/validator/balance-warning',
-      },
-    },
-  },
-  FEATURE: {
-    DOLLAR_CALCULATION: process.env.REACT_APP_SHOULD_CALCULATE_DOLLAR,
-    OPERATORS: {
-      VALID_KEY_LENGTH: 612,
-      SELECT_MINIMUM_OPERATORS: 4,
-      AUTO_SELECT: process.env.REACT_APP_FEATURE_AUTO_SELECT_OPERATORS,
-    },
+        ACCOUNT_BALANCE_AND_FEE: '/join/validator/balance-warning'
+      }
+    }
   },
   links: {
-    SSV_API_ENDPOINT: api,
-    EXPLORER_URL: explorerUrl,
+    get SSV_API_ENDPOINT() {
+      return getStoredNetwork().api;
+    },
+    get EXPLORER_URL() {
+      return getStoredNetwork().explorerUrl;
+    },
     SSV_WEB_SITE: 'https://ssv.network/',
     TWITTER_LINK: 'https://twitter.com/ssv_network',
     GOVERNANCE_FORUM_LINK: 'https://forum.ssv.network/',
     DISCORD_LINK: 'https://discord.gg/ssvnetworkofficial',
     TERMS_OF_USE_LINK: 'https://ssv.network/terms-of-use/',
     PRIVACY_POLICY_LINK: 'https://ssv.network/privacy-policy/',
-    LINK_SSV_DEV_DOCS: process.env.REACT_APP_LINK_SSV_DEV_DOCS,
-    LAUNCHPAD_LINK: 'https://prater.launchpad.ethereum.org/en/',
+    LINK_SSV_DEV_DOCS: import.meta.env.VITE_LINK_SSV_DEV_DOCS,
     SNAPSHOT_LINK: 'https://snapshot.org/#/mainnet.ssvnetwork.eth',
     SSV_DOCUMENTATION: 'https://docs.ssv.network/learn/introduction',
     DKG_DOCKER_INSTALL_URL: 'https://docs.docker.com/engine/install/',
@@ -160,31 +132,31 @@ const config = {
     ETHER_RESPONSIBILITIES: 'https://launchpad.ethereum.org/en/faq#responsibilities',
     REACTIVATION_LINK: 'https://docs.ssv.network/learn/stakers/clusters/reactivation',
     // TODO: blox-infra-api calls organization-center, if organization center will be archived, need to update this endpoint
-    COMPLIANCE_URL: `${process.env.REACT_APP_BLOX_API}/compliance/countries/restricted`,
+    COMPLIANCE_URL: `${import.meta.env.VITE_BLOX_API}/compliance/countries/restricted`,
     UPDATE_OPERATORS_LINK: 'https://docs.ssv.network/learn/stakers/validators/update-operators',
     MORE_ABOUT_UPDATE_FEES: 'https://docs.ssv.network/learn/operators/update-fee#_nn1qsdauoghf',
     MORE_ON_FEES: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/fees#_k4tw9to38r3v',
     MORE_ON_LIQUIDATION_LINK: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations',
     MONITOR_YOUR_NODE_URL: 'https://docs.ssv.network/operator-user-guides/operator-node/configuring-mev',
     INCORRECT_OWNER_NONCE_LINK: 'https://docs.ssv.network/developers/tools/cluster-scanner#_x7nzjlwu00d0',
-    DKG_TROUBLESHOOTING_LINK: 'https://docs.ssv.network/developers/tools/ssv-dkg-client/generate-key-shares#troubleshooting',
+    DKG_TROUBLESHOOTING_LINK: 'https://docs.ssv.network/developers/tools/ssv-dkg-client/generate-key-shares#troubleshooting'
   },
   GLOBAL_VARIABLE: {
     GAS_FIXED_PRICE: {
-      GAS_PRICE: process.env.REACT_APP_GAS_PRICE,
-      GAS_LIMIT: process.env.REACT_APP_GAS_LIMIT,
+      GAS_PRICE: import.meta.env.VITE_GAS_PRICE,
+      GAS_LIMIT: import.meta.env.VITE_GAS_LIMIT
     },
     CLUSTER_SIZES: {
       QUAD_CLUSTER: 4,
       SEPT_CLUSTER: 7,
       DECA_CLUSTER: 10,
-      TRISKAIDEKA_CLUSTER: 13,
+      TRISKAIDEKA_CLUSTER: 13
     },
     FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE: {
       QUAD_CLUSTER: 80,
       SEPT_CLUSTER: 40,
       DECA_CLUSTER: 30,
-      TRISKAIDEKA_CLUSTER: 20,
+      TRISKAIDEKA_CLUSTER: 20
     },
     BLOCKS_PER_DAY: 7160,
     OPERATORS_PER_PAGE: 50,
@@ -196,32 +168,32 @@ const config = {
     OPERATOR_VALIDATORS_LIMIT_PRESERVE: 5,
     MINIMUM_OPERATOR_FEE_PER_BLOCK: 0.000000001,
     MIN_VALIDATORS_COUNT_PER_BULK_REGISTRATION: 1,
-    DEFAULT_ADDRESS_WHITELIST: '0x0000000000000000000000000000000000000000',
+    DEFAULT_ADDRESS_WHITELIST: '0x0000000000000000000000000000000000000000'
   },
   ONBOARD: {
-    API_KEY: process.env.REACT_APP_BLOCKNATIVE_KEY,
+    API_KEY: import.meta.env.VITE_BLOCKNATIVE_KEY,
     NETWORK_ID: networkId,
-    PROJECT_ID: 'c93804911b583e5cacf856eee58655e6',
+    PROJECT_ID: 'c93804911b583e5cacf856eee58655e6'
   },
   CONTRACTS: {
     SSV_TOKEN: {
       ADDRESS: tokenAddress,
-      ABI: ABI_VERSION.tokenContract,
+      ABI: ABI_VERSION.tokenContract
     },
     SSV_NETWORK_SETTER: {
       ADDRESS: setterContractAddress,
-      ABI: ABI_VERSION.setterContract[`${networkId}_${apiVersion}`],
+      ABI: ABI_VERSION.setterContract[`${networkId}_${apiVersion}`]
     },
     SSV_NETWORK_GETTER: {
       ADDRESS: getterContractAddress,
-      ABI: ABI_VERSION.getterContract[`${networkId}_${apiVersion}`],
+      ABI: ABI_VERSION.getterContract[`${networkId}_${apiVersion}`]
     },
     SSV_DISTRIBUTION: {
       // ADDRESS: contract,
       ADDRESS: '',
-      ABI: abi,
-    },
-  },
+      ABI: abi
+    }
+  }
 };
 
 const HOLESKY_RPC_URL = 'https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26';
@@ -231,9 +203,9 @@ const DEFAULT_PAGINATION = {
   page: 1,
   pages: 1,
   total: 0,
-  per_page: 10,
+  per_page: 10
 };
 
-export { HOLESKY_RPC_URL, MAINNET_RPC_URL, DEFAULT_PAGINATION };
+export { DEFAULT_PAGINATION, HOLESKY_RPC_URL, MAINNET_RPC_URL };
 
 export default config;

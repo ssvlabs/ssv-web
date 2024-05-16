@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import  { useState, useRef, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
 import { truncateText } from '~lib/utils/strings';

@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Grid, Typography } from '@mui/material';
 import config from '~app/common/config';
 import { formatNumberToUi } from '~lib/utils/numbers';

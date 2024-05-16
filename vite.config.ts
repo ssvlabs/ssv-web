@@ -7,7 +7,8 @@ export default defineConfig(({ mode }) => {
   return {
     publicDir: 'public',
     build: {
-      outDir: 'build'
+      outDir: 'build',
+      sourcemap: true
     },
     plugins: [
       react(),

@@ -164,7 +164,6 @@ const KeyShareFlow = () => {
 
       const validatorsArray: ValidatorType[] = Object.values(validators);
       let currentNonce = ownerNonce;
-      let incorrectNonceFlag = false;
       let warningTextMessage = '';
       let maxValidatorsCount =
         validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length < getMaxValidatorsCountPerRegistration(operatorStore.clusterSize)
@@ -208,27 +207,11 @@ const KeyShareFlow = () => {
       });
 
       for (let i = 0; i < Object.values(validators).length; i++) {
-        let indexToSkip = 0;
         const validatorPublicKey = validatorsArray[i].publicKey;
-        const incorrectOwnerNonceCondition =
-          (incorrectNonceFlag && indexToSkip !== i && !validators[validatorPublicKey].registered) ||
-          (i > 0 && validatorsArray[i - 1].errorMessage && !validators[validatorPublicKey].registered) ||
-          (currentNonce !== validators[validatorPublicKey].ownerNonce && !validators[validatorPublicKey].registered);
-
-        if (i > 0 && validatorsArray && !validatorsArray[i - 1].registered && validatorsArray[i].registered) {
-          indexToSkip = i;
-          incorrectNonceFlag = true;
-        }
-
-        if (incorrectOwnerNonceCondition) {
+        if (!validatorsArray[i].registered && currentNonce !== validators[validatorPublicKey].ownerNonce) {
           validators[validatorPublicKey].errorMessage = translations.VALIDATOR.BULK_REGISTRATION.INCORRECT_OWNER_NONCE_ERROR_MESSAGE;
           validators[validatorPublicKey].isSelected = false;
-        }
-
-        if (validators[validatorPublicKey].isSelected && currentNonce - ownerNonce >= maxValidatorsCount) {
-          validators[validatorPublicKey].isSelected = false;
-        }
-        if (!validatorsArray[i].registered && !incorrectOwnerNonceCondition) {
+        } else if (!validatorsArray[i].registered) {
           await keyShares[i].validateSingleShares(validatorsArray[i].sharesData, {
             ownerAddress: accountAddress,
             ownerNonce: currentNonce,

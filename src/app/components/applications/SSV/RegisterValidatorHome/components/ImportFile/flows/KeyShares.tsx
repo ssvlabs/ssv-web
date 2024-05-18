@@ -215,7 +215,10 @@ const KeyShareFlow = () => {
           });
           currentNonce += 1;
         }
-      }
+      if ((currentNonce - ownerNonce) > maxValidatorsCount) {
+            validators[validatorPublicKey].isSelected = false;
+          }
+        }
 
         const selectedValidatorsCount = Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length;
         setValidatorsList(validators);

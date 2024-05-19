@@ -1,4 +1,5 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { ChevronDown } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { Button } from '~app/components/ui/button';
 
@@ -45,15 +46,17 @@ export const WalletButton = () => {
 
               if (chain.unsupported) {
                 return (
-                  <Button variant="destructive" onClick={openChainModal}>
-                    Wrong Network
+                  <Button size="lg" variant="destructive" onClick={openChainModal}>
+                    <div className="flex gap-1 items-center">
+                      <span>Wrong Network</span> <ChevronDown className="size-5" />
+                    </div>
                   </Button>
                 );
               }
 
               return (
                 <div className="flex gap-3">
-                  <Button size="lg" variant="ghost" onClick={openChainModal} style={{ display: 'flex', alignItems: 'center' }} type="button">
+                  <Button size="lg" variant="secondary" onClick={openChainModal} className="flex items-center gap-3" type="button">
                     {chain.hasIcon && (
                       <div
                         className="size-6"
@@ -67,9 +70,12 @@ export const WalletButton = () => {
                         {chain.iconUrl && <img alt={chain.name ?? 'Chain icon'} src={chain.iconUrl} className="size-6" />}
                       </div>
                     )}
-                    {chain.name}
+
+                    <div className="flex gap-1 items-center">
+                      <span> {chain.name}</span> <ChevronDown className="size-5" />
+                    </div>
                   </Button>
-                  <Button size="lg" className="gap-3" variant="outline" onClick={openAccountModal}>
+                  <Button size="lg" className="gap-3" variant="secondary" onClick={openAccountModal}>
                     <img className="size-6" src={getWalletIconSrc(connector?.name)} alt={`Connected to ${account.address}`} />
                     {account.displayName}
                   </Button>

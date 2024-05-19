@@ -1,9 +1,10 @@
-import { DisclaimerComponent, RainbowKitProvider as OriginalRainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+import { DisclaimerComponent, RainbowKitProvider as OriginalRainbowKitProvider } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 
 import React, { FC } from 'react';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
+import { rainbowKitTheme } from '~root/RainbowKitProvider/themes';
 
 const Disclaimer: DisclaimerComponent = ({ Text, Link }) => (
   <Text>
@@ -21,7 +22,7 @@ export const RainbowKitProvider: FC<{ children: React.ReactNode }> = ({ children
         appName: 'RainbowKit Demo',
         disclaimer: Disclaimer
       }}
-      theme={isDarkMode ? darkTheme() : undefined}
+      theme={isDarkMode ? rainbowKitTheme.dark : rainbowKitTheme.light}
     >
       {children}
     </OriginalRainbowKitProvider>

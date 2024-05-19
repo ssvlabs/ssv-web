@@ -9,10 +9,10 @@ import { store } from '~app/store';
 import GTMFrame from '~lib/analytics/GoogleTag/components/GTMFrame';
 import * as serviceWorker from '~root/serviceWorker';
 import { rootStore } from '~root/stores';
-import { RainbowKitProvider } from './RainbowKitProvider';
 import { config } from '~root/wagmi/config';
 
 import { Buffer } from 'buffer';
+import { RainbowKitProvider } from '~root/RainbowKitProvider';
 // @ts-ignore
 globalThis.Buffer = Buffer;
 

@@ -41,8 +41,8 @@ import ValidatorList
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorList';
 import ValidatorCounter
   from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/ValidatorList/ValidatorCounter';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getValidator } from '~root/services/validator.service';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getIsRegisteredValidator } from '~root/services/validator.service';
 import { getOperatorsByIds } from '~root/services/operator.service';
 import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 import { IOperator } from '~app/model/operator.model';
@@ -150,7 +150,7 @@ const KeyShareFlow = () => {
 
         const promises = Object.values(validators).map((validator: ValidatorType) => new Promise(async (resolve, reject) => {
           try {
-            const res = await getValidator(validator.publicKey);
+            const res = await getIsRegisteredValidator(validator.publicKey);
             if (res && isEqualsAddresses(res.owner_address, accountAddress)) {
               validators[`0x${res.public_key}`].registered = true;
             }
@@ -167,7 +167,6 @@ const KeyShareFlow = () => {
 
         const validatorsArray: ValidatorType[] = Object.values(validators);
         let currentNonce = ownerNonce;
-        let incorrectNonceFlag = false;
         let warningTextMessage = '';
         let maxValidatorsCount = validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length < getMaxValidatorsCountPerRegistration(operatorStore.clusterSize) ? validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length : getMaxValidatorsCountPerRegistration(operatorStore.clusterSize);
         let previousSmallCount = validatorStore.validatorsCount;
@@ -203,33 +202,21 @@ const KeyShareFlow = () => {
           });
         });
 
-        for (let i = 0; i < Object.values(validators).length; i++) {
-          let indexToSkip = 0;
-          const validatorPublicKey = validatorsArray[i].publicKey;
-          const incorrectOwnerNonceCondition = incorrectNonceFlag && indexToSkip !== i && !validators[validatorPublicKey].registered || i > 0 &&
-            validatorsArray[i - 1].errorMessage && !validators[validatorPublicKey].registered ||
-            currentNonce !== validators[validatorPublicKey].ownerNonce && !validators[validatorPublicKey].registered;
-
-          if (i > 0 && validatorsArray && !validatorsArray[i - 1].registered && validatorsArray[i].registered) {
-            indexToSkip = i;
-            incorrectNonceFlag = true;
-          }
-
-          if (incorrectOwnerNonceCondition) {
-            validators[validatorPublicKey].errorMessage = translations.VALIDATOR.BULK_REGISTRATION.INCORRECT_OWNER_NONCE_ERROR_MESSAGE;
+      for (let i = 0; i < Object.values(validators).length; i++) {
+        const validatorPublicKey = validatorsArray[i].publicKey;
+        if (!validatorsArray[i].registered && currentNonce !== validators[validatorPublicKey].ownerNonce) {
+          validators[validatorPublicKey].errorMessage = translations.VALIDATOR.BULK_REGISTRATION.INCORRECT_OWNER_NONCE_ERROR_MESSAGE;
+          validators[validatorPublicKey].isSelected = false;
+        } else if (!validatorsArray[i].registered) {
+          await keyShares[i].validateSingleShares(validatorsArray[i].sharesData, {
+            ownerAddress: accountAddress,
+            ownerNonce: currentNonce,
+            publicKey: validatorsArray[i].publicKey,
+          });
+          currentNonce += 1;
+        }
+      if ((currentNonce - ownerNonce) > maxValidatorsCount) {
             validators[validatorPublicKey].isSelected = false;
-          }
-
-          if (validators[validatorPublicKey].isSelected && currentNonce - ownerNonce >= maxValidatorsCount) {
-            validators[validatorPublicKey].isSelected = false;
-          }
-          if (!validatorsArray[i].registered && !incorrectOwnerNonceCondition) {
-            await keyShares[i].validateSingleShares(validatorsArray[i].sharesData, {
-              ownerAddress: accountAddress,
-              ownerNonce: currentNonce,
-              publicKey: validatorsArray[i].publicKey,
-            });
-            currentNonce += 1;
           }
         }
 

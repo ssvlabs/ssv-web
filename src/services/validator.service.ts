@@ -47,10 +47,16 @@ const getValidator = async (publicKey: string) => {
     return await getRequest(url);
 };
 
+const getIsRegisteredValidator = async (publicKey: string) => {
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/isRegisteredValidator/${publicKey.replace('0x', '')}?ts=${new Date().getTime()}`;
+    return await getRequest(url);
+};
+
 export {
   getOwnerAddressCost,
   clustersByOwnerAddress,
   validatorsByClusterHash,
   getLiquidationCollateralPerValidator,
   getValidator,
+  getIsRegisteredValidator,
 };

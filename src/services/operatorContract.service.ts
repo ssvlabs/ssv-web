@@ -1,11 +1,30 @@
 import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
 import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
-import { IOperator } from '~app/model/operator.model';
+import { IOperator, IOperatorRawData } from '~app/model/operator.model';
 import { transactionExecutor } from '~root/services/transaction.service';
-import { getOperator } from '~root/services/operator.service';
+import { getOperator, getOperatorByPublicKey } from '~root/services/operator.service';
 import { isEqualsAddresses } from '~lib/utils/strings';
 import { Contract } from 'ethers';
+import Decimal from 'decimal.js';
+import config from '~app/common/config';
+
+const addNewOperator = async (isContractWallet: boolean, operatorRawData: IOperatorRawData, dispatch: Function): Promise<boolean> => {
+  const contract: Contract = getContractByName(EContractName.SETTER);
+  if (!contract) {
+    return false;
+  }
+  const feePerBlock = new Decimal(operatorRawData.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
+
+  return await transactionExecutor({
+    contractMethod: contract.registerOperator,
+    payload: [operatorRawData.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock))],
+    isContractWallet,
+    getterTransactionState: async () => await getOperatorByPublicKey(operatorRawData.publicKey),
+    prevState: null,
+    dispatch
+  });
+}
 
 const getOperatorBalance = async ({ id }: { id: number }): Promise<number> => {
   const contract = getContractByName(EContractName.GETTER);
@@ -75,4 +94,46 @@ const removeOperator = async ({ operatorId, isContractWallet, dispatch }: { oper
   });
 };
 
-export { getOperatorBalance, withdrawRewards, updateOperatorAddressWhitelist, removeOperator };
+const approveOperatorFee = async ({ operator, isContractWallet, dispatch }: { operator: IOperator; isContractWallet: boolean; dispatch: Function }): Promise<boolean> => {
+  const contract: Contract = getContractByName(EContractName.SETTER);
+  if (!contract) {
+    return false;
+  }
+
+  return await transactionExecutor({
+    contractMethod: contract.executeOperatorFee,
+    payload: [operator.id],
+    isContractWallet,
+    getterTransactionState: async () => {
+      const { id, fee } = await getOperator(operator.id);
+      return { id, fee };
+    },
+    prevState: {
+      id: operator.id,
+      fee: operator.fee
+    },
+    dispatch
+  });
+};
+
+const decreaseOperatorFee = async ({ operator, newFee, isContractWallet, dispatch }: { operator: IOperator; newFee: number | string; isContractWallet: boolean; dispatch: Function; }): Promise<boolean> => {
+  const contract: Contract = getContractByName(EContractName.SETTER);
+  if (!contract) {
+    return false;
+  }
+  const formattedFee = prepareSsvAmountToTransfer(toWei(new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString()));
+
+  return await transactionExecutor({
+    contractMethod: contract.reduceOperatorFee,
+    payload: [operator.id, formattedFee],
+    isContractWallet,
+    getterTransactionState: async () => {
+      const { id, fee } = await getOperator(operator.id);
+      return { id, fee };
+    },
+    prevState: { id: operator.id, fee: operator.fee },
+    dispatch
+  });
+};
+
+export { getOperatorBalance, withdrawRewards, updateOperatorAddressWhitelist, removeOperator, addNewOperator, approveOperatorFee, decreaseOperatorFee };

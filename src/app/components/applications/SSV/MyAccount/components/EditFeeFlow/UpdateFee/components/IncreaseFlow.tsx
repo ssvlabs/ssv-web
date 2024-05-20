@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
 import CancelFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/CancelFee';
 import DeclareFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DeclareFee';
 import FeeUpdated from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/FeeUpdated';
@@ -10,7 +9,7 @@ import PendingExpired from '~app/components/applications/SSV/MyAccount/component
 import PendingExecution from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExecution';
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import { SingleOperator } from '~app/model/processes.model';
-import { IOperator } from '~app/model/operator.model';
+import { IOperator, UpdateFeeProps } from '~app/model/operator.model';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 

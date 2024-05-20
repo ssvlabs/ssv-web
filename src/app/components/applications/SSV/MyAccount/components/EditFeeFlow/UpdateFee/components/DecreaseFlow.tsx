@@ -8,7 +8,6 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
-import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
@@ -19,7 +18,8 @@ import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import LinkText from '~app/components/common/LinkText';
-import { getOperatorBalance } from '~root/services/operatorContract.service';
+import { decreaseOperatorFee, getOperatorBalance } from '~root/services/operatorContract.service';
+import { UpdateFeeProps } from '~app/model/operator.model.ts';
 
 const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
   const stores = useStores();
@@ -40,7 +40,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
       navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
     } else {
       setIsLoading(true);
-      const res = await operatorStore.decreaseOperatorFee({ operator, newFee, isContractWallet, dispatch });
+      const res = await decreaseOperatorFee({ operator, newFee, isContractWallet, dispatch });
       if (res) {
         const newOperatorData = await getOperator(operatorStore.processOperatorId);
         const balance = await getOperatorBalance(newOperatorData.id);

@@ -25,18 +25,6 @@ import { getOperator } from '~root/services/operator.service';
 import config from '~app/common/config';
 import Decimal from 'decimal.js';
 
-export type UpdateFeeProps = {
-  error: ErrorType;
-  nextIsDisabled: boolean;
-  onNextHandler: Function;
-  onChangeHandler: Function;
-  newFee: number | string;
-  oldFee: number | string;
-  currency: string;
-  setCurrency: Function;
-  declareNewFeeHandler: Function
-};
-
 // eslint-disable-next-line no-unused-vars
 enum FeeUpdateSteps {
   // eslint-disable-next-line no-unused-vars

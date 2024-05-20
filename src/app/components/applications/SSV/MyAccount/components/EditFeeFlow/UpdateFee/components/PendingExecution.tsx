@@ -16,6 +16,7 @@ import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { timeDiffCalc } from '~lib/utils/time';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
+import { approveOperatorFee } from '~root/services/operatorContract.service.ts';
 
 const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, cancelUpdateFee }: IncreaseFlowProps) => {
   const stores = useStores();
@@ -30,7 +31,7 @@ const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, ca
 
   const submitFeeChange = async () => {
     setIsLoading(true);
-    const response = await operatorStore.approveOperatorFee({ operator, isContractWallet, dispatch });
+    const response = await approveOperatorFee({ operator, isContractWallet, dispatch });
     if (response) {
       getCurrentState(true);
     }

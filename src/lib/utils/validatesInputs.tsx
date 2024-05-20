@@ -4,7 +4,6 @@ import config from '~app/common/config';
 import { compareNumbers, formatNumberToUi } from '~lib/utils/numbers';
 import { getFeeForYear, isAddress } from '~root/services/conversions.service';
 import LinkText from '~app/components/common/LinkText/LinkText';
-import { getOperatorByPublicKey } from '~root/services/operator.service';
 
 const OPERATOR_VALID_KEY_LENGTH = 612;
 
@@ -65,11 +64,6 @@ export const validateFeeInput = ({ value, maxFee, callback }: { value: string, m
   }
 
   callback(response);
-};
-
-export const validateOperatorPublicKey = async (publicKey: string): Promise<boolean> => {
-  const res = await getOperatorByPublicKey(publicKey);
-  return res.data;
 };
 
 export const validateFeeUpdate = ({ previousValue, newValue, maxFeeIncrease, isPrivateOperator, maxFee, callback }: {

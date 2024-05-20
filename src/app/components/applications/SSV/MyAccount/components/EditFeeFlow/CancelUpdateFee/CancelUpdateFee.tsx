@@ -31,6 +31,7 @@ const CancelUpdateFee = () => {
   const operator: IOperator = process.item;
   const [futureFee, setFutureFee] = useState(0);
   const [successPage, showSuccessPage] = useState(false);
+  const [isOpenCancelUpdateFeeDialog, setIsOpenCancelUpdateFeeDialog] = useState(false);
   const dispatch = useAppDispatch();
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const isContractWallet = useAppSelector(getIsContractWallet);
@@ -51,12 +52,10 @@ const CancelUpdateFee = () => {
 
   const backToMyAccount = () => {
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
-    operatorStore.switchCancelDialog();
   };
 
   const declareNewFee = async () => {
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.START);
-    operatorStore.switchCancelDialog();
   };
 
   // @ts-ignore
@@ -66,7 +65,7 @@ const CancelUpdateFee = () => {
 
   if (successPage) {
     return (
-      <Dialog className={classes.DialogWrapper} open={operatorStore.openCancelDialog}>
+      <Dialog className={classes.DialogWrapper} open={isOpenCancelUpdateFeeDialog}>
         <Grid container item className={classes.GridWrapper} style={{ gap: 56 }}>
           <Grid item className={classes.BackgroundImage} />
           <HeaderSubHeader marginBottom={0} title={'Fee update process canceled successfully!'} />
@@ -93,8 +92,8 @@ const CancelUpdateFee = () => {
   }
 
   return (
-    <Dialog className={classes.DialogWrapper} PaperProps={{ style: { overflow: 'unset', borderRadius: 16 } }} open={operatorStore.openCancelDialog}>
-      <Grid className={classes.CloseDialog} onClick={operatorStore.switchCancelDialog} />
+    <Dialog className={classes.DialogWrapper} PaperProps={{ style: { overflow: 'unset', borderRadius: 16 } }} open={isOpenCancelUpdateFeeDialog}>
+      <Grid className={classes.CloseDialog} onClick={() => setIsOpenCancelUpdateFeeDialog(true)} />
       <Grid className={classes.GridWrapper} container>
         <HeaderSubHeader title={'Cancel Update Fee'} />
         <Grid className={classes.Text}>

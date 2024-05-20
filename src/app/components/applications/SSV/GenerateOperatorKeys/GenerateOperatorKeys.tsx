@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
-import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
@@ -12,20 +9,19 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { encodeParameter } from '~root/services/conversions.service';
-import OperatorStore, { NewOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/GenerateOperatorKeys/GenerateOperatorKeys.styles';
-import { validateAddressInput, validateOperatorPublicKey, validatePublicKeyInput } from '~lib/utils/validatesInputs';
+import { validateAddressInput, validatePublicKeyInput } from '~lib/utils/validatesInputs';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import { PrimaryButton } from '~app/atomicComponents';
+import { Grid, PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { getOperatorByPublicKey } from '~root/services/operator.service.ts';
+import { IOperatorRawData } from '~app/model/operator.model.ts';
 
 const GenerateOperatorKeys = () => {
-  const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const accountAddress = useAppSelector(getAccountAddress);
-  const operatorStore: OperatorStore = stores.Operator;
   const [operatorExist, setOperatorExist] = useState(false);
   const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
   const [inputsData, setInputsData] = useState({ publicKey: '' });
@@ -54,17 +50,15 @@ const GenerateOperatorKeys = () => {
     setOperatorExist(false);
     setIsLoading(true);
 
-    const operatorKeys: NewOperator = {
+    const operatorRawData: IOperatorRawData = {
       fee: 0,
       id: 0,
       address: accountAddress,
       publicKey: encodeParameter('string', inputsData.publicKey),
     };
-    operatorKeys.id = operatorStore.getOperatorId;
-    operatorStore.setOperatorKeys(operatorKeys);
-    const isExists = await validateOperatorPublicKey(inputsData.publicKey);
+    const isExists = await getOperatorByPublicKey(inputsData.publicKey);
     setOperatorExist(isExists);
-    if (!isExists) navigate(config.routes.SSV.OPERATOR.SET_FEE_PAGE);
+    if (!isExists) navigate(config.routes.SSV.OPERATOR.SET_FEE_PAGE, { state: { operatorRawData }});
     setIsLoading(false);
   };
 
@@ -125,4 +119,4 @@ const GenerateOperatorKeys = () => {
   );
 };
 
-export default observer(GenerateOperatorKeys);
+export default GenerateOperatorKeys;

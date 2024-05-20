@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import config from '~app/common/config';
@@ -23,6 +23,8 @@ const SetOperatorFee = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { operatorKeys } = location.state;
   const operatorStore: OperatorStore = stores.Operator;
   const [error, setError] = useState(INITIAL_ERROR_STATE);
   const [userInput, setUserInput] = useState<UserInput>('');
@@ -45,10 +47,7 @@ const SetOperatorFee = () => {
   }, [error.shouldDisplay, userInput]);
 
   const moveToSubmitConfirmation = () => {
-    const operatorWithFee = operatorStore.newOperatorKeys;
-    // @ts-ignore
-    operatorWithFee.fee = parseFloat(userInput) || 0;
-    operatorStore.setOperatorKeys(operatorWithFee);
+    operatorKeys.fee = parseFloat(userInput) || 0;
     navigate(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE);
   };
 

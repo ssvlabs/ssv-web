@@ -1,29 +1,24 @@
-
-import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/OperatorId';
 import { useStyles } from '~app/components/applications/SSV/OperatorSuccessPage/OperatorSuccessPage.styles';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { fetchOperators } from '~app/redux/account.slice';
-import { PrimaryButton } from '~app/atomicComponents';
+import { Grid, PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 
 const SetOperatorFee = () => {
-  const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const operatorStore: OperatorStore = stores.Operator;
   const dispatch = useAppDispatch();
+  const location = useLocation();
+  const { operatorRawData } = location.state;
 
   const moveToMyAccount = async () => {
     dispatch(setIsLoading(true));
@@ -47,7 +42,7 @@ const SetOperatorFee = () => {
             <Typography className={classes.Text}>Your network identifier is:</Typography>
           </Grid>
           <Grid>
-            <OperatorId successPage id={operatorStore.newOperatorKeys.id}/>
+            <OperatorId successPage id={operatorRawData.id}/>
           </Grid>
         </Grid>,
         <Grid className={classes.Wrapper}>
@@ -65,4 +60,4 @@ const SetOperatorFee = () => {
   );
 };
 
-export default observer(SetOperatorFee);
+export default SetOperatorFee;

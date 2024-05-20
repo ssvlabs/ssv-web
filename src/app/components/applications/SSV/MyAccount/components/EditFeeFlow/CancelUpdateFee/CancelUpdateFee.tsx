@@ -20,6 +20,7 @@ import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { formatNumberToUi } from '~lib/utils/numbers';
 
 const CancelUpdateFee = () => {
   const stores = useStores();

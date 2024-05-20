@@ -365,7 +365,7 @@ class ValidatorStore extends BaseStore {
       this.keyStoreFile = keyStore;
       const fileJson = await keyStore.text();
       this.keyStorePublicKey = JSON.parse(fileJson).pubkey;
-      this.validatorPublicKeyExist = !!(await getIsRegisteredValidator(this.keyStorePublicKey))?.data;
+      this.validatorPublicKeyExist = !!(await getIsRegisteredValidator(`0x${this.keyStorePublicKey}`))?.data;
     } catch (e: any) {
       console.log(e.message);
     }

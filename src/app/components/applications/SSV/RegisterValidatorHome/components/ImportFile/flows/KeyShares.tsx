@@ -151,13 +151,13 @@ const KeyShareFlow = () => {
         const promises = Object.values(validators).map((validator: ValidatorType) => new Promise(async (resolve, reject) => {
           try {
             const res = await getIsRegisteredValidator(validator.publicKey);
-            if (res && isEqualsAddresses(res.owner_address, accountAddress)) {
-              validators[`0x${res.public_key}`].registered = true;
+            if (res.data && isEqualsAddresses(res.data.ownerAddress, accountAddress)) {
+              validators[res.data.publicKey].registered = true;
             }
             if (!validators[validator.publicKey].registered && !validators[validator.publicKey].errorMessage) {
               validators[validator.publicKey].isSelected = true;
             }
-            resolve(res);
+            resolve(true);
           } catch (e) {
             reject(false);
           }

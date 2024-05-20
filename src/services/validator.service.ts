@@ -48,7 +48,7 @@ const getValidator = async (publicKey: string) => {
 };
 
 const getIsRegisteredValidator = async (publicKey: string) => {
-    const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/isRegisteredValidator/${publicKey.replace('0x', '')}?ts=${new Date().getTime()}`;
+    const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/isRegisteredValidator/${publicKey}?ts=${new Date().getTime()}`;
     return await getRequest(url);
 };
 

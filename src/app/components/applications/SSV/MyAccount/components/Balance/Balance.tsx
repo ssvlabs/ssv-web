@@ -1,22 +1,21 @@
-
 import Grid from '@mui/material/Grid';
-import { formatNumberToUi } from '~lib/utils/numbers';
+import {formatNumberToUi} from '~lib/utils/numbers';
 import NaDisplay from '~app/components/common/NaDisplay';
-import { translations } from '~app/common/config';
+import {translations} from '~app/common/config';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Balance/Balance.styles';
+import {useStyles} from '~app/components/applications/SSV/MyAccount/components/Balance/Balance.styles';
 import ErrorText from '~app/components/applications/SSV/MyAccount/common/LiquidationStateError/LiquidationStateError';
-import { fromWei } from '~root/services/conversions.service';
-import { ICluster } from '~app/model/cluster.model';
-import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
-import { ButtonSize } from '~app/enums/Button.enum';
+import {fromWei} from '~root/services/conversions.service';
+import {ICluster} from '~app/model/cluster.model';
+import {PrimaryButton, SecondaryButton} from '~app/atomicComponents';
+import {ButtonSize} from '~app/enums/Button.enum';
 import styled from 'styled-components';
 
 const OperationRunwayWrapper = styled.div`
     width: 100%
 `;
 
-const Balance = ({ cluster, moveToReactivateCluster, moveToDeposit, moveToWithdraw }: {
+const Balance = ({cluster, moveToReactivateCluster, moveToDeposit, moveToWithdraw}: {
   cluster: ICluster;
   moveToReactivateCluster: Function;
   moveToDeposit: Function;
@@ -43,20 +42,22 @@ const Balance = ({ cluster, moveToReactivateCluster, moveToDeposit, moveToWithdr
           </Grid>
         </Grid>
       </Grid>
-      {(!!cluster.validatorCount || cluster.isLiquidated) &&
+      {((Number(cluster.balance)) || cluster.isLiquidated) &&
         <OperationRunwayWrapper>
-          <Grid item className={classes.SeparationLine} xs={12}/>
-          <Grid container item className={classes.SecondSectionWrapper}>
-            <NewRemainingDays cluster={cluster}/>
-            {cluster.isLiquidated && (
-              <Grid className={classes.ErrorMessageWrapper}>
-                <ErrorText
-                  marginTop={'16px'}
-                  errorType={2}
-                />
+          {(cluster.validatorCount || cluster.isLiquidated) &&
+            <div><Grid item className={classes.SeparationLine} xs={12}/>
+              <Grid container item className={classes.SecondSectionWrapper}>
+                <NewRemainingDays cluster={cluster}/>
+                {cluster.isLiquidated && (
+                  <Grid className={classes.ErrorMessageWrapper}>
+                    <ErrorText
+                      marginTop={'16px'}
+                      errorType={2}
+                    />
+                  </Grid>
+                )}
               </Grid>
-            )}
-          </Grid>
+            </div>}
           <Grid item className={classes.SeparationLine} xs={12}/>
           {cluster.isLiquidated ?
             (

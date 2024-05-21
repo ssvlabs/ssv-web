@@ -2,6 +2,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { ChevronDown } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { Button } from '~app/components/ui/button';
+import { formatAddress } from '~lib/utils/strings';
 
 type WalletType = 'ledger' | 'trezor' | 'walletconnect' | 'metamask';
 
@@ -56,7 +57,7 @@ export const WalletButton = () => {
 
               return (
                 <div className="flex gap-3">
-                  <Button size="lg" variant="secondary" onClick={openChainModal} className="flex items-center gap-3" type="button">
+                  <Button size="network" variant="secondary" colorScheme="wallet" onClick={openChainModal} className="flex items-center gap-3" type="button">
                     {chain.hasIcon && (
                       <div
                         className="size-6"
@@ -75,9 +76,9 @@ export const WalletButton = () => {
                       <span> {chain.name}</span> <ChevronDown className="size-5" />
                     </div>
                   </Button>
-                  <Button size="lg" className="gap-3" variant="secondary" onClick={openAccountModal}>
+                  <Button size="wallet" className="gap-3" variant="secondary" colorScheme="wallet" onClick={openAccountModal}>
                     <img className="size-6" src={getWalletIconSrc(connector?.name)} alt={`Connected to ${account.address}`} />
-                    {account.displayName}
+                    {formatAddress(account.address)}
                   </Button>
                 </div>
               );

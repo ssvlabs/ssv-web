@@ -43,6 +43,7 @@ const CustomizedCellBasic = styled(TableCell)`
   letter-spacing: normal;
   padding: 20px 26px 20px 32px;
   color: ${props => props.theme.colors.black};
+  border-bottom: solid 1px ${props => props.theme.colors.gray20};
 `;
 const CustomizedCellHeaderBasic = styled(TableCell)`
   font-style: normal;
@@ -51,6 +52,7 @@ const CustomizedCellHeaderBasic = styled(TableCell)`
   letter-spacing: normal;
   padding: 20px 26px 20px 32px;
   color: ${props => props.theme.colors.gray40};
+  border-bottom: solid 1px ${props => props.theme.colors.gray20};
   & p {
     font-weight: 500;
     line-height: 1.62;

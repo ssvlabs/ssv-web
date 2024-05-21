@@ -13,12 +13,11 @@ import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { IOperator } from '~app/model/operator.model';
 import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
-import { getLiquidationCollateralPerValidator, getValidator } from '~root/services/validator.service';
+import { getIsRegisteredValidator, getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { getOwnerNonce } from '~root/services/account.service';
 import { SingleCluster, RegisterValidator } from '~app/model/processes.model';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { createPayload } from '~root/utils/dkg.utils';
-import { getEventByTxHash } from '~root/services/contractEvent.service';
 
 const annotations = {
   keyStoreFile: observable,
@@ -366,7 +365,7 @@ class ValidatorStore extends BaseStore {
       this.keyStoreFile = keyStore;
       const fileJson = await keyStore.text();
       this.keyStorePublicKey = JSON.parse(fileJson).pubkey;
-      this.validatorPublicKeyExist = !!(await getValidator(this.keyStorePublicKey));
+      this.validatorPublicKeyExist = !!(await getIsRegisteredValidator(`0x${this.keyStorePublicKey}`))?.data;
     } catch (e: any) {
       console.log(e.message);
     }

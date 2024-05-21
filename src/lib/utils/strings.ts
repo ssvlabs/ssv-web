@@ -12,6 +12,10 @@ export const longStringShorten = (value: string, firstFriction: number = 10, sec
   return str;
 };
 
+export const formatAddress = (address: string): string => {
+  return longStringShorten(address, 6, 4);
+};
+
 export const truncateText = (text: string, maxCharacters: number): string => {
   if (text.length <= maxCharacters) {
     return text;
@@ -37,10 +41,9 @@ export const isEqualsAddresses = (a: string, b: string): boolean => {
   }
 };
 
-export const formatValidatorPublicKey = (publicKey: string) => publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`;
+export const formatValidatorPublicKey = (publicKey: string) => (publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`);
 
-const checkAddressChecksum
-  = (address: string) => {
+const checkAddressChecksum = (address: string) => {
   try {
     return utils.getAddress(address) === address;
   } catch (e) {
@@ -48,6 +51,6 @@ const checkAddressChecksum
   }
 };
 
-const toHexString = (val: any) => typeof val === 'number' ? `0x${val.toString(16)}` : val;
+const toHexString = (val: any) => (typeof val === 'number' ? `0x${val.toString(16)}` : val);
 
 export { checkAddressChecksum, toHexString };

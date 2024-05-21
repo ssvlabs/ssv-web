@@ -43,7 +43,7 @@ import {
   validateConsistentOperatorIds
 } from '~root/services/keyShare.service';
 import { getOperatorsByIds } from '~root/services/operator.service';
-import { getValidator } from '~root/services/validator.service';
+import { getIsRegisteredValidator } from '~root/services/validator.service';
 import { isJsonFile } from '~root/utils/dkg.utils';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
@@ -146,14 +146,14 @@ const KeyShareFlow = () => {
           // eslint-disable-next-line no-async-promise-executor
           new Promise(async (resolve, reject) => {
             try {
-              const res = await getValidator(validator.publicKey);
-              if (res && isEqualsAddresses(res.owner_address, accountAddress)) {
-                validators[`0x${res.public_key}`].registered = true;
+              const res = await getIsRegisteredValidator(validator.publicKey);
+              if (res.data && isEqualsAddresses(res.data.ownerAddress, accountAddress)) {
+                validators[res.data.publicKey].registered = true;
               }
               if (!validators[validator.publicKey].registered && !validators[validator.publicKey].errorMessage) {
                 validators[validator.publicKey].isSelected = true;
               }
-              resolve(res);
+              resolve(true);
             } catch (e) {
               reject(false);
             }
@@ -218,6 +218,9 @@ const KeyShareFlow = () => {
             publicKey: validatorsArray[i].publicKey
           });
           currentNonce += 1;
+        }
+        if (currentNonce - ownerNonce > maxValidatorsCount) {
+          validators[validatorPublicKey].isSelected = false;
         }
       }
 

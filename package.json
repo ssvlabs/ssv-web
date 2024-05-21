@@ -143,6 +143,7 @@
     "web3": "^4.7.0"
   },
   "scripts": {
+    "prettify": "prettier --write --log-level silent src/**/*.{ts,tsx,js,jsx,json,css,scss,md}",
     "type-check": "tsc --noEmit",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "dev": "rm -rf node_modules/.vite/ && vite",
@@ -157,7 +158,14 @@
     "prepublishOnly": "pinst --disable",
     "postpublish": "pinst --enable",
     "prod:watch": "yarn build && serve -s build -l 5173",
-    "serve": "serve -s build -l 5173"
+    "serve": "serve -s build -l 5173",
+    "lint-staged": "lint-staged"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx,js,jsx,json,css,scss,md}": [
+      "prettier --write --log-level silent",
+      "git add"
+    ]
   },
   "license": "GPL-3.0",
   "eslintConfig": {
@@ -212,6 +220,7 @@
     "jest-watch-typeahead": "^2.2.1",
     "jsdom": "^16.5.3",
     "jsdom-global": "^3.0.2",
+    "lint-staged": "^15.2.2",
     "nodemon": "^3.0.1",
     "pinst": "^2.1.6",
     "postcss": "^8.4.38",

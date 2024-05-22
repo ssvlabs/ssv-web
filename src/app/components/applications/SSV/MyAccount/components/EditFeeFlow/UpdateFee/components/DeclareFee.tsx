@@ -48,7 +48,7 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
 
   useEffect(() => {
     getCurrentState();
-  }, [JSON.stringify(operatorFeeData)]);
+  }, [operatorFeeData.operatorApprovalBeginTime, operatorFeeData.operatorApprovalEndTime, operatorFeeData.operatorFutureFee]);
 
   const currentDate = new Date();
   const options: Intl.DateTimeFormatOptions = {

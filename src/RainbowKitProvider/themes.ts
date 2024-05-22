@@ -57,7 +57,6 @@ const dark = merge(
   } as Theme
 );
 
-console.log('dark:', dark);
 export const rainbowKitTheme = {
   light,
   dark

@@ -24,7 +24,7 @@ const SetOperatorFee = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const maxFee = useAppSelector(getMaxOperatorFeePerYear);
-  const { operatorKeys } = location.state;
+  const { operatorRawData } = location.state;
   const [error, setError] = useState(INITIAL_ERROR_STATE);
   const [userInput, setUserInput] = useState<UserInput>('');
   const [registerButtonDisabled, setRegisterButtonDisabled] = useState(true);
@@ -46,8 +46,10 @@ const SetOperatorFee = () => {
   }, [error.shouldDisplay, userInput]);
 
   const moveToSubmitConfirmation = () => {
-    operatorKeys.fee = parseFloat(userInput) || 0;
-    navigate(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE);
+    console.log(operatorRawData);
+    operatorRawData.fee = parseFloat(userInput) || 0;
+    console.log('inNavigate');
+    navigate(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE, { state: { operatorRawData } });
   };
 
   const removeLeadingZeros = (num: string): string => {

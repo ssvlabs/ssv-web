@@ -80,6 +80,7 @@ const SingleCluster = () => {
     process.processName = 'cluster_registration';
     // @ts-ignore
     process.registerValidator = { depositAmount: 0 };
+    console.log(cluster.operators);
     dispatch(selectOperators(cluster.operators));
     navigate(getNextNavigation());
   };

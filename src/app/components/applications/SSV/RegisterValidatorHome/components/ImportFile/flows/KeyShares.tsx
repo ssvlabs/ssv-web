@@ -46,13 +46,7 @@ import { isJsonFile } from '~root/utils/dkg.utils';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
-import {
-  getClusterSize, getOperatorValidatorsLimit,
-  getSelectedOperators,
-  selectOperators,
-  setClusterSize,
-  unselectAllOperators
-} from '~app/redux/operator.slice.ts';
+import { getClusterSize, getOperatorValidatorsLimit, getSelectedOperators, selectOperators, setClusterSize, unselectAllOperators } from '~app/redux/operator.slice.ts';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
@@ -82,7 +76,7 @@ const KeyShareFlow = () => {
   });
   const selectedStoreOperators = useAppSelector(getSelectedOperators);
   const clusterSize = useAppSelector(getClusterSize);
-  const keyShareFileIsJson = isJsonFile(validatorStore.keyShareFile);
+  const keyShareFileIsJson = validatorStore.keyShareFile && isJsonFile(validatorStore.keyShareFile);
   const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(getMaxValidatorsCountPerRegistration(clusterSize));
   const [isLoading, setIsLoading] = useState(false);
   const operatorValidatorsLimit = useAppSelector(getOperatorValidatorsLimit);
@@ -117,11 +111,11 @@ const KeyShareFlow = () => {
         dispatch(setClusterSize(selectedOperators.length));
       }
 
-      if(processStore.secondRegistration) {
+      if (processStore.secondRegistration) {
         for (const keyShare of shares) {
           if (
             keyShare.data.operators?.some((operatorData: { id: number; operatorKey: string }) => {
-              const selectedOperator = [...selectedStoreOperators.values()].find((selected: IOperator) => selected.id === operatorData.id);
+              const selectedOperator = Object.values(selectedStoreOperators).find((selected: IOperator) => selected.id === operatorData.id);
               return !selectedOperator || selectedOperator.public_key.toLowerCase() !== operatorData.operatorKey.toLowerCase();
             })
           ) {
@@ -236,9 +230,7 @@ const KeyShareFlow = () => {
       setValidatorsList(validators);
       setWarningMessage(warningTextMessage);
       setValidatorsCount(selectedValidatorsCount);
-      setSelectedOperatorsData(
-        operatorsData.sort((operatorA: SelectedOperatorData, operatorB: SelectedOperatorData) => Number(operatorA.operatorId) - Number(operatorB.operatorId))
-      );
+      setSelectedOperatorsData(operatorsData);
       setMaxAvailableValidatorsCount(selectedValidatorsCount < maxValidatorsCount ? selectedValidatorsCount : maxValidatorsCount);
     } catch (err) {
       throw err;
@@ -409,12 +401,12 @@ const KeyShareFlow = () => {
         validatorStore.setKeySharePublicKey(validatorStore.registerValidatorsPublicKeys[0]);
       }
       if (!processStore.secondRegistration) {
-        await getClusterData(getClusterHash([...selectedStoreOperators.values()], accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true).then(
+        await getClusterData(getClusterHash(Object.values(selectedStoreOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true).then(
           (clusterData) => {
             if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
               processStore.setProcess(
                 {
-                  item: { ...clusterData, operators: [...selectedStoreOperators.values()] },
+                  item: { ...clusterData, operators: Object.values(selectedStoreOperators) },
                   processName: 'cluster_registration'
                 },
                 ProcessType.Validator

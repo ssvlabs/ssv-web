@@ -2,31 +2,25 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { IOperator } from '~app/model/operator.model.ts';
 import { RootState } from '~app/store.ts';
 import { fromWei } from '~root/services/conversions.service.ts';
-import { enableMapSet } from 'immer';
-import {
-  getMaxOperatorFee,
-  initFeeIncreaseAndPeriods,
-  syncOperatorFeeInfo,
-  updateOperatorValidatorsLimit
-} from '~root/services/operatorContract.service.ts';
+import { getMaxOperatorFee, initFeeIncreaseAndPeriods, syncOperatorFeeInfo, updateOperatorValidatorsLimit } from '~root/services/operatorContract.service.ts';
 
 type OperatorStateType = {
-  selectedOperators: Map<string, IOperator>
-  clusterSize: number
-  operatorValidatorsLimit: number
-  operatorCurrentFee: number
-  operatorFutureFee: number
-  operatorApprovalBeginTime: number
-  operatorApprovalEndTime: number
-  operatorProcessId: number
-  getSetOperatorFeePeriod: number
-  declaredOperatorFeePeriod: number
-  maxFeeIncrease: number
-  maxOperatorFeePerYear: number
-}
+  selectedOperators: Record<string, IOperator>;
+  clusterSize: number;
+  operatorValidatorsLimit: number;
+  operatorCurrentFee: number;
+  operatorFutureFee: number;
+  operatorApprovalBeginTime: number;
+  operatorApprovalEndTime: number;
+  operatorProcessId: number;
+  getSetOperatorFeePeriod: number;
+  declaredOperatorFeePeriod: number;
+  maxFeeIncrease: number;
+  maxOperatorFeePerYear: number;
+};
 
 const initialState: OperatorStateType = {
-  selectedOperators: new Map<string, IOperator>(),
+  selectedOperators: {},
   clusterSize: 4,
   operatorValidatorsLimit: 0,
   operatorCurrentFee: 0,
@@ -40,26 +34,20 @@ const initialState: OperatorStateType = {
   maxOperatorFeePerYear: 0
 };
 
-enableMapSet();
+export const fetchAndSetOperatorValidatorsLimit = createAsyncThunk('operator/fetchAndSetOperatorValidatorsLimit', async () => {
+  return await updateOperatorValidatorsLimit();
+});
 
-export const fetchAndSetOperatorValidatorsLimit =
-  createAsyncThunk('operator/fetchAndSetOperatorValidatorsLimit', async () => {
-    return await updateOperatorValidatorsLimit();
-  });
+export const fetchAndSetOperatorFeeInfo = createAsyncThunk('operator/fetchAndSetOperatorFeeInfo', async (operatorId: number) => {
+  return await syncOperatorFeeInfo(operatorId);
+});
 
-export const fetchAndSetOperatorFeeInfo =
-  createAsyncThunk('operator/fetchAndSetOperatorFeeInfo', async (operatorId: number) => {
-    return await syncOperatorFeeInfo(operatorId);
-  });
-
-export const fetchAndSetFeeIncreaseAndPeriods =
-  createAsyncThunk('operator/fetchAndSetFeeIncreaseAndPeriods', async () => {
-    return await initFeeIncreaseAndPeriods();
-  });
-export const fetchAndSetMaxOperatorFee =
-  createAsyncThunk('operator/fetchAndSetMaxOperatorFee', async () => {
-    return await getMaxOperatorFee();
-  });
+export const fetchAndSetFeeIncreaseAndPeriods = createAsyncThunk('operator/fetchAndSetFeeIncreaseAndPeriods', async () => {
+  return await initFeeIncreaseAndPeriods();
+});
+export const fetchAndSetMaxOperatorFee = createAsyncThunk('operator/fetchAndSetMaxOperatorFee', async () => {
+  return await getMaxOperatorFee();
+});
 
 export const slice = createSlice({
   name: 'operatorState',
@@ -68,37 +56,39 @@ export const slice = createSlice({
     setOperatorProcessId: (state, action: { payload: number }) => {
       state.operatorProcessId = action.payload;
     },
-    selectOperator: (state, action: {
-      payload: { operator: IOperator, selectedIndex: number, clusterBox: number[] }
-    }) => {
+    selectOperator: (
+      state,
+      action: {
+        payload: { operator: IOperator; selectedIndex: number; clusterBox: number[] };
+      }
+    ) => {
       if (Object.values(state.selectedOperators).some((operator: IOperator) => operator.id === action.payload.operator.id)) {
         return;
       }
-      state.selectedOperators.set(action.payload.selectedIndex.toString(), action.payload.operator);
+      state.selectedOperators[action.payload.selectedIndex.toString()] = action.payload.operator;
     },
     selectOperators: (state, action: { payload: IOperator[] }) => {
-      const newMap = new Map<string, IOperator>()
-      action.payload
-        .sort((operator: IOperator) => operator.id)
-        .forEach((value: IOperator, index: number) => {
-          newMap.set(`${index}`, value);
-        });
-      state.selectedOperators = newMap;
+      const newRecord: Record<string, IOperator> = {};
+      action.payload.forEach((value: IOperator, index: number) => {
+        console.log(index);
+        newRecord[`${index + 1}`] = value;
+      });
+      state.selectedOperators = newRecord;
     },
     unselectOperator: (state, action: { payload: number }) => {
-      state.selectedOperators.delete(action.payload.toString());
+      delete state.selectedOperators[action.payload.toString()];
     },
     clearAllSettings: (state) => {
-        state.maxFeeIncrease = 0;
-        state.operatorFutureFee = 0;
-        state.operatorCurrentFee = 0;
-        state.getSetOperatorFeePeriod = 0;
-        state.operatorApprovalEndTime = 0;
-        state.declaredOperatorFeePeriod = 0;
-        state.operatorApprovalBeginTime = 0;
+      state.maxFeeIncrease = 0;
+      state.operatorFutureFee = 0;
+      state.operatorCurrentFee = 0;
+      state.getSetOperatorFeePeriod = 0;
+      state.operatorApprovalEndTime = 0;
+      state.declaredOperatorFeePeriod = 0;
+      state.operatorApprovalBeginTime = 0;
     },
     unselectAllOperators: (state) => {
-      state.selectedOperators = new Map();
+      state.selectedOperators = {};
     },
     setClusterSize: (state, action: { payload: number }) => {
       state.clusterSize = action.payload;
@@ -137,25 +127,18 @@ export const slice = createSlice({
 });
 
 export const operatorStateReducer = slice.reducer;
-export const {
-  unselectOperator,
-  unselectAllOperators,
-  selectOperators,
-  selectOperator,
-  setClusterSize,
-  setOperatorProcessId,
-  clearOperatorFeeInfo,
-  clearAllSettings
-} = slice.actions;
+export const { unselectOperator, unselectAllOperators, selectOperators, selectOperator, setClusterSize, setOperatorProcessId, clearOperatorFeeInfo, clearAllSettings } =
+  slice.actions;
 
-export const getSelectedOperatorsFee = (state: RootState) => [...state.operatorState.selectedOperators.values()].reduce((acc: number, operator: IOperator) => {
-  return acc + fromWei(operator.fee);
-}, 0);
+export const getSelectedOperatorsFee = (state: RootState) =>
+  Object.values(state.operatorState.selectedOperators).reduce((acc: number, operator: IOperator) => {
+    return acc + fromWei(operator.fee);
+  }, 0);
 export const getOperatorProcessId = (state: RootState) => state.operatorState.operatorProcessId;
 export const getSelectedOperators = (state: RootState) => state.operatorState.selectedOperators;
 export const getClusterSize = (state: RootState) => state.operatorState.clusterSize;
 export const getMaxOperatorFeePerYear = (state: RootState) => state.operatorState.maxOperatorFeePerYear;
-export const hasEnoughSelectedOperators = (state: RootState) => state.operatorState.selectedOperators.size === state.operatorState.clusterSize;
+export const hasEnoughSelectedOperators = (state: RootState) => Object.values(state.operatorState.selectedOperators).length === state.operatorState.clusterSize;
 export const getOperatorValidatorsLimit = (state: RootState) => state.operatorState.operatorValidatorsLimit;
 export const getOperatorFeeData = (state: RootState) => ({
   operatorApprovalBeginTime: state.operatorState.operatorApprovalBeginTime,
@@ -167,4 +150,4 @@ export const getFeeIncreaseAndPeriods = (state: RootState) => ({
   getSetOperatorFeePeriod: state.operatorState.getSetOperatorFeePeriod,
   declaredOperatorFeePeriod: state.operatorState.declaredOperatorFeePeriod,
   maxFeeIncrease: state.operatorState.maxFeeIncrease
-})
+});

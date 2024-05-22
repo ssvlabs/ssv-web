@@ -1,6 +1,6 @@
 import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
-import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
+import { decodeParameter, fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { IOperator, IOperatorRawData } from '~app/model/operator.model';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { getOperator, getOperatorByPublicKey } from '~root/services/operator.service';
@@ -10,7 +10,15 @@ import Decimal from 'decimal.js';
 import config from '~app/common/config';
 import { getStoredNetwork, testNets } from '~root/providers/networkInfo.provider.ts';
 
-const addNewOperator = async (isContractWallet: boolean, operatorRawData: IOperatorRawData, dispatch: Function): Promise<boolean> => {
+const addNewOperator = async ({
+  isContractWallet,
+  operatorRawData,
+  dispatch
+}: {
+  isContractWallet: boolean;
+  operatorRawData: IOperatorRawData;
+  dispatch: Function;
+}): Promise<boolean> => {
   const contract: Contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -21,7 +29,10 @@ const addNewOperator = async (isContractWallet: boolean, operatorRawData: IOpera
     contractMethod: contract.registerOperator,
     payload: [operatorRawData.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock))],
     isContractWallet,
-    getterTransactionState: async () => await getOperatorByPublicKey(operatorRawData.publicKey),
+    getterTransactionState: async () => {
+      const res = await getOperatorByPublicKey(decodeParameter('string', operatorRawData.publicKey));
+      return res.data;
+    },
     prevState: null,
     dispatch
   });
@@ -42,12 +53,7 @@ const getOperatorBalance = async ({ id }: { id: number }): Promise<number> => {
   }
 };
 
-const withdrawRewards = async ({ operator, amount, isContractWallet, dispatch }: {
-  operator: IOperator;
-  amount: string;
-  isContractWallet: boolean;
-  dispatch: Function;
-}) => {
+const withdrawRewards = async ({ operator, amount, isContractWallet, dispatch }: { operator: IOperator; amount: string; isContractWallet: boolean; dispatch: Function }) => {
   const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -63,11 +69,16 @@ const withdrawRewards = async ({ operator, amount, isContractWallet, dispatch }:
   });
 };
 
-const updateOperatorAddressWhitelist = async ({ operator, address, isContractWallet, dispatch }: {
-  operator: IOperator,
-  address: string,
-  isContractWallet: boolean,
-  dispatch: Function
+const updateOperatorAddressWhitelist = async ({
+  operator,
+  address,
+  isContractWallet,
+  dispatch
+}: {
+  operator: IOperator;
+  address: string;
+  isContractWallet: boolean;
+  dispatch: Function;
 }) => {
   const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
@@ -77,7 +88,7 @@ const updateOperatorAddressWhitelist = async ({ operator, address, isContractWal
     const operatorAfter = await getOperator(operator.id);
     return operatorAfter.address_whitelist;
   };
-
+  console.log('1');
   return await transactionExecutor({
     contractMethod: contract.setOperatorWhitelist,
     payload: [operator.id, address],
@@ -90,11 +101,7 @@ const updateOperatorAddressWhitelist = async ({ operator, address, isContractWal
   });
 };
 
-const removeOperator = async ({ operatorId, isContractWallet, dispatch }: {
-  operatorId: number,
-  isContractWallet: boolean,
-  dispatch: Function
-}): Promise<boolean> => {
+const removeOperator = async ({ operatorId, isContractWallet, dispatch }: { operatorId: number; isContractWallet: boolean; dispatch: Function }): Promise<boolean> => {
   const contract: Contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -104,16 +111,12 @@ const removeOperator = async ({ operatorId, isContractWallet, dispatch }: {
     contractMethod: contract.removeOperator,
     payload: [operatorId],
     isContractWallet,
-    getterTransactionState: async () => !await getOperator(operatorId),
+    getterTransactionState: async () => !(await getOperator(operatorId)),
     dispatch
   });
 };
 
-const approveOperatorFee = async ({ operator, isContractWallet, dispatch }: {
-  operator: IOperator;
-  isContractWallet: boolean;
-  dispatch: Function
-}): Promise<boolean> => {
+const approveOperatorFee = async ({ operator, isContractWallet, dispatch }: { operator: IOperator; isContractWallet: boolean; dispatch: Function }): Promise<boolean> => {
   const contract: Contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -135,7 +138,12 @@ const approveOperatorFee = async ({ operator, isContractWallet, dispatch }: {
   });
 };
 
-const decreaseOperatorFee = async ({ operator, newFee, isContractWallet, dispatch }: {
+const decreaseOperatorFee = async ({
+  operator,
+  newFee,
+  isContractWallet,
+  dispatch
+}: {
   operator: IOperator;
   newFee: number | string;
   isContractWallet: boolean;
@@ -164,9 +172,9 @@ const syncOperatorFeeInfo = async (operatorId: number) => {
   const contract = getContractByName(EContractName.GETTER);
   try {
     const operatorCurrentFee = await contract.getOperatorFee(operatorId);
-    let operatorFutureFee = 0;
-    let operatorApprovalBeginTime = 0;
-    let operatorApprovalEndTime = 0;
+    let operatorFutureFee: number;
+    let operatorApprovalBeginTime: number;
+    let operatorApprovalEndTime: number;
     const response = await contract.getOperatorDeclaredFee(operatorId);
     if (response['0'] && testNets.indexOf(getStoredNetwork().networkId) !== -1) {
       operatorFutureFee = response['1'];
@@ -188,11 +196,7 @@ const syncOperatorFeeInfo = async (operatorId: number) => {
   }
 };
 
-const cancelChangeFeeProcess = async ({ operator, isContractWallet, dispatch }: {
-  operator: IOperator;
-  isContractWallet: boolean;
-  dispatch: Function
-}) => {
+const cancelChangeFeeProcess = async ({ operator, isContractWallet, dispatch }: { operator: IOperator; isContractWallet: boolean; dispatch: Function }) => {
   const contract: Contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -245,12 +249,7 @@ const getMaxOperatorFee = async () => {
   }
 };
 
-const updateOperatorFee = async ({ operator, newFee, isContractWallet, dispatch }: {
-  operator: IOperator;
-  newFee: any;
-  isContractWallet: boolean;
-  dispatch: Function
-}) => {
+const updateOperatorFee = async ({ operator, newFee, isContractWallet, dispatch }: { operator: IOperator; newFee: any; isContractWallet: boolean; dispatch: Function }) => {
   const contract: Contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;

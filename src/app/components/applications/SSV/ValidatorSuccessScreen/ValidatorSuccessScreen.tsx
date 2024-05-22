@@ -1,4 +1,4 @@
-import  { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -26,7 +26,7 @@ const ValidatorSuccessScreen = () => {
   const navigate = useNavigate();
   const buttonText = 'Manage Validator';
   const selectedOperators = useAppSelector(getSelectedOperators);
-  const operators = [...selectedOperators.values()];
+  const operators = Object.values(selectedOperators);
   const clusterHash = getClusterHash(operators, accountAddress);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -40,7 +40,7 @@ const ValidatorSuccessScreen = () => {
     GoogleTagManager.getInstance().sendEvent({
       category: 'explorer_link',
       action: 'click',
-      label: 'validator',
+      label: 'validator'
     });
   };
 
@@ -66,37 +66,45 @@ const ValidatorSuccessScreen = () => {
         sectionClass={classes.Section}
         body={[
           <Grid item container className={classes.Wrapper}>
-            <Grid item className={classes.Text}>Your new validator is managed by the following cluster:</Grid>
+            <Grid item className={classes.Text}>
+              Your new validator is managed by the following cluster:
+            </Grid>
             <Grid container item className={classes.ClusterID}>
               <Typography>Validator Cluster {longStringShorten(clusterHash, 4, undefined, { '': /^0x/ })}</Typography>
               {/* need to add link to "read more on clusters" */}
-              <Tooltip text={<Grid>Clusters represent a unique set of operators who operate your validators. <LinkText text={'Read more on clusters'} link={config.links.MORE_ON_CLUSTERS}/></Grid>} />
+              <Tooltip
+                text={
+                  <Grid>
+                    Clusters represent a unique set of operators who operate your validators. <LinkText text={'Read more on clusters'} link={config.links.MORE_ON_CLUSTERS} />
+                  </Grid>
+                }
+              />
             </Grid>
             <Grid container item style={{ gap: 24, alignItems: 'flex-start' }}>
-              {operators.map((operator: any, index: number ) => {
-                return <Grid container item className={classes.Operator} key={index}>
-                  <Grid item
-                        container
-                        onMouseLeave={handleGridLeave}
-                        className={classes.CircleImageOperatorWrapper}
-                        onMouseEnter={() => handleGridHover(operator.id)}
-                  >
-                    {(hoveredGrid === operator.id) && (
-                      <OperatorCard classExtend={index === 0 && classes.OperatorCardMargin} operator={operator} />
-                  )}
-                  <Grid item className={classes.OperatorImage}
-                        xs={12}/>
+              {operators.map((operator: any, index: number) => {
+                return (
+                  <Grid container item className={classes.Operator} key={index}>
+                    <Grid item container onMouseLeave={handleGridLeave} className={classes.CircleImageOperatorWrapper} onMouseEnter={() => handleGridHover(operator.id)}>
+                      {hoveredGrid === operator.id && <OperatorCard classExtend={index === 0 && classes.OperatorCardMargin} operator={operator} />}
+                      <Grid item className={classes.OperatorImage} xs={12} />
+                    </Grid>
+                    <Grid container className={classes.OperatorData}>
+                      <Grid item className={classes.OperatorName} xs>
+                        {truncateText(operator.name, 12)}
+                      </Grid>
+                      <Grid item className={classes.OperatorId}>
+                        ID: {operator.id}
+                      </Grid>
+                    </Grid>
                   </Grid>
-                  <Grid container className={classes.OperatorData}>
-                      <Grid item className={classes.OperatorName} xs>{truncateText(operator.name, 12)}</Grid>
-                      <Grid item className={classes.OperatorId}>ID: {operator.id}</Grid>
-                  </Grid>
-                </Grid>;
+                );
               })}
             </Grid>
-            <Grid item className={classes.Text}>Your cluster operators have been notified and will start your validator operation instantly.</Grid>
+            <Grid item className={classes.Text}>
+              Your cluster operators have been notified and will start your validator operation instantly.
+            </Grid>
             <PrimaryButton text={buttonText} onClick={redirectTo} size={ButtonSize.XL} isLoading={isLoading} />
-          </Grid>,
+          </Grid>
         ]}
       />
     </>

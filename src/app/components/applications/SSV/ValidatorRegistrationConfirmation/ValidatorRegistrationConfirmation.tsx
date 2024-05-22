@@ -72,7 +72,7 @@ const ValidatorRegistrationConfirmation = () => {
 
   useEffect(() => {
     try {
-      const hasWhitelistedOperator = [...selectedOperators.values()].some(
+      const hasWhitelistedOperator = Object.values(selectedOperators).some(
         (operator: IOperator) =>
           operator.address_whitelist &&
           operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST &&
@@ -93,7 +93,7 @@ const ValidatorRegistrationConfirmation = () => {
       accountAddress,
       isContractWallet,
       isBulk: validatorStore.isMultiSharesMode,
-      operators: [...selectedOperators.values()],
+      operators: Object.values(selectedOperators),
       networkFee,
       liquidationCollateralPeriod,
       minimumLiquidationCollateral,
@@ -159,7 +159,7 @@ const ValidatorRegistrationConfirmation = () => {
         <Grid item className={classes.SubHeader}>
           Selected Operators
         </Grid>
-        {[...selectedOperators.values()].map((operator: IOperator, index: number) => {
+        {Object.values(selectedOperators).map((operator: IOperator, index: number) => {
           const operatorCost = processStore.secondRegistration
             ? formatNumberToUi(getFeeForYear(fromWei(operator.fee)))
             : propertyCostByPeriod(fromWei(operator.fee), processFundingPeriod);

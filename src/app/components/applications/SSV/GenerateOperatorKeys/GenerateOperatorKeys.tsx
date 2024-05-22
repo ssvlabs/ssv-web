@@ -31,10 +31,7 @@ const GenerateOperatorKeys = () => {
 
   // Inputs validation
   useEffect(() => {
-    const isRegisterButtonEnabled = !inputsData.publicKey
-      || !accountAddress
-      || publicKeyError.shouldDisplay
-      || addressError.shouldDisplay;
+    const isRegisterButtonEnabled = !inputsData.publicKey || !accountAddress || publicKeyError.shouldDisplay || addressError.shouldDisplay;
     setRegisterButtonEnabled(!isRegisterButtonEnabled);
     return () => {
       setRegisterButtonEnabled(false);
@@ -54,11 +51,13 @@ const GenerateOperatorKeys = () => {
       fee: 0,
       id: 0,
       address: accountAddress,
-      publicKey: encodeParameter('string', inputsData.publicKey),
+      publicKey: encodeParameter('string', inputsData.publicKey)
     };
     const isExists = await getOperatorByPublicKey(inputsData.publicKey);
-    setOperatorExist(isExists);
-    if (!isExists) navigate(config.routes.SSV.OPERATOR.SET_FEE_PAGE, { state: { operatorRawData }});
+    setOperatorExist(isExists.data);
+    if (!isExists.data) {
+      navigate(config.routes.SSV.OPERATOR.SET_FEE_PAGE, { state: { operatorRawData } });
+    }
     setIsLoading(false);
   };
 
@@ -67,12 +66,10 @@ const GenerateOperatorKeys = () => {
       overFlow={'visible'}
       body={[
         <Grid container>
-          <HeaderSubHeader title={translations.OPERATOR.REGISTER.TITLE}
-                           subtitle={translations.OPERATOR.REGISTER.DESCRIPTION}/>
+          <HeaderSubHeader title={translations.OPERATOR.REGISTER.TITLE} subtitle={translations.OPERATOR.REGISTER.DESCRIPTION} />
           <Grid container direction={'column'}>
             <Grid item className={classes.GridItem}>
-              <InputLabel title="Owner Address" withHint
-                          toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS}/>
+              <InputLabel title="Owner Address" withHint toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS} />
               <TextInput
                 disable
                 data-testid="new-operator-address"
@@ -81,19 +78,18 @@ const GenerateOperatorKeys = () => {
                   validateAddressInput(event.target.value, setAddressError);
                 }}
               />
-              {addressError.shouldDisplay &&
-                <Typography className={classes.TextError}>{addressError.errorMessage}</Typography>}
+              {addressError.shouldDisplay && <Typography className={classes.TextError}>{addressError.errorMessage}</Typography>}
             </Grid>
             <Grid item className={classes.GridItem}>
               <InputLabel
                 title="Operator Public Key"
                 withHint
-                toolTipText={(
-                  <div>{translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
-                    <LinkText text={'documentation.'}
-                              link={'https://docs.ssv.network/run-a-node/operator-node/installation#generate-operator-keys'}/>
+                toolTipText={
+                  <div>
+                    {translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
+                    <LinkText text={'documentation.'} link={'https://docs.ssv.network/run-a-node/operator-node/installation#generate-operator-keys'} />
                   </div>
-                )}
+                }
               />
               <TextInput
                 value={inputsData.publicKey}
@@ -106,14 +102,12 @@ const GenerateOperatorKeys = () => {
                   validatePublicKeyInput(event.target.value, setPublicKeyError);
                 }}
               />
-              {publicKeyError.shouldDisplay &&
-                <Typography className={classes.TextError}>{publicKeyError.errorMessage}</Typography>}
+              {publicKeyError.shouldDisplay && <Typography className={classes.TextError}>{publicKeyError.errorMessage}</Typography>}
             </Grid>
-            {operatorExist && <ErrorMessage text={translations.OPERATOR.OPERATOR_EXIST}/>}
+            {operatorExist && <ErrorMessage text={translations.OPERATOR.OPERATOR_EXIST} />}
           </Grid>
-          <PrimaryButton isDisabled={!registerButtonEnabled} text={'Next'} onClick={onRegisterClick}
-                         size={ButtonSize.XL} isLoading={isLoading}/>
-        </Grid>,
+          <PrimaryButton isDisabled={!registerButtonEnabled} text={'Next'} onClick={onRegisterClick} size={ButtonSize.XL} isLoading={isLoading} />
+        </Grid>
       ]}
     />
   );

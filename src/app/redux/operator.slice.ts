@@ -104,24 +104,18 @@ export const slice = createSlice({
       state.operatorValidatorsLimit = action.payload;
     });
     builder.addCase(fetchAndSetOperatorFeeInfo.fulfilled, (state, action) => {
-      if (action.payload) {
-        state.operatorApprovalBeginTime = action.payload.operatorApprovalBeginTime;
-        state.operatorApprovalEndTime = action.payload.operatorApprovalEndTime;
-        state.operatorFutureFee = action.payload.operatorFutureFee;
-        state.operatorCurrentFee = action.payload.operatorCurrentFee;
-      }
+      state.operatorApprovalBeginTime = action.payload.operatorApprovalBeginTime;
+      state.operatorApprovalEndTime = action.payload.operatorApprovalEndTime;
+      state.operatorFutureFee = action.payload.operatorFutureFee;
+      state.operatorCurrentFee = action.payload.operatorCurrentFee;
     });
     builder.addCase(fetchAndSetFeeIncreaseAndPeriods.fulfilled, (state, action) => {
-      if (action.payload) {
-        state.getSetOperatorFeePeriod = action.payload.getSetOperatorFeePeriod;
-        state.declaredOperatorFeePeriod = action.payload.declaredOperatorFeePeriod;
-        state.maxFeeIncrease = action.payload.maxFeeIncrease;
-      }
+      state.getSetOperatorFeePeriod = action.payload.getSetOperatorFeePeriod;
+      state.declaredOperatorFeePeriod = action.payload.declaredOperatorFeePeriod;
+      state.maxFeeIncrease = action.payload.maxFeeIncrease;
     });
     builder.addCase(fetchAndSetMaxOperatorFee.fulfilled, (state, action) => {
-      if (action.payload) {
-        state.maxOperatorFeePerYear = action.payload;
-      }
+      state.maxOperatorFeePerYear = action.payload;
     });
   }
 });

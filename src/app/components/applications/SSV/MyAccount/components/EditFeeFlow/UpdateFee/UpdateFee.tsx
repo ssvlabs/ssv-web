@@ -1,20 +1,15 @@
 import { useEffect, useState } from 'react';
-import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
+import { Grid } from '~app/atomicComponents';
 import { useNavigate } from 'react-router-dom';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import WhiteWrapper from '~app/components/common/WhiteWrapper';
 import { validateFeeUpdate } from '~lib/utils/validatesInputs';
 import { ErrorType } from '~app/components/common/ConversionInput/ConversionInput';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/OperatorId';
-import CancelUpdateFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee.styles';
-import ChangeFee
-  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/ChangeFee';
-import IncreaseFlow
-  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
-import DecreaseFlow
-  from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DecreaseFlow';
+import ChangeFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/ChangeFee';
+import IncreaseFlow from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import DecreaseFlow from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DecreaseFlow';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
@@ -25,19 +20,16 @@ import Decimal from 'decimal.js';
 import {
   clearOperatorFeeInfo,
   fetchAndSetOperatorFeeInfo,
-  getFeeIncreaseAndPeriods, getMaxOperatorFeePerYear,
+  getFeeIncreaseAndPeriods,
+  getMaxOperatorFeePerYear,
   getOperatorFeeData,
   getOperatorProcessId
 } from '~app/redux/operator.slice.ts';
 
-// eslint-disable-next-line no-unused-vars
 enum FeeUpdateSteps {
-  // eslint-disable-next-line no-unused-vars
   START = 'Start',
-  // eslint-disable-next-line no-unused-vars
   INCREASE = 'Increase',
-  // eslint-disable-next-line no-unused-vars
-  DECREASE = 'Decrease',
+  DECREASE = 'Decrease'
 }
 
 const UpdateFee = () => {
@@ -112,7 +104,7 @@ const UpdateFee = () => {
       maxFeeIncrease: feeIncreaseAndPeriods.maxFeeIncrease,
       isPrivateOperator,
       maxFee: maxOperatorFeePerYear,
-      callback: updateFeeErrorHandler,
+      callback: updateFeeErrorHandler
     });
   };
   const onNextHandler = () => {
@@ -127,29 +119,30 @@ const UpdateFee = () => {
   const components = {
     [FeeUpdateSteps.START]: ChangeFee,
     [FeeUpdateSteps.INCREASE]: IncreaseFlow,
-    [FeeUpdateSteps.DECREASE]: DecreaseFlow,
+    [FeeUpdateSteps.DECREASE]: DecreaseFlow
   };
   const Component = components[currentFlowStep];
 
   return (
     <Grid container item>
       <WhiteWrapper header={'Update Operator Fee'}>
-        <OperatorId id={id}/>
+        <OperatorId id={id} />
       </WhiteWrapper>
       <Grid className={classes.BodyWrapper}>
-        <Component onNextHandler={onNextHandler}
-                   declareNewFeeHandler={declareNewFeeHandler}
-                   newFee={newFee}
-                   onChangeHandler={onInputChange}
-                   error={error}
-                   nextIsDisabled={nextIsDisabled}
-                   currency={currency}
-                   oldFee={oldFee}
-                   setCurrency={setCurrency}/>
-        <CancelUpdateFee/>
+        <Component
+          onNextHandler={onNextHandler}
+          declareNewFeeHandler={declareNewFeeHandler}
+          newFee={newFee}
+          onChangeHandler={onInputChange}
+          error={error}
+          nextIsDisabled={nextIsDisabled}
+          currency={currency}
+          oldFee={oldFee}
+          setCurrency={setCurrency}
+        />
       </Grid>
     </Grid>
   );
 };
 
-export default observer(UpdateFee);
+export default UpdateFee;

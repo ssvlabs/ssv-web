@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
+import { Grid } from '~app/atomicComponents';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { timeDiffCalc } from '~lib/utils/time';
@@ -34,17 +33,14 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
   }, []);
 
   const getState = async () => {
-    // @ts-ignore
-    await dispatch(fetchAndSetOperatorFeeInfo(operatorId || processOperatorId));
+    await dispatch(fetchAndSetOperatorFeeInfo(Number(operatorId || processOperatorId)));
     if (operatorFeeData.operatorApprovalBeginTime && operatorFeeData.operatorApprovalEndTime && operatorFeeData.operatorFutureFee) {
       const todayDate = new Date();
       const endPendingStateTime = new Date(operatorFeeData.operatorApprovalEndTime * 1000);
       const startPendingStateTime = new Date(operatorFeeData.operatorApprovalBeginTime * 1000);
       const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
-
       // @ts-ignore
       const daysFromEndPendingStateTime = Math.ceil(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24));
-
       if (isInPendingState) {
         setProcessState(PROCESS_STATE_PENDING);
       } else if (startPendingStateTime > todayDate) {
@@ -87,7 +83,6 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
   const TimeReminder = () => {
     if ([1, 2, 4].indexOf(processState) === -1) return null;
     let text: string;
-    // @ts-ignore
     const operatorBeginApprovalTime = new Date(operatorFeeData.operatorApprovalBeginTime * 1000);
 
     const today = new Date();
@@ -100,7 +95,6 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
       );
     }
     if (processState === 2) {
-      // @ts-ignore
       const operatorEndApprovalTime = new Date(operatorFeeData.operatorApprovalEndTime * 1000);
       text = `Expires in ~ ${timeDiffCalc(today, operatorEndApprovalTime)}`;
       return (
@@ -109,7 +103,6 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
         </Typography>
       );
     }
-    // @ts-ignore
     const expiredOn = new Date(operatorFeeData.operatorApprovalEndTime * 1000);
     const expiredDay = expiredOn.getDate();
     const expiredMonth = expiredOn.getMonth() + 1;
@@ -131,4 +124,4 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
   );
 };
 
-export default observer(UpdateFeeState);
+export default UpdateFeeState;

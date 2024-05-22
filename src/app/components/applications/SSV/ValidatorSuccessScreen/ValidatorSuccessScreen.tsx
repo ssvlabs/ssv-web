@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
-import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
+import { Grid } from '~app/atomicComponents';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config, { translations } from '~app/common/config';
@@ -111,4 +110,4 @@ const ValidatorSuccessScreen = () => {
   );
 };
 
-export default observer(ValidatorSuccessScreen);
+export default ValidatorSuccessScreen;

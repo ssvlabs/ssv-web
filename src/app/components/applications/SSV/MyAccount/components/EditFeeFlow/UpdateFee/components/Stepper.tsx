@@ -1,5 +1,4 @@
-import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
+import { Grid } from '~app/atomicComponents';
 import Typography from '@mui/material/Typography';
 import { UPDATE_FEE_STEPS } from '~lib/utils/updateFeeNotificationSteps';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
@@ -13,13 +12,9 @@ type StepperProps = {
   registerButtonEnabled?: boolean;
 };
 
-// eslint-disable-next-line no-unused-vars
 enum StepperProcessesSteps {
-  // eslint-disable-next-line no-unused-vars
   DECLARE_STEP = 0,
-  // eslint-disable-next-line no-unused-vars
   WAITING_STEP = 1,
-  // eslint-disable-next-line no-unused-vars
   PENDING_STEP = 2
 }
 
@@ -75,4 +70,4 @@ const ReactStepper = ({ step, registerButtonEnabled, subTextAlign, subText }: St
   );
 };
 
-export default observer(ReactStepper);
+export default ReactStepper;

@@ -1,5 +1,4 @@
-import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
+import { Grid } from '~app/atomicComponents';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
@@ -46,9 +45,7 @@ const SetOperatorFee = () => {
   }, [error.shouldDisplay, userInput]);
 
   const moveToSubmitConfirmation = () => {
-    console.log(operatorRawData);
     operatorRawData.fee = parseFloat(userInput) || 0;
-    console.log('inNavigate');
     navigate(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE, { state: { operatorRawData } });
   };
 
@@ -108,4 +105,4 @@ const SetOperatorFee = () => {
   );
 };
 
-export default observer(SetOperatorFee);
+export default SetOperatorFee;

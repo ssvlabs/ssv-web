@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import _ from 'underscore';
-import { observer } from 'mobx-react';
 import debounce from 'lodash/debounce';
 import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
@@ -338,4 +337,4 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
   );
 };
 
-export default observer(FirstSquare);
+export default FirstSquare;

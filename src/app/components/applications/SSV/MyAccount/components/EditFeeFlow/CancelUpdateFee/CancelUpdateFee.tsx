@@ -1,5 +1,5 @@
 import Dialog from '@mui/material/Dialog';
-import Grid from '@mui/material/Grid';
+import { Grid } from '~app/atomicComponents';
 import Typography from '@mui/material/Typography';
 import { observer } from 'mobx-react';
 import { useState } from 'react';
@@ -38,7 +38,6 @@ const CancelUpdateFee = () => {
   const isContractWallet = useAppSelector(getIsContractWallet);
   const operatorFeeData = useAppSelector(getOperatorFeeData);
   const processOperatorId = useAppSelector(getOperatorProcessId);
-
   const cancelUpdateProcess = async () => {
     if (!processOperatorId) return navigate(strategyRedirect);
     const response = await cancelChangeFeeProcess({ operator, isContractWallet, dispatch });

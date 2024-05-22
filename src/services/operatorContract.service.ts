@@ -88,7 +88,7 @@ const updateOperatorAddressWhitelist = async ({
     const operatorAfter = await getOperator(operator.id);
     return operatorAfter.address_whitelist;
   };
-  console.log('1');
+
   return await transactionExecutor({
     contractMethod: contract.setOperatorWhitelist,
     payload: [operator.id, address],
@@ -168,7 +168,14 @@ const decreaseOperatorFee = async ({
   });
 };
 
-const syncOperatorFeeInfo = async (operatorId: number) => {
+const syncOperatorFeeInfo = async (
+  operatorId: number
+): Promise<{
+  operatorCurrentFee: number;
+  operatorFutureFee: number;
+  operatorApprovalBeginTime: number;
+  operatorApprovalEndTime: number;
+}> => {
   const contract = getContractByName(EContractName.GETTER);
   try {
     const operatorCurrentFee = await contract.getOperatorFee(operatorId);
@@ -181,9 +188,9 @@ const syncOperatorFeeInfo = async (operatorId: number) => {
       operatorApprovalBeginTime = response['2'];
       operatorApprovalEndTime = response['3'];
     } else {
-      operatorFutureFee = response['0'] === '0' ? null : response['0'];
-      operatorApprovalBeginTime = response['1'] === '1' ? null : response['1'];
-      operatorApprovalEndTime = response['2'] === '2' ? null : response['2'];
+      operatorFutureFee = response['0'] === '0' ? 0 : response['0'];
+      operatorApprovalBeginTime = response['1'] === '1' ? 0 : response['1'];
+      operatorApprovalEndTime = response['2'] === '2' ? 0 : response['2'];
     }
     return {
       operatorCurrentFee,
@@ -193,6 +200,12 @@ const syncOperatorFeeInfo = async (operatorId: number) => {
     };
   } catch (e: any) {
     console.error(`Failed to get operator fee details from the contract: ${e.message}`);
+    return {
+      operatorCurrentFee: 0,
+      operatorFutureFee: 0,
+      operatorApprovalBeginTime: 0,
+      operatorApprovalEndTime: 0
+    };
   }
 };
 
@@ -221,12 +234,20 @@ const updateOperatorValidatorsLimit = async () => {
     return await contract.getValidatorsPerOperatorLimit();
   } catch (e) {
     console.error('Provided contract address is wrong', e);
+    return 0;
   }
 };
 
 const initFeeIncreaseAndPeriods = async () => {
   const contract = getContractByName(EContractName.GETTER);
-  if (!contract) return;
+  if (!contract) {
+    console.error('Missing contract');
+    return {
+      getSetOperatorFeePeriod: 0,
+      declaredOperatorFeePeriod: 0,
+      maxFeeIncrease: 0
+    };
+  }
   const { declareOperatorFeePeriod, executeOperatorFeePeriod } = await contract.getOperatorFeePeriods();
   const operatorFeeIncreaseLimit = await contract.getOperatorFeeIncreaseLimit();
   return {
@@ -236,16 +257,18 @@ const initFeeIncreaseAndPeriods = async () => {
   };
 };
 
-const getMaxOperatorFee = async () => {
+const getMaxOperatorFee = async (): Promise<number> => {
   const contract = getContractByName(EContractName.GETTER);
   if (!contract) {
-    return;
+    console.error('Missing contract');
+    return 0;
   }
   try {
     const res = await contract.getMaximumOperatorFee();
     return Number(fromWei(res));
   } catch (e) {
     console.error('Provided contract address is wrong', e);
+    return 0;
   }
 };
 

@@ -1,5 +1,6 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-import { Chain, HttpTransport, http } from 'viem';
+import { HttpTransport, http } from 'viem';
+import { Chain } from '@rainbow-me/rainbowkit';
 import { holesky, mainnet } from 'wagmi/chains';
 import { config as projectConfig } from '~app/common/config/config';
 import { networks } from '~root/providers/networkInfo.provider';
@@ -17,12 +18,20 @@ import { networks } from '~root/providers/networkInfo.provider';
 
 // const chains = appChains[app];
 
-const chainMap: Record<number, Chain> = {
-  [mainnet.id]: mainnet,
-  [holesky.id]: holesky
+const supportedChainsMap: Record<number, Chain> = {
+  [mainnet.id]: {
+    ...mainnet,
+    iconBackground: 'none',
+    iconUrl: '/images/networks/dark.svg'
+  },
+  [holesky.id]: {
+    ...holesky,
+    iconBackground: 'none',
+    iconUrl: '/images/networks/light.svg'
+  }
 };
 
-const chains = networks.map((network) => chainMap[network.networkId]).filter(Boolean) as [Chain, ...Chain[]];
+const chains = networks.map((network) => supportedChainsMap[network.networkId]).filter(Boolean) as [Chain, ...Chain[]];
 
 export const isChainSupported = (chainId: number) => {
   return chains.some((chain) => chain.id === chainId);

@@ -21,6 +21,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { cancelChangeFeeProcess } from '~root/services/operatorContract.service.ts';
 import { fetchAndSetOperatorFeeInfo, getOperatorFeeData, getOperatorProcessId } from '~app/redux/operator.slice.ts';
+import { formatNumberToUi } from '~lib/utils/numbers';
 
 const CancelUpdateFee = () => {
   const stores = useStores();
@@ -35,7 +36,7 @@ const CancelUpdateFee = () => {
   const dispatch = useAppDispatch();
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const isContractWallet = useAppSelector(getIsContractWallet);
-  const operatorFeeData = useAppSelector(getOperatorFeeData)
+  const operatorFeeData = useAppSelector(getOperatorFeeData);
   const processOperatorId = useAppSelector(getOperatorProcessId);
 
   const cancelUpdateProcess = async () => {

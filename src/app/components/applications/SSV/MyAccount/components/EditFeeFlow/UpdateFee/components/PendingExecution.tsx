@@ -2,7 +2,6 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { observer } from 'mobx-react';
 import { useState } from 'react';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
@@ -17,17 +16,18 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import { timeDiffCalc } from '~lib/utils/time';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import { approveOperatorFee } from '~root/services/operatorContract.service.ts';
+import { getOperatorFeeData } from '~app/redux/operator.slice.ts';
 
 const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, cancelUpdateFee }: IncreaseFlowProps) => {
   const stores = useStores();
   const classes = useStyles({ step: StepperSteps.EXECUTION });
   const [isLoading, setIsLoading] = useState(false);
-  const operatorStore: OperatorStore = stores.Operator;
   const processStore: ProcessStore = stores.Process;
   const process: SingleOperator = processStore.getProcess;
   const operator = process.item;
   const isContractWallet = useAppSelector(getIsContractWallet);
   const dispatch = useAppDispatch();
+  const operatorFeeData = useAppSelector(getOperatorFeeData);
 
   const submitFeeChange = async () => {
     setIsLoading(true);
@@ -38,7 +38,7 @@ const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, ca
     setIsLoading(false);
   };
 
-  const operatorEndApprovalTime = new Date(Number(operatorStore.operatorApprovalEndTime) * 1000);
+  const operatorEndApprovalTime = new Date(Number(operatorFeeData.operatorApprovalEndTime) * 1000);
   const today = new Date();
 
   return (

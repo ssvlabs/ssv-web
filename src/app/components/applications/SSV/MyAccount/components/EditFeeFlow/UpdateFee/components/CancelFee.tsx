@@ -2,9 +2,7 @@
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import ReactStepper
     from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
@@ -17,14 +15,15 @@ import {
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppDispatch } from '~app/hooks/redux.hook.ts';
+import { clearOperatorFeeInfo } from '~app/redux/operator.slice.ts';
 
 const CancelFee = ({ oldFee, newFee, currentCurrency, declareNewFeeHandler } : IncreaseFlowProps) => {
-    const stores = useStores();
     const classes = useStyles({ step: StepperSteps.CANCELED });
-    const operatorStore: OperatorStore = stores.Operator;
+    const dispatch = useAppDispatch();
 
     const declareNewFee = () => {
-        operatorStore.clearOperatorFeeInfo();
+        dispatch(clearOperatorFeeInfo());
         declareNewFeeHandler();
     };
 

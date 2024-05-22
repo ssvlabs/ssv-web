@@ -1,4 +1,4 @@
-import  { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import _ from 'underscore';
 import { observer } from 'mobx-react';
 import debounce from 'lodash/debounce';
@@ -9,7 +9,6 @@ import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import ToolTip from '~app/components/common/ToolTip';
 import { isEqualsAddresses } from '~lib/utils/strings';
@@ -19,11 +18,10 @@ import config, { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import Filters
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
 import {
-  useStyles,
+  useStyles
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import StyledCell
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
@@ -37,8 +35,15 @@ import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { IOperator } from '~app/model/operator.model';
 import { getOperators as getOperatorsOperatorService } from '~root/services/operator.service';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
+import {
+  fetchAndSetOperatorValidatorsLimit, getOperatorValidatorsLimit,
+  getSelectedOperators, hasEnoughSelectedOperators,
+  selectOperator,
+  unselectOperator
+} from '~app/redux/operator.slice.ts';
+
 
 const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
   editPage: boolean,
@@ -58,8 +63,10 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
   const wrapperRef = useRef(null);
   const scrollRef: any = useRef(null);
   const classes = useStyles({ loading });
-  const stores = useStores();
-  const operatorStore: OperatorStore = stores.Operator;
+  const dispatch = useAppDispatch();
+  const selectedOperators = useAppSelector(getSelectedOperators);
+  const operatorValidatorsLimit = useAppSelector(getOperatorValidatorsLimit);
+  const hasEnoughOperators = useAppSelector(hasEnoughSelectedOperators)
 
   const headers = [
     { type: '', displayName: '' },
@@ -68,7 +75,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
     { type: 'performance.30d', displayName: '30d performance', sortable: true },
     { type: 'fee', displayName: 'Yearly Fee', sortable: true },
     { type: 'mev', displayName: 'MEV', sortable: true },
-    { type: '', displayName: '', sortable: true },
+    { type: '', displayName: '', sortable: true }
   ];
 
   const getOperators = async (page: number) => {
@@ -81,7 +88,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
       dkgEnabled,
       perPage: 10,
       type: filterBy,
-      search: searchInput,
+      search: searchInput
     };
 
     const response = await getOperatorsOperatorService(payload);
@@ -95,22 +102,26 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
     setOperatorsPagination(response.pagination);
   };
 
-  const selectOperator = (e: any, operator: IOperator) => {
+  const selectOperatorHandling = (e: any, operator: IOperator) => {
     // @ts-ignore
     if (wrapperRef.current?.isEqualNode(e.target)) return;
-    if (operatorStore.isOperatorSelected(operator.id)) {
-      operatorStore.unselectOperatorByPublicKey(operator);
-      return;
+    if ([...selectedOperators.values()].some((selectedOperator: IOperator) => selectedOperator.id === operator.id)) {
+      for (const [key, value] of selectedOperators.entries()) {
+        if (JSON.stringify(value) === JSON.stringify(operator)) {
+          dispatch(unselectOperator(Number(key)));
+          return;
+        }
+      }
     }
     const indexes = clusterBox;
     let availableIndex: undefined | number;
     indexes.forEach((index: number) => {
-      if (!operatorStore.selectedOperators[index] && !availableIndex) {
+      if (!selectedOperators.get(`${index}`) && !availableIndex) {
         availableIndex = index;
       }
     });
     if (availableIndex) {
-      operatorStore.selectOperator(operator, availableIndex, clusterBox);
+      dispatch(selectOperator({ operator, selectedIndex: availableIndex, clusterBox }));
     }
   };
 
@@ -118,7 +129,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
     GoogleTagManager.getInstance().sendEvent({
       category: 'explorer_link',
       action: 'click',
-      label: 'operator',
+      label: 'operator'
     });
     window.open(`${config.links.EXPLORER_URL}/operators/${publicKey}`, '_blank');
   };
@@ -133,7 +144,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
       GoogleTagManager.getInstance().sendEvent({
         category: 'validator_register',
         action: 'sort',
-        label: sortType,
+        label: sortType
       });
       setSortBy(sortType);
       setSortOrder('desc');
@@ -146,7 +157,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
         <TableRow hover>
           <StyledCell className={classes.NoRecordsWrapper}>
             <Grid container>
-              <Grid item xs={12} className={classes.NoRecordImage}/>
+              <Grid item xs={12} className={classes.NoRecordImage} />
               <Grid item xs={12} className={classes.NoRecordsText}>No results found</Grid>
               <Grid item xs={12} className={classes.NoRecordsText}>Please try different keyword or filter</Grid>
             </Grid>
@@ -158,11 +169,10 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
     return operatorsData.map((operator) => {
       const isDeleted = operator.is_deleted;
       const hasValidators = operator.validators_count !== 0;
-      const isSelected = operatorStore.isOperatorSelected(operator.id);
-      const reachedMaxValidators = operatorStore.hasOperatorReachedValidatorLimit(operator.validators_count);
+      const isSelected = [...selectedOperators.values()].some((selectedOperator: IOperator) => selectedOperator.id === operator.id);
+      const reachedMaxValidators = operatorValidatorsLimit <= operator.validators_count;
       const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !isEqualsAddresses(operator.address_whitelist, accountAddress);
       const disabled = isDeleted || isPrivateOperator;
-      const disableCheckBoxes = operatorStore.selectedEnoughOperators;
       const isInactive = operator.is_active < 1;
       const mevRelays = operator?.mev_relays || '';
       const mevRelaysCount = mevRelays ? mevRelays.split(',').filter((item: string) => item).length : 0;
@@ -172,21 +182,23 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
           key={Math.floor(Math.random() * 10000000)}
           className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''} ${disabled ? classes.RowDisabled : ''}`}
           onClick={(e) => {
-            !disabled && selectOperator(e, operator);
+            !disabled && selectOperatorHandling(e, operator);
           }}
         >
           <StyledCell style={{ paddingLeft: 20, width: 60, paddingTop: 35 }}>
-            <Checkbox isDisabled={disableCheckBoxes && !isSelected || disabled} grayBackGround text={''} isChecked={isSelected} toggleIsChecked={() => {}} />
+            <Checkbox isDisabled={hasEnoughOperators && !isSelected || disabled} grayBackGround text={''}
+                      isChecked={isSelected} toggleIsChecked={() => {
+            }} />
           </StyledCell>
           <StyledCell>
-            <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator}/>
+            <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator} />
           </StyledCell>
           <StyledCell>
             <Grid container>
               <Grid item>{operator.validators_count}</Grid>
               {reachedMaxValidators && (
                 <Grid item style={{ alignSelf: 'center', marginLeft: 4 }}>
-                  <ToolTip text={'Operator reached  maximum amount of validators'}/>
+                  <ToolTip text={'Operator reached  maximum amount of validators'} />
                 </Grid>
               )}
             </Grid>
@@ -197,7 +209,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
                     className={hasValidators && isInactive ? classes.Inactive : ''}>{roundNumber(operator.performance['30d'], 2)}%</Grid>
               {isInactive && (
                 <Grid item xs={12}>
-                  <Status item={operator}/>
+                  <Status item={operator} />
                 </Grid>
               )}
             </Grid>
@@ -210,13 +222,13 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
           </StyledCell>
           <StyledCell>
             <Grid container>
-              <MevCounterBadge mevRelaysList={mevRelays.split(',')} mevCount={mevRelaysCount}/>
+              <MevCounterBadge mevRelaysList={mevRelays.split(',')} mevCount={mevRelaysCount} />
             </Grid>
           </StyledCell>
           <StyledCell>
             <Grid ref={wrapperRef} className={classes.ChartIcon} onClick={() => {
               redirectTo(operator.id);
-            }}/>
+            }} />
           </StyledCell>
         </TableRow>
       );
@@ -246,16 +258,13 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
       GoogleTagManager.getInstance().sendEvent({
         category: 'validator_register',
         action: 'search',
-        label: userInput,
+        label: userInput
       });
       setSearchInput(userInput);
     }
   }, 1000);
 
   const rows: any = dataRows();
-
-  useEffect(() => {
-  }, [JSON.stringify(operatorStore.selectedOperators)]);
 
   useEffect(() => {
     setLoading(true);
@@ -267,7 +276,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
 
   useEffect(() => {
     getOperators(operatorsPagination.page).then(async () => {
-      await operatorStore.updateOperatorValidatorsLimit();
+      await dispatch(fetchAndSetOperatorValidatorsLimit());
     });
   }, [operatorsPagination.page]);
 
@@ -281,18 +290,18 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
       header={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
       body={[
         <Grid container>
-          <ClusterSize currentClusterSize={clusterSize} changeClusterSize={setClusterSize}/>
+          <ClusterSize currentClusterSize={clusterSize} changeClusterSize={setClusterSize} />
           <Grid item container>
             <Grid item xs className={classes.SearchInputWrapper}>
               <TextInput
                 withSideText
                 placeHolder={'Search...'}
                 onChangeCallback={inputHandler}
-                sideIcon={loading ? <CircularProgress size={25} className={classes.Loading}/> :
-                  <div className={classes.SearchIcon}/>}
+                sideIcon={loading ? <CircularProgress size={25} className={classes.Loading} /> :
+                  <div className={classes.SearchIcon} />}
               />
             </Grid>
-            <Filters setFilterBy={setFilterBy} dkgEnabled={dkgEnabled} selectDkgEnabled={selectDkgEnabled}/>
+            <Filters setFilterBy={setFilterBy} dkgEnabled={dkgEnabled} selectDkgEnabled={selectDkgEnabled} />
           </Grid>
           <TableContainer className={classes.OperatorsTable} ref={scrollRef} onScroll={handleScroll}>
             <Table stickyHeader aria-label="sticky table">
@@ -330,7 +339,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: {
               </TableBody>
             </Table>
           </TableContainer>
-        </Grid>,
+        </Grid>
       ]}
     />
   );

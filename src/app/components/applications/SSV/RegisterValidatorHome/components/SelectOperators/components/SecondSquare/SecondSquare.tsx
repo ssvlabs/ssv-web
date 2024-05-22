@@ -18,7 +18,6 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useWindowSize, WINDOW_SIZES } from '~app/hooks/useWindowSize';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import MevIcon
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevIcon';
@@ -38,6 +37,13 @@ import { ICluster } from '~app/model/cluster.model';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import {
+  getOperatorValidatorsLimit,
+  getSelectedOperators,
+  getSelectedOperatorsFee,
+  hasEnoughSelectedOperators,
+  unselectOperator
+} from '~app/redux/operator.slice.ts';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox: number[] }) => {
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
@@ -45,21 +51,24 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
   const classes = useStyles({ editPage, shouldBeScrollable: clusterBox.length > 4 });
   const navigate = useNavigate();
   const location = useLocation();
+  const selectedOperators = useAppSelector(getSelectedOperators)
+  const selectedOperatorsFee = useAppSelector(getSelectedOperatorsFee)
   const dispatch = useAppDispatch();
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
   const accountAddress = useAppSelector(getAccountAddress);
   const processStore: ProcessStore = stores.Process;
-  const operatorStore: OperatorStore = stores.Operator;
   const windowSize = useWindowSize();
   const [existClusterData, setExistClusterData] = useState<ICluster | null>(null);
   const [previousOperatorsIds, setPreviousOperatorsIds] = useState<number[]>([]);
   const [checkClusterExistence, setCheckClusterExistence] = useState(false);
   const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
   const [operatorHasMaxCountValidators, setOperatorHasMaxCountValidators] = useState(false);
-  const operatorHasMevRelays = allEqual(Object.values(operatorStore.selectedOperators), 'mev_relays');
-  const operatorCount = Object.values(operatorStore.selectedOperators).length;
+  const operatorHasMevRelays = allEqual(Object.values(selectedOperators), 'mev_relays');
+  const operatorCount = Object.values(selectedOperators).length;
   const clusterSize = clusterBox.length;
   const secondSquareWidth = windowSize.size === WINDOW_SIZES.LG ? '100%' : 424;
+  const hasEnoughOperators = useAppSelector(hasEnoughSelectedOperators)
+  const operatorValidatorsLimit = useAppSelector(getOperatorValidatorsLimit);
 
   useEffect(() => {
     const process: SingleCluster = processStore.getProcess;
@@ -75,19 +84,21 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
   }, [editPage]);
 
   useEffect(() => {
-    const notVerifiedOperators = Object.values(operatorStore.selectedOperators).filter(operator => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
-    const operatorReachedMaxValidators = Object.values(operatorStore.selectedOperators).some((operator: IOperator) => operatorStore.hasOperatorReachedValidatorLimit(operator.validators_count));
+    const notVerifiedOperators = [...selectedOperators.values()].filter(operator => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
+    const operatorReachedMaxValidators = [...selectedOperators.values()].some((operator: IOperator) => {
+      return operatorValidatorsLimit <= operator.validators_count;
+    });
     setAllSelectedOperatorsVerified(notVerifiedOperators.length === 0);
     if (!getFromLocalStorageByKey(SKIP_VALIDATION)) {
       setOperatorHasMaxCountValidators(operatorReachedMaxValidators);
     }
-  }, [JSON.stringify(operatorStore.selectedOperators)]);
+  }, [JSON.stringify([...selectedOperators.values()])]);
 
   useEffect(() => {
-    if (operatorStore.selectedEnoughOperators) {
+    if (hasEnoughOperators) {
       setExistClusterData(null);
       setCheckClusterExistence(true);
-      getClusterData(getClusterHash(Object.values(operatorStore.selectedOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true).then((clusterData) => {
+      getClusterData(getClusterHash([...selectedOperators.values()], accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true).then((clusterData) => {
         if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
           setExistClusterData(clusterData);
         }
@@ -98,10 +109,10 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
     } else {
       setCheckClusterExistence(false);
     }
-  }, [operatorStore.selectedEnoughOperators]);
+  }, [hasEnoughOperators]);
 
   const removeOperator = (index: number) => {
-    operatorStore.unselectOperator(index);
+    dispatch(unselectOperator(index));
   };
 
   const onSelectOperatorsClick = async () => {
@@ -121,7 +132,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
   };
 
   const disableButton = (): boolean => {
-    return operatorHasMaxCountValidators || !!existClusterData || checkClusterExistence || !operatorStore.selectedEnoughOperators || !Object.values(operatorStore.selectedOperators).every((operator: IOperator) => {
+    return operatorHasMaxCountValidators || !!existClusterData || checkClusterExistence || !hasEnoughOperators || !Object.values(selectedOperators).every((operator: IOperator) => {
       return !previousOperatorsIds.includes(operator.id);
     });
   };
@@ -129,7 +140,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
   const openSingleCluster = () => {
     processStore.setProcess({
       processName: 'single_cluster',
-      item: { ...existClusterData, operators: [...Object.values(operatorStore.selectedOperators)] },
+      item: { ...existClusterData, operators: [...Object.values(selectedOperators)] },
     }, 2);
     if (existClusterData) {
       dispatch(setSelectedClusterId(existClusterData.clusterId));
@@ -154,8 +165,8 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
             <Grid container item className={classes.BoxesWrapper}>
               <Grid className={classes.OperatorBoxesWrapper}>
                 {clusterBox.map((index: number) => {
-                  if (operatorStore.selectedOperators[index]) {
-                    const operator = operatorStore.selectedOperators[index];
+                  if (!!selectedOperators.get(index.toString())) {
+                    const operator = selectedOperators.get(index.toString());
                     return (
                       <Grid key={index} container className={classes.SelectedOperatorBox}>
                         <Grid className={classes.DeleteOperator} onClick={() => {
@@ -168,11 +179,11 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
                         </Grid>
                         <Grid item className={classes.FeeAndMevRelaysWrapper}>
                           <SsvAndSubTitle fontSize={14}
-                                          ssv={formatNumberToUi(getFeeForYear(fromWei(operator.fee)))}/>
+                                          ssv={formatNumberToUi(getFeeForYear(fromWei(operator?.fee)))}/>
                           <Grid className={classes.MevRelaysWrapper}>
                             {Object.values(MEV_RELAYS).map((mevRelay: string) => <MevIcon mevRelay={mevRelay}
                                                                                           key={mevRelay}
-                                                                                          hasMevRelay={operator.mev_relays?.includes(mevRelay)}/>)}
+                                                                                          hasMevRelay={operator?.mev_relays?.includes(mevRelay)}/>)}
                           </Grid>
                         </Grid>
                       </Grid>
@@ -205,7 +216,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean, clusterBox:
                 bold
                 fontSize={16}
                 subTextCenter={false}
-                ssv={formatNumberToUi(getFeeForYear(operatorStore.getSelectedOperatorsFee))}
+                ssv={formatNumberToUi(getFeeForYear(selectedOperatorsFee))}
               />
             </Grid>
           </Grid>

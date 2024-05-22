@@ -8,6 +8,7 @@ import { isEqualsAddresses } from '~lib/utils/strings';
 import { Contract } from 'ethers';
 import Decimal from 'decimal.js';
 import config from '~app/common/config';
+import { getStoredNetwork, testNets } from '~root/providers/networkInfo.provider.ts';
 
 const addNewOperator = async (isContractWallet: boolean, operatorRawData: IOperatorRawData, dispatch: Function): Promise<boolean> => {
   const contract: Contract = getContractByName(EContractName.SETTER);
@@ -24,7 +25,7 @@ const addNewOperator = async (isContractWallet: boolean, operatorRawData: IOpera
     prevState: null,
     dispatch
   });
-}
+};
 
 const getOperatorBalance = async ({ id }: { id: number }): Promise<number> => {
   const contract = getContractByName(EContractName.GETTER);
@@ -41,7 +42,12 @@ const getOperatorBalance = async ({ id }: { id: number }): Promise<number> => {
   }
 };
 
-const withdrawRewards = async ({ operator, amount, isContractWallet, dispatch }: { operator: IOperator; amount: string; isContractWallet: boolean; dispatch: Function; }) => {
+const withdrawRewards = async ({ operator, amount, isContractWallet, dispatch }: {
+  operator: IOperator;
+  amount: string;
+  isContractWallet: boolean;
+  dispatch: Function;
+}) => {
   const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -53,11 +59,16 @@ const withdrawRewards = async ({ operator, amount, isContractWallet, dispatch }:
     getterTransactionState: async () => await getOperatorBalance({ id: operator.id }),
     prevState: operator.balance,
     isContractWallet,
-    dispatch,
+    dispatch
   });
 };
 
-const updateOperatorAddressWhitelist = async ({ operator, address, isContractWallet, dispatch }: { operator: IOperator, address: string, isContractWallet: boolean, dispatch: Function }) => {
+const updateOperatorAddressWhitelist = async ({ operator, address, isContractWallet, dispatch }: {
+  operator: IOperator,
+  address: string,
+  isContractWallet: boolean,
+  dispatch: Function
+}) => {
   const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -75,11 +86,15 @@ const updateOperatorAddressWhitelist = async ({ operator, address, isContractWal
       return isEqualsAddresses(newAddress, address);
     },
     isContractWallet,
-    dispatch,
+    dispatch
   });
 };
 
-const removeOperator = async ({ operatorId, isContractWallet, dispatch }: { operatorId: number, isContractWallet: boolean, dispatch: Function }): Promise<boolean> => {
+const removeOperator = async ({ operatorId, isContractWallet, dispatch }: {
+  operatorId: number,
+  isContractWallet: boolean,
+  dispatch: Function
+}): Promise<boolean> => {
   const contract: Contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -90,11 +105,15 @@ const removeOperator = async ({ operatorId, isContractWallet, dispatch }: { oper
     payload: [operatorId],
     isContractWallet,
     getterTransactionState: async () => !await getOperator(operatorId),
-    dispatch,
+    dispatch
   });
 };
 
-const approveOperatorFee = async ({ operator, isContractWallet, dispatch }: { operator: IOperator; isContractWallet: boolean; dispatch: Function }): Promise<boolean> => {
+const approveOperatorFee = async ({ operator, isContractWallet, dispatch }: {
+  operator: IOperator;
+  isContractWallet: boolean;
+  dispatch: Function
+}): Promise<boolean> => {
   const contract: Contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -116,7 +135,12 @@ const approveOperatorFee = async ({ operator, isContractWallet, dispatch }: { op
   });
 };
 
-const decreaseOperatorFee = async ({ operator, newFee, isContractWallet, dispatch }: { operator: IOperator; newFee: number | string; isContractWallet: boolean; dispatch: Function; }): Promise<boolean> => {
+const decreaseOperatorFee = async ({ operator, newFee, isContractWallet, dispatch }: {
+  operator: IOperator;
+  newFee: number | string;
+  isContractWallet: boolean;
+  dispatch: Function;
+}): Promise<boolean> => {
   const contract: Contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -136,4 +160,125 @@ const decreaseOperatorFee = async ({ operator, newFee, isContractWallet, dispatc
   });
 };
 
-export { getOperatorBalance, withdrawRewards, updateOperatorAddressWhitelist, removeOperator, addNewOperator, approveOperatorFee, decreaseOperatorFee };
+const syncOperatorFeeInfo = async (operatorId: number) => {
+  const contract = getContractByName(EContractName.GETTER);
+  try {
+    const operatorCurrentFee = await contract.getOperatorFee(operatorId);
+    let operatorFutureFee = 0;
+    let operatorApprovalBeginTime = 0;
+    let operatorApprovalEndTime = 0;
+    const response = await contract.getOperatorDeclaredFee(operatorId);
+    if (response['0'] && testNets.indexOf(getStoredNetwork().networkId) !== -1) {
+      operatorFutureFee = response['1'];
+      operatorApprovalBeginTime = response['2'];
+      operatorApprovalEndTime = response['3'];
+    } else {
+      operatorFutureFee = response['0'] === '0' ? null : response['0'];
+      operatorApprovalBeginTime = response['1'] === '1' ? null : response['1'];
+      operatorApprovalEndTime = response['2'] === '2' ? null : response['2'];
+    }
+    return {
+      operatorCurrentFee,
+      operatorFutureFee,
+      operatorApprovalBeginTime,
+      operatorApprovalEndTime
+    };
+  } catch (e: any) {
+    console.error(`Failed to get operator fee details from the contract: ${e.message}`);
+  }
+};
+
+const cancelChangeFeeProcess = async ({ operator, isContractWallet, dispatch }: {
+  operator: IOperator;
+  isContractWallet: boolean;
+  dispatch: Function
+}) => {
+  const contract: Contract = getContractByName(EContractName.SETTER);
+  if (!contract) {
+    return false;
+  }
+
+  return await transactionExecutor({
+    contractMethod: contract.cancelDeclaredOperatorFee,
+    payload: [operator.id],
+    isContractWallet,
+    getterTransactionState: async () => await syncOperatorFeeInfo(operator.id),
+    prevState: await syncOperatorFeeInfo(operator.id),
+    dispatch
+  });
+};
+
+const updateOperatorValidatorsLimit = async () => {
+  const contract = getContractByName(EContractName.GETTER);
+  if (!contract) {
+    return;
+  }
+  try {
+    return await contract.getValidatorsPerOperatorLimit();
+  } catch (e) {
+    console.error('Provided contract address is wrong', e);
+  }
+};
+
+const initFeeIncreaseAndPeriods = async () => {
+  const contract = getContractByName(EContractName.GETTER);
+  if (!contract) return;
+  const { declareOperatorFeePeriod, executeOperatorFeePeriod } = await contract.getOperatorFeePeriods();
+  const operatorFeeIncreaseLimit = await contract.getOperatorFeeIncreaseLimit();
+  return {
+    getSetOperatorFeePeriod: Number(executeOperatorFeePeriod),
+    declaredOperatorFeePeriod: Number(declareOperatorFeePeriod),
+    maxFeeIncrease: Number(operatorFeeIncreaseLimit) / 100
+  };
+};
+
+const getMaxOperatorFee = async () => {
+  const contract = getContractByName(EContractName.GETTER);
+  if (!contract) {
+    return;
+  }
+  try {
+    const res = await contract.getMaximumOperatorFee();
+    return Number(fromWei(res));
+  } catch (e) {
+    console.error('Provided contract address is wrong', e);
+  }
+};
+
+const updateOperatorFee = async ({ operator, newFee, isContractWallet, dispatch }: {
+  operator: IOperator;
+  newFee: any;
+  isContractWallet: boolean;
+  dispatch: Function
+}) => {
+  const contract: Contract = getContractByName(EContractName.SETTER);
+  if (!contract) {
+    return false;
+  }
+  const formattedFee = prepareSsvAmountToTransfer(toWei(new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString()));
+
+  return await transactionExecutor({
+    contractMethod: contract.declareOperatorFee,
+    payload: [operator.id, formattedFee],
+    isContractWallet,
+    getterTransactionState: async () => await syncOperatorFeeInfo(operator.id),
+    prevState: await syncOperatorFeeInfo(operator.id),
+    dispatch
+  });
+};
+
+export {
+  getMaxOperatorFee,
+  updateOperatorFee,
+  initFeeIncreaseAndPeriods,
+  getOperatorBalance,
+  updateOperatorValidatorsLimit,
+  withdrawRewards,
+  updateOperatorAddressWhitelist,
+  removeOperator,
+  syncOperatorFeeInfo,
+  addNewOperator,
+  approveOperatorFee,
+  cancelChangeFeeProcess,
+  decreaseOperatorFee
+};

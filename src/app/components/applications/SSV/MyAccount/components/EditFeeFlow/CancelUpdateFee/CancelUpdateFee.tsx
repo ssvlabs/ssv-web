@@ -8,7 +8,6 @@ import { PrimaryButton } from '~app/atomicComponents';
 import config from '~app/common/config';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee/CancelUpdateFee.styles';
 import { ButtonSize } from '~app/enums/Button.enum';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
@@ -20,12 +19,13 @@ import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { cancelChangeFeeProcess } from '~root/services/operatorContract.service.ts';
+import { fetchAndSetOperatorFeeInfo, getOperatorFeeData, getOperatorProcessId } from '~app/redux/operator.slice.ts';
 
 const CancelUpdateFee = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const operatorStore: OperatorStore = stores.Operator;
   const processStore: ProcessStore = stores.Process;
   const process: SingleOperator = processStore.getProcess;
   const operator: IOperator = process.item;
@@ -35,13 +35,16 @@ const CancelUpdateFee = () => {
   const dispatch = useAppDispatch();
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const isContractWallet = useAppSelector(getIsContractWallet);
+  const operatorFeeData = useAppSelector(getOperatorFeeData)
+  const processOperatorId = useAppSelector(getOperatorProcessId);
 
   const cancelUpdateProcess = async () => {
-    if (!operatorStore.processOperatorId) return navigate(strategyRedirect);
-    const response = await operatorStore.cancelChangeFeeProcess({ operator, isContractWallet, dispatch });
+    if (!processOperatorId) return navigate(strategyRedirect);
+    const response = await cancelChangeFeeProcess({ operator, isContractWallet, dispatch });
     if (response) {
       // @ts-ignore
-      setFutureFee(operatorStore.operatorFutureFee);
+      await dispatch(fetchAndSetOperatorFeeInfo(operator.id));
+      setFutureFee(operatorFeeData.operatorFutureFee);
       GoogleTagManager.getInstance().sendEvent({
         category: 'cancel',
         action: 'click'
@@ -59,7 +62,7 @@ const CancelUpdateFee = () => {
   };
 
   // @ts-ignore
-  const currentOperatorFee = formatNumberToUi(getFeeForYear(fromWei(operatorStore.operatorCurrentFee)));
+  const currentOperatorFee = formatNumberToUi(getFeeForYear(fromWei(operatorFeeData.operatorCurrentFee)));
   // @ts-ignore
   const operatorFutureFee = formatNumberToUi(getFeeForYear(fromWei(futureFee)));
 

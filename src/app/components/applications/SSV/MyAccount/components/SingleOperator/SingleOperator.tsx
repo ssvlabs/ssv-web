@@ -16,7 +16,6 @@ import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import LinkText from '~app/components/common/LinkText/LinkText';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/SingleOperator/SingleOperator.styles';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
@@ -34,6 +33,7 @@ import { SingleOperator as SingleOperatorProcess } from '~app/model/processes.mo
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { fetchAndSetOperatorFeeInfo } from '~app/redux/operator.slice.ts';
 
 const SingleOperator = () => {
   const stores = useStores();
@@ -42,7 +42,6 @@ const SingleOperator = () => {
   const [operatorsValidators, setOperatorsValidators] = useState([]);
   const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState(null);
   const processStore: ProcessStore = stores.Process;
-  const operatorStore: OperatorStore = stores.Operator;
   const process: SingleOperatorProcess = processStore.getProcess;
   const operator = process?.item;
   const isDarkMode = useAppSelector(getIsDarkMode);
@@ -98,7 +97,7 @@ const SingleOperator = () => {
   };
 
   const moveToUpdateFee = async () => {
-    await operatorStore.syncOperatorFeeInfo(operator.id);
+    await dispatch(fetchAndSetOperatorFeeInfo(operator.id));
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT);
   };
 

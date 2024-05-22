@@ -6,12 +6,12 @@ import Typography from '@mui/material/Typography';
 import { useStores } from '~app/hooks/useStores';
 import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/common/FundingSummary/FundingSummary.styles';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/model/processes.model';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
+import { getSelectedOperatorsFee } from '~app/redux/operator.slice.ts';
 
 type Props = {
   days?: number,
@@ -39,7 +39,6 @@ const FundingSummary = (props: Props) => {
     const stores = useStores();
     const classes = useStyles();
     const processStore: ProcessStore = stores.Process;
-    const operatorStore: OperatorStore = stores.Operator;
     const validatorStore: ValidatorStore = stores.Validator;
     const isMultiSharesMode = validatorStore.isMultiSharesMode || props.validatorsCount && props.validatorsCount > 1;
     const countOfValidators = props.validatorsCount || validatorStore.validatorsCount;
@@ -50,9 +49,10 @@ const FundingSummary = (props: Props) => {
       { id: PaymentId.NETWORK_FEE, name: 'Network fee' },
       { id: PaymentId.LIQUIDATION_COLLATERAL, name: 'Liquidation collateral' },
     ];
+    const selectedOperatorsFee = useAppSelector(getSelectedOperatorsFee);
 
     const networkCost = props.networkCost ?? propertyCostByPeriod(networkFee, daysPeriod);
-    const operatorsCost = props.operatorsCost ?? propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, daysPeriod);
+    const operatorsCost = props.operatorsCost ?? propertyCostByPeriod(selectedOperatorsFee, daysPeriod);
 
     const paymentsValue = (paymentId: number): number | Decimal => {
       switch (paymentId) {

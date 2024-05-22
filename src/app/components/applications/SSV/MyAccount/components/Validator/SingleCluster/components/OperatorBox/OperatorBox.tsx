@@ -1,27 +1,27 @@
 import { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './OperatorBox.styles';
 import Status from '~app/components/common/Status';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import ToolTip from '~app/components/common/ToolTip/ToolTip';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import OperatorDetails
   from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import NotificationPopUp
   from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox/NotificationPopUp/NotificationPopUp';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook.ts';
+import { fetchAndSetOperatorFeeInfo, getOperatorFeeData } from '~app/redux/operator.slice.ts';
 
 const OperatorBox = ({ operator }: { operator: any }) => {
-  const stores = useStores();
   const isDeleted = operator.is_deleted;
-  const operatorStore: OperatorStore = stores.Operator;
   const [newFee, setNewFee] = useState<string | null>(null);
   const [showPopUp, setShowPopUp] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<null | number>(null);
   const [updateOperatorFee, setUpdateOperatorFee] = useState<boolean>(false);
   const setShowPopUpHandler = () => showPopUp ? setShowPopUp(false) : setShowPopUp(true);
+  const operatorFeeData = useAppSelector(getOperatorFeeData);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     getCurrentState();
@@ -29,13 +29,13 @@ const OperatorBox = ({ operator }: { operator: any }) => {
 
   const getCurrentState = async () => {
 
-    await operatorStore.syncOperatorFeeInfo(operator.id);
-    if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee) {
+    await dispatch(fetchAndSetOperatorFeeInfo(operator.id));
+    if (operatorFeeData.operatorApprovalBeginTime && operatorFeeData.operatorApprovalEndTime && operatorFeeData.operatorFutureFee) {
 
       const todayDate = new Date();
-      const endPendingStateTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
-      const startPendingStateTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
-      setNewFee(formatNumberToUi(getFeeForYear(fromWei(operatorStore.operatorFutureFee.toString()))));
+      const endPendingStateTime = new Date(operatorFeeData.operatorApprovalEndTime * 1000);
+      const startPendingStateTime = new Date(operatorFeeData.operatorApprovalBeginTime * 1000);
+      setNewFee(formatNumberToUi(getFeeForYear(fromWei(operatorFeeData.operatorFutureFee.toString()))));
       const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
       if (isInPendingState) {
         setCurrentStep(2);

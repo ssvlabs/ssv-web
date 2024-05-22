@@ -2,11 +2,9 @@ import { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
-import { useStores } from '~app/hooks/useStores';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import WhiteWrapper from '~app/components/common/WhiteWrapper';
 import { validateFeeUpdate } from '~lib/utils/validatesInputs';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { ErrorType } from '~app/components/common/ConversionInput/ConversionInput';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/OperatorId';
 import CancelUpdateFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee';
@@ -24,6 +22,13 @@ import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getOperator } from '~root/services/operator.service';
 import config from '~app/common/config';
 import Decimal from 'decimal.js';
+import {
+  clearOperatorFeeInfo,
+  fetchAndSetOperatorFeeInfo,
+  getFeeIncreaseAndPeriods, getMaxOperatorFeePerYear,
+  getOperatorFeeData,
+  getOperatorProcessId
+} from '~app/redux/operator.slice.ts';
 
 // eslint-disable-next-line no-unused-vars
 enum FeeUpdateSteps {
@@ -36,9 +41,7 @@ enum FeeUpdateSteps {
 }
 
 const UpdateFee = () => {
-  const stores = useStores();
   const navigate = useNavigate();
-  const operatorStore: OperatorStore = stores.Operator;
   const [operator, setOperator] = useState<any>(null);
   const [newFee, setNewFee] = useState<any>(0);
   const [nextIsDisabled, setNextIsDisabled] = useState(true);
@@ -50,21 +53,25 @@ const UpdateFee = () => {
   const [error, setError] = useState({ shouldDisplay: false, errorMessage: '' });
   const dispatch = useAppDispatch();
   const strategyRedirect = useAppSelector(getStrategyRedirect);
+  const processOperatorId = useAppSelector(getOperatorProcessId);
+  const operatorFeeData = useAppSelector(getOperatorFeeData);
+  const feeIncreaseAndPeriods = useAppSelector(getFeeIncreaseAndPeriods);
+  const maxOperatorFeePerYear = useAppSelector(getMaxOperatorFeePerYear);
 
   useEffect(() => {
-    if (!operatorStore.processOperatorId) return navigate(strategyRedirect);
+    if (!processOperatorId) return navigate(strategyRedirect);
     dispatch(setIsLoading(true));
-    getOperator(operatorStore.processOperatorId).then(async (response: any) => {
+    getOperator(processOperatorId).then(async (response: any) => {
       if (response) {
         const operatorFee = formatNumberToUi(getFeeForYear(fromWei(response.fee)));
         setOperator(response);
         setOldFee(operatorFee);
-        if (!operatorStore.operatorFutureFee) {
+        if (!operatorFeeData.operatorFutureFee) {
           setNewFee(Number(operatorFee));
         }
-        await operatorStore.syncOperatorFeeInfo(response.id);
-        if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee) {
-          setNewFee(formatNumberToUi(getFeeForYear(fromWei(operatorStore.operatorFutureFee))));
+        await dispatch(fetchAndSetOperatorFeeInfo(response.id));
+        if (operatorFeeData.operatorApprovalBeginTime && operatorFeeData.operatorApprovalEndTime && operatorFeeData.operatorFutureFee) {
+          setNewFee(formatNumberToUi(getFeeForYear(fromWei(operatorFeeData.operatorFutureFee))));
           setCurrentFlowStep(FeeUpdateSteps.INCREASE);
         } else {
           setCurrentFlowStep(FeeUpdateSteps.START);
@@ -102,14 +109,14 @@ const UpdateFee = () => {
     validateFeeUpdate({
       previousValue: new Decimal(getFeeForYear(fromWei(operator.fee))),
       newValue: value,
-      maxFeeIncrease: operatorStore.maxFeeIncrease,
+      maxFeeIncrease: feeIncreaseAndPeriods.maxFeeIncrease,
       isPrivateOperator,
-      maxFee: operatorStore.maxOperatorFeePerYear,
+      maxFee: maxOperatorFeePerYear,
       callback: updateFeeErrorHandler,
     });
   };
   const onNextHandler = () => {
-    operatorStore.clearOperatorFeeInfo();
+    dispatch(clearOperatorFeeInfo());
     if (Number(newFee) > Number(oldFee)) {
       setCurrentFlowStep(FeeUpdateSteps.INCREASE);
     } else {

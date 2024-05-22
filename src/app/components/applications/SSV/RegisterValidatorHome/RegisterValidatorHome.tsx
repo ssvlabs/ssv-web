@@ -1,4 +1,4 @@
-import  { useEffect } from 'react';
+import { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import styled from 'styled-components';
@@ -9,7 +9,6 @@ import ToolTip from '~app/components/common/ToolTip';
 import config, { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
@@ -17,6 +16,8 @@ import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHom
 import { ProcessType } from '~app/model/processes.model';
 import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppDispatch } from '~app/hooks/redux.hook.ts';
+import { setClusterSize, unselectAllOperators } from '~app/redux/operator.slice.ts';
 
 const SELECT_MINIMUM_OPERATORS = 4;
 
@@ -27,19 +28,19 @@ type PreRequisiteType = {
 };
 
 const ButtonSeparator = styled.div`
-  width: 100%;
-  height: 12px;
+    width: 100%;
+    height: 12px;
 `;
 
 const preRequisites: PreRequisiteType[] = [
   {
     text: translations.VALIDATOR.HOME.PREREQUISITES[0],
     tooltip: translations.VALIDATOR.HOME.TOOLTIP.TEXT,
-    tooltipLinkText: translations.VALIDATOR.HOME.TOOLTIP.LINK_TEXT,
+    tooltipLinkText: translations.VALIDATOR.HOME.TOOLTIP.LINK_TEXT
   },
   {
-    text: translations.VALIDATOR.HOME.PREREQUISITES[1],
-  },
+    text: translations.VALIDATOR.HOME.PREREQUISITES[1]
+  }
 ];
 
 const RegisterValidatorHome = () => {
@@ -48,9 +49,9 @@ const RegisterValidatorHome = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const processStore: ProcessStore = stores.Process;
-  const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     validatorStore.clearKeyStoreFlowData();
@@ -63,17 +64,17 @@ const RegisterValidatorHome = () => {
   const moveToSelectOperators = () => {
     processStore.setProcess({
       item: null,
-      processName: 'register_validator',
+      processName: 'register_validator'
     }, ProcessType.Validator);
-    operatorStore.unselectAllOperators();
-    operatorStore.setClusterSize(SELECT_MINIMUM_OPERATORS);
+    dispatch(unselectAllOperators());
+    dispatch(setClusterSize(SELECT_MINIMUM_OPERATORS))
     navigate(getNextNavigation(EValidatorFlowAction.GENERATE_NEW_SHARE));
   };
 
   const moveToUploadKeyshare = () => {
     processStore.setProcess({
       item: null,
-      processName: 'register_validator',
+      processName: 'register_validator'
     }, ProcessType.Validator);
     navigate(getNextNavigation(EValidatorFlowAction.ALREADY_HAVE_SHARES));
   };
@@ -93,19 +94,21 @@ const RegisterValidatorHome = () => {
                 <Grid item className={classes.GreenV}></Grid>
                 <Typography className={classes.Text}>{preRequisite.text}</Typography>
                 {preRequisite.tooltip &&
-									<ToolTip text={<Grid className={classes.TooltipText}>{preRequisite.tooltip}
+                  <ToolTip text={<Grid className={classes.TooltipText}>{preRequisite.tooltip}
                     &nbsp;
                     <Grid onClick={createValidatorsLaunchpad}
                           className={classes.TooltipLink}>{preRequisite.tooltipLinkText}</Grid>
-                  </Grid>}/>
+                  </Grid>} />
                 }
               </Grid>;
             })}
           </Grid>
-          <PrimaryButton onClick={moveToSelectOperators} text={translations.VALIDATOR.HOME.BUTTON.NEW_KEYS} size={ButtonSize.XL}/>
-          <ButtonSeparator/>
-          <SecondaryButton onClick={moveToUploadKeyshare} text={translations.VALIDATOR.HOME.BUTTON.EXISTING_KEYS} size={ButtonSize.XL}/>
-        </Grid>,
+          <PrimaryButton onClick={moveToSelectOperators} text={translations.VALIDATOR.HOME.BUTTON.NEW_KEYS}
+                         size={ButtonSize.XL} />
+          <ButtonSeparator />
+          <SecondaryButton onClick={moveToUploadKeyshare} text={translations.VALIDATOR.HOME.BUTTON.EXISTING_KEYS}
+                           size={ButtonSize.XL} />
+        </Grid>
       ]}
     />
   );

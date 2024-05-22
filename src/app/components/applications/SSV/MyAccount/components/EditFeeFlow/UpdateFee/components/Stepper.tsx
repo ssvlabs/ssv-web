@@ -2,10 +2,10 @@
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { useStores } from '~app/hooks/useStores';
 import { UPDATE_FEE_STEPS } from '~lib/utils/updateFeeNotificationSteps';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import { useAppSelector } from '~app/hooks/redux.hook.ts';
+import { getOperatorFeeData } from '~app/redux/operator.slice.ts';
 
 type StepperProps = {
     step: number,
@@ -25,11 +25,10 @@ enum StepperProcessesSteps {
 }
 
 const ReactStepper = ({ step, registerButtonEnabled, subTextAlign, subText }: StepperProps) => {
-    const stores = useStores();
-    const operatorStore: OperatorStore = stores.Operator;
     const classes = useStyles({ step, registerButtonEnabled, subTextAlign });
+    const operatorFeeData = useAppSelector(getOperatorFeeData);
     // @ts-ignore
-    const time = (operatorStore.operatorApprovalBeginTime - operatorStore?.declaredOperatorFeePeriod) * 1000;
+    const time = (operatorFeeData.operatorApprovalBeginTime - operatorFeeData?.declaredOperatorFeePeriod) * 1000;
     const declareFeeDate = new Date(time);
     const options: Intl.DateTimeFormatOptions = {
         day: 'numeric',

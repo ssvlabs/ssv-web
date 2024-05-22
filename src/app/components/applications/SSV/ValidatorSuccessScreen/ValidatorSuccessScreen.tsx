@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -11,24 +10,23 @@ import LinkText from '~app/components/common/LinkText/LinkText';
 import { longStringShorten, truncateText } from '~lib/utils/strings';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/ValidatorSuccessScreen/ValidatorSuccessScreen.styles';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getClusterHash } from '~root/services/cluster.service';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { getSelectedOperators } from '~app/redux/operator.slice.ts';
 
 const ValidatorSuccessScreen = () => {
   const [hoveredGrid, setHoveredGrid] = useState<string | null>(null);
   const accountAddress = useAppSelector(getAccountAddress);
   const timeoutRef = useRef<any>(null);
-  const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const buttonText = 'Manage Validator';
-  const operatorStore: OperatorStore = stores.Operator;
-  const operators = Object.values(operatorStore.selectedOperators);
+  const selectedOperators = useAppSelector(getSelectedOperators);
+  const operators = [...selectedOperators.values()];
   const clusterHash = getClusterHash(operators, accountAddress);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -75,7 +73,7 @@ const ValidatorSuccessScreen = () => {
               <Tooltip text={<Grid>Clusters represent a unique set of operators who operate your validators. <LinkText text={'Read more on clusters'} link={config.links.MORE_ON_CLUSTERS}/></Grid>} />
             </Grid>
             <Grid container item style={{ gap: 24, alignItems: 'flex-start' }}>
-              {Object.values(operatorStore.selectedOperators).map((operator: any, index: number ) => {
+              {operators.map((operator: any, index: number ) => {
                 return <Grid container item className={classes.Operator} key={index}>
                   <Grid item
                         container

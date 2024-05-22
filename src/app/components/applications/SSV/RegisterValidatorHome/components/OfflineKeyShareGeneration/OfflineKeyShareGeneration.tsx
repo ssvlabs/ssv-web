@@ -19,7 +19,6 @@ import { CopyButton } from '~app/atomicComponents';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { DEVELOPER_FLAGS } from '~lib/utils/developerHelper';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import DkgOperator from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator';
 import {
   useStyles,
@@ -34,6 +33,7 @@ import styled from 'styled-components';
 import { OperatingSystemsEnum } from '~app/enums/os.enum';
 import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { getSelectedOperators } from '~app/redux/operator.slice.ts';
 
 const DkgTitleWrapper = styled.div`
     width: 100%;
@@ -99,9 +99,9 @@ const OfflineKeyShareGeneration = () => {
   const stores = useStores();
   const classes = useStyles();
   const processStore: ProcessStore = stores.Process;
-  const operatorStore: OperatorStore = stores.Operator;
+  const selectedOperators = useAppSelector(getSelectedOperators)
   const { apiNetwork } = getStoredNetwork();
-  const operatorsAcceptDkg = Object.values(operatorStore.selectedOperators).every((operator: IOperator) => isDkgAddressValid(operator.dkg_address ?? ''));
+  const operatorsAcceptDkg = [...selectedOperators.values()].every((operator: IOperator) => isDkgAddressValid(operator.dkg_address ?? ''));
   const isWindowOs = operatingSystemName === OperatingSystemsEnum.Windows;
   const dynamicFullPath = isWindowOs ? '%cd%' : '$(pwd)';
 
@@ -138,7 +138,7 @@ const OfflineKeyShareGeneration = () => {
     navigate(-2);
   };
 
-  const sortedOperators = Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => a.id - b.id);
+  const sortedOperators = [...selectedOperators.values()].sort((a: any, b: any) => a.id - b.id);
   const { operatorsIds, operatorsKeys } = sortedOperators.reduce((aggr: any, operator: IOperator) => {
     aggr.operatorsIds.push(operator.id);
     aggr.operatorsKeys.push(operator.public_key);
@@ -149,7 +149,7 @@ const OfflineKeyShareGeneration = () => {
   });
 
   const getOperatorsData = () => {
-    const operatorsInfo = Object.values(operatorStore.selectedOperators).map((operator: any) => ({
+    const operatorsInfo = [...selectedOperators.values()].map((operator: any) => ({
       id: operator.id,
       public_key: operator.public_key,
       ip: operator.dkg_address,
@@ -359,7 +359,7 @@ const OfflineKeyShareGeneration = () => {
           {selectedBox === 3 && !operatorsAcceptDkg && <Grid className={classes.DkgOperatorsWrapper}>
             <ErrorMessage
               text={translations.VALIDATOR.DISTRIBUTE_OFFLINE.DKG.OPERATOR_DOESNT_SUPPORT_DKG_ERROR_TEXT}/>
-            {Object.values(operatorStore.selectedOperators).sort((a: any, b: any) => {
+            {[...selectedOperators.values()].sort((a: any, b: any) => {
               if (a.dkg_address && !b.dkg_address) {
                 return 1;
               } else if (!a.dkg_address && b.dkg_address) {

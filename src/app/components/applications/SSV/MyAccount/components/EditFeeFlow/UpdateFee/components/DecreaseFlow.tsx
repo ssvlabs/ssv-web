@@ -6,7 +6,6 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import {
   useStyles,
@@ -20,13 +19,13 @@ import { ButtonSize } from '~app/enums/Button.enum';
 import LinkText from '~app/components/common/LinkText';
 import { decreaseOperatorFee, getOperatorBalance } from '~root/services/operatorContract.service';
 import { UpdateFeeProps } from '~app/model/operator.model.ts';
+import { getOperatorProcessId } from '~app/redux/operator.slice.ts';
 
 const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
   const stores = useStores();
   const navigate = useNavigate();
   const classes = useStyles({});
   const processStore: ProcessStore = stores.Process;
-  const operatorStore: OperatorStore = stores.Operator;
   const [buttonText, setButtonText] = useState('Update Fee');
   const [updated, setUpdated] = useState(false);
   const isContractWallet = useAppSelector(getIsContractWallet);
@@ -34,6 +33,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
   const operator = process.item;
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
+  const processOperatorId = useAppSelector(getOperatorProcessId);
 
   const onUpdateFeeHandle = async () => {
     if (updated) {
@@ -42,7 +42,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
       setIsLoading(true);
       const res = await decreaseOperatorFee({ operator, newFee, isContractWallet, dispatch });
       if (res) {
-        const newOperatorData = await getOperator(operatorStore.processOperatorId);
+        const newOperatorData = await getOperator(processOperatorId);
         const balance = await getOperatorBalance(newOperatorData.id);
         processStore.setProcess({
           processName: 'single_operator',

@@ -13,7 +13,6 @@ import LinkText from '~app/components/common/LinkText/LinkText';
 import FundingSummary from '~app/components/common/FundingSummary';
 import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import {
   useStyles,
@@ -26,6 +25,7 @@ import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
+import { getSelectedOperatorsFee } from '~app/redux/operator.slice.ts';
 
 const OPTIONS = [
   { id: 1, timeText: '6 Months', days: 182.5 },
@@ -42,7 +42,6 @@ const FundingPeriod = () => {
   const navigate = useNavigate();
   const { walletSsvBalance } = useFetchWalletBalance();
   const processStore: ProcessStore = stores.Process;
-  const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
   const timePeriodNotValid = customPeriod < config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM;
 
@@ -51,9 +50,10 @@ const FundingPeriod = () => {
   const isCustomPayment = checkedOption.id === 3;
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
   const networkCost = propertyCostByPeriod(networkFee, periodOfTime);
-  const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, periodOfTime);
+  const selectedOperatorsFee = useAppSelector(getSelectedOperatorsFee);
+  const operatorsCost = propertyCostByPeriod(selectedOperatorsFee, periodOfTime);
   const liquidationCollateralCost = getLiquidationCollateralPerValidator({
-    operatorsFee: operatorStore.getSelectedOperatorsFee,
+    operatorsFee: selectedOperatorsFee,
     networkFee,
     liquidationCollateralPeriod,
     validatorsCount: validatorStore.validatorsCount,
@@ -103,7 +103,7 @@ const FundingPeriod = () => {
                             className={isChecked(option.id) ? classes.SsvPrice : classes.TimeText}>{option.timeText}</Grid>
                     </Grid>
                     <Grid item
-                          className={classes.SsvPrice}>{formatNumberToUi(Number(propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, isCustom ? customPeriod : option.days) * validatorStore.validatorsCount))} SSV</Grid>
+                          className={classes.SsvPrice}>{formatNumberToUi(Number(propertyCostByPeriod(selectedOperatorsFee, isCustom ? customPeriod : option.days) * validatorStore.validatorsCount))} SSV</Grid>
                     {isCustom && <TextInput value={customPeriod}
                                             onChangeCallback={(e: any) => setCustomPeriod(Number(e.target.value))}
                                             extendClass={classes.DaysInput} withSideText sideText={'Days'}/>}

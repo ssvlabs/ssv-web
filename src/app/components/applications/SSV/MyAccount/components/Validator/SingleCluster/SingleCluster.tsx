@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { PrimaryButton } from '~app/atomicComponents';
 import config from '~app/common/config';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import Balance from '~app/components/applications/SSV/MyAccount/components/Balance';
 import OperatorBox from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox';
@@ -22,6 +21,7 @@ import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { isEqualsAddresses } from '~lib/utils/strings';
 import { useStyles } from './SingleCluster.styles';
+import { selectOperators } from '~app/redux/operator.slice.ts';
 
 const ValidatorsWrapper = styled.div`
   width: 872px;
@@ -62,7 +62,6 @@ const SingleCluster = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const processStore: ProcessStore = stores.Process;
-  const operatorStore: OperatorStore = stores.Operator;
   const process: SingleClusterProcess = processStore.getProcess;
   const cluster = useAppSelector(getSelectedCluster);
   const isDarkMode = useAppSelector(getIsDarkMode);
@@ -81,7 +80,7 @@ const SingleCluster = () => {
     process.processName = 'cluster_registration';
     // @ts-ignore
     process.registerValidator = { depositAmount: 0 };
-    operatorStore.selectOperators(cluster.operators);
+    dispatch(selectOperators(cluster.operators));
     navigate(getNextNavigation());
   };
 

@@ -3,30 +3,28 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { timeDiffCalc } from '~lib/utils/time';
-import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import ReactStepper
   from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
 import {
-  IncreaseFlowProps,
+  IncreaseFlowProps
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 import {
   StepperSteps,
-  useStyles,
+  useStyles
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
+import { useAppSelector } from '~app/hooks/redux.hook.ts';
+import { getOperatorFeeData } from '~app/redux/operator.slice.ts';
 
 const WaitingPeriod = ({ oldFee, newFee, currentCurrency, cancelUpdateFee }: IncreaseFlowProps) => {
-  const stores = useStores();
   const classes = useStyles({});
-  const operatorStore: OperatorStore = stores.Operator;
   const [isLoading, setIsLoading] = useState(false);
-
+  const operatorFeeData = useAppSelector(getOperatorFeeData);
   // @ts-ignore
-  const operatorEndApprovalTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
+  const operatorEndApprovalTime = new Date(operatorFeeData.operatorApprovalBeginTime * 1000);
   const endDay = operatorEndApprovalTime.getUTCDate();
   const today = new Date();
   const endMonth = operatorEndApprovalTime.toLocaleString('default', { month: 'long' });
@@ -52,7 +50,7 @@ const WaitingPeriod = ({ oldFee, newFee, currentCurrency, cancelUpdateFee }: Inc
             </Grid>
           </Grid>
           <ReactStepper subTextAlign={'center'} step={StepperSteps.WAITING}
-            subText={`${timeDiffCalc(operatorEndApprovalTime, today)} Left`} />
+                        subText={`${timeDiffCalc(operatorEndApprovalTime, today)} Left`} />
           <Grid item container className={classes.TextWrapper}>
             <Grid item>
               <Typography>You have declared a new fee update and your managed validators has been <br />
@@ -61,7 +59,7 @@ const WaitingPeriod = ({ oldFee, newFee, currentCurrency, cancelUpdateFee }: Inc
             </Grid>
           </Grid>
           <Grid item container className={classes.FeesChangeWrapper}>
-            <ChangeFeeDisplayValues   currentCurrency={currentCurrency} newFee={newFee} oldFee={oldFee}/>
+            <ChangeFeeDisplayValues currentCurrency={currentCurrency} newFee={newFee} oldFee={oldFee} />
           </Grid>
           <Grid item className={classes.Notice}>
             <Grid item className={classes.BulletsWrapper}>
@@ -73,13 +71,14 @@ const WaitingPeriod = ({ oldFee, newFee, currentCurrency, cancelUpdateFee }: Inc
           </Grid>
           <Grid item container className={classes.ButtonsWrapper}>
             <Grid item xs>
-              <SecondaryButton text={'Cancel'} isLoading={isLoading} onClick={cancelUpdateFeeHandler} size={ButtonSize.XL}/>
+              <SecondaryButton text={'Cancel'} isLoading={isLoading} onClick={cancelUpdateFeeHandler}
+                               size={ButtonSize.XL} />
             </Grid>
             <Grid item xs>
-              <PrimaryButton isDisabled text={'Execute'} size={ButtonSize.XL}/>
+              <PrimaryButton isDisabled text={'Execute'} size={ButtonSize.XL} />
             </Grid>
           </Grid>
-        </Grid>,
+        </Grid>
       ]}
     />
   );

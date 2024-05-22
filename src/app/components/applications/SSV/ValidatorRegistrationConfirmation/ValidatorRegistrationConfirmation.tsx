@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import config, { translations } from '~app/common/config';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import AllowanceButton from '~app/components/AllowanceButton';
@@ -30,7 +29,7 @@ import { isEqualsAddresses } from '~lib/utils/strings';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
-import LinkText from "~app/components/common/LinkText";
+import { getSelectedOperators, getSelectedOperatorsFee } from '~app/redux/operator.slice.ts';
 
 const ValidatorRegistrationConfirmation = () => {
   const navigate = useNavigate();
@@ -46,18 +45,19 @@ const ValidatorRegistrationConfirmation = () => {
   const { walletSsvBalance } = useFetchWalletBalance();
   const classes = useStyles();
   const processStore: ProcessStore = stores.Process;
-  const operatorStore: OperatorStore = stores.Operator;
   const validatorStore: ValidatorStore = stores.Validator;
   const process: RegisterValidator | SingleCluster = processStore.process;
+  const selectedOperatorsFee = useAppSelector(getSelectedOperatorsFee);
+  const selectedOperators = useAppSelector(getSelectedOperators);
   const processFundingPeriod = 'fundingPeriod' in process ? process.fundingPeriod : 0;
   const actionButtonDefaultText = validatorStore.isMultiSharesMode ? `Register ${validatorStore.validatorsCount} Validators` : 'Register Validator';
   const [actionButtonText, setActionButtonText] = useState(actionButtonDefaultText);
   const [isLoading, setIsLoading] = useState(false);
 
   const networkCost = propertyCostByPeriod(networkFee, processFundingPeriod);
-  const operatorsCost = propertyCostByPeriod(operatorStore.getSelectedOperatorsFee, processFundingPeriod);
+  const operatorsCost = propertyCostByPeriod(selectedOperatorsFee, processFundingPeriod);
   const liquidationCollateralCost = getLiquidationCollateralPerValidator({
-    operatorsFee: operatorStore.getSelectedOperatorsFee,
+    operatorsFee: selectedOperatorsFee,
     networkFee,
     liquidationCollateralPeriod,
     minimumLiquidationCollateral,
@@ -72,7 +72,7 @@ const ValidatorRegistrationConfirmation = () => {
 
   useEffect(() => {
     try {
-      const hasWhitelistedOperator = Object.values(operatorStore.selectedOperators).some(
+      const hasWhitelistedOperator = [...selectedOperators.values()].some(
         (operator: IOperator) =>
           operator.address_whitelist &&
           operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST &&
@@ -93,10 +93,11 @@ const ValidatorRegistrationConfirmation = () => {
       accountAddress,
       isContractWallet,
       isBulk: validatorStore.isMultiSharesMode,
-      operators: Object.values(operatorStore.selectedOperators),
+      operators: [...selectedOperators.values()],
       networkFee,
       liquidationCollateralPeriod,
       minimumLiquidationCollateral,
+      selectedOperatorsFee,
       dispatch
     });
     if (response && !isContractWallet) {
@@ -158,7 +159,7 @@ const ValidatorRegistrationConfirmation = () => {
         <Grid item className={classes.SubHeader}>
           Selected Operators
         </Grid>
-        {Object.values(operatorStore.selectedOperators).map((operator: IOperator, index: number) => {
+        {[...selectedOperators.values()].map((operator: IOperator, index: number) => {
           const operatorCost = processStore.secondRegistration
             ? formatNumberToUi(getFeeForYear(fromWei(operator.fee)))
             : propertyCostByPeriod(fromWei(operator.fee), processFundingPeriod);

@@ -33,4 +33,9 @@ const getValidator = async (publicKey: string) => {
   return await getRequest(url);
 };
 
-export { validatorsByClusterHash, getLiquidationCollateralPerValidator, getValidator };
+const getIsRegisteredValidator = async (publicKey: string) => {
+  const url = `${String(config.links.SSV_API_ENDPOINT)}/validators/isRegisteredValidator/${publicKey}?ts=${new Date().getTime()}`;
+  return await getRequest(url);
+};
+
+export { validatorsByClusterHash, getLiquidationCollateralPerValidator, getValidator, getIsRegisteredValidator };

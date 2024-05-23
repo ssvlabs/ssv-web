@@ -6,7 +6,7 @@ import config from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import { ProcessType, SingleCluster } from '~app/model/processes.model';
+import { ProcessType, SingleOperator } from '~app/model/processes.model';
 import { getOperator } from '~root/services/operator.service';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
@@ -24,7 +24,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
   const [buttonText, setButtonText] = useState('Update Fee');
   const [updated, setUpdated] = useState(false);
   const isContractWallet = useAppSelector(getIsContractWallet);
-  const process: SingleCluster | undefined = useAppSelector(getProcess);
+  const process: SingleOperator | undefined = useAppSelector(getProcess);
   const operator = process?.item;
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();

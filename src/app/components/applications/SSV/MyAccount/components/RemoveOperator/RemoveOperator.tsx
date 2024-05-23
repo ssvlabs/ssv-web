@@ -9,7 +9,7 @@ import CheckBox from '~app/components/common/CheckBox';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { SingleCluster } from '~app/model/processes.model';
+import { RegisterOperator } from '~app/model/processes.model.ts';
 import { fetchOperators } from '~app/redux/account.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
@@ -19,7 +19,7 @@ import { getProcess } from '~app/redux/process.slice.ts';
 const RemoveOperator = () => {
   const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(false);
-  const process: SingleCluster | undefined = useAppSelector(getProcess);
+  const process: RegisterOperator | undefined = useAppSelector(getProcess);
   const dispatch = useAppDispatch();
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const isContractWallet = useAppSelector(getIsContractWallet);

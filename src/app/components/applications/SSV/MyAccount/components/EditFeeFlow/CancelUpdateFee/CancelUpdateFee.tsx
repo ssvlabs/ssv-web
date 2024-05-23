@@ -10,7 +10,7 @@ import { ButtonSize } from '~app/enums/Button.enum';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import { SingleCluster } from '~app/model/processes.model';
+import { SingleOperator } from '~app/model/processes.model.ts';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
@@ -24,7 +24,7 @@ const CancelUpdateFee = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const [futureFee, setFutureFee] = useState(0);
-  const process: SingleCluster | undefined = useAppSelector(getProcess);
+  const process: SingleOperator | undefined = useAppSelector(getProcess);
   const operator: IOperator = process?.item;
   const [successPage, showSuccessPage] = useState(false);
   const [isOpenCancelUpdateFeeDialog, setIsOpenCancelUpdateFeeDialog] = useState(false);

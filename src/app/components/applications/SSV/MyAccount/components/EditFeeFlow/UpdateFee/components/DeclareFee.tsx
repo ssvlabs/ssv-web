@@ -9,7 +9,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { SingleCluster } from '~app/model/processes.model';
+import { SingleOperator } from '~app/model/processes.model.ts';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
 import { fetchAndSetOperatorFeeInfo, getFeeIncreaseAndPeriods, getOperatorFeeData, getOperatorProcessId } from '~app/redux/operator.slice.ts';
@@ -20,7 +20,7 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
   const classes = useStyles({});
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
-  const process: SingleCluster | undefined = useAppSelector(getProcess);
+  const process: SingleOperator | undefined = useAppSelector(getProcess);
   const operator = process?.item;
   const isContractWallet = useAppSelector(getIsContractWallet);
   const processOperatorId = useAppSelector(getOperatorProcessId);

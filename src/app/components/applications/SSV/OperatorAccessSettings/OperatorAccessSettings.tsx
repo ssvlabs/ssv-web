@@ -12,7 +12,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import { validateAddressInput } from '~lib/utils/validatesInputs';
 import { useStyles } from '~app/components/applications/SSV/OperatorAccessSettings/OperatorAccessSettings.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import { SingleCluster } from '~app/model/processes.model';
+import { SingleOperator } from '~app/model/processes.model.ts';
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
@@ -25,7 +25,7 @@ const INITIAL_ERROR_STATE = { shouldDisplay: false, errorMessage: '' };
 const OperatorAccessSettings = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const process: SingleCluster | undefined = useAppSelector(getProcess);
+  const process: SingleOperator | undefined = useAppSelector(getProcess);
   const operator = process?.item;
   const whiteListAddress = operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator.address_whitelist : '';
   const isOperatorPermissioned = !!operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;

@@ -36,8 +36,8 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
     const response = await updateOperatorFee({ operator, newFee, isContractWallet, dispatch });
     await dispatch(fetchAndSetOperatorFeeInfo(processOperatorId));
     if (response) {
-      // @ts-ignore
-      let savedOperator = JSON.parse(getFromLocalStorageByKey('expired_operators'));
+      // TODO: Review local storage usage
+      let savedOperator = JSON.parse(getFromLocalStorageByKey('expired_operators') || '');
       if (savedOperator && savedOperator?.includes(processOperatorId)) {
         savedOperator = savedOperator.filter((item: any) => item !== processOperatorId);
         saveInLocalStorage('expired_operators', JSON.stringify(savedOperator));

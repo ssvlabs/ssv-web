@@ -168,14 +168,7 @@ const decreaseOperatorFee = async ({
   });
 };
 
-const syncOperatorFeeInfo = async (
-  operatorId: number
-): Promise<{
-  operatorCurrentFee: number;
-  operatorFutureFee: number;
-  operatorApprovalBeginTime: number;
-  operatorApprovalEndTime: number;
-}> => {
+const syncOperatorFeeInfo = async (operatorId: number): Promise<any> => {
   const contract = getContractByName(EContractName.GETTER);
   try {
     const operatorCurrentFee = await contract.getOperatorFee(operatorId);

@@ -1,4 +1,3 @@
-
 import Grid from '@mui/material/Grid';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import NaDisplay from '~app/components/common/NaDisplay';
@@ -38,38 +37,40 @@ const Balance = ({ cluster, moveToReactivateCluster, moveToDeposit, moveToWithdr
             (<Grid item xs={12}
                    className={cluster.runWay < 30 ? classes.CurrentBalanceLiquidated : classes.CurrentBalance}>
               {formatNumberToUi(fromWei(cluster.balance))} SSV
-            </Grid>) : (<NaDisplay size={28} weight={800} text={translations.NA_DISPLAY.TOOLTIP_TEXT}/>)}
+            </Grid>) : (<NaDisplay size={28} weight={800} text={translations.NA_DISPLAY.TOOLTIP_TEXT} />)}
           <Grid item xs={12} className={classes.CurrentBalanceDollars}>
           </Grid>
         </Grid>
       </Grid>
-      {(!!cluster.validatorCount || cluster.isLiquidated) &&
+      {((Number(cluster.balance)) || cluster.isLiquidated) &&
         <OperationRunwayWrapper>
-          <Grid item className={classes.SeparationLine} xs={12}/>
-          <Grid container item className={classes.SecondSectionWrapper}>
-            <NewRemainingDays cluster={cluster}/>
-            {cluster.isLiquidated && (
-              <Grid className={classes.ErrorMessageWrapper}>
-                <ErrorText
-                  marginTop={'16px'}
-                  errorType={2}
-                />
+          {(cluster.validatorCount || cluster.isLiquidated) &&
+            <div><Grid item className={classes.SeparationLine} xs={12} />
+              <Grid container item className={classes.SecondSectionWrapper}>
+                <NewRemainingDays cluster={cluster} />
+                {cluster.isLiquidated && (
+                  <Grid className={classes.ErrorMessageWrapper}>
+                    <ErrorText
+                      marginTop={'16px'}
+                      errorType={2}
+                    />
+                  </Grid>
+                )}
               </Grid>
-            )}
-          </Grid>
-          <Grid item className={classes.SeparationLine} xs={12}/>
+            </div>}
+          <Grid item className={classes.SeparationLine} xs={12} />
           {cluster.isLiquidated ?
             (
               <Grid container item xs={12} className={classes.ActionButtonWrapper}>
-                <PrimaryButton text={'Reactivate Cluster'} onClick={moveToReactivateCluster} size={ButtonSize.XL}/>
+                <PrimaryButton text={'Reactivate Cluster'} onClick={moveToReactivateCluster} size={ButtonSize.XL} />
               </Grid>
             ) : (
               <Grid container item className={classes.ActionButtonWrapper}>
                 <Grid item xs>
-                  <PrimaryButton text={'Deposit'} onClick={moveToDeposit} size={ButtonSize.XL}/>
+                  <PrimaryButton text={'Deposit'} onClick={moveToDeposit} size={ButtonSize.XL} />
                 </Grid>
                 <Grid item xs>
-                  <SecondaryButton text={'Withdraw'} onClick={moveToWithdraw} size={ButtonSize.XL}/>
+                  <SecondaryButton text={'Withdraw'} onClick={moveToWithdraw} size={ButtonSize.XL} />
                 </Grid>
               </Grid>
             )}

@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
 import CancelFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/CancelFee';
 import DeclareFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DeclareFee';
 import FeeUpdated from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/FeeUpdated';
@@ -10,9 +8,11 @@ import PendingExpired from '~app/components/applications/SSV/MyAccount/component
 import PendingExecution from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/PendingExecution';
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import { SingleOperator } from '~app/model/processes.model';
-import { IOperator } from '~app/model/operator.model';
+import { IOperator, UpdateFeeProps } from '~app/model/operator.model';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
+import { getOperatorFeeData } from '~app/redux/operator.slice.ts';
+import { cancelChangeFeeProcess } from '~root/services/operatorContract.service.ts';
 
 export type IncreaseFlowProps = {
     newFee: string | number;
@@ -41,13 +41,13 @@ enum IncreaseSteps {
 
 const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : UpdateFeeProps) => {
     const stores = useStores();
-    const operatorStore: OperatorStore = stores.Operator;
     const processStore: ProcessStore = stores.Process;
     const process: SingleOperator = processStore.getProcess;
     const operator: IOperator = process.item;
     const [currentStep, setCurrentStep] = useState(IncreaseSteps.DECLARE_FEE);
     const isContractWallet = useAppSelector(getIsContractWallet);
     const dispatch = useAppDispatch();
+    const operatorFeeData = useAppSelector(getOperatorFeeData);
 
     useEffect(() => {
         getCurrentState();
@@ -58,10 +58,10 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : Updat
             setCurrentStep(IncreaseSteps.CONFIRM);
             return;
         }
-        if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee) {
+        if (operatorFeeData.operatorApprovalBeginTime && operatorFeeData.operatorApprovalEndTime && operatorFeeData.operatorFutureFee) {
             const todayDate = new Date();
-            const endPendingStateTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
-            const startPendingStateTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
+            const endPendingStateTime = new Date(operatorFeeData.operatorApprovalEndTime * 1000);
+            const startPendingStateTime = new Date(operatorFeeData.operatorApprovalBeginTime * 1000);
             const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
 
             // @ts-ignore
@@ -84,7 +84,7 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler } : Updat
     };
 
     const cancelUpdateFee = async () => {
-        const res = await operatorStore.cancelChangeFeeProcess({ operator, isContractWallet, dispatch });
+        const res = await cancelChangeFeeProcess({ operator, isContractWallet, dispatch });
         res && setCurrentStep(IncreaseSteps.CANCEL);
     };
 

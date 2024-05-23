@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
-import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
@@ -12,20 +9,19 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { encodeParameter } from '~root/services/conversions.service';
-import OperatorStore, { NewOperator } from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/GenerateOperatorKeys/GenerateOperatorKeys.styles';
-import { validateAddressInput, validateOperatorPublicKey, validatePublicKeyInput } from '~lib/utils/validatesInputs';
+import { validateAddressInput, validatePublicKeyInput } from '~lib/utils/validatesInputs';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import { PrimaryButton } from '~app/atomicComponents';
+import { Grid, PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { getOperatorByPublicKey } from '~root/services/operator.service.ts';
+import { IOperatorRawData } from '~app/model/operator.model.ts';
 
 const GenerateOperatorKeys = () => {
-  const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const accountAddress = useAppSelector(getAccountAddress);
-  const operatorStore: OperatorStore = stores.Operator;
   const [operatorExist, setOperatorExist] = useState(false);
   const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
   const [inputsData, setInputsData] = useState({ publicKey: '' });
@@ -35,10 +31,7 @@ const GenerateOperatorKeys = () => {
 
   // Inputs validation
   useEffect(() => {
-    const isRegisterButtonEnabled = !inputsData.publicKey
-      || !accountAddress
-      || publicKeyError.shouldDisplay
-      || addressError.shouldDisplay;
+    const isRegisterButtonEnabled = !inputsData.publicKey || !accountAddress || publicKeyError.shouldDisplay || addressError.shouldDisplay;
     setRegisterButtonEnabled(!isRegisterButtonEnabled);
     return () => {
       setRegisterButtonEnabled(false);
@@ -54,17 +47,17 @@ const GenerateOperatorKeys = () => {
     setOperatorExist(false);
     setIsLoading(true);
 
-    const operatorKeys: NewOperator = {
+    const operatorRawData: IOperatorRawData = {
       fee: 0,
       id: 0,
       address: accountAddress,
-      publicKey: encodeParameter('string', inputsData.publicKey),
+      publicKey: encodeParameter('string', inputsData.publicKey)
     };
-    operatorKeys.id = operatorStore.getOperatorId;
-    operatorStore.setOperatorKeys(operatorKeys);
-    const isExists = await validateOperatorPublicKey(inputsData.publicKey);
-    setOperatorExist(isExists);
-    if (!isExists) navigate(config.routes.SSV.OPERATOR.SET_FEE_PAGE);
+    const isExists = await getOperatorByPublicKey(inputsData.publicKey);
+    setOperatorExist(isExists.data);
+    if (!isExists.data) {
+      navigate(config.routes.SSV.OPERATOR.SET_FEE_PAGE, { state: { operatorRawData } });
+    }
     setIsLoading(false);
   };
 
@@ -73,12 +66,10 @@ const GenerateOperatorKeys = () => {
       overFlow={'visible'}
       body={[
         <Grid container>
-          <HeaderSubHeader title={translations.OPERATOR.REGISTER.TITLE}
-                           subtitle={translations.OPERATOR.REGISTER.DESCRIPTION}/>
+          <HeaderSubHeader title={translations.OPERATOR.REGISTER.TITLE} subtitle={translations.OPERATOR.REGISTER.DESCRIPTION} />
           <Grid container direction={'column'}>
             <Grid item className={classes.GridItem}>
-              <InputLabel title="Owner Address" withHint
-                          toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS}/>
+              <InputLabel title="Owner Address" withHint toolTipText={translations.OPERATOR.REGISTER.TOOL_TIP_ADDRESS} />
               <TextInput
                 disable
                 data-testid="new-operator-address"
@@ -87,19 +78,18 @@ const GenerateOperatorKeys = () => {
                   validateAddressInput(event.target.value, setAddressError);
                 }}
               />
-              {addressError.shouldDisplay &&
-                <Typography className={classes.TextError}>{addressError.errorMessage}</Typography>}
+              {addressError.shouldDisplay && <Typography className={classes.TextError}>{addressError.errorMessage}</Typography>}
             </Grid>
             <Grid item className={classes.GridItem}>
               <InputLabel
                 title="Operator Public Key"
                 withHint
-                toolTipText={(
-                  <div>{translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
-                    <LinkText text={'documentation.'}
-                              link={'https://docs.ssv.network/run-a-node/operator-node/installation#generate-operator-keys'}/>
+                toolTipText={
+                  <div>
+                    {translations.OPERATOR.REGISTER.TOOL_TIP_KEY}
+                    <LinkText text={'documentation.'} link={'https://docs.ssv.network/run-a-node/operator-node/installation#generate-operator-keys'} />
                   </div>
-                )}
+                }
               />
               <TextInput
                 value={inputsData.publicKey}
@@ -112,17 +102,15 @@ const GenerateOperatorKeys = () => {
                   validatePublicKeyInput(event.target.value, setPublicKeyError);
                 }}
               />
-              {publicKeyError.shouldDisplay &&
-                <Typography className={classes.TextError}>{publicKeyError.errorMessage}</Typography>}
+              {publicKeyError.shouldDisplay && <Typography className={classes.TextError}>{publicKeyError.errorMessage}</Typography>}
             </Grid>
-            {operatorExist && <ErrorMessage text={translations.OPERATOR.OPERATOR_EXIST}/>}
+            {operatorExist && <ErrorMessage text={translations.OPERATOR.OPERATOR_EXIST} />}
           </Grid>
-          <PrimaryButton isDisabled={!registerButtonEnabled} text={'Next'} onClick={onRegisterClick}
-                         size={ButtonSize.XL} isLoading={isLoading}/>
-        </Grid>,
+          <PrimaryButton isDisabled={!registerButtonEnabled} text={'Next'} onClick={onRegisterClick} size={ButtonSize.XL} isLoading={isLoading} />
+        </Grid>
       ]}
     />
   );
 };
 
-export default observer(GenerateOperatorKeys);
+export default GenerateOperatorKeys;

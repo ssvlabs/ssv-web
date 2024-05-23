@@ -1,29 +1,29 @@
-import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
+import { Grid } from '~app/atomicComponents';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './SetOperatorFee.styles';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import { validateFeeInput } from '~lib/utils/validatesInputs';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppSelector } from '~app/hooks/redux.hook.ts';
+import { getMaxOperatorFeePerYear } from '~app/redux/operator.slice.ts';
 
 type UserInput = string;
 
 const INITIAL_ERROR_STATE = { shouldDisplay: false, errorMessage: '' };
 
 const SetOperatorFee = () => {
-  const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const operatorStore: OperatorStore = stores.Operator;
+  const location = useLocation();
+  const maxFee = useAppSelector(getMaxOperatorFeePerYear);
+  const { operatorRawData } = location.state;
   const [error, setError] = useState(INITIAL_ERROR_STATE);
   const [userInput, setUserInput] = useState<UserInput>('');
   const [registerButtonDisabled, setRegisterButtonDisabled] = useState(true);
@@ -36,7 +36,7 @@ const SetOperatorFee = () => {
     }
     validateFeeInput({
       value: userInput,
-      maxFee: operatorStore.maxOperatorFeePerYear,
+      maxFee,
       callback: setError
     });
     setUserInput(removeLeadingZeros(userInput));
@@ -45,11 +45,8 @@ const SetOperatorFee = () => {
   }, [error.shouldDisplay, userInput]);
 
   const moveToSubmitConfirmation = () => {
-    const operatorWithFee = operatorStore.newOperatorKeys;
-    // @ts-ignore
-    operatorWithFee.fee = parseFloat(userInput) || 0;
-    operatorStore.setOperatorKeys(operatorWithFee);
-    navigate(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE);
+    operatorRawData.fee = parseFloat(userInput) || 0;
+    navigate(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE, { state: { operatorRawData } });
   };
 
   const removeLeadingZeros = (num: string): string => {
@@ -108,4 +105,4 @@ const SetOperatorFee = () => {
   );
 };
 
-export default observer(SetOperatorFee);
+export default SetOperatorFee;

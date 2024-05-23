@@ -3,11 +3,9 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAccount, useAccountEffect } from 'wagmi';
 import config from '~app/common/config';
-import { OperatorStore } from '~app/common/stores/applications/SsvWeb';
 import { METAMASK_LABEL } from '~app/constants/constants';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { useEthersSignerProvider } from '~app/hooks/useEthersSigner';
-import { useStores } from '~app/hooks/useStores';
 import { fetchClusters, fetchOperators } from '~app/redux/account.slice';
 import { setIsShowSsvLoader } from '~app/redux/appState.slice';
 import { setStrategyRedirect } from '~app/redux/navigation.slice';
@@ -20,6 +18,11 @@ import { cleanLocalStorageAndCookie } from '~root/providers/onboardSettings.prov
 import { initContracts, resetContracts } from '~root/services/contracts.service';
 import notifyService from '~root/services/notify.service';
 import { isChainSupported } from '~root/wagmi/config';
+import {
+  clearAllSettings,
+  fetchAndSetFeeIncreaseAndPeriods, fetchAndSetMaxOperatorFee,
+  fetchAndSetOperatorValidatorsLimit
+} from '~app/redux/operator.slice.ts';
 
 type InitProps = {
   walletAddress: string;
@@ -35,13 +38,11 @@ export const useWalletConnectivity = () => {
   const account = useAccount();
   const provider = useEthersSignerProvider();
 
-  const stores = useStores();
-  const operatorStore: OperatorStore = stores.Operator;
 
   const reset = () => {
     cleanLocalStorageAndCookie();
     dispatch(resetWallet());
-    operatorStore.clearSettings();
+    dispatch(clearAllSettings());
     removeFromLocalStorageByKey('params');
     store.dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
     resetContracts();
@@ -62,7 +63,7 @@ export const useWalletConnectivity = () => {
 
     initContracts({ provider: provider, network: getStoredNetwork(), shouldUseRpcUrl: connectorName !== METAMASK_LABEL });
 
-    await Promise.all([await dispatch(fetchAndSetNetworkFeeAndLiquidationCollateral()), await operatorStore.initUser()]);
+    await Promise.all([await dispatch(fetchAndSetNetworkFeeAndLiquidationCollateral()), await dispatch(fetchAndSetFeeIncreaseAndPeriods())]);
     const [accountClusters, accountOperators] = await Promise.all([dispatch(fetchClusters({})), dispatch(fetchOperators({}))]);
 
     if (accountClusters.payload?.clusters.length) {
@@ -74,7 +75,7 @@ export const useWalletConnectivity = () => {
       dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
     }
 
-    await Promise.all([await operatorStore.updateOperatorMaxFee(), await operatorStore.updateOperatorValidatorsLimit()]);
+    await Promise.all([await dispatch(fetchAndSetMaxOperatorFee()), await dispatch(fetchAndSetOperatorValidatorsLimit())]);
     dispatch(setIsShowSsvLoader(false));
   };
 

@@ -5,6 +5,7 @@ import { walletStateReducer } from '~app/redux/wallet.slice';
 import { notificationsStateReducer } from '~app/redux/notifications.slice';
 import { accountStateReducer } from '~app/redux/account.slice';
 import { networkStateReducer } from '~app/redux/network.slice';
+import { operatorStateReducer } from '~app/redux/operator.slice.ts';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     notificationsState: notificationsStateReducer,
     accountState: accountStateReducer,
     networkState: networkStateReducer,
+    operatorState: operatorStateReducer,
   },
 });
 

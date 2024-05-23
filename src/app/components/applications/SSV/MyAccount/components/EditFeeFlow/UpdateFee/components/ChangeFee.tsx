@@ -4,7 +4,6 @@ import Typography from '@mui/material/Typography';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ConversionInput from '~app/components/common/ConversionInput/ConversionInput';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import { UpdateFeeProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee';
 import {
   useStyles,
 } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
@@ -12,6 +11,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsMainnet } from '~app/redux/wallet.slice';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { UpdateFeeProps } from '~app/model/operator.model.ts';
 
 const ChangeFee = ({ newFee, onChangeHandler, error, nextIsDisabled, onNextHandler, setCurrency }: UpdateFeeProps) => {
   const classes = useStyles({});

@@ -9,7 +9,6 @@ import Status from '~app/components/common/Status';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
 import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards/ToggleDashboards';
@@ -23,6 +22,7 @@ import { getOperatorBalance } from '~root/services/operatorContract.service';
 import { fetchOperators, getAccountOperators, getOperatorsPagination, setSelectedOperatorId, sortOperatorsByStatus } from '~app/redux/account.slice';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { setOperatorProcessId } from '~app/redux/operator.slice.ts';
 
 const ButtonWrapper = styled.div`
     width: 164px;
@@ -33,7 +33,6 @@ const OperatorDashboard = () => {
   const classes = useStyles({});
   const navigate = useNavigate();
   const processStore: ProcessStore = stores.Process;
-  const operatorStore: OperatorStore = stores.Operator;
   const dispatch = useAppDispatch();
   const [openExplorerRefs, setOpenExplorerRefs] = useState<any[]>([]);
   const [operatorBalances, setOperatorBalances] = useState({});
@@ -98,8 +97,8 @@ const OperatorDashboard = () => {
       // @ts-ignore
       item: { ...operator, balance: operatorBalances[operator.id] },
     }, 1);
-    operatorStore.processOperatorId = operators[listIndex].id;
     dispatch(setSelectedOperatorId(operators[listIndex].id));
+    dispatch(setOperatorProcessId(operators[listIndex].id));
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
   };
 

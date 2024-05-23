@@ -1,3 +1,5 @@
+import { ErrorType } from '~app/components/common/ConversionInput/ConversionInput.tsx';
+
 export interface IOperator {
   id: number;
   fee?: string;
@@ -20,3 +22,22 @@ export interface IOperator {
   verified_operator?: boolean;
   balance: number;
 }
+
+export interface IOperatorRawData {
+  id: number;
+  fee: number;
+  publicKey: string;
+  address: string;
+}
+
+export type UpdateFeeProps = {
+  error: ErrorType;
+  nextIsDisabled: boolean;
+  onNextHandler: Function;
+  onChangeHandler: Function;
+  newFee: number | string;
+  oldFee: number | string;
+  currency: string;
+  setCurrency: Function;
+  declareNewFeeHandler: Function
+};

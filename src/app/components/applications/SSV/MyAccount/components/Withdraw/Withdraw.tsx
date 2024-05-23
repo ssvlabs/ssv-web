@@ -1,12 +1,9 @@
 import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
 import { SingleCluster, SingleOperator } from '~app/model/processes.model';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getAccountAddress } from '~app/redux/wallet.slice';
@@ -15,6 +12,7 @@ import { getClusterBalance } from '~root/services/cluster.service';
 import { fromWei, toDecimalNumber } from '~root/services/conversions.service';
 import OperatorFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/OperatorFlow';
 import ClusterFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/ClusterFlow';
+import { getIsValidatorFlow, getProcess } from '~app/redux/process.slice.ts';
 
 let interval: NodeJS.Timeout;
 
@@ -22,14 +20,13 @@ const Withdraw = () => {
   const accountAddress = useAppSelector(getAccountAddress);
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const classes = useStyles();
-  const stores = useStores();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleOperator | SingleCluster = processStore.getProcess;
+  const process: SingleOperator | SingleCluster | undefined = useAppSelector(getProcess);
+  const isValidatorFlow: boolean | undefined = useAppSelector(getIsValidatorFlow);
   const processItem = process?.item;
-  const [processItemBalance, setProcessItemBalance] = useState(processStore.isValidatorFlow ? fromWei(processItem.balance) : processItem.balance);
+  const [processItemBalance, setProcessItemBalance] = useState(isValidatorFlow ? fromWei(processItem.balance) : processItem.balance);
 
   useEffect(() => {
-    if (processStore.isValidatorFlow) {
+    if (isValidatorFlow) {
       interval = setInterval(async () => {
         const balance = await getClusterBalance(processItem.operators, accountAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, true);
         setProcessItemBalance(balance);
@@ -40,7 +37,7 @@ const Withdraw = () => {
 
   return (
     <Grid container item style={{ gap: 32 }}>
-      <NewWhiteWrapper type={processStore.isValidatorFlow ? 0 : 1} header={processStore.isValidatorFlow ? 'Cluster' : 'Operator Details'} />
+      <NewWhiteWrapper type={isValidatorFlow ? 0 : 1} header={isValidatorFlow ? 'Cluster' : 'Operator Details'} />
       <Grid container className={classes.ScreensWrapper} item xs={12}>
         <BorderScreen
           marginTop={0}
@@ -56,7 +53,7 @@ const Withdraw = () => {
             </Grid>
           ]}
         />
-        {processStore.isValidatorFlow ? (
+        {isValidatorFlow ? (
           <ClusterFlow cluster={processItem} minimumLiquidationCollateral={minimumLiquidationCollateral} liquidationCollateralPeriod={liquidationCollateralPeriod} />
         ) : (
           <OperatorFlow operator={processItem} />
@@ -66,4 +63,4 @@ const Withdraw = () => {
   );
 };
 
-export default observer(Withdraw);
+export default Withdraw;

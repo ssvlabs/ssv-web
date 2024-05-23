@@ -7,14 +7,13 @@ import { useNavigate } from 'react-router-dom';
 import { PrimaryButton } from '~app/atomicComponents';
 import config from '~app/common/config';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee/CancelUpdateFee.styles';
 import { ButtonSize } from '~app/enums/Button.enum';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { useStores } from '~app/hooks/useStores';
 import { IOperator } from '~app/model/operator.model';
-import { SingleOperator } from '~app/model/processes.model';
+import { SingleCluster } from '~app/model/processes.model';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
@@ -22,15 +21,14 @@ import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { cancelChangeFeeProcess } from '~root/services/operatorContract.service.ts';
 import { fetchAndSetOperatorFeeInfo, getOperatorFeeData, getOperatorProcessId } from '~app/redux/operator.slice.ts';
 import { formatNumberToUi } from '~lib/utils/numbers';
+import { getProcess } from '~app/redux/process.slice.ts';
 
 const CancelUpdateFee = () => {
-  const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleOperator = processStore.getProcess;
-  const operator: IOperator = process.item;
   const [futureFee, setFutureFee] = useState(0);
+  const process: SingleCluster | undefined = useAppSelector(getProcess);
+  const operator: IOperator = process?.item;
   const [successPage, showSuccessPage] = useState(false);
   const [isOpenCancelUpdateFeeDialog, setIsOpenCancelUpdateFeeDialog] = useState(false);
   const dispatch = useAppDispatch();
@@ -42,9 +40,8 @@ const CancelUpdateFee = () => {
     if (!processOperatorId) return navigate(strategyRedirect);
     const response = await cancelChangeFeeProcess({ operator, isContractWallet, dispatch });
     if (response) {
-      // @ts-ignore
       await dispatch(fetchAndSetOperatorFeeInfo(operator.id));
-      setFutureFee(operatorFeeData.operatorFutureFee);
+      setFutureFee(operatorFeeData.operatorFutureFee as number);
       GoogleTagManager.getInstance().sendEvent({
         category: 'cancel',
         action: 'click'

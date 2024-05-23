@@ -18,7 +18,6 @@ import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/SingleOperator/SingleOperator.styles';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import UpdateFeeState from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/UpdateFeeState';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
@@ -32,15 +31,14 @@ import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { fetchAndSetOperatorFeeInfo } from '~app/redux/operator.slice.ts';
+import { getProcess } from '~app/redux/process.slice.ts';
 
 const SingleOperator = () => {
-  const stores = useStores();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [operatorsValidators, setOperatorsValidators] = useState([]);
-  const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState(null);
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleOperatorProcess = processStore.getProcess;
+  const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState<{ per_page: number } | null>(null);
+  const process: SingleOperatorProcess | undefined = useAppSelector(getProcess);
   const operator = process?.item;
   const isDarkMode = useAppSelector(getIsDarkMode);
   const strategyRedirect = useAppSelector(getStrategyRedirect);
@@ -54,7 +52,6 @@ const SingleOperator = () => {
   const loadOperatorValidators = async (props: { page: number; perPage: number }) => {
     const { page, perPage } = props;
     const response = await getOperatorValidators({
-      // @ts-ignore
       operatorId: operator.id,
       page,
       perPage
@@ -67,8 +64,7 @@ const SingleOperator = () => {
     loadOperatorValidators({ page: 1, perPage });
   };
 
-  const onChangePage = (obj: any) => {
-    // @ts-ignore
+  const onChangePage = (obj: { paginationPage: number }) => {
     loadOperatorValidators({ page: obj.paginationPage, perPage: operatorsValidatorsPagination?.per_page ?? 5 });
   };
 
@@ -324,7 +320,7 @@ const SingleOperator = () => {
               columns={columns}
               actionProps={{
                 onChangePage,
-                perPage: per_page,
+                perPage: per_page as number,
                 type: 'operator',
                 currentPage: page,
                 totalPages: pages,

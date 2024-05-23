@@ -1,29 +1,25 @@
 import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ErrorButton from '~app/atomicComponents/ErrorButton';
 import config from '~app/common/config';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/RemoveOperator/RemoveOperator.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import CheckBox from '~app/components/common/CheckBox';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
-import { RegisterOperator } from '~app/model/processes.model';
+import { SingleCluster } from '~app/model/processes.model';
 import { fetchOperators } from '~app/redux/account.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { removeOperator } from '~root/services/operatorContract.service';
+import { getProcess } from '~app/redux/process.slice.ts';
 
 const RemoveOperator = () => {
-  const stores = useStores();
   const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(false);
-  const processStore: ProcessStore = stores.Process;
-  const process: RegisterOperator = processStore.process;
+  const process: SingleCluster | undefined = useAppSelector(getProcess);
   const dispatch = useAppDispatch();
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const isContractWallet = useAppSelector(getIsContractWallet);
@@ -31,7 +27,7 @@ const RemoveOperator = () => {
   const classes = useStyles({ isLoading });
 
   useEffect(() => {
-    if (!process.item) return navigate(strategyRedirect);
+    if (!process?.item) return navigate(strategyRedirect);
   }, []);
 
   const checkboxHandler = () => {
@@ -40,7 +36,7 @@ const RemoveOperator = () => {
 
   const submitForm = async () => {
     setIsLoading(true);
-    const isRemoved = await removeOperator({ operatorId: Number(process.item.id), isContractWallet, dispatch });
+    const isRemoved = await removeOperator({ operatorId: Number(process?.item.id), isContractWallet, dispatch });
     setIsLoading(false);
     if (isRemoved) {
       await dispatch(fetchOperators({ forcePage: 1 }));
@@ -85,4 +81,4 @@ const RemoveOperator = () => {
   );
 };
 
-export default observer(RemoveOperator);
+export default RemoveOperator;

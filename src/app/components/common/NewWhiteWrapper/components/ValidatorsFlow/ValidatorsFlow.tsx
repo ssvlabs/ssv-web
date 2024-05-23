@@ -1,14 +1,12 @@
 import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import { useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { SingleCluster } from '~app/model/processes.model';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { longStringShorten } from '~lib/utils/strings';
 import { getClusterHash } from '~root/services/cluster.service';
 import { useStyles } from '../../NewWhiteWrapper.styles';
+import { getProcess, modifyProcess } from '~app/redux/process.slice.ts';
 
 type Props = {
   header: string;
@@ -19,14 +17,13 @@ const ValidatorsFlow = ({ header, stepBack }: Props) => {
   const accountAddress = useAppSelector(getAccountAddress);
   const navigate = useNavigate();
   const classes = useStyles({ mainFlow: false });
-  const stores = useStores();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleCluster = processStore.getProcess;
+  const dispatch = useAppDispatch();
+  const process: SingleCluster | undefined = useAppSelector(getProcess);
   const cluster = process?.item;
 
   const onNavigationClicked = () => {
     if (!stepBack) {
-      process.validator = undefined;
+      dispatch(modifyProcess({ validator: undefined }));
       navigate(-1);
     } else {
       stepBack();
@@ -51,4 +48,4 @@ const ValidatorsFlow = ({ header, stepBack }: Props) => {
   );
 };
 
-export default observer(ValidatorsFlow);
+export default ValidatorsFlow;

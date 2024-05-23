@@ -3,7 +3,6 @@ import Typography from '@mui/material/Typography';
 import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import PrimaryButton from '~app/atomicComponents/PrimaryButton';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
 import { StepperSteps, useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
@@ -12,20 +11,20 @@ import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFee
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { useStores } from '~app/hooks/useStores';
-import { SingleOperator } from '~app/model/processes.model';
+import { SingleCluster } from '~app/model/processes.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
 import { fetchAndSetOperatorFeeInfo, getFeeIncreaseAndPeriods, getOperatorFeeData, getOperatorProcessId } from '~app/redux/operator.slice.ts';
 import { updateOperatorFee } from '~root/services/operatorContract.service.ts';
+import { getProcess } from '~app/redux/process.slice.ts';
 
 const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: IncreaseFlowProps) => {
   const stores = useStores();
   const classes = useStyles({});
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleOperator = processStore.getProcess;
-  const operator = process.item;
+  const process: SingleCluster | undefined = useAppSelector(getProcess);
+  const operator = process?.item;
   const isContractWallet = useAppSelector(getIsContractWallet);
   const processOperatorId = useAppSelector(getOperatorProcessId);
   const feeIncreaseAndPeriods = useAppSelector(getFeeIncreaseAndPeriods);
@@ -58,13 +57,11 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
     minute: 'numeric'
   };
 
-  const secondsToDhms = (seconds: any) => {
+  const secondsToDhms = (seconds: any): string => {
     // eslint-disable-next-line no-param-reassign
     seconds = Number(seconds);
     const d = Math.floor(seconds / (3600 * 24));
-    // eslint-disable-next-line no-mixed-operators
     const h = Math.floor((seconds % (3600 * 24)) / 3600);
-    // eslint-disable-next-line no-mixed-operators
     const m = Math.floor((seconds % 3600) / 60);
     if (d > 0) return d + (d === 1 ? ' day' : ' days');
     if (h > 0) return h + (h === 1 ? ' hour' : ' hours');

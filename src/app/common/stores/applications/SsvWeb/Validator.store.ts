@@ -189,6 +189,7 @@ class ValidatorStore {
   }): Promise<Map<string, any> | null> {
     const processStore: ProcessStore = rootStore.Process;
     const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
+
     const ownerNonce = await getOwnerNonce({ address: accountAddress });
     if (ownerNonce === null) {
       // TODO: add proper error handling

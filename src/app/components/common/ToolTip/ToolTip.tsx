@@ -3,7 +3,7 @@ import { useStyles } from './ToolTip.styles';
 import AnchorTooltip from './components/AnchorTooltip';
 
 type ToolTipProps = {
-  text?: string;
+  text?: JSX.Element | string;
   classExtend?: string;
   placement?: 'top' | 'bottom' | 'left' | 'right';
 };

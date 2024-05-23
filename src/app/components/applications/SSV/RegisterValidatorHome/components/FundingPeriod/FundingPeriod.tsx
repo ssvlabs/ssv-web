@@ -1,6 +1,5 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import Decimal from 'decimal.js';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
@@ -13,12 +12,10 @@ import LinkText from '~app/components/common/LinkText/LinkText';
 import FundingSummary from '~app/components/common/FundingSummary';
 import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import {
   useStyles,
 } from '~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod/FundingPeriod.styles';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import { RegisterValidator } from '~app/model/processes.model';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
@@ -26,11 +23,13 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 import { getSelectedOperatorsFee } from '~app/redux/operator.slice.ts';
+import { modifyProcess } from '~app/redux/process.slice.ts';
+import { useDispatch } from 'react-redux';
 
 const OPTIONS = [
   { id: 1, timeText: '6 Months', days: 182.5 },
   { id: 2, timeText: '1 Year', days: 365 },
-  { id: 3, timeText: 'Custom Period', days: 365 },
+  { id: 3, timeText: 'Custom Period', days: 365 }
 ];
 
 const FundingPeriod = () => {
@@ -41,11 +40,9 @@ const FundingPeriod = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const { walletSsvBalance } = useFetchWalletBalance();
-  const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const timePeriodNotValid = customPeriod < config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM;
-
-  const process: RegisterValidator = processStore.process as RegisterValidator;
+  const dispatch = useDispatch();
   const checkBox = (option: any) => setCheckedOption(option);
   const isCustomPayment = checkedOption.id === 3;
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
@@ -57,7 +54,7 @@ const FundingPeriod = () => {
     networkFee,
     liquidationCollateralPeriod,
     validatorsCount: validatorStore.validatorsCount,
-    minimumLiquidationCollateral,
+    minimumLiquidationCollateral
   });
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
   const insufficientBalance = totalCost.comparedTo(walletSsvBalance) === 1;
@@ -75,32 +72,32 @@ const FundingPeriod = () => {
   const isChecked = (id: number) => checkedOption.id === id;
 
   const moveToNextPage = () => {
-    process.fundingPeriod = periodOfTime;
+    dispatch(modifyProcess({ fundingPeriod: periodOfTime }));
+
     navigate(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
   };
 
   return (
-      <BorderScreen
-          blackHeader
-          withConversion
-          sectionClass={classes.Section}
-          header={'Select your validator funding period'}
-          body={[
-            <Grid container>
-              <Typography className={classes.Text}>The SSV amount you deposit will determine your validator operational
-                runway <br/>
-                (You can always manage it later by withdrawing or depositing more funds).</Typography>
-              <Grid container item style={{ gap: 16 }}>
-                {OPTIONS.map((option, index) => {
-                  const isCustom = option.id === 3;
-                  return <Grid key={index} container item
-                               className={`${classes.Box} ${isChecked(option.id) ? classes.SelectedBox : ''}`}
-                               onClick={() => checkBox(option)}>
-                    <Grid container item xs style={{ gap: 16, alignItems: 'center' }}>
-                      {isChecked(option.id) ? <Grid item className={classes.CheckedCircle}/> :
-                          <Grid item className={classes.CheckCircle}/>}
-                      <Grid item
-                            className={isChecked(option.id) ? classes.SsvPrice : classes.TimeText}>{option.timeText}</Grid>
+    <BorderScreen
+      blackHeader
+      withConversion
+      sectionClass={classes.Section}
+      header={'Select your validator funding period'}
+      body={[
+        <Grid container>
+          <Typography className={classes.Text}>
+            The SSV amount you deposit will determine your validator operational runway <br />
+            (You can always manage it later by withdrawing or depositing more funds).
+          </Typography>
+          <Grid container item style={{ gap: 16 }}>
+            {OPTIONS.map((option, index) => {
+              const isCustom = option.id === 3;
+              return (
+                <Grid key={index} container item className={`${classes.Box} ${isChecked(option.id) ? classes.SelectedBox : ''}`} onClick={() => checkBox(option)}>
+                  <Grid container item xs style={{ gap: 16, alignItems: 'center' }}>
+                    {isChecked(option.id) ? <Grid item className={classes.CheckedCircle} /> : <Grid item className={classes.CheckCircle} />}
+                    <Grid item className={isChecked(option.id) ? classes.SsvPrice : classes.TimeText}>
+                      {option.timeText}
                     </Grid>
                     <Grid item
                           className={classes.SsvPrice}>{formatNumberToUi(Number(propertyCostByPeriod(selectedOperatorsFee, isCustom ? customPeriod : option.days) * validatorStore.validatorsCount))} SSV</Grid>

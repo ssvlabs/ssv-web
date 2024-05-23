@@ -7,14 +7,9 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { FIELD_KEYS } from '~lib/utils/operatorMetadataHelper';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/FieldWrapper';
-import {
-  useStyles,
-} from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
-import OperatorMetadataStore, {
-  fieldsToValidateSignature,
-} from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
+import OperatorMetadataStore, { fieldsToValidateSignature } from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
 import { updateOperatorMetadata } from '~root/services/operator.service';
@@ -23,15 +18,15 @@ import { SingleOperator } from '~app/model/processes.model';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { fetchOperators } from '~app/redux/account.slice';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { getProcess } from '~app/redux/process.slice.ts';
 
 const EditOperatorDetails = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const classes = useStyles({});
-  const processStore: ProcessStore = stores.Process;
   const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-  const process: SingleOperator = processStore.getProcess;
+  const process: SingleOperator | undefined = useAppSelector(getProcess);
   const operator: IOperator = process?.item;
   const [errorMessage, setErrorMessage] = useState(['']);
   const [buttonDisable, setButtonDisable] = useState<boolean>(false);
@@ -55,10 +50,9 @@ const EditOperatorDetails = () => {
     if (!isNotValidity) {
       const payload = metadataStore.createMetadataPayload();
       let rawDataToValidate: any = [];
-      fieldsToValidateSignature.forEach(field => {
+      fieldsToValidateSignature.forEach((field) => {
         if (payload[field]) {
-          const newItem =
-            field === FIELD_KEYS.OPERATOR_IMAGE ? `logo:sha256:${sha256(payload[field])}` : payload[field];
+          const newItem = field === FIELD_KEYS.OPERATOR_IMAGE ? `logo:sha256:${sha256(payload[field])}` : payload[field];
           rawDataToValidate.push(newItem);
         }
       });
@@ -95,14 +89,10 @@ const EditOperatorDetails = () => {
       header={'Edit details'}
       body={[
         ...Object.values(FIELD_KEYS).map((key: string) => {
-          return (<FieldWrapper fieldKey={key}/>);
+          return <FieldWrapper fieldKey={key} />;
         }),
-        ...errorMessage.map(error => <Typography className={classes.ErrorMessage}>{error}</Typography>),
-        <PrimaryButton text={'Update'}
-                       isDisabled={buttonDisable}
-                       isLoading={isLoading}
-                       onClick={submitHandler}
-                       size={ButtonSize.XL}/>,
+        ...errorMessage.map((error) => <Typography className={classes.ErrorMessage}>{error}</Typography>),
+        <PrimaryButton text={'Update'} isDisabled={buttonDisable} isLoading={isLoading} onClick={submitHandler} size={ButtonSize.XL} />
       ]}
     />
   );

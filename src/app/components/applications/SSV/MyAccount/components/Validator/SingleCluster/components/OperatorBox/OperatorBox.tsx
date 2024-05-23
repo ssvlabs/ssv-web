@@ -25,8 +25,9 @@ const OperatorBox = ({ operator }: { operator: any }) => {
   }, []);
 
   const getCurrentState = async () => {
-    await dispatch(fetchAndSetOperatorFeeInfo(operator.id));
-    if (operatorFeeData.operatorApprovalBeginTime && operatorFeeData.operatorApprovalEndTime && operatorFeeData.operatorFutureFee) {
+    const res = await dispatch(fetchAndSetOperatorFeeInfo(operator.id));
+    // @ts-ignore
+    if (res.payload.operatorApprovalBeginTime && res.payload.operatorApprovalEndTime && res.payload.operatorFutureFee) {
       const todayDate = new Date();
       const endPendingStateTime = new Date(operatorFeeData.operatorApprovalEndTime * 1000);
       const startPendingStateTime = new Date(operatorFeeData.operatorApprovalBeginTime * 1000);

@@ -1,19 +1,30 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { retryWithDelay } from '~app/decorators/retriable.decorator';
-import config from '~app/common/config';
 
 enum HttpResult {
   SUCCESS,
-  FAIL,
+  FAIL
 }
 
 export interface IHttpResponse<T> {
   error: string | null;
   data: T | null;
-  result: HttpResult
+  result: HttpResult;
 }
 
-const httpErrorMessage = (url: string, errorCode: string, errorMessage: string, customMessage?: string) => `Http request to url ${url} ${customMessage} failed with error code ${errorCode}. Error: ${errorMessage}`;
+const RETRY_CONFIG = {
+  default: {
+    maxAttempts: 5,
+    backOff: 500,
+    exponentialOption: {
+      maxInterval: 5000,
+      multiplier: 2
+    }
+  }
+};
+
+const httpErrorMessage = (url: string, errorCode: string, errorMessage: string, customMessage?: string) =>
+  `Http request to url ${url} ${customMessage} failed with error code ${errorCode}. Error: ${errorMessage}`;
 
 const httpGeneralErrorMessage = (url: string) => `Http request to url ${url} failed.`;
 
@@ -37,7 +48,7 @@ const getRequest = async (url: string, skipRetry: boolean = true) => {
     if (skipRetry) {
       return null;
     }
-    return await retryWithDelay({ caller: async () => (await axios.get(url)).data, ...config.retry.default });
+    return await retryWithDelay({ caller: async () => (await axios.get(url)).data, ...RETRY_CONFIG.default });
   }
 };
 

@@ -4,6 +4,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: any }>`
   html, body {
     width: 100%;
     height: 100%;
+    color: ${({ theme }) => theme.colors.black} !important;
     background-color: ${({ theme }) => theme.colors.gray10} !important;
   }
 

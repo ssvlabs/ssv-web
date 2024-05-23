@@ -18,7 +18,7 @@ interface NetworkInfo {
 }
 
 export const API_VERSIONS = {
-  V4: 'v4',
+  V4: 'v4'
 };
 
 export const MAINNET_NETWORK_ID = 1;
@@ -26,23 +26,23 @@ export const HOLESKY_NETWORK_ID = 17000;
 
 const NETWORK_NAMES = {
   [`${MAINNET_NETWORK_ID}`]: 'Mainnet',
-  [`${HOLESKY_NETWORK_ID}`]: 'Holesky',
+  [`${HOLESKY_NETWORK_ID}`]: 'Holesky'
 };
 
 const LINKS = {
   [`${HOLESKY_NETWORK_ID}`]: {
     [NetworksEnum.BEACONCHA_URL]: 'https://holesky.beaconcha.in',
     [NetworksEnum.LAUNCHPAD_URL]: 'https://holesky.launchpad.ethereum.org/en/',
-    ETHERSCAN_URL: 'https://holesky.etherscan.io',
+    ETHERSCAN_URL: 'https://holesky.etherscan.io'
   },
   [`${MAINNET_NETWORK_ID}`]: {
     [NetworksEnum.BEACONCHA_URL]: 'https://beaconcha.in',
     [NetworksEnum.LAUNCHPAD_URL]: 'https://launchpad.ethereum.org/en/',
-    [NetworksEnum.ETHERSCAN_URL]: 'https://etherscan.io',
-  },
+    [NetworksEnum.ETHERSCAN_URL]: 'https://etherscan.io'
+  }
 };
 
-const rawNetworksData: string = process.env.REACT_APP_SSV_NETWORKS as string;
+const rawNetworksData: string = import.meta.env.VITE_SSV_NETWORKS as string;
 const networks: NetworkInfo[] = JSON.parse(rawNetworksData);
 
 for (let i = 0; i < networks.length; i++) {
@@ -92,7 +92,6 @@ const getTransactionLink = (txHash: string) => `${getLink({ type: NetworksEnum.E
 
 export {
   LINKS,
-  NetworkInfo,
   networks,
   getNetworkInfoIndexByNetworkId,
   changeNetwork,
@@ -104,5 +103,6 @@ export {
   getBeaconChainLink,
   getLaunchpadLink,
   getEtherScanLink,
-  getTransactionLink,
+  getTransactionLink
 };
+export type { NetworkInfo };

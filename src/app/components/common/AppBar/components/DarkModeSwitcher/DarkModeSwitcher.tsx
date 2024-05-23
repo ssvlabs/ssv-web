@@ -1,24 +1,23 @@
-import React from 'react';
 import Grid from '@mui/material/Grid';
 import { useStyles } from './DarkModeSwitcher.styles';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode, toggleDarkMode } from '~app/redux/appState.slice';
 
 type Props = {
-    margin?: boolean,
+  margin?: boolean;
 };
 
 const DarkModeSwitcher = (props: Props) => {
-    const { margin } = props;
-    const isDarkMode = useAppSelector(getIsDarkMode);
-    const dispatch = useAppDispatch();
-    const classes = useStyles({ isDarkMode, margin });
+  const { margin } = props;
+  const isDarkMode = useAppSelector(getIsDarkMode);
+  const dispatch = useAppDispatch();
+  const classes = useStyles({ isDarkMode, margin });
 
-    return (
-      <Grid item container onClick={() => dispatch(toggleDarkMode())}>
-        <Grid item className={classes.Image} />
-      </Grid>
-    );
+  return (
+    <Grid item container onClick={() => dispatch(toggleDarkMode())}>
+      <Grid item className={classes.Image} />
+    </Grid>
+  );
 };
 
 export default DarkModeSwitcher;

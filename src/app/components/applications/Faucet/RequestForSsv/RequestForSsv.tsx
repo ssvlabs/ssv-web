@@ -1,20 +1,20 @@
-import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
-import React, { useEffect, useRef, useState } from 'react';
+import Grid from '@mui/material/Grid';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import config from '~app/common/config';
-import TextInput from '~app/components/common/TextInput';
 import translations from '~app/common/config/translations';
-import InputLabel from '~app/components/common/InputLabel';
-import BorderScreen from '~app/components/common/BorderScreen';
 import { useStyles } from '~app/components/applications/Faucet/RequestForSsv/RequestForSsv.styles';
+import BorderScreen from '~app/components/common/BorderScreen';
+import InputLabel from '~app/components/common/InputLabel';
+import TextInput from '~app/components/common/TextInput';
+import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
+import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice';
 import { currentNetworkName } from '~root/providers/networkInfo.provider';
 import { getAmountToTransfer, requestSsvFromFaucet } from '~root/services/faucet.service';
-import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
-import { ButtonSize } from '~app/enums/Button.enum';
 
 const RequestForSsv = () => {
   const navigate = useNavigate();
@@ -71,32 +71,21 @@ const RequestForSsv = () => {
       body={[
         <Grid container className={classes.Wrapper}>
           <Grid item xs={12}>
-            <InputLabel title="Recipient Wallet"/>
-            <TextInput
-              disable
-              data-testid="recipient-wallet"
-              value={accountAddress}
-            />
+            <InputLabel title="Recipient Wallet" />
+            <TextInput disable data-testid="recipient-wallet" value={accountAddress} />
           </Grid>
           <Grid item xs={12}>
-            <InputLabel title="Request Amount"/>
-            {amountToTransfer !== undefined && <TextInput
-              disable
-              value={`${amountToTransfer} SSV`}
-              data-testid='request-amount'
-              wrapperClass={classes.AmountInput}
-            />}
+            <InputLabel title="Request Amount" />
+            {amountToTransfer !== undefined && <TextInput disable value={`${amountToTransfer} SSV`} data-testid="request-amount" wrapperClass={classes.AmountInput} />}
           </Grid>
-          {error && <Grid item xs={12} className={classes.ErrorText}>{error}</Grid>}
-          <HCaptcha
-            ref={captchaRef}
-            theme={isDarkMode ? 'dark' : 'light'}
-            onVerify={() => setDisabled(false)}
-            sitekey={String(process.env.REACT_APP_CAPTCHA_KEY)}
-          />
-          <PrimaryButton text={buttonText} onClick={requestForSSV}
-                         isDisabled={isMainnet || disabled || reachedMaxTransactionPerDay} isLoading={isLoading} size={ButtonSize.XL}/>
-        </Grid>,
+          {error && (
+            <Grid item xs={12} className={classes.ErrorText}>
+              {error}
+            </Grid>
+          )}
+          <HCaptcha ref={captchaRef} theme={isDarkMode ? 'dark' : 'light'} onVerify={() => setDisabled(false)} sitekey={String(process.env.REACT_APP_CAPTCHA_KEY)} />
+          <PrimaryButton text={buttonText} onClick={requestForSSV} isDisabled={isMainnet || disabled || reachedMaxTransactionPerDay} isLoading={isLoading} size={ButtonSize.XL} />
+        </Grid>
       ]}
     />
   );

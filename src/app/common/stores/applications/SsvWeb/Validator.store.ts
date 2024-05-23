@@ -2,7 +2,6 @@
 import Decimal from 'decimal.js';
 import { action, makeObservable, observable } from 'mobx';
 import { KeyShares, KeySharesItem, SSVKeys } from 'ssv-keys';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { EContractName } from '~app/model/contracts.model';
 import { IOperator } from '~app/model/operator.model';
 import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
@@ -13,7 +12,6 @@ import { getContractByName } from '~root/services/contracts.service';
 import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { getIsRegisteredValidator, getLiquidationCollateralPerValidator } from '~root/services/validator.service';
-import { rootStore } from '~root/stores.ts';
 import { createPayload } from '~root/utils/dkg.utils';
 
 const annotations = {
@@ -123,6 +121,7 @@ class ValidatorStore {
     liquidationCollateralPeriod,
     minimumLiquidationCollateral,
     selectedOperatorsFee,
+    process,
     dispatch
   }: {
     accountAddress: string;
@@ -133,6 +132,7 @@ class ValidatorStore {
     liquidationCollateralPeriod: number;
     minimumLiquidationCollateral: number;
     selectedOperatorsFee: number;
+    process: RegisterValidator | SingleCluster;
     dispatch: Function;
   }) {
     const contract = getContractByName(EContractName.SETTER);
@@ -145,7 +145,8 @@ class ValidatorStore {
             liquidationCollateralPeriod,
             minimumLiquidationCollateral,
             selectedOperatorsFee,
-            selectedOperators: operators
+            selectedOperators: operators,
+            process
           })
         : await this.createKeystorePayload({
             accountAddress,
@@ -153,7 +154,8 @@ class ValidatorStore {
             liquidationCollateralPeriod,
             minimumLiquidationCollateral,
             selectedOperatorsFee,
-            selectedOperators: operators
+            selectedOperators: operators,
+            process
           });
     if (!payload) {
       return false;
@@ -178,7 +180,8 @@ class ValidatorStore {
     liquidationCollateralPeriod,
     minimumLiquidationCollateral,
     selectedOperatorsFee,
-    selectedOperators
+    selectedOperators,
+    process
   }: {
     accountAddress: string;
     networkFee: number;
@@ -186,10 +189,8 @@ class ValidatorStore {
     minimumLiquidationCollateral: number;
     selectedOperatorsFee: number;
     selectedOperators: IOperator[];
+    process: RegisterValidator | SingleCluster;
   }): Promise<Map<string, any> | null> {
-    const processStore: ProcessStore = rootStore.Process;
-    const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
-
     const ownerNonce = await getOwnerNonce({ address: accountAddress });
     if (ownerNonce === null) {
       // TODO: add proper error handling
@@ -239,7 +240,8 @@ class ValidatorStore {
     liquidationCollateralPeriod,
     minimumLiquidationCollateral,
     selectedOperatorsFee,
-    selectedOperators
+    selectedOperators,
+    process
   }: {
     accountAddress: string;
     networkFee: number;
@@ -247,10 +249,9 @@ class ValidatorStore {
     minimumLiquidationCollateral: number;
     selectedOperatorsFee: number;
     selectedOperators: IOperator[];
+    process: RegisterValidator | SingleCluster;
   }): Promise<Map<string, any> | null> {
     return new Promise(async (resolve) => {
-      const processStore: ProcessStore = rootStore.Process;
-      const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
       let totalCost = 'registerValidator' in process ? prepareSsvAmountToTransfer(toWei(process.registerValidator?.depositAmount)) : 0;
       if (process && 'fundingPeriod' in process) {
         const networkCost = propertyCostByPeriod(networkFee, process.fundingPeriod);

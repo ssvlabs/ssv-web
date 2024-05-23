@@ -99,6 +99,7 @@ const ValidatorRegistrationConfirmation = () => {
       liquidationCollateralPeriod,
       minimumLiquidationCollateral,
       selectedOperatorsFee,
+      process,
       dispatch
     });
     if (response && !isContractWallet) {
@@ -161,9 +162,7 @@ const ValidatorRegistrationConfirmation = () => {
           Selected Operators
         </Grid>
         {Object.values(selectedOperators).map((operator: IOperator, index: number) => {
-          const operatorCost = isSecondRegistration
-            ? formatNumberToUi(getFeeForYear(fromWei(operator.fee)))
-            : propertyCostByPeriod(fromWei(operator.fee), processFundingPeriod);
+          const operatorCost = isSecondRegistration ? formatNumberToUi(getFeeForYear(fromWei(operator.fee))) : propertyCostByPeriod(fromWei(operator.fee), processFundingPeriod);
           const operatorCostPeriod = isSecondRegistration ? '/year' : `/${formatNumberToUi(processFundingPeriod, true)} days`;
           return (
             <Grid key={index} container item xs={12} className={classes.Row}>

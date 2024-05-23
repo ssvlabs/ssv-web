@@ -1,4 +1,3 @@
-import React from 'react';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import { useStyles } from './BarMessage.styles';
@@ -17,12 +16,7 @@ const BarMessage = () => {
   };
 
   return (
-    <Snackbar
-      onClose={handleClose}
-      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      open={!!message}
-      autoHideDuration={AUTO_HIDE_DURATION}
-    >
+    <Snackbar onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={!!message} autoHideDuration={AUTO_HIDE_DURATION}>
       <Alert onClose={handleClose} className={classes.messageBar} severity={severity}>
         {message}
       </Alert>

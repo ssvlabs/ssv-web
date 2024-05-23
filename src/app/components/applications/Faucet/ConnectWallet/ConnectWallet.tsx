@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -25,7 +25,6 @@ const ConnectWallet = () => {
   const connectToWallet = () => {
     if (accountAddress) {
       dispatch(setIsShowWalletPopup(true));
-    } else {
     }
   };
 
@@ -36,12 +35,12 @@ const ConnectWallet = () => {
       header={`SSV Faucet ${currentNetworkName()} Testnet`}
       body={[
         <Grid container>
-          <Typography className={classes.SubHeader}>Connect your wallet to receive testnet SSV for testing
-            purposes.</Typography>
-          <Grid item className={classes.Warning}>Funds received through the SSV faucet are not real funds and hold no
-            value.</Grid>
-          <PrimaryButton text={'Connect Wallet'} onClick={connectToWallet} size={ButtonSize.XL}/>
-        </Grid>,
+          <Typography className={classes.SubHeader}>Connect your wallet to receive testnet SSV for testing purposes.</Typography>
+          <Grid item className={classes.Warning}>
+            Funds received through the SSV faucet are not real funds and hold no value.
+          </Grid>
+          <PrimaryButton text={'Connect Wallet'} onClick={connectToWallet} size={ButtonSize.XL} />
+        </Grid>
       ]}
     />
   );

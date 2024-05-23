@@ -1,10 +1,6 @@
-import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
-import React, { useEffect, useState } from 'react';
-import { useStores } from '~app/hooks/useStores';
+import { useEffect, useState } from 'react';
 import { translations } from '~app/common/config';
 import CheckBox from '~app/components/common/CheckBox';
-import SsvStore from '~app/common/stores/applications/SsvWeb/SSV.store';
 import { toWei } from '~root/services/conversions.service';
 import { setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
@@ -12,103 +8,90 @@ import notifyService from '~root/services/notify.service';
 import Spinner from '~app/components/common/Spinner';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import styled from 'styled-components';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton, Grid } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { checkAllowance, requestAllowance } from '~root/services/tokenContract.service';
 
 const Container = styled.div`
-    display: flex;
-    flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
 `;
 
 const ButtonWrapper = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    gap: 24px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
 `;
 
 const ProgressStepsWrapper = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    margin-top: 16px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
 `;
 
 const ProgressStepsInner = styled.div`
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 `;
 
-
-const Step = styled.div<{ isCurrent: boolean, hasFinished?: boolean }>`
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    text-align: center;
-    padding: 3px 10px;
-    background-color: ${({
-                             theme,
-                             isCurrent,
-                         }) => isCurrent ? theme.colors.primarySuccessRegularOpacity : theme.colors.gray10};
-    border: ${({ theme, isCurrent }) => `1px solid ${isCurrent ? theme.colors.primarySuccessDark : theme.colors.gray30}`};
-    ${({ hasFinished }) => {
-        if (hasFinished) {
-            return {
-                border: 'none',
-                backgroundSize: 'contain',
-                backgroundColor: '#20eec8',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-                backgroundImage: 'url(/images/step-done.svg)',
-            };
-        }
-    }}
+const Step = styled.div<{ isCurrent: boolean; hasFinished?: boolean }>`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  text-align: center;
+  padding: 3px 10px;
+  background-color: ${({ theme, isCurrent }) => (isCurrent ? theme.colors.primarySuccessRegularOpacity : theme.colors.gray10)};
+  border: ${({ theme, isCurrent }) => `1px solid ${isCurrent ? theme.colors.primarySuccessDark : theme.colors.gray30}`};
+  ${({ hasFinished }) => {
+    if (hasFinished) {
+      return {
+        border: 'none',
+        backgroundSize: 'contain',
+        backgroundColor: '#20eec8',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundImage: 'url(/images/step-done.svg)'
+      };
+    }
+  }}
 `;
 
 const StepText = styled.div`
-    width: 10px;
-    height: 22px;
-    font-size: 16px;
-    font-weight: 600;
-    text-align: center;
-    color: ${({ theme }) => theme.colors.gray90};
+  width: 10px;
+  height: 22px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  color: ${({ theme }) => theme.colors.gray90};
 `;
 
 const Line = styled.div`
-    height: 1px;
-    width: 272px;
-    margin: 15.5px 0;
-    background-color: ${({ theme }) => theme.colors.gray40};
-    `;
+  height: 1px;
+  width: 272px;
+  margin: 15.5px 0;
+  background-color: ${({ theme }) => theme.colors.gray40};
+`;
 
 type ButtonParams = {
-  text: string,
-  disable: boolean,
-  onClick?: any,
-  testId?: string,
-  errorButton?: boolean,
-  withAllowance?: boolean,
-  checkboxText?: string | null,
-  checkBoxCallBack?: (() => void) | null,
-  isCheckboxChecked?: boolean,
-  isLoading?: boolean,
-  totalAmount?: string,
-  allowanceApprovedCB?: () => void
+  text: string;
+  disable: boolean;
+  onClick?: any;
+  testId?: string;
+  errorButton?: boolean;
+  withAllowance?: boolean;
+  checkboxText?: string | null;
+  checkBoxCallBack?: (() => void) | null;
+  isCheckboxChecked?: boolean;
+  isLoading?: boolean;
+  totalAmount?: string;
+  allowanceApprovedCB?: () => void;
 };
 
-const AllowanceButton = ({
-                           disable,
-                           onClick,
-                           text,
-                           checkboxText,
-                           checkBoxCallBack,
-                           isCheckboxChecked,
-                           totalAmount,
-                           isLoading,
-                           allowanceApprovedCB,
-                         }: ButtonParams) => {
+const AllowanceButton = ({ disable, onClick, text, checkboxText, checkBoxCallBack, isCheckboxChecked, totalAmount, isLoading, allowanceApprovedCB }: ButtonParams) => {
   const [hasCheckedAllowance, setHasCheckedAllowance] = useState(false);
   const [hasToRequestApproval, setHasToRequestApproval] = useState(false);
   const [hasGotAllowanceApproval, setHasGotAllowanceApproval] = useState(false);
@@ -116,13 +99,11 @@ const AllowanceButton = ({
   const [allowanceButtonDisable, setAllowanceButtonDisable] = useState(false);
   const dispatch = useAppDispatch();
   const accountAddress = useAppSelector(getAccountAddress);
-  const stores = useStores();
-  const ssvStore: SsvStore = stores.SSV;
 
   useEffect(() => {
     const checkUserAllowance = async () => {
-      await ssvStore.checkAllowance();
-      if (ssvStore.approvedAllowance < Number(toWei(totalAmount))) {
+      const approvedAllowance = await checkAllowance({ accountAddress });
+      if (approvedAllowance < Number(toWei(totalAmount))) {
         setHasToRequestApproval(true);
         setHasGotAllowanceApproval(false);
       } else {
@@ -130,11 +111,7 @@ const AllowanceButton = ({
       }
       setHasCheckedAllowance(true);
     };
-    if (true) {
-      checkUserAllowance();
-    } else {
-      setHasCheckedAllowance(true);
-    }
+    checkUserAllowance();
   }, [totalAmount]);
 
   const handlePendingTransaction = ({ txHash }: { txHash: string }) => {
@@ -143,11 +120,11 @@ const AllowanceButton = ({
     notifyService.hash(txHash);
   };
 
-  const requestAllowance = async () => {
+  const requestAllowanceHandler = async () => {
     try {
       setAllowanceButtonDisable(true);
       setApproveButtonText('Approving…');
-      await ssvStore.requestAllowance(handlePendingTransaction);
+      await requestAllowance(handlePendingTransaction);
       setApproveButtonText('Approved');
       setHasGotAllowanceApproval(true);
       allowanceApprovedCB && allowanceApprovedCB();
@@ -165,8 +142,7 @@ const AllowanceButton = ({
       <PrimaryButton
         isDisabled={disable}
         isLoading={isLoading}
-        onClick={onClick ? onClick : () => {
-        }}
+        onClick={onClick ? onClick : () => {}}
         text={!!accountAddress ? text : translations.CTA_BUTTON.CONNECT}
         size={ButtonSize.XL}
       />
@@ -180,27 +156,25 @@ const AllowanceButton = ({
           <PrimaryButton
             text={approveButtonText}
             isDisabled={hasGotAllowanceApproval || disable}
-            onClick={() => {
-              !allowanceButtonDisable && requestAllowance();
-            }}
+            onClick={!allowanceButtonDisable ? requestAllowanceHandler : () => {}}
             size={ButtonSize.XL}
           />
           <PrimaryButton
             isDisabled={!hasGotAllowanceApproval || disable}
             isLoading={isLoading}
-            onClick={onClick ? onClick : () => {
-            }}
+            onClick={onClick ? onClick : () => {}}
             text={!!accountAddress ? text : translations.CTA_BUTTON.CONNECT}
-            size={ButtonSize.XL}/>
+            size={ButtonSize.XL}
+          />
         </ButtonWrapper>
         <ProgressStepsWrapper>
           <ProgressStepsInner>
-            <Step
-              hasFinished={hasGotAllowanceApproval}
-              isCurrent={!hasGotAllowanceApproval}>
+            {/* @ts-ignore */}
+            <Step hasFinished={hasGotAllowanceApproval} isCurrent={!hasGotAllowanceApproval}>
               {!hasGotAllowanceApproval && <StepText>1</StepText>}
             </Step>
             <Line />
+            {/* @ts-ignore */}
             <Step isCurrent={hasGotAllowanceApproval}>
               <StepText>2</StepText>
             </Step>
@@ -211,14 +185,14 @@ const AllowanceButton = ({
   };
 
   if (!hasCheckedAllowance) {
-    return <Spinner size={35}/>;
+    return <Spinner size={35} />;
   }
 
   return (
     <Grid container>
       {checkboxText && checkBoxCallBack && (
         <Grid item xs={12}>
-          <CheckBox toggleIsChecked={checkBoxCallBack} text={checkboxText} isChecked={isCheckboxChecked}/>
+          <CheckBox toggleIsChecked={checkBoxCallBack} text={checkboxText} isChecked={isCheckboxChecked} />
         </Grid>
       )}
       {hasToRequestApproval ? userNeedApproval() : regularButton()}
@@ -226,4 +200,4 @@ const AllowanceButton = ({
   );
 };
 
-export default observer(AllowanceButton);
+export default AllowanceButton;

@@ -1,38 +1,33 @@
+/* eslint-disable no-async-promise-executor */
 import { action, computed, observable } from 'mobx';
-import { isEqualsAddresses } from '~lib/utils/strings';
-import BaseStore from '~app/common/stores/BaseStore';
-import { IMerkleTreeData } from '~app/model/merkleTree.model';
-import { fromWei } from '~root/services/conversions.service';
-import { store } from '~app/store';
-import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
-import { fetchMerkleTreeStructure } from '~root/services/distribution.service';
-import { getContractByName } from '~root/services/contracts.service';
-import { EContractName } from '~app/model/contracts.model';
-import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { translations } from '~app/common/config';
+import { EContractName } from '~app/model/contracts.model';
+import { IMerkleTreeData } from '~app/model/merkleTree.model';
+import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { store } from '~app/store';
+import { isEqualsAddresses } from '~lib/utils/strings';
+import { getContractByName } from '~root/services/contracts.service';
+import { fromWei } from '~root/services/conversions.service';
+import { fetchMerkleTreeStructure } from '~root/services/distribution.service';
 
-class DistributionStore extends BaseStore {
-  @observable merkleRoot: string = '';
-  @observable userAddress: string = '';
-  @observable rewardIndex: number = 0;
-  @observable rewardAmount: number = 0;
-  @observable claimed: boolean = false;
-  @observable claimedRewards: number = 0;
+class DistributionStore {
+  @observable merkleRoot = '';
+  @observable userAddress = '';
+  @observable rewardIndex = 0;
+  @observable rewardAmount = 0;
+  @observable claimed = false;
+  @observable claimedRewards = 0;
   @observable rewardMerkleProof: string[] = [];
-  @observable userWithdrawRewards: boolean = false;
+  @observable userWithdrawRewards = false;
 
   @action.bound
   async claimRewards() {
     return new Promise(async (resolve) => {
-      const contract = getContractByName((EContractName.DISTRIBUTION));
+      const contract = getContractByName(EContractName.DISTRIBUTION);
       store.dispatch(setIsLoading(true));
       try {
-        const tx = await contract.claim(
-          this.userAddress,
-          String(this.rewardAmount),
-          this.merkleRoot,
-          this.rewardMerkleProof,
-        );
+        const tx = await contract.claim(this.userAddress, String(this.rewardAmount), this.merkleRoot, this.rewardMerkleProof);
         if (tx.hash) {
           store.dispatch(setTxHash(tx.hash));
           store.dispatch(setIsShowTxPendingPopup(true));
@@ -76,7 +71,7 @@ class DistributionStore extends BaseStore {
     await this.cleanState();
     const merkle = await fetchMerkleTreeStructure();
     const accountAddress = store.getState().walletState.accountAddress;
-      merkle?.tree.data.forEach((merkleTreeUser: IMerkleTreeData, index: number) => {
+    merkle?.tree.data.forEach((merkleTreeUser: IMerkleTreeData, index: number) => {
       if (isEqualsAddresses(merkleTreeUser.address, accountAddress)) {
         this.merkleRoot = merkle.tree.root;
         this.userAddress = merkleTreeUser.address;
@@ -103,4 +98,5 @@ class DistributionStore extends BaseStore {
   }
 }
 
+export const distributionStore = new DistributionStore();
 export default DistributionStore;

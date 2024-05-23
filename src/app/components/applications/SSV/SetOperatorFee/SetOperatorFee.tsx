@@ -1,55 +1,56 @@
-import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
+import { Grid } from '~app/atomicComponents';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './SetOperatorFee.styles';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import { validateFeeInput } from '~lib/utils/validatesInputs';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppSelector } from '~app/hooks/redux.hook.ts';
+import { getMaxOperatorFeePerYear } from '~app/redux/operator.slice.ts';
 
 type UserInput = string;
 
 const INITIAL_ERROR_STATE = { shouldDisplay: false, errorMessage: '' };
 
 const SetOperatorFee = () => {
-  const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const operatorStore: OperatorStore = stores.Operator;
+  const location = useLocation();
+  const maxFee = useAppSelector(getMaxOperatorFeePerYear);
+  const { operatorRawData } = location.state;
   const [error, setError] = useState(INITIAL_ERROR_STATE);
   const [userInput, setUserInput] = useState<UserInput>('');
   const [registerButtonDisabled, setRegisterButtonDisabled] = useState(true);
 
   useEffect(() => {
-   if ( userInput === '') {
-     setError(INITIAL_ERROR_STATE);
-     setRegisterButtonDisabled(true);
-     return;
+    if (userInput === '') {
+      setError(INITIAL_ERROR_STATE);
+      setRegisterButtonDisabled(true);
+      return;
     }
-    validateFeeInput(userInput, setError);
+    validateFeeInput({
+      value: userInput,
+      maxFee,
+      callback: setError
+    });
     setUserInput(removeLeadingZeros(userInput));
     const isRegisterButtonDisabled = typeof userInput === 'object' || error.shouldDisplay;
     setRegisterButtonDisabled(isRegisterButtonDisabled);
   }, [error.shouldDisplay, userInput]);
 
   const moveToSubmitConfirmation = () => {
-    const operatorWithFee = operatorStore.newOperatorKeys;
-    // @ts-ignore
-    operatorWithFee.fee = parseFloat(userInput) || 0;
-    operatorStore.setOperatorKeys(operatorWithFee);
-    navigate(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE);
+    operatorRawData.fee = parseFloat(userInput) || 0;
+    navigate(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE, { state: { operatorRawData } });
   };
 
-  const removeLeadingZeros = (num: string): string =>  {
-    let stripped = num.toString().replace(/^0+(?!\.)/, '');
+  const removeLeadingZeros = (num: string): string => {
+    const stripped = num.toString().replace(/^0+(?!\.)/, '');
     return stripped === '' ? '0' : stripped;
   };
 
@@ -63,11 +64,20 @@ const SetOperatorFee = () => {
         <Grid container style={{ position: 'relative', gap: 0 }}>
           <HeaderSubHeader title={'Set Operator Fee'} />
           <Grid item container style={{ gap: 24 }}>
-            <Typography className={classes.Text}>The ssv network utilizes the SSV token to facilitate payments between stakers to operators for maintaining their validators.</Typography>
-            <Typography className={classes.Text}>Operators set their own fees, denominated in SSV tokens, to be charged per each validator that selects them as one of their operators.</Typography>
-            <Typography className={classes.Text}>Fees are presented as annual payments, but in practice are paid to operators continuously as an ongoing process - per each passed block.</Typography>
+            <Typography className={classes.Text}>
+              The ssv network utilizes the SSV token to facilitate payments between stakers to operators for maintaining their validators.
+            </Typography>
+            <Typography className={classes.Text}>
+              Operators set their own fees, denominated in SSV tokens, to be charged per each validator that selects them as one of their operators.
+            </Typography>
+            <Typography className={classes.Text}>
+              Fees are presented as annual payments, but in practice are paid to operators continuously as an ongoing process - per each passed block.
+            </Typography>
             <Typography className={classes.Text}>Your earnings are paid to your ssv operator balance, and can be withdrawn to your wallet at any time.</Typography>
-            <Grid className={classes.Text}>Please note that you could always change your fee (according to <br /> the <LinkText text={'limitations'} link={config.links.SSV_UPDATE_FEE_DOCS} />) to align with market dynamics, such as competitiveness and SSV price fluctuations.</Grid>
+            <Grid className={classes.Text}>
+              Please note that you could always change your fee (according to <br /> the <LinkText text={'limitations'} link={config.links.SSV_UPDATE_FEE_DOCS} />) to align with
+              market dynamics, such as competitiveness and SSV price fluctuations.
+            </Grid>
           </Grid>
           <Grid item container className={classes.InputWrapper} style={{ gap: 24 }}>
             <Grid item container>
@@ -77,20 +87,22 @@ const SetOperatorFee = () => {
                 </Grid>
               </Grid>
               <TextInput
+                type="number"
                 withSideText
                 value={userInput}
                 placeHolder={'0.0'}
                 showError={error.shouldDisplay}
                 dataTestId={'edit-operator-fee'}
-                onChangeCallback={verifyFeeNumber}/>
+                onChangeCallback={verifyFeeNumber}
+              />
               {error.shouldDisplay && <Typography className={classes.TextError}>{error.errorMessage}</Typography>}
             </Grid>
-              <PrimaryButton text={'Next'} isDisabled={registerButtonDisabled} onClick={moveToSubmitConfirmation}  size={ButtonSize.XL}/>
+            <PrimaryButton text={'Next'} isDisabled={registerButtonDisabled} onClick={moveToSubmitConfirmation} size={ButtonSize.XL} />
           </Grid>
-        </Grid>,
+        </Grid>
       ]}
     />
   );
 };
 
-export default observer(SetOperatorFee);
+export default SetOperatorFee;

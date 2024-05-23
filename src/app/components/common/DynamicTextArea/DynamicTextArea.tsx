@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import { useStores } from '~app/hooks/useStores';
 import { truncateText } from '~lib/utils/strings';
@@ -6,70 +6,69 @@ import { useStyles } from '~app/components/common/DynamicTextArea/DynamicTextAre
 import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 
 const DynamicTextarea = ({ fieldKey }: { fieldKey: string }) => {
-    const stores = useStores();
-    const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-    const description = metadataStore.getMetadataValue(fieldKey);
-    const [value, setValue] = useState<string>(description);
-    const [showingValue, setShowingValue] = useState(value);
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const [fieldHeight, setFieldHeight] = useState<string | number>(80);
-    const [amountOfField, setAmountOfField] = useState<number>(1);
+  const stores = useStores();
+  const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
+  const description = metadataStore.getMetadataValue(fieldKey);
+  const [value, setValue] = useState<string>(description);
+  const [showingValue, setShowingValue] = useState(value);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [fieldHeight, setFieldHeight] = useState<string | number>(80);
+  const [amountOfField, setAmountOfField] = useState<number>(1);
 
-    const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        metadataStore.setMetadataValue(fieldKey, event.target.value) ;
-        setValue(event.target.value);
-        setShowingValue(event.target.value);
-    };
+  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    metadataStore.setMetadataValue(fieldKey, event.target.value);
+    setValue(event.target.value);
+    setShowingValue(event.target.value);
+  };
 
-    const handleBlur = () => {
-        setShowingValue(truncateText(value, 100));
-        if (textareaRef.current) {
-            textareaRef.current.style.height = 'auto';
-            setFieldHeight(80);
-        }
-    };
+  const handleBlur = () => {
+    setShowingValue(truncateText(value, 100));
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      setFieldHeight(80);
+    }
+  };
 
-    const handleFocus = () => {
-        setShowingValue(value);
-    };
+  const handleFocus = () => {
+    setShowingValue(value);
+  };
 
-    useEffect(() => {
-        if (textareaRef.current) {
-            if ( textareaRef.current.scrollHeight < 80 ) {
-                textareaRef.current.style.height = 'auto';
-                setAmountOfField(1);
-                setFieldHeight(80);
-            } else {
-                textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-                setAmountOfField(2);
-                setFieldHeight(textareaRef.current.scrollHeight);
-            }
-        }
+  useEffect(() => {
+    if (textareaRef.current) {
+      if (textareaRef.current.scrollHeight < 80) {
+        textareaRef.current.style.height = 'auto';
+        setAmountOfField(1);
+        setFieldHeight(80);
+      } else {
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+        setAmountOfField(2);
+        setFieldHeight(textareaRef.current.scrollHeight);
+      }
+    }
+  }, [value]);
 
-    }, [value]);
+  useEffect(() => {
+    setShowingValue(truncateText(value, 100));
+    setFieldHeight(80);
+  }, []);
 
-    useEffect(() => {
-            setShowingValue(truncateText(value, 100));
-            setFieldHeight(80);
-    }, []);
+  const classes = useStyles({ areaHeight: fieldHeight });
 
-    const classes = useStyles({ areaHeight: fieldHeight });
-
-    return (
-        <Grid container className={classes.Wrapper}>
-               <textarea
-                   rows={amountOfField}
-                   className={classes.TextArea}
-                   ref={textareaRef}
-                   value={showingValue}
-                   onChange={handleChange}
-                   onBlur={handleBlur}
-                   onFocus={handleFocus}
-                   style={{ overflow: 'hidden' }}
-                   placeholder={'Describe your operation'}
-               />
-        </Grid>
-    );
+  return (
+    <Grid container className={classes.Wrapper}>
+      <textarea
+        rows={amountOfField}
+        className={classes.TextArea}
+        ref={textareaRef}
+        value={showingValue}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        onFocus={handleFocus}
+        style={{ overflow: 'hidden' }}
+        placeholder={'Describe your operation'}
+      />
+    </Grid>
+  );
 };
 
 export default DynamicTextarea;

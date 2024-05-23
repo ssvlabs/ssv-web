@@ -1,20 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import OperatorCard from '~app/components/common/OperatorCard';
-import {
-  useStyles,
-} from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/Operator/OperatorData.styles';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/Operator/OperatorData.styles';
 
 const OperatorData = ({
-                        operatorId, operatorLogo, hasError, name,
-                        type,
-                      }: {
-  name: string,
-  type: string | undefined,
-  operatorId: string,
-  operatorLogo: string,
-  hasError: boolean
+  operatorId,
+  operatorLogo,
+  hasError,
+  name,
+  type
+}: {
+  name: string;
+  type: string | undefined;
+  operatorId: number;
+  operatorLogo: string;
+  hasError: boolean;
 }) => {
   const classes = useStyles({ operatorLogo, hasError });
   const timeoutRef = useRef(null);
@@ -22,7 +23,7 @@ const OperatorData = ({
 
   useEffect(() => {
     return () => {
-      if (timeoutRef?.current){
+      if (timeoutRef?.current) {
         clearTimeout(timeoutRef.current);
       }
     };
@@ -44,11 +45,9 @@ const OperatorData = ({
 
   return (
     <Grid onMouseLeave={handleGridLeave} onMouseEnter={handleGridHover} className={classes.Wrapper}>
-      <Grid className={classes.OperatorLogo}/>
+      <Grid className={classes.OperatorLogo} />
       <Typography className={classes.OperatorId}>ID: {operatorId}</Typography>
-      {hoveredGrid && (
-        <OperatorCard classExtend={classes.OperatorCardExtendClass} operator={{ logo: operatorLogo, id: operatorId, name, type }}/>
-      )}
+      {hoveredGrid && <OperatorCard classExtend={classes.OperatorCardExtendClass} operator={{ logo: operatorLogo, id: operatorId, name, type }} />}
     </Grid>
   );
 };

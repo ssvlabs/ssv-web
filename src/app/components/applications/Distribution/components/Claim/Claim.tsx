@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDistributionStore } from '~app/hooks/useDistributionStore';
 import DistributionStore from '~app/common/stores/applications/Distribution/Distribution.store';
 import EligibleScreen from '~app/components/applications/Distribution/components/Claim/EligibleScreen';
@@ -10,7 +10,7 @@ import { getAccountAddress } from '~app/redux/wallet.slice';
 
 const CLAIM_FLOW = {
   NOT_ELIGIBLE: 0,
-  ELIGIBLE: 1,
+  ELIGIBLE: 1
 };
 
 const Claim = () => {
@@ -27,14 +27,12 @@ const Claim = () => {
 
   const components = {
     [CLAIM_FLOW.ELIGIBLE]: EligibleScreen,
-    [CLAIM_FLOW.NOT_ELIGIBLE]: NotEligibleScreen,
+    [CLAIM_FLOW.NOT_ELIGIBLE]: NotEligibleScreen
   };
 
   const Component = components[currentClaimFlow];
 
-  return (
-    <Component/>
-  );
+  return <Component />;
 };
 
 export default Claim;

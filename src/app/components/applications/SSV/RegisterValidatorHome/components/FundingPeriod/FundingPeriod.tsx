@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Decimal from 'decimal.js';
+import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
@@ -12,10 +13,9 @@ import LinkText from '~app/components/common/LinkText/LinkText';
 import FundingSummary from '~app/components/common/FundingSummary';
 import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
-import {
-  useStyles,
-} from '~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod/FundingPeriod.styles';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod/FundingPeriod.styles';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { RegisterValidator } from '~app/model/processes.model';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
@@ -23,8 +23,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 import { getSelectedOperatorsFee } from '~app/redux/operator.slice.ts';
-import { modifyProcess } from '~app/redux/process.slice.ts';
-import { useDispatch } from 'react-redux';
+import { getProcess } from '~app/redux/process.slice.ts';
 
 const OPTIONS = [
   { id: 1, timeText: '6 Months', days: 182.5 },
@@ -42,7 +41,8 @@ const FundingPeriod = () => {
   const { walletSsvBalance } = useFetchWalletBalance();
   const validatorStore: ValidatorStore = stores.Validator;
   const timePeriodNotValid = customPeriod < config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM;
-  const dispatch = useDispatch();
+
+  const process: RegisterValidator = useAppSelector(getProcess) as RegisterValidator;
   const checkBox = (option: any) => setCheckedOption(option);
   const isCustomPayment = checkedOption.id === 3;
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
@@ -72,8 +72,7 @@ const FundingPeriod = () => {
   const isChecked = (id: number) => checkedOption.id === id;
 
   const moveToNextPage = () => {
-    dispatch(modifyProcess({ fundingPeriod: periodOfTime }));
-
+    process.fundingPeriod = periodOfTime;
     navigate(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
   };
 
@@ -99,40 +98,62 @@ const FundingPeriod = () => {
                     <Grid item className={isChecked(option.id) ? classes.SsvPrice : classes.TimeText}>
                       {option.timeText}
                     </Grid>
-                    <Grid item
-                          className={classes.SsvPrice}>{formatNumberToUi(Number(propertyCostByPeriod(selectedOperatorsFee, isCustom ? customPeriod : option.days) * validatorStore.validatorsCount))} SSV</Grid>
-                    {isCustom && <TextInput value={customPeriod}
-                                            onChangeCallback={(e: any) => setCustomPeriod(Number(e.target.value))}
-                                            extendClass={classes.DaysInput} withSideText sideText={'Days'}/>}
-                  </Grid>;
-                })}
-                {insufficientBalance && <ErrorMessage extendClasses={classes.ErrorBox} text={
+                  </Grid>
+                  <Grid item className={classes.SsvPrice}>
+                    {formatNumberToUi(Number(propertyCostByPeriod(selectedOperatorsFee, isCustom ? customPeriod : option.days) * validatorStore.validatorsCount))} SSV
+                  </Grid>
+                  {isCustom && (
+                    <TextInput
+                      value={customPeriod}
+                      onChangeCallback={(e: any) => setCustomPeriod(Number(e.target.value))}
+                      extendClass={classes.DaysInput}
+                      withSideText
+                      sideText={'Days'}
+                    />
+                  )}
+                </Grid>
+              );
+            })}
+            {insufficientBalance && (
+              <ErrorMessage
+                extendClasses={classes.ErrorBox}
+                text={
                   <Grid container style={{ gap: 8 }}>
-                    <Grid item>
-                      Insufficient SSV balance. Acquire further SSV or pick a different amount.
-                    </Grid>
+                    <Grid item>Insufficient SSV balance. Acquire further SSV or pick a different amount.</Grid>
                     <Grid container item xs>
-                      <LinkText className={classes.Link} text={'Need SSV?'} link={getStoredNetwork().insufficientBalanceUrl}/>
+                      <LinkText className={classes.Link} text={'Need SSV?'} link={getStoredNetwork().insufficientBalanceUrl} />
                     </Grid>
                   </Grid>
                 }
-                />}
-                {showLiquidationError && <ErrorMessage extendClasses={classes.ErrorBox} text={
-                    <Grid>This period is low and could put your validator at risk. To avoid liquidation please input a longer period.<LinkText text={'Learn more on liquidations'}
-                                          link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'}/></Grid>
-                }/>}
-              </Grid>
-            </Grid>,
-            <FundingSummary liquidationCollateralCost={liquidationCollateralCost} days={isCustomPayment ? customPeriod : checkedOption.days}/>,
-            <Grid container>
-              <Grid container item style={{ justifyContent: 'space-between', marginTop: -8, marginBottom: 20 }}>
-                <Typography className={classes.Text} style={{ marginBottom: 0 }}>Total</Typography>
-                <Typography className={classes.SsvPrice} style={{ marginBottom: 0 }}>{totalAmount} SSV</Typography>
-              </Grid>
-              <PrimaryButton text={'Next'} onClick={moveToNextPage} isDisabled={buttonDisableCondition} size={ButtonSize.XL}/>
-            </Grid>,
-          ]}
-      />
+              />
+            )}
+            {showLiquidationError && (
+              <ErrorMessage
+                extendClasses={classes.ErrorBox}
+                text={
+                  <Grid>
+                    This period is low and could put your validator at risk. To avoid liquidation please input a longer period.
+                    <LinkText text={'Learn more on liquidations'} link={'https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations'} />
+                  </Grid>
+                }
+              />
+            )}
+          </Grid>
+        </Grid>,
+        <FundingSummary liquidationCollateralCost={liquidationCollateralCost} days={isCustomPayment ? customPeriod : checkedOption.days} />,
+        <Grid container>
+          <Grid container item style={{ justifyContent: 'space-between', marginTop: -8, marginBottom: 20 }}>
+            <Typography className={classes.Text} style={{ marginBottom: 0 }}>
+              Total
+            </Typography>
+            <Typography className={classes.SsvPrice} style={{ marginBottom: 0 }}>
+              {totalAmount} SSV
+            </Typography>
+          </Grid>
+          <PrimaryButton text={'Next'} onClick={moveToNextPage} isDisabled={buttonDisableCondition} size={ButtonSize.XL} />
+        </Grid>
+      ]}
+    />
   );
 };
 export default observer(FundingPeriod);

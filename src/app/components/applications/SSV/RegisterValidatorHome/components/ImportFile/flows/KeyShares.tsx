@@ -47,7 +47,6 @@ import { ButtonSize } from '~app/enums/Button.enum';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getClusterSize, getOperatorValidatorsLimit, getSelectedOperators, selectOperators, setClusterSize, unselectAllOperators } from '~app/redux/operator.slice.ts';
 import { getIsSecondRegistration, getProcess, setProcessAndType } from '~app/redux/process.slice.ts';
-import { useDispatch } from 'react-redux';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
@@ -411,7 +410,7 @@ const KeyShareFlow = () => {
               dispatch(
                 setProcessAndType({
                   process: {
-                    item: { ...clusterData, operators: Object.values(operatorStore.selectedOperators) },
+                    item: { ...clusterData, operators: Object.values(selectedOperatorsData) },
                     processName: 'cluster_registration'
                   },
                   type: ProcessType.Validator

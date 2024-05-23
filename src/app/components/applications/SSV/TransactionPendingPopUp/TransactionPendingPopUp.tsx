@@ -1,11 +1,10 @@
 import Grid from '@mui/material/Grid';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
 import Dialog from '@mui/material/Dialog';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import LinkText from '~app/components/common/LinkText';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { getEtherScanLink } from '~root/providers/networkInfo.provider';
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
@@ -70,7 +69,7 @@ const ROUTES_BY_PROCESS = {
 
 const TransactionPendingPopUp = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isShowTxPendingPopup = useAppSelector(getIsShowTxPendingPopup);
   const txHash = useAppSelector(getTxHash);

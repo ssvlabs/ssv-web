@@ -1,6 +1,5 @@
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
@@ -10,7 +9,6 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
 import { SingleCluster } from '~app/model/processes.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
@@ -19,7 +17,6 @@ import { updateOperatorFee } from '~root/services/operatorContract.service.ts';
 import { getProcess } from '~app/redux/process.slice.ts';
 
 const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: IncreaseFlowProps) => {
-  const stores = useStores();
   const classes = useStyles({});
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
@@ -117,4 +114,4 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
   );
 };
 
-export default observer(DeclareFee);
+export default DeclareFee;

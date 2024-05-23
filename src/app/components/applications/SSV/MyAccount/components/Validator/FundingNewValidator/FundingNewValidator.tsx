@@ -22,11 +22,10 @@ import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 import { getProcess, modifyProcess } from '~app/redux/process.slice.ts';
-import { useDispatch } from 'react-redux';
 
 const FundingNewValidator = () => {
   const [checkedId, setCheckedId] = useState(0);
@@ -61,7 +60,7 @@ const FundingNewValidator = () => {
       : formatNumberToUi(cluster.runWay, true);
   const disableBtnCondition = (Number(depositSSV) === 0 && checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS) || !checkedId || newRunWay < 1 || errorMessage.disableButton;
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) === 0) {

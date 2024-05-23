@@ -12,7 +12,6 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrap
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import { RegisterValidator } from '~app/model/processes.model';
 import { getSelectedCluster, setSelectedClusterId } from '~app/redux/account.slice';
@@ -57,7 +56,6 @@ const ValidatorsCountBadge = styled.div`
 `;
 
 const SingleCluster = () => {
-  const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();

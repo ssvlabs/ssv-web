@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useLocation, useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { allEqual } from '~lib/utils/arrays';
-import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './SecondSquare.styles';
 import Typography from '@mui/material/Typography';
 import { formatNumberToUi } from '~lib/utils/numbers';
@@ -39,7 +37,6 @@ import { getProcess, setProcessAndType } from '~app/redux/process.slice.ts';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox: number[] }) => {
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
-  const stores = useStores();
   const classes = useStyles({ editPage, shouldBeScrollable: clusterBox.length > 4 });
   const navigate = useNavigate();
   const location = useLocation();
@@ -140,7 +137,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
       setProcessAndType({
         process: {
           processName: 'single_cluster',
-          item: { ...existClusterData, operators: [...Object.values(operatorStore.selectedOperators)] }
+          item: { ...existClusterData, operators: [...Object.values(selectedOperators)] }
         },
         type: ProcessType.Validator
       })
@@ -280,4 +277,4 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
   );
 };
 
-export default observer(SecondSquare);
+export default SecondSquare;

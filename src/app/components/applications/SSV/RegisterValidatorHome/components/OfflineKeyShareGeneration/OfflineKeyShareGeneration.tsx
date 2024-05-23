@@ -5,7 +5,6 @@ import Tooltip from '@mui/material/Tooltip';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import { osName } from 'react-device-detect';
-import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
@@ -418,7 +417,7 @@ const OfflineKeyShareGeneration = () => {
           {hideButtonCondition() && (
             <PrimaryButton
               text={buttonLabel}
-              onClick={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, processStore.secondRegistration)}
+              onClick={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, isSecondRegistration)}
               isDisabled={disabledCondition()}
               size={ButtonSize.XL}
             />

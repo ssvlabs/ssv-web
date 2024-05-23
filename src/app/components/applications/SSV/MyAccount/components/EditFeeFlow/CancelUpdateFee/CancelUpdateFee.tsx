@@ -1,17 +1,14 @@
 import Dialog from '@mui/material/Dialog';
-import { Grid } from '~app/atomicComponents';
+import { Grid, PrimaryButton } from '~app/atomicComponents';
 import Typography from '@mui/material/Typography';
-import { observer } from 'mobx-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PrimaryButton } from '~app/atomicComponents';
 import config from '~app/common/config';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/CancelUpdateFee/CancelUpdateFee.styles';
 import { ButtonSize } from '~app/enums/Button.enum';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
 import { IOperator } from '~app/model/operator.model';
 import { SingleCluster } from '~app/model/processes.model';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
@@ -116,4 +113,4 @@ const CancelUpdateFee = () => {
   );
 };
 
-export default observer(CancelUpdateFee);
+export default CancelUpdateFee;

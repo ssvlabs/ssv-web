@@ -43,7 +43,6 @@ const OperatorDashboard = () => {
 
   const fetchData = async () => {
     try {
-      // eslint-disable-next-line no-async-promise-executor
       const promises = operators.map(
         (operator: IOperator) =>
           // eslint-disable-next-line no-async-promise-executor

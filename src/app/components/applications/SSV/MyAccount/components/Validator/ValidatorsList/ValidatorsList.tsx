@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import config from '~app/common/config';
@@ -137,7 +137,7 @@ const ValidatorsList = ({
   fillSelectedValidators?: Function;
   maxValidatorsCount?: number;
   withoutSettings?: boolean;
-  checkboxTooltipTitle?: JSX.Element | string;
+  checkboxTooltipTitle?: ReactElement | string;
   setIsLoading?: Function;
   isLoading?: boolean;
 }) => {

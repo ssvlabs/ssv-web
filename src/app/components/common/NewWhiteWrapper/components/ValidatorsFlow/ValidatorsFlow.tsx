@@ -5,7 +5,7 @@ import { SingleCluster } from '~app/model/processes.model';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { longStringShorten } from '~lib/utils/strings';
 import { getClusterHash } from '~root/services/cluster.service';
-import { useStyles } from '../../NewWhiteWrapper.styles';
+import { useStyles } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper.styles';
 import { getProcess, modifyProcess } from '~app/redux/process.slice.ts';
 
 type Props = {

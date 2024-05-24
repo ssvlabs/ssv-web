@@ -11,18 +11,15 @@
  * */
 
 import config from '~app/common/config';
-import {
-  getStoredNetwork,
-  MAINNET_NETWORK_ID,
-  HOLESKY_NETWORK_ID,
-} from '~root/providers/networkInfo.provider';
+import { getStoredNetwork, HOLESKY_NETWORK_ID, MAINNET_NETWORK_ID } from '~root/providers/networkInfo.provider';
 import { getLocalStorageFlagValue, MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
+import { ReactElement } from 'react';
 
 type NavigationRoutes = Record<string, string | Record<number, string>>;
 
 export enum EBulkMode {
   SINGLE,
-  MULTI,
+  MULTI
 }
 
 export enum EValidatorFlowAction {
@@ -34,19 +31,19 @@ export enum EValidatorFlowAction {
   OFFLINE_CLI,
   OFFLINE_DKG,
   FIRST_REGISTER,
-  SECOND_REGISTER,
+  SECOND_REGISTER
 }
 
 const MAX_VALIDATORS_PER_CLUSTER_SIZE: Record<number, number> = {
   [config.GLOBAL_VARIABLE.CLUSTER_SIZES.QUAD_CLUSTER]: config.GLOBAL_VARIABLE.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.QUAD_CLUSTER,
   [config.GLOBAL_VARIABLE.CLUSTER_SIZES.SEPT_CLUSTER]: config.GLOBAL_VARIABLE.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.SEPT_CLUSTER,
   [config.GLOBAL_VARIABLE.CLUSTER_SIZES.DECA_CLUSTER]: config.GLOBAL_VARIABLE.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.DECA_CLUSTER,
-  [config.GLOBAL_VARIABLE.CLUSTER_SIZES.TRISKAIDEKA_CLUSTER]: config.GLOBAL_VARIABLE.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.TRISKAIDEKA_CLUSTER,
+  [config.GLOBAL_VARIABLE.CLUSTER_SIZES.TRISKAIDEKA_CLUSTER]: config.GLOBAL_VARIABLE.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.TRISKAIDEKA_CLUSTER
 };
 
 const NETWORK_TO_BULK_MODE = {
   [`${MAINNET_NETWORK_ID}`]: EBulkMode.MULTI,
-  [`${HOLESKY_NETWORK_ID}`]: EBulkMode.MULTI,
+  [`${HOLESKY_NETWORK_ID}`]: EBulkMode.MULTI
 };
 
 const BULK_MODE_TO_ROUTES: NavigationRoutes = {
@@ -54,43 +51,43 @@ const BULK_MODE_TO_ROUTES: NavigationRoutes = {
   [config.routes.SSV.MY_ACCOUNT.CLUSTER.DISTRIBUTION_METHOD_START]: {
     [EValidatorFlowAction.SECOND_REGISTER]: config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES,
     [EValidatorFlowAction.GENERATE_KEY_SHARES_ONLINE]: config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEY_STORE,
-    [EValidatorFlowAction.GENERATE_KEY_SHARES_OFFLINE]: config.routes.SSV.MY_ACCOUNT.CLUSTER.DISTRIBUTE_OFFLINE,
+    [EValidatorFlowAction.GENERATE_KEY_SHARES_OFFLINE]: config.routes.SSV.MY_ACCOUNT.CLUSTER.DISTRIBUTE_OFFLINE
   },
   [config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD]: config.routes.SSV.VALIDATOR.HOME,
   [config.routes.SSV.VALIDATOR.HOME]: {
     [EValidatorFlowAction.GENERATE_NEW_SHARE]: config.routes.SSV.VALIDATOR.SELECT_OPERATORS,
-    [EValidatorFlowAction.ALREADY_HAVE_SHARES]: config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES,
+    [EValidatorFlowAction.ALREADY_HAVE_SHARES]: config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES
   },
   [config.routes.SSV.VALIDATOR.SELECT_OPERATORS]: config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.START,
   [config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES]: {
     [EValidatorFlowAction.FIRST_REGISTER]: config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE,
-    [EValidatorFlowAction.SECOND_REGISTER]: config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR,
+    [EValidatorFlowAction.SECOND_REGISTER]: config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR
   },
   [config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEY_STORE]: {
     [EValidatorFlowAction.FIRST_REGISTER]: config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE,
-    [EValidatorFlowAction.SECOND_REGISTER]: config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR,
+    [EValidatorFlowAction.SECOND_REGISTER]: config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR
   },
   [config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.START]: {
     [EValidatorFlowAction.GENERATE_KEY_SHARES_ONLINE]: config.routes.SSV.VALIDATOR.IMPORT,
-    [EValidatorFlowAction.GENERATE_KEY_SHARES_OFFLINE]: config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_OFFLINE,
+    [EValidatorFlowAction.GENERATE_KEY_SHARES_OFFLINE]: config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_OFFLINE
   },
   [config.routes.SSV.VALIDATOR.IMPORT]: {
     [EValidatorFlowAction.FIRST_REGISTER]: config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE,
-    [EValidatorFlowAction.SECOND_REGISTER]: config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR,
+    [EValidatorFlowAction.SECOND_REGISTER]: config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR
   },
   [config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE]: config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE,
   [config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE]: config.routes.SSV.VALIDATOR.SLASHING_WARNING,
   [config.routes.SSV.VALIDATOR.SLASHING_WARNING]: config.routes.SSV.VALIDATOR.CONFIRMATION_PAGE,
   [config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_OFFLINE]: {
     [EValidatorFlowAction.OFFLINE_CLI]: config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES,
-    [EValidatorFlowAction.OFFLINE_DKG]: config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY,
+    [EValidatorFlowAction.OFFLINE_DKG]: config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY
   },
   [config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES]: {
     [EValidatorFlowAction.FIRST_REGISTER]: config.routes.SSV.VALIDATOR.FUNDING_PERIOD_PAGE,
-    [EValidatorFlowAction.SECOND_REGISTER]: config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR,
+    [EValidatorFlowAction.SECOND_REGISTER]: config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR
   },
   [config.routes.SSV.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR]: config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE,
-  [config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY]: config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES,
+  [config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY]: config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES
 };
 
 const validatorRegistrationFlow = (currentRoute: string) => {
@@ -128,7 +125,7 @@ const validatorRegistrationFlow = (currentRoute: string) => {
 
   const isBulkMode = (mode: EBulkMode) => getBulkMode() === mode;
 
-  const getBulkKeyShareComponent = (single: JSX.Element, multi: JSX.Element): JSX.Element => {
+  const getBulkKeyShareComponent = (single: ReactElement, multi: ReactElement): ReactElement => {
     return isBulkMode(EBulkMode.MULTI) ? multi : single;
   };
 

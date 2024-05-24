@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
@@ -61,7 +61,7 @@ const OperatorDashboard = () => {
     navigate(config.routes.SSV.OPERATOR.HOME);
   };
 
-  const createData = (operatorName: JSX.Element, status: JSX.Element, performance: string, balance: JSX.Element, yearlyFee: JSX.Element, validators: number) => {
+  const createData = (operatorName: ReactElement, status: ReactElement, performance: string, balance: ReactElement, yearlyFee: ReactElement, validators: number) => {
     return { operatorName, status, performance, balance, yearlyFee, validators };
   };
 

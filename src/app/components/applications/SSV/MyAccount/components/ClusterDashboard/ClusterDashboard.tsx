@@ -1,5 +1,5 @@
 import Grid from '@mui/material/Grid';
-import { useEffect, useRef, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import config, { translations } from '~app/common/config';
@@ -62,7 +62,7 @@ export const ClusterDashboard = () => {
     setHoveredGrid(null);
   };
 
-  const createData = (clusterID: string, operators: JSX.Element, validators: number, operational_runway: string | JSX.Element, runWayError: JSX.Element | undefined) => {
+  const createData = (clusterID: string, operators: ReactElement, validators: number, operational_runway: string | ReactElement, runWayError: ReactElement | undefined) => {
     return { clusterID, operators, validators, operational_runway, runWayError };
   };
 

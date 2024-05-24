@@ -121,8 +121,8 @@ class ValidatorStore {
     liquidationCollateralPeriod,
     minimumLiquidationCollateral,
     selectedOperatorsFee,
-    process,
-    dispatch
+    dispatch,
+    process
   }: {
     accountAddress: string;
     isContractWallet: boolean;
@@ -137,6 +137,9 @@ class ValidatorStore {
   }) {
     const contract = getContractByName(EContractName.SETTER);
     const contractMethod = isBulk ? contract.bulkRegisterValidator : contract.registerValidator;
+    const depositAmount = 'registerValidator' in process ? (process.registerValidator as RegisterValidator | undefined)?.depositAmount ?? 0 : 0;
+    const fundingPeriod: number | null | undefined = 'fundingPeriod' in process ? process.fundingPeriod : null;
+
     const payload =
       this.registrationMode === 0
         ? await this.createKeySharePayload({
@@ -146,7 +149,8 @@ class ValidatorStore {
             minimumLiquidationCollateral,
             selectedOperatorsFee,
             selectedOperators: operators,
-            process
+            depositAmount,
+            fundingPeriod
           })
         : await this.createKeystorePayload({
             accountAddress,
@@ -155,7 +159,8 @@ class ValidatorStore {
             minimumLiquidationCollateral,
             selectedOperatorsFee,
             selectedOperators: operators,
-            process
+            depositAmount,
+            fundingPeriod
           });
     if (!payload) {
       return false;
@@ -181,7 +186,9 @@ class ValidatorStore {
     minimumLiquidationCollateral,
     selectedOperatorsFee,
     selectedOperators,
-    process
+
+    depositAmount,
+    fundingPeriod
   }: {
     accountAddress: string;
     networkFee: number;
@@ -189,7 +196,9 @@ class ValidatorStore {
     minimumLiquidationCollateral: number;
     selectedOperatorsFee: number;
     selectedOperators: IOperator[];
-    process: RegisterValidator | SingleCluster;
+
+    depositAmount: number;
+    fundingPeriod: number | null | undefined;
   }): Promise<Map<string, any> | null> {
     const ownerNonce = await getOwnerNonce({ address: accountAddress });
     if (ownerNonce === null) {
@@ -203,10 +212,10 @@ class ValidatorStore {
         // const keyShares = new KeyShares();
         const threshold = await ssvKeys.createThreshold(this.keyStorePrivateKey, operators);
         const encryptedShares = await ssvKeys.encryptShares(operators, threshold.shares);
-        let totalCost = 'registerValidator' in process ? prepareSsvAmountToTransfer(toWei(process.registerValidator?.depositAmount)) : 0;
-        if (process && 'fundingPeriod' in process) {
-          const networkCost = propertyCostByPeriod(networkFee, process.fundingPeriod);
-          const operatorsCost = propertyCostByPeriod(selectedOperatorsFee, process.fundingPeriod);
+        let totalCost = prepareSsvAmountToTransfer(toWei(depositAmount));
+        if (fundingPeriod !== null) {
+          const networkCost = propertyCostByPeriod(networkFee, fundingPeriod);
+          const operatorsCost = propertyCostByPeriod(selectedOperatorsFee, fundingPeriod);
           let liquidationCollateralCost = new Decimal(selectedOperatorsFee).add(networkFee).mul(liquidationCollateralPeriod);
           if (Number(liquidationCollateralCost) < minimumLiquidationCollateral) {
             liquidationCollateralCost = new Decimal(minimumLiquidationCollateral);
@@ -241,7 +250,9 @@ class ValidatorStore {
     minimumLiquidationCollateral,
     selectedOperatorsFee,
     selectedOperators,
-    process
+
+    depositAmount,
+    fundingPeriod
   }: {
     accountAddress: string;
     networkFee: number;
@@ -249,13 +260,15 @@ class ValidatorStore {
     minimumLiquidationCollateral: number;
     selectedOperatorsFee: number;
     selectedOperators: IOperator[];
-    process: RegisterValidator | SingleCluster;
+
+    depositAmount: number;
+    fundingPeriod: number | null | undefined;
   }): Promise<Map<string, any> | null> {
     return new Promise(async (resolve) => {
-      let totalCost = 'registerValidator' in process ? prepareSsvAmountToTransfer(toWei(process.registerValidator?.depositAmount)) : 0;
-      if (process && 'fundingPeriod' in process) {
-        const networkCost = propertyCostByPeriod(networkFee, process.fundingPeriod);
-        const operatorsCost = propertyCostByPeriod(selectedOperatorsFee, process.fundingPeriod);
+      let totalCost = prepareSsvAmountToTransfer(toWei(depositAmount));
+      if (fundingPeriod !== null) {
+        const networkCost = propertyCostByPeriod(networkFee, fundingPeriod);
+        const operatorsCost = propertyCostByPeriod(selectedOperatorsFee, fundingPeriod);
         const liquidationCollateralCost = getLiquidationCollateralPerValidator({
           operatorsFee: selectedOperatorsFee,
           networkFee,

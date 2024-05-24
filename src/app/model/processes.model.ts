@@ -36,7 +36,7 @@ enum RegistrationType {
 interface RegisterValidator {
   processName: string;
   validator?: any;
-  fundingPeriod?: any;
+  fundingPeriod?: number;
   totalRegistrationCost?: string;
   registrationType: RegistrationType;
   depositAmount: number;

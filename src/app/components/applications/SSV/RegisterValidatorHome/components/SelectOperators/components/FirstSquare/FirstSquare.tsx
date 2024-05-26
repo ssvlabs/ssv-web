@@ -37,6 +37,7 @@ import {
   selectOperator,
   unselectOperator
 } from '~app/redux/operator.slice.ts';
+import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
 
 const FirstSquare = ({
   editPage,
@@ -62,7 +63,7 @@ const FirstSquare = ({
   const filteredOperators = !dkgEnabled
     ? operatorsData
     : operatorsData.filter(({ dkg_address }) => {
-        return dkg_address && /https/.test(dkg_address);
+        return isDkgAddressValid(dkg_address ?? '');
       });
 
   const accountAddress = useAppSelector(getAccountAddress);

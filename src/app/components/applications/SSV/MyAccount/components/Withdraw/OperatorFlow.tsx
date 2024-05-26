@@ -10,9 +10,12 @@ import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
-import { withdrawRewards } from '~root/services/operatorContract.service';
+import { getOperatorBalance, withdrawRewards } from '~root/services/operatorContract.service';
+import { useStores } from '~app/hooks/useStores.ts';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store.ts';
+import { SingleCluster, SingleOperator } from '~app/model/processes.model.ts';
 
-const OperatorFlow = ({ operator }: { operator: IOperator; }) => {
+const OperatorFlow = ({ operator }: { operator: IOperator }) => {
   const [inputValue, setInputValue] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -22,10 +25,15 @@ const OperatorFlow = ({ operator }: { operator: IOperator; }) => {
   const classes = useStyles();
   const operatorBalance = operator.balance ?? 0;
   const dispatch = useAppDispatch();
+  const stores = useStores();
+  const processStore: ProcessStore = stores.Process;
+  const process: SingleOperator | SingleCluster = processStore.getProcess;
 
   const withdrawSsv = async () => {
     setIsLoading(true);
     const success = await withdrawRewards({ operator, amount: inputValue.toString(), isContractWallet, dispatch });
+    const balance = await getOperatorBalance({ id: operator.id });
+    process.item = { ...operator, balance };
     setIsLoading(false);
     if (success) {
       navigate(-1);
@@ -48,13 +56,13 @@ const OperatorFlow = ({ operator }: { operator: IOperator; }) => {
     setInputValue(operatorBalance);
   }
 
-  const secondBorderScreen = [(
+  const secondBorderScreen = [
     <Grid item container>
       <Grid container item xs={12} className={classes.BalanceWrapper}>
         <Grid item container xs={12}>
           <Grid item xs={6}>
             <IntegerInput
-            // @ts-ignore
+              // @ts-ignore
               type="number"
               value={inputValue}
               onChange={inputHandler}
@@ -65,12 +73,14 @@ const OperatorFlow = ({ operator }: { operator: IOperator; }) => {
             <Grid item onClick={maxValue} className={classes.MaxButton}>
               MAX
             </Grid>
-            <Grid item className={classes.MaxButtonText}>SSV</Grid>
+            <Grid item className={classes.MaxButtonText}>
+              SSV
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
     </Grid>
-  )];
+  ];
 
   return (
     <BorderScreen
@@ -79,15 +89,11 @@ const OperatorFlow = ({ operator }: { operator: IOperator; }) => {
       withoutNavigation
       header={'Withdraw'}
       body={secondBorderScreen}
-      bottom={[<TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)}
-                                           isMainnet={isMainnet}>
-        <PrimaryButton
-          text={'Withdraw'}
-          onClick={withdrawSsv}
-          isLoading={isLoading}
-          isDisabled={Number(inputValue) === 0 || (isMainnet && !isChecked)}
-          size={ButtonSize.XL}/>
-      </TermsAndConditionsCheckbox>]}
+      bottom={[
+        <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
+          <PrimaryButton text={'Withdraw'} onClick={withdrawSsv} isLoading={isLoading} isDisabled={Number(inputValue) === 0 || (isMainnet && !isChecked)} size={ButtonSize.XL} />
+        </TermsAndConditionsCheckbox>
+      ]}
     />
   );
 };

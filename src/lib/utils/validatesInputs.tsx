@@ -1,4 +1,3 @@
-
 import Decimal from 'decimal.js';
 import config from '~app/common/config';
 import { compareNumbers, formatNumberToUi } from '~lib/utils/numbers';
@@ -8,8 +7,8 @@ import LinkText from '~app/components/common/LinkText/LinkText';
 const OPERATOR_VALID_KEY_LENGTH = 612;
 
 interface ErrorObject {
-  errorMessage: any,
-  shouldDisplay: boolean,
+  errorMessage: any;
+  shouldDisplay: boolean;
 }
 
 export const validatePublicKeyInput = (value: string, callback: React.Dispatch<ErrorObject>): void => {
@@ -18,9 +17,12 @@ export const validatePublicKeyInput = (value: string, callback: React.Dispatch<E
   if (value.length === 0) {
     response.errorMessage = 'Please enter an operator key.';
   } else if (value.length !== OPERATOR_VALID_KEY_LENGTH) {
-    response.errorMessage = <>Invalid operator key - see our <LinkText text={'documentation.'}
-                                                                       link={'https://docs.ssv.network/run-a-node/operator-node/installation#generate-operator-keys'}/> to
-      generate your key.</>;
+    response.errorMessage = (
+      <>
+        Invalid operator key - see our <LinkText text={'documentation.'} link={'https://docs.ssv.network/run-a-node/operator-node/installation#generate-operator-keys'} /> to
+        generate your key.
+      </>
+    );
   } else if (!regx.test(value)) {
     response.errorMessage = 'Operator key should contain only alphanumeric characters.';
   } else {
@@ -36,7 +38,7 @@ export const validateAddressInput = (value: string, callback: React.Dispatch<Err
     response.shouldDisplay = false;
   } else if (value.length === 0) {
     response.errorMessage = `Please enter an ${fieldName.toLowerCase()}.`;
-  } else if ((value.length !== 42 && value.startsWith('0x')) || (value.length !== 40 && !value.startsWith('0x')) || (!isAddress(value))) {
+  } else if ((value.length !== 42 && value.startsWith('0x')) || (value.length !== 40 && !value.startsWith('0x')) || !isAddress(value)) {
     response.errorMessage = `${fieldName} must be a valid address format.`;
   } else if (!regx.test(value)) {
     response.errorMessage = `${fieldName} should contain only alphanumeric characters.`;
@@ -46,7 +48,7 @@ export const validateAddressInput = (value: string, callback: React.Dispatch<Err
   callback(response);
 };
 
-export const validateFeeInput = ({ value, maxFee, callback }: { value: string, maxFee: number, callback: Function }): void => {
+export const validateFeeInput = ({ value, maxFee, callback }: { value: string; maxFee: number; callback: Function }): void => {
   const response = { shouldDisplay: false, errorMessage: '' };
   const maxFeePerYear = Number(getFeeForYear(maxFee));
   if (new Decimal(Number(value) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK)) {
@@ -56,7 +58,7 @@ export const validateFeeInput = ({ value, maxFee, callback }: { value: string, m
   } else if (Number(value) > maxFeePerYear) {
     response.shouldDisplay = true;
     response.errorMessage = ` Fee must be lower than ${maxFeePerYear} SSV`;
-  } else if (Number.isNaN(value) || Number.isFinite(value)) {
+  } else if (Number.isNaN(Number(value)) || Number.isFinite(value)) {
     response.shouldDisplay = true;
     response.errorMessage = 'Please use numbers only.';
   } else {
@@ -66,16 +68,26 @@ export const validateFeeInput = ({ value, maxFee, callback }: { value: string, m
   callback(response);
 };
 
-export const validateFeeUpdate = ({ previousValue, newValue, maxFeeIncrease, isPrivateOperator, maxFee, callback }: {
-  previousValue: Decimal,
-  newValue: string,
-  maxFeeIncrease: number,
-  isPrivateOperator: boolean,
-  maxFee: number,
-  callback: any
+export const validateFeeUpdate = ({
+  previousValue,
+  newValue,
+  maxFeeIncrease,
+  isPrivateOperator,
+  maxFee,
+  callback
+}: {
+  previousValue: Decimal;
+  newValue: string;
+  maxFeeIncrease: number;
+  isPrivateOperator: boolean;
+  maxFee: number;
+  callback: any;
 }): void => {
   const response = { shouldDisplay: false, errorMessage: '' };
-  const feeMaximumIncrease = previousValue.mul(maxFeeIncrease).dividedBy(100).plus(Math.abs(Number(previousValue) - 0.01));
+  const feeMaximumIncrease = previousValue
+    .mul(maxFeeIncrease)
+    .dividedBy(100)
+    .plus(Math.abs(Number(previousValue) - 0.01));
   const maxFeePerYear = Number(getFeeForYear(maxFee));
   if (Number.isNaN(Number(newValue)) || Number.isFinite(newValue) || !newValue) {
     response.shouldDisplay = true;
@@ -85,7 +97,7 @@ export const validateFeeUpdate = ({ previousValue, newValue, maxFeeIncrease, isP
     response.errorMessage = ` Fee must be lower than ${maxFeePerYear} SSV`;
   } else if (Number(previousValue) === Number(newValue)) {
     response.shouldDisplay = true;
-    response.errorMessage = 'State for fee hasn\'t changed';
+    response.errorMessage = "State for fee hasn't changed";
   } else if (compareNumbers(previousValue, newValue)) {
     response.shouldDisplay = true;
     response.errorMessage = 'Please set a different fee amount from current.';

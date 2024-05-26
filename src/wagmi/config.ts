@@ -1,6 +1,7 @@
-import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+import { Chain, connectorsForWallets } from '@rainbow-me/rainbowkit';
+import { walletConnectWallet, coinbaseWallet } from '@rainbow-me/rainbowkit/wallets';
 import { HttpTransport, http } from 'viem';
-import { Chain } from '@rainbow-me/rainbowkit';
+import { createConfig } from 'wagmi';
 import { holesky, mainnet } from 'wagmi/chains';
 import { config as projectConfig } from '~app/common/config/config';
 import { networks } from '~root/providers/networkInfo.provider';
@@ -45,10 +46,21 @@ const transports = chains.reduce(
   {} as Record<string, HttpTransport>
 );
 
-export const config = getDefaultConfig({
-  appName: 'SSV Web App',
-  projectId: projectConfig.ONBOARD.PROJECT_ID,
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: 'Popular',
+      wallets: [walletConnectWallet, coinbaseWallet]
+    }
+  ],
+  {
+    appName: 'SSV Web App',
+    projectId: projectConfig.ONBOARD.PROJECT_ID
+  }
+);
+
+export const config = createConfig({
   chains,
-  transports,
-  ssr: false
+  connectors,
+  transports
 });

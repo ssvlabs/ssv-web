@@ -15,13 +15,18 @@ const checkIfStateChanged = async (updatedStateGetter: Function, prevState: unkn
   }
 };
 
-const delay = async (ms?: number) => (new Promise((r) => setTimeout(() => r(true), ms || 1000)));
+const delay = async (ms?: number) => new Promise((r) => setTimeout(() => r(true), ms || 1000));
 
-export const executeAfterEvent = async ({ updatedStateGetter, prevState, callBack, txHash }: {
+export const executeAfterEvent = async ({
+  updatedStateGetter,
+  prevState,
+  callBack,
+  txHash
+}: {
   updatedStateGetter: Function;
   prevState?: unknown;
   callBack: Function;
-  txHash?: string
+  txHash?: string;
 }) => {
   let iterations = 0;
   while (iterations <= CHECK_UPDATES_MAX_ITERATIONS) {
@@ -42,13 +47,20 @@ export const executeAfterEvent = async ({ updatedStateGetter, prevState, callBac
   return true;
 };
 
-export const transactionExecutor = async ({ contractMethod, payload, isContractWallet, getterTransactionState, prevState, dispatch }: {
-  contractMethod: Function,
-  payload: any,
-  isContractWallet: boolean,
-  getterTransactionState?: Function,
-  prevState?: unknown,
-  dispatch: Function,
+export const transactionExecutor = async ({
+  contractMethod,
+  payload,
+  isContractWallet,
+  getterTransactionState,
+  prevState,
+  dispatch
+}: {
+  contractMethod: Function;
+  payload: any;
+  isContractWallet: boolean;
+  getterTransactionState?: Function;
+  prevState?: unknown;
+  dispatch: Function;
 }) => {
   try {
     const tx = await contractMethod(...payload);

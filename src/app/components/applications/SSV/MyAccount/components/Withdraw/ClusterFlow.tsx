@@ -18,7 +18,15 @@ import CheckBox from '~app/components/common/CheckBox';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { depositOrWithdraw } from '~root/services/clusterContract.service';
 
-const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollateralPeriod }: { cluster: ICluster; minimumLiquidationCollateral: number; liquidationCollateralPeriod: number; }) => {
+const ClusterFlow = ({
+  cluster,
+  minimumLiquidationCollateral,
+  liquidationCollateralPeriod
+}: {
+  cluster: ICluster;
+  minimumLiquidationCollateral: number;
+  liquidationCollateralPeriod: number;
+}) => {
   const accountAddress = useAppSelector(getAccountAddress);
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isMainnet = useAppSelector(getIsMainnet);
@@ -38,26 +46,41 @@ const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollate
   const [buttonText, setButtonText] = useState(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW);
 
   useEffect(() => {
-    if (getClusterRunWay({
-      ...cluster,
-      balance: toWei(newBalance),
-    }, liquidationCollateralPeriod, minimumLiquidationCollateral) > config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && hasUserAgreed) {
+    if (
+      getClusterRunWay(
+        {
+          ...cluster,
+          balance: toWei(newBalance)
+        },
+        liquidationCollateralPeriod,
+        minimumLiquidationCollateral
+      ) > config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM &&
+      hasUserAgreed
+    ) {
       setHasUserAgreed(false);
     }
 
     const balance = (withdrawValue ? clusterBalance - Number(withdrawValue) : clusterBalance).toFixed(18);
-    const runWay = getClusterRunWay({
-      ...cluster,
-      balance: toWei(balance),
-    }, liquidationCollateralPeriod, minimumLiquidationCollateral);
+    const runWay = getClusterRunWay(
+      {
+        ...cluster,
+        balance: toWei(balance)
+      },
+      liquidationCollateralPeriod,
+      minimumLiquidationCollateral
+    );
     const showCheckboxCondition = runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !!cluster.validatorCount;
 
     setNewBalance(balance);
     setIsClusterLiquidation(runWay <= 0 && !!cluster.validatorCount);
     setShowCheckBox(showCheckboxCondition);
-    setButtonDisableCondition(runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !!cluster.validatorCount && !hasUserAgreed || Number(withdrawValue) === 0 || (isMainnet && !isChecked));
+    setButtonDisableCondition(
+      (runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !!cluster.validatorCount && !hasUserAgreed) || Number(withdrawValue) === 0 || (isMainnet && !isChecked)
+    );
 
-    setCheckBoxText(isClusterLiquidation && showCheckboxCondition ? translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATE_MY_CLUSTER : translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATION_RISK);
+    setCheckBoxText(
+      isClusterLiquidation && showCheckboxCondition ? translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATE_MY_CLUSTER : translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATION_RISK
+    );
     if (runWay <= 0 && !!cluster.validatorCount) {
       setButtonText(translations.VALIDATOR.WITHDRAW.BUTTON.LIQUIDATE_MY_CLUSTER);
     } else if (withdrawValue === clusterBalance) {
@@ -77,7 +100,7 @@ const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollate
       minimumLiquidationCollateral,
       liquidationCollateralPeriod,
       operation: isClusterLiquidation ? EClusterOperation.LIQUIDATE : EClusterOperation.WITHDRAW,
-      dispatch,
+      dispatch
     });
     if (success) {
       navigate(isClusterLiquidation && !cluster.validatorCount ? -2 : -1);
@@ -104,40 +127,42 @@ const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollate
 
   const Button = isClusterLiquidation ? ErrorButton : PrimaryButton;
 
-  const secondBorderScreen = [(
+  const secondBorderScreen = [
     <Grid item container>
       <Grid container item xs={12} className={classes.BalanceWrapper}>
         <Grid item container xs={12}>
           <Grid item xs={6}>
-            <IntegerInput
-              type="number"
-              value={withdrawValue}
-              placeholder={'0.0'}
-              onChange={inputHandler}
-              className={classes.Balance}
-            />
+            <IntegerInput type="number" value={withdrawValue} placeholder={'0.0'} onChange={inputHandler} className={classes.Balance} />
           </Grid>
           <Grid item container xs={6} className={classes.MaxButtonWrapper}>
             <Grid item onClick={maxValue} className={classes.MaxButton}>
               MAX
             </Grid>
-            <Grid item className={classes.MaxButtonText}>SSV</Grid>
+            <Grid item className={classes.MaxButtonText}>
+              SSV
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
-    </Grid>
-  ), (
+    </Grid>,
     <NewRemainingDays
       withdrawState
       isInputFilled={!!withdrawValue}
       cluster={{
         ...cluster,
-        newRunWay: !withdrawValue ? undefined : getClusterRunWay({
-          ...cluster,
-          balance: toWei(newBalance),
-        }, liquidationCollateralPeriod, minimumLiquidationCollateral),
-      }}/>
-  )];
+        newRunWay: !withdrawValue
+          ? undefined
+          : getClusterRunWay(
+              {
+                ...cluster,
+                balance: toWei(newBalance)
+              },
+              liquidationCollateralPeriod,
+              minimumLiquidationCollateral
+            )
+      }}
+    />
+  ];
 
   if (!cluster.validatorCount) {
     secondBorderScreen.pop();
@@ -150,21 +175,12 @@ const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollate
       header={'Withdraw'}
       body={secondBorderScreen}
       bottom={[
-        <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)}
-                                    isMainnet={isMainnet}>
+        <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
           <div>
-            {showCheckBox && (
-              <CheckBox toggleIsChecked={() => setHasUserAgreed(!hasUserAgreed)} text={checkBoxText}
-                        isChecked={hasUserAgreed}/>
-            )}
-            <Button
-              text={buttonText}
-              onClick={withdrawSsv}
-              isLoading={isLoading}
-              isDisabled={buttonDisableCondition}
-              size={ButtonSize.XL}/>
+            {showCheckBox && <CheckBox toggleIsChecked={() => setHasUserAgreed(!hasUserAgreed)} text={checkBoxText} isChecked={hasUserAgreed} />}
+            <Button text={buttonText} onClick={withdrawSsv} isLoading={isLoading} isDisabled={buttonDisableCondition} size={ButtonSize.XL} />
           </div>
-        </TermsAndConditionsCheckbox>,
+        </TermsAndConditionsCheckbox>
       ]}
     />
   );

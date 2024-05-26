@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
@@ -7,9 +7,7 @@ import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
-import {
-  useStyles,
-} from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import { SingleOperator } from '~app/model/processes.model';
 import { getOperator } from '~root/services/operator.service';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
@@ -44,10 +42,13 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
       if (res) {
         const newOperatorData = await getOperator(processOperatorId);
         const balance = await getOperatorBalance(newOperatorData.id);
-        processStore.setProcess({
-          processName: 'single_operator',
-          item: { ...newOperatorData, balance },
-        }, 1);
+        processStore.setProcess(
+          {
+            processName: 'single_operator',
+            item: { ...newOperatorData, balance }
+          },
+          1
+        );
         setButtonText('Back To My Account');
         setUpdated(true);
       }
@@ -63,20 +64,26 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
       withoutBorderBottom={true}
       body={[
         <Grid container className={classes.ChangeFeeWrapper}>
-          <Typography>{updated ? 'You have successfully updated your fee. The new fee will take effect immediately.' : 'Your new operator annual fee will be updated to.'}</Typography>
-          <ChangeFeeDisplayValues currentCurrency={currency} newFee={newFee} oldFee={oldFee}/>
-          {!updated && <Grid item className={classes.Notice}>
-            <Grid item className={classes.BulletsWrapper}>
-              {Number(newFee) === 0 ?
-                <div>Please note that operators who have set their fee to 0 will not have the option to increase or
-                  modify their fee in the future.'</div> :
-                <div>Keep in mind that the process of increasing your fee is different than decreasing it, and
-                  returning back to your current fee in the future would take longer. Read more on <LinkText link={config.links.SSV_UPDATE_FEE_DOCS} textSize={14}
-                    text={'fee changes'}/></div>}
+          <Typography>
+            {updated ? 'You have successfully updated your fee. The new fee will take effect immediately.' : 'Your new operator annual fee will be updated to.'}
+          </Typography>
+          <ChangeFeeDisplayValues currentCurrency={currency} newFee={newFee} oldFee={oldFee} />
+          {!updated && (
+            <Grid item className={classes.Notice}>
+              <Grid item className={classes.BulletsWrapper}>
+                {Number(newFee) === 0 ? (
+                  <div>Please note that operators who have set their fee to 0 will not have the option to increase or modify their fee in the future.'</div>
+                ) : (
+                  <div>
+                    Keep in mind that the process of increasing your fee is different than decreasing it, and returning back to your current fee in the future would take longer.
+                    Read more on <LinkText link={config.links.SSV_UPDATE_FEE_DOCS} textSize={14} text={'fee changes'} />
+                  </div>
+                )}
+              </Grid>
             </Grid>
-          </Grid>}
-          <PrimaryButton text={buttonText} isLoading={isLoading} onClick={onUpdateFeeHandle} size={ButtonSize.XL}/>
-        </Grid>,
+          )}
+          <PrimaryButton text={buttonText} isLoading={isLoading} onClick={onUpdateFeeHandle} size={ButtonSize.XL} />
+        </Grid>
       ]}
     />
   );

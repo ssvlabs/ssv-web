@@ -12,7 +12,7 @@ const checkAllowance = async ({ accountAddress }: { accountAddress: string }): P
       return 0;
     }
     const allowance = await ssvContract.allowance(accountAddress, config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS);
-    return  allowance || 0;
+    return allowance || 0;
   } catch (e) {
     console.warn('checkAllowance error', e);
     return 0;
@@ -55,7 +55,7 @@ const fetchNetworkFeeAndLiquidationCollateral = async (): Promise<{ networkFee: 
   }
 };
 
-const getWalletBalance = async ({ accountAddress }: { accountAddress: string }):Promise<number> => {
+const getWalletBalance = async ({ accountAddress }: { accountAddress: string }): Promise<number> => {
   try {
     const ssvContract = getContractByName(EContractName.TOKEN_GETTER);
     if (!ssvContract) {

@@ -1,4 +1,3 @@
-
 type ClusterDataType = {
   active: boolean;
   balance: number;
@@ -7,7 +6,13 @@ type ClusterDataType = {
   validatorCount: number;
 };
 
-const createPayload = (publicKey: string | string[], operatorIds: number[] | number[][], sharesData: string | string[], totalCost: string | string[], clusterData: ClusterDataType) => {
+const createPayload = (
+  publicKey: string | string[],
+  operatorIds: number[] | number[][],
+  sharesData: string | string[],
+  totalCost: string | string[],
+  clusterData: ClusterDataType
+) => {
   const payload = new Map<string, unknown>();
   payload.set('keyStorePublicKey', publicKey);
   payload.set('operatorIds', operatorIds);

@@ -18,7 +18,16 @@ interface ClusterBalanceInteractionProps {
   dispatch: Function;
 }
 
-const depositOrWithdraw = async ({ cluster, amount, accountAddress, isContractWallet, liquidationCollateralPeriod, minimumLiquidationCollateral, operation, dispatch }: ClusterBalanceInteractionProps)=> {
+const depositOrWithdraw = async ({
+  cluster,
+  amount,
+  accountAddress,
+  isContractWallet,
+  liquidationCollateralPeriod,
+  minimumLiquidationCollateral,
+  operation,
+  dispatch
+}: ClusterBalanceInteractionProps) => {
   const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -44,12 +53,27 @@ const depositOrWithdraw = async ({ cluster, amount, accountAddress, isContractWa
     getterTransactionState: async () => (await getClusterData(clusterHash, liquidationCollateralPeriod, minimumLiquidationCollateral)).balance,
     prevState: cluster.clusterData.balance,
     isContractWallet,
-    dispatch,
+    dispatch
   });
 };
 
-const reactivateCluster = async ({ cluster, accountAddress, isContractWallet, amount, liquidationCollateralPeriod, minimumLiquidationCollateral, dispatch }:
-                                   { cluster: ICluster; accountAddress: string; isContractWallet: boolean; amount: string; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number; dispatch: Function; }) => {
+const reactivateCluster = async ({
+  cluster,
+  accountAddress,
+  isContractWallet,
+  amount,
+  liquidationCollateralPeriod,
+  minimumLiquidationCollateral,
+  dispatch
+}: {
+  cluster: ICluster;
+  accountAddress: string;
+  isContractWallet: boolean;
+  amount: string;
+  liquidationCollateralPeriod: number;
+  minimumLiquidationCollateral: number;
+  dispatch: Function;
+}) => {
   const operatorsIds = getSortedOperatorsIds(cluster.operators);
   const amountInWei = toWei(amount);
   const clusterData = await getClusterData(getClusterHash(cluster.operators, accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
@@ -60,7 +84,7 @@ const reactivateCluster = async ({ cluster, accountAddress, isContractWallet, am
     payload,
     getterTransactionState: async (txHash: string) => (await getEventByTxHash(txHash)).data,
     isContractWallet: isContractWallet,
-    dispatch,
+    dispatch
   });
 };
 

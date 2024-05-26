@@ -1,4 +1,3 @@
-
 import Grid from '@mui/material/Grid';
 import LinkText from '~app/components/common/LinkText';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -19,7 +18,7 @@ const CountryNotSupported = () => {
     GoogleTagManager.getInstance().sendEvent({
       category: 'external_link',
       action: 'click',
-      label: 'Learn more about the SSV network',
+      label: 'Learn more about the SSV network'
     });
     window.open('https://ssv.network/');
   };
@@ -34,15 +33,16 @@ const CountryNotSupported = () => {
           <HeaderSubHeader
             rewardPage
             title={'Website not available'}
-            subtitle={(
+            subtitle={
               <span>
                 We noticed you are located in {restrictedUserGeo}.<br />
-                Please note that the website <LinkText text={websiteUrl} link={`https://${websiteUrl}`} /> is not available in your country.</span>
-            )}
+                Please note that the website <LinkText text={websiteUrl} link={`https://${websiteUrl}`} /> is not available in your country.
+              </span>
+            }
           />
           <Grid container item className={classes.ImageWrapper} />
-          <SecondaryButton onClick={openMarketingSite} text={'Learn more about the SSV network'} size={ButtonSize.XL}/>
-        </Grid>,
+          <SecondaryButton onClick={openMarketingSite} text={'Learn more about the SSV network'} size={ButtonSize.XL} />
+        </Grid>
       ]}
     />
   );

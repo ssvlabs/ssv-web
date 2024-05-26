@@ -1,4 +1,4 @@
-import {translations} from '~app/common/config';
+import { translations } from '~app/common/config';
 
 export const FIELD_KEYS = {
   OPERATOR_NAME: 'operatorName',
@@ -12,7 +12,7 @@ export const FIELD_KEYS = {
   WEBSITE_URL: 'websiteUrl',
   TWITTER_URL: 'twitterUrl',
   LINKEDIN_URL: 'linkedinUrl',
-  DKG_ADDRESS: 'dkgAddress',
+  DKG_ADDRESS: 'dkgAddress'
 };
 
 export const MEV_RELAYS = {
@@ -23,7 +23,7 @@ export const MEV_RELAYS = {
   EDEN: 'Eden Network',
   FLASHBOTS: 'Flashbots',
   MANIFOLD: 'Manifold',
-  ULTRA_SOUND: 'Ultra Sound',
+  ULTRA_SOUND: 'Ultra Sound'
 };
 
 export const MEV_RELAYS_LOGOS = {
@@ -34,7 +34,7 @@ export const MEV_RELAYS_LOGOS = {
   [MEV_RELAYS.EDEN]: 'eden',
   [MEV_RELAYS.FLASHBOTS]: 'Flashbots',
   [MEV_RELAYS.MANIFOLD]: 'manifold',
-  [MEV_RELAYS.ULTRA_SOUND]: 'ultraSound',
+  [MEV_RELAYS.ULTRA_SOUND]: 'ultraSound'
 };
 
 export type CountryType = {
@@ -51,7 +51,6 @@ export type CountryType = {
   'sub-region-code': string;
 };
 
-
 export type MetadataEntity = {
   label: string;
   value: string | any;
@@ -60,7 +59,7 @@ export type MetadataEntity = {
   options?: string[];
   imageFileName?: string;
   toolTipText?: string;
-  additionalLabelText?: string,
+  additionalLabelText?: string;
 };
 
 type FieldCondition = {
@@ -73,20 +72,20 @@ const DKG_ADDRESS_MIN_LENGTH: number = 256;
 export const ALLOWED_IMAGE_TYPES = ['image/jpg', 'image/jpeg', 'image/png'];
 
 export const FIELD_CONDITIONS: Record<string, FieldCondition> = {
-  [FIELD_KEYS.OPERATOR_NAME]: {maxLength: 30, errorMessage: 'Operator name up to 30 characters'},
-  [FIELD_KEYS.DESCRIPTION]: {maxLength: 350, errorMessage: 'Description up to 350 characters'},
-  [FIELD_KEYS.SETUP_PROVIDER]: {maxLength: 50, errorMessage: 'Cloud provider up to 50 characters'},
+  [FIELD_KEYS.OPERATOR_NAME]: { maxLength: 30, errorMessage: 'Operator name up to 30 characters' },
+  [FIELD_KEYS.DESCRIPTION]: { maxLength: 350, errorMessage: 'Description up to 350 characters' },
+  [FIELD_KEYS.SETUP_PROVIDER]: { maxLength: 50, errorMessage: 'Cloud provider up to 50 characters' }
 };
 
 export const exceptions: Record<string, string> = {
   operatorName: 'name',
   eth1NodeClient: 'eth1_node_client',
-  eth2NodeClient: 'eth2_node_client',
+  eth2NodeClient: 'eth2_node_client'
 };
 
 export const OPERATOR_NODE_TYPES = {
   [FIELD_KEYS.EXECUTION_CLIENT]: 1,
-  [FIELD_KEYS.CONSENSUS_CLIENT]: 2,
+  [FIELD_KEYS.CONSENSUS_CLIENT]: 2
 };
 
 export const camelToSnakeFieldsMapping = [FIELD_KEYS.EXECUTION_CLIENT, FIELD_KEYS.CONSENSUS_CLIENT, FIELD_KEYS.OPERATOR_NAME];
@@ -97,7 +96,7 @@ export const FIELDS: { [key: string]: MetadataEntity } = {
     label: 'Display Name',
     value: '',
     errorMessage: '',
-    placeholderText: 'Enter your operator name',
+    placeholderText: 'Enter your operator name'
   },
   [FIELD_KEYS.OPERATOR_IMAGE]: {
     label: 'Operator Image',
@@ -105,72 +104,73 @@ export const FIELDS: { [key: string]: MetadataEntity } = {
     errorMessage: '',
     placeholderText: '',
     imageFileName: '',
-    additionalLabelText: '(Icons should be square and at least 400 x 400 PX)',
+    additionalLabelText: '(Icons should be square and at least 400 x 400 PX)'
   },
   [FIELD_KEYS.DESCRIPTION]: {
     label: 'Description',
     value: '',
     errorMessage: '',
-    placeholderText: 'Describe your operation',
+    placeholderText: 'Describe your operation'
   },
   [FIELD_KEYS.SETUP_PROVIDER]: {
     label: 'Cloud Provider',
     value: '',
     errorMessage: '',
-    placeholderText: 'AWS, Azure, Google Cloud...',
+    placeholderText: 'AWS, Azure, Google Cloud...'
   },
   [FIELD_KEYS.MEV_RELAYS]: {
     label: 'Mev Relays',
     value: '',
     errorMessage: '',
     placeholderText: 'Aestus, Agnostic Gnosis, Blocknative...',
-    options: Object.values(MEV_RELAYS),
+    options: Object.values(MEV_RELAYS)
   },
   [FIELD_KEYS.LOCATION]: {
     label: 'Server Geolocation',
     value: '',
     errorMessage: '',
-    placeholderText: 'Select your server geolocation',
+    placeholderText: 'Select your server geolocation'
   },
   [FIELD_KEYS.EXECUTION_CLIENT]: {
     label: 'Execution Client',
     value: '',
     errorMessage: '',
     placeholderText: 'Geth, Nethermind, Besu...',
-    options: [],
+    options: []
   },
   [FIELD_KEYS.CONSENSUS_CLIENT]: {
     label: 'Consensus Client',
     value: '',
     errorMessage: '',
     placeholderText: 'Prism, Lighthouse, Teku...',
-    options: [],
+    options: []
   },
   [FIELD_KEYS.DKG_ADDRESS]: {
     label: 'DKG Endpoint',
     value: HTTPS_PREFIX,
     errorMessage: '',
     placeholderText: 'https://ip:port',
-    toolTipText: 'The IP address or domain name of the machine running the operator DKG client, along with the port number ("3030" is the default port). Example: "http://192.168.1.1:3030 or "http://my.example.com:3030"',
+    toolTipText:
+      'The IP address or domain name of the machine running the operator DKG client, along with the port number ("3030" is the default port). Example: "http://192.168.1.1:3030 or "http://my.example.com:3030"'
   },
   [FIELD_KEYS.WEBSITE_URL]: {
     label: 'Website Link',
     value: '',
     errorMessage: '',
-    placeholderText: 'Enter your Website Link',
+    placeholderText: 'Enter your Website Link'
   },
   [FIELD_KEYS.TWITTER_URL]: {
     label: 'Twitter Link',
     value: '',
     errorMessage: '',
-    placeholderText: 'Enter your Twitter Link',
+    placeholderText: 'Enter your Twitter Link'
   },
   [FIELD_KEYS.LINKEDIN_URL]: {
     label: 'Linkedin Link',
     value: '',
     errorMessage: '',
-    placeholderText: 'Enter your LinkedIn Link',
-  },
+    placeholderText: 'Enter your LinkedIn Link'
+  }
 };
 
 export const photoValidation = (file: any, callback: Function) => {
@@ -179,7 +179,7 @@ export const photoValidation = (file: any, callback: Function) => {
     errorMessage = translations.OPERATOR_METADATA.IMAGE_TYPE_ERROR;
     return callback('', file.name, errorMessage);
   }
-  if ((file.size / 1024) > 200) {
+  if (file.size / 1024 > 200) {
     errorMessage = translations.OPERATOR_METADATA.IMAGE_SIZE_ERROR;
   }
   const reader = new FileReader();
@@ -199,7 +199,6 @@ export const photoValidation = (file: any, callback: Function) => {
     }
   };
   reader.readAsDataURL(file);
-
 };
 
 export const isValidLink = (value: string) => {

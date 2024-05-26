@@ -118,13 +118,13 @@ const Deposit = () => {
           newRunWay: !inputValue
             ? undefined
             : getClusterRunWay(
-              {
-                ...cluster,
-                balance: toWei(newBalance)
-              },
-              liquidationCollateralPeriod,
-              minimumLiquidationCollateral
-            )
+                {
+                  ...cluster,
+                  balance: toWei(newBalance)
+                },
+                liquidationCollateralPeriod,
+                minimumLiquidationCollateral
+              )
         }}
       />
     </>

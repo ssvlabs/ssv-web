@@ -3,27 +3,28 @@ import { retryWithDelay } from '~app/decorators/retriable.decorator';
 
 enum HttpResult {
   SUCCESS,
-  FAIL,
+  FAIL
 }
 
 export interface IHttpResponse<T> {
   error: string | null;
   data: T | null;
-  result: HttpResult
+  result: HttpResult;
 }
 
 const RETRY_CONFIG = {
-    default: {
-      maxAttempts: 5,
-      backOff: 500,
-      exponentialOption: {
-        maxInterval: 5000,
-        multiplier: 2,
-      },
-    },
-  };
+  default: {
+    maxAttempts: 5,
+    backOff: 500,
+    exponentialOption: {
+      maxInterval: 5000,
+      multiplier: 2
+    }
+  }
+};
 
-const httpErrorMessage = (url: string, errorCode: string, errorMessage: string, customMessage?: string) => `Http request to url ${url} ${customMessage} failed with error code ${errorCode}. Error: ${errorMessage}`;
+const httpErrorMessage = (url: string, errorCode: string, errorMessage: string, customMessage?: string) =>
+  `Http request to url ${url} ${customMessage} failed with error code ${errorCode}. Error: ${errorMessage}`;
 
 const httpGeneralErrorMessage = (url: string) => `Http request to url ${url} failed.`;
 

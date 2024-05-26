@@ -14,11 +14,11 @@ export interface IOperator {
   ownerAddress: string;
   dkg_address?: string;
   mev_relays?: string;
-  autoSelected?: boolean
+  autoSelected?: boolean;
   validators_count: number;
-  declared_fee: string,
-  previous_fee: string,
-  address_whitelist: string,
+  declared_fee: string;
+  previous_fee: string;
+  address_whitelist: string;
   verified_operator?: boolean;
   balance: number;
 }
@@ -39,5 +39,5 @@ export type UpdateFeeProps = {
   oldFee: number | string;
   currency: string;
   setCurrency: Function;
-  declareNewFeeHandler: Function
+  declareNewFeeHandler: Function;
 };

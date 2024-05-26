@@ -57,40 +57,40 @@ const FeeRecipient = () => {
       blackHeader
       header={'Fee Recipient Address'}
       body={[
-        (
-          <Grid container item style={{ gap: 32 }}>
-            <Grid container style={{ gap: 24 }}>
-              <Grid item className={classes.Text}>
-                Enter an Ethereum address that will receive all of your validators block proposal rewards. <LinkText
-                text={'What are proposal rewards?'} link={config.links.SSV_DOCUMENTATION}/>
-              </Grid>
-              <Grid className={`${classes.Warning} ${classes.Text}`}>
-                Standard rewards from performing other duties will remain to be credited to your validators balance on
-                the Beacon Chain.
-              </Grid>
+        <Grid container item style={{ gap: 32 }}>
+          <Grid container style={{ gap: 24 }}>
+            <Grid item className={classes.Text}>
+              Enter an Ethereum address that will receive all of your validators block proposal rewards.{' '}
+              <LinkText text={'What are proposal rewards?'} link={config.links.SSV_DOCUMENTATION} />
             </Grid>
-            <Grid container gap={{ gap: 17 }}>
-              <Grid item container>
-                <InputLabel title="Fee Recipient Address"/>
-                <TextInput
-                  value={userInput}
-                  disable={readOnlyState}
-                  showError={!isAddressValid}
-                  data-testid="new-fee-recipient"
-                  onChangeCallback={setFeeRecipient}
-                  icon={<Grid onClick={() => setReadOnlyState(false)} className={classes.EditIcon}/>}
-                />
-                <Grid
-                  className={classes.ErrorText}>{!isAddressValid ? 'Invalid address, please input a valid Ethereum wallet address' : ''}</Grid>
-              </Grid>
-              <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)}
-                                          isMainnet={isMainnet}>
-                <PrimaryButton isDisabled={readOnlyState || submitDisable || (isMainnet && !isChecked)} text={'Update'}
-                               onClick={submitFeeRecipient} size={ButtonSize.XL} isLoading={isLoading}/>
-              </TermsAndConditionsCheckbox>
+            <Grid className={`${classes.Warning} ${classes.Text}`}>
+              Standard rewards from performing other duties will remain to be credited to your validators balance on the Beacon Chain.
             </Grid>
           </Grid>
-        ),
+          <Grid container gap={{ gap: 17 }}>
+            <Grid item container>
+              <InputLabel title="Fee Recipient Address" />
+              <TextInput
+                value={userInput}
+                disable={readOnlyState}
+                showError={!isAddressValid}
+                data-testid="new-fee-recipient"
+                onChangeCallback={setFeeRecipient}
+                icon={<Grid onClick={() => setReadOnlyState(false)} className={classes.EditIcon} />}
+              />
+              <Grid className={classes.ErrorText}>{!isAddressValid ? 'Invalid address, please input a valid Ethereum wallet address' : ''}</Grid>
+            </Grid>
+            <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
+              <PrimaryButton
+                isDisabled={readOnlyState || submitDisable || (isMainnet && !isChecked)}
+                text={'Update'}
+                onClick={submitFeeRecipient}
+                size={ButtonSize.XL}
+                isLoading={isLoading}
+              />
+            </TermsAndConditionsCheckbox>
+          </Grid>
+        </Grid>
       ]}
     />
   );

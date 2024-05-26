@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import Checkbox from '~app/components/common/CheckBox';
 import WarningBox from '~app/components/common/WarningBox';
@@ -19,62 +19,69 @@ type FlowData = {
 };
 
 const Wrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
 `;
 
 const ConfirmationWrapper = styled.div`
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: 24px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 24px;
 `;
 
 const Confirmation = styled.div`
-    width: 648px;
-    min-height: 492px;
-    border-radius: 16px;
-    background-color: ${({ theme }) => theme.colors.white};
-    padding: 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+  width: 648px;
+  min-height: 492px;
+  border-radius: 16px;
+  background-color: ${({ theme }) => theme.colors.white};
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 `;
 
 const ConfirmationTitle = styled.h1`
-    margin: 0;
-    font-size: 20px;
-    font-weight: 700;
-    color: ${({ theme }) => theme.colors.gray90};
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.gray90};
 `;
 
 const ConfirmationText = styled.p`
-    margin: 0;
-    font-size: 16px;
-    font-weight: 500;
-    color: ${({ theme }) => theme.colors.gray60};
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.gray60};
 `;
 
-const initialState = (checkBoxes: string[]) => checkBoxes.reduce((acc: boolean[]) => {
-  acc.push(false);
-  return acc;
-}, []);
+const initialState = (checkBoxes: string[]) =>
+  checkBoxes.reduce((acc: boolean[]) => {
+    acc.push(false);
+    return acc;
+  }, []);
 
-const ConfirmationStep = ({ nextStep, selectedValidators, flowData, stepBack, currentBulkFlow, isLoading }: {
-  nextStep: Function,
-  selectedValidators: string[],
-  flowData: FlowData,
-  stepBack?: Function,
-  currentBulkFlow: BULK_FLOWS,
-  isLoading: boolean
+const ConfirmationStep = ({
+  nextStep,
+  selectedValidators,
+  flowData,
+  stepBack,
+  currentBulkFlow,
+  isLoading
+}: {
+  nextStep: Function;
+  selectedValidators: string[];
+  flowData: FlowData;
+  stepBack?: Function;
+  currentBulkFlow: BULK_FLOWS;
+  isLoading: boolean;
 }) => {
   const { title, texts, warningMessage, checkBoxes } = flowData;
   const [isSelectedCheckboxes, setIsSelectedCheckboxes] = useState(initialState(checkBoxes));
   const disableCButtonCondition = isSelectedCheckboxes.some((isSelected: boolean) => !isSelected);
   const appStateIsLoading = useAppSelector(getIsLoading);
-
 
   const clickCheckboxHandler = ({ index }: { index: number }) => {
     setIsSelectedCheckboxes((prevState: boolean[]) => {
@@ -87,24 +94,33 @@ const ConfirmationStep = ({ nextStep, selectedValidators, flowData, stepBack, cu
 
   return (
     <Wrapper>
-      <NewWhiteWrapper
-        type={0}
-        header={'Cluster'}
-        stepBack={stepBack}
-      />
+      <NewWhiteWrapper type={0} header={'Cluster'} stepBack={stepBack} />
       <ConfirmationWrapper>
         <Confirmation>
           <ConfirmationTitle>{title}</ConfirmationTitle>
-          {texts.map((text: string) => <ConfirmationText key={text}>{text}</ConfirmationText>)}
-          <WarningBox text={warningMessage}/>
-          {checkBoxes.map((checkBoxText, index) => <Checkbox key={index} withoutMarginBottom
-                                                             toggleIsChecked={() => clickCheckboxHandler({ index })}
-                                                             grayBackGround text={checkBoxText}
-                                                             isChecked={isSelectedCheckboxes[index]}/>)}
-          <Button text={flowData.buttonText(selectedValidators.length, appStateIsLoading)}
-                  isDisabled={disableCButtonCondition} isLoading={isLoading} onClick={nextStep} size={ButtonSize.XL}/>
+          {texts.map((text: string) => (
+            <ConfirmationText key={text}>{text}</ConfirmationText>
+          ))}
+          <WarningBox text={warningMessage} />
+          {checkBoxes.map((checkBoxText, index) => (
+            <Checkbox
+              key={index}
+              withoutMarginBottom
+              toggleIsChecked={() => clickCheckboxHandler({ index })}
+              grayBackGround
+              text={checkBoxText}
+              isChecked={isSelectedCheckboxes[index]}
+            />
+          ))}
+          <Button
+            text={flowData.buttonText(selectedValidators.length, appStateIsLoading)}
+            isDisabled={disableCButtonCondition}
+            isLoading={isLoading}
+            onClick={nextStep}
+            size={ButtonSize.XL}
+          />
         </Confirmation>
-        <Summary selectedValidators={selectedValidators}/>
+        <Summary selectedValidators={selectedValidators} />
       </ConfirmationWrapper>
     </Wrapper>
   );

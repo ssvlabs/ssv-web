@@ -25,7 +25,7 @@ const SsvAppBar = () => {
     GoogleTagManager.getInstance().sendEvent({
       category: 'nav',
       action: 'click',
-      label: 'Docs',
+      label: 'Docs'
     });
     window.open(config.links.LINK_SSV_DEV_DOCS);
   };
@@ -34,20 +34,24 @@ const SsvAppBar = () => {
     GoogleTagManager.getInstance().sendEvent({
       category: 'nav',
       action: 'click',
-      label: 'Explorer',
+      label: 'Explorer'
     });
     window.open(config.links.EXPLORER_URL);
   };
 
   const buttons = [
     {
-      label: 'My Account', blueColor: true, onClick: moveToDashboard,
+      label: 'My Account',
+      blueColor: true,
+      onClick: moveToDashboard
     },
     {
-      label: 'Explorer', onClick: openExplorer,
+      label: 'Explorer',
+      onClick: openExplorer
     },
     {
-      label: 'Docs', onClick: openDocs,
+      label: 'Docs',
+      onClick: openDocs
     },
     {
       label: '...',
@@ -56,8 +60,9 @@ const SsvAppBar = () => {
         { label: 'Governance Forum', link: config.links.GOVERNANCE_FORUM_LINK },
         { label: 'Snapshot', link: config.links.SNAPSHOT_LINK, bottomLine: true },
         { label: 'Terms of Use', link: config.links.TERMS_OF_USE_LINK },
-        { label: 'Privacy Policy', link: config.links.PRIVACY_POLICY_LINK }],
-    },
+        { label: 'Privacy Policy', link: config.links.PRIVACY_POLICY_LINK }
+      ]
+    }
   ];
 
   return <AppBar buttons={buttons} />;

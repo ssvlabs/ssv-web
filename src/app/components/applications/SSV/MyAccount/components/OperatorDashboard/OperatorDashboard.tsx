@@ -12,8 +12,7 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
 import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards/ToggleDashboards';
-import OperatorDetails
-  from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { IOperator } from '~app/model/operator.model';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
@@ -25,7 +24,7 @@ import { ButtonSize } from '~app/enums/Button.enum';
 import { setOperatorProcessId } from '~app/redux/operator.slice.ts';
 
 const ButtonWrapper = styled.div`
-    width: 164px;
+  width: 164px;
 `;
 
 const OperatorDashboard = () => {
@@ -46,11 +45,14 @@ const OperatorDashboard = () => {
 
   const fetchData = async () => {
     try {
-      // eslint-disable-next-line no-async-promise-executor
-      const promises = operators.map((operator: IOperator) => new Promise(async () => {
-        const balance = await getOperatorBalance({ id: operator.id });
-        setOperatorBalances((prevState: {}) => ({ ...prevState, [operator.id]: balance }));
-      }));
+      const promises = operators.map(
+        (operator: IOperator) =>
+          // eslint-disable-next-line no-async-promise-executor
+          new Promise(async () => {
+            const balance = await getOperatorBalance({ id: operator.id });
+            setOperatorBalances((prevState: {}) => ({ ...prevState, [operator.id]: balance }));
+          })
+      );
       await Promise.all(promises);
     } catch (e: any) {
       dispatch(setMessageAndSeverity({ message: e.message, severity: 'error' }));
@@ -61,29 +63,22 @@ const OperatorDashboard = () => {
     navigate(config.routes.SSV.OPERATOR.HOME);
   };
 
-  const createData = (
-    operatorName: JSX.Element,
-    status: JSX.Element,
-    performance: string,
-    balance: JSX.Element,
-    yearlyFee: JSX.Element,
-    validators: number,
-  ) => {
+  const createData = (operatorName: JSX.Element, status: JSX.Element, performance: string, balance: JSX.Element, yearlyFee: JSX.Element, validators: number) => {
     return { operatorName, status, performance, balance, yearlyFee, validators };
   };
 
   const rows = operators.map((operator: any) => {
     return createData(
-      <OperatorDetails operator={operator} setOpenExplorerRefs={setOpenExplorerRefs}/>,
-      <Status item={operator}/>,
+      <OperatorDetails operator={operator} setOpenExplorerRefs={setOpenExplorerRefs} />,
+      <Status item={operator} />,
       `${operator.validators_count === 0 ? '- -' : `${operator.performance['30d'].toFixed(2)}%`}`,
       <SsvAndSubTitle
         // @ts-ignore
         ssv={operatorBalances[operator.id] === undefined ? 'n/a' : formatNumberToUi(operatorBalances[operator.id])}
-        leftTextAlign/>,
-      <SsvAndSubTitle
-        ssv={formatNumberToUi(getFeeForYear(fromWei(operator.fee)))} leftTextAlign/>,
-      operator.validators_count,
+        leftTextAlign
+      />,
+      <SsvAndSubTitle ssv={formatNumberToUi(getFeeForYear(fromWei(operator.fee)))} leftTextAlign />,
+      operator.validators_count
     );
   });
 
@@ -92,17 +87,20 @@ const OperatorDashboard = () => {
       return;
     }
     const operator = operators[listIndex];
-    processStore.setProcess({
-      processName: 'single_operator',
-      // @ts-ignore
-      item: { ...operator, balance: operatorBalances[operator.id] },
-    }, 1);
+    processStore.setProcess(
+      {
+        processName: 'single_operator',
+        // @ts-ignore
+        item: { ...operator, balance: operatorBalances[operator.id] }
+      },
+      1
+    );
     dispatch(setSelectedOperatorId(operators[listIndex].id));
     dispatch(setOperatorProcessId(operators[listIndex].id));
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
   };
 
-  const onChangePage = async (newPage: number) =>  {
+  const onChangePage = async (newPage: number) => {
     setLoadingOperators(true);
     await dispatch(fetchOperators({ forcePage: newPage }));
     setLoadingOperators(false);
@@ -115,9 +113,9 @@ const OperatorDashboard = () => {
   return (
     <Grid container className={classes.MyAccountWrapper}>
       <Grid container item className={classes.HeaderWrapper}>
-        <ToggleDashboards title={'Operators'} type={'operator'}/>
+        <ToggleDashboards title={'Operators'} type={'operator'} />
         <ButtonWrapper>
-          <PrimaryButton size={ButtonSize.MD} text={'Add Operator'} onClick={moveToRegisterOperator}/>
+          <PrimaryButton size={ButtonSize.MD} text={'Add Operator'} onClick={moveToRegisterOperator} />
         </ButtonWrapper>
       </Grid>
       <Dashboard
@@ -131,19 +129,19 @@ const OperatorDashboard = () => {
           count: total,
           totalPages: pages,
           rowsPerPage: per_page,
-          onChangePage: onChangePage,
+          onChangePage: onChangePage
         }}
         columns={[
           { name: 'Operator Name' },
           {
             name: 'Status',
             onClick: sortOperatorsByStatusHandler,
-            tooltip: 'Is the operator performing duties for the majority of its validators for the last 2 epochs.',
+            tooltip: 'Is the operator performing duties for the majority of its validators for the last 2 epochs.'
           },
           { name: '30D Performance' },
           { name: 'Balance' },
           { name: 'Yearly Fee' },
-          { name: 'Validators' },
+          { name: 'Validators' }
         ]}
       />
     </Grid>

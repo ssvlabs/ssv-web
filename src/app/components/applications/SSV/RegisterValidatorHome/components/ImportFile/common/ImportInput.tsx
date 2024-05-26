@@ -1,16 +1,16 @@
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import  { useRef } from 'react';
+import { useRef } from 'react';
 import { useStyles } from '../ImportFile.styles';
 import Spinner from '~app/components/common/Spinner';
 
 type Props = {
-  fileText: any,
-  fileImage?: any,
-  fileHandler: any,
-  removeButtons?: any,
-  extendClass?: string,
-  processingFile: boolean,
+  fileText: any;
+  fileImage?: any;
+  fileHandler: any;
+  removeButtons?: any;
+  extendClass?: string;
+  processingFile: boolean;
 };
 
 const ImportInput = (props: Props) => {
@@ -36,25 +36,18 @@ const ImportInput = (props: Props) => {
   };
 
   return (
-      <Grid
-          container
-          item xs={12}
-          onDrop={handleDrop}
-          onClick={handleClick}
-          onDragOver={handleDrag}
-          className={`${classes.DropZone} ${extendClass}`}
-      >
-        <input type="file" className={classes.Input} ref={inputRef} onChange={handleDrop}/>
-        {!processingFile && fileImage && fileImage()}
-        {!processingFile && fileText()}
-        {processingFile && (
-            <Grid container item>
-              <Grid item style={{ margin: 'auto' }}>
-                <Spinner/>
-              </Grid>
-            </Grid>
-        )}
-      </Grid>
+    <Grid container item xs={12} onDrop={handleDrop} onClick={handleClick} onDragOver={handleDrag} className={`${classes.DropZone} ${extendClass}`}>
+      <input type="file" className={classes.Input} ref={inputRef} onChange={handleDrop} />
+      {!processingFile && fileImage && fileImage()}
+      {!processingFile && fileText()}
+      {processingFile && (
+        <Grid container item>
+          <Grid item style={{ margin: 'auto' }}>
+            <Spinner />
+          </Grid>
+        </Grid>
+      )}
+    </Grid>
   );
 };
 

@@ -15,7 +15,16 @@ interface IRemoveValidators {
   dispatch: Function;
 }
 
-const removeValidators = async ({ accountAddress, isContractWallet, validatorPks, operators, liquidationCollateralPeriod, minimumLiquidationCollateral, isBulk, dispatch }: IRemoveValidators): Promise<boolean> => {
+const removeValidators = async ({
+  accountAddress,
+  isContractWallet,
+  validatorPks,
+  operators,
+  liquidationCollateralPeriod,
+  minimumLiquidationCollateral,
+  isBulk,
+  dispatch
+}: IRemoveValidators): Promise<boolean> => {
   const sortedOperatorIds = getSortedOperatorsIds(operators);
   const clusterData = await getClusterData(getClusterHash(operators, accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
   const payload = [validatorPks, sortedOperatorIds, clusterData];
@@ -32,7 +41,7 @@ const removeValidators = async ({ accountAddress, isContractWallet, validatorPks
     },
     prevState: clusterData.validatorCount,
     isContractWallet,
-    dispatch,
+    dispatch
   });
 };
 
@@ -51,7 +60,7 @@ const exitValidators = async ({ isContractWallet, validatorIds, operatorIds, isB
     contractMethod: isBulk ? contract.bulkExitValidator : contract.exitValidator,
     payload,
     isContractWallet,
-    dispatch,
+    dispatch
   });
 };
 

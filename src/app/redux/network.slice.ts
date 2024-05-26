@@ -11,11 +11,10 @@ export interface NetworkState {
 const initialState: NetworkState = {
   networkFee: 0,
   liquidationCollateralPeriod: 0,
-  minimumLiquidationCollateral: 0,
+  minimumLiquidationCollateral: 0
 };
 
-export const fetchAndSetNetworkFeeAndLiquidationCollateral =
-  createAsyncThunk('network/fetchAndSetNetworkFeeAndLiquidationCollateral', async () => {
+export const fetchAndSetNetworkFeeAndLiquidationCollateral = createAsyncThunk('network/fetchAndSetNetworkFeeAndLiquidationCollateral', async () => {
   return await fetchNetworkFeeAndLiquidationCollateral();
 });
 
@@ -24,13 +23,15 @@ export const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchAndSetNetworkFeeAndLiquidationCollateral.fulfilled, (state, action:
-      { payload: { networkFee: number; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number } }) => {
-      state.networkFee = action.payload.networkFee;
-      state.liquidationCollateralPeriod = action.payload.liquidationCollateralPeriod;
-      state.minimumLiquidationCollateral = action.payload.minimumLiquidationCollateral;
-    });
-  },
+    builder.addCase(
+      fetchAndSetNetworkFeeAndLiquidationCollateral.fulfilled,
+      (state, action: { payload: { networkFee: number; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number } }) => {
+        state.networkFee = action.payload.networkFee;
+        state.liquidationCollateralPeriod = action.payload.liquidationCollateralPeriod;
+        state.minimumLiquidationCollateral = action.payload.minimumLiquidationCollateral;
+      }
+    );
+  }
 });
 
 export const networkStateReducer = slice.reducer;
@@ -38,5 +39,5 @@ export const networkStateReducer = slice.reducer;
 export const getNetworkFeeAndLiquidationCollateral = (state: RootState) => ({
   networkFee: state.networkState.networkFee,
   liquidationCollateralPeriod: state.networkState.liquidationCollateralPeriod,
-  minimumLiquidationCollateral: state.networkState.minimumLiquidationCollateral,
+  minimumLiquidationCollateral: state.networkState.minimumLiquidationCollateral
 });

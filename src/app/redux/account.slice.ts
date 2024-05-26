@@ -32,7 +32,7 @@ const initialState: AccountState = {
   isFetchingClusters: false,
   clustersPagination: DEFAULT_PAGINATION,
   selectedClusterId: '',
-  selectedOperatorId: -1,
+  selectedOperatorId: -1
 };
 
 export const fetchOperators = createAsyncThunk('account/fetchOperators', async ({ forcePage, forcePerPage }: { forcePage?: number; forcePerPage?: number }, thunkApi) => {
@@ -82,7 +82,7 @@ export const slice = createSlice({
           return b.status === 'No Validators' ? 0 : 1;
         }
       });
-    },
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(fetchOperators.pending, (state) => {
@@ -108,7 +108,7 @@ export const slice = createSlice({
     builder.addCase(fetchClusters.rejected, (state) => {
       state.isFetchingClusters = false;
     });
-  },
+  }
 });
 
 export const accountStateReducer = slice.reducer;
@@ -121,5 +121,7 @@ export const getOperatorsPagination = (state: RootState) => state.accountState.o
 export const getAccountClusters = (state: RootState) => state.accountState.clusters;
 // export const getIsFetchingClusters = (state: RootState) => state.accountState.isFetchingClusters;
 export const getClustersPagination = (state: RootState) => state.accountState.clustersPagination;
-export const getSelectedCluster = (state: RootState) => state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId) || {} as ICluster;
-export const getSelectedOperator = (state: RootState) => state.accountState.operators.find((operator: IOperator) => operator.id === state.accountState.selectedOperatorId) || {} as IOperator;
+export const getSelectedCluster = (state: RootState) =>
+  state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId) || ({} as ICluster);
+export const getSelectedOperator = (state: RootState) =>
+  state.accountState.operators.find((operator: IOperator) => operator.id === state.accountState.selectedOperatorId) || ({} as IOperator);

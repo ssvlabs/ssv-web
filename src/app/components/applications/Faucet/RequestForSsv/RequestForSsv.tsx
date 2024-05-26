@@ -71,32 +71,21 @@ const RequestForSsv = () => {
       body={[
         <Grid container className={classes.Wrapper}>
           <Grid item xs={12}>
-            <InputLabel title="Recipient Wallet"/>
-            <TextInput
-              disable
-              data-testid="recipient-wallet"
-              value={accountAddress}
-            />
+            <InputLabel title="Recipient Wallet" />
+            <TextInput disable data-testid="recipient-wallet" value={accountAddress} />
           </Grid>
           <Grid item xs={12}>
-            <InputLabel title="Request Amount"/>
-            {amountToTransfer !== undefined && <TextInput
-              disable
-              value={`${amountToTransfer} SSV`}
-              data-testid='request-amount'
-              wrapperClass={classes.AmountInput}
-            />}
+            <InputLabel title="Request Amount" />
+            {amountToTransfer !== undefined && <TextInput disable value={`${amountToTransfer} SSV`} data-testid="request-amount" wrapperClass={classes.AmountInput} />}
           </Grid>
-          {error && <Grid item xs={12} className={classes.ErrorText}>{error}</Grid>}
-          <HCaptcha
-            ref={captchaRef}
-            theme={isDarkMode ? 'dark' : 'light'}
-            onVerify={() => setDisabled(false)}
-            sitekey={String(process.env.REACT_APP_CAPTCHA_KEY)}
-          />
-          <PrimaryButton text={buttonText} onClick={requestForSSV}
-                         isDisabled={isMainnet || disabled || reachedMaxTransactionPerDay} isLoading={isLoading} size={ButtonSize.XL}/>
-        </Grid>,
+          {error && (
+            <Grid item xs={12} className={classes.ErrorText}>
+              {error}
+            </Grid>
+          )}
+          <HCaptcha ref={captchaRef} theme={isDarkMode ? 'dark' : 'light'} onVerify={() => setDisabled(false)} sitekey={String(process.env.REACT_APP_CAPTCHA_KEY)} />
+          <PrimaryButton text={buttonText} onClick={requestForSSV} isDisabled={isMainnet || disabled || reachedMaxTransactionPerDay} isLoading={isLoading} size={ButtonSize.XL} />
+        </Grid>
       ]}
     />
   );

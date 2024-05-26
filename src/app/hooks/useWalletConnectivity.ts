@@ -18,11 +18,7 @@ import { cleanLocalStorageAndCookie } from '~root/providers/onboardSettings.prov
 import { initContracts, resetContracts } from '~root/services/contracts.service';
 import notifyService from '~root/services/notify.service';
 import { isChainSupported } from '~root/wagmi/config';
-import {
-  clearAllSettings,
-  fetchAndSetFeeIncreaseAndPeriods, fetchAndSetMaxOperatorFee,
-  fetchAndSetOperatorValidatorsLimit
-} from '~app/redux/operator.slice.ts';
+import { clearAllSettings, fetchAndSetFeeIncreaseAndPeriods, fetchAndSetMaxOperatorFee, fetchAndSetOperatorValidatorsLimit } from '~app/redux/operator.slice.ts';
 
 type InitProps = {
   walletAddress: string;
@@ -37,7 +33,6 @@ export const useWalletConnectivity = () => {
 
   const account = useAccount();
   const provider = useEthersSignerProvider();
-
 
   const reset = () => {
     cleanLocalStorageAndCookie();

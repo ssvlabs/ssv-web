@@ -5,23 +5,31 @@ import { IPagination } from '~app/model/pagination.model';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
 
 type OperatorsListQuery = {
-  page?: number,
-  search?: string,
-  type?: string[],
-  perPage?: number
-  ordering?: string,
-  dkgEnabled?: boolean,
+  page?: number;
+  search?: string;
+  type?: string[];
+  perPage?: number;
+  ordering?: string;
+  dkgEnabled?: boolean;
 };
 
 type OperatorValidatorListQuery = {
-  page?: number,
-  perPage?: number
-  operatorId: number,
+  page?: number;
+  perPage?: number;
+  operatorId: number;
 };
 
 const PERFORMANCE_PERIOD = '24hours';
 
-const getOperatorsByOwnerAddress = async ({ page = 1, perPage = 8, accountAddress }: { page: number; perPage: number; accountAddress: string }): Promise<{ operators: IOperator[], pagination: IPagination }> => {
+const getOperatorsByOwnerAddress = async ({
+  page = 1,
+  perPage = 8,
+  accountAddress
+}: {
+  page: number;
+  perPage: number;
+  accountAddress: string;
+}): Promise<{ operators: IOperator[]; pagination: IPagination }> => {
   const url = `${getStoredNetwork().api}/operators/owned_by/${accountAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}&ordering=id:asc`;
   const res = await getRequest(url, false);
   return res ?? { operators: [], pagination: DEFAULT_PAGINATION };
@@ -49,7 +57,7 @@ const getOperator = async (operatorId: number | string, skipRetry?: boolean) => 
 };
 
 const getOperatorsByIds = async (operatorIds: number[]): Promise<IOperator[]> => {
-  const promises = operatorIds.map(operatorId => getOperator(operatorId, false));
+  const promises = operatorIds.map((operatorId) => getOperator(operatorId, false));
   const responses = await Promise.all(promises);
   for (const response of responses) {
     if (!response) {
@@ -97,6 +105,5 @@ export {
   updateOperatorMetadata,
   getOperatorNodes,
   getOperatorAvailableLocations,
-  getOperatorValidators,
+  getOperatorValidators
 };
-

@@ -71,7 +71,7 @@ class DistributionStore {
     await this.cleanState();
     const merkle = await fetchMerkleTreeStructure();
     const accountAddress = store.getState().walletState.accountAddress;
-      merkle?.tree.data.forEach((merkleTreeUser: IMerkleTreeData, index: number) => {
+    merkle?.tree.data.forEach((merkleTreeUser: IMerkleTreeData, index: number) => {
       if (isEqualsAddresses(merkleTreeUser.address, accountAddress)) {
         this.merkleRoot = merkle.tree.root;
         this.userAddress = merkleTreeUser.address;

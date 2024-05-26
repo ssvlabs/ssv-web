@@ -13,7 +13,7 @@ const clusterDataDTO = ({ cluster }: { cluster: ICluster }) => ({
   networkFeeIndex: `${cluster.networkFeeIndex}`,
   index: `${cluster.index}`,
   balance: cluster.balance,
-  active: cluster.active,
+  active: cluster.active
 });
 
 const extendClusterEntity = async (cluster: ICluster, ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number) => {
@@ -25,7 +25,19 @@ const extendClusterEntity = async (cluster: ICluster, ownerAddress: string, liqu
   return { ...cluster, runWay, burnRate: burnRate.toString(), balance: balance.toString(), clusterData };
 };
 
-const getClustersByOwnerAddress = async ({ page, perPage, accountAddress, liquidationCollateralPeriod, minimumLiquidationCollateral }: { page: number; perPage: number; accountAddress: string; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number; }): Promise<any> => {
+const getClustersByOwnerAddress = async ({
+  page,
+  perPage,
+  accountAddress,
+  liquidationCollateralPeriod,
+  minimumLiquidationCollateral
+}: {
+  page: number;
+  perPage: number;
+  accountAddress: string;
+  liquidationCollateralPeriod: number;
+  minimumLiquidationCollateral: number;
+}): Promise<any> => {
   const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/owner/${accountAddress}?page=${page}&perPage=${perPage}&operatorDetails=operatorDetails&ts=${new Date().getTime()}`;
   const res = await getRequest(url);
   const clusters = await Promise.all(res.clusters.map((cluster: any) => extendClusterEntity(cluster, accountAddress, liquidationCollateralPeriod, minimumLiquidationCollateral)));
@@ -33,7 +45,10 @@ const getClustersByOwnerAddress = async ({ page, perPage, accountAddress, liquid
 };
 
 const getSortedOperatorsIds = (operators: IOperator[]) => {
-  return operators.map((operator: IOperator) => operator.id).map(Number).sort((a: number, b: number) => a - b);
+  return operators
+    .map((operator: IOperator) => operator.id)
+    .map(Number)
+    .sort((a: number, b: number) => a - b);
 };
 
 const getClusterHash = (operators: (number | IOperator)[], ownerAddress: string) => {
@@ -51,10 +66,17 @@ const getClusterByHash = async (clusterHash: string): Promise<any> => {
   return await getRequest(url);
 };
 
-const getClusterBalance = async (operators: IOperator[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, convertFromWei?: boolean, injectedClusterData?: any) => {
+const getClusterBalance = async (
+  operators: IOperator[],
+  ownerAddress: string,
+  liquidationCollateralPeriod: number,
+  minimumLiquidationCollateral: number,
+  convertFromWei?: boolean,
+  injectedClusterData?: any
+) => {
   const operatorsIds = getSortedOperatorsIds(operators);
   const contract = getContractByName(EContractName.GETTER);
-  const clusterData = injectedClusterData ?? await getClusterData(getClusterHash(operators, ownerAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
+  const clusterData = injectedClusterData ?? (await getClusterData(getClusterHash(operators, ownerAddress), liquidationCollateralPeriod, minimumLiquidationCollateral));
   if (!clusterData || !contract) {
     return 0;
   }
@@ -118,33 +140,37 @@ const getClusterRunWay = (cluster: any, liquidationCollateralPeriod: number, min
 };
 
 const getClusterData = async (clusterHash: string, liquidationCollateralPeriod?: number, minimumLiquidationCollateral?: number, fullData = false) => {
-    const response = await getClusterByHash(clusterHash);
-    const clusterData = response?.cluster;
-    if (clusterData === null) {
-      return {
-        validatorCount: 0,
-        networkFeeIndex: 0,
-        index: 0,
-        balance: 0,
-        active: true,
-      };
-    } else if (fullData && liquidationCollateralPeriod && minimumLiquidationCollateral) {
-      const isLiquidated = await isClusterLiquidated(Object.values(clusterData.operators), clusterData.ownerAddress, clusterData);
-      const burnRate: string = await getClusterBurnRate(Object.values(clusterData.operators), clusterData.ownerAddress, clusterData);
-      const runWay: number = getClusterRunWay({
+  const response = await getClusterByHash(clusterHash);
+  const clusterData = response?.cluster;
+  if (clusterData === null) {
+    return {
+      validatorCount: 0,
+      networkFeeIndex: 0,
+      index: 0,
+      balance: 0,
+      active: true
+    };
+  } else if (fullData && liquidationCollateralPeriod && minimumLiquidationCollateral) {
+    const isLiquidated = await isClusterLiquidated(Object.values(clusterData.operators), clusterData.ownerAddress, clusterData);
+    const burnRate: string = await getClusterBurnRate(Object.values(clusterData.operators), clusterData.ownerAddress, clusterData);
+    const runWay: number = getClusterRunWay(
+      {
         ...clusterData,
-        burnRate,
-      }, liquidationCollateralPeriod, minimumLiquidationCollateral);
-      return { ...clusterData, isLiquidated, runWay, burnRate };
-    } else {
-      return {
-        validatorCount: clusterData.validatorCount,
-        networkFeeIndex: clusterData.networkFeeIndex,
-        index: clusterData.index,
-        balance: clusterData.balance,
-        active: clusterData.active,
-      };
-    }
+        burnRate
+      },
+      liquidationCollateralPeriod,
+      minimumLiquidationCollateral
+    );
+    return { ...clusterData, isLiquidated, runWay, burnRate };
+  } else {
+    return {
+      validatorCount: clusterData.validatorCount,
+      networkFeeIndex: clusterData.networkFeeIndex,
+      index: clusterData.index,
+      balance: clusterData.balance,
+      active: clusterData.active
+    };
+  }
 };
 
 export {
@@ -156,5 +182,5 @@ export {
   getClusterBalance,
   getClusterNewBurnRate,
   getClusterRunWay,
-  getClusterData,
+  getClusterData
 };

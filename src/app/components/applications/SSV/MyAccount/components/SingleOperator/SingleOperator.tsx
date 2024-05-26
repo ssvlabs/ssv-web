@@ -32,6 +32,7 @@ import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { fetchAndSetOperatorFeeInfo } from '~app/redux/operator.slice.ts';
+import { getOperatorBalance } from '~root/services/operatorContract.service.ts';
 
 const SingleOperator = () => {
   const stores = useStores();
@@ -42,11 +43,18 @@ const SingleOperator = () => {
   const processStore: ProcessStore = stores.Process;
   const process: SingleOperatorProcess = processStore.getProcess;
   const operator = process?.item;
+  const [balance, setBalance] = useState(operator.balance);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const strategyRedirect = useAppSelector(getStrategyRedirect);
 
+  const updateOperatorBalance = async () => {
+    const res = await getOperatorBalance({ id: operator.id });
+    setBalance(res);
+  };
+
   useEffect(() => {
     if (!operator) return navigate(strategyRedirect);
+    updateOperatorBalance();
     loadOperatorValidators({ page: 1, perPage: 5 });
     dispatch(fetchAndSetOperatorFeeInfo(operator.id));
   }, []);
@@ -54,7 +62,6 @@ const SingleOperator = () => {
   const loadOperatorValidators = async (props: { page: number; perPage: number }) => {
     const { page, perPage } = props;
     const response = await getOperatorValidators({
-      // @ts-ignore
       operatorId: operator.id,
       page,
       perPage
@@ -274,7 +281,7 @@ const SingleOperator = () => {
               body={[
                 <Grid container item>
                   <Grid item xs={12}>
-                    <SsvAndSubTitle ssv={formatNumberToUi(operator.balance) || 0} bold leftTextAlign />
+                    <SsvAndSubTitle ssv={formatNumberToUi(balance) || 0} bold leftTextAlign />
                   </Grid>
                 </Grid>
               ]}

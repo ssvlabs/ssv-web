@@ -58,7 +58,7 @@ export const validateFeeInput = ({ value, maxFee, callback }: { value: string; m
   } else if (Number(value) > maxFeePerYear) {
     response.shouldDisplay = true;
     response.errorMessage = ` Fee must be lower than ${maxFeePerYear} SSV`;
-  } else if (Number.isNaN(value) || Number.isFinite(value)) {
+  } else if (Number.isNaN(Number(value)) || Number.isFinite(value)) {
     response.shouldDisplay = true;
     response.errorMessage = 'Please use numbers only.';
   } else {

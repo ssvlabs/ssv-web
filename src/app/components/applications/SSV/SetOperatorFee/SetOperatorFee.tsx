@@ -86,15 +86,7 @@ const SetOperatorFee = () => {
                   <Typography>Annual fee</Typography>
                 </Grid>
               </Grid>
-              <TextInput
-                type="number"
-                withSideText
-                value={userInput}
-                placeHolder={'0.0'}
-                showError={error.shouldDisplay}
-                dataTestId={'edit-operator-fee'}
-                onChangeCallback={verifyFeeNumber}
-              />
+              <TextInput withSideText value={userInput} placeHolder={'0.0'} showError={error.shouldDisplay} dataTestId={'edit-operator-fee'} onChangeCallback={verifyFeeNumber} />
               {error.shouldDisplay && <Typography className={classes.TextError}>{error.errorMessage}</Typography>}
             </Grid>
             <PrimaryButton text={'Next'} isDisabled={registerButtonDisabled} onClick={moveToSubmitConfirmation} size={ButtonSize.XL} />

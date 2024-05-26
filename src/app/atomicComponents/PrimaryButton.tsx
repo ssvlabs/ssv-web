@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { ButtonSize } from '~app/enums/Button.enum';
 import Spinner from '~app/components/common/Spinner';
 
-const Button = styled.div<{ theme: any; size: ButtonSize; isDisabled: boolean; isLoading: boolean; isReverseDirection: boolean }>`
+const Button = styled.div<{ theme: any; size: ButtonSize; isDisabled: boolean; isLoading: boolean; isReverseDirection: boolean; zIndex: number }>`
   width: 100%;
   height: ${({ size }) => {
     if (size === ButtonSize.SM) {
@@ -21,7 +21,7 @@ const Button = styled.div<{ theme: any; size: ButtonSize; isDisabled: boolean; i
   font-size: 16px;
   padding: 0 18px;
   font-weight: 600;
-  z-index: 1000;
+  z-index: ${({ zIndex }) => zIndex};
   flex-direction: ${({ isReverseDirection }) => (isReverseDirection ? 'row-reverse' : 'row')};
   color: ${({ theme, isDisabled, isLoading }) => {
     if (isLoading) {
@@ -62,7 +62,8 @@ const PrimaryButton = ({
   isReverseDirection = false,
   onClick,
   isDisabled = false,
-  isLoading = false
+  isLoading = false,
+  zIndex = 0
 }: {
   size: ButtonSize;
   text: string;
@@ -71,11 +72,12 @@ const PrimaryButton = ({
   onClick?: Function;
   isDisabled?: boolean;
   isLoading?: boolean;
+  zIndex?: number;
 }) => {
   const handleOnClickFunction = () => onClick && !isDisabled && !isLoading && onClick();
 
   return (
-    <Button isReverseDirection={isReverseDirection} isLoading={isLoading} onClick={handleOnClickFunction} size={size} isDisabled={isDisabled}>
+    <Button zIndex={zIndex} isReverseDirection={isReverseDirection} isLoading={isLoading} onClick={handleOnClickFunction} size={size} isDisabled={isDisabled}>
       {isLoading && <Spinner />}
       {text}
       {icon && <Icon path={icon} />}

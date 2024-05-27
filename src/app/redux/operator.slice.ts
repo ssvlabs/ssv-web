@@ -8,10 +8,10 @@ type OperatorStateType = {
   selectedOperators: Record<string, IOperator>;
   clusterSize: number;
   operatorValidatorsLimit: number;
-  operatorCurrentFee: number;
-  operatorFutureFee: number;
-  operatorApprovalBeginTime: number;
-  operatorApprovalEndTime: number;
+  operatorCurrentFee: string;
+  operatorFutureFee: string;
+  operatorApprovalBeginTime: string;
+  operatorApprovalEndTime: string;
   operatorProcessId: number;
   getSetOperatorFeePeriod: number;
   declaredOperatorFeePeriod: number;
@@ -23,10 +23,10 @@ const initialState: OperatorStateType = {
   selectedOperators: {},
   clusterSize: 4,
   operatorValidatorsLimit: 0,
-  operatorCurrentFee: 0,
-  operatorFutureFee: 0,
-  operatorApprovalBeginTime: 0,
-  operatorApprovalEndTime: 0,
+  operatorCurrentFee: '',
+  operatorFutureFee: '',
+  operatorApprovalBeginTime: '',
+  operatorApprovalEndTime: '',
   operatorProcessId: 0,
   maxFeeIncrease: 0,
   getSetOperatorFeePeriod: 0,
@@ -80,12 +80,12 @@ export const slice = createSlice({
     },
     clearAllSettings: (state) => {
       state.maxFeeIncrease = 0;
-      state.operatorFutureFee = 0;
-      state.operatorCurrentFee = 0;
+      state.operatorFutureFee = '';
+      state.operatorCurrentFee = '';
       state.getSetOperatorFeePeriod = 0;
-      state.operatorApprovalEndTime = 0;
+      state.operatorApprovalEndTime = '';
       state.declaredOperatorFeePeriod = 0;
-      state.operatorApprovalBeginTime = 0;
+      state.operatorApprovalBeginTime = '';
     },
     unselectAllOperators: (state) => {
       state.selectedOperators = {};
@@ -94,9 +94,9 @@ export const slice = createSlice({
       state.clusterSize = action.payload;
     },
     clearOperatorFeeInfo: (state) => {
-      state.operatorApprovalBeginTime = 0;
-      state.operatorApprovalEndTime = 0;
-      state.operatorFutureFee = 0;
+      state.operatorApprovalBeginTime = '';
+      state.operatorApprovalEndTime = '';
+      state.operatorFutureFee = '';
     }
   },
   extraReducers: (builder) => {
@@ -135,10 +135,10 @@ export const getMaxOperatorFeePerYear = (state: RootState) => state.operatorStat
 export const hasEnoughSelectedOperators = (state: RootState) => Object.values(state.operatorState.selectedOperators).length === state.operatorState.clusterSize;
 export const getOperatorValidatorsLimit = (state: RootState) => state.operatorState.operatorValidatorsLimit;
 export const getOperatorFeeData = (state: RootState) => ({
-  operatorApprovalBeginTime: Number(state.operatorState.operatorApprovalBeginTime) || 0,
-  operatorApprovalEndTime: Number(state.operatorState.operatorApprovalEndTime) || 0,
-  operatorFutureFee: Number(state.operatorState.operatorFutureFee) || 0,
-  operatorCurrentFee: Number(state.operatorState.operatorCurrentFee) || 0
+  operatorApprovalBeginTime: state.operatorState.operatorApprovalBeginTime,
+  operatorApprovalEndTime: state.operatorState.operatorApprovalEndTime,
+  operatorFutureFee: state.operatorState.operatorFutureFee,
+  operatorCurrentFee: state.operatorState.operatorCurrentFee
 });
 export const getFeeIncreaseAndPeriods = (state: RootState) => ({
   getSetOperatorFeePeriod: state.operatorState.getSetOperatorFeePeriod,

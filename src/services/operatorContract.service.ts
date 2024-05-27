@@ -187,17 +187,17 @@ const syncOperatorFeeInfo = async (operatorId: number): Promise<any> => {
     }
     return {
       operatorCurrentFee: operatorCurrentFee.toString(),
-      operatorFutureFee: operatorFutureFee.toString(),
+      operatorFutureFee: operatorFutureFee || '',
       operatorApprovalBeginTime: operatorApprovalBeginTime.toString(),
       operatorApprovalEndTime: operatorApprovalEndTime.toString()
     };
   } catch (e: any) {
     console.error(`Failed to get operator fee details from the contract: ${e.message}`);
     return {
-      operatorCurrentFee: 0,
-      operatorFutureFee: 0,
-      operatorApprovalBeginTime: 0,
-      operatorApprovalEndTime: 0
+      operatorCurrentFee: '',
+      operatorFutureFee: '',
+      operatorApprovalBeginTime: '',
+      operatorApprovalEndTime: ''
     };
   }
 };

@@ -10,7 +10,6 @@ const fromWei = (amount?: number | string): number => {
   if (!amount) return 0;
   if (typeof amount === 'number' && amount === 0) return 0;
   if (typeof amount === 'string' && Number(amount) === 0) return 0;
-
   return parseFloat(utils.formatEther(amount.toString()));
 };
 
@@ -52,7 +51,10 @@ const getFeeForYear = (fee: number, decimalPlaces?: number): string => {
   const wrapFee = new Decimal(fee);
   const feePerYear = Number(wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR));
   const places = feePerYear < 0.0099 ? 10 : 2;
-  return wrapFee.mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed(decimalPlaces ?? places).toString();
+  return wrapFee
+    .mul(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR)
+    .toFixed(decimalPlaces ?? places)
+    .toString();
 };
 
 export { fromWei, toWei, encodeParameter, decodeParameter, isAddress, prepareSsvAmountToTransfer, toDecimalNumber, getFeeForYear, encodePacked };

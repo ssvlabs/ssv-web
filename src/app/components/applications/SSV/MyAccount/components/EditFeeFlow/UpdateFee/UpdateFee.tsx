@@ -17,14 +17,7 @@ import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getOperator } from '~root/services/operator.service';
 import config from '~app/common/config';
 import Decimal from 'decimal.js';
-import {
-  clearOperatorFeeInfo,
-  fetchAndSetOperatorFeeInfo,
-  getFeeIncreaseAndPeriods,
-  getMaxOperatorFeePerYear,
-  getOperatorFeeData,
-  getOperatorProcessId
-} from '~app/redux/operator.slice.ts';
+import { clearOperatorFeeInfo, fetchAndSetOperatorFeeInfo, getFeeIncreaseAndPeriods, getMaxOperatorFeePerYear, getOperatorProcessId } from '~app/redux/operator.slice.ts';
 
 enum FeeUpdateSteps {
   START = 'Start',
@@ -46,7 +39,6 @@ const UpdateFee = () => {
   const dispatch = useAppDispatch();
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const processOperatorId = useAppSelector(getOperatorProcessId);
-  const operatorFeeData = useAppSelector(getOperatorFeeData);
   const feeIncreaseAndPeriods = useAppSelector(getFeeIncreaseAndPeriods);
   const maxOperatorFeePerYear = useAppSelector(getMaxOperatorFeePerYear);
 
@@ -58,12 +50,12 @@ const UpdateFee = () => {
         const operatorFee = formatNumberToUi(getFeeForYear(fromWei(response.fee)));
         setOperator(response);
         setOldFee(operatorFee);
-        if (!operatorFeeData.operatorFutureFee) {
+        const res = await dispatch(fetchAndSetOperatorFeeInfo(response.id));
+        if (!res.payload.operatorFutureFee) {
           setNewFee(Number(operatorFee));
         }
-        await dispatch(fetchAndSetOperatorFeeInfo(response.id));
-        if (operatorFeeData.operatorApprovalBeginTime && operatorFeeData.operatorApprovalEndTime && operatorFeeData.operatorFutureFee) {
-          setNewFee(formatNumberToUi(getFeeForYear(fromWei(operatorFeeData.operatorFutureFee))));
+        if (res.payload.operatorApprovalBeginTime && res.payload.operatorApprovalEndTime && res.payload.operatorFutureFee) {
+          setNewFee(formatNumberToUi(getFeeForYear(fromWei(res.payload.operatorFutureFee))));
           setCurrentFlowStep(FeeUpdateSteps.INCREASE);
         } else {
           setCurrentFlowStep(FeeUpdateSteps.START);

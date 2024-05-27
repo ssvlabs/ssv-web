@@ -57,7 +57,7 @@ const Withdraw = () => {
           ]}
         />
         {processStore.isValidatorFlow ? (
-          <ClusterFlow cluster={processItem} minimumLiquidationCollateral={minimumLiquidationCollateral} liquidationCollateralPeriod={liquidationCollateralPeriod} />
+          <ClusterFlow minimumLiquidationCollateral={minimumLiquidationCollateral} liquidationCollateralPeriod={liquidationCollateralPeriod} />
         ) : (
           <OperatorFlow operator={processItem} />
         )}

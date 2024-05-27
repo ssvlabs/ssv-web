@@ -11,28 +11,21 @@ import TermsAndConditionsCheckbox from '~app/components/common/TermsAndCondition
 import { fromWei, toWei } from '~root/services/conversions.service';
 import { getClusterRunWay } from '~root/services/cluster.service';
 import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
-import { ICluster } from '~app/model/cluster.model';
 import { EClusterOperation } from '~app/enums/clusterOperation.enum';
 import { PrimaryButton, ErrorButton } from '~app/atomicComponents';
 import CheckBox from '~app/components/common/CheckBox';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { depositOrWithdraw } from '~root/services/clusterContract.service';
+import { getSelectedCluster } from '~app/redux/account.slice.ts';
 
-const ClusterFlow = ({
-  cluster,
-  minimumLiquidationCollateral,
-  liquidationCollateralPeriod
-}: {
-  cluster: ICluster;
-  minimumLiquidationCollateral: number;
-  liquidationCollateralPeriod: number;
-}) => {
+const ClusterFlow = ({ minimumLiquidationCollateral, liquidationCollateralPeriod }: { minimumLiquidationCollateral: number; liquidationCollateralPeriod: number }) => {
   const accountAddress = useAppSelector(getAccountAddress);
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isMainnet = useAppSelector(getIsMainnet);
   const dispatch = useAppDispatch();
   const classes = useStyles();
   const navigate = useNavigate();
+  const cluster = useAppSelector(getSelectedCluster);
   const clusterBalance = fromWei(cluster.balance);
   const [isLoading, setIsLoading] = useState(false);
   const [hasUserAgreed, setHasUserAgreed] = useState(false);
@@ -44,7 +37,6 @@ const ClusterFlow = ({
   const [withdrawValue, setWithdrawValue] = useState<number | string>('');
   const [buttonDisableCondition, setButtonDisableCondition] = useState(false);
   const [buttonText, setButtonText] = useState(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW);
-
   useEffect(() => {
     if (
       getClusterRunWay(

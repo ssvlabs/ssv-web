@@ -40,13 +40,13 @@ import {
   ValidatorType
 } from '~root/services/keyShare.service';
 import { getOperatorsByIds } from '~root/services/operator.service';
-import { getIsRegisteredValidator } from '~root/services/validator.service';
+import { fetchIsRegisteredValidator } from '~root/services/validator.service';
 import { isJsonFile } from '~root/utils/dkg.utils';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getClusterSize, getOperatorValidatorsLimit, getSelectedOperators, selectOperators, setClusterSize, unselectAllOperators } from '~app/redux/operator.slice.ts';
-import { getIsSecondRegistration, getProcess, setProcessAndType } from '~app/redux/process.slice.ts';
+import { getIsSecondRegistration, getProcessItem, setProcessAndType } from '~app/redux/process.slice.ts';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
@@ -60,7 +60,7 @@ const KeyShareFlow = () => {
   const removeButtons = useRef(null);
   const validatorStore: ValidatorStore = stores.Validator;
   const isSecondRegistration = Boolean(useAppSelector(getIsSecondRegistration));
-  const process: SingleCluster | undefined = useAppSelector(getProcess);
+  const validator = useAppSelector(getProcessItem<SingleCluster>);
   const [warningMessage, setWarningMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
   const [validatorsList, setValidatorsList] = useState<Record<string, ValidatorType>>({});
@@ -93,7 +93,7 @@ const KeyShareFlow = () => {
     const shares = keyShareMulti.list();
     try {
       if (isSecondRegistration) {
-        const clusterOperatorsIds = process?.item.operators.map((operator: { id: number; operatorKey: string }) => operator.id).sort();
+        const clusterOperatorsIds = validator?.operators.map((operator: { id: number; operatorKey: string }) => operator.id).toSorted() ?? [];
         if (shares.some((keyShare: KeySharesItem) => !validateConsistentOperatorIds(keyShare, clusterOperatorsIds))) {
           return getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER);
         }
@@ -151,7 +151,7 @@ const KeyShareFlow = () => {
           // eslint-disable-next-line no-async-promise-executor
           new Promise(async (resolve, reject) => {
             try {
-              const res = await getIsRegisteredValidator(validator.publicKey);
+              const res = await fetchIsRegisteredValidator(validator.publicKey);
               if (res.data && isEqualsAddresses(res.data.ownerAddress, accountAddress)) {
                 validators[res.data.publicKey].registered = true;
               }

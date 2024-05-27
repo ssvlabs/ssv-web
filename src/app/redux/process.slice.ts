@@ -2,12 +2,14 @@ import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from '~app/store';
 import { ProcessType, RegisterOperator, RegisterValidator, SingleCluster, SingleOperator } from '~app/model/processes.model.ts';
 
-export interface WalletSliceState {
+export type PossibleProcesses = RegisterValidator | RegisterOperator | SingleCluster | SingleOperator;
+
+export interface ProcessSliceState {
   type: ProcessType | undefined;
-  process: RegisterValidator | RegisterOperator | undefined;
+  process: PossibleProcesses | undefined;
 }
 
-const initialState: WalletSliceState = {
+const initialState: ProcessSliceState = {
   type: undefined,
   process: undefined
 };
@@ -16,7 +18,7 @@ export const slice = createSlice({
   name: 'processState',
   initialState,
   reducers: {
-    setProcessAndType(state, action: { payload: { process: RegisterValidator | RegisterOperator | SingleCluster | SingleOperator; type: ProcessType } }) {
+    setProcessAndType(state: ProcessSliceState, action: { payload: { process: PossibleProcesses; type: ProcessType } }) {
       state.type = action.payload.type;
       state.process = action.payload.process;
     },
@@ -30,6 +32,7 @@ export const processStateReducer = slice.reducer;
 
 export const { setProcessAndType, modifyProcess } = slice.actions;
 
+export const getProcessItem = <T extends Exclude<PossibleProcesses, RegisterValidator>>(state: RootState): T['item'] => (state.processState.process as T | undefined)?.item;
 export const getProcess = (state: RootState) => state.processState.process;
 export const getType = (state: RootState) => state.processState.type;
 export const getIsValidatorFlow = (state: RootState) => state.processState.type === ProcessType.Validator;

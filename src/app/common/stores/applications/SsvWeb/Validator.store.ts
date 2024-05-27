@@ -11,7 +11,7 @@ import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 import { getContractByName } from '~root/services/contracts.service';
 import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { transactionExecutor } from '~root/services/transaction.service';
-import { getIsRegisteredValidator, getLiquidationCollateralPerValidator } from '~root/services/validator.service';
+import { fetchIsRegisteredValidator, getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { createPayload } from '~root/utils/dkg.utils';
 
 const annotations = {
@@ -335,7 +335,7 @@ class ValidatorStore {
       this.keyStoreFile = keyStore;
       const fileJson = await keyStore.text();
       this.keyStorePublicKey = JSON.parse(fileJson).pubkey;
-      this.validatorPublicKeyExist = !!(await getIsRegisteredValidator(`0x${this.keyStorePublicKey}`))?.data;
+      this.validatorPublicKeyExist = !!(await fetchIsRegisteredValidator(`0x${this.keyStorePublicKey}`))?.data;
     } catch (e: any) {
       console.log(e.message);
     }

@@ -18,14 +18,13 @@ import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { cancelChangeFeeProcess } from '~root/services/operatorContract.service.ts';
 import { fetchAndSetOperatorFeeInfo, getOperatorFeeData, getOperatorProcessId } from '~app/redux/operator.slice.ts';
 import { formatNumberToUi } from '~lib/utils/numbers';
-import { getProcess } from '~app/redux/process.slice.ts';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const CancelUpdateFee = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const [futureFee, setFutureFee] = useState(0);
-  const process: SingleOperator | undefined = useAppSelector(getProcess);
-  const operator: IOperator = process?.item;
+  const operator: IOperator | undefined = useAppSelector(getProcessItem<SingleOperator>);
   const [successPage, showSuccessPage] = useState(false);
   const [isOpenCancelUpdateFeeDialog, setIsOpenCancelUpdateFeeDialog] = useState(false);
   const dispatch = useAppDispatch();
@@ -34,7 +33,7 @@ const CancelUpdateFee = () => {
   const operatorFeeData = useAppSelector(getOperatorFeeData);
   const processOperatorId = useAppSelector(getOperatorProcessId);
   const cancelUpdateProcess = async () => {
-    if (!processOperatorId) return navigate(strategyRedirect);
+    if (!processOperatorId || !operator) return navigate(strategyRedirect);
     const response = await cancelChangeFeeProcess({ operator, isContractWallet, dispatch });
     if (response) {
       await dispatch(fetchAndSetOperatorFeeInfo(operator.id));

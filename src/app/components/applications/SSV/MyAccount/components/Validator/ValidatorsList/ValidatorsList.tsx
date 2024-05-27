@@ -5,7 +5,7 @@ import config from '~app/common/config';
 import Status from '~app/components/common/Status';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import { getClusterHash } from '~root/services/cluster.service';
-import { validatorsByClusterHash } from '~root/services/validator.service';
+import { fetchValidatorsByClusterHash } from '~root/services/validator.service';
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { formatValidatorPublicKey, longStringShorten } from '~lib/utils/strings';
 import ToolTip from '~app/components/common/ToolTip';
@@ -17,7 +17,7 @@ import Spinner from '~app/components/common/Spinner';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import Settings from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import { getProcess } from '~app/redux/process.slice.ts';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const TableWrapper = styled.div<{ children: React.ReactNode; id: string }>`
   margin-top: 12px;
@@ -142,8 +142,7 @@ const ValidatorsList = ({
   isLoading?: boolean;
 }) => {
   const accountAddress = useAppSelector(getAccountAddress);
-  const process: SingleCluster | undefined = useAppSelector(getProcess);
-  const cluster = process?.item;
+  const cluster = useAppSelector(getProcessItem<SingleCluster>);
   const selectValidatorDisableCondition = Object.values(selectedValidators || {}).filter((validator: BulkValidatorData) => validator.isSelected).length === maxValidatorsCount;
   const navigate = useNavigate();
   const isDarkMode = useAppSelector(getIsDarkMode);
@@ -151,7 +150,7 @@ const ValidatorsList = ({
   const [noValidatorsData, setNoValidatorsData] = useState(false);
   const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
     page: 1,
-    total: cluster.validatorCount,
+    total: cluster?.validatorCount ?? 0,
     pages: 1,
     per_page: 5,
     rowsPerPage: 14,
@@ -164,7 +163,7 @@ const ValidatorsList = ({
     if (selectedValidators && Object.values(selectedValidators).length) {
       setClusterValidators(Object.values(selectedValidators).map((validator: { validator: IValidator; isSelected: boolean }) => validator.validator));
     } else {
-      validatorsByClusterHash(1, getClusterHash(cluster.operators, accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
+      fetchValidatorsByClusterHash(1, getClusterHash(cluster.operators, accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
         if (response.validators && response.validators.length) {
           setClusterValidators(response.validators);
         } else {
@@ -192,7 +191,7 @@ const ValidatorsList = ({
     let validators = clusterValidators;
     let pagination = clusterValidatorsPagination;
     do {
-      const response = await validatorsByClusterHash(nextPage, getClusterHash(cluster.operators, accountAddress), 14);
+      const response = await fetchValidatorsByClusterHash(nextPage, getClusterHash(cluster?.operators ?? [], accountAddress), 14);
       validators = [...validators, ...response.validators];
       pagination = { ...response.pagination };
       if (fillSelectedValidators) {

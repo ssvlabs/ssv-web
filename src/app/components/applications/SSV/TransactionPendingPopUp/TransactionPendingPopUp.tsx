@@ -11,7 +11,7 @@ import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyIn
 import { getIsShowTxPendingPopup, getTxHash, setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
 import { ProcessType, SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
-import { getProcess, getType } from '~app/redux/process.slice.ts';
+import { getProcessItem, getType } from '~app/redux/process.slice.ts';
 
 const DialogWrapper = styled(Dialog)<{ theme: any }>`
   & > div > div {
@@ -73,9 +73,8 @@ const TransactionPendingPopUp = () => {
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isShowTxPendingPopup = useAppSelector(getIsShowTxPendingPopup);
   const txHash = useAppSelector(getTxHash);
-  const process: SingleClusterProcess | undefined = useAppSelector(getProcess);
   const type = useAppSelector(getType);
-  const cluster = process?.item;
+  const cluster = useAppSelector(getProcessItem<SingleClusterProcess>);
 
   const closeButtonAction = () => {
     let nextNavigation;

@@ -1,12 +1,12 @@
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { SingleCluster } from '~app/model/processes.model';
+import { SingleCluster } from '~app/model/processes.model.ts';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { longStringShorten } from '~lib/utils/strings';
 import { getClusterHash } from '~root/services/cluster.service';
 import { useStyles } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper.styles';
-import { getProcess, modifyProcess } from '~app/redux/process.slice.ts';
+import { getProcessItem, modifyProcess } from '~app/redux/process.slice.ts';
 
 type Props = {
   header: string;
@@ -18,8 +18,7 @@ const ValidatorsFlow = ({ header, stepBack }: Props) => {
   const navigate = useNavigate();
   const classes = useStyles({ mainFlow: false });
   const dispatch = useAppDispatch();
-  const process: SingleCluster | undefined = useAppSelector(getProcess);
-  const cluster = process?.item;
+  const cluster = useAppSelector(getProcessItem<SingleCluster>);
 
   const onNavigationClicked = () => {
     if (!stepBack) {
@@ -41,7 +40,7 @@ const ValidatorsFlow = ({ header, stepBack }: Props) => {
           |
         </Grid>
         <Grid item className={classes.subHeaderText}>
-          {longStringShorten(getClusterHash(cluster.operators, accountAddress), 4, undefined, { '': /^0x/ })}
+          {longStringShorten(getClusterHash(cluster?.operators ?? [], accountAddress), 4, undefined, { '': /^0x/ })}
         </Grid>
       </Grid>
     </Grid>

@@ -11,7 +11,7 @@ import { SingleCluster } from '~app/model/processes.model';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
-import { getProcess } from '~app/redux/process.slice.ts';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const HeaderWrapper = styled.div`
   display: flex;
@@ -111,14 +111,14 @@ const NewBulkActions = ({
   checkboxTooltipTitle: string;
 }) => {
   const navigate = useNavigate();
-  const process: SingleCluster | undefined = useAppSelector(getProcess);
+  const validator = useAppSelector(getProcessItem<SingleCluster>)!;
   const validatorsListArray = Object.values(selectedValidators);
   const selectedValidatorsCount = validatorsListArray.filter((validator: BulkValidatorData) => validator.isSelected).length;
-  const totalCount = process?.item.validatorCount > maxValidatorsCount ? maxValidatorsCount : process?.item.validatorCount;
+  const totalCount = validator.validatorCount > maxValidatorsCount ? maxValidatorsCount : validator.validatorCount;
   const [isLoading, setIsLoading] = useState(false);
   const disableButtonCondition = !selectedValidatorsCount || isLoading;
   const showIndicatorCondition = selectedValidatorsCount > 0;
-  const showSubHeaderCondition = process?.item.validatorCount > maxValidatorsCount;
+  const showSubHeaderCondition = validator.validatorCount > maxValidatorsCount;
   const createValidatorsLaunchpad = () => {
     navigate(config.routes.SSV.VALIDATOR.CREATE);
   };

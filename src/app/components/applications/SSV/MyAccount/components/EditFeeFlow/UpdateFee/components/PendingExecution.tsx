@@ -14,18 +14,20 @@ import { timeDiffCalc } from '~lib/utils/time';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import { approveOperatorFee } from '~root/services/operatorContract.service.ts';
 import { getOperatorFeeData } from '~app/redux/operator.slice.ts';
-import { getProcess } from '~app/redux/process.slice.ts';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, cancelUpdateFee }: IncreaseFlowProps) => {
   const classes = useStyles({ step: StepperSteps.EXECUTION });
   const [isLoading, setIsLoading] = useState(false);
-  const process: SingleOperator | undefined = useAppSelector(getProcess);
-  const operator = process?.item;
+  const operator = useAppSelector(getProcessItem<SingleOperator>);
   const isContractWallet = useAppSelector(getIsContractWallet);
   const dispatch = useAppDispatch();
   const operatorFeeData = useAppSelector(getOperatorFeeData);
 
   const submitFeeChange = async () => {
+    if (!operator) {
+      return;
+    }
     setIsLoading(true);
     const response = await approveOperatorFee({ operator, isContractWallet, dispatch });
     if (response) {

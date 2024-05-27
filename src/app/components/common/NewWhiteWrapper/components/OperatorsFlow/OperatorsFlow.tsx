@@ -9,10 +9,10 @@ import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useStyles } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper.styles';
 import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
-import { SingleOperator } from '~app/model/processes.model';
+import { SingleOperator } from '~app/model/processes.model.ts';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getProcess } from '~app/redux/process.slice.ts';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 type Props = {
   header: string;
@@ -26,8 +26,7 @@ const OperatorsFlow = (props: Props) => {
   const settingsRef = useRef<HTMLDivElement>(null);
   const classes = useStyles({ mainFlow });
   const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-  const process: SingleOperator | undefined = useAppSelector(getProcess);
-  const operator = process?.item;
+  const operator = useAppSelector(getProcessItem<SingleOperator>);
   const dispatch = useAppDispatch();
 
   const [showSettings, setShowSettings] = useState(false);
@@ -60,7 +59,7 @@ const OperatorsFlow = (props: Props) => {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(operator.id);
+    navigator.clipboard.writeText(operator?.id.toString() ?? '');
     dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
   };
 
@@ -72,7 +71,7 @@ const OperatorsFlow = (props: Props) => {
       action: 'click',
       label: 'operator'
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/operators/${operator?.id}`, '_blank');
   };
 
   const secondaryFlowDom = () => {
@@ -85,7 +84,7 @@ const OperatorsFlow = (props: Props) => {
         <Grid item className={classes.Line} />
         <Grid item container xs style={{ gap: 8, alignItems: 'center' }}>
           <Grid item>
-            <Typography className={classes.subHeaderText}>ID: {operator.id}</Typography>
+            <Typography className={classes.subHeaderText}>ID: {operator?.id}</Typography>
           </Grid>
           <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
           <ImageDiv onClick={openExplorer} image={'explorer'} width={23} height={23} />

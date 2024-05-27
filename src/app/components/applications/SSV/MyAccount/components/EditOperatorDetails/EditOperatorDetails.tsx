@@ -13,21 +13,19 @@ import OperatorMetadataStore, { fieldsToValidateSignature } from '~app/common/st
 import { getContractByName } from '~root/services/contracts.service';
 import { EContractName } from '~app/model/contracts.model';
 import { updateOperatorMetadata } from '~root/services/operator.service';
-import { IOperator } from '~app/model/operator.model';
 import { SingleOperator } from '~app/model/processes.model';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { fetchOperators } from '~app/redux/account.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getProcess } from '~app/redux/process.slice.ts';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const EditOperatorDetails = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const classes = useStyles({});
   const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-  const process: SingleOperator | undefined = useAppSelector(getProcess);
-  const operator: IOperator = process?.item;
+  const operator = useAppSelector(getProcessItem<SingleOperator>);
   const [errorMessage, setErrorMessage] = useState(['']);
   const [buttonDisable, setButtonDisable] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -69,7 +67,7 @@ const EditOperatorDetails = () => {
         setIsLoading(false);
         return;
       }
-      const updateOperatorResponse = await updateOperatorMetadata(operator.id, signatureHash, payload);
+      const updateOperatorResponse = await updateOperatorMetadata(operator?.id ?? 0, signatureHash, payload);
       if (updateOperatorResponse.data) {
         dispatch(fetchOperators({}));
         navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);

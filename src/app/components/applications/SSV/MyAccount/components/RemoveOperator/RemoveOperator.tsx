@@ -14,12 +14,12 @@ import { fetchOperators } from '~app/redux/account.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { removeOperator } from '~root/services/operatorContract.service';
-import { getProcess } from '~app/redux/process.slice.ts';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const RemoveOperator = () => {
   const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(false);
-  const process: RegisterOperator | undefined = useAppSelector(getProcess);
+  const operator = useAppSelector(getProcessItem<RegisterOperator>);
   const dispatch = useAppDispatch();
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const isContractWallet = useAppSelector(getIsContractWallet);
@@ -27,7 +27,7 @@ const RemoveOperator = () => {
   const classes = useStyles({ isLoading });
 
   useEffect(() => {
-    if (!process?.item) return navigate(strategyRedirect);
+    if (!operator) return navigate(strategyRedirect);
   }, []);
 
   const checkboxHandler = () => {
@@ -36,7 +36,7 @@ const RemoveOperator = () => {
 
   const submitForm = async () => {
     setIsLoading(true);
-    const isRemoved = await removeOperator({ operatorId: Number(process?.item.id), isContractWallet, dispatch });
+    const isRemoved = await removeOperator({ operatorId: Number(operator?.id), isContractWallet, dispatch });
     setIsLoading(false);
     if (isRemoved) {
       await dispatch(fetchOperators({ forcePage: 1 }));

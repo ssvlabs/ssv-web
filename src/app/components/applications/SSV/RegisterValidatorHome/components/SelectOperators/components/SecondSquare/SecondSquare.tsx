@@ -26,14 +26,14 @@ import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider'
 import { SKIP_VALIDATION } from '~lib/utils/developerHelper';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import { getValidator } from '~root/services/validator.service';
+import { fetchValidator } from '~root/services/validator.service';
 import { setSelectedClusterId } from '~app/redux/account.slice';
 import { ICluster } from '~app/model/cluster.model';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getOperatorValidatorsLimit, getSelectedOperators, getSelectedOperatorsFee, hasEnoughSelectedOperators, unselectOperator } from '~app/redux/operator.slice.ts';
-import { getProcess, setProcessAndType } from '~app/redux/process.slice.ts';
+import { getProcessItem, PossibleProcesses, setProcessAndType } from '~app/redux/process.slice.ts';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox: number[] }) => {
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
@@ -57,12 +57,12 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
   const secondSquareWidth = windowSize.size === WINDOW_SIZES.LG ? '100%' : 424;
   const hasEnoughOperators = useAppSelector(hasEnoughSelectedOperators);
   const operatorValidatorsLimit = useAppSelector(getOperatorValidatorsLimit);
-  const process: SingleCluster | undefined = useAppSelector(getProcess);
+  const validator = useAppSelector(getProcessItem<SingleCluster>);
 
   useEffect(() => {
     if (editPage) {
-      if (!process?.item.publicKey) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
-      getValidator(process.item.publicKey).then((validator: any) => {
+      if (!validator?.publicKey) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
+      fetchValidator(validator.publicKey).then((validator: any) => {
         if (validator?.operators) {
           setPreviousOperatorsIds(validator.operators.map(({ id }: { id: number }) => id));
         }
@@ -138,7 +138,7 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
         process: {
           processName: 'single_cluster',
           item: { ...existClusterData, operators: [...Object.values(selectedOperators)] }
-        },
+        } as PossibleProcesses,
         type: ProcessType.Validator
       })
     );

@@ -16,7 +16,7 @@ import LinkText from '~app/components/common/LinkText';
 import { decreaseOperatorFee, getOperatorBalance } from '~root/services/operatorContract.service';
 import { UpdateFeeProps } from '~app/model/operator.model.ts';
 import { getOperatorProcessId } from '~app/redux/operator.slice.ts';
-import { getProcess, setProcessAndType } from '~app/redux/process.slice.ts';
+import { getProcessItem, setProcessAndType } from '~app/redux/process.slice.ts';
 
 const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
   const navigate = useNavigate();
@@ -24,8 +24,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
   const [buttonText, setButtonText] = useState('Update Fee');
   const [updated, setUpdated] = useState(false);
   const isContractWallet = useAppSelector(getIsContractWallet);
-  const process: SingleOperator | undefined = useAppSelector(getProcess);
-  const operator = process?.item;
+  const operator = useAppSelector(getProcessItem<SingleOperator>);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const processOperatorId = useAppSelector(getOperatorProcessId);
@@ -34,6 +33,9 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
     if (updated) {
       navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
     } else {
+      if (!operator) {
+        return;
+      }
       setIsLoading(true);
       const res = await decreaseOperatorFee({ operator, newFee, isContractWallet, dispatch });
       if (res) {

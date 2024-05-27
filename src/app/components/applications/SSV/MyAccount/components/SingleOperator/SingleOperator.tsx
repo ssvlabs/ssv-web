@@ -30,15 +30,15 @@ import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { fetchAndSetOperatorFeeInfo } from '~app/redux/operator.slice.ts';
-import { getProcess } from '~app/redux/process.slice.ts';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const SingleOperator = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [operatorsValidators, setOperatorsValidators] = useState([]);
   const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState<{ per_page: number } | null>(null);
-  const process: SingleOperatorProcess | undefined = useAppSelector(getProcess);
-  const operator = process?.item;
+  const operator = useAppSelector(getProcessItem<SingleOperatorProcess>);
+
   const isDarkMode = useAppSelector(getIsDarkMode);
   const strategyRedirect = useAppSelector(getStrategyRedirect);
 
@@ -51,7 +51,7 @@ const SingleOperator = () => {
   const loadOperatorValidators = async (props: { page: number; perPage: number }) => {
     const { page, perPage } = props;
     const response = await getOperatorValidators({
-      operatorId: operator.id,
+      operatorId: operator?.id ?? 0,
       page,
       perPage
     });
@@ -91,7 +91,7 @@ const SingleOperator = () => {
   };
 
   const moveToUpdateFee = async () => {
-    await dispatch(fetchAndSetOperatorFeeInfo(operator.id));
+    await dispatch(fetchAndSetOperatorFeeInfo(operator?.id ?? 0));
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT);
   };
 
@@ -226,7 +226,7 @@ const SingleOperator = () => {
   };
 
   const UpdateFeeButton = () =>
-    !Number(operator.fee) ? (
+    !Number(operator?.fee) ? (
       <Tooltip
         title={
           <Typography className={classes.UpdateFeeTooltipText}>
@@ -237,12 +237,12 @@ const SingleOperator = () => {
         placement="top-end"
         children={
           <Grid item xs>
-            <SecondaryButton isDisabled={!Number(operator.fee)} text={'Update Fee'} onClick={moveToUpdateFee} size={ButtonSize.XL} />
+            <SecondaryButton isDisabled={!Number(operator?.fee)} text={'Update Fee'} onClick={moveToUpdateFee} size={ButtonSize.XL} />
           </Grid>
         }
       />
     ) : (
-      <SecondaryButton isDisabled={!Number(operator.fee)} text={'Update Fee'} onClick={moveToUpdateFee} size={ButtonSize.XL} />
+      <SecondaryButton isDisabled={!Number(operator?.fee)} text={'Update Fee'} onClick={moveToUpdateFee} size={ButtonSize.XL} />
     );
 
   return (
@@ -269,7 +269,7 @@ const SingleOperator = () => {
               body={[
                 <Grid container item>
                   <Grid item xs={12}>
-                    <SsvAndSubTitle ssv={formatNumberToUi(operator.balance) || 0} bold leftTextAlign />
+                    <SsvAndSubTitle ssv={formatNumberToUi(operator?.balance) || 0} bold leftTextAlign />
                   </Grid>
                 </Grid>
               ]}
@@ -312,7 +312,7 @@ const SingleOperator = () => {
             </Grid>
           </Grid>
         )}
-        {validators_count > 0 && (
+        {validators_count! > 0 && (
           <Grid item className={classes.OperatorsValidatorsTable}>
             <Table
               data={data}

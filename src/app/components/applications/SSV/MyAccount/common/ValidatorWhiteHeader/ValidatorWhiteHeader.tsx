@@ -6,10 +6,10 @@ import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/common/ValidatorWhiteHeader/ValidatorWhiteHeader.styles';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
-import { SingleCluster } from '~app/model/processes.model';
+import { SingleCluster } from '~app/model/processes.model.ts';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
-import { getProcess } from '~app/redux/process.slice.ts';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 type Props = {
   text: string;
@@ -23,12 +23,12 @@ type Props = {
 
 const ValidatorWhiteHeader = (props: Props) => {
   const classes = useStyles();
-  const process: SingleCluster | undefined = useAppSelector(getProcess);
-  const validator = process?.item;
+  const validator = useAppSelector(getProcessItem<SingleCluster>);
   const dispatch = useAppDispatch();
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(props.address ?? validator.public_key);
+    // @ts-ignore
+    navigator.clipboard.writeText(props.address ?? validator?.public_key ?? validator?.publicKey); // TODO: Which property key is valid?
     dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
   };
 
@@ -46,7 +46,7 @@ const ValidatorWhiteHeader = (props: Props) => {
         action: 'click',
         label: 'validator'
       });
-      window.open(`${config.links.EXPLORER_URL}/validators/${validator.public_key.replace('0x', '')}`, '_blank');
+      window.open(`${config.links.EXPLORER_URL}/validators/${validator?.public_key.replace('0x', '')}`, '_blank');
     }
   };
 
@@ -56,13 +56,13 @@ const ValidatorWhiteHeader = (props: Props) => {
       action: 'click',
       label: 'Open Beaconcha'
     });
-    window.open(`${getBeaconChainLink()}/validator/${validator.public_key}`);
+    window.open(`${getBeaconChainLink()}/validator/${validator?.public_key}`);
   };
 
   return (
     <WhiteWrapper withCancel={!!props.withCancel} withBackButton={props.withBackButton} header={props.text} backButtonCallBack={props.onCancelButtonClick}>
       <Grid item container className={classes.SubHeaderWrapper}>
-        <Typography>{props.address ?? validator.public_key}</Typography>
+        <Typography>{props.address ?? validator?.public_key}</Typography>
         <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
         {!props.withoutExplorer && <ImageDiv onClick={openExplorer} image={'explorer'} width={24} height={24} />}
         {!props.withoutBeaconcha && <ImageDiv onClick={openBeaconcha} image={'beacon'} width={24} height={24} />}

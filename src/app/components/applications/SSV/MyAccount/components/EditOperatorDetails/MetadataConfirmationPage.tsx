@@ -8,12 +8,11 @@ import { SingleOperator } from '~app/model/processes.model';
 import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
-import { getProcess } from '~app/redux/process.slice.ts';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const MetadataConfirmationPage = () => {
   const classes = useStyles({});
-  const process: SingleOperator | undefined = useAppSelector(getProcess);
-  const operator = process?.item;
+  const operator = useAppSelector(getProcessItem<SingleOperator>);
   const navigate = useNavigate();
 
   const openExplorer = () => {
@@ -22,7 +21,7 @@ const MetadataConfirmationPage = () => {
       action: 'click',
       label: 'operator'
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/operators/${operator?.id}`, '_blank');
   };
 
   const goToDashboard = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);

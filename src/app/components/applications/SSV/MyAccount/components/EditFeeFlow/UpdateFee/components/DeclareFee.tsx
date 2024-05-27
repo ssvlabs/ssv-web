@@ -14,20 +14,23 @@ import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { getFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
 import { fetchAndSetOperatorFeeInfo, getFeeIncreaseAndPeriods, getOperatorFeeData, getOperatorProcessId } from '~app/redux/operator.slice.ts';
 import { updateOperatorFee } from '~root/services/operatorContract.service.ts';
-import { getProcess } from '~app/redux/process.slice.ts';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: IncreaseFlowProps) => {
   const classes = useStyles({});
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
-  const process: SingleOperator | undefined = useAppSelector(getProcess);
-  const operator = process?.item;
+  const operator = useAppSelector(getProcessItem<SingleOperator>);
   const isContractWallet = useAppSelector(getIsContractWallet);
   const processOperatorId = useAppSelector(getOperatorProcessId);
   const feeIncreaseAndPeriods = useAppSelector(getFeeIncreaseAndPeriods);
   const operatorFeeData = useAppSelector(getOperatorFeeData);
 
   const changeOperatorFee = async () => {
+    if (!operator) {
+      return;
+    }
+
     setIsLoading(true);
     const response = await updateOperatorFee({ operator, newFee, isContractWallet, dispatch });
     await dispatch(fetchAndSetOperatorFeeInfo(processOperatorId));

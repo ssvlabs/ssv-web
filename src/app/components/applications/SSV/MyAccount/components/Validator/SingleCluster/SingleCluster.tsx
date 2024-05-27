@@ -66,7 +66,6 @@ const SingleCluster = () => {
   const cluster = useAppSelector(getSelectedCluster);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const accountAddress = useAppSelector(getAccountAddress);
-
   const hasPrivateOperator = cluster.operators.some(
     (operator: any) =>
       operator.address_whitelist &&

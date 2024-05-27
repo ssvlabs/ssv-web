@@ -14,12 +14,12 @@ import { checkIfWalletIsContractAction, resetWallet, setConnectedNetwork, setWal
 import { store } from '~app/store';
 import { removeFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { getNetworkInfoIndexByNetworkId, getStoredNetwork } from '~root/providers/networkInfo.provider';
-import { cleanLocalStorageAndCookie } from '~root/providers/onboardSettings.provider';
 import { initContracts, resetContracts } from '~root/services/contracts.service';
 import notifyService from '~root/services/notify.service';
 import { isChainSupported } from '~root/wagmi/config';
 import { clearAllSettings, fetchAndSetFeeIncreaseAndPeriods, fetchAndSetMaxOperatorFee, fetchAndSetOperatorValidatorsLimit } from '~app/redux/operator.slice.ts';
 import { useDebounce } from 'react-use';
+
 type InitProps = {
   walletAddress: string;
   connectorName: string;
@@ -35,7 +35,6 @@ export const useWalletConnectivity = () => {
   const provider = useEthersSignerProvider();
 
   const reset = () => {
-    cleanLocalStorageAndCookie();
     dispatch(resetWallet());
     dispatch(clearAllSettings());
     removeFromLocalStorageByKey('params');

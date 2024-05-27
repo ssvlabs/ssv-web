@@ -47,7 +47,7 @@ const Deposit = () => {
       operation: EClusterOperation.DEPOSIT,
       dispatch
     });
-    if (success) {
+    if (success && !isContractWallet) {
       GoogleTagManager.getInstance().sendEvent({
         category: 'my_account',
         action: 'deposit_tx',

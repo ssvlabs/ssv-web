@@ -27,7 +27,7 @@ const OperatorFlow = ({ operator }: { operator: IOperator }) => {
     setIsLoading(true);
     const success = await withdrawRewards({ operator, amount: inputValue.toString(), isContractWallet, dispatch });
     setIsLoading(false);
-    if (success) {
+    if (success && !isContractWallet) {
       navigate(-1);
     }
   };

@@ -70,16 +70,16 @@ const ClusterFlow = ({
       minimumLiquidationCollateral
     );
     const showCheckboxCondition = runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !!cluster.validatorCount;
-
+    const isLiqudationState = runWay <= 0 && !!cluster.validatorCount;
     setNewBalance(balance);
-    setIsClusterLiquidation(runWay <= 0 && !!cluster.validatorCount);
+    setIsClusterLiquidation(isLiqudationState);
     setShowCheckBox(showCheckboxCondition);
     setButtonDisableCondition(
       (runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !!cluster.validatorCount && !hasUserAgreed) || Number(withdrawValue) === 0 || (isMainnet && !isChecked)
     );
 
     setCheckBoxText(
-      isClusterLiquidation && showCheckboxCondition ? translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATE_MY_CLUSTER : translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATION_RISK
+      isLiqudationState && showCheckboxCondition ? translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATE_MY_CLUSTER : translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATION_RISK
     );
     if (runWay <= 0 && !!cluster.validatorCount) {
       setButtonText(translations.VALIDATOR.WITHDRAW.BUTTON.LIQUIDATE_MY_CLUSTER);

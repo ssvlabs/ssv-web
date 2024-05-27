@@ -1,29 +1,28 @@
 import { useState } from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import BackNavigation from '~app/components/common/BackNavigation';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareCeremony/OfflineKeyShareCeremony.styles';
 import DirectoryBadge from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareCeremony/DirectoryBadge/DirectoryBadge';
 import { getLaunchpadLink } from '~root/providers/networkInfo.provider';
 import styled from 'styled-components';
 import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppSelector } from '~app/hooks/redux.hook.ts';
+import { getIsSecondRegistration } from '~app/redux/process.slice.ts';
 
 const BoldText = styled.span`
   font-weight: 800;
 `;
 
 const OfflineKeyShareCeremony = () => {
-  const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const processStore: ProcessStore = stores.Process;
+
+  const isSecondRegistration = Boolean(useAppSelector(getIsSecondRegistration));
 
   // State to manage button enable/disable condition
   const [isValidatorActivated, setValidatorActivated] = useState(false);
@@ -112,11 +111,11 @@ const OfflineKeyShareCeremony = () => {
             <Typography className={classes.StepTitle}>Step 3:</Typography>&nbsp;Register Validator
           </Typography>
           <Typography className={classes.DkgText}>Run your validator on the SSV Network by registering and distributing its key shares to your cluster operators.</Typography>
-          <PrimaryButton text={'Register Validator'} onClick={goToNextPage[`${processStore.secondRegistration}`]} isDisabled={!isValidatorActivated} size={ButtonSize.XL} />
+          <PrimaryButton text={'Register Validator'} onClick={goToNextPage[`${isSecondRegistration}`]} isDisabled={!isValidatorActivated} size={ButtonSize.XL} />
         </Grid>
       </Grid>
     </Grid>
   );
 };
 
-export default observer(OfflineKeyShareCeremony);
+export default OfflineKeyShareCeremony;

@@ -1,11 +1,22 @@
+import { IOperator } from '~app/model/operator.model.ts';
+import { ICluster } from '~app/model/cluster.model.ts';
+
+interface Validator {
+  publicKey: string;
+  public_key: string; // TODO: Both properties are used - which one is valid?
+  operators: { id: number; operatorKey: string }[]; //IOperator[];
+}
+
 interface SingleOperator {
   processName: string;
-  item?: any;
+  item?: IOperator;
 }
+
+export type ValidatorItem = Validator & ICluster;
 
 interface SingleCluster {
   processName: string;
-  item?: any;
+  item?: ValidatorItem;
   currentBulkFlow?: BULK_FLOWS;
   operators?: any;
   validator?: any;
@@ -18,7 +29,7 @@ interface RegisterValidator {
 
 interface RegisterOperator {
   processName: string;
-  item?: any;
+  item?: IOperator;
 }
 
 enum BULK_FLOWS {
@@ -27,16 +38,14 @@ enum BULK_FLOWS {
 }
 
 enum RegistrationType {
-  // eslint-disable-next-line no-unused-vars
   Online = 1,
-  // eslint-disable-next-line no-unused-vars
   Offline = 2
 }
 
 interface RegisterValidator {
   processName: string;
   validator?: any;
-  fundingPeriod?: any;
+  fundingPeriod?: number;
   totalRegistrationCost?: string;
   registrationType: RegistrationType;
   depositAmount: number;

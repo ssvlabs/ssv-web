@@ -1,15 +1,12 @@
 import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import { useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
-import { SingleCluster } from '~app/model/processes.model';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { longStringShorten } from '~lib/utils/strings';
 import { getClusterHash } from '~root/services/cluster.service';
 import { useStyles } from '../../NewWhiteWrapper.styles';
 import { getSelectedCluster } from '~app/redux/account.slice.ts';
+import { modifyProcess } from '~app/redux/process.slice.ts';
 
 type Props = {
   header: string;
@@ -20,14 +17,12 @@ const ValidatorsFlow = ({ header, stepBack }: Props) => {
   const accountAddress = useAppSelector(getAccountAddress);
   const navigate = useNavigate();
   const classes = useStyles({ mainFlow: false });
-  const stores = useStores();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleCluster = processStore.getProcess;
+  const dispatch = useAppDispatch();
   const cluster = useAppSelector(getSelectedCluster);
 
   const onNavigationClicked = () => {
     if (!stepBack) {
-      process.validator = undefined;
+      dispatch(modifyProcess({ validator: undefined }));
       navigate(-1);
     } else {
       stepBack();
@@ -45,11 +40,11 @@ const ValidatorsFlow = ({ header, stepBack }: Props) => {
           |
         </Grid>
         <Grid item className={classes.subHeaderText}>
-          {longStringShorten(getClusterHash(cluster.operators, accountAddress), 4, undefined, { '': /^0x/ })}
+          {longStringShorten(getClusterHash(cluster?.operators ?? [], accountAddress), 4, undefined, { '': /^0x/ })}
         </Grid>
       </Grid>
     </Grid>
   );
 };
 
-export default observer(ValidatorsFlow);
+export default ValidatorsFlow;

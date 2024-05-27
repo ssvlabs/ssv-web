@@ -7,28 +7,25 @@ import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { FIELD_KEYS } from '~lib/utils/operatorMetadataHelper';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/FieldWrapper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
 import OperatorMetadataStore, { fieldsToValidateSignature } from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import { getContractByName } from '~root/wagmi/utils';
 import { EContractName } from '~app/model/contracts.model';
 import { updateOperatorMetadata } from '~root/services/operator.service';
-import { IOperator } from '~app/model/operator.model';
 import { SingleOperator } from '~app/model/processes.model';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { fetchOperators } from '~app/redux/account.slice';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const EditOperatorDetails = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const classes = useStyles({});
-  const processStore: ProcessStore = stores.Process;
   const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-  const process: SingleOperator = processStore.getProcess;
-  const operator: IOperator = process?.item;
+  const operator = useAppSelector(getProcessItem<SingleOperator>);
   const [errorMessage, setErrorMessage] = useState(['']);
   const [buttonDisable, setButtonDisable] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,7 +67,7 @@ const EditOperatorDetails = () => {
         setIsLoading(false);
         return;
       }
-      const updateOperatorResponse = await updateOperatorMetadata(operator.id, signatureHash, payload);
+      const updateOperatorResponse = await updateOperatorMetadata(operator?.id ?? 0, signatureHash, payload);
       if (updateOperatorResponse.data) {
         dispatch(fetchOperators({}));
         navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);

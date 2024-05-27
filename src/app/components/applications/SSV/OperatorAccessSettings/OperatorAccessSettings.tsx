@@ -3,7 +3,6 @@ import Grid from '@mui/material/Grid';
 import Switch from '@mui/material/Switch';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
@@ -13,31 +12,28 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import { validateAddressInput } from '~lib/utils/validatesInputs';
 import { useStyles } from '~app/components/applications/SSV/OperatorAccessSettings/OperatorAccessSettings.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import { SingleOperator } from '~app/model/processes.model';
+import { SingleOperator } from '~app/model/processes.model.ts';
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { updateOperatorAddressWhitelist } from '~root/services/operatorContract.service';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const INITIAL_ERROR_STATE = { shouldDisplay: false, errorMessage: '' };
 
 const OperatorAccessSettings = () => {
   const dispatch = useAppDispatch();
-  const stores = useStores();
   const navigate = useNavigate();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleOperator = processStore.getProcess;
-  const operator = process?.item;
-  const whiteListAddress = operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator.address_whitelist : '';
-  const isOperatorPermissioned = !!operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
+  const operator = useAppSelector(getProcessItem<SingleOperator>);
+  const whiteListAddress: string = operator?.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator?.address_whitelist ?? '' : '';
+  const isOperatorPermissioned = !!operator?.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
   const [address, setAddress] = useState(whiteListAddress);
   const [readOnly, setReadOnly] = useState(true);
   const [addressError, setAddressError] = useState(INITIAL_ERROR_STATE);
   const [isPermissionedOperator, setIsPermissionedOperator] = useState(isOperatorPermissioned);
   const isFirstUsage = !operator?.address_whitelist && address === config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
-  const btnDisabledCondition = addressError.shouldDisplay || !address || isFirstUsage || address.toString() === operator.address_whitelist?.toString();
+  const btnDisabledCondition = addressError.shouldDisplay || !address || isFirstUsage || address.toString() === operator?.address_whitelist?.toString();
   const classes = useStyles({ isPermissionedOperator });
   const isMainnet = useAppSelector(getIsMainnet);
   const [isChecked, setIsChecked] = useState(false);
@@ -50,6 +46,9 @@ const OperatorAccessSettings = () => {
   };
 
   const updateAddressHandler = async () => {
+    if (!operator) {
+      return;
+    }
     const res = await updateOperatorAddressWhitelist({ operator, address, isContractWallet, dispatch });
     if (res) {
       navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
@@ -62,7 +61,7 @@ const OperatorAccessSettings = () => {
       setAddress(config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
     } else {
       setIsPermissionedOperator(true);
-      setAddress(operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator.address_whitelist : '');
+      setAddress(operator?.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator?.address_whitelist ?? '' : '');
     }
   };
 

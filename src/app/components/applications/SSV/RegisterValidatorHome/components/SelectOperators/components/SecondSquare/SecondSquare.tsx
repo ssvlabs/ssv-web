@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useLocation, useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { allEqual } from '~lib/utils/arrays';
-import { useStores } from '~app/hooks/useStores';
 import { useStyles } from './SecondSquare.styles';
 import Typography from '@mui/material/Typography';
 import { formatNumberToUi } from '~lib/utils/numbers';
@@ -18,7 +16,6 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { useWindowSize, WINDOW_SIZES } from '~app/hooks/useWindowSize';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import MevIcon from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevIcon';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
@@ -29,17 +26,17 @@ import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider'
 import { SKIP_VALIDATION } from '~lib/utils/developerHelper';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import { getValidator } from '~root/services/validator.service';
+import { fetchValidator } from '~root/services/validator.service';
 import { setExcludedCluster } from '~app/redux/account.slice';
 import { ICluster } from '~app/model/cluster.model';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getOperatorValidatorsLimit, getSelectedOperators, getSelectedOperatorsFee, hasEnoughSelectedOperators, unselectOperator } from '~app/redux/operator.slice.ts';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox: number[] }) => {
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
-  const stores = useStores();
   const classes = useStyles({ editPage, shouldBeScrollable: clusterBox.length > 4 });
   const navigate = useNavigate();
   const location = useLocation();
@@ -48,7 +45,6 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
   const dispatch = useAppDispatch();
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
   const accountAddress = useAppSelector(getAccountAddress);
-  const processStore: ProcessStore = stores.Process;
   const windowSize = useWindowSize();
   const [existClusterData, setExistClusterData] = useState<ICluster | null>(null);
   const [previousOperatorsIds, setPreviousOperatorsIds] = useState<number[]>([]);
@@ -61,15 +57,14 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
   const secondSquareWidth = windowSize.size === WINDOW_SIZES.LG ? '100%' : 424;
   const hasEnoughOperators = useAppSelector(hasEnoughSelectedOperators);
   const operatorValidatorsLimit = useAppSelector(getOperatorValidatorsLimit);
+  const validator = useAppSelector(getProcessItem<SingleCluster>);
 
   useEffect(() => {
-    const process: SingleCluster = processStore.getProcess;
     if (editPage) {
-      if (!process.item.publicKey) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
-      getValidator(process.item.publicKey).then((validator: any) => {
+      if (!validator?.publicKey) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
+      fetchValidator(validator.publicKey).then((validator: any) => {
         if (validator?.operators) {
-          // @ts-ignore
-          setPreviousOperatorsIds(validator.operators.map(({ id }) => id));
+          setPreviousOperatorsIds(validator.operators.map(({ id }: { id: number }) => id));
         }
       });
     }
@@ -288,4 +283,4 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
   );
 };
 
-export default observer(SecondSquare);
+export default SecondSquare;

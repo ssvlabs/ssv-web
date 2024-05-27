@@ -7,24 +7,25 @@ import config, { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning/SlashingWarning.styles';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppSelector } from '~app/hooks/redux.hook.ts';
+import { getIsSecondRegistration } from '~app/redux/process.slice.ts';
 
 const SlashingWarning = () => {
   const classes = useStyles();
   const stores = useStores();
   const navigate = useNavigate();
-  const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const [hasUserAgreed, setHasUserAgreed] = useState(false);
   const publicKey = validatorStore.keyStorePublicKey || validatorStore.keySharePublicKey;
+  const isSecondRegistration = Boolean(useAppSelector(getIsSecondRegistration));
 
   const goToConfirmation = () => {
-    if (processStore.secondRegistration) {
+    if (isSecondRegistration) {
       navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE);
     } else {
       navigate(config.routes.SSV.VALIDATOR.CONFIRMATION_PAGE);
@@ -45,7 +46,7 @@ const SlashingWarning = () => {
   const MainScreen = (
     <BorderScreen
       blackHeader
-      withoutNavigation={processStore.secondRegistration}
+      withoutNavigation={isSecondRegistration}
       header={translations.VALIDATOR.SLASHING_WARNING.TITLE}
       body={[
         <Grid container>
@@ -67,7 +68,7 @@ const SlashingWarning = () => {
     />
   );
 
-  if (processStore.secondRegistration) {
+  if (isSecondRegistration) {
     return (
       <Grid container>
         <NewWhiteWrapper type={0} header={'Cluster'} />

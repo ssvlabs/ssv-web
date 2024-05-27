@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import config, { translations } from '~app/common/config';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import AllowanceButton from '~app/components/AllowanceButton';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails';
@@ -30,6 +29,7 @@ import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { getSelectedOperators, getSelectedOperatorsFee } from '~app/redux/operator.slice.ts';
+import { getIsSecondRegistration, getProcess } from '~app/redux/process.slice.ts';
 
 const ValidatorRegistrationConfirmation = () => {
   const navigate = useNavigate();
@@ -44,12 +44,12 @@ const ValidatorRegistrationConfirmation = () => {
   const stores = useStores();
   const { walletSsvBalance } = useFetchWalletBalance();
   const classes = useStyles();
-  const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
-  const process: RegisterValidator | SingleCluster = processStore.process;
   const selectedOperatorsFee = useAppSelector(getSelectedOperatorsFee);
   const selectedOperators = useAppSelector(getSelectedOperators);
-  const processFundingPeriod = 'fundingPeriod' in process ? process.fundingPeriod : 0;
+  const process: RegisterValidator | SingleCluster = useAppSelector(getProcess) as RegisterValidator | SingleCluster;
+  const isSecondRegistration = Boolean(useAppSelector(getIsSecondRegistration));
+  const processFundingPeriod = 'fundingPeriod' in process ? process?.fundingPeriod : 0;
   const actionButtonDefaultText = validatorStore.isMultiSharesMode ? `Register ${validatorStore.validatorsCount} Validators` : 'Register Validator';
   const [actionButtonText, setActionButtonText] = useState(actionButtonDefaultText);
   const [isLoading, setIsLoading] = useState(false);
@@ -98,10 +98,11 @@ const ValidatorRegistrationConfirmation = () => {
       liquidationCollateralPeriod,
       minimumLiquidationCollateral,
       selectedOperatorsFee,
+      process,
       dispatch
     });
     if (response && !isContractWallet) {
-      successPageNavigate[`${processStore.secondRegistration}`]();
+      successPageNavigate[`${isSecondRegistration}`]();
     } else {
       setActionButtonText(actionButtonDefaultText);
     }
@@ -160,10 +161,8 @@ const ValidatorRegistrationConfirmation = () => {
           Selected Operators
         </Grid>
         {Object.values(selectedOperators).map((operator: IOperator, index: number) => {
-          const operatorCost = processStore.secondRegistration
-            ? formatNumberToUi(getFeeForYear(fromWei(operator.fee)))
-            : propertyCostByPeriod(fromWei(operator.fee), processFundingPeriod);
-          const operatorCostPeriod = processStore.secondRegistration ? '/year' : `/${formatNumberToUi(processFundingPeriod, true)} days`;
+          const operatorCost = isSecondRegistration ? formatNumberToUi(getFeeForYear(fromWei(operator.fee))) : propertyCostByPeriod(fromWei(operator.fee), processFundingPeriod);
+          const operatorCostPeriod = isSecondRegistration ? '/year' : `/${formatNumberToUi(processFundingPeriod, true)} days`;
           return (
             <Grid key={index} container item xs={12} className={classes.Row}>
               <Grid item>
@@ -179,8 +178,8 @@ const ValidatorRegistrationConfirmation = () => {
     </Grid>
   ];
 
-  if (!processStore.secondRegistration) screenBody.push(<FundingSummary networkCost={networkCost} liquidationCollateralCost={liquidationCollateralCost} />);
-  if (!processStore.secondRegistration) screenBody.push(TotalSection);
+  if (!isSecondRegistration) screenBody.push(<FundingSummary networkCost={networkCost} liquidationCollateralCost={liquidationCollateralCost} />);
+  if (!isSecondRegistration) screenBody.push(TotalSection);
 
   const MainScreen = (
     <BorderScreen
@@ -188,7 +187,7 @@ const ValidatorRegistrationConfirmation = () => {
       marginTop={32}
       sectionClass={classes.Section}
       header={translations.VALIDATOR.CONFIRMATION.TITLE}
-      withoutNavigation={processStore.secondRegistration}
+      withoutNavigation={isSecondRegistration}
       body={screenBody}
       sideElementShowCondition={validatorStore.validatorsCount > 1}
       sideElement={<Grid className={classes.ValidatorHeaderCount}>{`${validatorStore.validatorsCount} Validators`}</Grid>}
@@ -219,7 +218,7 @@ const ValidatorRegistrationConfirmation = () => {
     />
   );
 
-  if (processStore.secondRegistration) {
+  if (isSecondRegistration) {
     return (
       <Grid container>
         <NewWhiteWrapper type={0} header={'Cluster'} />

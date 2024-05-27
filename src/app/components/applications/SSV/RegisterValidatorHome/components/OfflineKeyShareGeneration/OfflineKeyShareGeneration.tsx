@@ -5,7 +5,6 @@ import Tooltip from '@mui/material/Tooltip';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import { osName } from 'react-device-detect';
-import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
@@ -14,7 +13,6 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import { validateAddressInput } from '~lib/utils/validatesInputs';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
 import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { CopyButton } from '~app/atomicComponents';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
@@ -32,6 +30,7 @@ import { OperatingSystemsEnum } from '~app/enums/os.enum';
 import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getSelectedOperators } from '~app/redux/operator.slice.ts';
+import { getIsSecondRegistration } from '~app/redux/process.slice.ts';
 
 const DkgTitleWrapper = styled.div`
   width: 100%;
@@ -97,14 +96,13 @@ const OfflineKeyShareGeneration = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const accountAddress = useAppSelector(getAccountAddress);
-  const stores = useStores();
   const classes = useStyles();
-  const processStore: ProcessStore = stores.Process;
   const selectedOperators = useAppSelector(getSelectedOperators);
   const { apiNetwork } = getStoredNetwork();
   const operatorsAcceptDkg = Object.values(selectedOperators).every((operator: IOperator) => isDkgAddressValid(operator.dkg_address ?? ''));
   const isWindowOs = operatingSystemName === OperatingSystemsEnum.Windows;
   const dynamicFullPath = isWindowOs ? '%cd%' : '$(pwd)';
+  const isSecondRegistration = Boolean(useAppSelector(getIsSecondRegistration));
 
   useEffect(() => {
     const fetchOwnerNonce = async () => {
@@ -123,12 +121,12 @@ const OfflineKeyShareGeneration = () => {
 
   const isSelected = (id: number) => selectedBox === id;
 
-  const goToNextPage = (selectedBoxIndex: number, isSecondRegistration: boolean) => {
+  const goToNextPage = (selectedBoxIndex: number, isSecondReg: boolean) => {
     if (selectedBoxIndex === OFFLINE_FLOWS.DKG) {
       navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY);
       return;
     }
-    if (isSecondRegistration) {
+    if (isSecondReg) {
       navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES);
     } else {
       navigate(config.routes.SSV.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES);
@@ -244,7 +242,7 @@ const OfflineKeyShareGeneration = () => {
 
   const hideButtonCondition = () => {
     if (submitFunctionCondition) {
-      return !processStore.secondRegistration;
+      return !isSecondRegistration;
     }
     return true;
   };
@@ -255,7 +253,7 @@ const OfflineKeyShareGeneration = () => {
   const MainScreen = (
     <BorderScreen
       blackHeader
-      withoutNavigation={processStore.secondRegistration}
+      withoutNavigation={isSecondRegistration}
       header={translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.HEADER}
       overFlow={'none'}
       width={872}
@@ -419,7 +417,7 @@ const OfflineKeyShareGeneration = () => {
           {hideButtonCondition() && (
             <PrimaryButton
               text={buttonLabel}
-              onClick={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, processStore.secondRegistration)}
+              onClick={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, isSecondRegistration)}
               isDisabled={disabledCondition()}
               size={ButtonSize.XL}
             />
@@ -429,7 +427,7 @@ const OfflineKeyShareGeneration = () => {
     />
   );
 
-  if (processStore.secondRegistration) {
+  if (isSecondRegistration) {
     return (
       <Grid container>
         <NewWhiteWrapper type={0} header={'Cluster'} />

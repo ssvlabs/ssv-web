@@ -1,21 +1,18 @@
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
 import { SingleOperator } from '~app/model/processes.model';
 import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppSelector } from '~app/hooks/redux.hook.ts';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const MetadataConfirmationPage = () => {
   const classes = useStyles({});
-  const stores = useStores();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleOperator = processStore.getProcess;
-  const operator = process?.item;
+  const operator = useAppSelector(getProcessItem<SingleOperator>);
   const navigate = useNavigate();
 
   const openExplorer = () => {
@@ -24,7 +21,7 @@ const MetadataConfirmationPage = () => {
       action: 'click',
       label: 'operator'
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/operators/${operator?.id}`, '_blank');
   };
 
   const goToDashboard = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);

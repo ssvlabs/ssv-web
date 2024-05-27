@@ -1,27 +1,25 @@
 import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
 import { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/AccountBalanceAndFee/AccountBalanceAndFee.styles';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppSelector } from '~app/hooks/redux.hook.ts';
+import { getIsSecondRegistration } from '~app/redux/process.slice.ts';
 
 const AccountBalanceAndFee = () => {
   const classes = useStyles();
-  const stores = useStores();
   const navigate = useNavigate();
   const location = useLocation();
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
-  const processStore: ProcessStore = stores.Process;
+  const isSecondRegistration = Boolean(useAppSelector(getIsSecondRegistration));
   const [firstCheckBox, setFirstCheckBox] = useState(false);
   const [secondCheckBox, setSecondCheckBox] = useState(false);
 
@@ -36,7 +34,7 @@ const AccountBalanceAndFee = () => {
   const MainScreen = (
     <BorderScreen
       blackHeader
-      withoutNavigation={processStore.secondRegistration}
+      withoutNavigation={isSecondRegistration}
       header={translations.VALIDATOR.BALANCE_AND_FEE.TITLE}
       body={[
         <Grid container>
@@ -94,7 +92,7 @@ const AccountBalanceAndFee = () => {
     />
   );
 
-  if (processStore.secondRegistration) {
+  if (isSecondRegistration) {
     return (
       <Grid container>
         <NewWhiteWrapper type={0} header={'Cluster'} />
@@ -105,4 +103,4 @@ const AccountBalanceAndFee = () => {
 
   return MainScreen;
 };
-export default observer(AccountBalanceAndFee);
+export default AccountBalanceAndFee;

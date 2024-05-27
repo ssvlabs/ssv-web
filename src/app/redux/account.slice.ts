@@ -6,7 +6,7 @@ import { DEFAULT_PAGINATION } from '~app/common/config/config';
 import { getOperatorsByOwnerAddress } from '~root/services/operator.service';
 import { getClustersByOwnerAddress } from '~root/services/cluster.service';
 
-interface Pagination {
+export interface Pagination {
   page: number;
   pages: number;
   total: number;

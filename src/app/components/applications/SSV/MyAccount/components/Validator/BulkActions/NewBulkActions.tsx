@@ -7,11 +7,11 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrap
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import ValidatorsList from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
 import Spinner from '~app/components/common/Spinner';
-import { useStores } from '~app/hooks/useStores';
-import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import { SingleCluster } from '~app/model/processes.model';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppSelector } from '~app/hooks/redux.hook.ts';
+import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const HeaderWrapper = styled.div`
   display: flex;
@@ -111,16 +111,14 @@ const NewBulkActions = ({
   checkboxTooltipTitle: string;
 }) => {
   const navigate = useNavigate();
-  const stores = useStores();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleCluster = processStore.getProcess;
+  const validator = useAppSelector(getProcessItem<SingleCluster>)!;
   const validatorsListArray = Object.values(selectedValidators);
   const selectedValidatorsCount = validatorsListArray.filter((validator: BulkValidatorData) => validator.isSelected).length;
-  const totalCount = process.item.validatorCount > maxValidatorsCount ? maxValidatorsCount : process.item.validatorCount;
+  const totalCount = validator.validatorCount > maxValidatorsCount ? maxValidatorsCount : validator.validatorCount;
   const [isLoading, setIsLoading] = useState(false);
   const disableButtonCondition = !selectedValidatorsCount || isLoading;
   const showIndicatorCondition = selectedValidatorsCount > 0;
-  const showSubHeaderCondition = process.item.validatorCount > maxValidatorsCount;
+  const showSubHeaderCondition = validator.validatorCount > maxValidatorsCount;
   const createValidatorsLaunchpad = () => {
     navigate(config.routes.SSV.VALIDATOR.CREATE);
   };

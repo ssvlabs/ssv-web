@@ -6,11 +6,11 @@ import { useStores } from '~app/hooks/useStores';
 import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import { useStyles } from '~app/components/common/FundingSummary/FundingSummary.styles';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { RegisterValidator } from '~app/model/processes.model';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getSelectedOperatorsFee } from '~app/redux/operator.slice.ts';
+import { getProcess } from '~app/redux/process.slice.ts';
 
 type Props = {
   days?: number;
@@ -37,11 +37,10 @@ const FundingSummary = (props: Props) => {
   const { networkFee } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const stores = useStores();
   const classes = useStyles();
-  const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const isMultiSharesMode = validatorStore.isMultiSharesMode || (props.validatorsCount && props.validatorsCount > 1);
   const countOfValidators = props.validatorsCount || validatorStore.validatorsCount;
-  const process: RegisterValidator = processStore.process as RegisterValidator;
+  const process: RegisterValidator = useAppSelector(getProcess) as RegisterValidator;
   const daysPeriod = props.days ?? process.fundingPeriod;
   const payments = [
     { id: PaymentId.OPERATOR_FEE, name: 'Operator fee' },

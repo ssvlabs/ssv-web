@@ -1,5 +1,6 @@
 import { KeyShares, KeySharesItem } from 'ssv-keys';
 import { translations } from '~app/common/config';
+import { ReactElement } from 'react';
 
 export type KeyShareMulti = {
   version: string;
@@ -10,7 +11,7 @@ export type KeyShareMulti = {
 export type KeyShareValidationResponse = {
   id: KeyShareValidationResponseId;
   name: string;
-  errorMessage: string | JSX.Element;
+  errorMessage: string | ReactElement;
   subErrorMessage?: string;
 };
 
@@ -64,7 +65,7 @@ export const validateConsistentOperatorIds = (keyShare: KeySharesItem, consisten
 };
 
 // TODO this is better but still not good. improve later
-export const getResponse = (keyShareResponseId: KeyShareValidationResponseId, errorMsg?: string | JSX.Element): KeyShareValidationResponse => {
+export const getResponse = (keyShareResponseId: KeyShareValidationResponseId, errorMsg?: string | ReactElement): KeyShareValidationResponse => {
   const { KEYSHARE_RESPONSE } = translations.VALIDATOR;
   switch (keyShareResponseId) {
     case KeyShareValidationResponseId.OK_RESPONSE_ID: {

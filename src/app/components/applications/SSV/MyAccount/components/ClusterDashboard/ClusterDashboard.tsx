@@ -1,10 +1,8 @@
 import Grid from '@mui/material/Grid';
-import { observer } from 'mobx-react';
-import { useEffect, useRef, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import config, { translations } from '~app/common/config';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import ClusterWarnings from '~app/components/applications/SSV/MyAccount/components/ClusterDashboard/components/ClusterWarnings';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
@@ -15,7 +13,6 @@ import OperatorCard from '~app/components/common/OperatorCard/OperatorCard';
 import OperatorCircleImage from '~app/components/common/OperatorCircleImage';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
 import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import { fetchClusters, getAccountClusters, getClustersPagination, setExcludedCluster, setSelectedClusterId } from '~app/redux/account.slice';
 import { getIsDarkMode } from '~app/redux/appState.slice';
@@ -23,20 +20,20 @@ import { getAccountAddress } from '~app/redux/wallet.slice';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import { getClusterHash } from '~root/services/cluster.service';
+import { setProcessAndType } from '~app/redux/process.slice.ts';
+import { ProcessType, SingleCluster } from '~app/model/processes.model.ts';
 
-const ClusterDashboard = () => {
-  const stores = useStores();
+export const ClusterDashboard = () => {
   const classes = useStyles({});
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
-  const timeoutRef = useRef(null);
-  const clusterIntervalRef = useRef<any>(null);
+  const timeoutRef = useRef<number | null>(null);
+  const clusterIntervalRef = useRef<number | null>(null);
   const accountAddress = useAppSelector(getAccountAddress);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const accountClusters = useAppSelector(getAccountClusters);
-  const processStore: ProcessStore = stores.Process;
-  const [hoveredGrid, setHoveredGrid] = useState(null);
+  const [hoveredGrid, setHoveredGrid] = useState<string | null>(null);
   const [loadingCluster, setLoadingClusters] = useState(false);
   const { page, pages, per_page, total } = useAppSelector(getClustersPagination);
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
@@ -56,20 +53,17 @@ const ClusterDashboard = () => {
   };
 
   const handleGridHover = (index: string) => {
-    // @ts-ignore
     timeoutRef.current = setTimeout(() => {
-      // @ts-ignore
       setHoveredGrid(index);
-    }, 300);
+    }, 300) as unknown as number;
   };
 
   const handleGridLeave = () => {
-    // @ts-ignore
-    clearTimeout(timeoutRef.current);
+    clearTimeout(timeoutRef?.current ?? undefined);
     setHoveredGrid(null);
   };
 
-  const createData = (clusterID: string, operators: JSX.Element, validators: number, operational_runway: string | JSX.Element, runWayError: JSX.Element | undefined) => {
+  const createData = (clusterID: string, operators: ReactElement, validators: number, operational_runway: string | ReactElement, runWayError: ReactElement | undefined) => {
     return { clusterID, operators, validators, operational_runway, runWayError };
   };
 
@@ -113,12 +107,14 @@ const ClusterDashboard = () => {
   });
 
   const openSingleCluster = (listIndex: number) => {
-    processStore.setProcess(
-      {
-        processName: 'single_cluster',
-        item: sortedClusters[listIndex]
-      },
-      2
+    dispatch(
+      setProcessAndType({
+        process: {
+          processName: 'single_cluster',
+          item: sortedClusters[listIndex]
+        } as SingleCluster,
+        type: ProcessType.Validator
+      })
     );
     dispatch(setSelectedClusterId(sortedClusters[listIndex].clusterId));
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
@@ -182,4 +178,4 @@ const ClusterDashboard = () => {
   );
 };
 
-export default observer(ClusterDashboard);
+export default ClusterDashboard;

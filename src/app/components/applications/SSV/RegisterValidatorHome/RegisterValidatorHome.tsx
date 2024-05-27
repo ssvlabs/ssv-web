@@ -10,7 +10,6 @@ import config, { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/RegisterValidatorHome.styles';
 import { ProcessType } from '~app/model/processes.model';
@@ -18,6 +17,7 @@ import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch } from '~app/hooks/redux.hook.ts';
 import { setClusterSize, unselectAllOperators } from '~app/redux/operator.slice.ts';
+import { setProcessAndType } from '~app/redux/process.slice.ts';
 
 const SELECT_MINIMUM_OPERATORS = 4;
 
@@ -48,7 +48,6 @@ const RegisterValidatorHome = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const location = useLocation();
-  const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
   const dispatch = useAppDispatch();
@@ -62,12 +61,14 @@ const RegisterValidatorHome = () => {
   };
 
   const moveToSelectOperators = () => {
-    processStore.setProcess(
-      {
-        item: null,
-        processName: 'register_validator'
-      },
-      ProcessType.Validator
+    dispatch(
+      setProcessAndType({
+        process: {
+          item: undefined,
+          processName: 'register_validator'
+        },
+        type: ProcessType.Validator
+      })
     );
     dispatch(unselectAllOperators());
     dispatch(setClusterSize(SELECT_MINIMUM_OPERATORS));
@@ -75,12 +76,14 @@ const RegisterValidatorHome = () => {
   };
 
   const moveToUploadKeyshare = () => {
-    processStore.setProcess(
-      {
-        item: null,
-        processName: 'register_validator'
-      },
-      ProcessType.Validator
+    dispatch(
+      setProcessAndType({
+        process: {
+          item: undefined,
+          processName: 'register_validator'
+        },
+        type: ProcessType.Validator
+      })
     );
     navigate(getNextNavigation(EValidatorFlowAction.ALREADY_HAVE_SHARES));
   };

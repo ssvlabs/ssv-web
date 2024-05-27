@@ -135,10 +135,10 @@ export const getMaxOperatorFeePerYear = (state: RootState) => state.operatorStat
 export const hasEnoughSelectedOperators = (state: RootState) => Object.values(state.operatorState.selectedOperators).length === state.operatorState.clusterSize;
 export const getOperatorValidatorsLimit = (state: RootState) => state.operatorState.operatorValidatorsLimit;
 export const getOperatorFeeData = (state: RootState) => ({
-  operatorApprovalBeginTime: state.operatorState.operatorApprovalBeginTime,
-  operatorApprovalEndTime: state.operatorState.operatorApprovalEndTime,
-  operatorFutureFee: state.operatorState.operatorFutureFee,
-  operatorCurrentFee: state.operatorState.operatorCurrentFee
+  operatorApprovalBeginTime: Number(state.operatorState.operatorApprovalBeginTime) || 0,
+  operatorApprovalEndTime: Number(state.operatorState.operatorApprovalEndTime) || 0,
+  operatorFutureFee: Number(state.operatorState.operatorFutureFee) || 0,
+  operatorCurrentFee: Number(state.operatorState.operatorCurrentFee) || 0
 });
 export const getFeeIncreaseAndPeriods = (state: RootState) => ({
   getSetOperatorFeePeriod: state.operatorState.getSetOperatorFeePeriod,

@@ -12,7 +12,7 @@ import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import { getEtherScanLink } from '~root/providers/networkInfo.provider';
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
 import { getIsShowTxPendingPopup, getTxHash, setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
-import { ProcessType, SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
+import { SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 
 const DialogWrapper = styled(Dialog)<{ theme: any }>`
@@ -64,11 +64,6 @@ const POP_UP_DATA = {
   }
 };
 
-const ROUTES_BY_PROCESS = {
-  [ProcessType.Operator]: config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT,
-  [ProcessType.Validator]: config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT
-};
-
 const TransactionPendingPopUp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -82,10 +77,10 @@ const TransactionPendingPopUp = () => {
 
   const closeButtonAction = () => {
     let nextNavigation;
-    if (!processStore.type || (processStore.type === ProcessType.Validator && !cluster)) {
+    if (cluster) {
       nextNavigation = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
     } else {
-      nextNavigation = ROUTES_BY_PROCESS[processStore.type];
+      nextNavigation = config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD;
     }
     dispatch(setIsLoading(false));
     dispatch(setIsShowTxPendingPopup(false));

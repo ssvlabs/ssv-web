@@ -95,7 +95,7 @@ const ClusterFlow = ({ minimumLiquidationCollateral, liquidationCollateralPeriod
       dispatch
     });
     if (success) {
-      navigate(isClusterLiquidation && !cluster.validatorCount ? -2 : -1);
+      navigate((isClusterLiquidation && !cluster.validatorCount) || (!cluster.validatorCount && toWei(withdrawValue) === cluster.balance) ? -2 : -1);
     }
     setIsLoading(false);
   };

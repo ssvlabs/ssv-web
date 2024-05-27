@@ -37,6 +37,7 @@ const ClusterFlow = ({ minimumLiquidationCollateral, liquidationCollateralPeriod
   const [withdrawValue, setWithdrawValue] = useState<number | string>('');
   const [buttonDisableCondition, setButtonDisableCondition] = useState(false);
   const [buttonText, setButtonText] = useState(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW);
+
   useEffect(() => {
     if (
       getClusterRunWay(
@@ -94,7 +95,7 @@ const ClusterFlow = ({ minimumLiquidationCollateral, liquidationCollateralPeriod
       operation: isClusterLiquidation ? EClusterOperation.LIQUIDATE : EClusterOperation.WITHDRAW,
       dispatch
     });
-    if (success) {
+    if (success && !isContractWallet) {
       navigate((isClusterLiquidation && !cluster.validatorCount) || (!cluster.validatorCount && toWei(withdrawValue) === cluster.balance) ? -2 : -1);
     }
     setIsLoading(false);

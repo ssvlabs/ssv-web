@@ -187,7 +187,7 @@ const syncOperatorFeeInfo = async (operatorId: number): Promise<any> => {
     }
     return {
       operatorCurrentFee: operatorCurrentFee.toString(),
-      operatorFutureFee: operatorFutureFee || '',
+      operatorFutureFee: operatorFutureFee ? operatorFutureFee.toString() : '',
       operatorApprovalBeginTime: operatorApprovalBeginTime.toString(),
       operatorApprovalEndTime: operatorApprovalEndTime.toString()
     };

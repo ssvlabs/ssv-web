@@ -1,4 +1,4 @@
-import { getContractByName } from '~root/services/contracts.service';
+import { getContractByName } from '~root/wagmi/utils';
 import { EContractName } from '~app/model/contracts.model';
 import config from '~app/common/config';
 import { fromWei } from '~root/services/conversions.service';

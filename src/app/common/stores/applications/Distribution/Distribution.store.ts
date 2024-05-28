@@ -7,7 +7,7 @@ import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/app
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { store } from '~app/store';
 import { isEqualsAddresses } from '~lib/utils/strings';
-import { getContractByName } from '~root/services/contracts.service';
+import { getContractByName } from '~root/wagmi/utils';
 import { fromWei } from '~root/services/conversions.service';
 import { fetchMerkleTreeStructure } from '~root/services/distribution.service';
 

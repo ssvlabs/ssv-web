@@ -9,7 +9,7 @@ import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
 import { propertyCostByPeriod } from '~lib/utils/numbers';
 import { getOwnerNonce } from '~root/services/account.service';
 import { getClusterData, getClusterHash } from '~root/services/cluster.service';
-import { getContractByName } from '~root/services/contracts.service';
+import { getContractByName } from '~root/wagmi/utils';
 import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { getIsRegisteredValidator, getLiquidationCollateralPerValidator } from '~root/services/validator.service';

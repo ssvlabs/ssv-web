@@ -15,6 +15,7 @@ import { getClusterBalance } from '~root/services/cluster.service';
 import { fromWei, toDecimalNumber } from '~root/services/conversions.service';
 import OperatorFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/OperatorFlow';
 import ClusterFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/ClusterFlow';
+import { getSelectedCluster } from '~app/redux/account.slice.ts';
 
 let interval: NodeJS.Timeout;
 
@@ -25,13 +26,14 @@ const Withdraw = () => {
   const stores = useStores();
   const processStore: ProcessStore = stores.Process;
   const process: SingleOperator | SingleCluster = processStore.getProcess;
+  const cluster = useAppSelector(getSelectedCluster);
   const processItem = process?.item;
-  const [processItemBalance, setProcessItemBalance] = useState(processStore.isValidatorFlow ? fromWei(processItem.balance) : processItem.balance);
+  const [processItemBalance, setProcessItemBalance] = useState(processStore.isValidatorFlow ? fromWei(cluster.balance) : processItem.balance);
 
   useEffect(() => {
     if (processStore.isValidatorFlow) {
       interval = setInterval(async () => {
-        const balance = await getClusterBalance(processItem.operators, accountAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, true);
+        const balance = await getClusterBalance(cluster.operators, accountAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, true);
         setProcessItemBalance(balance);
       }, 12000);
       return () => clearInterval(interval);
@@ -57,7 +59,7 @@ const Withdraw = () => {
           ]}
         />
         {processStore.isValidatorFlow ? (
-          <ClusterFlow minimumLiquidationCollateral={minimumLiquidationCollateral} liquidationCollateralPeriod={liquidationCollateralPeriod} />
+          <ClusterFlow clusterBalance={processItemBalance} minimumLiquidationCollateral={minimumLiquidationCollateral} liquidationCollateralPeriod={liquidationCollateralPeriod} />
         ) : (
           <OperatorFlow operator={processItem} />
         )}

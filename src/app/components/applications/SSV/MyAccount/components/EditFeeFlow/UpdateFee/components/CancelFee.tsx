@@ -33,7 +33,7 @@ const CancelFee = ({ oldFee, newFee, currentCurrency, declareNewFeeHandler }: In
               Canceled
             </Grid>
           </Grid>
-          <ReactStepper step={StepperSteps.CANCELED} subTextAlign={'center'} />
+          <ReactStepper isCanceled step={StepperSteps.CANCELED} subTextAlign={'center'} />
           <Grid item container className={classes.TextWrapper}>
             <Grid item>
               <Typography>Your fee has been canceled.</Typography>

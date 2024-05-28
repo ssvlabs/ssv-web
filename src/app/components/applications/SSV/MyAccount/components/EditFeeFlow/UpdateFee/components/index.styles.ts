@@ -1,5 +1,6 @@
 import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material/styles';
+import { IncreaseSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow.tsx';
 
 export enum StepperSteps {
   DECLARE_FEE = 0,
@@ -37,7 +38,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     },
     '&:nth-of-type(4)': {
       backgroundColor: (props: any) => {
-        if (props.isCanceled) {
+        if (props.isCanceled && props.prevStep === IncreaseSteps.WAITING) {
           return theme.colors.primaryError;
         }
         if (props.step <= StepperSteps.WAITING) {
@@ -154,12 +155,18 @@ export const useStyles = makeStyles((theme: Theme) => ({
         return 'none';
       },
       backgroundColor: (props: any) => {
+        if (props.isCanceled && props.prevStep === IncreaseSteps.WAITING) {
+          return theme.colors.primaryError;
+        }
         if (props.step < StepperSteps.WAITING) {
           return theme.colors.gray20;
         }
         return theme.colors.white;
       },
       backgroundImage: (props: any) => {
+        if (props.isCanceled && props.prevStep === IncreaseSteps.WAITING) {
+          return 'url(/images/x/white.svg)';
+        }
         if (props.step < StepperSteps.EXECUTION) {
           return 'none';
         }
@@ -179,12 +186,12 @@ export const useStyles = makeStyles((theme: Theme) => ({
           return theme.colors.primaryError;
         }
         if (props.step === StepperSteps.EXECUTION) {
-          return theme.colors.primaryBlue;
+          return 'none';
         }
         if (props.step < StepperSteps.EXECUTION) {
           return theme.colors.gray20;
         }
-        return 'none';
+        return theme.colors.primaryBlue;
       },
       backgroundImage: (props: any) => {
         if (props.step === StepperSteps.EXPIRED || props.isCanceled) {
@@ -334,14 +341,11 @@ export const useStyles = makeStyles((theme: Theme) => ({
         return theme.colors.primaryError;
       }
       if (props.step === StepperSteps.UPDATED) {
-        if (theme.darkMode) return theme.colors.primaryBlue;
         return theme.colors.white;
       }
       if (props.step === StepperSteps.EXECUTION) {
-        if (theme.darkMode) return theme.colors.shade20;
         return theme.colors.white;
       }
-      // if (theme.darkMode) return theme.colors.shade40;
       return theme.colors.primaryBlue;
     },
     backgroundColor: (props: any) => {
@@ -355,7 +359,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
         return theme.colors.primaryBlue;
       }
       if (props.step === StepperSteps.EXECUTION) {
-        return '#60bffa';
+        return theme.colors.tint40;
       }
       return theme.colors.tint90;
     }

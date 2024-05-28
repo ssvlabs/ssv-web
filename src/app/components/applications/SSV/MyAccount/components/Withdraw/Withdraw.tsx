@@ -12,7 +12,7 @@ import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice'
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { getClusterBalance } from '~root/services/cluster.service';
-import { fromWei, toDecimalNumber } from '~root/services/conversions.service';
+import { fromWei } from '~root/services/conversions.service';
 import OperatorFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/OperatorFlow';
 import ClusterFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/ClusterFlow';
 import { getSelectedCluster } from '~app/redux/account.slice.ts';
@@ -52,7 +52,7 @@ const Withdraw = () => {
           body={[
             <Grid item container>
               <Grid item xs={12} className={classes.currentBalance}>
-                {formatNumberToUi(toDecimalNumber(Number(processItemBalance?.toFixed(2))))} SSV
+                {formatNumberToUi(processItemBalance)} SSV
               </Grid>
               <Grid item xs={12} className={classes.currentBalanceDollar}></Grid>
             </Grid>

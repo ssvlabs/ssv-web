@@ -1,6 +1,6 @@
 import { IOperator } from '~app/model/operator.model';
 import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
-import { getContractByName } from '~root/services/contracts.service';
+import { getContractByName } from '~root/wagmi/utils';
 import { EContractName } from '~app/model/contracts.model';
 import { transactionExecutor } from '~root/services/transaction.service';
 

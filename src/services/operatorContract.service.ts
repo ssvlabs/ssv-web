@@ -1,4 +1,4 @@
-import { getContractByName } from '~root/services/contracts.service';
+import { getContractByName } from '~root/wagmi/utils';
 import { EContractName } from '~app/model/contracts.model';
 import { decodeParameter, fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { IOperator, IOperatorRawData } from '~app/model/operator.model';

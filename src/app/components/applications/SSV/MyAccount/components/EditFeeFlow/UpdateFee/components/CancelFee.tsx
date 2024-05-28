@@ -10,8 +10,8 @@ import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch } from '~app/hooks/redux.hook.ts';
 import { clearOperatorFeeInfo } from '~app/redux/operator.slice.ts';
 
-const CancelFee = ({ oldFee, newFee, currentCurrency, declareNewFeeHandler }: IncreaseFlowProps) => {
-  const classes = useStyles({ step: StepperSteps.CANCELED });
+const CancelFee = ({ oldFee, newFee, currentCurrency, declareNewFeeHandler, prevStep }: IncreaseFlowProps) => {
+  const classes = useStyles({ step: StepperSteps.CANCELED, prevStep });
   const dispatch = useAppDispatch();
 
   const declareNewFee = () => {
@@ -33,7 +33,7 @@ const CancelFee = ({ oldFee, newFee, currentCurrency, declareNewFeeHandler }: In
               Canceled
             </Grid>
           </Grid>
-          <ReactStepper isCanceled step={StepperSteps.CANCELED} subTextAlign={'center'} />
+          <ReactStepper prevStep={prevStep} isCanceled step={StepperSteps.CANCELED} subTextAlign={'center'} />
           <Grid item container className={classes.TextWrapper}>
             <Grid item>
               <Typography>Your fee has been canceled.</Typography>

@@ -8,6 +8,7 @@ import { getFeeIncreaseAndPeriods, getOperatorFeeData } from '~app/redux/operato
 type StepperProps = {
   step: number;
   subText?: string;
+  isCanceled?: boolean;
   subTextAlign: string;
   registerButtonEnabled?: boolean;
 };
@@ -18,8 +19,8 @@ enum StepperProcessesSteps {
   PENDING_STEP = 2
 }
 
-const ReactStepper = ({ step, registerButtonEnabled, subTextAlign, subText }: StepperProps) => {
-  const classes = useStyles({ step, registerButtonEnabled, subTextAlign });
+const ReactStepper = ({ step, registerButtonEnabled, subTextAlign, subText, isCanceled }: StepperProps) => {
+  const classes = useStyles({ step, registerButtonEnabled, subTextAlign, isCanceled });
   const operatorFeeData = useAppSelector(getOperatorFeeData);
   const feeIncreaseAndPeriods = useAppSelector(getFeeIncreaseAndPeriods);
 

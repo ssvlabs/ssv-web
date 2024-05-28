@@ -8,7 +8,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import { fromWei, toWei } from '~root/services/conversions.service';
+import { toWei } from '~root/services/conversions.service';
 import { getClusterRunWay } from '~root/services/cluster.service';
 import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { EClusterOperation } from '~app/enums/clusterOperation.enum';
@@ -18,7 +18,15 @@ import { ButtonSize } from '~app/enums/Button.enum';
 import { depositOrWithdraw } from '~root/services/clusterContract.service';
 import { getSelectedCluster } from '~app/redux/account.slice.ts';
 
-const ClusterFlow = ({ minimumLiquidationCollateral, liquidationCollateralPeriod }: { minimumLiquidationCollateral: number; liquidationCollateralPeriod: number }) => {
+const ClusterFlow = ({
+  minimumLiquidationCollateral,
+  liquidationCollateralPeriod,
+  clusterBalance
+}: {
+  minimumLiquidationCollateral: number;
+  liquidationCollateralPeriod: number;
+  clusterBalance: number;
+}) => {
   const accountAddress = useAppSelector(getAccountAddress);
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isMainnet = useAppSelector(getIsMainnet);
@@ -26,7 +34,6 @@ const ClusterFlow = ({ minimumLiquidationCollateral, liquidationCollateralPeriod
   const classes = useStyles();
   const navigate = useNavigate();
   const cluster = useAppSelector(getSelectedCluster);
-  const clusterBalance = fromWei(cluster.balance);
   const [isLoading, setIsLoading] = useState(false);
   const [hasUserAgreed, setHasUserAgreed] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -37,7 +44,6 @@ const ClusterFlow = ({ minimumLiquidationCollateral, liquidationCollateralPeriod
   const [withdrawValue, setWithdrawValue] = useState<number | string>('');
   const [buttonDisableCondition, setButtonDisableCondition] = useState(false);
   const [buttonText, setButtonText] = useState(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW);
-
   useEffect(() => {
     if (
       getClusterRunWay(

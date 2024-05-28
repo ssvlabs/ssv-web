@@ -49,6 +49,7 @@ const SingleOperator = () => {
 
   const updateOperatorBalance = async () => {
     const res = await getOperatorBalance({ id: operator.id });
+    process.item = { ...operator, balance: res };
     setBalance(res);
   };
 

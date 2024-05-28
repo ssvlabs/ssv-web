@@ -33,14 +33,14 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
   }, []);
 
   const getState = async () => {
-    await dispatch(fetchAndSetOperatorFeeInfo(Number(operatorId || processOperatorId)));
-    if (operatorFeeData.operatorApprovalBeginTime && operatorFeeData.operatorApprovalEndTime && operatorFeeData.operatorFutureFee) {
+    const res = await dispatch(fetchAndSetOperatorFeeInfo(Number(operatorId || processOperatorId)));
+    if (res.payload.operatorApprovalBeginTime && res.payload.operatorApprovalEndTime && res.payload.operatorFutureFee) {
       const todayDate = new Date();
-      const endPendingStateTime = new Date(operatorFeeData.operatorApprovalEndTime * 1000);
-      const startPendingStateTime = new Date(operatorFeeData.operatorApprovalBeginTime * 1000);
+      const endPendingStateTime = new Date(res.payload.operatorApprovalEndTime * 1000);
+      const startPendingStateTime = new Date(res.payload.operatorApprovalBeginTime * 1000);
       const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
       // @ts-ignore
-      const daysFromEndPendingStateTime = Math.ceil(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24));
+      const daysFromEndPendingStateTime = Math.ceil(Math.abs(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24)));
       if (isInPendingState) {
         setProcessState(PROCESS_STATE_PENDING);
       } else if (startPendingStateTime > todayDate) {

@@ -1,4 +1,4 @@
-import { getContractByName } from '~root/services/contracts.service';
+// import { getContractByName } from '~root/wagmi/utils';
 import { EContractName } from '~app/model/contracts.model';
 import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { EClusterOperation } from '~app/enums/clusterOperation.enum';
@@ -6,6 +6,7 @@ import { transactionExecutor } from '~root/services/transaction.service';
 import { ICluster } from '~app/model/cluster.model';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
 import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
+import { getContractByName } from '~root/wagmi/utils';
 
 interface ClusterBalanceInteractionProps {
   amount: string;
@@ -29,6 +30,7 @@ const depositOrWithdraw = async ({
   dispatch
 }: ClusterBalanceInteractionProps) => {
   const contract = getContractByName(EContractName.SETTER);
+  console.log('contract:', contract);
   if (!contract) {
     return false;
   }

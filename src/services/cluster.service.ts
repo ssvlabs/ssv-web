@@ -2,7 +2,7 @@ import Decimal from 'decimal.js';
 import config from '~app/common/config';
 import { keccak256 } from 'web3-utils';
 import { EContractName } from '~app/model/contracts.model';
-import { getContractByName } from '~root/services/contracts.service';
+import { getContractByName } from '~root/wagmi/utils';
 import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { IOperator } from '~app/model/operator.model';
 import { ICluster } from '~app/model/cluster.model';

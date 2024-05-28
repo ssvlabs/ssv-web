@@ -43,6 +43,7 @@
     "@web3-onboard/injected-wallets": "^2.10.11",
     "@web3-onboard/react": "^2.8.13",
     "@web3-onboard/walletconnect": "^2.5.3",
+    "abitype": "^1.0.2",
     "assert": "^2.0.0",
     "axios": "1.6.8",
     "babel-eslint": "^10.1.0",

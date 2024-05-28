@@ -1,7 +1,7 @@
 import config from '~app/common/config';
 import { getRequest } from '~root/services/httpApi.service';
 import { utils } from 'ethers';
-import { getContractByName } from '~root/services/contracts.service';
+import { getContractByName } from '~root/wagmi/utils';
 import { EContractName } from '~app/model/contracts.model';
 import notifyService from '~root/services/notify.service';
 import { store } from '~app/store';
@@ -24,7 +24,7 @@ const getOwnerNonce = async ({ address }: { address: string }) => {
   return undefined;
 };
 
-const setFeeRecipient = async ({ feeRecipientAddress, isContractWallet }: { feeRecipientAddress: string, isContractWallet: boolean }) => {
+const setFeeRecipient = async ({ feeRecipientAddress, isContractWallet }: { feeRecipientAddress: string; isContractWallet: boolean }) => {
   const contract = getContractByName(EContractName.SETTER);
   try {
     const tx = await contract.setFeeRecipientAddress(feeRecipientAddress);
@@ -45,7 +45,7 @@ const setFeeRecipient = async ({ feeRecipientAddress, isContractWallet }: { feeR
   }
 };
 
-const getFeeRecipientAddress = async ({ address }: { address: string })=> {
+const getFeeRecipientAddress = async ({ address }: { address: string }) => {
   const res = await getAccountData(address);
   if (res && res.data.recipientAddress) {
     return res.data.recipientAddress;

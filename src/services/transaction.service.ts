@@ -47,31 +47,32 @@ export const executeAfterEvent = async ({
   return true;
 };
 
-export const transactionExecutor = async ({
-  contractMethod,
-  payload,
-  isContractWallet,
-  getterTransactionState,
-  prevState,
-  dispatch
-}: {
+type TxProps = {
   contractMethod: Function;
   payload: any;
   isContractWallet: boolean;
   getterTransactionState?: Function;
   prevState?: unknown;
   dispatch: Function;
-}) => {
+};
+
+export const transactionExecutor = async ({ contractMethod, payload, isContractWallet, getterTransactionState, prevState, dispatch }: TxProps) => {
   try {
+    if (isContractWallet) {
+      contractMethod(...payload);
+      dispatch(setIsShowTxPendingPopup(true));
+      return true;
+    }
+
     const tx = await contractMethod(...payload);
+
     if (tx.hash) {
       dispatch(setTxHash(tx.hash));
       dispatch(setIsShowTxPendingPopup(true));
     }
-    if (isContractWallet) {
-      return true;
-    }
+
     const receipt = await tx.wait();
+
     if (receipt.blockHash) {
       const event: boolean = receipt.hasOwnProperty('events');
       if (event) {

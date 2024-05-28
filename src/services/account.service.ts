@@ -41,7 +41,9 @@ const setFeeRecipient = async ({ feeRecipientAddress, isContractWallet }: { feeR
     // TODO: add error handling
     console.error(`Error during setting fee recipient: ${e.message}`);
   } finally {
-    store.dispatch(setIsShowTxPendingPopup(false));
+    if (!isContractWallet) {
+      store.dispatch(setIsShowTxPendingPopup(false));
+    }
   }
 };
 

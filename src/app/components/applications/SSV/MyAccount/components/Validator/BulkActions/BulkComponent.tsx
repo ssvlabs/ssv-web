@@ -15,6 +15,7 @@ import { getAccountAddress, getIsContractWallet } from '~app/redux/wallet.slice'
 import { MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
 import { formatValidatorPublicKey } from '~lib/utils/strings';
 import { exitValidators, removeValidators } from '~root/services/validatorContract.service';
+import { getSelectedCluster } from '~app/redux/account.slice.ts';
 
 enum BULK_STEPS {
   BULK_ACTIONS = 'BULK_ACTIONS',
@@ -50,6 +51,7 @@ const BulkComponent = () => {
   const navigate = useNavigate();
   const accountAddress = useAppSelector(getAccountAddress);
   const isContractWallet = useAppSelector(getIsContractWallet);
+  const cluster = useAppSelector(getSelectedCluster);
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const stores = useStores();
   const processStore: ProcessStore = stores.Process;
@@ -105,16 +107,17 @@ const BulkComponent = () => {
     });
   };
 
-  const backToSingleClusterPage = () => {
+  const backToSingleClusterPage = (validatorsCount?: number) => {
     process.validator = undefined;
-    navigate(-1);
+    navigate(validatorsCount === cluster.validatorCount && cluster.isLiquidated ? -2 : -1);
   };
 
   const nextStep = async () => {
     const selectedValidatorKeys = Object.keys(selectedValidators);
     const selectedValidatorValues = Object.values(selectedValidators);
     let res;
-    const condition = selectedValidatorValues.filter((validator) => validator.isSelected).length > 1;
+    const selectedValidatorsCount = selectedValidatorValues.filter((validator) => validator.isSelected).length;
+    const condition = selectedValidatorsCount > 1;
     if (currentStep === BULK_STEPS.BULK_ACTIONS) {
       setCurrentStep(BULK_STEPS.BULK_CONFIRMATION);
     } else if (currentStep === BULK_STEPS.BULK_CONFIRMATION && currentBulkFlow === BULK_FLOWS.BULK_EXIT) {
@@ -145,7 +148,7 @@ const BulkComponent = () => {
         dispatch
       });
       if (res && !isContractWallet) {
-        backToSingleClusterPage();
+        backToSingleClusterPage(selectedValidatorsCount);
       }
       setIsLoading(false);
     }

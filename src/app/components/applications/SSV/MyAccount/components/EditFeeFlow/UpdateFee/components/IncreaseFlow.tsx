@@ -21,21 +21,15 @@ export type IncreaseFlowProps = {
   getCurrentState: Function;
   declareNewFeeHandler: Function;
   cancelUpdateFee: Function;
+  prevStep?: IncreaseSteps;
 };
 
-// eslint-disable-next-line no-unused-vars
-enum IncreaseSteps {
-  // eslint-disable-next-line no-unused-vars
+export enum IncreaseSteps {
   DECLARE_FEE,
-  // eslint-disable-next-line no-unused-vars
   WAITING,
-  // eslint-disable-next-line no-unused-vars
   PENDING,
-  // eslint-disable-next-line no-unused-vars
   CONFIRM,
-  // eslint-disable-next-line no-unused-vars
   EXPIRED,
-  // eslint-disable-next-line no-unused-vars
   CANCEL
 }
 
@@ -45,6 +39,7 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler }: Update
   const process: SingleOperator = processStore.getProcess;
   const operator: IOperator = process.item;
   const [currentStep, setCurrentStep] = useState(IncreaseSteps.DECLARE_FEE);
+  const [prevStep, setPrevStep] = useState(IncreaseSteps.DECLARE_FEE);
   const isContractWallet = useAppSelector(getIsContractWallet);
   const dispatch = useAppDispatch();
   const operatorFeeData = useAppSelector(getOperatorFeeData);
@@ -83,7 +78,10 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler }: Update
 
   const cancelUpdateFee = async () => {
     const res = await cancelChangeFeeProcess({ operator, isContractWallet, dispatch });
-    res && setCurrentStep(IncreaseSteps.CANCEL);
+    if (res) {
+      setPrevStep(currentStep);
+      setCurrentStep(IncreaseSteps.CANCEL);
+    }
   };
 
   const components = {
@@ -104,6 +102,7 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler }: Update
       oldFee={oldFee}
       currentCurrency={currency}
       getCurrentState={getCurrentState}
+      prevStep={prevStep}
     />
   );
 };

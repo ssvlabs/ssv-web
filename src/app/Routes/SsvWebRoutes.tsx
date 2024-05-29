@@ -4,6 +4,7 @@ import config from '~app/common/config';
 import Announcement from '~app/components/common/Annotation/Announcement';
 import SsvAppBar from '~app/components/common/AppBar/SsvAppBar';
 import Layout from '~app/components/common/Layout';
+import OperatorAccessSettingsV2 from '~app/components/applications/SSV/OperatorAccessSettingsV2/OperatorAccessSettingsV2.tsx';
 
 const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
 const FeeRecipient = lazy(() => import('~app/components/applications/SSV/FeeRecipient'));
@@ -47,7 +48,8 @@ const SsvWebRoutes: any = () => {
   const dashboardRoutes: any = [
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DEPOSIT, Component: Deposit },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ROOT, Component: SingleOperator },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS, Component: OperatorAccessSettings },
+    // TODO: add future flag V2 should be for testnet only
+    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS, Component: OperatorAccessSettingsV2 || OperatorAccessSettings },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ROOT, Component: SingleCluster },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.WITHDRAW, Component: NewWithdraw },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.WITHDRAW, Component: NewWithdraw },

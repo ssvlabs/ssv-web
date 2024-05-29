@@ -2,23 +2,21 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import { getClusterHash } from '~root/services/cluster.service';
 import { validatorsByClusterHash } from '~root/services/validator.service';
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { formatValidatorPublicKey, longStringShorten } from '~lib/utils/strings';
-import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import ToolTip from '~app/components/common/ToolTip';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
-import { SingleCluster } from '~app/model/processes.model';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Spinner from '~app/components/common/Spinner';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import Settings from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
 import { getAccountAddress } from '~app/redux/wallet.slice';
+import { getSelectedCluster } from '~app/redux/account.slice.ts';
 
 const TableWrapper = styled.div<{ children: React.ReactNode; id: string }>`
   margin-top: 12px;
@@ -143,10 +141,7 @@ const ValidatorsList = ({
   isLoading?: boolean;
 }) => {
   const accountAddress = useAppSelector(getAccountAddress);
-  const stores = useStores();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleCluster = processStore.getProcess;
-  const cluster = process?.item;
+  const cluster = useAppSelector(getSelectedCluster);
   const selectValidatorDisableCondition = Object.values(selectedValidators || {}).filter((validator: BulkValidatorData) => validator.isSelected).length === maxValidatorsCount;
   const navigate = useNavigate();
   const isDarkMode = useAppSelector(getIsDarkMode);

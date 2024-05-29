@@ -17,7 +17,7 @@ import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { useStores } from '~app/hooks/useStores';
 import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
-import { fetchClusters, getAccountClusters, getClustersPagination, setSelectedClusterId } from '~app/redux/account.slice';
+import { fetchClusters, getAccountClusters, getClustersPagination, setExcludedCluster, setSelectedClusterId } from '~app/redux/account.slice';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { formatNumberToUi } from '~lib/utils/numbers';
@@ -42,6 +42,7 @@ const ClusterDashboard = () => {
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
 
   useEffect(() => {
+    dispatch(setExcludedCluster(null));
     clusterIntervalRef.current = setInterval(() => dispatch(fetchClusters({})), 10000);
     return () => {
       if (clusterIntervalRef.current) {

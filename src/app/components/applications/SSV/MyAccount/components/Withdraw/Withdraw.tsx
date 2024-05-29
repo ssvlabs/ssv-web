@@ -4,7 +4,6 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 import BorderScreen from '~app/components/common/BorderScreen';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { SingleCluster, SingleOperator, ValidatorItem } from '~app/model/processes.model.ts';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { formatNumberToUi } from '~lib/utils/numbers';
@@ -12,29 +11,20 @@ import { getClusterBalance } from '~root/services/cluster.service';
 import { fromWei } from '~root/services/conversions.service';
 import OperatorFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/OperatorFlow';
 import ClusterFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/ClusterFlow';
-import { getSelectedCluster } from '~app/redux/account.slice.ts';
-import { getIsValidatorFlow, getProcessItem } from '~app/redux/process.slice.ts';
+import { getSelectedCluster, getSelectedOperator } from '~app/redux/account.slice.ts';
 
 let interval: NodeJS.Timeout;
 
-function checkIfValidator(
-  _validatorOrOperator: ReturnType<typeof getProcessItem<SingleOperator | SingleCluster>>,
-  isVFlow: boolean | undefined
-): _validatorOrOperator is ValidatorItem {
-  return Boolean(isVFlow);
-}
-
-const Withdraw = () => {
+const Withdraw = ({ isValidatorFlow }: { isValidatorFlow: boolean }) => {
   const accountAddress = useAppSelector(getAccountAddress);
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const classes = useStyles();
   const cluster = useAppSelector(getSelectedCluster);
-  const isValidatorFlow: boolean | undefined = useAppSelector(getIsValidatorFlow);
-  const validatorOrOperator = useAppSelector(getProcessItem<SingleOperator | SingleCluster>)!;
-  const [processItemBalance, setProcessItemBalance] = useState<number>(isValidatorFlow ? fromWei(validatorOrOperator?.balance) : +(validatorOrOperator?.balance ?? 0));
+  const operator = useAppSelector(getSelectedOperator)!;
+  const [processItemBalance, setProcessItemBalance] = useState<number>(isValidatorFlow ? fromWei(cluster.balance) : +(operator?.balance ?? 0));
 
   useEffect(() => {
-    if (checkIfValidator(validatorOrOperator, isValidatorFlow)) {
+    if (isValidatorFlow) {
       interval = setInterval(async () => {
         const balance = await getClusterBalance(cluster.operators, accountAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, true);
         setProcessItemBalance(balance);
@@ -61,10 +51,10 @@ const Withdraw = () => {
             </Grid>
           ]}
         />
-        {checkIfValidator(validatorOrOperator, isValidatorFlow) ? (
+        {isValidatorFlow ? (
           <ClusterFlow clusterBalance={processItemBalance} minimumLiquidationCollateral={minimumLiquidationCollateral} liquidationCollateralPeriod={liquidationCollateralPeriod} />
         ) : (
-          <OperatorFlow operator={validatorOrOperator} />
+          <OperatorFlow operator={operator} />
         )}
       </Grid>
     </Grid>

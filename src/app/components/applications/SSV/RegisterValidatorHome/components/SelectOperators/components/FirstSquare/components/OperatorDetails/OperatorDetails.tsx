@@ -10,12 +10,13 @@ import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorToolt
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails.styles';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { useAppDispatch } from '~app/hooks/redux.hook';
+import { IOperator } from '~app/model/operator.model.ts';
 
 type Props = {
   gray80?: boolean;
   withCopy?: boolean;
   withoutExplorer?: boolean;
-  operator: any;
+  operator: IOperator;
   setOpenExplorerRefs?: Function;
   logoSize?: number;
   nameFontSize?: number;
@@ -38,7 +39,7 @@ const OperatorDetails = (props: Props) => {
   const dispatch = useAppDispatch();
 
   const copyId = () => {
-    navigator.clipboard.writeText(operator?.id);
+    navigator.clipboard.writeText(operator.id.toString());
     dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
   };
 

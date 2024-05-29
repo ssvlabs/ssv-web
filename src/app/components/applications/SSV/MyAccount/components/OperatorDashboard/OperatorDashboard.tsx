@@ -16,12 +16,10 @@ import { IOperator } from '~app/model/operator.model';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getOperatorBalance } from '~root/services/operatorContract.service';
-import { fetchOperators, getAccountOperators, getOperatorsPagination, setSelectedOperatorId, sortOperatorsByStatus } from '~app/redux/account.slice';
+import { fetchOperators, getAccountOperators, getOperatorsPagination, setSelectedOperator, sortOperatorsByStatus } from '~app/redux/account.slice';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { setOperatorProcessId } from '~app/redux/operator.slice.ts';
-import { setProcessAndType } from '~app/redux/process.slice.ts';
-import { ProcessType } from '~app/model/processes.model.ts';
 
 const ButtonWrapper = styled.div`
   width: 164px;
@@ -81,16 +79,7 @@ const OperatorDashboard = () => {
       return;
     }
     const operator = operators[listIndex];
-    dispatch(
-      setProcessAndType({
-        process: {
-          processName: 'single_operator',
-          item: { ...operator, balance: operatorBalances[operator.id] }
-        },
-        type: ProcessType.Operator
-      })
-    );
-    dispatch(setSelectedOperatorId(operators[listIndex].id));
+    dispatch(setSelectedOperator({ ...operator, balance: operatorBalances[operator.id] })); // TODO does the balance refetch required?
     dispatch(setOperatorProcessId(operators[listIndex].id));
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
   };

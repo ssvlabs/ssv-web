@@ -21,7 +21,7 @@ export interface AccountState {
   isFetchingClusters: boolean;
   clustersPagination: Pagination;
   selectedClusterId: string;
-  selectedOperatorId: number;
+  selectedOperator: IOperator | undefined;
   excludedCluster: ICluster | null;
 }
 
@@ -33,7 +33,7 @@ const initialState: AccountState = {
   isFetchingClusters: false,
   clustersPagination: DEFAULT_PAGINATION,
   selectedClusterId: '',
-  selectedOperatorId: -1,
+  selectedOperator: undefined,
   excludedCluster: null
 };
 
@@ -103,8 +103,8 @@ export const slice = createSlice({
     setSelectedClusterId: (state, action: { payload: string }) => {
       state.selectedClusterId = action.payload;
     },
-    setSelectedOperatorId: (state, action: { payload: number }) => {
-      state.selectedOperatorId = action.payload;
+    setSelectedOperator: (state, action: { payload: IOperator }) => {
+      state.selectedOperator = action.payload;
     },
     setExcludedCluster: (state, action: { payload: ICluster | null }) => {
       state.excludedCluster = action.payload;
@@ -152,7 +152,7 @@ export const slice = createSlice({
 
 export const accountStateReducer = slice.reducer;
 
-export const { resetPagination, setExcludedCluster, setSelectedClusterId, setSelectedOperatorId, sortOperatorsByStatus } = slice.actions;
+export const { resetPagination, setExcludedCluster, setSelectedClusterId, setSelectedOperator, sortOperatorsByStatus } = slice.actions;
 
 export const getAccountOperators = (state: RootState) => state.accountState.operators;
 // export const getIsFetchingOperators = (state: RootState) => state.accountState.isFetchingOperators;
@@ -162,5 +162,4 @@ export const getAccountClusters = (state: RootState) => state.accountState.clust
 export const getClustersPagination = (state: RootState) => state.accountState.clustersPagination;
 export const getSelectedCluster = (state: RootState) =>
   state.accountState.excludedCluster || state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId) || ({} as ICluster);
-export const getSelectedOperator = (state: RootState) =>
-  state.accountState.operators.find((operator: IOperator) => operator.id === state.accountState.selectedOperatorId) || ({} as IOperator);
+export const getSelectedOperator = (state: RootState) => state.accountState.selectedOperator;

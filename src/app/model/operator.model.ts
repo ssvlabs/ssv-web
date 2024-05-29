@@ -1,6 +1,7 @@
 import { ErrorType } from '~app/components/common/ConversionInput/ConversionInput.tsx';
 
 export interface IOperator {
+  is_deleted: boolean; // TODO: is valid?
   id: number;
   fee?: string;
   name: string;

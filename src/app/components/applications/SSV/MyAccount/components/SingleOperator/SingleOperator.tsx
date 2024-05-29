@@ -25,27 +25,26 @@ import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getOperatorValidators } from '~root/services/operator.service';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
-import { SingleOperator as SingleOperatorProcess } from '~app/model/processes.model';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { fetchAndSetOperatorFeeInfo } from '~app/redux/operator.slice.ts';
-import { getProcessItem } from '~app/redux/process.slice.ts';
 import { getOperatorBalance } from '~root/services/operatorContract.service.ts';
+import { getSelectedOperator, setSelectedOperator } from '~app/redux/account.slice.ts';
 
 const SingleOperator = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [operatorsValidators, setOperatorsValidators] = useState([]);
   const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState<{ per_page: number } | null>(null);
-  const operator = useAppSelector(getProcessItem<SingleOperatorProcess>);
+  const operator = useAppSelector(getSelectedOperator)!;
   const [balance, setBalance] = useState(operator?.balance);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const strategyRedirect = useAppSelector(getStrategyRedirect);
 
   const updateOperatorBalance = async () => {
     const res = await getOperatorBalance({ id: operator.id });
-    process.item = { ...operator, balance: res };
+    dispatch(setSelectedOperator({ ...operator, balance: res }));
     setBalance(res);
   };
 
@@ -59,7 +58,7 @@ const SingleOperator = () => {
   const loadOperatorValidators = async (props: { page: number; perPage: number }) => {
     const { page, perPage } = props;
     const response = await getOperatorValidators({
-      operatorId: operator?.id ?? 0,
+      operatorId: operator.id,
       page,
       perPage
     });
@@ -80,7 +79,7 @@ const SingleOperator = () => {
 
   // @ts-ignore
   const { logo, validators_count, fee, performance } = operator || {};
-  const validator30dPerformance = operator ? performance['30d'] : 0;
+  const validator30dPerformance = operator ? performance['30d'] : 0; // TODO Why if in useEffect in line 50 operator is null checked?
   const yearlyFee = formatNumberToUi(getFeeForYear(fromWei(fee)));
   const classes = useStyles({ operatorLogo: logo, noValidators: operatorsValidators.length === 0 });
 
@@ -99,12 +98,12 @@ const SingleOperator = () => {
   };
 
   const moveToUpdateFee = async () => {
-    await dispatch(fetchAndSetOperatorFeeInfo(operator?.id ?? 0));
+    await dispatch(fetchAndSetOperatorFeeInfo(operator.id));
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT);
   };
 
   const moveToWithdraw = () => {
-    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.WITHDRAW);
+    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.WITHDRAW); // TODO check
   };
 
   const openBeaconcha = (publicKey: string) => {
@@ -234,7 +233,7 @@ const SingleOperator = () => {
   };
 
   const UpdateFeeButton = () =>
-    !Number(operator?.fee) ? (
+    !Number(operator.fee) ? (
       <Tooltip
         title={
           <Typography className={classes.UpdateFeeTooltipText}>
@@ -245,12 +244,12 @@ const SingleOperator = () => {
         placement="top-end"
         children={
           <Grid item xs>
-            <SecondaryButton isDisabled={!Number(operator?.fee)} text={'Update Fee'} onClick={moveToUpdateFee} size={ButtonSize.XL} />
+            <SecondaryButton isDisabled={!Number(operator.fee)} text={'Update Fee'} onClick={moveToUpdateFee} size={ButtonSize.XL} />
           </Grid>
         }
       />
     ) : (
-      <SecondaryButton isDisabled={!Number(operator?.fee)} text={'Update Fee'} onClick={moveToUpdateFee} size={ButtonSize.XL} />
+      <SecondaryButton isDisabled={!Number(operator.fee)} text={'Update Fee'} onClick={moveToUpdateFee} size={ButtonSize.XL} />
     );
 
   return (

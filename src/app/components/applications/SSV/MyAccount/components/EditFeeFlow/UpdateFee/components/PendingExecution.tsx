@@ -5,7 +5,6 @@ import { IncreaseFlowProps } from '~app/components/applications/SSV/MyAccount/co
 import ReactStepper from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/Stepper';
 import { StepperSteps, useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { SingleOperator } from '~app/model/processes.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
@@ -14,20 +13,17 @@ import { timeDiffCalc } from '~lib/utils/time';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import { approveOperatorFee } from '~root/services/operatorContract.service.ts';
 import { getOperatorFeeData } from '~app/redux/operator.slice.ts';
-import { getProcessItem } from '~app/redux/process.slice.ts';
+import { getSelectedOperator } from '~app/redux/account.slice.ts';
 
 const PendingExecution = ({ oldFee, newFee, currentCurrency, getCurrentState, cancelUpdateFee }: IncreaseFlowProps) => {
   const classes = useStyles({ step: StepperSteps.EXECUTION });
   const [isLoading, setIsLoading] = useState(false);
-  const operator = useAppSelector(getProcessItem<SingleOperator>);
+  const operator = useAppSelector(getSelectedOperator)!;
   const isContractWallet = useAppSelector(getIsContractWallet);
   const dispatch = useAppDispatch();
   const operatorFeeData = useAppSelector(getOperatorFeeData);
 
   const submitFeeChange = async () => {
-    if (!operator) {
-      return;
-    }
     setIsLoading(true);
     const response = await approveOperatorFee({ operator, isContractWallet, dispatch });
     if (response) {

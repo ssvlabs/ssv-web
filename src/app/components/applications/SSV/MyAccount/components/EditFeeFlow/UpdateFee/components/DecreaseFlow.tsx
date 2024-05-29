@@ -6,7 +6,6 @@ import config from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import { ProcessType, SingleOperator } from '~app/model/processes.model';
 import { getOperator } from '~root/services/operator.service';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
@@ -16,7 +15,7 @@ import LinkText from '~app/components/common/LinkText';
 import { decreaseOperatorFee, getOperatorBalance } from '~root/services/operatorContract.service';
 import { UpdateFeeProps } from '~app/model/operator.model.ts';
 import { getOperatorProcessId } from '~app/redux/operator.slice.ts';
-import { getProcessItem, setProcessAndType } from '~app/redux/process.slice.ts';
+import { getSelectedOperator, setSelectedOperator } from '~app/redux/account.slice.ts';
 
 const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
   const navigate = useNavigate();
@@ -24,7 +23,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
   const [buttonText, setButtonText] = useState('Update Fee');
   const [updated, setUpdated] = useState(false);
   const isContractWallet = useAppSelector(getIsContractWallet);
-  const operator = useAppSelector(getProcessItem<SingleOperator>);
+  const operator = useAppSelector(getSelectedOperator)!;
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const processOperatorId = useAppSelector(getOperatorProcessId);
@@ -33,23 +32,12 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
     if (updated) {
       navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
     } else {
-      if (!operator) {
-        return;
-      }
       setIsLoading(true);
       const res = await decreaseOperatorFee({ operator, newFee, isContractWallet, dispatch });
       if (res) {
         const newOperatorData = await getOperator(processOperatorId);
         const balance = await getOperatorBalance(newOperatorData.id);
-        dispatch(
-          setProcessAndType({
-            process: {
-              processName: 'single_operator',
-              item: { ...newOperatorData, balance }
-            },
-            type: ProcessType.Operator
-          })
-        );
+        dispatch(setSelectedOperator({ ...newOperatorData, balance }));
         setButtonText('Back To My Account');
         setUpdated(true);
       }

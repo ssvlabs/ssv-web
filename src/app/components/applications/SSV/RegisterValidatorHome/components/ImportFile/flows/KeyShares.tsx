@@ -88,27 +88,33 @@ const KeyShareFlow = () => {
     validatorStore.clearKeyShareFlowData();
   }, []);
 
-  async function validateKeyShareFile(keyShareMulti: KeyShares): Promise<KeyShareValidationResponse> {
+  async function validateKeyShareFile(keyShareMulti: KeyShares): Promise<{ response: KeyShareValidationResponse; operatorsData?: IOperator[]; clusterSizeData?: number }> {
     const shares = keyShareMulti.list();
     try {
+      let operatorsData = Object.values(selectedStoreOperators);
+      let clusterSizeData = clusterSize;
       if (processStore.secondRegistration) {
         const process: SingleCluster = processStore.process;
         const clusterOperatorsIds = process.item.operators.map((operator: { id: number; operatorKey: string }) => operator.id).sort();
         if (shares.some((keyShare: KeySharesItem) => !validateConsistentOperatorIds(keyShare, clusterOperatorsIds))) {
-          return getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER);
+          return {
+            response: getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER),
+            operatorsData,
+            clusterSizeData
+          };
         }
       } else {
         const consistentOperatorIds = shares[0].payload.operatorIds.sort(); // Taking first slot in array just to get any ids. should be consistent across all shares.
         const selectedOperators = await getOperatorsByIds(consistentOperatorIds);
         const selectedOperatorsIds = selectedOperators.map((operator: IOperator) => operator.id);
         if (!selectedOperators.length) {
-          return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID);
+          return { response: getResponse(KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID), operatorsData, clusterSizeData };
         } else if (shares.some((keyShare: KeySharesItem) => !validateConsistentOperatorIds(keyShare, selectedOperatorsIds))) {
-          return getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER);
+          return { response: getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER), operatorsData, clusterSizeData };
         }
 
-        dispatch(selectOperators(selectedOperators));
-        dispatch(setClusterSize(selectedOperators.length));
+        operatorsData = dispatch(selectOperators(selectedOperators)).payload;
+        clusterSizeData = dispatch(setClusterSize(selectedOperators.length)).payload;
       }
 
       if (processStore.secondRegistration) {
@@ -119,17 +125,18 @@ const KeyShareFlow = () => {
               return !selectedOperator || selectedOperator.public_key.toLowerCase() !== operatorData.operatorKey.toLowerCase();
             })
           ) {
-            return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID);
+            return { response: getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID), operatorsData, clusterSizeData };
           }
         }
       }
+      return { response: getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID), operatorsData, clusterSizeData };
     } catch (e: any) {
-      return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'Failed to process KeyShares file');
+      return { response: getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'Failed to process KeyShares file') };
     }
-    return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
+    // return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
   }
 
-  async function storeKeyShareData(keyShareMulti: KeyShares) {
+  async function storeKeyShareData(keyShareMulti: KeyShares, clusterSizeData: any, selectedOperatorsData: any) {
     // eslint-disable-next-line no-useless-catch
     try {
       validatorStore.setProcessedKeyShare(keyShareMulti);
@@ -144,7 +151,8 @@ const KeyShareFlow = () => {
         // TODO: add proper error handling
         return;
       }
-
+      // console.log(test1);
+      // console.log(test2);
       // eslint-disable-next-line no-async-promise-executor
       const promises = Object.values(validators).map(
         (validator: ValidatorType) =>
@@ -171,12 +179,12 @@ const KeyShareFlow = () => {
       let currentNonce = ownerNonce;
       let warningTextMessage = '';
       let maxValidatorsCount =
-        validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length < getMaxValidatorsCountPerRegistration(clusterSize)
+        validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length < getMaxValidatorsCountPerRegistration(clusterSizeData)
           ? validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length
-          : getMaxValidatorsCountPerRegistration(clusterSize);
+          : getMaxValidatorsCountPerRegistration(clusterSizeData);
       let previousSmallCount = validatorStore.validatorsCount;
 
-      const operatorsData = Object.values(selectedStoreOperators).map((operator: IOperator) => {
+      const operatorsData = selectedOperatorsData.map((operator: IOperator) => {
         const availableValidatorsAmount = operatorValidatorsLimit - operator.validators_count;
         let hasError = false;
         if (availableValidatorsAmount < validatorStore.validatorsCount && availableValidatorsAmount > 0) {
@@ -285,11 +293,12 @@ const KeyShareFlow = () => {
       const fileJson = await validatorStore.keyShareFile.text();
       const keyShareMulti: KeyShareMulti = parseToMultiShareFormat(fileJson);
       const keyShares: KeyShares = await KeyShares.fromJson(keyShareMulti);
-      const validationResponse: KeyShareValidationResponse = await validateKeyShareFile(keyShares);
-      if (validationResponse.id !== KeyShareValidationResponseId.OK_RESPONSE_ID) {
+      // TODO: fix type
+      const validationResponse: any = await validateKeyShareFile(keyShares);
+      if (validationResponse.response.id !== KeyShareValidationResponseId.OK_RESPONSE_ID) {
         return validationResponse;
       }
-      await storeKeyShareData(keyShares);
+      await storeKeyShareData(keyShares, validationResponse.clusterSizeData, validationResponse.operatorsData);
       return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
     } catch (e: any) {
       setValidatorsList({});

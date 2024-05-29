@@ -177,6 +177,7 @@ const getClusterData = async (clusterHash: string, liquidationCollateralPeriod?:
 };
 
 export {
+  extendClusterEntity,
   getClustersByOwnerAddress,
   clusterDataDTO,
   getSortedOperatorsIds,

@@ -38,7 +38,8 @@ import {
   getTooltipText,
   getValidatorCountErrorMessage,
   parseToMultiShareFormat,
-  validateConsistentOperatorIds
+  validateConsistentOperatorIds,
+  KeyShareValidationResult
 } from '~root/services/keyShare.service';
 import { getOperatorsByIds } from '~root/services/operator.service';
 import { getIsRegisteredValidator } from '~root/services/validator.service';
@@ -88,7 +89,7 @@ const KeyShareFlow = () => {
     validatorStore.clearKeyShareFlowData();
   }, []);
 
-  async function validateKeyShareFile(keyShareMulti: KeyShares): Promise<{ response: KeyShareValidationResponse; operatorsData?: IOperator[]; clusterSizeData?: number }> {
+  async function validateKeyShareFile(keyShareMulti: KeyShares): Promise<KeyShareValidationResult> {
     const shares = keyShareMulti.list();
     try {
       let operatorsData = Object.values(selectedStoreOperators);
@@ -108,9 +109,17 @@ const KeyShareFlow = () => {
         const selectedOperators = await getOperatorsByIds(consistentOperatorIds);
         const selectedOperatorsIds = selectedOperators.map((operator: IOperator) => operator.id);
         if (!selectedOperators.length) {
-          return { response: getResponse(KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID), operatorsData, clusterSizeData };
+          return {
+            response: getResponse(KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID),
+            operatorsData,
+            clusterSizeData
+          };
         } else if (shares.some((keyShare: KeySharesItem) => !validateConsistentOperatorIds(keyShare, selectedOperatorsIds))) {
-          return { response: getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER), operatorsData, clusterSizeData };
+          return {
+            response: getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER),
+            operatorsData,
+            clusterSizeData
+          };
         }
 
         operatorsData = dispatch(selectOperators(selectedOperators)).payload;
@@ -125,18 +134,25 @@ const KeyShareFlow = () => {
               return !selectedOperator || selectedOperator.public_key.toLowerCase() !== operatorData.operatorKey.toLowerCase();
             })
           ) {
-            return { response: getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID), operatorsData, clusterSizeData };
+            return {
+              response: getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID),
+              operatorsData,
+              clusterSizeData
+            };
           }
         }
       }
       return { response: getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID), operatorsData, clusterSizeData };
     } catch (e: any) {
-      return { response: getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'Failed to process KeyShares file') };
+      return {
+        response: getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'Failed to process KeyShares file'),
+        operatorsData: [],
+        clusterSizeData: 0
+      };
     }
-    // return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
   }
 
-  async function storeKeyShareData(keyShareMulti: KeyShares, clusterSizeData: any, selectedOperatorsData: any) {
+  async function storeKeyShareData(keyShareMulti: KeyShares, clusterSizeData: number, selectedOperatorsData: IOperator[]) {
     // eslint-disable-next-line no-useless-catch
     try {
       validatorStore.setProcessedKeyShare(keyShareMulti);
@@ -151,9 +167,6 @@ const KeyShareFlow = () => {
         // TODO: add proper error handling
         return;
       }
-      // console.log(test1);
-      // console.log(test2);
-      // eslint-disable-next-line no-async-promise-executor
       const promises = Object.values(validators).map(
         (validator: ValidatorType) =>
           // eslint-disable-next-line no-async-promise-executor
@@ -293,10 +306,9 @@ const KeyShareFlow = () => {
       const fileJson = await validatorStore.keyShareFile.text();
       const keyShareMulti: KeyShareMulti = parseToMultiShareFormat(fileJson);
       const keyShares: KeyShares = await KeyShares.fromJson(keyShareMulti);
-      // TODO: fix type
-      const validationResponse: any = await validateKeyShareFile(keyShares);
+      const validationResponse: KeyShareValidationResult = await validateKeyShareFile(keyShares);
       if (validationResponse.response.id !== KeyShareValidationResponseId.OK_RESPONSE_ID) {
-        return validationResponse;
+        return validationResponse.response;
       }
       await storeKeyShareData(keyShares, validationResponse.clusterSizeData, validationResponse.operatorsData);
       return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);

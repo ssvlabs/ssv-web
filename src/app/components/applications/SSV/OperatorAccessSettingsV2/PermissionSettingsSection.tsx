@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import OperatorAccessStatusBadge from '~app/atomicComponents/OperatorAccessStatusBadge.tsx';
 
-const Wrapeer = styled.div`
+const Wrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -55,7 +55,7 @@ const PermissionSettingsSection = ({
   isOperatorStatus?: boolean;
 }) => {
   return (
-    <Wrapeer onClick={() => onClick()}>
+    <Wrapper onClick={() => onClick()}>
       <SectionInfo>
         <SectionTitle>{title}</SectionTitle>
         <SectionSubtitle>{subTitle}</SectionSubtitle>
@@ -64,7 +64,7 @@ const PermissionSettingsSection = ({
         <OperatorAccessStatusBadge isOperatorStatus={isOperatorStatus} status={status} />
         <OpenSectionButton />
       </OpenAndStatusWrapper>
-    </Wrapeer>
+    </Wrapper>
   );
 };
 

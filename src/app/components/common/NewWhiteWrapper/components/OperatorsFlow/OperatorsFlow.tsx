@@ -66,7 +66,7 @@ const OperatorsFlow = (props: Props) => {
     dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
   };
 
-  const goToAccessSettings = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS);
+  const goToAccessSettings = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.ROOT);
 
   const openExplorer = () => {
     GoogleTagManager.getInstance().sendEvent({

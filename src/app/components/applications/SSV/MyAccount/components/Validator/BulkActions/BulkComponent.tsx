@@ -15,7 +15,7 @@ import { getAccountAddress, getIsContractWallet } from '~app/redux/wallet.slice'
 import { MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
 import { formatValidatorPublicKey } from '~lib/utils/strings';
 import { exitValidators, removeValidators } from '~root/services/validatorContract.service';
-import { getSelectedCluster } from '~app/redux/account.slice.ts';
+import { getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
 
 enum BULK_STEPS {
   BULK_ACTIONS = 'BULK_ACTIONS',
@@ -134,6 +134,9 @@ const BulkComponent = () => {
       backToSingleClusterPage();
     } else {
       setIsLoading(true);
+      if (selectedValidatorsCount === cluster.validatorCount && cluster.isLiquidated) {
+        dispatch(setExcludedCluster(cluster));
+      }
       const validatorPks = condition
         ? selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected)
         : formatValidatorPublicKey(process?.validator?.public_key || selectedValidatorValues.filter((selectedValidator) => selectedValidator.isSelected)[0].validator.public_key);

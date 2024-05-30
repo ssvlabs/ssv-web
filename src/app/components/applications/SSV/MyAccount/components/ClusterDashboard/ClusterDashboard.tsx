@@ -23,6 +23,7 @@ import { getAccountAddress } from '~app/redux/wallet.slice';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import { getClusterHash } from '~root/services/cluster.service';
+import { setClusterSize } from '~app/redux/operator.slice.ts';
 
 const ClusterDashboard = () => {
   const stores = useStores();
@@ -121,6 +122,7 @@ const ClusterDashboard = () => {
       2
     );
     dispatch(setSelectedClusterId(sortedClusters[listIndex].clusterId));
+    dispatch(setClusterSize(sortedClusters[listIndex].operators.length));
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
   };
 

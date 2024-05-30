@@ -64,7 +64,6 @@ const SingleCluster = () => {
   const processStore: ProcessStore = stores.Process;
   const process: SingleClusterProcess = processStore.getProcess;
   const cluster = useAppSelector(getSelectedCluster);
-  console.log(cluster);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const accountAddress = useAppSelector(getAccountAddress);
   const hasPrivateOperator = cluster.operators.some(

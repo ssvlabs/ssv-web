@@ -22,7 +22,7 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import MevIcon from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevIcon';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
-import { getClusterData, getClusterHash } from '~root/services/cluster.service';
+import { extendClusterEntity, getClusterData, getClusterHash } from '~root/services/cluster.service';
 import { IOperator } from '~app/model/operator.model';
 import { SingleCluster } from '~app/model/processes.model';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
@@ -30,7 +30,7 @@ import { SKIP_VALIDATION } from '~lib/utils/developerHelper';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { getValidator } from '~root/services/validator.service';
-import { setSelectedClusterId } from '~app/redux/account.slice';
+import { setExcludedCluster } from '~app/redux/account.slice';
 import { ICluster } from '~app/model/cluster.model';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { PrimaryButton } from '~app/atomicComponents';
@@ -137,16 +137,24 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
     );
   };
 
-  const openSingleCluster = () => {
-    processStore.setProcess(
-      {
-        processName: 'single_cluster',
-        item: { ...existClusterData, operators: [...Object.values(selectedOperators)] }
-      },
-      2
-    );
+  const openSingleCluster = async () => {
     if (existClusterData) {
-      dispatch(setSelectedClusterId(existClusterData.clusterId));
+      const sortedOperators = [...Object.values(selectedOperators).sort((operator: IOperator) => operator.id)];
+      const cluster = await extendClusterEntity(
+        {
+          ...existClusterData,
+          operators: sortedOperators
+        },
+        accountAddress,
+        liquidationCollateralPeriod,
+        minimumLiquidationCollateral
+      );
+      dispatch(
+        setExcludedCluster({
+          ...cluster,
+          operators: sortedOperators
+        } as unknown as ICluster)
+      );
       navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
     }
   };

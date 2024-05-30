@@ -9,6 +9,7 @@ import { getAccountAddress } from '~app/redux/wallet.slice';
 import { longStringShorten } from '~lib/utils/strings';
 import { getClusterHash } from '~root/services/cluster.service';
 import { useStyles } from '../../NewWhiteWrapper.styles';
+import { getSelectedCluster } from '~app/redux/account.slice.ts';
 
 type Props = {
   header: string;
@@ -22,7 +23,7 @@ const ValidatorsFlow = ({ header, stepBack }: Props) => {
   const stores = useStores();
   const processStore: ProcessStore = stores.Process;
   const process: SingleCluster = processStore.getProcess;
-  const cluster = process?.item;
+  const cluster = useAppSelector(getSelectedCluster);
 
   const onNavigationClicked = () => {
     if (!stepBack) {

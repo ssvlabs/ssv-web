@@ -1,5 +1,6 @@
 import { KeyShares, KeySharesItem } from 'ssv-keys';
 import { translations } from '~app/common/config';
+import { IOperator } from '~app/model/operator.model.ts';
 
 export type KeyShareMulti = {
   version: string;
@@ -12,6 +13,12 @@ export type KeyShareValidationResponse = {
   name: string;
   errorMessage: string | JSX.Element;
   subErrorMessage?: string;
+};
+
+export type KeyShareValidationResult = {
+  response: KeyShareValidationResponse;
+  operatorsData: IOperator[];
+  clusterSizeData: number;
 };
 
 export enum KeyShareValidationResponseId {

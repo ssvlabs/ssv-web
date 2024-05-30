@@ -70,7 +70,6 @@ export const slice = createSlice({
     selectOperators: (state, action: { payload: IOperator[] }) => {
       const newRecord: Record<string, IOperator> = {};
       action.payload.forEach((value: IOperator, index: number) => {
-        console.log(index);
         newRecord[`${index + 1}`] = value;
       });
       state.selectedOperators = newRecord;

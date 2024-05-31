@@ -34,6 +34,4 @@ export const { setProcessAndType, modifyProcess } = slice.actions;
 
 export const getProcessItem = <T extends Exclude<PossibleProcesses, RegisterValidator>>(state: RootState): T['item'] => (state.processState.process as T | undefined)?.item;
 export const getProcess = (state: RootState) => state.processState.process;
-export const getType = (state: RootState) => state.processState.type;
-export const getIsValidatorFlow = (state: RootState) => state.processState.type === ProcessType.Validator;
 export const getIsSecondRegistration = (state: RootState) => state.processState.process && 'registerValidator' in state.processState.process;

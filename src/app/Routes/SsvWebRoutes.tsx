@@ -48,7 +48,7 @@ interface RouteConfig {
   props?: ComponentProps<any>;
 }
 
-const SsvWebRoutes: any = () => {
+const SsvWebRoutes = () => {
   const ssvRoutes = config.routes.SSV;
 
   const dashboardRoutes: RouteConfig[] = [
@@ -56,8 +56,8 @@ const SsvWebRoutes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ROOT, Component: SingleOperator },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS, Component: OperatorAccessSettings },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ROOT, Component: SingleCluster },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.WITHDRAW, Component: NewWithdraw, props: { isValidatorFlow: this } },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.WITHDRAW, Component: NewWithdraw, props: { isValidatorFlow: false } },
+    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.WITHDRAW, Component: NewWithdraw, props: { isValidatorFlow: true } satisfies ComponentProps<typeof NewWithdraw> },
+    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.WITHDRAW, Component: NewWithdraw, props: { isValidatorFlow: false } satisfies ComponentProps<typeof NewWithdraw> },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER_DASHBOARD, Component: ClusterDashboard },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT, Component: FeeRecipient },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.UPLOAD_KEY_STORE, Component: ImportFile },

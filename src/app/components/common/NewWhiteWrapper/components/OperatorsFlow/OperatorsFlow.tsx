@@ -9,10 +9,9 @@ import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useStyles } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper.styles';
 import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
-import { SingleOperator } from '~app/model/processes.model.ts';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getProcessItem } from '~app/redux/process.slice.ts';
+import { getSelectedOperator } from '~app/redux/account.slice.ts';
 
 type Props = {
   header: string;
@@ -26,7 +25,7 @@ const OperatorsFlow = (props: Props) => {
   const settingsRef = useRef<HTMLDivElement>(null);
   const classes = useStyles({ mainFlow });
   const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-  const operator = useAppSelector(getProcessItem<SingleOperator>);
+  const operator = useAppSelector(getSelectedOperator)!;
   const dispatch = useAppDispatch();
 
   const [showSettings, setShowSettings] = useState(false);

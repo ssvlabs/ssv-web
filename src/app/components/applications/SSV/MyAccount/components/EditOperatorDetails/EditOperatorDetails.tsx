@@ -14,18 +14,16 @@ import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { updateOperatorMetadata } from '~root/services/operator.service';
-import { SingleOperator } from '~app/model/processes.model';
-import { fetchOperators } from '~app/redux/account.slice';
+import { fetchOperators, getSelectedOperator } from '~app/redux/account.slice';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const EditOperatorDetails = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const classes = useStyles({});
   const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-  const operator = useAppSelector(getProcessItem<SingleOperator>);
+  const operator = useAppSelector(getSelectedOperator)!;
   const [errorMessage, setErrorMessage] = useState(['']);
   const [buttonDisable, setButtonDisable] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);

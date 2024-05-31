@@ -4,15 +4,14 @@ import config, { translations } from '~app/common/config';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
-import { SingleOperator } from '~app/model/processes.model';
 import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
-import { getProcessItem } from '~app/redux/process.slice.ts';
+import { getSelectedOperator } from '~app/redux/account.slice.ts';
 
 const MetadataConfirmationPage = () => {
   const classes = useStyles({});
-  const operator = useAppSelector(getProcessItem<SingleOperator>);
+  const operator = useAppSelector(getSelectedOperator)!;
   const navigate = useNavigate();
 
   const openExplorer = () => {
@@ -21,7 +20,7 @@ const MetadataConfirmationPage = () => {
       action: 'click',
       label: 'operator'
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${operator?.id}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');
   };
 
   const goToDashboard = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);

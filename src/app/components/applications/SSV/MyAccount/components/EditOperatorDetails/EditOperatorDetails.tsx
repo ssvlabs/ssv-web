@@ -1,22 +1,22 @@
-import { useEffect, useState } from 'react';
+import { Typography } from '@mui/material';
 import { sha256 } from 'js-sha256';
 import { observer } from 'mobx-react';
-import { Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSignMessage } from 'wagmi';
+import { PrimaryButton } from '~app/atomicComponents';
 import config from '~app/common/config';
+import OperatorMetadataStore, { fieldsToValidateSignature } from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { FIELD_KEYS } from '~lib/utils/operatorMetadataHelper';
 import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/FieldWrapper';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
-import OperatorMetadataStore, { fieldsToValidateSignature } from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
-import { getContractByName } from '~root/wagmi/utils';
-import { EContractName } from '~app/model/contracts.model';
+import { ButtonSize } from '~app/enums/Button.enum';
 import { updateOperatorMetadata } from '~root/services/operator.service';
 import { SingleOperator } from '~app/model/processes.model';
-import { PrimaryButton } from '~app/atomicComponents';
-import { ButtonSize } from '~app/enums/Button.enum';
 import { fetchOperators } from '~app/redux/account.slice';
+import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getProcessItem } from '~app/redux/process.slice.ts';
 
@@ -30,6 +30,9 @@ const EditOperatorDetails = () => {
   const [buttonDisable, setButtonDisable] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
+  const isContractWallet = useAppSelector(getIsContractWallet);
+
+  const signMessage = useSignMessage();
 
   useEffect(() => {
     (async () => {
@@ -58,8 +61,9 @@ const EditOperatorDetails = () => {
       setIsLoading(true);
       let signatureHash;
       try {
-        const contract = getContractByName(EContractName.SETTER);
-        signatureHash = await contract.signer.signMessage(rawDataToValidate);
+        signatureHash = await signMessage.signMessageAsync({
+          message: rawDataToValidate
+        });
         setErrorMessage(['']);
       } catch (e: any) {
         console.log(`Error message: ${e.message}`);
@@ -67,7 +71,7 @@ const EditOperatorDetails = () => {
         setIsLoading(false);
         return;
       }
-      const updateOperatorResponse = await updateOperatorMetadata(operator?.id ?? 0, signatureHash, payload);
+      const updateOperatorResponse = await updateOperatorMetadata(operator?.id ?? 0, signatureHash, payload, isContractWallet);
       if (updateOperatorResponse.data) {
         dispatch(fetchOperators({}));
         navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);

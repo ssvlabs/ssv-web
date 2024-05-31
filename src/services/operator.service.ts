@@ -72,9 +72,14 @@ const getOperatorByPublicKey = async (publicKey: string, skipRetry: boolean = tr
   return await getRequest(url, skipRetry);
 };
 
-const updateOperatorMetadata = async (operatorId: number, signature: string, operatorMetadata: Record<string, unknown>): Promise<IHttpResponse<IOperator>> => {
+const updateOperatorMetadata = async (
+  operatorId: number,
+  signature: string,
+  operatorMetadata: Record<string, unknown>,
+  isContract?: boolean
+): Promise<IHttpResponse<IOperator>> => {
   const url = `${getStoredNetwork().api}/operators/${operatorId}/metadata`;
-  return await putRequest(url, { ...operatorMetadata, signature });
+  return await putRequest(url, { ...operatorMetadata, signature, isContract });
 };
 
 const getOperatorNodes = async (layer: number): Promise<[]> => {

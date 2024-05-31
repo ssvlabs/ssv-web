@@ -16,7 +16,7 @@ import { PrimaryButton, ErrorButton } from '~app/atomicComponents';
 import CheckBox from '~app/components/common/CheckBox';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { depositOrWithdraw } from '~root/services/clusterContract.service';
-import { getSelectedCluster } from '~app/redux/account.slice.ts';
+import { getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
 
 const ClusterFlow = ({
   minimumLiquidationCollateral,
@@ -91,6 +91,9 @@ const ClusterFlow = ({
 
   const withdrawSsv = async () => {
     setIsLoading(true);
+    if (!cluster.validatorCount && toWei(withdrawValue) === cluster.balance) {
+      dispatch(setExcludedCluster(cluster));
+    }
     const success = await depositOrWithdraw({
       cluster,
       amount: withdrawValue.toString(),

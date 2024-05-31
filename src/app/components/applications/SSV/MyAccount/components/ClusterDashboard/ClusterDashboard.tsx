@@ -20,6 +20,7 @@ import { getAccountAddress } from '~app/redux/wallet.slice';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import { getClusterHash } from '~root/services/cluster.service';
+import { setClusterSize } from '~app/redux/operator.slice.ts';
 import { setProcessAndType } from '~app/redux/process.slice.ts';
 import { ProcessType, SingleCluster } from '~app/model/processes.model.ts';
 
@@ -117,6 +118,7 @@ export const ClusterDashboard = () => {
       })
     );
     dispatch(setSelectedClusterId(sortedClusters[listIndex].clusterId));
+    dispatch(setClusterSize(sortedClusters[listIndex].operators.length));
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
   };
 

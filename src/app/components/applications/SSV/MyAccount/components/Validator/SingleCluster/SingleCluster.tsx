@@ -59,7 +59,6 @@ const SingleCluster = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const cluster = useAppSelector(getSelectedCluster);
-  console.log(cluster);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const accountAddress = useAppSelector(getAccountAddress);
   const hasPrivateOperator = cluster.operators.some(

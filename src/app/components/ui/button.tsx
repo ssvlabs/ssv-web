@@ -9,10 +9,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-blue-500 text-white hover:bg-blue-500/90',
+        default: 'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700',
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline: 'border dark:border-white/10 hover:bg-accent hover:text-accent-foreground',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+        secondary: 'bg-primary-50 text-primary-500 hover:bg-primary-100 active:bg-primary-200',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline'
       },
@@ -23,6 +23,7 @@ const buttonVariants = cva(
         default: 'h-10 px-4 py-2 font-semibold text-md rounded-lg',
         sm: 'h-9 px-3 font-semibold text-sm rounded-lg',
         lg: 'h-12 px-6 font-semibold text-md rounded-lg',
+        xl: 'h-[60px] px-6 font-semibold text-md rounded-lg',
         icon: 'h-10 w-10 rounded-lg',
         network: 'h-12 pl-3 pr-4 font-semibold text-md rounded-lg',
         wallet: 'h-12 px-4 font-semibold text-md rounded-lg'
@@ -35,14 +36,18 @@ const buttonVariants = cva(
   }
 );
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ className, variant, size, colorScheme, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : 'button';
-  return <Comp className={cn(buttonVariants({ variant, size, colorScheme, className }))} ref={ref} {...props} />;
-});
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, colorScheme, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : 'button';
+    return <Comp className={cn(buttonVariants({ variant, size, colorScheme, className }))} ref={ref} {...props} />;
+  }
+);
 Button.displayName = 'Button';
 
 export { Button, buttonVariants };

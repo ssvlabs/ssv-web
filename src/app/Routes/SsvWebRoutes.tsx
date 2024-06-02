@@ -21,28 +21,69 @@ const RemoveOperator = lazy(() => import('~app/components/applications/SSV/MyAcc
 const UpdateFee = lazy(() => import('~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee'));
 const OperatorTransactionConfirmation = lazy(() => import('~app/components/applications/SSV/OperatorConfirmation'));
 const ClusterDashboard = lazy(() => import('~app/components/applications/SSV/MyAccount/components/ClusterDashboard'));
-const BulkComponent = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/BulkComponent'));
+const BulkComponent = lazy(
+  () => import('~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/BulkComponent')
+);
 const ImportFile = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile'));
 const ReactivateCluster = lazy(() => import('~app/components/applications/SSV/MyAccount/components/ReactivateCluster'));
 const OperatorDashboard = lazy(() => import('~app/components/applications/SSV/MyAccount/components/OperatorDashboard'));
-const FundingPeriod = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod'));
-const EditOperatorDetails = lazy(() => import('~app/components/applications/SSV/MyAccount/components/EditOperatorDetails'));
-const SingleCluster = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster'));
-const CreateValidator = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator'));
-const SlashingWarning = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning'));
-const SelectOperators = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators'));
-const ValidatorTransactionConfirmation = lazy(() => import('~app/components/applications/SSV/ValidatorRegistrationConfirmation'));
-const GenerateKeyShares = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares'));
-const OperatorAccessSettings = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettings/OperatorAccessSettings'));
-const OperatorPermissionSettingsDashboard = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/PermissionSettingsDashboard.tsx'));
-const OperatorPermissionAddressesList = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/AddressesList.tsx'));
-const OperatorPermissionStatus = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/Status.tsx'));
-const FundingNewValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/FundingNewValidator'));
-const DepositViaLaunchpad = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/DepositViaLaunchpad'));
-const AccountBalanceAndFee = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/AccountBalanceAndFee'));
-const OfflineKeyShareGeneration = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration'));
-const OfflineKeyShareCeremony = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareCeremony'));
-const MetadataConfirmationPage = lazy(() => import('~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/MetadataConfirmationPage'));
+const FundingPeriod = lazy(
+  () => import('~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod')
+);
+const EditOperatorDetails = lazy(
+  () => import('~app/components/applications/SSV/MyAccount/components/EditOperatorDetails')
+);
+const SingleCluster = lazy(
+  () => import('~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster')
+);
+const CreateValidator = lazy(
+  () => import('~app/components/applications/SSV/RegisterValidatorHome/components/CreateValidator')
+);
+const SlashingWarning = lazy(
+  () => import('~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning')
+);
+const SelectOperators = lazy(
+  () => import('~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators')
+);
+const ValidatorTransactionConfirmation = lazy(
+  () => import('~app/components/applications/SSV/ValidatorRegistrationConfirmation')
+);
+const GenerateKeyShares = lazy(
+  () => import('~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares')
+);
+const OperatorAccessSettings = lazy(
+  () => import('~app/components/applications/SSV/OperatorAccessSettings/OperatorAccessSettings')
+);
+const OperatorPermissionSettingsDashboard = lazy(
+  () => import('~app/components/applications/SSV/OperatorAccessSettingsV2/PermissionSettingsDashboard.tsx')
+);
+const OperatorPermissionAddressesList = lazy(
+  () => import('~app/components/applications/SSV/OperatorAccessSettingsV2/AddressesList.tsx')
+);
+const OperatorPermissionExternalContract = lazy(
+  () => import('~app/components/applications/SSV/OperatorAccessSettingsV2/ExternalContract.tsx')
+);
+const OperatorPermissionStatus = lazy(
+  () => import('~app/components/applications/SSV/OperatorAccessSettingsV2/Status.tsx')
+);
+const FundingNewValidator = lazy(
+  () => import('~app/components/applications/SSV/MyAccount/components/Validator/FundingNewValidator')
+);
+const DepositViaLaunchpad = lazy(
+  () => import('~app/components/applications/SSV/RegisterValidatorHome/components/DepositViaLaunchpad')
+);
+const AccountBalanceAndFee = lazy(
+  () => import('~app/components/applications/SSV/RegisterValidatorHome/components/AccountBalanceAndFee')
+);
+const OfflineKeyShareGeneration = lazy(
+  () => import('~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration')
+);
+const OfflineKeyShareCeremony = lazy(
+  () => import('~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareCeremony')
+);
+const MetadataConfirmationPage = lazy(
+  () => import('~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/MetadataConfirmationPage')
+);
 
 const SsvWebRoutes: any = () => {
   const ssvRoutes = config.routes.SSV;
@@ -51,9 +92,19 @@ const SsvWebRoutes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DEPOSIT, Component: Deposit },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ROOT, Component: SingleOperator },
     // TODO: add future flag V2 should be for testnet only
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.ROOT, Component: OperatorPermissionSettingsDashboard || OperatorAccessSettings },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.AUTHORIZED_ADDRESSES, Component: OperatorPermissionAddressesList },
+    {
+      path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.ROOT,
+      Component: OperatorPermissionSettingsDashboard || OperatorAccessSettings
+    },
+    {
+      path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.AUTHORIZED_ADDRESSES,
+      Component: OperatorPermissionAddressesList
+    },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.STATUS, Component: OperatorPermissionStatus },
+    {
+      path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.EXTERNAL_CONTRACT,
+      Component: OperatorPermissionExternalContract
+    },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ROOT, Component: SingleCluster },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.WITHDRAW, Component: NewWithdraw },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.WITHDRAW, Component: NewWithdraw },

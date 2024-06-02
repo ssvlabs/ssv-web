@@ -6,7 +6,6 @@ import { getIsLoading } from '~app/redux/appState.slice';
 const BackNavigationWrapper = styled.div`
   gap: 4px;
   height: 16px;
-  flex-grow: 1;
   display: flex;
   color: #1ba5f8;
   cursor: pointer;

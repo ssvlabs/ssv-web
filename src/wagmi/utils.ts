@@ -5,19 +5,20 @@ import { HoleskyV4SetterABI } from '~app/common/config/abi/holesky/v4/setter';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { getContractByName as _getContractByName } from '~root/services/contracts.service';
 import { config } from '~root/wagmi/config';
-import { MainnetV4SetterABI } from '../app/common/config/abi/mainnet/v4/setter';
 import { WaitForTransactionReceiptReturnType } from 'viem';
 import { ExtractAbiFunctionNames } from 'abitype';
 import type { Contract } from 'ethers';
+import { MainnetV4SetterABI } from '~app/common/config/abi/mainnet/v4/setter';
 
 type MainnetSetterFnNames = ExtractAbiFunctionNames<typeof MainnetV4SetterABI>;
+type HoleskySetterFnNames = ExtractAbiFunctionNames<typeof HoleskyV4SetterABI>;
 
 type ContractMethod = (...args: unknown[]) => Promise<{
   hash: string;
   wait: () => Promise<WaitForTransactionReceiptReturnType & { events?: string }>;
 }>;
 
-type SetterContract = Record<MainnetSetterFnNames, ContractMethod>;
+type SetterContract = Record<MainnetSetterFnNames | HoleskySetterFnNames, ContractMethod>;
 
 const getSetter = () => {
   const { networkId } = getStoredNetwork();
@@ -52,7 +53,9 @@ const getSetter = () => {
   }, {} as SetterContract);
 };
 
-export const getContractByName = <T extends EContractName>(name: T): T extends EContractName.SETTER ? SetterContract : Contract => {
+export const getContractByName = <T extends EContractName>(
+  name: T
+): T extends EContractName.SETTER ? SetterContract : Contract => {
   switch (name) {
     case EContractName.TOKEN_SETTER:
     case EContractName.TOKEN_GETTER:

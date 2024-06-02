@@ -1,65 +1,52 @@
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import { Card } from '~app/atomicComponents/Card';
 import config from '~app/common/config';
-import PermissionSettingsSection from '~app/components/applications/SSV/OperatorAccessSettingsV2/PermissionSettingsSection.tsx';
+import { ActiveBadge } from '~app/components/applications/SSV/OperatorAccessSettingsV2/ActiveBadge';
+import { OperatorStatusBadge } from '~app/components/applications/SSV/OperatorAccessSettingsV2/OperatorStatusBadge';
+import { PermissionSettingsItem } from '~app/components/applications/SSV/OperatorAccessSettingsV2/PermissionSettingsItem';
 import BorderScreen from '~app/components/common/BorderScreen';
-import LinkText from '~app/components/common/LinkText/LinkText.tsx';
 import { useOperatorPermissions } from '~app/hooks/operator/useOperatorPermissions';
 
-const SubTitle = styled.div`
-  margin: 0;
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.gray80};
-`;
-
-const Wrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
 const PermissionSettingsDashboard = () => {
-  const navigate = useNavigate();
-
   const permissions = useOperatorPermissions();
 
   return (
-    <BorderScreen
-      blackHeader
-      width={872}
-      header={'Permission Settings'}
-      body={[
-        <Wrapper>
-          <div>
-            <SubTitle>Activating the permissioned operator setting will restrict validator registration to only the set authorized addresses.</SubTitle>
-            <SubTitle>
-              Read more on <LinkText textSize={14} text={'Permissioned Operators.'} />
-            </SubTitle>
-          </div>
-          <SubTitle>You can utilize both authorized addresses and external contract at the same time.</SubTitle>
-        </Wrapper>,
-        <PermissionSettingsSection
-          onClick={() => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.STATUS)}
-          subTitle={'Switch between public and private statuses for the operator.\n' + 'Set the operator to private to enforce whitelisted addresses.'}
-          title={'Operator Status'}
-          isOperatorStatus
-          status={permissions.data?.visibility ?? ''}
-        />,
-        <PermissionSettingsSection
-          onClick={() => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.AUTHORIZED_ADDRESSES)}
-          subTitle={'Add Ethereum addresses to the whitelist for authorization'}
-          title={'Authorized Addresses'}
-          status={permissions.data?.addresses.length ? 'On' : 'Off'}
-        />,
-        <PermissionSettingsSection
-          onClick={() => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.EXTERNAL_CONTRACT)}
-          subTitle={'Manage whitelisted addresses through an external contract'}
-          title={'External Contract'}
-          status={permissions.data?.externalContract ? 'On' : 'Off'}
+    <BorderScreen blackHeader width={872}>
+      <Card variant="unstyled" className="not-last:border-b not-last:border-gray-300 overflow-hidden">
+        <PermissionSettingsItem
+          className="pt-8"
+          title={<h2 className="text-xl">Permission Settings</h2>}
+          description={
+            <p>
+              Use the options below to activate permissioned operator settings and restrict validator registration to
+              authorized addresses only. Learn more about Permissioned Operators. You can use both authorized addresses
+              and an external contract simultaneously.
+            </p>
+          }
         />
-      ]}
-    />
+        <PermissionSettingsItem
+          title="Operator Status"
+          description={
+            'Switch between public and private statuses for the operator.\n' +
+            'Set the operator to private to enforce whitelisted addresses.'
+          }
+          route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.STATUS}
+          addon={<OperatorStatusBadge isPrivate={permissions.isPrivate} />}
+        />
+        <PermissionSettingsItem
+          title="Authorized Addresses"
+          description="Add Ethereum addresses to the whitelist for authorization"
+          route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.AUTHORIZED_ADDRESSES}
+          addon={<ActiveBadge isActive={Boolean(permissions.addresses?.length)} />}
+        />
+        <PermissionSettingsItem
+          className="pb-8"
+          title="External Contract"
+          description="Manage whitelisted addresses through an external contract"
+          addon={<ActiveBadge isActive={Boolean(permissions.externalContract)} />}
+          route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.EXTERNAL_CONTRACT}
+        />
+      </Card>
+    </BorderScreen>
   );
 };
 

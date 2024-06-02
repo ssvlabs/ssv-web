@@ -1,0 +1,37 @@
+
+
+
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, useDisclosure } from "@chakra-ui/react";
+import type { FC } from 'react';
+import { useOverlayClick } from '@pages/content/ui/hooks/useOverlayClick';
+
+
+export type {{pascalCase name}}Props = {
+  // TODO: Add props or remove this type
+};
+
+export const {{pascalCase name}}: FC<{{pascalCase name}}Props> = () => {
+  const modal = useDisclosure();
+  const { ref } = useOverlayClick(modal.onClose);
+  return (
+     <Modal {...modal}>
+        <ModalOverlay />
+        <ModalContent ref={ref}>
+          <ModalHeader>Modal Title</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme='blue' mr={3} onClick={modal.onClose}>
+              Close
+            </Button>
+            <Button variant='ghost'>Secondary Action</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+  )
+};
+
+{{pascalCase name}}.displayName = '{{pascalCase name}}';

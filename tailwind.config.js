@@ -1,3 +1,5 @@
+const plugin = require('tailwindcss/plugin');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ['class'],
@@ -13,28 +15,54 @@ module.exports = {
     },
     extend: {
       colors: {
-        'blue': {
-          50: '#f0f8ff',
-          100: '#dff0ff',
-          200: '#b8e2ff',
-          300: '#79cbff',
-          400: '#32b2fe',
-          500: '#1ba5f8',
-          600: '#0079cd',
-          700: '#005fa6',
-          800: '#035189',
-          900: '#094471',
-          950: '#062b4b'
+        black: 'var(--black)',
+        primary: {
+          50: 'var(--primary-50)',
+          100: 'var(--primary-100)',
+          200: 'var(--primary-200)',
+          300: 'var(--primary-300)',
+          400: 'var(--primary-400)',
+          500: 'var(--primary-500)',
+          600: 'var(--primary-600)',
+          700: 'var(--primary-700)',
+          800: 'var(--primary-800)',
+          900: 'var(--primary-900)',
+          1000: 'var(--primary-1000)'
+        },
+        gray: {
+          50: 'var(--gray-50)',
+          100: 'var(--gray-100)',
+          200: 'var(--gray-200)',
+          300: 'var(--gray-300)',
+          400: 'var(--gray-400)',
+          500: 'var(--gray-500)',
+          600: 'var(--gray-600)',
+          700: 'var(--gray-700)',
+          800: 'var(--gray-800)',
+          900: 'var(--gray-900)'
+        },
+        success: {
+          100: 'var(--success-100)',
+          300: 'var(--success-300)',
+          500: 'var(--success-500)',
+          700: 'var(--success-700)'
+        },
+        error: {
+          50: 'var(--error-50)',
+          100: 'var(--error-100)',
+          150: 'var(--error-150)',
+          200: 'var(--error-200)',
+          500: 'var(--error-500)'
+        },
+        warning: {
+          200: 'var(--warning-200)',
+          500: 'var(--warning-500)'
         },
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))'
-        },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))'
@@ -81,5 +109,11 @@ module.exports = {
       }
     }
   },
-  plugins: [require('tailwindcss-animate')]
+  plugins: [
+    require('tailwindcss-animate'),
+    plugin(function ({ addVariant }) {
+      addVariant('not-last', '& > *:not(:last-child)');
+      addVariant('invalid', '&[aria-invalid="true"]');
+    })
+  ]
 };

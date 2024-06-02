@@ -21,7 +21,6 @@ import { useStores } from '~app/hooks/useStores';
 import validatorRegistrationFlow, { EBulkMode, EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import { ProcessType, SingleCluster } from '~app/model/processes.model';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { isEqualsAddresses } from '~lib/utils/strings';
@@ -48,6 +47,7 @@ import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getClusterSize, getOperatorValidatorsLimit, getSelectedOperators, selectOperators, setClusterSize, unselectAllOperators } from '~app/redux/operator.slice.ts';
+import { getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
@@ -61,6 +61,7 @@ const KeyShareFlow = () => {
   const removeButtons = useRef(null);
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
+  const cluster = useAppSelector(getSelectedCluster);
   const [warningMessage, setWarningMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
   const [validatorsList, setValidatorsList] = useState<Record<string, ValidatorType>>({});
@@ -95,8 +96,7 @@ const KeyShareFlow = () => {
       let operatorsData = Object.values(selectedStoreOperators);
       let clusterSizeData = clusterSize;
       if (processStore.secondRegistration) {
-        const process: SingleCluster = processStore.process;
-        const clusterOperatorsIds = process.item.operators.map((operator: { id: number; operatorKey: string }) => operator.id).sort();
+        const clusterOperatorsIds = cluster.operators.map((operator: IOperator) => operator.id).sort();
         if (shares.some((keyShare: KeySharesItem) => !validateConsistentOperatorIds(keyShare, clusterOperatorsIds))) {
           return {
             response: getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER),
@@ -428,13 +428,7 @@ const KeyShareFlow = () => {
         await getClusterData(getClusterHash(Object.values(selectedStoreOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true).then(
           (clusterData) => {
             if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
-              processStore.setProcess(
-                {
-                  item: { ...clusterData, operators: Object.values(selectedStoreOperators) },
-                  processName: 'cluster_registration'
-                },
-                ProcessType.Validator
-              );
+              dispatch(setExcludedCluster({ ...clusterData, operators: Object.values(selectedStoreOperators) }));
               nextRouteAction = EValidatorFlowAction.SECOND_REGISTER;
             }
           }

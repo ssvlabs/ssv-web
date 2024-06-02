@@ -1,4 +1,3 @@
-import React from 'react';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 import config from '~app/common/config';
@@ -8,9 +7,7 @@ import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import OperatorType from '~app/components/common/OperatorType/OperatorType';
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
-import {
-  useStyles,
-} from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails.styles';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails/OperatorDetails.styles';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 
@@ -34,9 +31,9 @@ const OperatorDetails = (props: Props) => {
     logoSize,
     isDeleted: operator.is_deleted,
     operatorLogo: operator.logo,
-    gray80,
+    gray80
   });
-  let operatorName = operator?.name;
+  const operatorName = operator?.name;
   const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
   const dispatch = useAppDispatch();
 
@@ -49,47 +46,64 @@ const OperatorDetails = (props: Props) => {
     GoogleTagManager.getInstance().sendEvent({
       category: 'explorer_link',
       action: 'click',
-      label: 'operator',
+      label: 'operator'
     });
     window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');
   };
 
   return (
     <Grid container className={classes.Wrapper}>
-      <Tooltip disableHoverListener={!isPrivateOperator} title={'Private Operator'} placement={'top'} children={
-      <Grid className={classes.OperatorDetailsWrapper}>
-        <Grid item className={classes.OperatorLogo}>
-          {isPrivateOperator && <Grid className={classes.PrivateOperatorWrapper}>
-            <Grid className={classes.PrivateOperatorLockIcon}/>
-          </Grid>}
-        </Grid>
-        <Grid item className={classes.TextWrapper}>
-          <Grid item className={classes.Name}>
-            {operatorName.length > 18 && !isFullOperatorName ? <AnchorTooltip title={operatorName} placement={'top'}>
-              {truncateText(operatorName, 18)}
-            </AnchorTooltip> : operatorName}
+      <Tooltip
+        disableHoverListener={!isPrivateOperator}
+        title={'Private Operator'}
+        placement={'top'}
+        children={
+          <Grid className={classes.OperatorDetailsWrapper}>
+            <Grid item className={classes.OperatorLogo}>
+              {isPrivateOperator && (
+                <Grid className={classes.PrivateOperatorWrapper}>
+                  <Grid className={classes.PrivateOperatorLockIcon} />
+                </Grid>
+              )}
+            </Grid>
+            <Grid item className={classes.TextWrapper}>
+              <Grid item className={classes.Name}>
+                {operatorName.length > 18 && !isFullOperatorName ? (
+                  <AnchorTooltip title={operatorName} placement={'top'}>
+                    {truncateText(operatorName, 18)}
+                  </AnchorTooltip>
+                ) : (
+                  operatorName
+                )}
+              </Grid>
+              <Grid item container className={classes.Id}>
+                ID: {operator.id}
+                {withCopy && <Grid className={classes.Copy} onClick={copyId} />}
+              </Grid>
+            </Grid>
           </Grid>
-          <Grid item container className={classes.Id}>
-            ID: {operator.id}
-            {withCopy && <Grid className={classes.Copy} onClick={copyId}/>}
-          </Grid>
-        </Grid>
-      </Grid> }/>
+        }
+      />
       {operator.type !== 'operator' && (
         <Grid item className={classes.OperatorType}>
-          <OperatorType type={operator.type}/>
+          <OperatorType type={operator.type} />
         </Grid>
       )}
-      {!operator.is_deleted && !withoutExplorer && <Grid item className={classes.OperatorType}>
-        <ImageDiv onClick={openExplorer} setOpenExplorerRefs={setOpenExplorerRefs} image={'explorer'} width={20}
-                  height={20}/>
-      </Grid>}
-      {operator.is_deleted && <Grid item className={classes.OperatorType}>
-        <ImageDiv onClick={openExplorer} image={'operatorOff'} width={20} height={20}/>
-      </Grid>}
-      {operator.is_deleted && <Grid item className={classes.OperatorType}>
-        <CustomTooltip text={'This operator has left the network permanently'}/>
-      </Grid>}
+      {!operator.is_deleted && !withoutExplorer && (
+        <Grid item className={classes.OperatorType}>
+          <ImageDiv onClick={openExplorer} setOpenExplorerRefs={setOpenExplorerRefs} image={'explorer'} width={20} height={20} />
+        </Grid>
+      )}
+      {operator.is_deleted && (
+        <Grid item className={classes.OperatorType}>
+          <ImageDiv onClick={openExplorer} image={'operatorOff'} width={20} height={20} />
+        </Grid>
+      )}
+      {operator.is_deleted && (
+        <Grid item className={classes.OperatorType}>
+          <CustomTooltip text={'This operator has left the network permanently'} />
+        </Grid>
+      )}
     </Grid>
   );
 };

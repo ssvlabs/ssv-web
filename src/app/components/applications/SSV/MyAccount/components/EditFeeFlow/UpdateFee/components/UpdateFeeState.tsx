@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { observer } from 'mobx-react';
-import Grid from '@mui/material/Grid';
+import { useEffect, useState } from 'react';
+import { Grid } from '~app/atomicComponents';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { timeDiffCalc } from '~lib/utils/time';
-import { useStores } from '~app/hooks/useStores';
-import OperatorStore from '~app/common/stores/applications/SsvWeb/Operator.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
+import { fetchAndSetOperatorFeeInfo, getOperatorFeeData, getOperatorProcessId } from '~app/redux/operator.slice.ts';
 
 const PROCESS_STATE_START = 0;
 const PROCESS_STATE_WAITING = 1;
@@ -18,15 +16,16 @@ const PROCESS_STATE_SUCCESS = 3;
 const PROCESS_STATE_EXPIRED = 4;
 
 const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
-  const stores = useStores();
   const navigate = useNavigate();
-  const operatorStore: OperatorStore = stores.Operator;
   const [processState, setProcessState] = useState(0);
   const classes = useStyles({ step: processState });
   const strategyRedirect = useAppSelector(getStrategyRedirect);
+  const processOperatorId = useAppSelector(getOperatorProcessId);
+  const operatorFeeData = useAppSelector(getOperatorFeeData);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!operatorStore.processOperatorId && !operatorId) {
+    if (!processOperatorId && !operatorId) {
       navigate(strategyRedirect);
       return;
     }
@@ -34,17 +33,14 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
   }, []);
 
   const getState = async () => {
-    // @ts-ignore
-    await operatorStore.syncOperatorFeeInfo(operatorId || operatorStore.processOperatorId);
-    if (operatorStore.operatorApprovalBeginTime && operatorStore.operatorApprovalEndTime && operatorStore.operatorFutureFee) {
+    const res = await dispatch(fetchAndSetOperatorFeeInfo(Number(operatorId || processOperatorId)));
+    if (res.payload.operatorApprovalBeginTime && res.payload.operatorApprovalEndTime && res.payload.operatorFutureFee) {
       const todayDate = new Date();
-      const endPendingStateTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
-      const startPendingStateTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
+      const endPendingStateTime = new Date(res.payload.operatorApprovalEndTime * 1000);
+      const startPendingStateTime = new Date(res.payload.operatorApprovalBeginTime * 1000);
       const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
-
       // @ts-ignore
-      const daysFromEndPendingStateTime = Math.ceil(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24));
-
+      const daysFromEndPendingStateTime = Math.ceil(Math.abs(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24)));
       if (isInPendingState) {
         setProcessState(PROCESS_STATE_PENDING);
       } else if (startPendingStateTime > todayDate) {
@@ -52,7 +48,7 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
       } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 3) {
         // @ts-ignore
         const savedOperator = JSON.parse(getFromLocalStorageByKey('expired_operators'));
-        if (savedOperator && savedOperator?.includes(operatorStore.processOperatorId)) {
+        if (savedOperator && savedOperator?.includes(processOperatorId)) {
           setProcessState(PROCESS_STATE_START);
           return;
         }
@@ -87,8 +83,7 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
   const TimeReminder = () => {
     if ([1, 2, 4].indexOf(processState) === -1) return null;
     let text: string;
-    // @ts-ignore
-    const operatorBeginApprovalTime = new Date(operatorStore.operatorApprovalBeginTime * 1000);
+    const operatorBeginApprovalTime = new Date(operatorFeeData.operatorApprovalBeginTime * 1000);
 
     const today = new Date();
     if (processState === 1) {
@@ -100,8 +95,7 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
       );
     }
     if (processState === 2) {
-      // @ts-ignore
-      const operatorEndApprovalTime = new Date(operatorStore.operatorApprovalEndTime * 1000);
+      const operatorEndApprovalTime = new Date(operatorFeeData.operatorApprovalEndTime * 1000);
       text = `Expires in ~ ${timeDiffCalc(today, operatorEndApprovalTime)}`;
       return (
         <Typography style={{ alignSelf: 'center' }} className={classes.ExpiresIn}>
@@ -109,8 +103,7 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
         </Typography>
       );
     }
-    // @ts-ignore
-    const expiredOn = new Date(operatorStore.operatorApprovalEndTime * 1000);
+    const expiredOn = new Date(operatorFeeData.operatorApprovalEndTime * 1000);
     const expiredDay = expiredOn.getDate();
     const expiredMonth = expiredOn.getMonth() + 1;
     const expiredYear = expiredOn.getFullYear();
@@ -131,4 +124,4 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
   );
 };
 
-export default observer(UpdateFeeState);
+export default UpdateFeeState;

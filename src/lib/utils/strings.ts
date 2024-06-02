@@ -3,13 +3,17 @@ import { utils } from 'ethers';
 export const longStringShorten = (value: string, firstFriction: number = 10, secondFriction: number = firstFriction, replacements: Record<string, any> | null = null) => {
   if (!value) return '';
   if (replacements) {
-    for (let key in replacements) {
+    for (const key in replacements) {
       value = value.replace(replacements[key], key);
     }
   }
-  let str = `${value.slice(0, firstFriction)}...${value.slice(value.length - secondFriction, value.length)}`;
+  const str = `${value.slice(0, firstFriction)}...${value.slice(value.length - secondFriction, value.length)}`;
 
   return str;
+};
+
+export const formatAddress = (address: string): string => {
+  return longStringShorten(address, 6, 4);
 };
 
 export const truncateText = (text: string, maxCharacters: number): string => {
@@ -37,10 +41,9 @@ export const isEqualsAddresses = (a: string, b: string): boolean => {
   }
 };
 
-export const formatValidatorPublicKey = (publicKey: string) => publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`;
+export const formatValidatorPublicKey = (publicKey: string) => (publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`);
 
-const checkAddressChecksum
-  = (address: string) => {
+const checkAddressChecksum = (address: string) => {
   try {
     return utils.getAddress(address) === address;
   } catch (e) {
@@ -48,6 +51,6 @@ const checkAddressChecksum
   }
 };
 
-const toHexString = (val: any) => typeof val === 'number' ? `0x${val.toString(16)}` : val;
+const toHexString = (val: any) => (typeof val === 'number' ? `0x${val.toString(16)}` : val);
 
 export { checkAddressChecksum, toHexString };

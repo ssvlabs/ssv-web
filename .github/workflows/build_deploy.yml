@@ -63,7 +63,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
         with:
-          node-version: 16.15.1
+          node-version: 20.12.2
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
@@ -73,9 +73,6 @@ jobs:
 
       - name: Run lint
         run: yarn lint
-
-      - name: Run test
-        run: yarn test
 
       # <app.stage.ssv.network>
       - name: Run stage webapp build
@@ -93,7 +90,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          BLOX_INFRA_API: "https://api.stage.bloxstaking.com"
+          BLOX_INFRA_API: "https://api.bloxstaking.com"
 
       - name: Deploy stage webapp
         if: github.ref == 'refs/heads/stage'
@@ -107,6 +104,131 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
       # </app.stage.ssv.network>
+
+      # <ilya-app.stage.ssv.network>
+      - name: Run ilya-dev webapp build
+        if: github.ref == 'refs/heads/ilya-dev'
+        run: >
+          GAS_PRICE="${{ env.GAS_PRICE }}"
+          GAS_LIMIT="${{ env.GAS_LIMIT }}"
+          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
+          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
+          BLOX_INFRA_API="$BLOX_INFRA_API"
+          yarn build
+        env:
+          GAS_PRICE: ${{ secrets.GAS_PRICE }}
+          GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
+          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
+          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          BLOX_INFRA_API: "https://api.stage.bloxstaking.com"
+
+      - name: Deploy ilya-dev webapp
+        if: github.ref == 'refs/heads/ilya-dev'
+        uses: jakejarvis/s3-sync-action@v0.5.0
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          SOURCE_DIR: 'build/'
+          AWS_REGION: 'us-west-2'
+          AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET_ILYA }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
+      # </ilya-app.stage.ssv.network>
+      
+      # <chris-app.stage.ssv.network>
+      - name: Run chris-dev webapp build
+        if: github.ref == 'refs/heads/chris-dev'
+        run: >
+          GAS_PRICE="${{ env.GAS_PRICE }}"
+          GAS_LIMIT="${{ env.GAS_LIMIT }}"
+          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
+          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
+          BLOX_INFRA_API="$BLOX_INFRA_API"
+          yarn build
+        env:
+          GAS_PRICE: ${{ secrets.GAS_PRICE }}
+          GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
+          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
+          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          BLOX_INFRA_API: "https://api.stage.bloxstaking.com"
+
+      - name: Deploy chris-dev webapp
+        if: github.ref == 'refs/heads/chris-dev'
+        uses: jakejarvis/s3-sync-action@v0.5.0
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          SOURCE_DIR: 'build/'
+          AWS_REGION: 'us-west-2'
+          AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET_CHRIS }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
+      # </chris-app.stage.ssv.network>      
+      
+      # <dima-app.stage.ssv.network>
+      - name: Run dima-dev webapp build
+        if: github.ref == 'refs/heads/dima-dev'
+        run: >
+          GAS_PRICE="${{ env.GAS_PRICE }}"
+          GAS_LIMIT="${{ env.GAS_LIMIT }}"
+          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
+          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
+          BLOX_INFRA_API="$BLOX_INFRA_API"
+          yarn build
+        env:
+          GAS_PRICE: ${{ secrets.GAS_PRICE }}
+          GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
+          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
+          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          BLOX_INFRA_API: "https://api.stage.bloxstaking.com"
+
+      - name: Deploy dima-dev webapp
+        if: github.ref == 'refs/heads/dima-dev'
+        uses: jakejarvis/s3-sync-action@v0.5.0
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          SOURCE_DIR: 'build/'
+          AWS_REGION: 'us-west-2'
+          AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET_DIMA }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
+      # </dima-app.stage.ssv.network>        
+      
+      # <sumbat-app.stage.ssv.network>
+      - name: Run sumbat-dev webapp build
+        if: github.ref == 'refs/heads/sumbat-dev'
+        run: >
+          GAS_PRICE="${{ env.GAS_PRICE }}"
+          GAS_LIMIT="${{ env.GAS_LIMIT }}"
+          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
+          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
+          BLOX_INFRA_API="$BLOX_INFRA_API"
+          yarn build
+        env:
+          GAS_PRICE: ${{ secrets.GAS_PRICE }}
+          GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
+          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
+          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          BLOX_INFRA_API: "https://api.stage.bloxstaking.com"
+
+      - name: Deploy sumbat-dev webapp
+        if: github.ref == 'refs/heads/sumbat-dev'
+        uses: jakejarvis/s3-sync-action@v0.5.0
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          SOURCE_DIR: 'build/'
+          AWS_REGION: 'us-west-2'
+          AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET_SUMBAT }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
+      # </sumbat-app.stage.ssv.network>       
+
 
       # <beta.app.ssv.network>
       - name: Run prod webapp build
@@ -147,12 +269,12 @@ jobs:
 #          GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
 #          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
 #        env:
-#          REACT_APP_FAUCET_PAGE: "true"
+#          VITE_FAUCET_PAGE: "true"
 #          SSV_NETWORKS: ${{ env.STAGE_SSV_NETWORKS }}
 #          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
 #          EXPLORER_URL: "https://explorer.ssv.network/"
 #          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-#          REACT_APP_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
+#          VITE_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
 #
 #      - name: Deploy stage faucet
 #        if: github.ref == 'refs/heads/stage'
@@ -201,12 +323,12 @@ jobs:
 #          GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
 #          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
 #        env:
-#          REACT_APP_FAUCET_PAGE: "true"
+#          VITE_FAUCET_PAGE: "true"
 #          SSV_NETWORKS: ${{ env.PROD_SSV_NETWORKS }}
 #          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
 #          EXPLORER_URL: "https://explorer.ssv.network/"
 #          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-#          REACT_APP_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
+#          VITE_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
 #
 #      - name: Deploy prod faucet
 #        if: github.ref == 'refs/heads/main'

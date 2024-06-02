@@ -2,42 +2,56 @@ import Decimal from 'decimal.js';
 import config from '~app/common/config';
 import { keccak256 } from 'web3-utils';
 import { EContractName } from '~app/model/contracts.model';
-import { getContractByName } from '~root/services/contracts.service';
-import {
-  encodePacked,
-  fromWei,
-  getFeeForYear,
-  prepareSsvAmountToTransfer,
-  toWei,
-} from '~root/services/conversions.service';
+import { getContractByName } from '~root/wagmi/utils';
+import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { IOperator } from '~app/model/operator.model';
 import { ICluster } from '~app/model/cluster.model';
 import { getRequest } from '~root/services/httpApi.service';
-import { transactionExecutor } from '~root/services/transaction.service';
-import { EClusterOperation } from '~app/enums/clusterOperation.enum';
-import { getEventByTxHash } from '~root/services/contractEvent.service';
-
-interface ClusterBalanceInteractionProps {
-  amount: string;
-  cluster: ICluster;
-  isContractWallet: boolean;
-  accountAddress: string;
-  liquidationCollateralPeriod: number;
-  minimumLiquidationCollateral: number;
-  callbackAfterExecution: Function;
-  operation: EClusterOperation
-}
 
 const clusterDataDTO = ({ cluster }: { cluster: ICluster }) => ({
   validatorCount: cluster.validatorCount,
   networkFeeIndex: `${cluster.networkFeeIndex}`,
   index: `${cluster.index}`,
   balance: cluster.balance,
-  active: cluster.active,
+  active: cluster.active
 });
 
+const extendClusterEntity = async (cluster: ICluster, ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number) => {
+  const operatorIds = cluster.operators.map((operator) => operator.id);
+  const clusterData = clusterDataDTO({ cluster });
+  if (cluster.isLiquidated) {
+    return { ...cluster, runWay: '0', burnRate: '0', balance: '0', clusterData };
+  }
+  const balance = await getClusterBalance(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, false, clusterData);
+  const burnRate = await getClusterBurnRate(operatorIds, ownerAddress, clusterData);
+  const runWay: number = getClusterRunWay({ balance, burnRate }, liquidationCollateralPeriod, minimumLiquidationCollateral);
+  return { ...cluster, runWay, burnRate: burnRate.toString(), balance: balance.toString(), clusterData };
+};
+
+const getClustersByOwnerAddress = async ({
+  page,
+  perPage,
+  accountAddress,
+  liquidationCollateralPeriod,
+  minimumLiquidationCollateral
+}: {
+  page: number;
+  perPage: number;
+  accountAddress: string;
+  liquidationCollateralPeriod: number;
+  minimumLiquidationCollateral: number;
+}): Promise<any> => {
+  const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/owner/${accountAddress}?page=${page}&perPage=${perPage}&operatorDetails=operatorDetails&ts=${new Date().getTime()}`;
+  const res = await getRequest(url);
+  const clusters = await Promise.all(res.clusters.map((cluster: any) => extendClusterEntity(cluster, accountAddress, liquidationCollateralPeriod, minimumLiquidationCollateral)));
+  return { clusters, pagination: res.pagination };
+};
+
 const getSortedOperatorsIds = (operators: IOperator[]) => {
-  return operators.map((operator: IOperator) => operator.id).map(Number).sort((a: number, b: number) => a - b);
+  return operators
+    .map((operator: IOperator) => operator.id)
+    .map(Number)
+    .sort((a: number, b: number) => a - b);
 };
 
 const getClusterHash = (operators: (number | IOperator)[], ownerAddress: string) => {
@@ -55,10 +69,17 @@ const getClusterByHash = async (clusterHash: string): Promise<any> => {
   return await getRequest(url);
 };
 
-const getClusterBalance = async (operators: IOperator[], ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number, convertFromWei?: boolean, injectedClusterData?: any) => {
+const getClusterBalance = async (
+  operators: IOperator[],
+  ownerAddress: string,
+  liquidationCollateralPeriod: number,
+  minimumLiquidationCollateral: number,
+  convertFromWei?: boolean,
+  injectedClusterData?: any
+) => {
   const operatorsIds = getSortedOperatorsIds(operators);
   const contract = getContractByName(EContractName.GETTER);
-  const clusterData = injectedClusterData ?? await getClusterData(getClusterHash(operators, ownerAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
+  const clusterData = injectedClusterData ?? (await getClusterData(getClusterHash(operators, ownerAddress), liquidationCollateralPeriod, minimumLiquidationCollateral));
   if (!clusterData || !contract) {
     return 0;
   }
@@ -69,6 +90,8 @@ const getClusterBalance = async (operators: IOperator[], ownerAddress: string, l
     }
     return balance;
   } catch (e) {
+    // TODO: add error handling
+    console.warn(e);
     return 0;
   }
 };
@@ -86,9 +109,10 @@ const isClusterLiquidated = async (operatorsIds: number[], ownerAddress: string,
   const contract = getContractByName(EContractName.GETTER);
   if (!clusterData || !contract) return false;
   try {
-    const isLiquidated = await contract.isLiquidated(ownerAddress, sortedOperatorsIds, clusterData);
-    return isLiquidated;
+    return await contract.isLiquidated(ownerAddress, sortedOperatorsIds, clusterData);
   } catch (e) {
+    // TODO: add error handling
+    console.warn(e);
     return false;
   }
 };
@@ -100,9 +124,10 @@ const getClusterBurnRate = async (operators: number[], ownerAddress: string, clu
   }
   const operatorsIds = operators.sort((a, b) => a - b);
   try {
-    const burnRate = await contract.getBurnRate(ownerAddress, operatorsIds, clusterData);
-    return burnRate;
+    return await contract.getBurnRate(ownerAddress, operatorsIds, clusterData);
   } catch (e) {
+    // TODO: add error handling
+    console.warn(e);
     return '';
   }
 };
@@ -118,92 +143,42 @@ const getClusterRunWay = (cluster: any, liquidationCollateralPeriod: number, min
 };
 
 const getClusterData = async (clusterHash: string, liquidationCollateralPeriod?: number, minimumLiquidationCollateral?: number, fullData = false) => {
-    const response = await getClusterByHash(clusterHash);
-    const clusterData = response?.cluster;
-    if (clusterData === null) {
-      return {
-        validatorCount: 0,
-        networkFeeIndex: 0,
-        index: 0,
-        balance: 0,
-        active: true,
-      };
-    } else if (fullData && liquidationCollateralPeriod && minimumLiquidationCollateral) {
-      const isLiquidated = await isClusterLiquidated(Object.values(clusterData.operators), clusterData.ownerAddress, clusterData);
-      const burnRate: string = await getClusterBurnRate(Object.values(clusterData.operators), clusterData.ownerAddress, clusterData);
-      const runWay: number = getClusterRunWay({
+  const response = await getClusterByHash(clusterHash);
+  const clusterData = response?.cluster;
+  if (clusterData === null) {
+    return {
+      validatorCount: 0,
+      networkFeeIndex: 0,
+      index: 0,
+      balance: 0,
+      active: true
+    };
+  } else if (fullData && liquidationCollateralPeriod && minimumLiquidationCollateral) {
+    const isLiquidated = await isClusterLiquidated(Object.values(clusterData.operators), clusterData.ownerAddress, clusterData);
+    const burnRate: string = await getClusterBurnRate(Object.values(clusterData.operators), clusterData.ownerAddress, clusterData);
+    const runWay: number = getClusterRunWay(
+      {
         ...clusterData,
-        burnRate,
-      }, liquidationCollateralPeriod, minimumLiquidationCollateral);
-      return { ...clusterData, isLiquidated, runWay, burnRate };
-    } else {
-      return {
-        validatorCount: clusterData.validatorCount,
-        networkFeeIndex: clusterData.networkFeeIndex,
-        index: clusterData.index,
-        balance: clusterData.balance,
-        active: clusterData.active,
-      };
-    }
-};
-
-const extendClusterEntity = async (cluster: ICluster, ownerAddress: string, liquidationCollateralPeriod: number, minimumLiquidationCollateral: number) => {
-  const operatorIds = cluster.operators.map((operator) => operator.id);
-  const clusterData = clusterDataDTO({ cluster });
-  const isLiquidated = await isClusterLiquidated(operatorIds, ownerAddress, clusterData);
-  const balance = await getClusterBalance(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, false, clusterData);
-  const burnRate = await getClusterBurnRate(operatorIds, ownerAddress, clusterData);
-  const runWay: number = getClusterRunWay({ balance, burnRate }, liquidationCollateralPeriod, minimumLiquidationCollateral);
-  return { ...cluster, runWay, burnRate, balance, isLiquidated, clusterData };
-};
-
-const depositOrWithdraw = async ({ cluster, amount, accountAddress, isContractWallet, liquidationCollateralPeriod, minimumLiquidationCollateral, callbackAfterExecution, operation }: ClusterBalanceInteractionProps)=> {
-  const contract = getContractByName(EContractName.SETTER);
-  if (!contract) {
-    return false;
-  }
-  const operatorsIds = getSortedOperatorsIds(cluster.operators);
-  const ssvAmount = prepareSsvAmountToTransfer(toWei(amount));
-  const clusterHash = getClusterHash(cluster.operators, accountAddress);
-  let contractMethod;
-  let payload;
-  if (operation === EClusterOperation.DEPOSIT) {
-    contractMethod = contract.deposit;
-    payload = [accountAddress, operatorsIds, ssvAmount, cluster.clusterData];
-  } else if (operation === EClusterOperation.WITHDRAW) {
-    contractMethod = contract.withdraw;
-    payload = [operatorsIds, ssvAmount, cluster.clusterData];
+        burnRate
+      },
+      liquidationCollateralPeriod,
+      minimumLiquidationCollateral
+    );
+    return { ...clusterData, isLiquidated, runWay, burnRate };
   } else {
-    contractMethod = contract.liquidate;
-    payload = [accountAddress, operatorsIds, cluster.clusterData];
+    return {
+      validatorCount: clusterData.validatorCount,
+      networkFeeIndex: clusterData.networkFeeIndex,
+      index: clusterData.index,
+      balance: clusterData.balance,
+      active: clusterData.active
+    };
   }
-  return await transactionExecutor({
-    contractMethod,
-    payload,
-    getterTransactionState: async () => (await getClusterData(clusterHash, liquidationCollateralPeriod, minimumLiquidationCollateral)).balance,
-    prevState: cluster.clusterData.balance,
-    isContractWallet,
-    callbackAfterExecution,
-  });
-};
-
-const reactivateCluster = async ({ cluster, accountAddress, isContractWallet, amount, liquidationCollateralPeriod, minimumLiquidationCollateral, callbackAfterExecution }:
-                                   { cluster: ICluster; accountAddress: string; isContractWallet: boolean; amount: string; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number; callbackAfterExecution: Function }) => {
-  const operatorsIds = getSortedOperatorsIds(cluster.operators);
-  const amountInWei = toWei(amount);
-  const clusterData = await getClusterData(getClusterHash(cluster.operators, accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
-  const payload = [operatorsIds, amountInWei, clusterData];
-  const contract = getContractByName(EContractName.SETTER);
-  return await transactionExecutor({
-    contractMethod: contract.reactivate,
-    payload,
-    getterTransactionState: async (txHash: string) => (await getEventByTxHash(txHash)).data,
-    isContractWallet: isContractWallet,
-    callbackAfterExecution,
-  });
 };
 
 export {
+  extendClusterEntity,
+  getClustersByOwnerAddress,
   clusterDataDTO,
   getSortedOperatorsIds,
   getClusterHash,
@@ -211,8 +186,5 @@ export {
   getClusterBalance,
   getClusterNewBurnRate,
   getClusterRunWay,
-  getClusterData,
-  extendClusterEntity,
-  depositOrWithdraw,
-  reactivateCluster,
+  getClusterData
 };

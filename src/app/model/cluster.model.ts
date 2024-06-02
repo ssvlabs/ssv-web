@@ -11,7 +11,7 @@ interface ICluster {
   active: boolean;
   isLiquidated: boolean;
   runWay: number;
-  burnRate: BigInteger,
+  burnRate: BigInteger;
   operators: IOperator[];
   clusterData: {
     // use this snapshot data for contract interactions
@@ -20,7 +20,7 @@ interface ICluster {
     index: string;
     networkFeeIndex: string;
     validatorCount: number;
-  }
+  };
 }
 
-export { ICluster };
+export type { ICluster };

@@ -1,14 +1,10 @@
 import { Contract, ethers } from 'ethers';
-import { EIP1193Provider } from '@web3-onboard/core';
 import config from '~app/common/config';
-import { EContractName } from '~app/model/contracts.model';
-import {
-  HOLESKY_NETWORK_ID,
-  MAINNET_NETWORK_ID,
-  NetworkInfo,
-} from '~root/providers/networkInfo.provider';
 import { HOLESKY_RPC_URL, MAINNET_RPC_URL } from '~app/common/config/config';
+import { EContractName } from '~app/model/contracts.model';
+import { HOLESKY_NETWORK_ID, MAINNET_NETWORK_ID, NetworkInfo } from '~root/providers/networkInfo.provider';
 
+type Provider = ethers.providers.Web3Provider;
 let contracts: Record<EContractName, Contract> = {} as Record<EContractName, Contract>;
 let shouldUseRpcUrlFlag = false;
 
@@ -20,7 +16,7 @@ const providerCreator = ({ networkId }: { networkId: number }) => {
   }
 };
 
-const initGetterContract = ({ provider, network }: { provider: any; network: NetworkInfo })=> {
+const initGetterContract = ({ provider, network }: { provider: Provider; network: NetworkInfo }) => {
   const abi: any = config.CONTRACTS.SSV_NETWORK_GETTER.ABI;
   const contractAddress = network.getterContractAddress;
   if (contractAddress) {
@@ -28,7 +24,7 @@ const initGetterContract = ({ provider, network }: { provider: any; network: Net
       console.warn('Getter contract already exists');
     } else {
       console.warn('Creating new getter contract');
-      const ethProvider = shouldUseRpcUrlFlag ? providerCreator({ networkId: network.networkId }) : new ethers.providers.Web3Provider(provider, 'any');
+      const ethProvider = shouldUseRpcUrlFlag ? providerCreator({ networkId: network.networkId }) : provider;
       contracts[EContractName.GETTER] = new Contract(contractAddress, abi, ethProvider);
     }
   } else {
@@ -36,7 +32,7 @@ const initGetterContract = ({ provider, network }: { provider: any; network: Net
   }
 };
 
-const initSetterContract = ({ provider, network }: { provider: any; network: NetworkInfo }) => {
+const initSetterContract = ({ provider, network }: { provider: Provider; network: NetworkInfo }) => {
   const abi: any = config.CONTRACTS.SSV_NETWORK_SETTER.ABI;
   const contractAddress = network.setterContractAddress;
   if (contractAddress) {
@@ -44,7 +40,7 @@ const initSetterContract = ({ provider, network }: { provider: any; network: Net
       console.warn('Setter contract already exists');
     } else {
       console.warn('Creating new setter contract');
-      const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
+      const ethProvider = provider;
       contracts[EContractName.SETTER] = new Contract(contractAddress, abi, ethProvider.getSigner());
     }
   } else {
@@ -52,7 +48,7 @@ const initSetterContract = ({ provider, network }: { provider: any; network: Net
   }
 };
 
-const initTokenContract = ({ provider, network }: { provider: any; network: NetworkInfo }) => {
+const initTokenContract = ({ provider, network }: { provider: Provider; network: NetworkInfo }) => {
   const abi: any = config.CONTRACTS.SSV_TOKEN.ABI;
   const contractAddress = network.tokenAddress;
   if (contractAddress) {
@@ -60,8 +56,8 @@ const initTokenContract = ({ provider, network }: { provider: any; network: Netw
       console.warn('Token contract already exists');
     } else {
       console.warn('Creating new token contract');
-      const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
-      const rpcProvider = shouldUseRpcUrlFlag ? providerCreator({ networkId: network.networkId }) : new ethers.providers.Web3Provider(provider, 'any');
+      const ethProvider = provider;
+      const rpcProvider = shouldUseRpcUrlFlag ? providerCreator({ networkId: network.networkId }) : provider;
       contracts[EContractName.TOKEN_GETTER] = new Contract(contractAddress, abi, rpcProvider);
       contracts[EContractName.TOKEN_SETTER] = new Contract(contractAddress, abi, ethProvider.getSigner());
     }
@@ -70,7 +66,7 @@ const initTokenContract = ({ provider, network }: { provider: any; network: Netw
   }
 };
 
-const initDistributionContract = ({ provider, network }: { provider: any; network: NetworkInfo }) => {
+const initDistributionContract = ({ provider, network }: { provider: Provider; network: NetworkInfo }) => {
   const abi: any = config.CONTRACTS.SSV_DISTRIBUTION.ABI;
   const contractAddress = network.distributionContractAddress;
   if (contractAddress) {
@@ -78,7 +74,7 @@ const initDistributionContract = ({ provider, network }: { provider: any; networ
       console.warn('Distribution contract already exists', { abi, contractAddress });
     } else {
       console.warn('Creating new distribution contract');
-      const ethProvider = new ethers.providers.Web3Provider(provider, 'any');
+      const ethProvider = provider;
       contracts[EContractName.DISTRIBUTION] = new Contract(contractAddress, abi, ethProvider.getSigner());
     }
   } else {
@@ -95,7 +91,7 @@ const resetContracts = () => {
 /**
  * Crucial to call this only when then network object has been changed
  */
-const initContracts = ({ provider, network, shouldUseRpcUrl }: { provider: EIP1193Provider | null; network: NetworkInfo; shouldUseRpcUrl: boolean }) => {
+const initContracts = ({ provider, network, shouldUseRpcUrl }: { provider: Provider; network: NetworkInfo; shouldUseRpcUrl: boolean }) => {
   shouldUseRpcUrlFlag = shouldUseRpcUrl;
   initGetterContract({ provider, network });
   initSetterContract({ provider, network });
@@ -103,8 +99,4 @@ const initContracts = ({ provider, network, shouldUseRpcUrl }: { provider: EIP11
   initDistributionContract({ provider, network });
 };
 
-export {
-  initContracts,
-  resetContracts,
-  getContractByName,
-};
+export { getContractByName, initContracts, resetContracts };

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { translations } from '~app/common/config';
 import ConfirmationStep from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ConfirmationStep';
 import ExitFinishPage from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ExitFinishPage';
 import NewBulkActions from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/NewBulkActions';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import { BULK_FLOWS, SingleCluster } from '~app/model/processes.model';
+import { BULK_FLOWS } from '~app/model/processes.model';
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getAccountAddress, getIsContractWallet } from '~app/redux/wallet.slice';
@@ -14,7 +14,7 @@ import { MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
 import { formatValidatorPublicKey } from '~lib/utils/strings';
 import { exitValidators, removeValidators } from '~root/services/validatorContract.service';
 import { getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
-import { getProcess, modifyProcess } from '~app/redux/process.slice.ts';
+import { BulkActionRouteState } from '~app/Routes';
 
 enum BULK_STEPS {
   BULK_ACTIONS = 'BULK_ACTIONS',
@@ -52,17 +52,18 @@ const BulkComponent = () => {
   const isContractWallet = useAppSelector(getIsContractWallet);
   const cluster = useAppSelector(getSelectedCluster);
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
-  const process: SingleCluster = useAppSelector(getProcess) as SingleCluster;
 
-  const currentBulkFlow = process.currentBulkFlow;
+  const location: Location<BulkActionRouteState> = useLocation();
+  const { validator, currentBulkFlow } = location.state;
+
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (process.validator) {
+    if (validator) {
       setSelectedValidators({
-        [formatValidatorPublicKey(process.validator.public_key)]: {
-          validator: process.validator,
+        [formatValidatorPublicKey(validator.public_key)]: {
+          validator,
           isSelected: true
         }
       });
@@ -106,7 +107,6 @@ const BulkComponent = () => {
   };
 
   const backToSingleClusterPage = (validatorsCount?: number) => {
-    dispatch(modifyProcess({ validator: undefined }));
     navigate(validatorsCount === cluster.validatorCount && cluster.isLiquidated ? -2 : -1);
   };
 
@@ -126,7 +126,7 @@ const BulkComponent = () => {
       res = await exitValidators({
         isContractWallet,
         validatorIds,
-        operatorIds: process?.item?.operators.map((operator: IOperator) => operator.id) ?? [],
+        operatorIds: cluster.operators.map((operator: IOperator) => operator.id) ?? [],
         isBulk: condition,
         dispatch
       });
@@ -143,12 +143,12 @@ const BulkComponent = () => {
       }
       const validatorPks = condition
         ? selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected)
-        : formatValidatorPublicKey(process?.validator?.public_key || selectedValidatorValues.filter((selectedValidator) => selectedValidator.isSelected)[0].validator.public_key);
+        : formatValidatorPublicKey(validator?.public_key || selectedValidatorValues.filter((selectedValidator) => selectedValidator.isSelected)[0].validator.public_key);
       res = await removeValidators({
         accountAddress,
         isContractWallet,
         validatorPks,
-        operators: process?.item?.operators ?? [],
+        operators: cluster.operators ?? [],
         liquidationCollateralPeriod,
         minimumLiquidationCollateral,
         isBulk: condition,
@@ -163,7 +163,7 @@ const BulkComponent = () => {
 
   const stepBack = () => setCurrentStep(BULK_STEPS.BULK_ACTIONS);
 
-  if (currentStep === BULK_STEPS.BULK_ACTIONS && !process.validator) {
+  if (currentStep === BULK_STEPS.BULK_ACTIONS && !validator) {
     return (
       <NewBulkActions
         nextStep={nextStep}
@@ -181,7 +181,7 @@ const BulkComponent = () => {
   if (currentStep === BULK_STEPS.BULK_CONFIRMATION) {
     return (
       <ConfirmationStep
-        stepBack={!process.validator ? stepBack : undefined}
+        stepBack={!validator ? stepBack : undefined}
         flowData={BULK_FLOWS_CONFIRMATION_DATA[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
         selectedValidators={Object.keys(selectedValidators).filter((publicKey: string) => selectedValidators[publicKey].isSelected)}
         isLoading={isLoading}

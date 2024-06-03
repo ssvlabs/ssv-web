@@ -30,7 +30,7 @@ import { OperatingSystemsEnum } from '~app/enums/os.enum';
 import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getSelectedOperators } from '~app/redux/operator.slice.ts';
-import { getIsSecondRegistration } from '~app/redux/process.slice.ts';
+import { getIsSecondRegistration } from '~app/redux/account.slice.ts';
 
 const DkgTitleWrapper = styled.div`
   width: 100%;
@@ -102,7 +102,7 @@ const OfflineKeyShareGeneration = () => {
   const operatorsAcceptDkg = Object.values(selectedOperators).every((operator: IOperator) => isDkgAddressValid(operator.dkg_address ?? ''));
   const isWindowOs = operatingSystemName === OperatingSystemsEnum.Windows;
   const dynamicFullPath = isWindowOs ? '%cd%' : '$(pwd)';
-  const isSecondRegistration = Boolean(useAppSelector(getIsSecondRegistration));
+  const isSecondRegistration = useAppSelector(getIsSecondRegistration);
 
   useEffect(() => {
     const fetchOwnerNonce = async () => {

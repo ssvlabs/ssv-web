@@ -96,7 +96,7 @@ const getClusterBalance = async (
   }
 };
 
-const getClusterNewBurnRate = (operators: Record<string, IOperator>, newAmountOfValidators: number, networkFee: number) => {
+const getClusterNewBurnRate = (operators: Record<string, IOperator> | IOperator[], newAmountOfValidators: number, networkFee: number) => {
   const operatorsFeePerYear = Object.values(operators).reduce((acc: number, operator: IOperator) => Number(acc) + Number(getFeeForYear(fromWei(operator.fee))), 0);
   const operatorsFeePerBlock = new Decimal(operatorsFeePerYear).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
   const networkFeePerBlock = new Decimal(networkFee).toFixed().toString();

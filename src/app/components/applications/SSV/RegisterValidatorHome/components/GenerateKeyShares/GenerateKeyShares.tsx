@@ -14,7 +14,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsMainnet } from '~app/redux/wallet.slice';
 import { SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
-import { getIsSecondRegistration } from '~app/redux/process.slice.ts';
+import { getIsSecondRegistration } from '~app/redux/account.slice.ts';
 
 type ButtonData = {
   isShow: boolean;
@@ -38,7 +38,7 @@ const GenerateKeyShares = () => {
   const classes = useStyles({ networkId });
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
   const isMainnet = useAppSelector(getIsMainnet);
-  const isSecondRegistration = Boolean(useAppSelector(getIsSecondRegistration));
+  const isSecondRegistration = useAppSelector(getIsSecondRegistration);
 
   const buttonsData: ButtonData[] = [
     {

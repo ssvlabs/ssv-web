@@ -163,3 +163,4 @@ export const getClustersPagination = (state: RootState) => state.accountState.cl
 export const getSelectedCluster = (state: RootState) =>
   state.accountState.excludedCluster || state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId) || ({} as ICluster);
 export const getSelectedOperator = (state: RootState) => state.accountState.selectedOperator;
+export const getIsSecondRegistration = (state: RootState) => state.accountState.clusters.filter(({ id }) => state.accountState.excludedCluster?.id !== id).length > 0;

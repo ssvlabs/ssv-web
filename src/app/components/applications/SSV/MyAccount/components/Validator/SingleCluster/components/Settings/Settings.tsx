@@ -9,15 +9,13 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings/Settings.styles';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 import { BULK_FLOWS } from '~app/model/processes.model';
-import { useAppDispatch } from '~app/hooks/redux.hook.ts';
-import { modifyProcess } from '~app/redux/process.slice.ts';
+import { BulkActionRouteState } from '~app/Routes';
 
 const Settings = ({ validator, withoutSettings }: { validator: any; withoutSettings?: boolean }) => {
   const classes = useStyles();
   const navigate = useNavigate();
   const settingsRef = useRef<HTMLDivElement>(null);
   const [showSettings, setShowSettings] = useState(false);
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     /**
@@ -66,8 +64,7 @@ const Settings = ({ validator, withoutSettings }: { validator: any; withoutSetti
   };
 
   const moveToRemoveValidator = (flow: BULK_FLOWS) => {
-    dispatch(modifyProcess({ validator, currentBulkFlow: flow }));
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK, { state: { validator, currentBulkFlow: flow } satisfies BulkActionRouteState });
   };
 
   return (

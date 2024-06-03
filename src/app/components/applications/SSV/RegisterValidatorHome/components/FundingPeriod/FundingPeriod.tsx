@@ -15,7 +15,6 @@ import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/FundingPeriod/FundingPeriod.styles';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import { RegisterValidator } from '~app/model/processes.model';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
@@ -23,7 +22,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 import { getSelectedOperatorsFee } from '~app/redux/operator.slice.ts';
-import { getProcess } from '~app/redux/process.slice.ts';
+import { NewValidatorRouteState } from '~app/Routes';
 
 const OPTIONS = [
   { id: 1, timeText: '6 Months', days: 182.5 },
@@ -42,8 +41,7 @@ const FundingPeriod = () => {
   const validatorStore: ValidatorStore = stores.Validator;
   const timePeriodNotValid = customPeriod < config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM;
 
-  const process: RegisterValidator = useAppSelector(getProcess) as RegisterValidator;
-  const checkBox = (option: any) => setCheckedOption(option);
+  const checkBox = (option: (typeof OPTIONS)[0]) => setCheckedOption(option);
   const isCustomPayment = checkedOption.id === 3;
   const periodOfTime = isCustomPayment ? customPeriod : checkedOption.days;
   const networkCost = propertyCostByPeriod(networkFee, periodOfTime);
@@ -72,8 +70,7 @@ const FundingPeriod = () => {
   const isChecked = (id: number) => checkedOption.id === id;
 
   const moveToNextPage = () => {
-    process.fundingPeriod = periodOfTime;
-    navigate(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE);
+    navigate(config.routes.SSV.VALIDATOR.ACCOUNT_BALANCE_AND_FEE, { state: { newValidatorFundingPeriod: periodOfTime } satisfies NewValidatorRouteState });
   };
 
   return (

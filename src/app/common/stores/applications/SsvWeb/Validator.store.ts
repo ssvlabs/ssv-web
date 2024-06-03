@@ -4,7 +4,6 @@ import { action, makeObservable, observable } from 'mobx';
 import { KeyShares, KeySharesItem, SSVKeys } from 'ssv-keys';
 import { EContractName } from '~app/model/contracts.model';
 import { IOperator } from '~app/model/operator.model';
-import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
 import { propertyCostByPeriod } from '~lib/utils/numbers';
 import { getOwnerNonce } from '~root/services/account.service';
 import { getClusterData, getClusterHash } from '~root/services/cluster.service';
@@ -122,7 +121,8 @@ class ValidatorStore {
     minimumLiquidationCollateral,
     selectedOperatorsFee,
     dispatch,
-    process
+    depositAmount,
+    fundingPeriod
   }: {
     accountAddress: string;
     isContractWallet: boolean;
@@ -132,13 +132,12 @@ class ValidatorStore {
     liquidationCollateralPeriod: number;
     minimumLiquidationCollateral: number;
     selectedOperatorsFee: number;
-    process: RegisterValidator | SingleCluster;
+    depositAmount: number;
+    fundingPeriod: number | undefined;
     dispatch: Function;
   }) {
     const contract = getContractByName(EContractName.SETTER);
     const contractMethod = isBulk ? contract.bulkRegisterValidator : contract.registerValidator;
-    const depositAmount = 'registerValidator' in process ? (process.registerValidator as RegisterValidator | undefined)?.depositAmount ?? 0 : 0;
-    const fundingPeriod: number | null | undefined = 'fundingPeriod' in process ? process.fundingPeriod : null;
 
     const payload =
       this.registrationMode === 0
@@ -196,7 +195,7 @@ class ValidatorStore {
     selectedOperatorsFee: number;
     selectedOperators: IOperator[];
     depositAmount: number;
-    fundingPeriod: number | null | undefined;
+    fundingPeriod: number | undefined;
   }): Promise<Map<string, any> | null> {
     const ownerNonce = await getOwnerNonce({ address: accountAddress });
     if (ownerNonce === null) {
@@ -211,7 +210,8 @@ class ValidatorStore {
         const threshold = await ssvKeys.createThreshold(this.keyStorePrivateKey, operators);
         const encryptedShares = await ssvKeys.encryptShares(operators, threshold.shares);
         let totalCost = prepareSsvAmountToTransfer(toWei(depositAmount));
-        if (fundingPeriod !== null) {
+        if (fundingPeriod) {
+          // TODO is it ok to treat value 0 as no fundingPeriod?
           const networkCost = propertyCostByPeriod(networkFee, fundingPeriod);
           const operatorsCost = propertyCostByPeriod(selectedOperatorsFee, fundingPeriod);
           let liquidationCollateralCost = new Decimal(selectedOperatorsFee).add(networkFee).mul(liquidationCollateralPeriod);
@@ -258,11 +258,12 @@ class ValidatorStore {
     selectedOperatorsFee: number;
     selectedOperators: IOperator[];
     depositAmount: number;
-    fundingPeriod: number | null | undefined;
+    fundingPeriod: number | undefined;
   }): Promise<Map<string, any> | null> {
     return new Promise(async (resolve) => {
       let totalCost = prepareSsvAmountToTransfer(toWei(depositAmount));
-      if (fundingPeriod !== null) {
+      if (fundingPeriod) {
+        // TODO is it ok yo treat value 0 as no fundingPeriod?
         const networkCost = propertyCostByPeriod(networkFee, fundingPeriod);
         const operatorsCost = propertyCostByPeriod(selectedOperatorsFee, fundingPeriod);
         const liquidationCollateralCost = getLiquidationCollateralPerValidator({

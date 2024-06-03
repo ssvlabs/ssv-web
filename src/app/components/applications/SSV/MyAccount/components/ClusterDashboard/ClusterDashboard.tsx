@@ -21,8 +21,6 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
 import { getClusterHash } from '~root/services/cluster.service';
 import { setClusterSize } from '~app/redux/operator.slice.ts';
-import { setProcessAndType } from '~app/redux/process.slice.ts';
-import { ProcessType, SingleCluster } from '~app/model/processes.model.ts';
 
 export const ClusterDashboard = () => {
   const classes = useStyles({});
@@ -30,7 +28,7 @@ export const ClusterDashboard = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const timeoutRef = useRef<number | null>(null);
-  const clusterIntervalRef = useRef<number | null>(null);
+  const clusterIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const accountAddress = useAppSelector(getAccountAddress);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const accountClusters = useAppSelector(getAccountClusters);
@@ -108,15 +106,6 @@ export const ClusterDashboard = () => {
   });
 
   const openSingleCluster = (listIndex: number) => {
-    dispatch(
-      setProcessAndType({
-        process: {
-          processName: 'single_cluster',
-          item: sortedClusters[listIndex]
-        } as SingleCluster,
-        type: ProcessType.Validator
-      })
-    );
     dispatch(setSelectedClusterId(sortedClusters[listIndex].clusterId));
     dispatch(setClusterSize(sortedClusters[listIndex].operators.length));
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);

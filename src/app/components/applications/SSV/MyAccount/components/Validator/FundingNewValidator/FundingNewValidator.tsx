@@ -19,13 +19,13 @@ import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlo
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { getClusterNewBurnRate, getClusterRunWay } from '~root/services/cluster.service';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { useAppSelector } from '~app/hooks/redux.hook';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
-import { getProcessItem, modifyProcess } from '~app/redux/process.slice.ts';
+import { getSelectedCluster } from '~app/redux/account.slice.ts';
+import { NewValidatorRouteState } from '~app/Routes';
 
 const FundingNewValidator = () => {
   const [checkedId, setCheckedId] = useState(0);
@@ -36,15 +36,13 @@ const FundingNewValidator = () => {
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const OPTION_USE_CURRENT_BALANCE = 1;
   const { walletSsvBalance } = useFetchWalletBalance();
   const OPTION_DEPOSIT_ADDITIONAL_FUNDS = 2;
   const validatorStore: ValidatorStore = stores.Validator;
-  const cluster = useAppSelector(getProcessItem<SingleCluster>)!;
+  const cluster = useAppSelector(getSelectedCluster);
 
   const newValidatorsCount = validatorStore.validatorsCount ? validatorStore.validatorsCount : 1;
-  // @ts-ignore // TODO Operators should be an array - not a map/object
   const newBurnRate = getClusterNewBurnRate(cluster.operators, cluster.validatorCount + newValidatorsCount, networkFee);
   const newRunWay = getClusterRunWay(
     {
@@ -120,9 +118,7 @@ const FundingNewValidator = () => {
   };
 
   const moveToNextPage = () => {
-    dispatch(modifyProcess({ registerValidator: { depositAmount: Number(depositSSV) } as RegisterValidator }));
-
-    navigate(getNextNavigation());
+    navigate(getNextNavigation(), { state: { newValidatorDepositAmount: Number(depositSSV) } satisfies NewValidatorRouteState });
   };
 
   const changeDepositSsvHandler = (event: ChangeEvent<HTMLInputElement>) => {

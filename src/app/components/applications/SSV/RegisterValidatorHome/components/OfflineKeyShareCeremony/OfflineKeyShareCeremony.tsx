@@ -12,7 +12,7 @@ import styled from 'styled-components';
 import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
-import { getIsSecondRegistration } from '~app/redux/process.slice.ts';
+import { getIsSecondRegistration } from '~app/redux/account.slice.ts';
 
 const BoldText = styled.span`
   font-weight: 800;
@@ -22,7 +22,7 @@ const OfflineKeyShareCeremony = () => {
   const classes = useStyles();
   const navigate = useNavigate();
 
-  const isSecondRegistration = Boolean(useAppSelector(getIsSecondRegistration));
+  const isSecondRegistration = useAppSelector(getIsSecondRegistration);
 
   // State to manage button enable/disable condition
   const [isValidatorActivated, setValidatorActivated] = useState(false);

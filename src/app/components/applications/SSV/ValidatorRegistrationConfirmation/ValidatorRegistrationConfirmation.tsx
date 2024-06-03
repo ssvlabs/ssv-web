@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Location, useLocation, useNavigate } from 'react-router-dom';
 import config, { translations } from '~app/common/config';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import AllowanceButton from '~app/components/AllowanceButton';
@@ -20,7 +20,6 @@ import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 import { useStores } from '~app/hooks/useStores';
 import { IOperator } from '~app/model/operator.model';
-import { RegisterValidator, SingleCluster } from '~app/model/processes.model';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
@@ -29,7 +28,8 @@ import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { getSelectedOperators, getSelectedOperatorsFee } from '~app/redux/operator.slice.ts';
-import { getIsSecondRegistration, getProcess } from '~app/redux/process.slice.ts';
+import { NewValidatorRouteState } from '~app/Routes';
+import { getIsSecondRegistration } from '~app/redux/account.slice.ts';
 
 const ValidatorRegistrationConfirmation = () => {
   const navigate = useNavigate();
@@ -47,15 +47,18 @@ const ValidatorRegistrationConfirmation = () => {
   const validatorStore: ValidatorStore = stores.Validator;
   const selectedOperatorsFee = useAppSelector(getSelectedOperatorsFee);
   const selectedOperators = useAppSelector(getSelectedOperators);
-  const process: RegisterValidator | SingleCluster = useAppSelector(getProcess) as RegisterValidator | SingleCluster;
-  const isSecondRegistration = Boolean(useAppSelector(getIsSecondRegistration));
-  const processFundingPeriod = 'fundingPeriod' in process ? process?.fundingPeriod : 0;
+  const isSecondRegistration = useAppSelector(getIsSecondRegistration);
+
+  const location: Location<NewValidatorRouteState> = useLocation();
+
+  const newFundingPeriod = location.state.newValidatorFundingPeriod ?? 0;
+
   const actionButtonDefaultText = validatorStore.isMultiSharesMode ? `Register ${validatorStore.validatorsCount} Validators` : 'Register Validator';
   const [actionButtonText, setActionButtonText] = useState(actionButtonDefaultText);
   const [isLoading, setIsLoading] = useState(false);
 
-  const networkCost = propertyCostByPeriod(networkFee, processFundingPeriod);
-  const operatorsCost = propertyCostByPeriod(selectedOperatorsFee, processFundingPeriod);
+  const networkCost = propertyCostByPeriod(networkFee, newFundingPeriod);
+  const operatorsCost = propertyCostByPeriod(selectedOperatorsFee, newFundingPeriod);
   const liquidationCollateralCost = getLiquidationCollateralPerValidator({
     operatorsFee: selectedOperatorsFee,
     networkFee,
@@ -64,7 +67,8 @@ const ValidatorRegistrationConfirmation = () => {
     validatorsCount: validatorStore.validatorsCount
   });
   const amountOfSsv: number = Number(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(validatorStore.validatorsCount));
-  const totalAmountOfSsv: number = 'registerValidator' in process && process.registerValidator ? process.registerValidator?.depositAmount : amountOfSsv;
+  const totalAmountOfSsv: number = location.state.newValidatorDepositAmount ?? amountOfSsv;
+
   const successPageNavigate = {
     true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SUCCESS_PAGE),
     false: () => navigate(config.routes.SSV.VALIDATOR.SUCCESS_PAGE)
@@ -98,7 +102,8 @@ const ValidatorRegistrationConfirmation = () => {
       liquidationCollateralPeriod,
       minimumLiquidationCollateral,
       selectedOperatorsFee,
-      process,
+      depositAmount: totalAmountOfSsv,
+      fundingPeriod: newFundingPeriod,
       dispatch
     });
     if (response && !isContractWallet) {
@@ -161,8 +166,8 @@ const ValidatorRegistrationConfirmation = () => {
           Selected Operators
         </Grid>
         {Object.values(selectedOperators).map((operator: IOperator, index: number) => {
-          const operatorCost = isSecondRegistration ? formatNumberToUi(getFeeForYear(fromWei(operator.fee))) : propertyCostByPeriod(fromWei(operator.fee), processFundingPeriod);
-          const operatorCostPeriod = isSecondRegistration ? '/year' : `/${formatNumberToUi(processFundingPeriod, true)} days`;
+          const operatorCost = isSecondRegistration ? formatNumberToUi(getFeeForYear(fromWei(operator.fee))) : propertyCostByPeriod(fromWei(operator.fee), newFundingPeriod);
+          const operatorCostPeriod = isSecondRegistration ? '/year' : `/${formatNumberToUi(newFundingPeriod, true)} days`;
           return (
             <Grid key={index} container item xs={12} className={classes.Row}>
               <Grid item>
@@ -178,7 +183,7 @@ const ValidatorRegistrationConfirmation = () => {
     </Grid>
   ];
 
-  if (!isSecondRegistration) screenBody.push(<FundingSummary networkCost={networkCost} liquidationCollateralCost={liquidationCollateralCost} />);
+  if (!isSecondRegistration) screenBody.push(<FundingSummary networkCost={networkCost} liquidationCollateralCost={liquidationCollateralCost} days={newFundingPeriod} />);
   if (!isSecondRegistration) screenBody.push(TotalSection);
 
   const MainScreen = (
@@ -209,7 +214,7 @@ const ValidatorRegistrationConfirmation = () => {
               <NameAndAddress name={'SSV Deposit'} />
             </Grid>
             <Grid item>
-              <NameAndAddress name={`${'registerValidator' in process ? process.registerValidator?.depositAmount : 0} SSV`} />
+              <NameAndAddress name={`${totalAmountOfSsv} ssSSV`} />
             </Grid>
           </Grid>
         </Grid>,

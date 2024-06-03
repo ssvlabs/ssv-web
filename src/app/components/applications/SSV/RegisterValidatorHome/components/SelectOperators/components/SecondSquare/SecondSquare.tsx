@@ -21,19 +21,17 @@ import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorH
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { extendClusterEntity, getClusterData, getClusterHash } from '~root/services/cluster.service';
 import { IOperator } from '~app/model/operator.model';
-import { SingleCluster } from '~app/model/processes.model';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { SKIP_VALIDATION } from '~lib/utils/developerHelper';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { fetchValidator } from '~root/services/validator.service';
-import { setExcludedCluster } from '~app/redux/account.slice';
+import { getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice';
 import { ICluster } from '~app/model/cluster.model';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getOperatorValidatorsLimit, getSelectedOperators, getSelectedOperatorsFee, hasEnoughSelectedOperators, unselectOperator } from '~app/redux/operator.slice.ts';
-import { getProcessItem } from '~app/redux/process.slice.ts';
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox: number[] }) => {
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
@@ -57,11 +55,14 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
   const secondSquareWidth = windowSize.size === WINDOW_SIZES.LG ? '100%' : 424;
   const hasEnoughOperators = useAppSelector(hasEnoughSelectedOperators);
   const operatorValidatorsLimit = useAppSelector(getOperatorValidatorsLimit);
-  const validator = useAppSelector(getProcessItem<SingleCluster>);
+  const validator = useAppSelector(getSelectedCluster);
 
   useEffect(() => {
     if (editPage) {
+      // TODO: this flag is not used all all, only use is in SelectedOperators and it's only used once without this flag
+      // @ts-ignore
       if (!validator?.publicKey) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
+      // @ts-ignore
       fetchValidator(validator.publicKey).then((validator: any) => {
         if (validator?.operators) {
           setPreviousOperatorsIds(validator.operators.map(({ id }: { id: number }) => id));

@@ -1,6 +1,6 @@
 import Grid from '@mui/material/Grid';
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Location, useLocation, useNavigate } from 'react-router-dom';
 import LinkText from '~app/components/common/LinkText';
 import { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -12,14 +12,15 @@ import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHom
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
-import { getIsSecondRegistration } from '~app/redux/process.slice.ts';
+import { getIsSecondRegistration } from '~app/redux/account.slice.ts';
+import { BulkActionRouteState } from '~app/Routes';
 
 const AccountBalanceAndFee = () => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const location = useLocation();
+  const location: Location<BulkActionRouteState> = useLocation();
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
-  const isSecondRegistration = Boolean(useAppSelector(getIsSecondRegistration));
+  const isSecondRegistration = useAppSelector(getIsSecondRegistration);
   const [firstCheckBox, setFirstCheckBox] = useState(false);
   const [secondCheckBox, setSecondCheckBox] = useState(false);
 
@@ -83,7 +84,7 @@ const AccountBalanceAndFee = () => {
             isDisabled={!firstCheckBox || !secondCheckBox}
             text={'Next'}
             onClick={() => {
-              navigate(getNextNavigation());
+              navigate(getNextNavigation(), { state: location.state });
             }}
             size={ButtonSize.XL}
           />

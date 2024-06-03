@@ -1,6 +1,6 @@
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import { useNavigate } from 'react-router-dom';
+import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
@@ -13,22 +13,24 @@ import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHom
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
-import { getIsSecondRegistration } from '~app/redux/process.slice.ts';
+import { getIsSecondRegistration } from '~app/redux/account.slice.ts';
+import { NewValidatorRouteState } from '~app/Routes';
 
 const SlashingWarning = () => {
   const classes = useStyles();
   const stores = useStores();
   const navigate = useNavigate();
+  const location: Location<NewValidatorRouteState> = useLocation();
   const validatorStore: ValidatorStore = stores.Validator;
   const [hasUserAgreed, setHasUserAgreed] = useState(false);
   const publicKey = validatorStore.keyStorePublicKey || validatorStore.keySharePublicKey;
-  const isSecondRegistration = Boolean(useAppSelector(getIsSecondRegistration));
+  const isSecondRegistration = useAppSelector(getIsSecondRegistration);
 
   const goToConfirmation = () => {
     if (isSecondRegistration) {
-      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE);
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE, { state: location.state });
     } else {
-      navigate(config.routes.SSV.VALIDATOR.CONFIRMATION_PAGE);
+      navigate(config.routes.SSV.VALIDATOR.CONFIRMATION_PAGE, { state: location.state });
     }
   };
 

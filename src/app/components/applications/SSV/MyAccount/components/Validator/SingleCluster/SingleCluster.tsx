@@ -19,7 +19,7 @@ import { getAccountAddress } from '~app/redux/wallet.slice';
 import { isEqualsAddresses } from '~lib/utils/strings';
 import { useStyles } from './SingleCluster.styles';
 import { selectOperators } from '~app/redux/operator.slice.ts';
-import { modifyProcess } from '~app/redux/process.slice.ts';
+import { NewValidatorRouteState } from '~app/Routes';
 
 const ValidatorsWrapper = styled.div`
   width: 872px;
@@ -71,9 +71,8 @@ const SingleCluster = () => {
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 
   const addToCluster = () => {
-    dispatch(modifyProcess({ processName: 'cluster_registration', registerValidator: { depositAmount: 0 } as RegisterValidator }));
     dispatch(selectOperators(cluster.operators));
-    navigate(getNextNavigation());
+    navigate(getNextNavigation(), { state: { newValidatorDepositAmount: 0 } satisfies NewValidatorRouteState });
   };
 
   const backToClustersDashboard = () => {

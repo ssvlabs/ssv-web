@@ -9,9 +9,8 @@ import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { getEtherScanLink } from '~root/providers/networkInfo.provider';
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
 import { getIsShowTxPendingPopup, getTxHash, setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
-import { SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
-import { getProcessItem } from '~app/redux/process.slice.ts';
+import { getSelectedOperator } from '~app/redux/account.slice.ts';
 
 const DialogWrapper = styled(Dialog)<{ theme: any }>`
   & > div > div {
@@ -68,14 +67,14 @@ const TransactionPendingPopUp = () => {
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isShowTxPendingPopup = useAppSelector(getIsShowTxPendingPopup);
   const txHash = useAppSelector(getTxHash);
-  const cluster = useAppSelector(getProcessItem<SingleClusterProcess>);
+  const operator = useAppSelector(getSelectedOperator);
 
   const closeButtonAction = () => {
     let nextNavigation;
-    if (cluster) {
-      nextNavigation = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
-    } else {
+    if (operator) {
       nextNavigation = config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD;
+    } else {
+      nextNavigation = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
     }
     dispatch(setIsLoading(false));
     dispatch(setIsShowTxPendingPopup(false));

@@ -1,12 +1,11 @@
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { longStringShorten } from '~lib/utils/strings';
 import { getClusterHash } from '~root/services/cluster.service';
 import { useStyles } from '../../NewWhiteWrapper.styles';
 import { getSelectedCluster } from '~app/redux/account.slice.ts';
-import { modifyProcess } from '~app/redux/process.slice.ts';
 
 type Props = {
   header: string;
@@ -17,12 +16,10 @@ const ValidatorsFlow = ({ header, stepBack }: Props) => {
   const accountAddress = useAppSelector(getAccountAddress);
   const navigate = useNavigate();
   const classes = useStyles({ mainFlow: false });
-  const dispatch = useAppDispatch();
   const cluster = useAppSelector(getSelectedCluster);
 
   const onNavigationClicked = () => {
     if (!stepBack) {
-      dispatch(modifyProcess({ validator: undefined }));
       navigate(-1);
     } else {
       stepBack();

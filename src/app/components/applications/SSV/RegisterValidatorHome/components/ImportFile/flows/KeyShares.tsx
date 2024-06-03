@@ -46,7 +46,7 @@ import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getClusterSize, getOperatorValidatorsLimit, getSelectedOperators, selectOperators, setClusterSize, unselectAllOperators } from '~app/redux/operator.slice.ts';
-import { getIsSecondRegistration, getSelectedCluster } from '~app/redux/account.slice.ts';
+import { setExcludedCluster, getIsSecondRegistration, getSelectedCluster } from '~app/redux/account.slice.ts';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
@@ -59,8 +59,8 @@ const KeyShareFlow = () => {
   const inputRef = useRef(null);
   const removeButtons = useRef(null);
   const validatorStore: ValidatorStore = stores.Validator;
+  const cluster = useAppSelector(getSelectedCluster);
   const isSecondRegistration = useAppSelector(getIsSecondRegistration);
-  const validator = useAppSelector(getSelectedCluster);
   const [warningMessage, setWarningMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
   const [validatorsList, setValidatorsList] = useState<Record<string, ValidatorType>>({});
@@ -95,7 +95,7 @@ const KeyShareFlow = () => {
       let operatorsData = Object.values(selectedStoreOperators);
       let clusterSizeData = clusterSize;
       if (isSecondRegistration) {
-        const clusterOperatorsIds = validator.operators.map((operator) => operator.id).toSorted() ?? [];
+        const clusterOperatorsIds = cluster.operators.map((operator: IOperator) => operator.id).sort();
         if (shares.some((keyShare: KeySharesItem) => !validateConsistentOperatorIds(keyShare, clusterOperatorsIds))) {
           return {
             response: getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER),
@@ -427,6 +427,7 @@ const KeyShareFlow = () => {
         await getClusterData(getClusterHash(Object.values(selectedStoreOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true).then(
           (clusterData) => {
             if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
+              dispatch(setExcludedCluster({ ...clusterData, operators: Object.values(selectedStoreOperators) }));
               nextRouteAction = EValidatorFlowAction.SECOND_REGISTER;
             }
           }

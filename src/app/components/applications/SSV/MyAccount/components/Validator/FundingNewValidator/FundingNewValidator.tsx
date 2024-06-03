@@ -41,7 +41,6 @@ const FundingNewValidator = () => {
   const OPTION_DEPOSIT_ADDITIONAL_FUNDS = 2;
   const validatorStore: ValidatorStore = stores.Validator;
   const cluster = useAppSelector(getSelectedCluster);
-
   const newValidatorsCount = validatorStore.validatorsCount ? validatorStore.validatorsCount : 1;
   const newBurnRate = getClusterNewBurnRate(cluster.operators, cluster.validatorCount + newValidatorsCount, networkFee);
   const newRunWay = getClusterRunWay(

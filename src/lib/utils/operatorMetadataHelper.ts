@@ -72,18 +72,9 @@ const DKG_ADDRESS_MIN_LENGTH: number = 256;
 export const ALLOWED_IMAGE_TYPES = ['image/jpg', 'image/jpeg', 'image/png'];
 
 export const FIELD_CONDITIONS: Record<string, FieldCondition> = {
-  [FIELD_KEYS.OPERATOR_NAME]: {
-    maxLength: 30,
-    errorMessage: 'Operator name up to 30 characters'
-  },
-  [FIELD_KEYS.DESCRIPTION]: {
-    maxLength: 350,
-    errorMessage: 'Description up to 350 characters'
-  },
-  [FIELD_KEYS.SETUP_PROVIDER]: {
-    maxLength: 50,
-    errorMessage: 'Cloud provider up to 50 characters'
-  }
+  [FIELD_KEYS.OPERATOR_NAME]: { maxLength: 30, errorMessage: 'Operator name up to 30 characters' },
+  [FIELD_KEYS.DESCRIPTION]: { maxLength: 350, errorMessage: 'Description up to 350 characters' },
+  [FIELD_KEYS.SETUP_PROVIDER]: { maxLength: 50, errorMessage: 'Cloud provider up to 50 characters' }
 };
 
 export const exceptions: Record<string, string> = {
@@ -97,11 +88,7 @@ export const OPERATOR_NODE_TYPES = {
   [FIELD_KEYS.CONSENSUS_CLIENT]: 2
 };
 
-export const camelToSnakeFieldsMapping = [
-  FIELD_KEYS.EXECUTION_CLIENT,
-  FIELD_KEYS.CONSENSUS_CLIENT,
-  FIELD_KEYS.OPERATOR_NAME
-];
+export const camelToSnakeFieldsMapping = [FIELD_KEYS.EXECUTION_CLIENT, FIELD_KEYS.CONSENSUS_CLIENT, FIELD_KEYS.OPERATOR_NAME];
 export const HTTPS_PREFIX = 'https://';
 
 export const FIELDS: { [key: string]: MetadataEntity } = {
@@ -225,15 +212,11 @@ export const isDkgAddressValid = (value: string, isForm?: boolean) => {
 
   const addressWithoutHttps = value.substring(HTTPS_PREFIX.length);
 
-  const domainPattern =
-    '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,9}';
-  const ipPattern =
-    '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)';
+  const domainPattern = '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,9}';
+  const ipPattern = '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)';
   const portPattern = ':\\d{1,5}';
 
   const pattern = new RegExp(`(${domainPattern}|${ipPattern})${portPattern}$`);
 
-  return (
-    value.length <= DKG_ADDRESS_MIN_LENGTH && pattern.test(addressWithoutHttps)
-  );
+  return value.length <= DKG_ADDRESS_MIN_LENGTH && pattern.test(addressWithoutHttps);
 };

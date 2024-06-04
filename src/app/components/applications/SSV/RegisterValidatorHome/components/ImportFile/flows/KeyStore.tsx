@@ -1,4 +1,4 @@
-import  { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -13,9 +13,7 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import {
-  useStyles,
-} from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
 import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
 import { isJsonFile } from '~root/utils/dkg.utils';
@@ -92,14 +90,14 @@ const KeyStoreFlow = () => {
     } else if (!keyStoreFileIsJson && validatorStore.keyStoreFile) {
       fileClass += ` ${classes.Fail}`;
     }
-    return <Grid item className={fileClass}/>;
+    return <Grid item className={fileClass} />;
   };
 
   const renderFileText = () => {
     if (!validatorStore.keyStoreFile) {
       return (
         <Grid item xs={12} className={classes.FileText}>
-          Drag and drop files or <LinkText text={'browse'}/>
+          Drag and drop files or <LinkText text={'browse'} />
         </Grid>
       );
     }
@@ -107,9 +105,9 @@ const KeyStoreFlow = () => {
     if (keyStoreFileIsJson && validatorStore.validatorPublicKeyExist) {
       return (
         <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
-          Validator is already registered to the network, <br/>
+          Validator is already registered to the network, <br />
           please try a different keystore file.
-          <RemoveButton/>
+          <RemoveButton />
         </Grid>
       );
     }
@@ -117,7 +115,7 @@ const KeyStoreFlow = () => {
       return (
         <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
           Invalid file format - only .json files are supported
-          <RemoveButton/>
+          <RemoveButton />
         </Grid>
       );
     }
@@ -126,7 +124,7 @@ const KeyStoreFlow = () => {
       return (
         <Grid item xs={12} className={`${classes.FileText} ${classes.SuccessText}`}>
           {validatorStore.keyStoreFile.name}
-          <RemoveButton/>
+          <RemoveButton />
         </Grid>
       );
     }
@@ -136,7 +134,11 @@ const KeyStoreFlow = () => {
     GoogleTagManager.getInstance().sendEvent({ category, action, label });
   };
 
-  const RemoveButton = () => <Grid ref={removeButtons} onClick={removeFile} className={classes.Remove}>Remove</Grid>;
+  const RemoveButton = () => (
+    <Grid ref={removeButtons} onClick={removeFile} className={classes.Remove}>
+      Remove
+    </Grid>
+  );
 
   const submitHandler = async () => {
     setIsLoading(true);
@@ -169,47 +171,41 @@ const KeyStoreFlow = () => {
     }, 200);
   };
 
-
   const inputDisableConditions = !keyStoreFileIsJson || isProcessingFile || validatorStore.validatorPublicKeyExist;
   const buttonDisableConditions = isProcessingFile || !keyStoreFileIsJson || !keyStorePassword || !!errorMessage || validatorStore.validatorPublicKeyExist;
 
-  const MainScreen = <BorderScreen
-    blackHeader
-    header={translations.VALIDATOR.IMPORT.TITLE}
-    withoutNavigation={processStore.secondRegistration}
-    body={[
-      <Grid item container>
-        <Grid item xs={12} className={classes.SubHeader}>Upload your validator <b>keystore</b> file below</Grid>
-        <ImportInput
-          fileText={renderFileText}
-          fileHandler={fileHandler}
-          fileImage={renderFileImage}
-          removeButtons={removeButtons}
-          processingFile={isProcessingFile}
-        />
-        <Grid container item xs={12}>
-          <><InputLabel title="Keystore Password"/>
-            <Grid item xs={12} className={classes.ItemWrapper}>
-              <TextInput withLock disable={inputDisableConditions} value={keyStorePassword}
-                         onChangeCallback={handlePassword}/>
-            </Grid>
-            <Grid item xs={12} className={classes.ErrorWrapper}>
-              {errorMessage && <ErrorMessage text={errorMessage}/>}
-            </Grid></>
-          <PrimaryButton text={'Next'} onClick={submitHandler} isDisabled={buttonDisableConditions} size={ButtonSize.XL}
-                         isLoading={isLoading}/>
+  const MainScreen = (
+    <BorderScreen
+      blackHeader
+      header={translations.VALIDATOR.IMPORT.TITLE}
+      withoutNavigation={processStore.secondRegistration}
+      body={[
+        <Grid item container>
+          <Grid item xs={12} className={classes.SubHeader}>
+            Upload your validator <b>keystore</b> file below
+          </Grid>
+          <ImportInput fileText={renderFileText} fileHandler={fileHandler} fileImage={renderFileImage} removeButtons={removeButtons} processingFile={isProcessingFile} />
+          <Grid container item xs={12}>
+            <>
+              <InputLabel title="Keystore Password" />
+              <Grid item xs={12} className={classes.ItemWrapper}>
+                <TextInput withLock disable={inputDisableConditions} value={keyStorePassword} onChangeCallback={handlePassword} />
+              </Grid>
+              <Grid item xs={12} className={classes.ErrorWrapper}>
+                {errorMessage && <ErrorMessage text={errorMessage} />}
+              </Grid>
+            </>
+            <PrimaryButton text={'Next'} onClick={submitHandler} isDisabled={buttonDisableConditions} size={ButtonSize.XL} isLoading={isLoading} />
+          </Grid>
         </Grid>
-      </Grid>,
-    ]}
-  />;
+      ]}
+    />
+  );
 
   if (processStore.secondRegistration) {
     return (
       <Grid container>
-        <NewWhiteWrapper
-          type={0}
-          header={'Cluster'}
-        />
+        <NewWhiteWrapper type={0} header={'Cluster'} />
         {MainScreen}
       </Grid>
     );

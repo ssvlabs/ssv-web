@@ -32,9 +32,7 @@ const DkgOperator = ({ operator, isHealthy }: Props) => {
           <Grid className={classes.OperatorId}>ID: {operator.id}</Grid>
         </Grid>
       </Grid>
-      <Grid className={classes.DkgEnabledBudge}>
-        DKG {isHealthy && isDkgEnabled ? 'Enabled' : 'Disabled'}
-      </Grid>
+      <Grid className={classes.DkgEnabledBudge}>DKG {isHealthy && isDkgEnabled ? 'Enabled' : 'Disabled'}</Grid>
     </Grid>
   );
 };

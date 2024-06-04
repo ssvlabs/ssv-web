@@ -1,4 +1,3 @@
-
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import LinkText from '~app/components/common/LinkText';
@@ -19,7 +18,7 @@ import { ButtonSize } from '~app/enums/Button.enum';
 
 const Success = () => {
   const classes = useStyles();
-  const [{  wallet }] = useConnectWallet();
+  const [{ wallet }] = useConnectWallet();
   const txHash = useAppSelector(getTxHash);
   const isMainnet = useAppSelector(getIsMainnet);
   const dispatch = useAppDispatch();
@@ -28,7 +27,7 @@ const Success = () => {
     GoogleTagManager.getInstance().sendEvent({
       category: 'external_link',
       action: 'click',
-      label: 'Learn more about the SSV network',
+      label: 'Learn more about the SSV network'
     });
     window.open('https://ssv.network/');
   };
@@ -45,18 +44,23 @@ const Success = () => {
           <HeaderSubHeader
             rewardPage
             title={'Rewards Successfully Claimed!'}
-            subtitle={<span>Thank you for joining the SSV network's {isMainnet ? 'Mainnet' : 'Testnet'} Incentivization Program.<br />Your tokens have been transferred to your wallet.</span>}
+            subtitle={
+              <span>
+                Thank you for joining the SSV network's {isMainnet ? 'Mainnet' : 'Testnet'} Incentivization Program.
+                <br />
+                Your tokens have been transferred to your wallet.
+              </span>
+            }
           />
-          <Grid item container className={classes.AddSsvToWallet}
-            onClick={() => wallet && registerSSVTokenInMetamask({ provider: wallet.provider, notificationHandler })}>
+          <Grid item container className={classes.AddSsvToWallet} onClick={() => wallet && registerSSVTokenInMetamask({ provider: wallet.provider, notificationHandler })}>
             <Grid item className={classes.MetaMask} />
             <Typography component={'span'}>Add SSV to Metamask</Typography>
           </Grid>
           <Grid className={classes.LinkWrapper}>
             <LinkText text={'View Transaction on Etherscan'} link={getTransactionLink(txHash)} />
           </Grid>
-          <SecondaryButton onClick={openMarketingSite} text={'Learn more about the SSV network'} size={ButtonSize.XL}/>
-        </Grid>,
+          <SecondaryButton onClick={openMarketingSite} text={'Learn more about the SSV network'} size={ButtonSize.XL} />
+        </Grid>
       ]}
     />
   );

@@ -1,4 +1,3 @@
-
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -39,37 +38,37 @@ const EligibleScreen = () => {
       withoutNavigation
       body={[
         <Grid container>
-          <HeaderSubHeader
-            title={'Congrats, you are eligible for the following rewards!'}
-          />
-          <InputLabel title="Recipient"/>
+          <HeaderSubHeader title={'Congrats, you are eligible for the following rewards!'} />
+          <InputLabel title="Recipient" />
           <Grid className={classes.RecipientWrapper}>
             <Typography className={classes.RecipientAddress}>{accountAddress}</Typography>
           </Grid>
-          {(distributionStore instanceof DistributionStore) && distributionStore.userEligibleRewards &&
+          {distributionStore instanceof DistributionStore && distributionStore.userEligibleRewards && (
             <Grid className={classes.RewardWrapper}>
               <Typography className={classes.RewardTitle}>Eligible Rewards</Typography>
               <Typography className={classes.RewardAmount}>{distributionStore.userEligibleRewards} SSV</Typography>
-            </Grid>}
-          {(distributionStore instanceof DistributionStore) && distributionStore.claimedRewards &&
+            </Grid>
+          )}
+          {distributionStore instanceof DistributionStore && distributionStore.claimedRewards && (
             <Grid className={classes.RewardWrapper}>
               <Typography className={classes.RewardTitle}>Claimed Rewards</Typography>
               <Typography className={classes.RewardAmount}>{distributionStore.claimedRewards} SSV</Typography>
-            </Grid>}
+            </Grid>
+          )}
           <Grid container item className={classes.EligibleWrapper}>
-            <InputLabel title="Eligible Reward"/>
+            <InputLabel title="Eligible Reward" />
             <Grid container className={classes.Eligible}>
-              <Grid item className={classes.EligibleAmount}>{distributionStore.userRewardAmount}</Grid>
-              <Grid item className={classes.CompanyIcon}/>
-              <Grid item className={classes.EligibleAmount}>SSV</Grid>
+              <Grid item className={classes.EligibleAmount}>
+                {distributionStore.userRewardAmount}
+              </Grid>
+              <Grid item className={classes.CompanyIcon} />
+              <Grid item className={classes.EligibleAmount}>
+                SSV
+              </Grid>
             </Grid>
           </Grid>
-          <PrimaryButton
-            isDisabled={!claimedCondition}
-            onClick={claimRewards}
-            text={claimedCondition ? 'Claim SSV Reward' : 'All Rewards Claimed'}
-            size={ButtonSize.XL}/>
-        </Grid>,
+          <PrimaryButton isDisabled={!claimedCondition} onClick={claimRewards} text={claimedCondition ? 'Claim SSV Reward' : 'All Rewards Claimed'} size={ButtonSize.XL} />
+        </Grid>
       ]}
     />
   );

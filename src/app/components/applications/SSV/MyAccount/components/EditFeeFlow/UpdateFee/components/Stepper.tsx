@@ -4,12 +4,15 @@ import { UPDATE_FEE_STEPS } from '~lib/utils/updateFeeNotificationSteps';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
 import { getFeeIncreaseAndPeriods, getOperatorFeeData } from '~app/redux/operator.slice.ts';
+import { IncreaseSteps } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow.tsx';
 
 type StepperProps = {
   step: number;
   subText?: string;
+  isCanceled?: boolean;
   subTextAlign: string;
   registerButtonEnabled?: boolean;
+  prevStep?: IncreaseSteps;
 };
 
 enum StepperProcessesSteps {
@@ -18,8 +21,8 @@ enum StepperProcessesSteps {
   PENDING_STEP = 2
 }
 
-const ReactStepper = ({ step, registerButtonEnabled, subTextAlign, subText }: StepperProps) => {
-  const classes = useStyles({ step, registerButtonEnabled, subTextAlign });
+const ReactStepper = ({ step, registerButtonEnabled, subTextAlign, subText, isCanceled, prevStep }: StepperProps) => {
+  const classes = useStyles({ step, registerButtonEnabled, subTextAlign, isCanceled, prevStep });
   const operatorFeeData = useAppSelector(getOperatorFeeData);
   const feeIncreaseAndPeriods = useAppSelector(getFeeIncreaseAndPeriods);
 

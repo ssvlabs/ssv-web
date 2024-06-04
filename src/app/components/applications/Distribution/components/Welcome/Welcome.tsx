@@ -11,37 +11,33 @@ import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const Welcome = () => {
-    const classes = useStyles();
-    const accountAddress = useAppSelector(getAccountAddress);
-    const { networkId } = getStoredNetwork();
-    const [, connect] = useConnectWallet();
-    const titleNetwork = networkId === MAINNET_NETWORK_ID ? 'Mainnet' : 'Testnet';
-    const dispatch = useAppDispatch();
+  const classes = useStyles();
+  const accountAddress = useAppSelector(getAccountAddress);
+  const { networkId } = getStoredNetwork();
+  const [, connect] = useConnectWallet();
+  const titleNetwork = networkId === MAINNET_NETWORK_ID ? 'Mainnet' : 'Testnet';
+  const dispatch = useAppDispatch();
 
-    const connectToWallet = async () => {
-      if (!!accountAddress) {
-          dispatch(setIsShowWalletPopup(true));
-      } else {
-        await connect();
-      }
-    };
+  const connectToWallet = async () => {
+    if (!!accountAddress) {
+      dispatch(setIsShowWalletPopup(true));
+    } else {
+      await connect();
+    }
+  };
 
-    return (
-      <BorderScreen
-        withoutNavigation
-        body={[
-          <Grid container>
-            <HeaderSubHeader title={`Claim ${titleNetwork} Rewards`}
-              subtitle={'Connect your wallet to check your rewards eligibility'} />
-            <Grid container item className={classes.ImageWrapper} />
-            <PrimaryButton
-              text={'Connect Wallet'}
-              onClick={connectToWallet}
-             size={ButtonSize.XL}/>
-          </Grid>,
-        ]}
-      />
-    );
+  return (
+    <BorderScreen
+      withoutNavigation
+      body={[
+        <Grid container>
+          <HeaderSubHeader title={`Claim ${titleNetwork} Rewards`} subtitle={'Connect your wallet to check your rewards eligibility'} />
+          <Grid container item className={classes.ImageWrapper} />
+          <PrimaryButton text={'Connect Wallet'} onClick={connectToWallet} size={ButtonSize.XL} />
+        </Grid>
+      ]}
+    />
+  );
 };
 
 export default Welcome;

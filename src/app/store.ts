@@ -15,8 +15,8 @@ export const store = configureStore({
     notificationsState: notificationsStateReducer,
     accountState: accountStateReducer,
     networkState: networkStateReducer,
-    operatorState: operatorStateReducer,
-  },
+    operatorState: operatorStateReducer
+  }
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

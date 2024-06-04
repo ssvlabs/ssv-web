@@ -106,7 +106,10 @@ export const validateFeeUpdate = ({
     response.errorMessage = `You can only increase your fee up to ${formatNumberToUi(feeMaximumIncrease)}`;
   }
   // eslint-disable-next-line radix
-  else if (new Decimal(newValue).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK) && Number(newValue) > 0) {
+  else if (
+    (new Decimal(newValue).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK) && Number(newValue) > 0) ||
+    Number(newValue) < 0
+  ) {
     const minimumFeePerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR * config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK;
     response.shouldDisplay = true;
     response.errorMessage = `Fee must be higher than ${minimumFeePerYear} SSV`;

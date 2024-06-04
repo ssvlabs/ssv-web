@@ -2,12 +2,7 @@ import { DEFAULT_PAGINATION } from '~app/common/config/config';
 import { IOperator } from '~app/model/operator.model';
 import { IPagination } from '~app/model/pagination.model';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import {
-  IHttpResponse,
-  getRequest,
-  postRequest,
-  putRequest
-} from '~root/services/httpApi.service';
+import { IHttpResponse, getRequest, postRequest, putRequest } from '~root/services/httpApi.service';
 
 type OperatorsListQuery = {
   page?: number;
@@ -58,21 +53,14 @@ const getOperators = async (props: OperatorsListQuery, skipRetry?: boolean) => {
   };
 };
 
-const getOperator = async (
-  operatorId: number | string,
-  skipRetry?: boolean
-) => {
+const getOperator = async (operatorId: number | string, skipRetry?: boolean) => {
   const utcTimestamp = new Date(new Date().toUTCString()).getTime();
   const url = `${getStoredNetwork().api}/operators/${operatorId}?performances=${PERFORMANCE_PERIOD}&withFee=true&ts=${utcTimestamp}`;
   return await getRequest(url, skipRetry);
 };
 
-const getOperatorsByIds = async (
-  operatorIds: number[]
-): Promise<IOperator[]> => {
-  const promises = operatorIds.map((operatorId) =>
-    getOperator(operatorId, false)
-  );
+const getOperatorsByIds = async (operatorIds: number[]): Promise<IOperator[]> => {
+  const promises = operatorIds.map((operatorId) => getOperator(operatorId, false));
   const responses = await Promise.all(promises);
   for (const response of responses) {
     if (!response) {
@@ -82,10 +70,7 @@ const getOperatorsByIds = async (
   return responses;
 };
 
-const getOperatorByPublicKey = async (
-  publicKey: string,
-  skipRetry: boolean = true
-) => {
+const getOperatorByPublicKey = async (publicKey: string, skipRetry: boolean = true) => {
   const url = `${getStoredNetwork().api}/operators/public_key/${publicKey}`;
   return await getRequest(url, skipRetry);
 };
@@ -93,10 +78,11 @@ const getOperatorByPublicKey = async (
 const updateOperatorMetadata = async (
   operatorId: number,
   signature: string,
-  operatorMetadata: Record<string, unknown>
+  operatorMetadata: Record<string, unknown>,
+  isContract?: boolean
 ): Promise<IHttpResponse<IOperator>> => {
   const url = `${getStoredNetwork().api}/operators/${operatorId}/metadata`;
-  return await putRequest(url, { ...operatorMetadata, signature });
+  return await putRequest(url, { ...operatorMetadata, signature, isContract });
 };
 
 const getOperatorNodes = async (layer: number): Promise<[]> => {
@@ -111,19 +97,14 @@ const getOperatorAvailableLocations = async (): Promise<[]> => {
   return res ?? [];
 };
 
-const getOperatorValidators = async (
-  props: OperatorValidatorListQuery,
-  skipRetry?: boolean
-) => {
+const getOperatorValidators = async (props: OperatorValidatorListQuery, skipRetry?: boolean) => {
   const { page, perPage, operatorId } = props;
   const url = `${getStoredNetwork().api}/validators/in_operator/${operatorId}?page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
   const res = await getRequest(url, skipRetry);
   return res ?? { validators: [], pagination: {} };
 };
 
-const checkOperatorDKGHealth = async (
-  dkgAddress: string
-): Promise<IHttpResponse<boolean>> => {
+const checkOperatorDKGHealth = async (dkgAddress: string): Promise<IHttpResponse<boolean>> => {
   return postRequest(`${getStoredNetwork().api}/operators/dkg_health_check`, {
     dkgAddress
   });

@@ -14,7 +14,7 @@ const iconMap: Record<WalletType, string> = {
 };
 
 const getWalletIconSrc = (connectorName?: string) => {
-  return iconMap[connectorName as WalletType] || '/images/wallets/metamask.svg';
+  return iconMap[connectorName?.toLowerCase() as WalletType] || '/images/wallets/metamask.svg';
 };
 
 export const WalletButton = () => {

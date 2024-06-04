@@ -28,8 +28,8 @@ type PreRequisiteType = {
 };
 
 const ButtonSeparator = styled.div`
-    width: 100%;
-    height: 12px;
+  width: 100%;
+  height: 12px;
 `;
 
 const preRequisites: PreRequisiteType[] = [
@@ -62,52 +62,61 @@ const RegisterValidatorHome = () => {
   };
 
   const moveToSelectOperators = () => {
-    processStore.setProcess({
-      item: null,
-      processName: 'register_validator'
-    }, ProcessType.Validator);
+    processStore.setProcess(
+      {
+        item: null,
+        processName: 'register_validator'
+      },
+      ProcessType.Validator
+    );
     dispatch(unselectAllOperators());
-    dispatch(setClusterSize(SELECT_MINIMUM_OPERATORS))
+    dispatch(setClusterSize(SELECT_MINIMUM_OPERATORS));
     navigate(getNextNavigation(EValidatorFlowAction.GENERATE_NEW_SHARE));
   };
 
   const moveToUploadKeyshare = () => {
-    processStore.setProcess({
-      item: null,
-      processName: 'register_validator'
-    }, ProcessType.Validator);
+    processStore.setProcess(
+      {
+        item: null,
+        processName: 'register_validator'
+      },
+      ProcessType.Validator
+    );
     navigate(getNextNavigation(EValidatorFlowAction.ALREADY_HAVE_SHARES));
   };
-
 
   return (
     <BorderScreen
       body={[
         <Grid container>
-          <HeaderSubHeader title={translations.VALIDATOR.HOME.TITLE}
-                           subtitle={translations.VALIDATOR.HOME.SUB_TITLE}
-          />
+          <HeaderSubHeader title={translations.VALIDATOR.HOME.TITLE} subtitle={translations.VALIDATOR.HOME.SUB_TITLE} />
           <Typography className={classes.GrayText}>Prerequisites</Typography>
           <Grid container item style={{ gap: 8, marginBottom: 24 }}>
             {preRequisites.map((preRequisite: PreRequisiteType, index: number) => {
-              return <Grid container item key={index} style={{ alignItems: 'center', gap: 14 }}>
-                <Grid item className={classes.GreenV}></Grid>
-                <Typography className={classes.Text}>{preRequisite.text}</Typography>
-                {preRequisite.tooltip &&
-                  <ToolTip text={<Grid className={classes.TooltipText}>{preRequisite.tooltip}
-                    &nbsp;
-                    <Grid onClick={createValidatorsLaunchpad}
-                          className={classes.TooltipLink}>{preRequisite.tooltipLinkText}</Grid>
-                  </Grid>} />
-                }
-              </Grid>;
+              return (
+                <Grid container item key={index} style={{ alignItems: 'center', gap: 14 }}>
+                  <Grid item className={classes.GreenV}></Grid>
+                  <Typography className={classes.Text}>{preRequisite.text}</Typography>
+                  {preRequisite.tooltip && (
+                    <ToolTip
+                      text={
+                        <Grid className={classes.TooltipText}>
+                          {preRequisite.tooltip}
+                          &nbsp;
+                          <Grid onClick={createValidatorsLaunchpad} className={classes.TooltipLink}>
+                            {preRequisite.tooltipLinkText}
+                          </Grid>
+                        </Grid>
+                      }
+                    />
+                  )}
+                </Grid>
+              );
             })}
           </Grid>
-          <PrimaryButton onClick={moveToSelectOperators} text={translations.VALIDATOR.HOME.BUTTON.NEW_KEYS}
-                         size={ButtonSize.XL} />
+          <PrimaryButton onClick={moveToSelectOperators} text={translations.VALIDATOR.HOME.BUTTON.NEW_KEYS} size={ButtonSize.XL} />
           <ButtonSeparator />
-          <SecondaryButton onClick={moveToUploadKeyshare} text={translations.VALIDATOR.HOME.BUTTON.EXISTING_KEYS}
-                           size={ButtonSize.XL} />
+          <SecondaryButton onClick={moveToUploadKeyshare} text={translations.VALIDATOR.HOME.BUTTON.EXISTING_KEYS} size={ButtonSize.XL} />
         </Grid>
       ]}
     />

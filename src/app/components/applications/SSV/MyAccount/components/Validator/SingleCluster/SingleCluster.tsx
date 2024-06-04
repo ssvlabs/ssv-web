@@ -16,7 +16,7 @@ import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { useStores } from '~app/hooks/useStores';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import { SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
-import { getSelectedCluster, setSelectedClusterId } from '~app/redux/account.slice';
+import { getSelectedCluster, setExcludedCluster, setSelectedClusterId } from '~app/redux/account.slice';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { isEqualsAddresses } from '~lib/utils/strings';
@@ -66,7 +66,6 @@ const SingleCluster = () => {
   const cluster = useAppSelector(getSelectedCluster);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const accountAddress = useAppSelector(getAccountAddress);
-
   const hasPrivateOperator = cluster.operators.some(
     (operator: any) =>
       operator.address_whitelist &&
@@ -80,13 +79,13 @@ const SingleCluster = () => {
     process.processName = 'cluster_registration';
     // @ts-ignore
     process.registerValidator = { depositAmount: 0 };
-    console.log(cluster.operators);
     dispatch(selectOperators(cluster.operators));
     navigate(getNextNavigation());
   };
 
   const backToClustersDashboard = () => {
     dispatch(setSelectedClusterId(''));
+    dispatch(setExcludedCluster(null));
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };
 

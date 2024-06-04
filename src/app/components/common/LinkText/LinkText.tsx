@@ -1,4 +1,3 @@
-
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
@@ -11,9 +10,9 @@ type MessageDivProps = {
   link?: string;
   onClick?: any;
   textSize?: number;
-  className?: string,
+  className?: string;
   routePush?: boolean;
-  withoutUnderline?: boolean
+  withoutUnderline?: boolean;
 };
 
 const LinkText = ({ textSize, style, text, onClick, link, className, routePush, withoutUnderline }: MessageDivProps) => {
@@ -28,7 +27,7 @@ const LinkText = ({ textSize, style, text, onClick, link, className, routePush, 
         GoogleTagManager.getInstance().sendEvent({
           category: 'external_link',
           action: 'click',
-          label: text,
+          label: text
         });
         window.open(link);
       }
@@ -39,7 +38,9 @@ const LinkText = ({ textSize, style, text, onClick, link, className, routePush, 
   };
 
   return (
-    <Typography component="div" style={style} className={className ?? classes.Link} onClick={openLink}>{text}</Typography>
+    <Typography component="div" style={style} className={className ?? classes.Link} onClick={openLink}>
+      {text}
+    </Typography>
   );
 };
 

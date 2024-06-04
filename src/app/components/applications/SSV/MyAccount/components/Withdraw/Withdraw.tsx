@@ -12,9 +12,10 @@ import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice'
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { getClusterBalance } from '~root/services/cluster.service';
-import { fromWei, toDecimalNumber } from '~root/services/conversions.service';
+import { fromWei } from '~root/services/conversions.service';
 import OperatorFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/OperatorFlow';
 import ClusterFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/ClusterFlow';
+import { getSelectedCluster } from '~app/redux/account.slice.ts';
 
 let interval: NodeJS.Timeout;
 
@@ -25,13 +26,14 @@ const Withdraw = () => {
   const stores = useStores();
   const processStore: ProcessStore = stores.Process;
   const process: SingleOperator | SingleCluster = processStore.getProcess;
+  const cluster = useAppSelector(getSelectedCluster);
   const processItem = process?.item;
-  const [processItemBalance, setProcessItemBalance] = useState(processStore.isValidatorFlow ? fromWei(processItem.balance) : processItem.balance);
+  const [processItemBalance, setProcessItemBalance] = useState(processStore.isValidatorFlow ? fromWei(cluster.balance) : processItem.balance);
 
   useEffect(() => {
     if (processStore.isValidatorFlow) {
       interval = setInterval(async () => {
-        const balance = await getClusterBalance(processItem.operators, accountAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, true);
+        const balance = await getClusterBalance(cluster.operators, accountAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, true);
         setProcessItemBalance(balance);
       }, 12000);
       return () => clearInterval(interval);
@@ -50,14 +52,14 @@ const Withdraw = () => {
           body={[
             <Grid item container>
               <Grid item xs={12} className={classes.currentBalance}>
-                {formatNumberToUi(toDecimalNumber(Number(processItemBalance?.toFixed(2))))} SSV
+                {formatNumberToUi(processItemBalance)} SSV
               </Grid>
               <Grid item xs={12} className={classes.currentBalanceDollar}></Grid>
             </Grid>
           ]}
         />
         {processStore.isValidatorFlow ? (
-          <ClusterFlow cluster={processItem} minimumLiquidationCollateral={minimumLiquidationCollateral} liquidationCollateralPeriod={liquidationCollateralPeriod} />
+          <ClusterFlow clusterBalance={processItemBalance} minimumLiquidationCollateral={minimumLiquidationCollateral} liquidationCollateralPeriod={liquidationCollateralPeriod} />
         ) : (
           <OperatorFlow operator={processItem} />
         )}

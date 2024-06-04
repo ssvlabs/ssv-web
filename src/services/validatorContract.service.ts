@@ -1,6 +1,6 @@
 import { IOperator } from '~app/model/operator.model';
 import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
-import { getContractByName } from '~root/services/contracts.service';
+import { getContractByName } from '~root/wagmi/utils';
 import { EContractName } from '~app/model/contracts.model';
 import { transactionExecutor } from '~root/services/transaction.service';
 
@@ -15,7 +15,16 @@ interface IRemoveValidators {
   dispatch: Function;
 }
 
-const removeValidators = async ({ accountAddress, isContractWallet, validatorPks, operators, liquidationCollateralPeriod, minimumLiquidationCollateral, isBulk, dispatch }: IRemoveValidators): Promise<boolean> => {
+const removeValidators = async ({
+  accountAddress,
+  isContractWallet,
+  validatorPks,
+  operators,
+  liquidationCollateralPeriod,
+  minimumLiquidationCollateral,
+  isBulk,
+  dispatch
+}: IRemoveValidators): Promise<boolean> => {
   const sortedOperatorIds = getSortedOperatorsIds(operators);
   const clusterData = await getClusterData(getClusterHash(operators, accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
   const payload = [validatorPks, sortedOperatorIds, clusterData];
@@ -32,7 +41,7 @@ const removeValidators = async ({ accountAddress, isContractWallet, validatorPks
     },
     prevState: clusterData.validatorCount,
     isContractWallet,
-    dispatch,
+    dispatch
   });
 };
 
@@ -51,7 +60,7 @@ const exitValidators = async ({ isContractWallet, validatorIds, operatorIds, isB
     contractMethod: isBulk ? contract.bulkExitValidator : contract.exitValidator,
     payload,
     isContractWallet,
-    dispatch,
+    dispatch
   });
 };
 

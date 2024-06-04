@@ -21,7 +21,6 @@ import { useStores } from '~app/hooks/useStores';
 import validatorRegistrationFlow, { EBulkMode, EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import { ProcessType, SingleCluster } from '~app/model/processes.model';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { isEqualsAddresses } from '~lib/utils/strings';
@@ -38,7 +37,8 @@ import {
   getTooltipText,
   getValidatorCountErrorMessage,
   parseToMultiShareFormat,
-  validateConsistentOperatorIds
+  validateConsistentOperatorIds,
+  KeyShareValidationResult
 } from '~root/services/keyShare.service';
 import { getOperatorsByIds } from '~root/services/operator.service';
 import { getIsRegisteredValidator } from '~root/services/validator.service';
@@ -47,6 +47,7 @@ import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getClusterSize, getOperatorValidatorsLimit, getSelectedOperators, selectOperators, setClusterSize, unselectAllOperators } from '~app/redux/operator.slice.ts';
+import { getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
@@ -60,6 +61,7 @@ const KeyShareFlow = () => {
   const removeButtons = useRef(null);
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
+  const cluster = useAppSelector(getSelectedCluster);
   const [warningMessage, setWarningMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
   const [validatorsList, setValidatorsList] = useState<Record<string, ValidatorType>>({});
@@ -88,27 +90,40 @@ const KeyShareFlow = () => {
     validatorStore.clearKeyShareFlowData();
   }, []);
 
-  async function validateKeyShareFile(keyShareMulti: KeyShares): Promise<KeyShareValidationResponse> {
+  async function validateKeyShareFile(keyShareMulti: KeyShares): Promise<KeyShareValidationResult> {
     const shares = keyShareMulti.list();
     try {
+      let operatorsData = Object.values(selectedStoreOperators);
+      let clusterSizeData = clusterSize;
       if (processStore.secondRegistration) {
-        const process: SingleCluster = processStore.process;
-        const clusterOperatorsIds = process.item.operators.map((operator: { id: number; operatorKey: string }) => operator.id).sort();
+        const clusterOperatorsIds = cluster.operators.map((operator: IOperator) => operator.id).sort();
         if (shares.some((keyShare: KeySharesItem) => !validateConsistentOperatorIds(keyShare, clusterOperatorsIds))) {
-          return getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER);
+          return {
+            response: getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER),
+            operatorsData,
+            clusterSizeData
+          };
         }
       } else {
         const consistentOperatorIds = shares[0].payload.operatorIds.sort(); // Taking first slot in array just to get any ids. should be consistent across all shares.
         const selectedOperators = await getOperatorsByIds(consistentOperatorIds);
         const selectedOperatorsIds = selectedOperators.map((operator: IOperator) => operator.id);
         if (!selectedOperators.length) {
-          return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID);
+          return {
+            response: getResponse(KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID),
+            operatorsData,
+            clusterSizeData
+          };
         } else if (shares.some((keyShare: KeySharesItem) => !validateConsistentOperatorIds(keyShare, selectedOperatorsIds))) {
-          return getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER);
+          return {
+            response: getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER),
+            operatorsData,
+            clusterSizeData
+          };
         }
 
-        dispatch(selectOperators(selectedOperators));
-        dispatch(setClusterSize(selectedOperators.length));
+        operatorsData = dispatch(selectOperators(selectedOperators)).payload;
+        clusterSizeData = dispatch(setClusterSize(selectedOperators.length)).payload;
       }
 
       if (processStore.secondRegistration) {
@@ -119,17 +134,25 @@ const KeyShareFlow = () => {
               return !selectedOperator || selectedOperator.public_key.toLowerCase() !== operatorData.operatorKey.toLowerCase();
             })
           ) {
-            return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID);
+            return {
+              response: getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID),
+              operatorsData,
+              clusterSizeData
+            };
           }
         }
       }
+      return { response: getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID), operatorsData, clusterSizeData };
     } catch (e: any) {
-      return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'Failed to process KeyShares file');
+      return {
+        response: getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'Failed to process KeyShares file'),
+        operatorsData: [],
+        clusterSizeData: 0
+      };
     }
-    return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
   }
 
-  async function storeKeyShareData(keyShareMulti: KeyShares) {
+  async function storeKeyShareData(keyShareMulti: KeyShares, clusterSizeData: number, selectedOperatorsData: IOperator[]) {
     // eslint-disable-next-line no-useless-catch
     try {
       validatorStore.setProcessedKeyShare(keyShareMulti);
@@ -144,8 +167,6 @@ const KeyShareFlow = () => {
         // TODO: add proper error handling
         return;
       }
-
-      // eslint-disable-next-line no-async-promise-executor
       const promises = Object.values(validators).map(
         (validator: ValidatorType) =>
           // eslint-disable-next-line no-async-promise-executor
@@ -171,12 +192,12 @@ const KeyShareFlow = () => {
       let currentNonce = ownerNonce;
       let warningTextMessage = '';
       let maxValidatorsCount =
-        validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length < getMaxValidatorsCountPerRegistration(clusterSize)
+        validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length < getMaxValidatorsCountPerRegistration(clusterSizeData)
           ? validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length
-          : getMaxValidatorsCountPerRegistration(clusterSize);
+          : getMaxValidatorsCountPerRegistration(clusterSizeData);
       let previousSmallCount = validatorStore.validatorsCount;
 
-      const operatorsData = Object.values(selectedStoreOperators).map((operator: IOperator) => {
+      const operatorsData = selectedOperatorsData.map((operator: IOperator) => {
         const availableValidatorsAmount = operatorValidatorsLimit - operator.validators_count;
         let hasError = false;
         if (availableValidatorsAmount < validatorStore.validatorsCount && availableValidatorsAmount > 0) {
@@ -285,11 +306,11 @@ const KeyShareFlow = () => {
       const fileJson = await validatorStore.keyShareFile.text();
       const keyShareMulti: KeyShareMulti = parseToMultiShareFormat(fileJson);
       const keyShares: KeyShares = await KeyShares.fromJson(keyShareMulti);
-      const validationResponse: KeyShareValidationResponse = await validateKeyShareFile(keyShares);
-      if (validationResponse.id !== KeyShareValidationResponseId.OK_RESPONSE_ID) {
-        return validationResponse;
+      const validationResponse: KeyShareValidationResult = await validateKeyShareFile(keyShares);
+      if (validationResponse.response.id !== KeyShareValidationResponseId.OK_RESPONSE_ID) {
+        return validationResponse.response;
       }
-      await storeKeyShareData(keyShares);
+      await storeKeyShareData(keyShares, validationResponse.clusterSizeData, validationResponse.operatorsData);
       return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
     } catch (e: any) {
       setValidatorsList({});
@@ -407,13 +428,7 @@ const KeyShareFlow = () => {
         await getClusterData(getClusterHash(Object.values(selectedStoreOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true).then(
           (clusterData) => {
             if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
-              processStore.setProcess(
-                {
-                  item: { ...clusterData, operators: Object.values(selectedStoreOperators) },
-                  processName: 'cluster_registration'
-                },
-                ProcessType.Validator
-              );
+              dispatch(setExcludedCluster({ ...clusterData, operators: Object.values(selectedStoreOperators) }));
               nextRouteAction = EValidatorFlowAction.SECOND_REGISTER;
             }
           }

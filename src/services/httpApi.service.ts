@@ -23,16 +23,10 @@ const RETRY_CONFIG = {
   }
 };
 
-const httpErrorMessage = (
-  url: string,
-  errorCode: string,
-  errorMessage: string,
-  customMessage?: string
-) =>
+const httpErrorMessage = (url: string, errorCode: string, errorMessage: string, customMessage?: string) =>
   `Http request to url ${url} ${customMessage} failed with error code ${errorCode}. Error: ${errorMessage}`;
 
-const httpGeneralErrorMessage = (url: string) =>
-  `Http request to url ${url} failed.`;
+const httpGeneralErrorMessage = (url: string) => `Http request to url ${url} failed.`;
 
 const formatError = (error: unknown, url: string) => {
   if (axios.isAxiosError(error)) {
@@ -46,11 +40,7 @@ const formatError = (error: unknown, url: string) => {
   }
 };
 
-const putRequest = async <T>(
-  url: string,
-  data?: any,
-  requestConfig?: AxiosRequestConfig
-): Promise<IHttpResponse<T>> => {
+const putRequest = async <T>(url: string, data?: any, requestConfig?: AxiosRequestConfig): Promise<IHttpResponse<T>> => {
   try {
     const response = await axios.put(url, data, requestConfig);
     return { error: null, data: response.data, result: HttpResult.SUCCESS };
@@ -81,23 +71,13 @@ const getRequest = async (url: string, skipRetry: boolean = true) => {
   }
 };
 
-const postRequest = async <T>(
-  url: string,
-  body: unknown
-): Promise<IHttpResponse<T>> => {
+const postRequest = async <T>(url: string, body: unknown): Promise<IHttpResponse<T>> => {
   try {
     const response = await axios.post(url, body);
     return { error: null, data: response.data, result: HttpResult.SUCCESS };
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.log(
-        httpErrorMessage(
-          url,
-          error.code!,
-          error.message,
-          `Body: ${JSON.stringify(body)}`
-        )
-      );
+      console.log(httpErrorMessage(url, error.code!, error.message, `Body: ${JSON.stringify(body)}`));
     }
 
     return formatError(error, url);

@@ -12,8 +12,8 @@ const GTMFrame = () => {
       window.dataLayer = window.dataLayer || [];
       // @ts-ignore
       window.dataLayer.push({
-        'gtm.start':
-          new Date().getTime(), event: 'gtm.js',
+        'gtm.start': new Date().getTime(),
+        event: 'gtm.js'
       });
 
       const scriptElement = document.createElement('script');
@@ -28,8 +28,7 @@ const GTMFrame = () => {
 
   return (
     <noscript>
-      <div id="gtmContainer"/>
-      ;
+      <div id="gtmContainer" />;
     </noscript>
   );
 };

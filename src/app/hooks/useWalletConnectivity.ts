@@ -14,15 +14,11 @@ import { checkIfWalletIsContractAction, resetWallet, setConnectedNetwork, setWal
 import { store } from '~app/store';
 import { removeFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { getNetworkInfoIndexByNetworkId, getStoredNetwork } from '~root/providers/networkInfo.provider';
-import { cleanLocalStorageAndCookie } from '~root/providers/onboardSettings.provider';
 import { initContracts, resetContracts } from '~root/services/contracts.service';
 import notifyService from '~root/services/notify.service';
 import { isChainSupported } from '~root/wagmi/config';
-import {
-  clearAllSettings,
-  fetchAndSetFeeIncreaseAndPeriods, fetchAndSetMaxOperatorFee,
-  fetchAndSetOperatorValidatorsLimit
-} from '~app/redux/operator.slice.ts';
+import { clearAllSettings, fetchAndSetFeeIncreaseAndPeriods, fetchAndSetMaxOperatorFee, fetchAndSetOperatorValidatorsLimit } from '~app/redux/operator.slice.ts';
+import { useDebounce } from 'react-use';
 
 type InitProps = {
   walletAddress: string;
@@ -38,9 +34,7 @@ export const useWalletConnectivity = () => {
   const account = useAccount();
   const provider = useEthersSignerProvider();
 
-
   const reset = () => {
-    cleanLocalStorageAndCookie();
     dispatch(resetWallet());
     dispatch(clearAllSettings());
     removeFromLocalStorageByKey('params');
@@ -60,7 +54,6 @@ export const useWalletConnectivity = () => {
     notifyService.init(chainId.toString());
     const index = getNetworkInfoIndexByNetworkId(Number(chainId));
     dispatch(setConnectedNetwork(index));
-
     initContracts({ provider: provider, network: getStoredNetwork(), shouldUseRpcUrl: connectorName !== METAMASK_LABEL });
 
     await Promise.all([await dispatch(fetchAndSetNetworkFeeAndLiquidationCollateral()), await dispatch(fetchAndSetFeeIncreaseAndPeriods())]);
@@ -79,23 +72,27 @@ export const useWalletConnectivity = () => {
     dispatch(setIsShowSsvLoader(false));
   };
 
+  useDebounce(
+    () => {
+      if (provider && account.isConnected && account.chainId) {
+        reset();
+        if (isChainSupported(account.chainId)) {
+          initiateWallet({
+            chainId: account.chainId!,
+            connectorName: account.connector?.name ?? '',
+            provider: provider,
+            walletAddress: account.address as string
+          });
+        } else {
+          dispatch(setIsShowSsvLoader(false));
+        }
+      }
+    },
+    500,
+    [account.address, account.chainId, account.connector?.name, account.isConnected, provider]
+  );
+
   useEffect(() => {
     if (account.status === 'disconnected') dispatch(setIsShowSsvLoader(false));
   }, [account.status, dispatch]);
-
-  useEffect(() => {
-    if (provider && account.isConnected && account.chainId) {
-      reset();
-      if (isChainSupported(account.chainId)) {
-        initiateWallet({
-          chainId: account.chainId!,
-          connectorName: account.connector?.name ?? '',
-          provider: provider,
-          walletAddress: account.address as string
-        });
-      } else {
-        dispatch(setIsShowSsvLoader(false));
-      }
-    }
-  }, [account.address, account.chainId, account.connector?.name, account.isConnected, provider]);
 };

@@ -117,8 +117,8 @@ const GenerateKeyShares = () => {
           <Grid container item className={classes.LinkButtonsWrapper}>
             {buttonsData
               .filter((buttonData: ButtonData) => buttonData.isShow)
-              .map((buttonData: ButtonData) => (
-                <Grid container item {...buttonData.wrapperProps}>
+              .map((buttonData: ButtonData, i) => (
+                <Grid container item {...buttonData.wrapperProps} key={i}>
                   <SecondaryButton {...buttonData.buttonProps} />
                   {!isSecondRegistration && buttonData.subText && (
                     <Grid item xs={12} className={classes.UnderButtonText}>

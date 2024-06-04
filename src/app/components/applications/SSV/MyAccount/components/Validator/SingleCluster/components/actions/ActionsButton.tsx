@@ -1,13 +1,11 @@
-import  { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
-import {
-  useStyles,
-} from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/actions.styles';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/actions.styles';
 import { BULK_FLOWS, SingleCluster } from '~app/model/processes.model';
 import { SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
@@ -27,7 +25,11 @@ const ActionsButton = () => {
      */
     const handleClickOutside = (e: any) => {
       // @ts-ignore
-      if (showActions && actionsRef.current && (!actionsRef.current.contains(e.target))) {
+      if (
+        showActions &&
+        actionsRef.current &&
+        !actionsRef.current.contains(e.target)
+      ) {
         setShowActions(false);
       }
     };
@@ -50,26 +52,41 @@ const ActionsButton = () => {
 
   return (
     <Grid>
-      <SecondaryButton text={'Actions'} onClick={onButtonClickHandler} icon={'/images/arrowDown/arrow.svg'}
-                       size={ButtonSize.SM}/>
-      {showActions && <Grid item className={classes.SettingsWrapper}>
-        <Grid ref={actionsRef} className={classes.Settings}>
-          <Grid container item className={classes.Button} onClick={() => goToBulkActions(BULK_FLOWS.BULK_REMOVE)}
-                style={{ justifyContent: 'space-between' }}>
-            <Grid container item xs style={{ gap: 8, width: '100%' }}>
-              <Grid className={classes.Remove}/>
-              <Typography>Remove Validators</Typography>
+      <SecondaryButton
+        text={'Actions'}
+        onClick={onButtonClickHandler}
+        icon={'/images/arrowDown/arrow.svg'}
+        size={ButtonSize.SM}
+      />
+      {showActions && (
+        <Grid item className={classes.SettingsWrapper}>
+          <Grid ref={actionsRef} className={classes.Settings}>
+            <Grid
+              container
+              item
+              className={classes.Button}
+              onClick={() => goToBulkActions(BULK_FLOWS.BULK_REMOVE)}
+              style={{ justifyContent: 'space-between' }}
+            >
+              <Grid container item xs style={{ gap: 8, width: '100%' }}>
+                <Grid className={classes.Remove} />
+                <Typography>Remove Validators</Typography>
+              </Grid>
             </Grid>
-          </Grid>
-          <Grid container item className={classes.Button} onClick={() => goToBulkActions(BULK_FLOWS.BULK_EXIT)}>
-            <Grid container item xs style={{ gap: 8, width: '100%' }}>
-              <Grid className={classes.Exit}/>
-              <Typography>Exit Validators</Typography>
+            <Grid
+              container
+              item
+              className={classes.Button}
+              onClick={() => goToBulkActions(BULK_FLOWS.BULK_EXIT)}
+            >
+              <Grid container item xs style={{ gap: 8, width: '100%' }}>
+                <Grid className={classes.Exit} />
+                <Typography>Exit Validators</Typography>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
-      </Grid>
-      }
+      )}
     </Grid>
   );
 };

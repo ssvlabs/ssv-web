@@ -1,9 +1,11 @@
-
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import { useStyles } from './BarMessage.styles';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { clearMessage, getMessageAndSeverity } from '~app/redux/notifications.slice';
+import {
+  clearMessage,
+  getMessageAndSeverity
+} from '~app/redux/notifications.slice';
 
 const AUTO_HIDE_DURATION = 5000;
 
@@ -23,7 +25,11 @@ const BarMessage = () => {
       open={!!message}
       autoHideDuration={AUTO_HIDE_DURATION}
     >
-      <Alert onClose={handleClose} className={classes.messageBar} severity={severity}>
+      <Alert
+        onClose={handleClose}
+        className={classes.messageBar}
+        severity={severity}
+      >
         {message}
       </Alert>
     </Snackbar>

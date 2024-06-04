@@ -16,7 +16,11 @@ import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { useStores } from '~app/hooks/useStores';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import { SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
-import { getSelectedCluster, setSelectedClusterId } from '~app/redux/account.slice';
+import {
+  getSelectedCluster,
+  setExcludedCluster,
+  setSelectedClusterId
+} from '~app/redux/account.slice';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { isEqualsAddresses } from '~lib/utils/strings';
@@ -66,27 +70,32 @@ const SingleCluster = () => {
   const cluster = useAppSelector(getSelectedCluster);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const accountAddress = useAppSelector(getAccountAddress);
-
   const hasPrivateOperator = cluster.operators.some(
     (operator: any) =>
       operator.address_whitelist &&
       !isEqualsAddresses(operator.address_whitelist, accountAddress) &&
-      operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST
+      operator.address_whitelist !==
+        config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST
   );
-  const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated || hasPrivateOperator;
-  const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
+  const showAddValidatorBtnCondition =
+    cluster.operators.some((operator: any) => operator.is_deleted) ||
+    cluster.isLiquidated ||
+    hasPrivateOperator;
+  const { getNextNavigation } = useValidatorRegistrationFlow(
+    window.location.pathname
+  );
 
   const addToCluster = () => {
     process.processName = 'cluster_registration';
     // @ts-ignore
     process.registerValidator = { depositAmount: 0 };
-    console.log(cluster.operators);
     dispatch(selectOperators(cluster.operators));
     navigate(getNextNavigation());
   };
 
   const backToClustersDashboard = () => {
     dispatch(setSelectedClusterId(''));
+    dispatch(setExcludedCluster(null));
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };
 
@@ -104,7 +113,11 @@ const SingleCluster = () => {
 
   return (
     <Grid container className={classes.Wrapper}>
-      <NewWhiteWrapper stepBack={backToClustersDashboard} type={0} header={'Cluster'} />
+      <NewWhiteWrapper
+        stepBack={backToClustersDashboard}
+        type={0}
+        header={'Cluster'}
+      />
       <Grid container item className={classes.Section}>
         {cluster.operators.map((operator: any, index: number) => {
           return <OperatorBox key={index} operator={operator} />;
@@ -112,7 +125,12 @@ const SingleCluster = () => {
       </Grid>
       <Section>
         <Grid item>
-          <Balance cluster={cluster} moveToReactivateCluster={moveToReactivateCluster} moveToDeposit={moveToDeposit} moveToWithdraw={moveToWithdraw} />
+          <Balance
+            cluster={cluster}
+            moveToReactivateCluster={moveToReactivateCluster}
+            moveToDeposit={moveToDeposit}
+            moveToWithdraw={moveToWithdraw}
+          />
         </Grid>
         <div>
           <ValidatorsWrapper>
@@ -121,12 +139,18 @@ const SingleCluster = () => {
                 <Grid item className={classes.Header}>
                   Validators
                 </Grid>
-                {cluster.validatorCount > 0 && <ValidatorsCountBadge>{cluster.validatorCount}</ValidatorsCountBadge>}
+                {cluster.validatorCount > 0 && (
+                  <ValidatorsCountBadge>
+                    {cluster.validatorCount}
+                  </ValidatorsCountBadge>
+                )}
               </TitleWrapper>
               <Grid className={classes.ButtonsWrapper}>
                 {cluster.validatorCount > 1 && <ActionsButton />}
                 <AnchorTooltip
-                  title={"One of your chosen operators has shifted to a permissioned status. To onboard validators, you'll need to select a new cluster."}
+                  title={
+                    "One of your chosen operators has shifted to a permissioned status. To onboard validators, you'll need to select a new cluster."
+                  }
                   shouldDisableHoverListener={!hasPrivateOperator}
                   placement="top"
                 >

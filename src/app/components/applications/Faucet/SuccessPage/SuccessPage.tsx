@@ -28,7 +28,13 @@ const SuccessPage = () => {
     }, 300);
   };
 
-  const notificationHandler = ({ message, severity }: { message: string; severity: AlertColor }) => {
+  const notificationHandler = ({
+    message,
+    severity
+  }: {
+    message: string;
+    severity: AlertColor;
+  }) => {
     dispatch(setMessageAndSeverity({ message, severity }));
   };
 
@@ -40,24 +46,41 @@ const SuccessPage = () => {
       body={[
         <Grid container className={classes.Wrapper}>
           <Grid container item xs={12} className={classes.TextWrapper}>
-            <Typography>Testnet SSV was successfully sent to your wallet - you can now go back to fund your
-              account.</Typography>
-            <Typography>Please note that funds might take a few minutes to arrive.</Typography>
+            <Typography>
+              Testnet SSV was successfully sent to your wallet - you can now go
+              back to fund your account.
+            </Typography>
+            <Typography>
+              Please note that funds might take a few minutes to arrive.
+            </Typography>
           </Grid>
           <Grid container item xs={12} className={classes.TextWrapper}>
             <Typography>Can&apos;t find your tokens?</Typography>
-            <Grid container item className={classes.AddToMetamask} onClick={() => wallet && registerSSVTokenInMetamask({
-              provider: wallet.provider,
-              notificationHandler,
-            })}>
-              <Grid className={classes.MetaMask}/>
+            <Grid
+              container
+              item
+              className={classes.AddToMetamask}
+              onClick={() =>
+                wallet &&
+                registerSSVTokenInMetamask({
+                  provider: wallet.provider,
+                  notificationHandler
+                })
+              }
+            >
+              <Grid className={classes.MetaMask} />
               <Typography>Add SSV to Metamask</Typography>
             </Grid>
           </Grid>
           <Grid container item xs={12} className={classes.TextWrapper}>
-            <PrimaryButton text={'Request More Funds'} onClick={requestForSSV} isLoading={isLoading} size={ButtonSize.XL}/>
+            <PrimaryButton
+              text={'Request More Funds'}
+              onClick={requestForSSV}
+              isLoading={isLoading}
+              size={ButtonSize.XL}
+            />
           </Grid>
-        </Grid>,
+        </Grid>
       ]}
     />
   );

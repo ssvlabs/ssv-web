@@ -1,4 +1,3 @@
-
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '~app/hooks/redux.hook';
@@ -9,7 +8,7 @@ const BackNavigationWrapper = styled.div`
   height: 16px;
   flex-grow: 1;
   display: flex;
-  color: #1BA5F8;
+  color: #1ba5f8;
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
@@ -33,20 +32,23 @@ const BackNavigationImage = styled.div<Record<string, any>>`
 `;
 
 type BackNavigationProps = {
-  color?: string
-  onClick?: () => void | null | undefined,
-  backButtonRedirect?: string,
+  color?: string;
+  onClick?: () => void | null | undefined;
+  backButtonRedirect?: string;
 };
 
-const BackNavigation = ({ color, onClick, backButtonRedirect }: BackNavigationProps) => {
+const BackNavigation = ({
+  color,
+  onClick,
+  backButtonRedirect
+}: BackNavigationProps) => {
   const navigate = useNavigate();
   const defaultColor = '#A1ACBE';
   const usedColor = color || defaultColor;
   const isLoading = useAppSelector(getIsLoading);
 
   const onNavigationClicked = async () => {
-    let clickHandler = () => {
-    };
+    let clickHandler = () => {};
     if (typeof onClick === 'function') {
       clickHandler = onClick;
     }

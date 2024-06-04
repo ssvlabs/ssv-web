@@ -18,10 +18,12 @@ import LinkText from '~app/components/common/LinkText';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper';
 import WarningBox from '~app/components/common/WarningBox';
 import { useStores } from '~app/hooks/useStores';
-import validatorRegistrationFlow, { EBulkMode, EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
+import validatorRegistrationFlow, {
+  EBulkMode,
+  EValidatorFlowAction
+} from '~app/hooks/useValidatorRegistrationFlow';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import { ProcessType, SingleCluster } from '~app/model/processes.model';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { isEqualsAddresses } from '~lib/utils/strings';
@@ -38,7 +40,8 @@ import {
   getTooltipText,
   getValidatorCountErrorMessage,
   parseToMultiShareFormat,
-  validateConsistentOperatorIds
+  validateConsistentOperatorIds,
+  KeyShareValidationResult
 } from '~root/services/keyShare.service';
 import { getOperatorsByIds } from '~root/services/operator.service';
 import { getIsRegisteredValidator } from '~root/services/validator.service';
@@ -46,11 +49,23 @@ import { isJsonFile } from '~root/utils/dkg.utils';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
-import { getClusterSize, getOperatorValidatorsLimit, getSelectedOperators, selectOperators, setClusterSize, unselectAllOperators } from '~app/redux/operator.slice.ts';
+import {
+  getClusterSize,
+  getOperatorValidatorsLimit,
+  getSelectedOperators,
+  selectOperators,
+  setClusterSize,
+  unselectAllOperators
+} from '~app/redux/operator.slice.ts';
+import {
+  getSelectedCluster,
+  setExcludedCluster
+} from '~app/redux/account.slice.ts';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
-  const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
+  const { liquidationCollateralPeriod, minimumLiquidationCollateral } =
+    useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
@@ -60,24 +75,38 @@ const KeyShareFlow = () => {
   const removeButtons = useRef(null);
   const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
+  const cluster = useAppSelector(getSelectedCluster);
   const [warningMessage, setWarningMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [validatorsList, setValidatorsList] = useState<Record<string, ValidatorType>>({});
+  const [validatorsList, setValidatorsList] = useState<
+    Record<string, ValidatorType>
+  >({});
   const [processingFile, setProcessFile] = useState(false);
   const [hasPermissionedOperator, setHasPermissionedOperator] = useState(false);
-  const [validatorsCount, setValidatorsCount] = useState(Object.values(validatorsList).length);
-  const { getNextNavigation, isBulkMode, getMaxValidatorsCountPerRegistration } = validatorRegistrationFlow(location.pathname);
-  const [selectedOperatorsData, setSelectedOperatorsData] = useState<SelectedOperatorData[]>([]);
-  const [validationError, setValidationError] = useState<KeyShareValidationResponse>({
-    id: KeyShareValidationResponseId.OK_RESPONSE_ID,
-    name: '',
-    errorMessage: '',
-    subErrorMessage: ''
-  });
+  const [validatorsCount, setValidatorsCount] = useState(
+    Object.values(validatorsList).length
+  );
+  const {
+    getNextNavigation,
+    isBulkMode,
+    getMaxValidatorsCountPerRegistration
+  } = validatorRegistrationFlow(location.pathname);
+  const [selectedOperatorsData, setSelectedOperatorsData] = useState<
+    SelectedOperatorData[]
+  >([]);
+  const [validationError, setValidationError] =
+    useState<KeyShareValidationResponse>({
+      id: KeyShareValidationResponseId.OK_RESPONSE_ID,
+      name: '',
+      errorMessage: '',
+      subErrorMessage: ''
+    });
   const selectedStoreOperators = useAppSelector(getSelectedOperators);
   const clusterSize = useAppSelector(getClusterSize);
-  const keyShareFileIsJson = validatorStore.keyShareFile && isJsonFile(validatorStore.keyShareFile);
-  const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(getMaxValidatorsCountPerRegistration(clusterSize));
+  const keyShareFileIsJson =
+    validatorStore.keyShareFile && isJsonFile(validatorStore.keyShareFile);
+  const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] =
+    useState<number>(getMaxValidatorsCountPerRegistration(clusterSize));
   const [isLoading, setIsLoading] = useState(false);
   const operatorValidatorsLimit = useAppSelector(getOperatorValidatorsLimit);
 
@@ -88,48 +117,118 @@ const KeyShareFlow = () => {
     validatorStore.clearKeyShareFlowData();
   }, []);
 
-  async function validateKeyShareFile(keyShareMulti: KeyShares): Promise<KeyShareValidationResponse> {
+  async function validateKeyShareFile(
+    keyShareMulti: KeyShares
+  ): Promise<KeyShareValidationResult> {
     const shares = keyShareMulti.list();
     try {
+      let operatorsData = Object.values(selectedStoreOperators);
+      let clusterSizeData = clusterSize;
       if (processStore.secondRegistration) {
-        const process: SingleCluster = processStore.process;
-        const clusterOperatorsIds = process.item.operators.map((operator: { id: number; operatorKey: string }) => operator.id).sort();
-        if (shares.some((keyShare: KeySharesItem) => !validateConsistentOperatorIds(keyShare, clusterOperatorsIds))) {
-          return getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER);
+        const clusterOperatorsIds = cluster.operators
+          .map((operator: IOperator) => operator.id)
+          .sort();
+        if (
+          shares.some(
+            (keyShare: KeySharesItem) =>
+              !validateConsistentOperatorIds(keyShare, clusterOperatorsIds)
+          )
+        ) {
+          return {
+            response: getResponse(
+              KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER
+            ),
+            operatorsData,
+            clusterSizeData
+          };
         }
       } else {
         const consistentOperatorIds = shares[0].payload.operatorIds.sort(); // Taking first slot in array just to get any ids. should be consistent across all shares.
-        const selectedOperators = await getOperatorsByIds(consistentOperatorIds);
-        const selectedOperatorsIds = selectedOperators.map((operator: IOperator) => operator.id);
+        const selectedOperators = await getOperatorsByIds(
+          consistentOperatorIds
+        );
+        const selectedOperatorsIds = selectedOperators.map(
+          (operator: IOperator) => operator.id
+        );
         if (!selectedOperators.length) {
-          return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID);
-        } else if (shares.some((keyShare: KeySharesItem) => !validateConsistentOperatorIds(keyShare, selectedOperatorsIds))) {
-          return getResponse(KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER);
+          return {
+            response: getResponse(
+              KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID
+            ),
+            operatorsData,
+            clusterSizeData
+          };
+        } else if (
+          shares.some(
+            (keyShare: KeySharesItem) =>
+              !validateConsistentOperatorIds(keyShare, selectedOperatorsIds)
+          )
+        ) {
+          return {
+            response: getResponse(
+              KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER
+            ),
+            operatorsData,
+            clusterSizeData
+          };
         }
 
-        dispatch(selectOperators(selectedOperators));
-        dispatch(setClusterSize(selectedOperators.length));
+        operatorsData = dispatch(selectOperators(selectedOperators)).payload;
+        clusterSizeData = dispatch(
+          setClusterSize(selectedOperators.length)
+        ).payload;
       }
 
       if (processStore.secondRegistration) {
         for (const keyShare of shares) {
           if (
-            keyShare.data.operators?.some((operatorData: { id: number; operatorKey: string }) => {
-              const selectedOperator = Object.values(selectedStoreOperators).find((selected: IOperator) => selected.id === operatorData.id);
-              return !selectedOperator || selectedOperator.public_key.toLowerCase() !== operatorData.operatorKey.toLowerCase();
-            })
+            keyShare.data.operators?.some(
+              (operatorData: { id: number; operatorKey: string }) => {
+                const selectedOperator = Object.values(
+                  selectedStoreOperators
+                ).find(
+                  (selected: IOperator) => selected.id === operatorData.id
+                );
+                return (
+                  !selectedOperator ||
+                  selectedOperator.public_key.toLowerCase() !==
+                    operatorData.operatorKey.toLowerCase()
+                );
+              }
+            )
           ) {
-            return getResponse(KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID);
+            return {
+              response: getResponse(
+                KeyShareValidationResponseId.OPERATOR_NOT_MATCHING_ID
+              ),
+              operatorsData,
+              clusterSizeData
+            };
           }
         }
       }
+      return {
+        response: getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID),
+        operatorsData,
+        clusterSizeData
+      };
     } catch (e: any) {
-      return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'Failed to process KeyShares file');
+      return {
+        response: getResponse(
+          KeyShareValidationResponseId.ERROR_RESPONSE_ID,
+          'Failed to process KeyShares file'
+        ),
+        operatorsData: [],
+        clusterSizeData: 0
+      };
     }
-    return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
   }
 
-  async function storeKeyShareData(keyShareMulti: KeyShares) {
+  async function storeKeyShareData(
+    keyShareMulti: KeyShares,
+    clusterSizeData: number,
+    selectedOperatorsData: IOperator[]
+  ) {
     // eslint-disable-next-line no-useless-catch
     try {
       validatorStore.setProcessedKeyShare(keyShareMulti);
@@ -137,25 +236,30 @@ const KeyShareFlow = () => {
       if (keyShares.length === 1 && isBulkMode(EBulkMode.SINGLE)) {
         validatorStore.setKeySharePublicKey(keyShares[0].payload.publicKey);
       }
-      const validators: Record<string, ValidatorType> = createValidatorsRecord(keyShareMulti);
+      const validators: Record<string, ValidatorType> =
+        createValidatorsRecord(keyShareMulti);
       const ownerNonce = await getOwnerNonce({ address: accountAddress });
 
       if (ownerNonce === undefined || ownerNonce === null) {
         // TODO: add proper error handling
         return;
       }
-
-      // eslint-disable-next-line no-async-promise-executor
       const promises = Object.values(validators).map(
         (validator: ValidatorType) =>
           // eslint-disable-next-line no-async-promise-executor
           new Promise(async (resolve, reject) => {
             try {
               const res = await getIsRegisteredValidator(validator.publicKey);
-              if (res.data && isEqualsAddresses(res.data.ownerAddress, accountAddress)) {
+              if (
+                res.data &&
+                isEqualsAddresses(res.data.ownerAddress, accountAddress)
+              ) {
                 validators[res.data.publicKey].registered = true;
               }
-              if (!validators[validator.publicKey].registered && !validators[validator.publicKey].errorMessage) {
+              if (
+                !validators[validator.publicKey].registered &&
+                !validators[validator.publicKey].errorMessage
+              ) {
                 validators[validator.publicKey].isSelected = true;
               }
               resolve(true);
@@ -171,33 +275,53 @@ const KeyShareFlow = () => {
       let currentNonce = ownerNonce;
       let warningTextMessage = '';
       let maxValidatorsCount =
-        validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length < getMaxValidatorsCountPerRegistration(clusterSize)
-          ? validatorsArray.filter((validator: ValidatorType) => validator.isSelected).length
-          : getMaxValidatorsCountPerRegistration(clusterSize);
+        validatorsArray.filter(
+          (validator: ValidatorType) => validator.isSelected
+        ).length < getMaxValidatorsCountPerRegistration(clusterSizeData)
+          ? validatorsArray.filter(
+              (validator: ValidatorType) => validator.isSelected
+            ).length
+          : getMaxValidatorsCountPerRegistration(clusterSizeData);
       let previousSmallCount = validatorStore.validatorsCount;
 
-      const operatorsData = Object.values(selectedStoreOperators).map((operator: IOperator) => {
-        const availableValidatorsAmount = operatorValidatorsLimit - operator.validators_count;
+      const operatorsData = selectedOperatorsData.map((operator: IOperator) => {
+        const availableValidatorsAmount =
+          operatorValidatorsLimit - operator.validators_count;
         let hasError = false;
-        if (availableValidatorsAmount < validatorStore.validatorsCount && availableValidatorsAmount > 0) {
+        if (
+          availableValidatorsAmount < validatorStore.validatorsCount &&
+          availableValidatorsAmount > 0
+        ) {
           hasError = true;
-          if (availableValidatorsAmount < previousSmallCount && maxAvailableValidatorsCount > 0) {
+          if (
+            availableValidatorsAmount < previousSmallCount &&
+            maxAvailableValidatorsCount > 0
+          ) {
             previousSmallCount = availableValidatorsAmount;
-            warningTextMessage = getValidatorCountErrorMessage(availableValidatorsAmount);
-            maxValidatorsCount = availableValidatorsAmount > maxAvailableValidatorsCount ? maxAvailableValidatorsCount : availableValidatorsAmount;
+            warningTextMessage = getValidatorCountErrorMessage(
+              availableValidatorsAmount
+            );
+            maxValidatorsCount =
+              availableValidatorsAmount > maxAvailableValidatorsCount
+                ? maxAvailableValidatorsCount
+                : availableValidatorsAmount;
           }
         }
         if (availableValidatorsAmount <= 0) {
           maxValidatorsCount = 0;
-          warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.OPERATOR_REACHED_MAX_VALIDATORS;
+          warningTextMessage =
+            translations.VALIDATOR.BULK_REGISTRATION
+              .OPERATOR_REACHED_MAX_VALIDATORS;
           hasError = true;
         }
         if (
           operator.address_whitelist &&
           !isEqualsAddresses(operator.address_whitelist, accountAddress) &&
-          operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST
+          operator.address_whitelist !==
+            config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST
         ) {
-          warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.WHITELIST_OPERATOR;
+          warningTextMessage =
+            translations.VALIDATOR.BULK_REGISTRATION.WHITELIST_OPERATOR;
           setHasPermissionedOperator(true);
           hasError = true;
         }
@@ -213,15 +337,22 @@ const KeyShareFlow = () => {
 
       for (let i = 0; i < Object.values(validators).length; i++) {
         const validatorPublicKey = validatorsArray[i].publicKey;
-        if (!validatorsArray[i].registered && currentNonce !== validators[validatorPublicKey].ownerNonce) {
-          validators[validatorPublicKey].errorMessage = translations.VALIDATOR.BULK_REGISTRATION.INCORRECT_OWNER_NONCE_ERROR_MESSAGE;
+        if (
+          !validatorsArray[i].registered &&
+          currentNonce !== validators[validatorPublicKey].ownerNonce
+        ) {
+          validators[validatorPublicKey].errorMessage =
+            translations.VALIDATOR.BULK_REGISTRATION.INCORRECT_OWNER_NONCE_ERROR_MESSAGE;
           validators[validatorPublicKey].isSelected = false;
         } else if (!validatorsArray[i].registered) {
-          await keyShares[i].validateSingleShares(validatorsArray[i].sharesData, {
-            ownerAddress: accountAddress,
-            ownerNonce: currentNonce,
-            publicKey: validatorsArray[i].publicKey
-          });
+          await keyShares[i].validateSingleShares(
+            validatorsArray[i].sharesData,
+            {
+              ownerAddress: accountAddress,
+              ownerNonce: currentNonce,
+              publicKey: validatorsArray[i].publicKey
+            }
+          );
           currentNonce += 1;
         }
         if (currentNonce - ownerNonce > maxValidatorsCount) {
@@ -229,12 +360,18 @@ const KeyShareFlow = () => {
         }
       }
 
-      const selectedValidatorsCount = Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length;
+      const selectedValidatorsCount = Object.values(validators).filter(
+        (validator: ValidatorType) => validator.isSelected
+      ).length;
       setValidatorsList(validators);
       setWarningMessage(warningTextMessage);
       setValidatorsCount(selectedValidatorsCount);
       setSelectedOperatorsData(operatorsData);
-      setMaxAvailableValidatorsCount(selectedValidatorsCount < maxValidatorsCount ? selectedValidatorsCount : maxValidatorsCount);
+      setMaxAvailableValidatorsCount(
+        selectedValidatorsCount < maxValidatorsCount
+          ? selectedValidatorsCount
+          : maxValidatorsCount
+      );
     } catch (err) {
       throw err;
     }
@@ -242,8 +379,17 @@ const KeyShareFlow = () => {
 
   const selectLastValidValidator = () => {
     const validators: Record<string, ValidatorType> = validatorsList;
-    const lastSelectedValidator: any = Object.values(validatorsList).find((validator: any) => !validator.errorMessage && !validator.isSelected && !validator.registered);
-    if (lastSelectedValidator && !lastSelectedValidator.errorMessage && !lastSelectedValidator.registered) {
+    const lastSelectedValidator: any = Object.values(validatorsList).find(
+      (validator: any) =>
+        !validator.errorMessage &&
+        !validator.isSelected &&
+        !validator.registered
+    );
+    if (
+      lastSelectedValidator &&
+      !lastSelectedValidator.errorMessage &&
+      !lastSelectedValidator.registered
+    ) {
       validators[lastSelectedValidator.publicKey].isSelected = true;
       setValidatorsCount((prevCount: number) => prevCount + 1);
     }
@@ -252,7 +398,12 @@ const KeyShareFlow = () => {
 
   const unselectLastValidator = () => {
     const validators: Record<string, ValidatorType> = validatorsList;
-    const lastSelectedValidator: any = Object.values(validatorsList).reduceRight((found, item: any) => found || (item.isSelected ? item : null), null);
+    const lastSelectedValidator: any = Object.values(
+      validatorsList
+    ).reduceRight(
+      (found, item: any) => found || (item.isSelected ? item : null),
+      null
+    );
     validators[lastSelectedValidator.publicKey].isSelected = false;
     setValidatorsCount((prevCount: number) => prevCount - 1);
     setValidatorsList(validators);
@@ -280,30 +431,58 @@ const KeyShareFlow = () => {
       if (!validatorStore.keyShareFile) {
         setValidatorsList({});
         setValidatorsCount(0);
-        return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'KeyShares file undefined.');
+        return getResponse(
+          KeyShareValidationResponseId.ERROR_RESPONSE_ID,
+          'KeyShares file undefined.'
+        );
       }
       const fileJson = await validatorStore.keyShareFile.text();
       const keyShareMulti: KeyShareMulti = parseToMultiShareFormat(fileJson);
       const keyShares: KeyShares = await KeyShares.fromJson(keyShareMulti);
-      const validationResponse: KeyShareValidationResponse = await validateKeyShareFile(keyShares);
-      if (validationResponse.id !== KeyShareValidationResponseId.OK_RESPONSE_ID) {
-        return validationResponse;
+      const validationResponse: KeyShareValidationResult =
+        await validateKeyShareFile(keyShares);
+      if (
+        validationResponse.response.id !==
+        KeyShareValidationResponseId.OK_RESPONSE_ID
+      ) {
+        return validationResponse.response;
       }
-      await storeKeyShareData(keyShares);
+      await storeKeyShareData(
+        keyShares,
+        validationResponse.clusterSizeData,
+        validationResponse.operatorsData
+      );
       return getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID);
     } catch (e: any) {
       setValidatorsList({});
       setValidatorsCount(0);
-      if (e.message.includes('The keyshares file you are attempting to reuse does not have the same version')) {
+      if (
+        e.message.includes(
+          'The keyshares file you are attempting to reuse does not have the same version'
+        )
+      ) {
         return getResponse(
           KeyShareValidationResponseId.ERROR_RESPONSE_ID,
-          <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
-            The keyshares file you are attempting to use appears to be from an older version. Please update ssv-keys to the latest version{' '}
-            <LinkText withoutUnderline link={config.links.SSV_KEYS_RELEASES_URL} text={'(v1.1.0)'} /> and generate your keyshares again.
+          <Grid
+            item
+            xs={12}
+            className={`${classes.FileText} ${classes.ErrorText}`}
+          >
+            The keyshares file you are attempting to use appears to be from an
+            older version. Please update ssv-keys to the latest version{' '}
+            <LinkText
+              withoutUnderline
+              link={config.links.SSV_KEYS_RELEASES_URL}
+              text={'(v1.1.0)'}
+            />{' '}
+            and generate your keyshares again.
           </Grid>
         );
       }
-      return getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, e?.message);
+      return getResponse(
+        KeyShareValidationResponseId.ERROR_RESPONSE_ID,
+        e?.message
+      );
     }
   }
 
@@ -316,12 +495,20 @@ const KeyShareFlow = () => {
     });
   };
 
-  const ownerNonceIssueCondition = Object.values(validatorsList).length && Object.values(validatorsList).every((validator: any) => validator.errorMessage);
+  const ownerNonceIssueCondition =
+    Object.values(validatorsList).length &&
+    Object.values(validatorsList).every(
+      (validator: any) => validator.errorMessage
+    );
 
   const removeFile = () => {
     setProcessFile(true);
     validatorStore.clearKeyShareFlowData();
-    setValidationError({ id: KeyShareValidationResponseId.OK_RESPONSE_ID, name: '', errorMessage: '' });
+    setValidationError({
+      id: KeyShareValidationResponseId.OK_RESPONSE_ID,
+      name: '',
+      errorMessage: ''
+    });
     validatorStore.keyShareFile = null;
     setProcessFile(false);
     setValidatorsCount(0);
@@ -357,7 +544,11 @@ const KeyShareFlow = () => {
 
     if (!keyShareFileIsJson) {
       return (
-        <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
+        <Grid
+          item
+          xs={12}
+          className={`${classes.FileText} ${classes.ErrorText}`}
+        >
           Keyshares file must be in a JSON format.
           <RemoveButton />
         </Grid>
@@ -366,9 +557,15 @@ const KeyShareFlow = () => {
 
     if (validationError.id !== 0) {
       return (
-        <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
+        <Grid
+          item
+          xs={12}
+          className={`${classes.FileText} ${classes.ErrorText}`}
+        >
           {validationError.errorMessage}
-          {validationError.subErrorMessage && <Grid item>{validationError.subErrorMessage}</Grid>}
+          {validationError.subErrorMessage && (
+            <Grid item>{validationError.subErrorMessage}</Grid>
+          )}
           <RemoveButton />
         </Grid>
       );
@@ -376,7 +573,11 @@ const KeyShareFlow = () => {
 
     if (keyShareFileIsJson) {
       return (
-        <Grid item xs={12} className={`${classes.FileText} ${classes.SuccessText}`}>
+        <Grid
+          item
+          xs={12}
+          className={`${classes.FileText} ${classes.SuccessText}`}
+        >
           {validatorStore.keyShareFile.name}
           <RemoveButton />
         </Grid>
@@ -401,23 +602,31 @@ const KeyShareFlow = () => {
           .map((validator: any) => validator.publicKey)
       );
       if (validatorsCount === 1) {
-        validatorStore.setKeySharePublicKey(validatorStore.registerValidatorsPublicKeys[0]);
+        validatorStore.setKeySharePublicKey(
+          validatorStore.registerValidatorsPublicKeys[0]
+        );
       }
       if (!processStore.secondRegistration) {
-        await getClusterData(getClusterHash(Object.values(selectedStoreOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true).then(
-          (clusterData) => {
-            if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
-              processStore.setProcess(
-                {
-                  item: { ...clusterData, operators: Object.values(selectedStoreOperators) },
-                  processName: 'cluster_registration'
-                },
-                ProcessType.Validator
-              );
-              nextRouteAction = EValidatorFlowAction.SECOND_REGISTER;
-            }
+        await getClusterData(
+          getClusterHash(Object.values(selectedStoreOperators), accountAddress),
+          liquidationCollateralPeriod,
+          minimumLiquidationCollateral,
+          true
+        ).then((clusterData) => {
+          if (
+            clusterData?.validatorCount !== 0 ||
+            clusterData?.index > 0 ||
+            !clusterData?.active
+          ) {
+            dispatch(
+              setExcludedCluster({
+                ...clusterData,
+                operators: Object.values(selectedStoreOperators)
+              })
+            );
+            nextRouteAction = EValidatorFlowAction.SECOND_REGISTER;
           }
-        );
+        });
       } else {
         nextRouteAction = EValidatorFlowAction.SECOND_REGISTER;
       }
@@ -434,15 +643,30 @@ const KeyShareFlow = () => {
     setIsLoading(false);
   };
 
-  const availableToRegisterValidatorsCount = Object.values(validatorsList).filter((validator: ValidatorType) => !validator.registered && !validator.errorMessage).length;
+  const availableToRegisterValidatorsCount = Object.values(
+    validatorsList
+  ).filter(
+    (validator: ValidatorType) =>
+      !validator.registered && !validator.errorMessage
+  ).length;
   const buttonDisableConditions =
-    processingFile || validationError.id !== 0 || !keyShareFileIsJson || !!errorMessage || validatorStore.validatorPublicKeyExist || !validatorsCount || hasPermissionedOperator;
+    processingFile ||
+    validationError.id !== 0 ||
+    !keyShareFileIsJson ||
+    !!errorMessage ||
+    validatorStore.validatorPublicKeyExist ||
+    !validatorsCount ||
+    hasPermissionedOperator;
   const MainMultiKeyShare = (
     <Grid className={classes.SummaryWrapper}>
-      <Typography className={classes.KeysharesSummaryTitle}>Keyshares summary</Typography>
+      <Typography className={classes.KeysharesSummaryTitle}>
+        Keyshares summary
+      </Typography>
       <Grid className={classes.SummaryInfoFieldWrapper}>
         <Typography className={classes.SummaryText}>Validators</Typography>
-        <Typography className={classes.SummaryText}>{validatorStore.validatorsCount}</Typography>
+        <Typography className={classes.SummaryText}>
+          {validatorStore.validatorsCount}
+        </Typography>
       </Grid>
       <Grid className={classes.SummaryInfoFieldWrapper}>
         <Typography className={classes.SummaryText}>Operators</Typography>
@@ -464,8 +688,16 @@ const KeyShareFlow = () => {
       wrapperClass={classes.marginNone}
       body={[
         <Grid item container>
-          <ImportInput removeButtons={removeButtons} processingFile={processingFile} fileText={renderFileText} fileHandler={fileHandler} fileImage={renderFileImage} />
-          {Object.values(validatorsList).length > 0 && !processingFile && MainMultiKeyShare}
+          <ImportInput
+            removeButtons={removeButtons}
+            processingFile={processingFile}
+            fileText={renderFileText}
+            fileHandler={fileHandler}
+            fileImage={renderFileImage}
+          />
+          {Object.values(validatorsList).length > 0 &&
+            !processingFile &&
+            MainMultiKeyShare}
         </Grid>
       ]}
     />
@@ -476,7 +708,9 @@ const KeyShareFlow = () => {
       withoutNavigation
       blackHeader
       header={translations.VALIDATOR.BULK_REGISTRATION.SELECTED_VALIDATORS}
-      wrapperClass={processStore.secondRegistration ? classes.marginNone : classes.marginTop}
+      wrapperClass={
+        processStore.secondRegistration ? classes.marginNone : classes.marginTop
+      }
       sideElement={
         <ValidatorCounter
           changeCountOfValidators={changeCountOfValidators}
@@ -486,22 +720,38 @@ const KeyShareFlow = () => {
           countOfValidators={ownerNonceIssueCondition ? 0 : validatorsCount}
         />
       }
-      tooltipText={getTooltipText(maxAvailableValidatorsCount, maxAvailableValidatorsCount !== 0 && maxAvailableValidatorsCount < availableToRegisterValidatorsCount)}
+      tooltipText={getTooltipText(
+        maxAvailableValidatorsCount,
+        maxAvailableValidatorsCount !== 0 &&
+          maxAvailableValidatorsCount < availableToRegisterValidatorsCount
+      )}
       body={[
         <Grid item container>
           {ownerNonceIssueCondition && (
             <ErrorMessage
               text={
                 <Typography className={classes.ErrorMessageText}>
-                  Validators within this file have an incorrect <LinkText textSize={14} link={config.links.INCORRECT_OWNER_NONCE_LINK} text={'registration nonce'} />.<br /> Please
-                  split the validator keys to new key shares aligned with the correct one.
+                  Validators within this file have an incorrect{' '}
+                  <LinkText
+                    textSize={14}
+                    link={config.links.INCORRECT_OWNER_NONCE_LINK}
+                    text={'registration nonce'}
+                  />
+                  .<br /> Please split the validator keys to new key shares
+                  aligned with the correct one.
                 </Typography>
               }
             />
           )}
           <ValidatorList validatorsList={Object.values(validatorsList)} />
           <Grid container item xs={12}>
-            <PrimaryButton text={'Next'} onClick={submitHandler} isDisabled={buttonDisableConditions} size={ButtonSize.XL} isLoading={isLoading} />
+            <PrimaryButton
+              text={'Next'}
+              onClick={submitHandler}
+              isDisabled={buttonDisableConditions}
+              size={ButtonSize.XL}
+              isLoading={isLoading}
+            />
           </Grid>
         </Grid>
       ]}
@@ -514,7 +764,10 @@ const KeyShareFlow = () => {
         <NewWhiteWrapper type={0} header={'Cluster'} />
         <Grid className={classes.KeysharesWrapper}>
           {MainScreen}
-          {validatorStore.validatorsCount > 0 && !validationError.errorMessage && !processingFile && SecondScreen}
+          {validatorStore.validatorsCount > 0 &&
+            !validationError.errorMessage &&
+            !processingFile &&
+            SecondScreen}
         </Grid>
       </>
     );
@@ -523,7 +776,10 @@ const KeyShareFlow = () => {
   return (
     <Grid className={classes.KeysharesWrapper}>
       {MainScreen}
-      {validatorStore.validatorsCount > 0 && !validationError.errorMessage && !processingFile && SecondScreen}
+      {validatorStore.validatorsCount > 0 &&
+        !validationError.errorMessage &&
+        !processingFile &&
+        SecondScreen}
     </Grid>
   );
 };

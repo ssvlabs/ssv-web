@@ -13,7 +13,11 @@ import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 import { getSelectedCluster } from '~app/redux/account.slice';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
-import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
+import {
+  getAccountAddress,
+  getIsContractWallet,
+  getIsMainnet
+} from '~app/redux/wallet.slice';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { getClusterRunWay } from '~root/services/cluster.service';
@@ -32,7 +36,8 @@ const Deposit = () => {
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isMainnet = useAppSelector(getIsMainnet);
   const cluster = useAppSelector(getSelectedCluster);
-  const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
+  const { liquidationCollateralPeriod, minimumLiquidationCollateral } =
+    useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const dispatch = useAppDispatch();
   const clusterBalance = fromWei(cluster.balance);
 
@@ -47,7 +52,7 @@ const Deposit = () => {
       operation: EClusterOperation.DEPOSIT,
       dispatch
     });
-    if (success) {
+    if (success && !isContractWallet) {
       GoogleTagManager.getInstance().sendEvent({
         category: 'my_account',
         action: 'deposit_tx',
@@ -78,7 +83,9 @@ const Deposit = () => {
     setInputValue(String(walletSsvBalance));
   }
 
-  const newBalance = inputValue ? clusterBalance + Number(inputValue) : undefined;
+  const newBalance = inputValue
+    ? clusterBalance + Number(inputValue)
+    : undefined;
 
   const bodySection = [
     <Grid item container>
@@ -118,13 +125,13 @@ const Deposit = () => {
           newRunWay: !inputValue
             ? undefined
             : getClusterRunWay(
-              {
-                ...cluster,
-                balance: toWei(newBalance)
-              },
-              liquidationCollateralPeriod,
-              minimumLiquidationCollateral
-            )
+                {
+                  ...cluster,
+                  balance: toWei(newBalance)
+                },
+                liquidationCollateralPeriod,
+                minimumLiquidationCollateral
+              )
         }}
       />
     </>
@@ -142,7 +149,11 @@ const Deposit = () => {
         header={'Deposit'}
         body={bodySection}
         bottom={[
-          <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)} isMainnet={isMainnet}>
+          <TermsAndConditionsCheckbox
+            isChecked={isChecked}
+            toggleIsChecked={() => setIsChecked(!isChecked)}
+            isMainnet={isMainnet}
+          >
             <AllowanceButton
               withAllowance
               text={'Deposit'}

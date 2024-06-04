@@ -14,7 +14,10 @@ const iconMap: Record<WalletType, string> = {
 };
 
 const getWalletIconSrc = (connectorName?: string) => {
-  return iconMap[connectorName as WalletType] || '/images/wallets/metamask.svg';
+  return (
+    iconMap[connectorName?.toLowerCase() as WalletType] ||
+    '/images/wallets/metamask.svg'
+  );
 };
 
 export const WalletButton = () => {
@@ -22,7 +25,14 @@ export const WalletButton = () => {
 
   return (
     <ConnectButton.Custom>
-      {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
+      {({
+        account,
+        chain,
+        openAccountModal,
+        openChainModal,
+        openConnectModal,
+        mounted
+      }) => {
         const connected = mounted && account && chain;
 
         return (
@@ -47,9 +57,14 @@ export const WalletButton = () => {
 
               if (chain.unsupported) {
                 return (
-                  <Button size="lg" variant="destructive" onClick={openChainModal}>
+                  <Button
+                    size="lg"
+                    variant="destructive"
+                    onClick={openChainModal}
+                  >
                     <div className="flex gap-1 items-center">
-                      <span>Wrong Network</span> <ChevronDown className="size-5" />
+                      <span>Wrong Network</span>{' '}
+                      <ChevronDown className="size-5" />
                     </div>
                   </Button>
                 );
@@ -57,7 +72,14 @@ export const WalletButton = () => {
 
               return (
                 <div className="flex gap-3">
-                  <Button size="network" variant="secondary" colorScheme="wallet" onClick={openChainModal} className="flex items-center gap-3" type="button">
+                  <Button
+                    size="network"
+                    variant="secondary"
+                    colorScheme="wallet"
+                    onClick={openChainModal}
+                    className="flex items-center gap-3"
+                    type="button"
+                  >
                     {chain.hasIcon && (
                       <div
                         className="size-6"
@@ -68,16 +90,33 @@ export const WalletButton = () => {
                           marginRight: 4
                         }}
                       >
-                        {chain.iconUrl && <img alt={chain.name ?? 'Chain icon'} src={chain.iconUrl} className="size-6" />}
+                        {chain.iconUrl && (
+                          <img
+                            alt={chain.name ?? 'Chain icon'}
+                            src={chain.iconUrl}
+                            className="size-6"
+                          />
+                        )}
                       </div>
                     )}
 
                     <div className="flex gap-1 items-center">
-                      <span> {chain.name}</span> <ChevronDown className="size-5" />
+                      <span> {chain.name}</span>{' '}
+                      <ChevronDown className="size-5" />
                     </div>
                   </Button>
-                  <Button size="wallet" className="gap-3" variant="secondary" colorScheme="wallet" onClick={openAccountModal}>
-                    <img className="size-6" src={getWalletIconSrc(connector?.name)} alt={`Connected to ${account.address}`} />
+                  <Button
+                    size="wallet"
+                    className="gap-3"
+                    variant="secondary"
+                    colorScheme="wallet"
+                    onClick={openAccountModal}
+                  >
+                    <img
+                      className="size-6"
+                      src={getWalletIconSrc(connector?.name)}
+                      alt={`Connected to ${account.address}`}
+                    />
                     {formatAddress(account.address)}
                   </Button>
                 </div>

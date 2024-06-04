@@ -8,24 +8,39 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import { fromWei, toWei } from '~root/services/conversions.service';
+import { toWei } from '~root/services/conversions.service';
 import { getClusterRunWay } from '~root/services/cluster.service';
-import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
-import { ICluster } from '~app/model/cluster.model';
+import {
+  getAccountAddress,
+  getIsContractWallet,
+  getIsMainnet
+} from '~app/redux/wallet.slice';
 import { EClusterOperation } from '~app/enums/clusterOperation.enum';
 import { PrimaryButton, ErrorButton } from '~app/atomicComponents';
 import CheckBox from '~app/components/common/CheckBox';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { depositOrWithdraw } from '~root/services/clusterContract.service';
+import {
+  getSelectedCluster,
+  setExcludedCluster
+} from '~app/redux/account.slice.ts';
 
-const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollateralPeriod }: { cluster: ICluster; minimumLiquidationCollateral: number; liquidationCollateralPeriod: number; }) => {
+const ClusterFlow = ({
+  minimumLiquidationCollateral,
+  liquidationCollateralPeriod,
+  clusterBalance
+}: {
+  minimumLiquidationCollateral: number;
+  liquidationCollateralPeriod: number;
+  clusterBalance: number;
+}) => {
   const accountAddress = useAppSelector(getAccountAddress);
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isMainnet = useAppSelector(getIsMainnet);
   const dispatch = useAppDispatch();
   const classes = useStyles();
   const navigate = useNavigate();
-  const clusterBalance = fromWei(cluster.balance);
+  const cluster = useAppSelector(getSelectedCluster);
   const [isLoading, setIsLoading] = useState(false);
   const [hasUserAgreed, setHasUserAgreed] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -35,31 +50,59 @@ const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollate
   const [newBalance, setNewBalance] = useState<string | number>(clusterBalance);
   const [withdrawValue, setWithdrawValue] = useState<number | string>('');
   const [buttonDisableCondition, setButtonDisableCondition] = useState(false);
-  const [buttonText, setButtonText] = useState(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW);
-
+  const [buttonText, setButtonText] = useState(
+    translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW
+  );
   useEffect(() => {
-    if (getClusterRunWay({
-      ...cluster,
-      balance: toWei(newBalance),
-    }, liquidationCollateralPeriod, minimumLiquidationCollateral) > config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && hasUserAgreed) {
+    if (
+      getClusterRunWay(
+        {
+          ...cluster,
+          balance: toWei(newBalance)
+        },
+        liquidationCollateralPeriod,
+        minimumLiquidationCollateral
+      ) > config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM &&
+      hasUserAgreed
+    ) {
       setHasUserAgreed(false);
     }
 
-    const balance = (withdrawValue ? clusterBalance - Number(withdrawValue) : clusterBalance).toFixed(18);
-    const runWay = getClusterRunWay({
-      ...cluster,
-      balance: toWei(balance),
-    }, liquidationCollateralPeriod, minimumLiquidationCollateral);
-    const showCheckboxCondition = runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !!cluster.validatorCount;
-
+    const balance = (
+      withdrawValue ? clusterBalance - Number(withdrawValue) : clusterBalance
+    ).toFixed(18);
+    const runWay = getClusterRunWay(
+      {
+        ...cluster,
+        balance: toWei(balance)
+      },
+      liquidationCollateralPeriod,
+      minimumLiquidationCollateral
+    );
+    const showCheckboxCondition =
+      runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM &&
+      !!cluster.validatorCount;
+    const isLiqudationState = runWay <= 0 && !!cluster.validatorCount;
     setNewBalance(balance);
-    setIsClusterLiquidation(runWay <= 0 && !!cluster.validatorCount);
+    setIsClusterLiquidation(isLiqudationState);
     setShowCheckBox(showCheckboxCondition);
-    setButtonDisableCondition(runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !!cluster.validatorCount && !hasUserAgreed || Number(withdrawValue) === 0 || (isMainnet && !isChecked));
+    setButtonDisableCondition(
+      (runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM &&
+        !!cluster.validatorCount &&
+        !hasUserAgreed) ||
+        Number(withdrawValue) === 0 ||
+        (isMainnet && !isChecked)
+    );
 
-    setCheckBoxText(isClusterLiquidation && showCheckboxCondition ? translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATE_MY_CLUSTER : translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATION_RISK);
+    setCheckBoxText(
+      isLiqudationState && showCheckboxCondition
+        ? translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATE_MY_CLUSTER
+        : translations.VALIDATOR.WITHDRAW.CHECKBOX.LIQUIDATION_RISK
+    );
     if (runWay <= 0 && !!cluster.validatorCount) {
-      setButtonText(translations.VALIDATOR.WITHDRAW.BUTTON.LIQUIDATE_MY_CLUSTER);
+      setButtonText(
+        translations.VALIDATOR.WITHDRAW.BUTTON.LIQUIDATE_MY_CLUSTER
+      );
     } else if (withdrawValue === clusterBalance) {
       setButtonText(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW_ALL);
     } else {
@@ -69,6 +112,9 @@ const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollate
 
   const withdrawSsv = async () => {
     setIsLoading(true);
+    if (!cluster.validatorCount && toWei(withdrawValue) === cluster.balance) {
+      dispatch(setExcludedCluster(cluster));
+    }
     const success = await depositOrWithdraw({
       cluster,
       amount: withdrawValue.toString(),
@@ -76,11 +122,18 @@ const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollate
       isContractWallet,
       minimumLiquidationCollateral,
       liquidationCollateralPeriod,
-      operation: isClusterLiquidation ? EClusterOperation.LIQUIDATE : EClusterOperation.WITHDRAW,
-      dispatch,
+      operation: isClusterLiquidation
+        ? EClusterOperation.LIQUIDATE
+        : EClusterOperation.WITHDRAW,
+      dispatch
     });
-    if (success) {
-      navigate(isClusterLiquidation && !cluster.validatorCount ? -2 : -1);
+    if (success && !isContractWallet) {
+      navigate(
+        (isClusterLiquidation && !cluster.validatorCount) ||
+          (!cluster.validatorCount && toWei(withdrawValue) === cluster.balance)
+          ? -2
+          : -1
+      );
     }
     setIsLoading(false);
   };
@@ -104,7 +157,7 @@ const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollate
 
   const Button = isClusterLiquidation ? ErrorButton : PrimaryButton;
 
-  const secondBorderScreen = [(
+  const secondBorderScreen = [
     <Grid item container>
       <Grid container item xs={12} className={classes.BalanceWrapper}>
         <Grid item container xs={12}>
@@ -121,23 +174,31 @@ const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollate
             <Grid item onClick={maxValue} className={classes.MaxButton}>
               MAX
             </Grid>
-            <Grid item className={classes.MaxButtonText}>SSV</Grid>
+            <Grid item className={classes.MaxButtonText}>
+              SSV
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
-    </Grid>
-  ), (
+    </Grid>,
     <NewRemainingDays
       withdrawState
       isInputFilled={!!withdrawValue}
       cluster={{
         ...cluster,
-        newRunWay: !withdrawValue ? undefined : getClusterRunWay({
-          ...cluster,
-          balance: toWei(newBalance),
-        }, liquidationCollateralPeriod, minimumLiquidationCollateral),
-      }}/>
-  )];
+        newRunWay: !withdrawValue
+          ? undefined
+          : getClusterRunWay(
+              {
+                ...cluster,
+                balance: toWei(newBalance)
+              },
+              liquidationCollateralPeriod,
+              minimumLiquidationCollateral
+            )
+      }}
+    />
+  ];
 
   if (!cluster.validatorCount) {
     secondBorderScreen.pop();
@@ -150,21 +211,28 @@ const ClusterFlow = ({ cluster, minimumLiquidationCollateral, liquidationCollate
       header={'Withdraw'}
       body={secondBorderScreen}
       bottom={[
-        <TermsAndConditionsCheckbox isChecked={isChecked} toggleIsChecked={() => setIsChecked(!isChecked)}
-                                    isMainnet={isMainnet}>
+        <TermsAndConditionsCheckbox
+          isChecked={isChecked}
+          toggleIsChecked={() => setIsChecked(!isChecked)}
+          isMainnet={isMainnet}
+        >
           <div>
             {showCheckBox && (
-              <CheckBox toggleIsChecked={() => setHasUserAgreed(!hasUserAgreed)} text={checkBoxText}
-                        isChecked={hasUserAgreed}/>
+              <CheckBox
+                toggleIsChecked={() => setHasUserAgreed(!hasUserAgreed)}
+                text={checkBoxText}
+                isChecked={hasUserAgreed}
+              />
             )}
             <Button
               text={buttonText}
               onClick={withdrawSsv}
               isLoading={isLoading}
               isDisabled={buttonDisableCondition}
-              size={ButtonSize.XL}/>
+              size={ButtonSize.XL}
+            />
           </div>
-        </TermsAndConditionsCheckbox>,
+        </TermsAndConditionsCheckbox>
       ]}
     />
   );

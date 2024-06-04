@@ -14,14 +14,18 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice';
 import { currentNetworkName } from '~root/providers/networkInfo.provider';
-import { getAmountToTransfer, requestSsvFromFaucet } from '~root/services/faucet.service';
+import {
+  getAmountToTransfer,
+  requestSsvFromFaucet
+} from '~root/services/faucet.service';
 
 const RequestForSsv = () => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [disabled, setDisabled] = useState(true);
   const [buttonText, setButtonText] = useState('Request');
-  const [reachedMaxTransactionPerDay, setReachedMaxTransactionPerDay] = useState(false);
+  const [reachedMaxTransactionPerDay, setReachedMaxTransactionPerDay] =
+    useState(false);
   const [amountToTransfer, setAmountToTransfer] = useState(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const accountAddress = useAppSelector(getAccountAddress);
@@ -71,7 +75,7 @@ const RequestForSsv = () => {
       body={[
         <Grid container className={classes.Wrapper}>
           <Grid item xs={12}>
-            <InputLabel title="Recipient Wallet"/>
+            <InputLabel title="Recipient Wallet" />
             <TextInput
               disable
               data-testid="recipient-wallet"
@@ -79,24 +83,35 @@ const RequestForSsv = () => {
             />
           </Grid>
           <Grid item xs={12}>
-            <InputLabel title="Request Amount"/>
-            {amountToTransfer !== undefined && <TextInput
-              disable
-              value={`${amountToTransfer} SSV`}
-              data-testid='request-amount'
-              wrapperClass={classes.AmountInput}
-            />}
+            <InputLabel title="Request Amount" />
+            {amountToTransfer !== undefined && (
+              <TextInput
+                disable
+                value={`${amountToTransfer} SSV`}
+                data-testid="request-amount"
+                wrapperClass={classes.AmountInput}
+              />
+            )}
           </Grid>
-          {error && <Grid item xs={12} className={classes.ErrorText}>{error}</Grid>}
+          {error && (
+            <Grid item xs={12} className={classes.ErrorText}>
+              {error}
+            </Grid>
+          )}
           <HCaptcha
             ref={captchaRef}
             theme={isDarkMode ? 'dark' : 'light'}
             onVerify={() => setDisabled(false)}
             sitekey={String(process.env.REACT_APP_CAPTCHA_KEY)}
           />
-          <PrimaryButton text={buttonText} onClick={requestForSSV}
-                         isDisabled={isMainnet || disabled || reachedMaxTransactionPerDay} isLoading={isLoading} size={ButtonSize.XL}/>
-        </Grid>,
+          <PrimaryButton
+            text={buttonText}
+            onClick={requestForSSV}
+            isDisabled={isMainnet || disabled || reachedMaxTransactionPerDay}
+            isLoading={isLoading}
+            size={ButtonSize.XL}
+          />
+        </Grid>
       ]}
     />
   );

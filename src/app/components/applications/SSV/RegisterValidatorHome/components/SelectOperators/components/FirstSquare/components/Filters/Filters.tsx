@@ -1,4 +1,4 @@
-import  { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import CheckBox from '~app/components/common/CheckBox';
@@ -29,7 +29,11 @@ const Filters = ({ setFilterBy, selectDkgEnabled, dkgEnabled }: Props) => {
   useEffect(() => {
     const handleClickOutside = (e: any) => {
       // @ts-ignore
-      if (shouldOpen && wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+      if (
+        shouldOpen &&
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target)
+      ) {
         openPopUp(false);
       }
     };
@@ -48,11 +52,22 @@ const Filters = ({ setFilterBy, selectDkgEnabled, dkgEnabled }: Props) => {
   if (dkgEnabled) filterSelected += 1;
 
   return (
-    <Grid item container ref={wrapperRef}
-      className={`${classes.FiltersWrapper} ${filterSelected > 0 ? classes.Bold : ''}`} onClick={openPopup}>
+    <Grid
+      item
+      container
+      ref={wrapperRef}
+      className={`${classes.FiltersWrapper} ${filterSelected > 0 ? classes.Bold : ''}`}
+      onClick={openPopup}
+    >
       <Grid item className={classes.FilterImg} />
-      <Grid item className={classes.FilterText}>Filters</Grid>
-      {filterSelected > 0 && <Grid item className={classes.FilterTextBlue}>{filterSelected}</Grid>}
+      <Grid item className={classes.FilterText}>
+        Filters
+      </Grid>
+      {filterSelected > 0 && (
+        <Grid item className={classes.FilterTextBlue}>
+          {filterSelected}
+        </Grid>
+      )}
       {shouldOpen && (
         <Grid container className={classes.Popup}>
           <CheckBox
@@ -63,11 +78,15 @@ const Filters = ({ setFilterBy, selectDkgEnabled, dkgEnabled }: Props) => {
               GoogleTagManager.getInstance().sendEvent({
                 category: 'validator_register',
                 action: 'filter',
-                label: 'verified_operator',
+                label: 'verified_operator'
               });
               selectVerify(!verifySelected);
             }}
-            text={<Grid item className={classes.Text}>Verified</Grid>}
+            text={
+              <Grid item className={classes.Text}>
+                Verified
+              </Grid>
+            }
           />
           <CheckBox
             width={24}
@@ -77,11 +96,15 @@ const Filters = ({ setFilterBy, selectDkgEnabled, dkgEnabled }: Props) => {
               GoogleTagManager.getInstance().sendEvent({
                 category: 'validator_register',
                 action: 'filter',
-                label: 'dkg_enabled',
+                label: 'dkg_enabled'
               });
               selectDkgEnabled(!dkgEnabled);
             }}
-            text={<Grid item className={classes.Text}>DKG Enabled</Grid>}
+            text={
+              <Grid item className={classes.Text}>
+                DKG Enabled
+              </Grid>
+            }
           />
         </Grid>
       )}

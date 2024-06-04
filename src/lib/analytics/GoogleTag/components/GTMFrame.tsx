@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
-export const GOOGLE_TAG_MANAGER_URL = 'https://www.googletagmanager.com/gtm.js?id=';
+export const GOOGLE_TAG_MANAGER_URL =
+  'https://www.googletagmanager.com/gtm.js?id=';
 const GTMFrame = () => {
   const [scriptCreated, setScriptCreated] = useState(false);
   const currentNetwork = getStoredNetwork();
@@ -12,8 +13,8 @@ const GTMFrame = () => {
       window.dataLayer = window.dataLayer || [];
       // @ts-ignore
       window.dataLayer.push({
-        'gtm.start':
-          new Date().getTime(), event: 'gtm.js',
+        'gtm.start': new Date().getTime(),
+        event: 'gtm.js'
       });
 
       const scriptElement = document.createElement('script');
@@ -28,8 +29,7 @@ const GTMFrame = () => {
 
   return (
     <noscript>
-      <div id="gtmContainer"/>
-      ;
+      <div id="gtmContainer" />;
     </noscript>
   );
 };

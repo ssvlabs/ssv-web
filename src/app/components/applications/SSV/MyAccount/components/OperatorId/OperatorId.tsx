@@ -1,4 +1,3 @@
-
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
@@ -9,10 +8,10 @@ import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 
 type Props = {
-  id: number,
-  text?: string,
-  successPage?: boolean,
-  withoutExplorer?: boolean,
+  id: number;
+  text?: string;
+  successPage?: boolean;
+  withoutExplorer?: boolean;
 };
 
 const OperatorId = ({ id, text, successPage, withoutExplorer }: Props) => {
@@ -21,23 +20,42 @@ const OperatorId = ({ id, text, successPage, withoutExplorer }: Props) => {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(String(id));
-    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
+    dispatch(
+      setMessageAndSeverity({
+        message: 'Copied to clipboard.',
+        severity: 'success'
+      })
+    );
   };
 
   const openExplorer = () => {
     GoogleTagManager.getInstance().sendEvent({
       category: 'explorer_link',
       action: 'click',
-      label: 'operator',
+      label: 'operator'
     });
     window.open(`${config.links.EXPLORER_URL}/operators/${id}`, '_blank');
   };
 
   return (
     <Grid item container className={classes.Wrapper}>
-      <Typography className={classes.OperatorId}>{text ?? successPage ? 'ID' : 'Operator ID'}: {id}</Typography>
-      <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
-      {!withoutExplorer && <ImageDiv onClick={openExplorer} image={'explorer'} width={24} height={24} />}
+      <Typography className={classes.OperatorId}>
+        {text ?? successPage ? 'ID' : 'Operator ID'}: {id}
+      </Typography>
+      <ImageDiv
+        onClick={copyToClipboard}
+        image={'copy'}
+        width={24}
+        height={24}
+      />
+      {!withoutExplorer && (
+        <ImageDiv
+          onClick={openExplorer}
+          image={'explorer'}
+          width={24}
+          height={24}
+        />
+      )}
     </Grid>
   );
 };

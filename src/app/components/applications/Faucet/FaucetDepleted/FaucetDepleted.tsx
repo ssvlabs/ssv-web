@@ -1,4 +1,3 @@
-
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -28,13 +27,15 @@ const SuccessPage = () => {
             Sorry, unfortunately the faucet has depleted for the time being.
           </Typography>
           <Typography className={classes.Text}>
-            Please try again at a later time or jump to our discord to ask the community for help.
+            Please try again at a later time or jump to our discord to ask the
+            community for help.
           </Typography>
           <PrimaryButton
             text={'Go to Discord'}
             onClick={requestForSSV}
-            size={ButtonSize.XL}/>
-        </Grid>,
+            size={ButtonSize.XL}
+          />
+        </Grid>
       ]}
     />
   );

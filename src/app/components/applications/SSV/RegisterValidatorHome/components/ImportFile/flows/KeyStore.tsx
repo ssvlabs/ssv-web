@@ -1,4 +1,4 @@
-import  { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -13,10 +13,10 @@ import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import {
-  useStyles,
-} from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
-import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
+import validatorRegistrationFlow, {
+  EValidatorFlowAction
+} from '~app/hooks/useValidatorRegistrationFlow';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
 import { isJsonFile } from '~root/utils/dkg.utils';
 import { PrimaryButton } from '~app/atomicComponents';
@@ -92,51 +92,71 @@ const KeyStoreFlow = () => {
     } else if (!keyStoreFileIsJson && validatorStore.keyStoreFile) {
       fileClass += ` ${classes.Fail}`;
     }
-    return <Grid item className={fileClass}/>;
+    return <Grid item className={fileClass} />;
   };
 
   const renderFileText = () => {
     if (!validatorStore.keyStoreFile) {
       return (
         <Grid item xs={12} className={classes.FileText}>
-          Drag and drop files or <LinkText text={'browse'}/>
+          Drag and drop files or <LinkText text={'browse'} />
         </Grid>
       );
     }
 
     if (keyStoreFileIsJson && validatorStore.validatorPublicKeyExist) {
       return (
-        <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
-          Validator is already registered to the network, <br/>
+        <Grid
+          item
+          xs={12}
+          className={`${classes.FileText} ${classes.ErrorText}`}
+        >
+          Validator is already registered to the network, <br />
           please try a different keystore file.
-          <RemoveButton/>
+          <RemoveButton />
         </Grid>
       );
     }
     if (!keyStoreFileIsJson) {
       return (
-        <Grid item xs={12} className={`${classes.FileText} ${classes.ErrorText}`}>
+        <Grid
+          item
+          xs={12}
+          className={`${classes.FileText} ${classes.ErrorText}`}
+        >
           Invalid file format - only .json files are supported
-          <RemoveButton/>
+          <RemoveButton />
         </Grid>
       );
     }
 
     if (keyStoreFileIsJson) {
       return (
-        <Grid item xs={12} className={`${classes.FileText} ${classes.SuccessText}`}>
+        <Grid
+          item
+          xs={12}
+          className={`${classes.FileText} ${classes.SuccessText}`}
+        >
           {validatorStore.keyStoreFile.name}
-          <RemoveButton/>
+          <RemoveButton />
         </Grid>
       );
     }
   };
 
-  const sendTagManagerEvent = (category: string, action: string, label: string) => {
+  const sendTagManagerEvent = (
+    category: string,
+    action: string,
+    label: string
+  ) => {
     GoogleTagManager.getInstance().sendEvent({ category, action, label });
   };
 
-  const RemoveButton = () => <Grid ref={removeButtons} onClick={removeFile} className={classes.Remove}>Remove</Grid>;
+  const RemoveButton = () => (
+    <Grid ref={removeButtons} onClick={removeFile} className={classes.Remove}>
+      Remove
+    </Grid>
+  );
 
   const submitHandler = async () => {
     setIsLoading(true);
@@ -145,7 +165,9 @@ const KeyStoreFlow = () => {
         await validatorStore.extractKeyStoreData(keyStorePassword);
         // TODO fix this dummy value.
         const deposited = true; // await isDeposited()
-        const nextRouteAction = processStore.secondRegistration ? EValidatorFlowAction.SECOND_REGISTER : EValidatorFlowAction.FIRST_REGISTER;
+        const nextRouteAction = processStore.secondRegistration
+          ? EValidatorFlowAction.SECOND_REGISTER
+          : EValidatorFlowAction.FIRST_REGISTER;
         setIsLoading(false);
         validatorStore.registrationMode = 1;
         validatorStore.setMultiSharesMode(1);
@@ -153,63 +175,98 @@ const KeyStoreFlow = () => {
         if (deposited) {
           sendTagManagerEvent('validator_register', 'upload_file', 'success');
         } else {
-          sendTagManagerEvent('validator_register', 'upload_file', 'not_deposited');
+          sendTagManagerEvent(
+            'validator_register',
+            'upload_file',
+            'not_deposited'
+          );
           navigate(config.routes.SSV.VALIDATOR.DEPOSIT_VALIDATOR);
         }
       } catch (error: any) {
         if (error.message === 'Invalid password') {
-          sendTagManagerEvent('validator_register', 'upload_file', 'invalid_password');
-          setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD);
+          sendTagManagerEvent(
+            'validator_register',
+            'upload_file',
+            'invalid_password'
+          );
+          setErrorMessage(
+            translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_PASSWORD
+          );
         } else {
-          sendTagManagerEvent('validator_register', 'upload_file', 'invalid_file');
-          setErrorMessage(translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE);
+          sendTagManagerEvent(
+            'validator_register',
+            'upload_file',
+            'invalid_file'
+          );
+          setErrorMessage(
+            translations.VALIDATOR.IMPORT.FILE_ERRORS.INVALID_FILE
+          );
         }
         setIsLoading(false);
       }
     }, 200);
   };
 
+  const inputDisableConditions =
+    !keyStoreFileIsJson ||
+    isProcessingFile ||
+    validatorStore.validatorPublicKeyExist;
+  const buttonDisableConditions =
+    isProcessingFile ||
+    !keyStoreFileIsJson ||
+    !keyStorePassword ||
+    !!errorMessage ||
+    validatorStore.validatorPublicKeyExist;
 
-  const inputDisableConditions = !keyStoreFileIsJson || isProcessingFile || validatorStore.validatorPublicKeyExist;
-  const buttonDisableConditions = isProcessingFile || !keyStoreFileIsJson || !keyStorePassword || !!errorMessage || validatorStore.validatorPublicKeyExist;
-
-  const MainScreen = <BorderScreen
-    blackHeader
-    header={translations.VALIDATOR.IMPORT.TITLE}
-    withoutNavigation={processStore.secondRegistration}
-    body={[
-      <Grid item container>
-        <Grid item xs={12} className={classes.SubHeader}>Upload your validator <b>keystore</b> file below</Grid>
-        <ImportInput
-          fileText={renderFileText}
-          fileHandler={fileHandler}
-          fileImage={renderFileImage}
-          removeButtons={removeButtons}
-          processingFile={isProcessingFile}
-        />
-        <Grid container item xs={12}>
-          <><InputLabel title="Keystore Password"/>
-            <Grid item xs={12} className={classes.ItemWrapper}>
-              <TextInput withLock disable={inputDisableConditions} value={keyStorePassword}
-                         onChangeCallback={handlePassword}/>
-            </Grid>
-            <Grid item xs={12} className={classes.ErrorWrapper}>
-              {errorMessage && <ErrorMessage text={errorMessage}/>}
-            </Grid></>
-          <PrimaryButton text={'Next'} onClick={submitHandler} isDisabled={buttonDisableConditions} size={ButtonSize.XL}
-                         isLoading={isLoading}/>
+  const MainScreen = (
+    <BorderScreen
+      blackHeader
+      header={translations.VALIDATOR.IMPORT.TITLE}
+      withoutNavigation={processStore.secondRegistration}
+      body={[
+        <Grid item container>
+          <Grid item xs={12} className={classes.SubHeader}>
+            Upload your validator <b>keystore</b> file below
+          </Grid>
+          <ImportInput
+            fileText={renderFileText}
+            fileHandler={fileHandler}
+            fileImage={renderFileImage}
+            removeButtons={removeButtons}
+            processingFile={isProcessingFile}
+          />
+          <Grid container item xs={12}>
+            <>
+              <InputLabel title="Keystore Password" />
+              <Grid item xs={12} className={classes.ItemWrapper}>
+                <TextInput
+                  withLock
+                  disable={inputDisableConditions}
+                  value={keyStorePassword}
+                  onChangeCallback={handlePassword}
+                />
+              </Grid>
+              <Grid item xs={12} className={classes.ErrorWrapper}>
+                {errorMessage && <ErrorMessage text={errorMessage} />}
+              </Grid>
+            </>
+            <PrimaryButton
+              text={'Next'}
+              onClick={submitHandler}
+              isDisabled={buttonDisableConditions}
+              size={ButtonSize.XL}
+              isLoading={isLoading}
+            />
+          </Grid>
         </Grid>
-      </Grid>,
-    ]}
-  />;
+      ]}
+    />
+  );
 
   if (processStore.secondRegistration) {
     return (
       <Grid container>
-        <NewWhiteWrapper
-          type={0}
-          header={'Cluster'}
-        />
+        <NewWhiteWrapper type={0} header={'Cluster'} />
         {MainScreen}
       </Grid>
     );

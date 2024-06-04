@@ -93,10 +93,11 @@ const getOperatorByPublicKey = async (
 const updateOperatorMetadata = async (
   operatorId: number,
   signature: string,
-  operatorMetadata: Record<string, unknown>
+  operatorMetadata: Record<string, unknown>,
+  isContract?: boolean
 ): Promise<IHttpResponse<IOperator>> => {
   const url = `${getStoredNetwork().api}/operators/${operatorId}/metadata`;
-  return await putRequest(url, { ...operatorMetadata, signature });
+  return await putRequest(url, { ...operatorMetadata, signature, isContract });
 };
 
 const getOperatorNodes = async (layer: number): Promise<[]> => {

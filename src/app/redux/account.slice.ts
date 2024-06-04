@@ -22,6 +22,7 @@ export interface AccountState {
   clustersPagination: Pagination;
   selectedClusterId: string;
   selectedOperatorId: number;
+  excludedCluster: ICluster | null;
 }
 
 const initialState: AccountState = {
@@ -33,28 +34,68 @@ const initialState: AccountState = {
   clustersPagination: DEFAULT_PAGINATION,
   selectedClusterId: '',
   selectedOperatorId: -1,
+  excludedCluster: null
 };
 
-export const fetchOperators = createAsyncThunk('account/fetchOperators', async ({ forcePage, forcePerPage }: { forcePage?: number; forcePerPage?: number }, thunkApi) => {
-  const state = thunkApi.getState() as RootState;
-  const accountAddress = state.walletState.accountAddress;
-  const { page, per_page } = state.accountState.operatorsPagination;
-  return await getOperatorsByOwnerAddress({ page: forcePage ?? page, perPage: forcePerPage ?? per_page, accountAddress });
-});
+export const fetchOperators = createAsyncThunk(
+  'account/fetchOperators',
+  async (
+    {
+      forcePage,
+      forcePerPage
+    }: {
+      forcePage?: number;
+      forcePerPage?: number;
+    },
+    thunkApi
+  ) => {
+    const state = thunkApi.getState() as RootState;
+    const accountAddress = state.walletState.accountAddress;
+    const { page, per_page } = state.accountState.operatorsPagination;
+    return await getOperatorsByOwnerAddress({
+      page: forcePage ?? page,
+      perPage: forcePerPage ?? per_page,
+      accountAddress
+    });
+  }
+);
 
-export const fetchClusters = createAsyncThunk('account/fetchClusters', async ({ forcePage, forcePerPage }: { forcePage?: number; forcePerPage?: number }, thunkApi) => {
-  const state = thunkApi.getState() as RootState;
-  const accountAddress = state.walletState.accountAddress;
-  const liquidationCollateralPeriod = state.networkState.liquidationCollateralPeriod;
-  const minimumLiquidationCollateral = state.networkState.minimumLiquidationCollateral;
-  const { page, per_page } = state.accountState.clustersPagination;
-  return await getClustersByOwnerAddress({ page: forcePage ?? page, perPage: forcePerPage ?? per_page, accountAddress, liquidationCollateralPeriod, minimumLiquidationCollateral });
-});
+export const fetchClusters = createAsyncThunk(
+  'account/fetchClusters',
+  async (
+    {
+      forcePage,
+      forcePerPage
+    }: {
+      forcePage?: number;
+      forcePerPage?: number;
+    },
+    thunkApi
+  ) => {
+    const state = thunkApi.getState() as RootState;
+    const accountAddress = state.walletState.accountAddress;
+    const liquidationCollateralPeriod =
+      state.networkState.liquidationCollateralPeriod;
+    const minimumLiquidationCollateral =
+      state.networkState.minimumLiquidationCollateral;
+    const { page, per_page } = state.accountState.clustersPagination;
+    return await getClustersByOwnerAddress({
+      page: forcePage ?? page,
+      perPage: forcePerPage ?? per_page,
+      accountAddress,
+      liquidationCollateralPeriod,
+      minimumLiquidationCollateral
+    });
+  }
+);
 
-export const refreshOperatorsAndClusters = createAsyncThunk('account/refreshOperatorsAndClusters', async (_, thunkApi) => {
-  await thunkApi.dispatch(fetchOperators({}));
-  await thunkApi.dispatch(fetchClusters({}));
-});
+export const refreshOperatorsAndClusters = createAsyncThunk(
+  'account/refreshOperatorsAndClusters',
+  async (_, thunkApi) => {
+    await thunkApi.dispatch(fetchOperators({}));
+    await thunkApi.dispatch(fetchClusters({}));
+  }
+);
 
 export const slice = createSlice({
   name: 'accountState',
@@ -70,6 +111,9 @@ export const slice = createSlice({
     setSelectedOperatorId: (state, action: { payload: number }) => {
       state.selectedOperatorId = action.payload;
     },
+    setExcludedCluster: (state, action: { payload: ICluster | null }) => {
+      state.excludedCluster = action.payload;
+    },
     sortOperatorsByStatus: (state) => {
       state.operators = state.operators.sort((a: any, b: any) => {
         if (a.status === 'Inactive') {
@@ -82,7 +126,7 @@ export const slice = createSlice({
           return b.status === 'No Validators' ? 0 : 1;
         }
       });
-    },
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(fetchOperators.pending, (state) => {
@@ -108,18 +152,38 @@ export const slice = createSlice({
     builder.addCase(fetchClusters.rejected, (state) => {
       state.isFetchingClusters = false;
     });
-  },
+  }
 });
 
 export const accountStateReducer = slice.reducer;
 
-export const { resetPagination, setSelectedClusterId, setSelectedOperatorId, sortOperatorsByStatus } = slice.actions;
+export const {
+  resetPagination,
+  setExcludedCluster,
+  setSelectedClusterId,
+  setSelectedOperatorId,
+  sortOperatorsByStatus
+} = slice.actions;
 
-export const getAccountOperators = (state: RootState) => state.accountState.operators;
+export const getAccountOperators = (state: RootState) =>
+  state.accountState.operators;
 // export const getIsFetchingOperators = (state: RootState) => state.accountState.isFetchingOperators;
-export const getOperatorsPagination = (state: RootState) => state.accountState.operatorsPagination;
-export const getAccountClusters = (state: RootState) => state.accountState.clusters;
+export const getOperatorsPagination = (state: RootState) =>
+  state.accountState.operatorsPagination;
+export const getAccountClusters = (state: RootState) =>
+  state.accountState.clusters;
 // export const getIsFetchingClusters = (state: RootState) => state.accountState.isFetchingClusters;
-export const getClustersPagination = (state: RootState) => state.accountState.clustersPagination;
-export const getSelectedCluster = (state: RootState) => state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId) || {} as ICluster;
-export const getSelectedOperator = (state: RootState) => state.accountState.operators.find((operator: IOperator) => operator.id === state.accountState.selectedOperatorId) || {} as IOperator;
+export const getClustersPagination = (state: RootState) =>
+  state.accountState.clustersPagination;
+export const getSelectedCluster = (state: RootState) =>
+  state.accountState.excludedCluster ||
+  state.accountState.clusters.find(
+    (cluster: ICluster) =>
+      cluster.clusterId === state.accountState.selectedClusterId
+  ) ||
+  ({} as ICluster);
+export const getSelectedOperator = (state: RootState) =>
+  state.accountState.operators.find(
+    (operator: IOperator) =>
+      operator.id === state.accountState.selectedOperatorId
+  ) || ({} as IOperator);

@@ -10,31 +10,38 @@ import { getAccountAddress } from '~app/redux/wallet.slice';
 
 const CLAIM_FLOW = {
   NOT_ELIGIBLE: 0,
-  ELIGIBLE: 1,
+  ELIGIBLE: 1
 };
 
 const Claim = () => {
   const accountAddress = useAppSelector(getAccountAddress);
   const { networkId } = getStoredNetwork();
-  const distributionStore: DistributionStore | DistributionTestnetStore = useDistributionStore(networkId);
-  const [currentClaimFlow, setCurrentClaimFlow] = useState(distributionStore.userAddress ? CLAIM_FLOW.ELIGIBLE : CLAIM_FLOW.NOT_ELIGIBLE);
+  const distributionStore: DistributionStore | DistributionTestnetStore =
+    useDistributionStore(networkId);
+  const [currentClaimFlow, setCurrentClaimFlow] = useState(
+    distributionStore.userAddress
+      ? CLAIM_FLOW.ELIGIBLE
+      : CLAIM_FLOW.NOT_ELIGIBLE
+  );
 
   console.log(distributionStore);
 
   useEffect(() => {
-    setCurrentClaimFlow(distributionStore.userAddress ? CLAIM_FLOW.ELIGIBLE : CLAIM_FLOW.NOT_ELIGIBLE);
+    setCurrentClaimFlow(
+      distributionStore.userAddress
+        ? CLAIM_FLOW.ELIGIBLE
+        : CLAIM_FLOW.NOT_ELIGIBLE
+    );
   }, [accountAddress]);
 
   const components = {
     [CLAIM_FLOW.ELIGIBLE]: EligibleScreen,
-    [CLAIM_FLOW.NOT_ELIGIBLE]: NotEligibleScreen,
+    [CLAIM_FLOW.NOT_ELIGIBLE]: NotEligibleScreen
   };
 
   const Component = components[currentClaimFlow];
 
-  return (
-    <Component/>
-  );
+  return <Component />;
 };
 
 export default Claim;

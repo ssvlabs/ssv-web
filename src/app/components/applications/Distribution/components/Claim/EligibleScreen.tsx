@@ -1,4 +1,3 @@
-
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +21,8 @@ const EligibleScreen = () => {
   const navigate = useNavigate();
   const accountAddress = useAppSelector(getAccountAddress);
   const { networkId } = getStoredNetwork();
-  const distributionStore: DistributionStore | DistributionTestnetStore = useDistributionStore(networkId);
+  const distributionStore: DistributionStore | DistributionTestnetStore =
+    useDistributionStore(networkId);
 
   const claimRewards = async () => {
     if (!distributionStore.userAddress || distributionStore.claimed) {
@@ -42,34 +42,53 @@ const EligibleScreen = () => {
           <HeaderSubHeader
             title={'Congrats, you are eligible for the following rewards!'}
           />
-          <InputLabel title="Recipient"/>
+          <InputLabel title="Recipient" />
           <Grid className={classes.RecipientWrapper}>
-            <Typography className={classes.RecipientAddress}>{accountAddress}</Typography>
+            <Typography className={classes.RecipientAddress}>
+              {accountAddress}
+            </Typography>
           </Grid>
-          {(distributionStore instanceof DistributionStore) && distributionStore.userEligibleRewards &&
-            <Grid className={classes.RewardWrapper}>
-              <Typography className={classes.RewardTitle}>Eligible Rewards</Typography>
-              <Typography className={classes.RewardAmount}>{distributionStore.userEligibleRewards} SSV</Typography>
-            </Grid>}
-          {(distributionStore instanceof DistributionStore) && distributionStore.claimedRewards &&
-            <Grid className={classes.RewardWrapper}>
-              <Typography className={classes.RewardTitle}>Claimed Rewards</Typography>
-              <Typography className={classes.RewardAmount}>{distributionStore.claimedRewards} SSV</Typography>
-            </Grid>}
+          {distributionStore instanceof DistributionStore &&
+            distributionStore.userEligibleRewards && (
+              <Grid className={classes.RewardWrapper}>
+                <Typography className={classes.RewardTitle}>
+                  Eligible Rewards
+                </Typography>
+                <Typography className={classes.RewardAmount}>
+                  {distributionStore.userEligibleRewards} SSV
+                </Typography>
+              </Grid>
+            )}
+          {distributionStore instanceof DistributionStore &&
+            distributionStore.claimedRewards && (
+              <Grid className={classes.RewardWrapper}>
+                <Typography className={classes.RewardTitle}>
+                  Claimed Rewards
+                </Typography>
+                <Typography className={classes.RewardAmount}>
+                  {distributionStore.claimedRewards} SSV
+                </Typography>
+              </Grid>
+            )}
           <Grid container item className={classes.EligibleWrapper}>
-            <InputLabel title="Eligible Reward"/>
+            <InputLabel title="Eligible Reward" />
             <Grid container className={classes.Eligible}>
-              <Grid item className={classes.EligibleAmount}>{distributionStore.userRewardAmount}</Grid>
-              <Grid item className={classes.CompanyIcon}/>
-              <Grid item className={classes.EligibleAmount}>SSV</Grid>
+              <Grid item className={classes.EligibleAmount}>
+                {distributionStore.userRewardAmount}
+              </Grid>
+              <Grid item className={classes.CompanyIcon} />
+              <Grid item className={classes.EligibleAmount}>
+                SSV
+              </Grid>
             </Grid>
           </Grid>
           <PrimaryButton
             isDisabled={!claimedCondition}
             onClick={claimRewards}
             text={claimedCondition ? 'Claim SSV Reward' : 'All Rewards Claimed'}
-            size={ButtonSize.XL}/>
-        </Grid>,
+            size={ButtonSize.XL}
+          />
+        </Grid>
       ]}
     />
   );

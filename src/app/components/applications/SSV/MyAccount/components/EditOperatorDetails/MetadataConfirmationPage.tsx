@@ -24,10 +24,14 @@ const MetadataConfirmationPage = () => {
       action: 'click',
       label: 'operator'
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');
+    window.open(
+      `${config.links.EXPLORER_URL}/operators/${operator.id}`,
+      '_blank'
+    );
   };
 
-  const goToDashboard = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
+  const goToDashboard = () =>
+    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
 
   return (
     <Grid className={classes.ConfirmationBox}>
@@ -39,8 +43,22 @@ const MetadataConfirmationPage = () => {
           subtitle={translations.OPERATOR_METADATA.CONFIRMATION_CHANGE.SUBTITLE}
         />
         <Grid className={classes.ButtonGroup}>
-          <SecondaryButton text={translations.OPERATOR_METADATA.CONFIRMATION_CHANGE.EXPLORER_BUTTON} onClick={openExplorer} size={ButtonSize.XL} />
-          <PrimaryButton text={translations.OPERATOR_METADATA.CONFIRMATION_CHANGE.RETURN_TO_MY_ACCOUNT} onClick={goToDashboard} size={ButtonSize.XL} />
+          <SecondaryButton
+            text={
+              translations.OPERATOR_METADATA.CONFIRMATION_CHANGE.EXPLORER_BUTTON
+            }
+            onClick={openExplorer}
+            size={ButtonSize.XL}
+          />
+          <PrimaryButton
+            text={
+              translations.OPERATOR_METADATA.CONFIRMATION_CHANGE
+                .RETURN_TO_MY_ACCOUNT
+            }
+            zIndex={1000}
+            onClick={goToDashboard}
+            size={ButtonSize.XL}
+          />
         </Grid>
       </Grid>
     </Grid>

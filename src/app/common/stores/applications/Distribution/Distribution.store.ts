@@ -3,11 +3,15 @@ import { action, computed, observable } from 'mobx';
 import { translations } from '~app/common/config';
 import { EContractName } from '~app/model/contracts.model';
 import { IMerkleTreeData } from '~app/model/merkleTree.model';
-import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
+import {
+  setIsLoading,
+  setIsShowTxPendingPopup,
+  setTxHash
+} from '~app/redux/appState.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { store } from '~app/store';
 import { isEqualsAddresses } from '~lib/utils/strings';
-import { getContractByName } from '~root/services/contracts.service';
+import { getContractByName } from '~root/wagmi/utils';
 import { fromWei } from '~root/services/conversions.service';
 import { fetchMerkleTreeStructure } from '~root/services/distribution.service';
 
@@ -27,7 +31,12 @@ class DistributionStore {
       const contract = getContractByName(EContractName.DISTRIBUTION);
       store.dispatch(setIsLoading(true));
       try {
-        const tx = await contract.claim(this.userAddress, String(this.rewardAmount), this.merkleRoot, this.rewardMerkleProof);
+        const tx = await contract.claim(
+          this.userAddress,
+          String(this.rewardAmount),
+          this.merkleRoot,
+          this.rewardMerkleProof
+        );
         if (tx.hash) {
           store.dispatch(setTxHash(tx.hash));
           store.dispatch(setIsShowTxPendingPopup(true));
@@ -37,7 +46,13 @@ class DistributionStore {
         this.claimed = true;
         resolve(true);
       } catch (error: any) {
-        store.dispatch(setMessageAndSeverity({ message: error.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
+        store.dispatch(
+          setMessageAndSeverity({
+            message:
+              error.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE,
+            severity: 'error'
+          })
+        );
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));
@@ -51,7 +66,9 @@ class DistributionStore {
     return new Promise(async (resolve) => {
       const contract = getContractByName(EContractName.DISTRIBUTION);
       const result = await contract.cumulativeClaimed(this.userAddress)();
-      this.claimedRewards = Number(fromWei(parseInt(String(result)).toString()));
+      this.claimedRewards = Number(
+        fromWei(parseInt(String(result)).toString())
+      );
       resolve(this.claimedRewards);
     });
   }
@@ -71,15 +88,17 @@ class DistributionStore {
     await this.cleanState();
     const merkle = await fetchMerkleTreeStructure();
     const accountAddress = store.getState().walletState.accountAddress;
-      merkle?.tree.data.forEach((merkleTreeUser: IMerkleTreeData, index: number) => {
-      if (isEqualsAddresses(merkleTreeUser.address, accountAddress)) {
-        this.merkleRoot = merkle.tree.root;
-        this.userAddress = merkleTreeUser.address;
-        this.rewardIndex = index;
-        this.rewardAmount = Number(merkleTreeUser.amount);
-        this.rewardMerkleProof = merkleTreeUser.proof;
+    merkle?.tree.data.forEach(
+      (merkleTreeUser: IMerkleTreeData, index: number) => {
+        if (isEqualsAddresses(merkleTreeUser.address, accountAddress)) {
+          this.merkleRoot = merkle.tree.root;
+          this.userAddress = merkleTreeUser.address;
+          this.rewardIndex = index;
+          this.rewardAmount = Number(merkleTreeUser.amount);
+          this.rewardMerkleProof = merkleTreeUser.proof;
+        }
       }
-    });
+    );
     if (this.userAddress) {
       await this.cumulativeClaimed();
     }
@@ -88,7 +107,10 @@ class DistributionStore {
   @computed
   get userRewardAmount() {
     // eslint-disable-next-line radix
-    return Number(fromWei(parseInt(String(this.rewardAmount)).toString())) - this.claimedRewards;
+    return (
+      Number(fromWei(parseInt(String(this.rewardAmount)).toString())) -
+      this.claimedRewards
+    );
   }
 
   @computed

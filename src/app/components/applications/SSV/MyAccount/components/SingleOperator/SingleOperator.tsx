@@ -32,29 +32,41 @@ import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { fetchAndSetOperatorFeeInfo } from '~app/redux/operator.slice.ts';
+import { getOperatorBalance } from '~root/services/operatorContract.service.ts';
 
 const SingleOperator = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [operatorsValidators, setOperatorsValidators] = useState([]);
-  const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState(null);
+  const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] =
+    useState(null);
   const processStore: ProcessStore = stores.Process;
   const process: SingleOperatorProcess = processStore.getProcess;
   const operator = process?.item;
+  const [balance, setBalance] = useState(operator.balance);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const strategyRedirect = useAppSelector(getStrategyRedirect);
 
+  const updateOperatorBalance = async () => {
+    const res = await getOperatorBalance({ id: operator.id });
+    process.item = { ...operator, balance: res };
+    setBalance(res);
+  };
+
   useEffect(() => {
     if (!operator) return navigate(strategyRedirect);
+    updateOperatorBalance();
     loadOperatorValidators({ page: 1, perPage: 5 });
     dispatch(fetchAndSetOperatorFeeInfo(operator.id));
   }, []);
 
-  const loadOperatorValidators = async (props: { page: number; perPage: number }) => {
+  const loadOperatorValidators = async (props: {
+    page: number;
+    perPage: number;
+  }) => {
     const { page, perPage } = props;
     const response = await getOperatorValidators({
-      // @ts-ignore
       operatorId: operator.id,
       page,
       perPage
@@ -69,7 +81,10 @@ const SingleOperator = () => {
 
   const onChangePage = (obj: any) => {
     // @ts-ignore
-    loadOperatorValidators({ page: obj.paginationPage, perPage: operatorsValidatorsPagination?.per_page ?? 5 });
+    loadOperatorValidators({
+      page: obj.paginationPage,
+      perPage: operatorsValidatorsPagination?.per_page ?? 5
+    });
   };
 
   // @ts-ignore
@@ -79,11 +94,19 @@ const SingleOperator = () => {
   const { logo, validators_count, fee, performance } = operator || {};
   const validator30dPerformance = operator ? performance['30d'] : 0;
   const yearlyFee = formatNumberToUi(getFeeForYear(fromWei(fee)));
-  const classes = useStyles({ operatorLogo: logo, noValidators: operatorsValidators.length === 0 });
+  const classes = useStyles({
+    operatorLogo: logo,
+    noValidators: operatorsValidators.length === 0
+  });
 
   const copyToClipboard = (key: string) => {
     navigator.clipboard.writeText(key);
-    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
+    dispatch(
+      setMessageAndSeverity({
+        message: 'Copied to clipboard.',
+        severity: 'success'
+      })
+    );
   };
 
   const openExplorer = (key: string, linkType: string) => {
@@ -114,7 +137,11 @@ const SingleOperator = () => {
   };
 
   const sortValidatorsByStatus = () => {
-    setOperatorsValidators((prevState) => [...prevState.sort((a: any, b: any) => (a.status === b.status ? 0 : a.status ? -1 : 1))]);
+    setOperatorsValidators((prevState) => [
+      ...prevState.sort((a: any, b: any) =>
+        a.status === b.status ? 0 : a.status ? -1 : 1
+      )
+    ]);
   };
 
   const operatorView = useMemo(
@@ -133,7 +160,11 @@ const SingleOperator = () => {
             <Grid item style={{ marginTop: 1, marginRight: 4 }}>
               Status
             </Grid>
-            <ToolTip text={'Is the operator performing duties for the majority of its validators for the last 2 epochs.'} />
+            <ToolTip
+              text={
+                'Is the operator performing duties for the majority of its validators for the last 2 epochs.'
+              }
+            />
           </Grid>
         ),
         value: (
@@ -146,7 +177,9 @@ const SingleOperator = () => {
         key: <Typography>Validators</Typography>,
         value: (
           <Grid item container className={classes.ItemWrapper} xs={12}>
-            <Typography className={classes.TableValueText}>{validators_count}</Typography>
+            <Typography className={classes.TableValueText}>
+              {validators_count}
+            </Typography>
           </Grid>
         )
       },
@@ -154,7 +187,9 @@ const SingleOperator = () => {
         key: <Typography>30D Performance</Typography>,
         value: (
           <Grid item container className={classes.ItemWrapper} xs={12}>
-            <Typography className={classes.TableValueText}>{validators_count === 0 ? '- -' : validator30dPerformance}</Typography>
+            <Typography className={classes.TableValueText}>
+              {validators_count === 0 ? '- -' : validator30dPerformance}
+            </Typography>
           </Grid>
         )
       }
@@ -173,14 +208,33 @@ const SingleOperator = () => {
         status: <Status item={validator} />,
         public_key: (
           <Grid container style={{ alignItems: 'center', gap: 16 }}>
-            <Typography className={classes.TableValueText}>{longStringShorten(public_key, 6, 4)}</Typography>
-            <ImageDiv onClick={() => copyToClipboard(validator.public_key)} image={'copy'} width={20} height={20} />
+            <Typography className={classes.TableValueText}>
+              {longStringShorten(public_key, 6, 4)}
+            </Typography>
+            <ImageDiv
+              onClick={() => copyToClipboard(validator.public_key)}
+              image={'copy'}
+              width={20}
+              height={20}
+            />
           </Grid>
         ),
         extra_buttons: (
           <Grid item container className={classes.ExtraButtonWrapper}>
-            <ImageDiv onClick={() => openExplorer(`validators/${validator.public_key}`, 'validator')} image={'explorer'} width={20} height={20} />
-            <ImageDiv onClick={() => openBeaconcha(validator.public_key)} image={'beacon'} width={20} height={20} />
+            <ImageDiv
+              onClick={() =>
+                openExplorer(`validators/${validator.public_key}`, 'validator')
+              }
+              image={'explorer'}
+              width={20}
+              height={20}
+            />
+            <ImageDiv
+              onClick={() => openBeaconcha(validator.public_key)}
+              image={'beacon'}
+              width={20}
+              height={20}
+            />
           </Grid>
         )
       };
@@ -192,7 +246,12 @@ const SingleOperator = () => {
       {
         id: 'col13',
         Header: (
-          <Grid item container justifyContent={'space-between'} alignItems={'center'}>
+          <Grid
+            item
+            container
+            justifyContent={'space-between'}
+            alignItems={'center'}
+          >
             <Typography>Validators</Typography>
           </Grid>
         ),
@@ -204,7 +263,10 @@ const SingleOperator = () => {
           {
             Header: (
               <Grid container item alignItems={'center'}>
-                <Typography onClick={() => sortValidatorsByStatus()} style={{ marginRight: 4, cursor: 'pointer' }}>
+                <Typography
+                  onClick={() => sortValidatorsByStatus()}
+                  style={{ marginRight: 4, cursor: 'pointer' }}
+                >
                   Status
                 </Typography>
                 <ToolTip
@@ -236,23 +298,42 @@ const SingleOperator = () => {
         title={
           <Typography className={classes.UpdateFeeTooltipText}>
             Operators with a fee of 0 can not change their fee
-            <LinkText className={classes.LinkText} text={'read more on operator fees'} link={config.links.MORE_ABOUT_UPDATE_FEES} />
+            <LinkText
+              className={classes.LinkText}
+              text={'read more on operator fees'}
+              link={config.links.MORE_ABOUT_UPDATE_FEES}
+            />
           </Typography>
         }
         placement="top-end"
         children={
           <Grid item xs>
-            <SecondaryButton isDisabled={!Number(operator.fee)} text={'Update Fee'} onClick={moveToUpdateFee} size={ButtonSize.XL} />
+            <SecondaryButton
+              isDisabled={!Number(operator.fee)}
+              text={'Update Fee'}
+              onClick={moveToUpdateFee}
+              size={ButtonSize.XL}
+            />
           </Grid>
         }
       />
     ) : (
-      <SecondaryButton isDisabled={!Number(operator.fee)} text={'Update Fee'} onClick={moveToUpdateFee} size={ButtonSize.XL} />
+      <SecondaryButton
+        isDisabled={!Number(operator.fee)}
+        text={'Update Fee'}
+        onClick={moveToUpdateFee}
+        size={ButtonSize.XL}
+      />
     );
 
   return (
     <Grid container item style={{ gap: 26 }}>
-      <NewWhiteWrapper type={1} mainFlow stepBack={backToClustersDashboard} header={'Operator Details'}>
+      <NewWhiteWrapper
+        type={1}
+        mainFlow
+        stepBack={backToClustersDashboard}
+        header={'Operator Details'}
+      >
         <Grid item container className={classes.ItemsWrapper}>
           {operatorView.map((item: any, index: number) => (
             <Grid item key={index}>
@@ -274,13 +355,21 @@ const SingleOperator = () => {
               body={[
                 <Grid container item>
                   <Grid item xs={12}>
-                    <SsvAndSubTitle ssv={formatNumberToUi(operator.balance) || 0} bold leftTextAlign />
+                    <SsvAndSubTitle
+                      ssv={formatNumberToUi(balance) || 0}
+                      bold
+                      leftTextAlign
+                    />
                   </Grid>
                 </Grid>
               ]}
               bottom={[
                 <Grid item xs>
-                  <PrimaryButton text={'Withdraw'} onClick={moveToWithdraw} size={ButtonSize.XL} />
+                  <PrimaryButton
+                    text={'Withdraw'}
+                    onClick={moveToWithdraw}
+                    size={ButtonSize.XL}
+                  />
                 </Grid>
               ]}
               bottomWrapper={classes.ButtonSection}
@@ -312,7 +401,9 @@ const SingleOperator = () => {
             <Grid container item className={classes.BigBox}>
               <Grid item className={classes.NoValidatorImage} xs={12} />
               <Grid item xs={12}>
-                <Typography className={classes.NoValidatorText}>No Validators</Typography>
+                <Typography className={classes.NoValidatorText}>
+                  No Validators
+                </Typography>
               </Grid>
             </Grid>
           </Grid>

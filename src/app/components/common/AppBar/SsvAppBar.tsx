@@ -2,7 +2,10 @@ import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import AppBar from '~app/components/common/AppBar/AppBar';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { getAccountClusters, getAccountOperators } from '~app/redux/account.slice';
+import {
+  getAccountClusters,
+  getAccountOperators
+} from '~app/redux/account.slice';
 import { getIsLoading, getRestrictedUserGeo } from '~app/redux/appState.slice';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 
@@ -25,7 +28,7 @@ const SsvAppBar = () => {
     GoogleTagManager.getInstance().sendEvent({
       category: 'nav',
       action: 'click',
-      label: 'Docs',
+      label: 'Docs'
     });
     window.open(config.links.LINK_SSV_DEV_DOCS);
   };
@@ -34,30 +37,39 @@ const SsvAppBar = () => {
     GoogleTagManager.getInstance().sendEvent({
       category: 'nav',
       action: 'click',
-      label: 'Explorer',
+      label: 'Explorer'
     });
     window.open(config.links.EXPLORER_URL);
   };
 
   const buttons = [
     {
-      label: 'My Account', blueColor: true, onClick: moveToDashboard,
+      label: 'My Account',
+      blueColor: true,
+      onClick: moveToDashboard
     },
     {
-      label: 'Explorer', onClick: openExplorer,
+      label: 'Explorer',
+      onClick: openExplorer
     },
     {
-      label: 'Docs', onClick: openDocs,
+      label: 'Docs',
+      onClick: openDocs
     },
     {
       label: '...',
       onClick: () => null,
       options: [
         { label: 'Governance Forum', link: config.links.GOVERNANCE_FORUM_LINK },
-        { label: 'Snapshot', link: config.links.SNAPSHOT_LINK, bottomLine: true },
+        {
+          label: 'Snapshot',
+          link: config.links.SNAPSHOT_LINK,
+          bottomLine: true
+        },
         { label: 'Terms of Use', link: config.links.TERMS_OF_USE_LINK },
-        { label: 'Privacy Policy', link: config.links.PRIVACY_POLICY_LINK }],
-    },
+        { label: 'Privacy Policy', link: config.links.PRIVACY_POLICY_LINK }
+      ]
+    }
   ];
 
   return <AppBar buttons={buttons} />;

@@ -22,7 +22,11 @@ import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import MevIcon from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevIcon';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
-import { getClusterData, getClusterHash } from '~root/services/cluster.service';
+import {
+  extendClusterEntity,
+  getClusterData,
+  getClusterHash
+} from '~root/services/cluster.service';
 import { IOperator } from '~app/model/operator.model';
 import { SingleCluster } from '~app/model/processes.model';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
@@ -30,17 +34,33 @@ import { SKIP_VALIDATION } from '~lib/utils/developerHelper';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { getValidator } from '~root/services/validator.service';
-import { setSelectedClusterId } from '~app/redux/account.slice';
+import { setExcludedCluster } from '~app/redux/account.slice';
 import { ICluster } from '~app/model/cluster.model';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
-import { getOperatorValidatorsLimit, getSelectedOperators, getSelectedOperatorsFee, hasEnoughSelectedOperators, unselectOperator } from '~app/redux/operator.slice.ts';
+import {
+  getOperatorValidatorsLimit,
+  getSelectedOperators,
+  getSelectedOperatorsFee,
+  hasEnoughSelectedOperators,
+  unselectOperator
+} from '~app/redux/operator.slice.ts';
 
-const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox: number[] }) => {
-  const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
+const SecondSquare = ({
+  editPage,
+  clusterBox
+}: {
+  editPage: boolean;
+  clusterBox: number[];
+}) => {
+  const { liquidationCollateralPeriod, minimumLiquidationCollateral } =
+    useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const stores = useStores();
-  const classes = useStyles({ editPage, shouldBeScrollable: clusterBox.length > 4 });
+  const classes = useStyles({
+    editPage,
+    shouldBeScrollable: clusterBox.length > 4
+  });
   const navigate = useNavigate();
   const location = useLocation();
   const selectedOperators = useAppSelector(getSelectedOperators);
@@ -50,12 +70,21 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
   const accountAddress = useAppSelector(getAccountAddress);
   const processStore: ProcessStore = stores.Process;
   const windowSize = useWindowSize();
-  const [existClusterData, setExistClusterData] = useState<ICluster | null>(null);
-  const [previousOperatorsIds, setPreviousOperatorsIds] = useState<number[]>([]);
+  const [existClusterData, setExistClusterData] = useState<ICluster | null>(
+    null
+  );
+  const [previousOperatorsIds, setPreviousOperatorsIds] = useState<number[]>(
+    []
+  );
   const [checkClusterExistence, setCheckClusterExistence] = useState(false);
-  const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] = useState(true);
-  const [operatorHasMaxCountValidators, setOperatorHasMaxCountValidators] = useState(false);
-  const operatorHasMevRelays = allEqual(Object.values(selectedOperators), 'mev_relays');
+  const [allSelectedOperatorsVerified, setAllSelectedOperatorsVerified] =
+    useState(true);
+  const [operatorHasMaxCountValidators, setOperatorHasMaxCountValidators] =
+    useState(false);
+  const operatorHasMevRelays = allEqual(
+    Object.values(selectedOperators),
+    'mev_relays'
+  );
   const operatorCount = Object.values(selectedOperators).length;
   const clusterSize = clusterBox.length;
   const secondSquareWidth = windowSize.size === WINDOW_SIZES.LG ? '100%' : 424;
@@ -65,7 +94,8 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
   useEffect(() => {
     const process: SingleCluster = processStore.getProcess;
     if (editPage) {
-      if (!process.item.publicKey) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
+      if (!process.item.publicKey)
+        return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
       getValidator(process.item.publicKey).then((validator: any) => {
         if (validator?.operators) {
           // @ts-ignore
@@ -76,10 +106,15 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
   }, [editPage]);
 
   useEffect(() => {
-    const notVerifiedOperators = Object.values(selectedOperators).filter((operator) => operator.type !== 'verified_operator' && operator.type !== 'dappnode');
-    const operatorReachedMaxValidators = Object.values(selectedOperators).some((operator: IOperator) => {
-      return operatorValidatorsLimit <= operator.validators_count;
-    });
+    const notVerifiedOperators = Object.values(selectedOperators).filter(
+      (operator) =>
+        operator.type !== 'verified_operator' && operator.type !== 'dappnode'
+    );
+    const operatorReachedMaxValidators = Object.values(selectedOperators).some(
+      (operator: IOperator) => {
+        return operatorValidatorsLimit <= operator.validators_count;
+      }
+    );
     setAllSelectedOperatorsVerified(notVerifiedOperators.length === 0);
     if (!getFromLocalStorageByKey(SKIP_VALIDATION)) {
       setOperatorHasMaxCountValidators(operatorReachedMaxValidators);
@@ -90,9 +125,18 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
     if (hasEnoughOperators) {
       setExistClusterData(null);
       setCheckClusterExistence(true);
-      getClusterData(getClusterHash(Object.values(selectedOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true)
+      getClusterData(
+        getClusterHash(Object.values(selectedOperators), accountAddress),
+        liquidationCollateralPeriod,
+        minimumLiquidationCollateral,
+        true
+      )
         .then((clusterData) => {
-          if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
+          if (
+            clusterData?.validatorCount !== 0 ||
+            clusterData?.index > 0 ||
+            !clusterData?.active
+          ) {
             setExistClusterData(clusterData);
           }
           setCheckClusterExistence(false);
@@ -111,7 +155,9 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
 
   const onSelectOperatorsClick = async () => {
     if (editPage) {
-      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.ENTER_KEYSTORE);
+      navigate(
+        config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_UPDATE.ENTER_KEYSTORE
+      );
     } else {
       navigate(getNextNavigation());
     }
@@ -137,16 +183,28 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
     );
   };
 
-  const openSingleCluster = () => {
-    processStore.setProcess(
-      {
-        processName: 'single_cluster',
-        item: { ...existClusterData, operators: [...Object.values(selectedOperators)] }
-      },
-      2
-    );
+  const openSingleCluster = async () => {
     if (existClusterData) {
-      dispatch(setSelectedClusterId(existClusterData.clusterId));
+      const sortedOperators = [
+        ...Object.values(selectedOperators).sort(
+          (operator: IOperator) => operator.id
+        )
+      ];
+      const cluster = await extendClusterEntity(
+        {
+          ...existClusterData,
+          operators: sortedOperators
+        },
+        accountAddress,
+        liquidationCollateralPeriod,
+        minimumLiquidationCollateral
+      );
+      dispatch(
+        setExcludedCluster({
+          ...cluster,
+          operators: sortedOperators
+        } as unknown as ICluster)
+      );
       navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.ROOT);
     }
   };
@@ -162,7 +220,9 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
           <Grid container className={classes.firstSection}>
             <Grid className={classes.HeaderWrapper}>
               <HeaderSubHeader marginBottom={24} title={'Selected Operators'} />
-              <Typography className={classes.SelectedOperatorsIndicator}>{`${operatorCount}/${clusterSize}`}</Typography>
+              <Typography
+                className={classes.SelectedOperatorsIndicator}
+              >{`${operatorCount}/${clusterSize}`}</Typography>
             </Grid>
             <Grid container item className={classes.BoxesWrapper}>
               <Grid className={classes.OperatorBoxesWrapper}>
@@ -170,7 +230,11 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
                   if (!!selectedOperators[index.toString()]) {
                     const operator = selectedOperators[index.toString()];
                     return (
-                      <Grid key={index} container className={classes.SelectedOperatorBox}>
+                      <Grid
+                        key={index}
+                        container
+                        className={classes.SelectedOperatorBox}
+                      >
                         <Grid
                           className={classes.DeleteOperator}
                           onClick={() => {
@@ -181,14 +245,33 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
                           <Grid className={classes.whiteLine} />
                         </Grid>
                         <Grid item>
-                          <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} operator={operator} withoutExplorer />
+                          <OperatorDetails
+                            nameFontSize={14}
+                            idFontSize={12}
+                            logoSize={24}
+                            operator={operator}
+                            withoutExplorer
+                          />
                         </Grid>
                         <Grid item className={classes.FeeAndMevRelaysWrapper}>
-                          <SsvAndSubTitle fontSize={14} ssv={formatNumberToUi(getFeeForYear(fromWei(operator?.fee)))} />
+                          <SsvAndSubTitle
+                            fontSize={14}
+                            ssv={formatNumberToUi(
+                              getFeeForYear(fromWei(operator?.fee))
+                            )}
+                          />
                           <Grid className={classes.MevRelaysWrapper}>
-                            {Object.values(MEV_RELAYS).map((mevRelay: string) => (
-                              <MevIcon mevRelay={mevRelay} key={mevRelay} hasMevRelay={operator?.mev_relays?.includes(mevRelay)} />
-                            ))}
+                            {Object.values(MEV_RELAYS).map(
+                              (mevRelay: string) => (
+                                <MevIcon
+                                  mevRelay={mevRelay}
+                                  key={mevRelay}
+                                  hasMevRelay={operator?.mev_relays?.includes(
+                                    mevRelay
+                                  )}
+                                />
+                              )
+                            )}
                           </Grid>
                         </Grid>
                       </Grid>
@@ -205,7 +288,8 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
             {editPage ? (
               <Grid container item xs={12} className={classes.AlertMessage}>
                 <Grid item xs={12}>
-                  Updating operators is experimental and could result in slashing, please proceed at your own discretion.
+                  Updating operators is experimental and could result in
+                  slashing, please proceed at your own discretion.
                 </Grid>
               </Grid>
             ) : (
@@ -219,7 +303,12 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
               {editPage ? 'New Operators Yearly Fee' : 'Operators Yearly Fee'}
             </Grid>
             <Grid item>
-              <SsvAndSubTitle bold fontSize={16} subTextCenter={false} ssv={formatNumberToUi(getFeeForYear(selectedOperatorsFee))} />
+              <SsvAndSubTitle
+                bold
+                fontSize={16}
+                subTextCenter={false}
+                ssv={formatNumberToUi(getFeeForYear(selectedOperatorsFee))}
+              />
             </Grid>
           </Grid>
           {existClusterData && (
@@ -227,8 +316,12 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
               <ErrorMessage
                 text={
                   <Grid item xs={12}>
-                    To register an additional validator to this cluster, navigate to this&nbsp;
-                    <LinkText text={'cluster page'} onClick={openSingleCluster} />
+                    To register an additional validator to this cluster,
+                    navigate to this&nbsp;
+                    <LinkText
+                      text={'cluster page'}
+                      onClick={openSingleCluster}
+                    />
                     &nbsp;and click “Add Validator”.
                   </Grid>
                 }
@@ -240,7 +333,8 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
               <ErrorMessage
                 text={
                   <Grid item xs={12}>
-                    One of your chosen operators has reached its maximum validator capacity. Please select an alternative operator.
+                    One of your chosen operators has reached its maximum
+                    validator capacity. Please select an alternative operator.
                   </Grid>
                 }
               />
@@ -254,11 +348,15 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
                   text={'not verified.'}
                   onClick={linkToNotVerified}
                   className={classes.NotVerifiedText}
-                  link={'https://docs.ssv.network/learn/operators/verified-operators'}
+                  link={
+                    'https://docs.ssv.network/learn/operators/verified-operators'
+                  }
                 />
               </Grid>
               <Grid item xs={12}>
-                Unverified operators that were not reviewed and their identity is not confirmed, may pose a threat to your validators’ performance.
+                Unverified operators that were not reviewed and their identity
+                is not confirmed, may pose a threat to your validators’
+                performance.
               </Grid>
               <Grid item xs={12}>
                 Please proceed only if you know and trust these operators.
@@ -270,10 +368,17 @@ const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox:
               extendClass={classes.ExtendWarningClass}
               text={'Partial MEV Relay Correlation'}
               textLink={'Learn more'}
-              link={'https://docs.ssv.network/learn/stakers/validators/validator-onboarding#_jm9n7m464k0'}
+              link={
+                'https://docs.ssv.network/learn/stakers/validators/validator-onboarding#_jm9n7m464k0'
+              }
             />
           )}
-          <PrimaryButton size={ButtonSize.XL} text={'Next'} isDisabled={disableButton()} onClick={onSelectOperatorsClick} />
+          <PrimaryButton
+            size={ButtonSize.XL}
+            text={'Next'}
+            isDisabled={disableButton()}
+            onClick={onSelectOperatorsClick}
+          />
         </Grid>
       ]}
     />

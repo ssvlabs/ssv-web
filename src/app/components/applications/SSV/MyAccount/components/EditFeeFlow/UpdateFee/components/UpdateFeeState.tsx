@@ -7,7 +7,11 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
-import { fetchAndSetOperatorFeeInfo, getOperatorFeeData, getOperatorProcessId } from '~app/redux/operator.slice.ts';
+import {
+  fetchAndSetOperatorFeeInfo,
+  getOperatorFeeData,
+  getOperatorProcessId
+} from '~app/redux/operator.slice.ts';
 
 const PROCESS_STATE_START = 0;
 const PROCESS_STATE_WAITING = 1;
@@ -33,21 +37,39 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
   }, []);
 
   const getState = async () => {
-    await dispatch(fetchAndSetOperatorFeeInfo(Number(operatorId || processOperatorId)));
-    if (operatorFeeData.operatorApprovalBeginTime && operatorFeeData.operatorApprovalEndTime && operatorFeeData.operatorFutureFee) {
+    const res = await dispatch(
+      fetchAndSetOperatorFeeInfo(Number(operatorId || processOperatorId))
+    );
+    if (
+      res.payload.operatorApprovalBeginTime &&
+      res.payload.operatorApprovalEndTime &&
+      res.payload.operatorFutureFee
+    ) {
       const todayDate = new Date();
-      const endPendingStateTime = new Date(operatorFeeData.operatorApprovalEndTime * 1000);
-      const startPendingStateTime = new Date(operatorFeeData.operatorApprovalBeginTime * 1000);
-      const isInPendingState = todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
+      const endPendingStateTime = new Date(
+        res.payload.operatorApprovalEndTime * 1000
+      );
+      const startPendingStateTime = new Date(
+        res.payload.operatorApprovalBeginTime * 1000
+      );
+      const isInPendingState =
+        todayDate >= startPendingStateTime && todayDate < endPendingStateTime;
       // @ts-ignore
-      const daysFromEndPendingStateTime = Math.ceil(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24));
+      const daysFromEndPendingStateTime = Math.ceil(
+        Math.abs(Math.abs(todayDate - endPendingStateTime) / (1000 * 3600 * 24))
+      );
       if (isInPendingState) {
         setProcessState(PROCESS_STATE_PENDING);
       } else if (startPendingStateTime > todayDate) {
         setProcessState(PROCESS_STATE_WAITING);
-      } else if (todayDate > endPendingStateTime && daysFromEndPendingStateTime <= 3) {
+      } else if (
+        todayDate > endPendingStateTime &&
+        daysFromEndPendingStateTime <= 3
+      ) {
         // @ts-ignore
-        const savedOperator = JSON.parse(getFromLocalStorageByKey('expired_operators'));
+        const savedOperator = JSON.parse(
+          getFromLocalStorageByKey('expired_operators')
+        );
         if (savedOperator && savedOperator?.includes(processOperatorId)) {
           setProcessState(PROCESS_STATE_START);
           return;
@@ -83,22 +105,32 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
   const TimeReminder = () => {
     if ([1, 2, 4].indexOf(processState) === -1) return null;
     let text: string;
-    const operatorBeginApprovalTime = new Date(operatorFeeData.operatorApprovalBeginTime * 1000);
+    const operatorBeginApprovalTime = new Date(
+      operatorFeeData.operatorApprovalBeginTime * 1000
+    );
 
     const today = new Date();
     if (processState === 1) {
       text = `${timeDiffCalc(operatorBeginApprovalTime, today)} Left`;
       return (
-        <Typography style={{ alignSelf: 'center' }} className={classes.WaitingPeriod}>
+        <Typography
+          style={{ alignSelf: 'center' }}
+          className={classes.WaitingPeriod}
+        >
           {text}
         </Typography>
       );
     }
     if (processState === 2) {
-      const operatorEndApprovalTime = new Date(operatorFeeData.operatorApprovalEndTime * 1000);
+      const operatorEndApprovalTime = new Date(
+        operatorFeeData.operatorApprovalEndTime * 1000
+      );
       text = `Expires in ~ ${timeDiffCalc(today, operatorEndApprovalTime)}`;
       return (
-        <Typography style={{ alignSelf: 'center' }} className={classes.ExpiresIn}>
+        <Typography
+          style={{ alignSelf: 'center' }}
+          className={classes.ExpiresIn}
+        >
           {text}
         </Typography>
       );
@@ -117,7 +149,13 @@ const UpdateFeeState = ({ operatorId }: { operatorId?: string }) => {
   };
 
   return (
-    <Grid container item className={classes.HeaderWrapper} alignItems={'flex-end'} direction={'column'}>
+    <Grid
+      container
+      item
+      className={classes.HeaderWrapper}
+      alignItems={'flex-end'}
+      direction={'column'}
+    >
       <State />
       <TimeReminder />
     </Grid>

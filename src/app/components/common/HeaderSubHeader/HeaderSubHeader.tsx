@@ -29,7 +29,11 @@ const Header = styled.h1<{ theme: string; marginBottom: number | undefined }>`
   }};
 `;
 
-const SubHeader = styled.p<{ theme: string; marginBottom: number | undefined; rewardPage: boolean | undefined }>`
+const SubHeader = styled.p<{
+  theme: string;
+  marginBottom: number | undefined;
+  rewardPage: boolean | undefined;
+}>`
   margin: 0;
   z-index: 9;
   font-size: 16px;

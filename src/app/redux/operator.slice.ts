@@ -59,7 +59,11 @@ export const slice = createSlice({
     selectOperator: (
       state,
       action: {
-        payload: { operator: IOperator; selectedIndex: number; clusterBox: number[] };
+        payload: {
+          operator: IOperator;
+          selectedIndex: number;
+          clusterBox: number[];
+        };
       }
     ) => {
       if (Object.values(state.selectedOperators).some((operator: IOperator) => operator.id === action.payload.operator.id)) {

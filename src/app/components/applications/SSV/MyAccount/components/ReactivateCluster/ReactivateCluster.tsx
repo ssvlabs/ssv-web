@@ -154,7 +154,15 @@ const ReactivateCluster = () => {
             days={isCustomPayment ? customPeriod : checkedOption.days}
           />,
           <Grid container>
-            <Grid container item style={{ justifyContent: 'space-between', marginTop: -8, marginBottom: 20 }}>
+            <Grid
+              container
+              item
+              style={{
+                justifyContent: 'space-between',
+                marginTop: -8,
+                marginBottom: 20
+              }}
+            >
               <Typography className={classes.Text} style={{ marginBottom: 0 }}>
                 Total
               </Typography>

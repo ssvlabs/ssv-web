@@ -54,7 +54,11 @@ export const useWalletConnectivity = () => {
     notifyService.init(chainId.toString());
     const index = getNetworkInfoIndexByNetworkId(Number(chainId));
     dispatch(setConnectedNetwork(index));
-    initContracts({ provider: provider, network: getStoredNetwork(), shouldUseRpcUrl: connectorName !== METAMASK_LABEL });
+    initContracts({
+      provider: provider,
+      network: getStoredNetwork(),
+      shouldUseRpcUrl: connectorName !== METAMASK_LABEL
+    });
 
     await Promise.all([await dispatch(fetchAndSetNetworkFeeAndLiquidationCollateral()), await dispatch(fetchAndSetFeeIncreaseAndPeriods())]);
     const [accountClusters, accountOperators] = await Promise.all([dispatch(fetchClusters({})), dispatch(fetchOperators({}))]);

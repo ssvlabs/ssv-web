@@ -141,7 +141,12 @@ const WhiteWrapper = (props: Props) => {
         <Grid item xs={12} className={classes.ChildWrapper}>
           {children}
         </Grid>
-        <Dialog open={openDialog} PaperProps={{ style: { borderRadius: 16, backgroundColor: 'transparent' } }}>
+        <Dialog
+          open={openDialog}
+          PaperProps={{
+            style: { borderRadius: 16, backgroundColor: 'transparent' }
+          }}
+        >
           <Grid container item className={classes.DialogWrapper}>
             <HeaderSubHeader title={'Cancel Update Operators'} subtitle={'Are you sure you want to cancel'} />
             <Grid container className={classes.ButtonsWrapper}>

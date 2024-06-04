@@ -39,19 +39,35 @@ const requestAllowance = async (callBack?: CallableFunction): Promise<boolean> =
   }
 };
 
-const fetchNetworkFeeAndLiquidationCollateral = async (): Promise<{ networkFee: number; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number }> => {
+const fetchNetworkFeeAndLiquidationCollateral = async (): Promise<{
+  networkFee: number;
+  liquidationCollateralPeriod: number;
+  minimumLiquidationCollateral: number;
+}> => {
   try {
     const contract = getContractByName(EContractName.GETTER);
     if (!contract) {
-      return { networkFee: 0, liquidationCollateralPeriod: 0, minimumLiquidationCollateral: 0 };
+      return {
+        networkFee: 0,
+        liquidationCollateralPeriod: 0,
+        minimumLiquidationCollateral: 0
+      };
     }
     const networkFee = fromWei(await contract.getNetworkFee());
     const liquidationCollateralPeriod = Number(await contract.getLiquidationThresholdPeriod());
     const minimumLiquidationCollateral = fromWei(await contract.getMinimumLiquidationCollateral());
-    return { networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral };
+    return {
+      networkFee,
+      liquidationCollateralPeriod,
+      minimumLiquidationCollateral
+    };
   } catch (e) {
     console.warn('getNetworkFeeAndLiquidationCollateral error', e);
-    return { networkFee: 0, liquidationCollateralPeriod: 0, minimumLiquidationCollateral: 0 };
+    return {
+      networkFee: 0,
+      liquidationCollateralPeriod: 0,
+      minimumLiquidationCollateral: 0
+    };
   }
 };
 

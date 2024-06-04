@@ -213,7 +213,11 @@ class ValidatorStore {
         }
         const keysharePayload = await new KeySharesItem().buildPayload(
           { publicKey: threshold.publicKey, operators, encryptedShares },
-          { ownerAddress: accountAddress, ownerNonce: ownerNonce as number, privateKey: this.keyStorePrivateKey }
+          {
+            ownerAddress: accountAddress,
+            ownerNonce: ownerNonce as number,
+            privateKey: this.keyStorePrivateKey
+          }
         );
 
         const payload = createPayload(

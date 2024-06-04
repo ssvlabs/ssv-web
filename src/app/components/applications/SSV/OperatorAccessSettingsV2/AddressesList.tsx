@@ -103,7 +103,7 @@ const AddressesList = () => {
               <Button
                 type="button"
                 className="flex-1"
-                size="lg"
+                size="xl"
                 variant="secondary"
                 onClick={reset}
                 disabled={setter.isPending}
@@ -112,13 +112,13 @@ const AddressesList = () => {
               </Button>
               <Button
                 className="flex-1"
-                size="lg"
+                size="xl"
                 type="submit"
                 isActionBtn
                 isLoading={setter.isPending}
                 disabled={Boolean(addManager.form.formState.errors.addresses)}
               >
-                Save
+                {mode === 'delete' ? 'Remove and Save' : 'Add and Save'}
               </Button>
             </div>
           )}

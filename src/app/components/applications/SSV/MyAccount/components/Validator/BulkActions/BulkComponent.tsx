@@ -6,7 +6,7 @@ import ExitFinishPage from '~app/components/applications/SSV/MyAccount/component
 import NewBulkActions from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/NewBulkActions';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import { BULK_FLOWS } from '~app/model/processes.model';
+import { BULK_FLOWS } from '~app/enums/bulkFlow.enum.ts';
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getAccountAddress, getIsContractWallet } from '~app/redux/wallet.slice';

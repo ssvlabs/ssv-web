@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/actions.styles';
-import { BULK_FLOWS } from '~app/model/processes.model';
+import { BULK_FLOWS } from '~app/enums/bulkFlow.enum.ts';
 import { SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 

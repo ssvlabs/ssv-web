@@ -8,7 +8,7 @@ import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings/Settings.styles';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
-import { BULK_FLOWS } from '~app/model/processes.model';
+import { BULK_FLOWS } from '~app/enums/bulkFlow.enum.ts';
 import { BulkActionRouteState } from '~app/Routes';
 
 const Settings = ({ validator, withoutSettings }: { validator: any; withoutSettings?: boolean }) => {

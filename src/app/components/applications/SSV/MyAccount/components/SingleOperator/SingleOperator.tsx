@@ -103,7 +103,7 @@ const SingleOperator = () => {
   };
 
   const moveToWithdraw = () => {
-    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.WITHDRAW); // TODO check
+    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.WITHDRAW);
   };
 
   const openBeaconcha = (publicKey: string) => {

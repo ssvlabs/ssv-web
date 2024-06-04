@@ -1,5 +1,5 @@
 import { IValidator } from '~app/model/validator.model.ts';
-import { BULK_FLOWS } from '~app/model/processes.model.ts';
+import { BULK_FLOWS } from '~app/enums/bulkFlow.enum.ts';
 
 export interface NewValidatorRouteState {
   newValidatorFundingPeriod?: number;

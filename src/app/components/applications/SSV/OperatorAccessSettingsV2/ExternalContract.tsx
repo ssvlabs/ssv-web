@@ -6,25 +6,44 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import { Button } from '~app/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '~app/components/ui/form';
 import { Input } from '~app/components/ui/input';
+import { IoDocumentTextOutline } from 'react-icons/io5';
+import { useSetOperatorsWhitelistingContract } from '~app/hooks/operator/useSetOperatorsWhitelistingContract';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getSelectedOperator } from '~app/redux/account.slice';
+import { isWhitelistingContract } from '~root/services/operatorContract.service';
+import { useNavigate } from 'react-router-dom';
 
 type FormValues = {
   externalContract: string;
 };
 
 const schema = z.object({
-  externalContract: z.string().refine(isAddress, 'Contract address must be a in a valid address format')
+  externalContract: z
+    .custom<string>(isAddress, 'Contract address must be a in a valid address format')
+    .refine(isWhitelistingContract, 'Address is not a valid whitelisting contract')
 }) satisfies z.ZodType<FormValues>;
 
 const ExternalContract = () => {
+  const navigate = useNavigate();
+
+  const operator = useAppSelector(getSelectedOperator);
+  const setExternalContract = useSetOperatorsWhitelistingContract();
+
   const form = useForm<FormValues>({
     defaultValues: {
       externalContract: ''
     },
-    resolver: zodResolver(schema)
+    resolver: zodResolver(schema, { async: true }, { mode: 'async' })
   });
 
+  const hasErrors = Boolean(form.formState.errors.externalContract);
+
   const submit = form.handleSubmit((values) => {
-    console.log(values);
+    setExternalContract.mutate({
+      type: 'set',
+      operatorIds: [operator.id],
+      contractAddress: values.externalContract
+    });
   });
 
   return (
@@ -36,24 +55,55 @@ const ExternalContract = () => {
           <form className="flex flex-col gap-8 w-full" onSubmit={submit}>
             <div className="flex flex-col gap-2">
               <h1 className="text-xl font-bold">External Contract</h1>
-              <p>Manage whitelisted addresses through an external contract. Learn how to set an External Contract.</p>
+              <p>
+                Manage whitelisted addresses through an external contract. Learn how to set an{' '}
+                <a
+                  href="https://docs.ssv.network/learn/operators/permissioned-operators"
+                  className="text-primary-500"
+                  target="_blank"
+                >
+                  External Contract
+                </a>
+                .
+              </p>
             </div>
-
             <FormField
               control={form.control}
               name="externalContract"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input {...field} />
+                    <Input
+                      {...field}
+                      placeholder="0xCONT...RACT"
+                      leftSlot={<IoDocumentTextOutline className="w-6 h-6 text-gray-600" />}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            <Button size="lg" className="w-full h-[60px]">
-              Switch to Private
-            </Button>
+            />{' '}
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                disabled={setExternalContract.isPending}
+                size="xl"
+                variant="secondary"
+                className="w-full"
+                onClick={() => navigate(-1)}
+              >
+                Cancel
+              </Button>
+              <Button
+                disabled={hasErrors}
+                isLoading={setExternalContract.isPending}
+                isActionBtn
+                size="xl"
+                className="w-full"
+              >
+                Save
+              </Button>
+            </div>
           </form>
         </Form>
       ]}

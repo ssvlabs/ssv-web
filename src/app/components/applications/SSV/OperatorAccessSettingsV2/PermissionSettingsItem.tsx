@@ -21,7 +21,7 @@ export const PermissionSettingsItem: FCProps = ({ className, route, title, addon
   return (
     <div
       className={cn(
-        'flex items-center gap-3 py-6 px-8',
+        'flex items-center gap-3 py-6 px-8 transition-colors duration-100',
         {
           'cursor-pointer hover:bg-gray-200 active:bg-gray-300': Boolean(route)
         },
@@ -34,7 +34,7 @@ export const PermissionSettingsItem: FCProps = ({ className, route, title, addon
         <Node as="h2" className="font-bold">
           {title}
         </Node>
-        <Node as="p" className="text-gray-500">
+        <Node as="p" className="text-gray-700 text-sm font-medium">
           {description}
         </Node>
       </div>

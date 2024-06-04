@@ -4,10 +4,11 @@ import { ActiveBadge } from '~app/components/applications/SSV/OperatorAccessSett
 import { OperatorStatusBadge } from '~app/components/applications/SSV/OperatorAccessSettingsV2/OperatorStatusBadge';
 import { PermissionSettingsItem } from '~app/components/applications/SSV/OperatorAccessSettingsV2/PermissionSettingsItem';
 import BorderScreen from '~app/components/common/BorderScreen';
-import { useOperatorPermissions } from '~app/hooks/operator/useOperatorPermissions';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getSelectedOperator } from '~app/redux/account.slice';
 
 const PermissionSettingsDashboard = () => {
-  const permissions = useOperatorPermissions();
+  const selectedOperator = useAppSelector(getSelectedOperator);
 
   return (
     <BorderScreen blackHeader width={872}>
@@ -18,8 +19,15 @@ const PermissionSettingsDashboard = () => {
           description={
             <p>
               Use the options below to activate permissioned operator settings and restrict validator registration to
-              authorized addresses only. Learn more about Permissioned Operators. You can use both authorized addresses
-              and an external contract simultaneously.
+              authorized addresses only. Learn more about{' '}
+              <a
+                href="https://docs.ssv.network/learn/operators/permissioned-operators"
+                className="text-primary-500"
+                target="_blank"
+              >
+                Permissioned Operators
+              </a>
+              .
             </p>
           }
         />
@@ -30,19 +38,19 @@ const PermissionSettingsDashboard = () => {
             'Set the operator to private to enforce whitelisted addresses.'
           }
           route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.STATUS}
-          addon={<OperatorStatusBadge isPrivate={permissions.isPrivate} />}
+          addon={<OperatorStatusBadge isPrivate={selectedOperator.isPrivate} />}
         />
         <PermissionSettingsItem
           title="Authorized Addresses"
           description="Add Ethereum addresses to the whitelist for authorization"
           route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.AUTHORIZED_ADDRESSES}
-          addon={<ActiveBadge isActive={Boolean(permissions.addresses?.length)} />}
+          addon={<ActiveBadge isActive={Boolean(selectedOperator.whitelistAddresses?.length)} />}
         />
         <PermissionSettingsItem
           className="pb-8"
           title="External Contract"
           description="Manage whitelisted addresses through an external contract"
-          addon={<ActiveBadge isActive={Boolean(permissions.externalContract)} />}
+          addon={<ActiveBadge isActive={Boolean(selectedOperator.whitelistingContract)} />}
           route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.EXTERNAL_CONTRACT}
         />
       </Card>

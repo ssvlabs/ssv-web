@@ -3,14 +3,20 @@ import { useMemo } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { isAddress } from 'viem';
 import { z } from 'zod';
-import { useOperatorPermissions } from '~app/hooks/operator/useOperatorPermissions';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getSelectedOperator } from '~app/redux/account.slice';
 
 type FormValues = {
   addresses: { value: string }[];
 };
 
 export const useAddAuthorizedAddresses = () => {
-  const { addressesMap } = useOperatorPermissions();
+  const selectedOperator = useAppSelector(getSelectedOperator);
+
+  const addressesMap = useMemo(
+    () => new Map(selectedOperator.whitelistAddresses?.map((a) => [a, true])),
+    [selectedOperator.whitelistAddresses]
+  );
 
   const formSchema = useMemo(
     () =>
@@ -24,7 +30,7 @@ export const useAddAuthorizedAddresses = () => {
           .superRefine((arr, ctx) => {
             arr.forEach((address, index) => {
               const foundIndex = arr.findIndex((a) => a.value === address.value);
-              if (foundIndex !== index || addressesMap[address.value]) {
+              if (foundIndex !== index || addressesMap.has(address.value)) {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   message: 'The address you specified is already in use',

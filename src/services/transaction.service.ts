@@ -47,7 +47,7 @@ export const executeAfterEvent = async ({
   return true;
 };
 
-type TxProps = {
+export type TxProps = {
   contractMethod: Function;
   payload: any;
   isContractWallet: boolean;
@@ -56,7 +56,14 @@ type TxProps = {
   dispatch: Function;
 };
 
-export const transactionExecutor = async ({ contractMethod, payload, isContractWallet, getterTransactionState, prevState, dispatch }: TxProps) => {
+export const transactionExecutor = async ({
+  contractMethod,
+  payload,
+  isContractWallet,
+  getterTransactionState,
+  prevState,
+  dispatch
+}: TxProps) => {
   try {
     if (isContractWallet) {
       contractMethod(...payload);
@@ -80,7 +87,12 @@ export const transactionExecutor = async ({ contractMethod, payload, isContractW
           await dispatch(refreshOperatorsAndClusters());
           return true;
         }
-        return await executeAfterEvent({ updatedStateGetter: getterTransactionState, prevState, callBack: () => dispatch(refreshOperatorsAndClusters()), txHash: tx.hash });
+        return await executeAfterEvent({
+          updatedStateGetter: getterTransactionState,
+          prevState,
+          callBack: () => dispatch(refreshOperatorsAndClusters()),
+          txHash: tx.hash
+        });
       } else {
         return false;
       }
@@ -88,7 +100,9 @@ export const transactionExecutor = async ({ contractMethod, payload, isContractW
       return false;
     }
   } catch (e: any) {
-    dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
+    dispatch(
+      setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' })
+    );
     dispatch(setIsLoading(false));
     return false;
   } finally {

@@ -1,19 +1,19 @@
 import { EContractName } from '~app/model/contracts.model';
 
 import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
+import { ExtractAbiFunctionNames } from 'abitype';
+import type { Contract } from 'ethers';
+import { WaitForTransactionReceiptReturnType } from 'viem';
 import { HoleskyV4SetterABI } from '~app/common/config/abi/holesky/v4/setter';
+import { MainnetV4SetterABI } from '~app/common/config/abi/mainnet/v4/setter';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { getContractByName as _getContractByName } from '~root/services/contracts.service';
 import { config } from '~root/wagmi/config';
-import { WaitForTransactionReceiptReturnType } from 'viem';
-import { ExtractAbiFunctionNames } from 'abitype';
-import type { Contract } from 'ethers';
-import { MainnetV4SetterABI } from '~app/common/config/abi/mainnet/v4/setter';
 
 type MainnetSetterFnNames = ExtractAbiFunctionNames<typeof MainnetV4SetterABI>;
 type HoleskySetterFnNames = ExtractAbiFunctionNames<typeof HoleskyV4SetterABI>;
 
-type ContractMethod = (...args: unknown[]) => Promise<{
+export type ContractMethod = (...args: unknown[]) => Promise<{
   hash: string;
   wait: () => Promise<WaitForTransactionReceiptReturnType & { events?: string }>;
 }>;

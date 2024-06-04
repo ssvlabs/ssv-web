@@ -114,6 +114,7 @@ module.exports = {
     plugin(function ({ addVariant }) {
       addVariant('not-last', '& > *:not(:last-child)');
       addVariant('invalid', '&[aria-invalid="true"]');
+      addVariant('invalid-within', "&:has([aria-invalid='true'])");
     })
   ]
 };

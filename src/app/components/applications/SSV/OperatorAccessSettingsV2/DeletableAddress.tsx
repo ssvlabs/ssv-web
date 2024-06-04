@@ -46,7 +46,7 @@ export const DeletableAddress: FCProps = ({ className, address, onDelete, onUndo
           </Button>
         ) : (
           <Button size="icon" variant="ghost" onClick={() => onDelete(address)}>
-            <X />
+            <X className="size-5" />
           </Button>
         ))}
     </div>

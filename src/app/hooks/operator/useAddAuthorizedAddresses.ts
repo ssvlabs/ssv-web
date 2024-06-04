@@ -11,11 +11,11 @@ type FormValues = {
 };
 
 export const useAddAuthorizedAddresses = () => {
-  const selectedOperator = useAppSelector(getSelectedOperator);
+  const operator = useAppSelector(getSelectedOperator);
 
   const addressesMap = useMemo(
-    () => new Map(selectedOperator.whitelistAddresses?.map((a) => [a, true])),
-    [selectedOperator.whitelistAddresses]
+    () => new Map(operator.whitelist_addresses?.map((a) => [a, true])),
+    [operator.whitelist_addresses]
   );
 
   const formSchema = useMemo(
@@ -27,6 +27,9 @@ export const useAddAuthorizedAddresses = () => {
               value: z.string().refine(isAddress, 'Owner address must be a valid address format')
             })
           )
+          .refine((arr) => {
+            return arr.length + (operator.whitelist_addresses?.length || 0) <= 500;
+          }, 'You can add up to 500 addresses')
           .superRefine((arr, ctx) => {
             arr.forEach((address, index) => {
               const foundIndex = arr.findIndex((a) => a.value === address.value);
@@ -40,7 +43,7 @@ export const useAddAuthorizedAddresses = () => {
             });
           })
       }) satisfies z.ZodType<FormValues>,
-    [addressesMap]
+    [addressesMap, operator.whitelist_addresses?.length]
   );
 
   const form = useForm<FormValues>({

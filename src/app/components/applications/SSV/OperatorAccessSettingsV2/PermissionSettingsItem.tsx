@@ -23,7 +23,7 @@ export const PermissionSettingsItem: FCProps = ({ className, route, title, addon
       className={cn(
         'flex items-center gap-3 py-6 px-8 transition-colors duration-100',
         {
-          'cursor-pointer hover:bg-gray-200 active:bg-gray-300': Boolean(route)
+          'cursor-pointer hover:bg-gray-100 active:bg-gray-200': Boolean(route)
         },
         className
       )}

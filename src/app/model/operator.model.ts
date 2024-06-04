@@ -21,9 +21,9 @@ export interface IOperator {
   address_whitelist: string;
   verified_operator?: boolean;
   balance: number;
-  whitelistAddresses?: string[];
-  whitelistingContract?: string;
-  isPrivate?: boolean;
+  whitelist_addresses?: string[];
+  whitelisting_contract?: string;
+  is_private?: boolean;
 }
 
 export interface IOperatorRawData {

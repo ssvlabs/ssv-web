@@ -1,8 +1,7 @@
 import { UseMutationResult, useMutation } from '@tanstack/react-query';
 import { useTransactionExecutor } from '~app/hooks/useTransactionExecutor';
 import { EContractName } from '~app/model/contracts.model';
-import { getContractByName } from '~root/services/contracts.service';
-import { ContractMethod } from '~root/wagmi/utils';
+import { ContractMethod, getContractByName } from '~root/wagmi/utils';
 
 type MutationType = 'add' | 'delete';
 

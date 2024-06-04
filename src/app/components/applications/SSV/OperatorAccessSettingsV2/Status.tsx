@@ -16,18 +16,26 @@ const OperatorStatus = () => {
 
   const executor = useTransactionExecutor();
 
-  const switchLabel = operator.isPrivate ? 'Public' : 'Private';
+  const switchLabel = operator.is_private ? 'Public' : 'Private';
 
   const switcher = useMutation({
     mutationFn: () => {
       const contract = getContractByName(EContractName.SETTER);
-      console.log('contract:', contract);
+      const successTimestamp = Date.now() + 60 * 1000;
       return executor({
-        contractMethod: operator.isPrivate
-          ? contract.setOperatorsPrivateUnchecked
-          : contract.setOperatorsPublicUnchecked,
-        payload: [[operator.id]]
+        contractMethod: operator.is_private
+          ? contract.setOperatorsPublicUnchecked
+          : contract.setOperatorsPrivateUnchecked,
+        payload: [[operator.id]],
+        getterTransactionState: () => {
+          console.log('Date.now() > successTimestamp:', Date.now() > successTimestamp);
+          return Date.now() > successTimestamp;
+        },
+        prevState: false
       });
+    },
+    onSuccess: () => {
+      console.log('success');
     }
   });
 
@@ -37,19 +45,24 @@ const OperatorStatus = () => {
       width={872}
       body={[
         <div className="flex flex-col gap-8 w-full">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-4">
             <h1 className="text-xl font-bold">Operator Status</h1>
-            <p>
-              Switch between public and private statuses for the operator.
+            <p className="font-medium text-sm =">
+              Control validator access by toggling between public and private modes.
               <br />
-              Set the operator to private to enforce whitelisted addresses.
+              In public mode, any validator can register with the operator, while in private mode, only authorized
+              addresses can register.
+              <br />
+              <br />
+              Please note that switching to Private only impacts future validator registrations and will not disrupt the
+              functionality of already registered validators in clusters that include this Operator.
             </p>
           </div>
           <div className="flex items-center justify-between bg-gray-100 px-6 py-5 rounded-lg">
             <OperatorDetails operator={operator} />
-            <OperatorStatusBadge isPrivate={operator.isPrivate} />
+            <OperatorStatusBadge isPrivate={operator.is_private} />
           </div>
-          {isFeeZero && operator.isPrivate && (
+          {isFeeZero && operator.is_private && (
             <Alert variant="error">
               <AlertDescription>
                 Switching the operator to public when the fee is set to 0 is not possible.{' '}
@@ -57,10 +70,11 @@ const OperatorStatus = () => {
             </Alert>
           )}
           <Button
-            disabled={isFeeZero && operator.isPrivate}
+            disabled={isFeeZero && operator.is_private}
             size="xl"
             className="w-full"
             isLoading={switcher.isPending}
+            isActionBtn
             onClick={() => switcher.mutate()}
           >
             Switch to {switchLabel}

@@ -49,7 +49,19 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { className, variant, size, colorScheme, asChild = false, isLoading, loadingText, children, isActionBtn, ...props },
+    {
+      className,
+      variant,
+      size,
+      colorScheme,
+      asChild = false,
+      isLoading,
+      loadingText,
+      children,
+      isActionBtn,
+      type = 'button',
+      ...props
+    },
     ref
   ) => {
     const Comp = asChild ? Slot : 'button';
@@ -59,6 +71,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(buttonVariants({ variant, size, colorScheme, className }), {
           'opacity-50': isLoading
         })}
+        type={type}
         ref={ref}
         {...props}
         onClick={isLoading ? undefined : props.onClick}

@@ -9,6 +9,7 @@ import { getSelectedOperator } from '~app/redux/account.slice';
 
 const PermissionSettingsDashboard = () => {
   const selectedOperator = useAppSelector(getSelectedOperator);
+  console.log('selectedOperator:', selectedOperator);
 
   return (
     <BorderScreen blackHeader width={872}>
@@ -38,19 +39,19 @@ const PermissionSettingsDashboard = () => {
             'Set the operator to private to enforce whitelisted addresses.'
           }
           route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.STATUS}
-          addon={<OperatorStatusBadge isPrivate={selectedOperator.isPrivate} />}
+          addon={<OperatorStatusBadge isPrivate={selectedOperator.is_private} />}
         />
         <PermissionSettingsItem
           title="Authorized Addresses"
           description="Add Ethereum addresses to the whitelist for authorization"
           route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.AUTHORIZED_ADDRESSES}
-          addon={<ActiveBadge isActive={Boolean(selectedOperator.whitelistAddresses?.length)} />}
+          addon={<ActiveBadge isActive={Boolean(selectedOperator.whitelist_addresses?.length)} />}
         />
         <PermissionSettingsItem
           className="pb-8"
           title="External Contract"
           description="Manage whitelisted addresses through an external contract"
-          addon={<ActiveBadge isActive={Boolean(selectedOperator.whitelistingContract)} />}
+          addon={<ActiveBadge isActive={Boolean(selectedOperator.whitelisting_contract)} />}
           route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.EXTERNAL_CONTRACT}
         />
       </Card>

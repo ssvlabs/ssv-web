@@ -1,33 +1,44 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { Loader2 } from 'lucide-react';
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { IoDocumentTextOutline } from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
 import { isAddress } from 'viem';
 import { z } from 'zod';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { Button } from '~app/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '~app/components/ui/form';
 import { Input } from '~app/components/ui/input';
-import { IoDocumentTextOutline } from 'react-icons/io5';
 import { useSetOperatorsWhitelistingContract } from '~app/hooks/operator/useSetOperatorsWhitelistingContract';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
-import { isWhitelistingContract } from '~root/services/operatorContract.service';
-import { useNavigate } from 'react-router-dom';
+import { isWhitelistingContract as _isWhitelistingContract } from '~root/services/operatorContract.service';
 
 type FormValues = {
   externalContract: string;
 };
-
-const schema = z.object({
-  externalContract: z
-    .custom<string>(isAddress, 'Contract address must be a in a valid address format')
-    .refine(isWhitelistingContract, 'Address is not a valid whitelisting contract')
-}) satisfies z.ZodType<FormValues>;
 
 const ExternalContract = () => {
   const navigate = useNavigate();
 
   const operator = useAppSelector(getSelectedOperator);
   const setExternalContract = useSetOperatorsWhitelistingContract();
+
+  const isWhitelistingContract = useMutation({
+    mutationFn: _isWhitelistingContract
+  });
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        externalContract: z
+          .custom<string>(isAddress, 'Contract address must be a in a valid address format')
+          .refine(isWhitelistingContract.mutateAsync, 'Address is not a valid whitelisting contract')
+      }) satisfies z.ZodType<FormValues>,
+    [isWhitelistingContract.mutateAsync]
+  );
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -76,7 +87,13 @@ const ExternalContract = () => {
                     <Input
                       {...field}
                       placeholder="0xCONT...RACT"
-                      leftSlot={<IoDocumentTextOutline className="w-6 h-6 text-gray-600" />}
+                      leftSlot={
+                        isWhitelistingContract.isPending ? (
+                          <Loader2 className="w-6 h-6 text-primary-500" />
+                        ) : (
+                          <IoDocumentTextOutline className="w-6 h-6 text-gray-600" />
+                        )
+                      }
                     />
                   </FormControl>
                   <FormMessage />

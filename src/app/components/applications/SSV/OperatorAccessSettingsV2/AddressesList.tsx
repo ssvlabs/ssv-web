@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Card } from '~app/atomicComponents/Card';
 import { DeletableAddress } from '~app/components/applications/SSV/OperatorAccessSettingsV2/DeletableAddress';
 import BackNavigation from '~app/components/common/BackNavigation';
@@ -12,7 +12,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
 
 const AddressesList = () => {
-  const { whitelistAddresses } = useAppSelector(getSelectedOperator);
+  const operator = useAppSelector(getSelectedOperator);
   const { addManager, deleteManager, mode, submit, reset, setter } = useManageAuthorizedAddresses();
 
   const formRef = useRef<HTMLDivElement>(null);
@@ -23,6 +23,12 @@ const AddressesList = () => {
       formRef.current?.scrollTo({ top: formRef.current.scrollHeight, behavior: 'smooth' });
     }, 10);
   };
+
+  useEffect(() => {
+    window.onbeforeunload = () => {
+      return mode !== 'view' ? `Are you sure that you want to cancel? Any unsaved changes will be lost.` : undefined;
+    };
+  }, [mode]);
 
   return (
     <Form {...addManager.form}>
@@ -37,14 +43,16 @@ const AddressesList = () => {
               You can use both authorized addresses and an external contract simultaneously.
             </p>
           </div>
-          <Alert variant="warning">
-            <AlertDescription>
-              In order to enforce whitelisted addresses, make sure to switch the{' '}
-              <span className="font-bold">Operator Status</span> to <span className="font-bold">Private.</span>
-            </AlertDescription>
-          </Alert>
+          {mode === 'add' && !operator.is_private && (
+            <Alert variant="warning">
+              <AlertDescription>
+                In order to enforce whitelisted addresses, make sure to switch the{' '}
+                <span className="font-bold">Operator Status</span> to <span className="font-bold">Private.</span>
+              </AlertDescription>
+            </Alert>
+          )}
           <div ref={formRef} className="space-y-3 overflow-auto">
-            {whitelistAddresses?.map((address) => (
+            {operator.whitelist_addresses?.map((address) => (
               <DeletableAddress
                 key={address}
                 address={address}
@@ -76,6 +84,9 @@ const AddressesList = () => {
                 )}
               />
             ))}
+            {addManager.form.formState.errors.addresses && (
+              <FormMessage className="text-error-500">{addManager.form.formState.errors.addresses.message}</FormMessage>
+            )}
             {mode !== 'delete' && (
               <button
                 type="button"

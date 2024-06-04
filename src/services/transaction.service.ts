@@ -8,6 +8,8 @@ const CHECK_UPDATES_MAX_ITERATIONS = 60;
 const checkIfStateChanged = async (updatedStateGetter: Function, prevState: unknown): Promise<boolean> => {
   try {
     const newState = await updatedStateGetter();
+    console.log('newState:', newState);
+    console.log('prevState:', prevState);
     return JSON.stringify(prevState) !== JSON.stringify(newState);
   } catch (e) {
     console.error('checkIfStateChanged ', e);
@@ -78,25 +80,33 @@ export const transactionExecutor = async ({
       dispatch(setIsShowTxPendingPopup(true));
     }
 
+    console.time('transaction itself took');
     const receipt = await tx.wait();
+    console.timeEnd('transaction itself took');
 
+    console.time('transaction processing took');
     if (receipt.blockHash) {
       const event: boolean = receipt.hasOwnProperty('events');
       if (event) {
         if (!getterTransactionState) {
           await dispatch(refreshOperatorsAndClusters());
+          console.timeEnd('transaction processing took');
           return true;
         }
-        return await executeAfterEvent({
+        const after = await executeAfterEvent({
           updatedStateGetter: getterTransactionState,
           prevState,
           callBack: () => dispatch(refreshOperatorsAndClusters()),
           txHash: tx.hash
         });
+        console.timeEnd('transaction processing took');
+        return after;
       } else {
+        console.timeEnd('transaction processing took');
         return false;
       }
     } else {
+      console.timeEnd('transaction processing took');
       return false;
     }
   } catch (e: any) {

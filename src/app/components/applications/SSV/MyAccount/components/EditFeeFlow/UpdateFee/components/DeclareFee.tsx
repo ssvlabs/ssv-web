@@ -31,10 +31,12 @@ const DeclareFee = ({ newFee, oldFee, currentCurrency, getCurrentState }: Increa
     await dispatch(fetchAndSetOperatorFeeInfo(processOperatorId));
     if (response) {
       // TODO: Review local storage usage
-      let savedOperator = JSON.parse(getFromLocalStorageByKey('expired_operators') || '');
+      const expiredOperatorsStorageKey = 'expired_operators';
+      const storedValue = getFromLocalStorageByKey(expiredOperatorsStorageKey);
+      let savedOperator = storedValue ? JSON.parse(storedValue) : null;
       if (savedOperator && savedOperator?.includes(processOperatorId)) {
         savedOperator = savedOperator.filter((item: any) => item !== processOperatorId);
-        saveInLocalStorage('expired_operators', JSON.stringify(savedOperator));
+        saveInLocalStorage(expiredOperatorsStorageKey, JSON.stringify(savedOperator));
       }
     }
     setIsLoading(false);

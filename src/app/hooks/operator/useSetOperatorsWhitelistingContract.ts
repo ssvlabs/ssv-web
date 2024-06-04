@@ -1,6 +1,7 @@
 import { UseMutationResult, useMutation } from '@tanstack/react-query';
 import { useTransactionExecutor } from '~app/hooks/useTransactionExecutor';
 import { EContractName } from '~app/model/contracts.model';
+import { getOperator } from '~root/services/operator.service';
 import { ContractMethod, getContractByName } from '~root/wagmi/utils';
 
 type MutationType = 'set' | 'remove';
@@ -28,7 +29,9 @@ export const useSetOperatorsWhitelistingContract = () => {
     mutationFn: ({ type, operatorIds, contractAddress }) => {
       return executor({
         contractMethod: methods[type],
-        payload: [operatorIds, contractAddress]
+        payload: [operatorIds, contractAddress],
+        getterTransactionState: () => getOperator(operatorIds[0]).then((o) => o.whitelisting_contract),
+        prevState: contractAddress
       });
     }
   }) satisfies Mutation;

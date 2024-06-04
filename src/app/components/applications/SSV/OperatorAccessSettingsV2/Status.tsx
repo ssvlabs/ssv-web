@@ -1,43 +1,18 @@
-import { useMutation } from '@tanstack/react-query';
 import { OperatorStatusBadge } from '~app/components/applications/SSV/OperatorAccessSettingsV2/OperatorStatusBadge';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { Alert, AlertDescription } from '~app/components/ui/alert';
 import { Button } from '~app/components/ui/button';
+import { useSetOperatorVisibility } from '~app/hooks/operator/useSetOperatorVisibility';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { useTransactionExecutor } from '~app/hooks/useTransactionExecutor';
-import { EContractName } from '~app/model/contracts.model';
 import { getSelectedOperator } from '~app/redux/account.slice';
-import { getContractByName } from '~root/wagmi/utils';
 
 const OperatorStatus = () => {
   const operator = useAppSelector(getSelectedOperator);
   const isFeeZero = !Number(operator.fee);
-
-  const executor = useTransactionExecutor();
-
   const switchLabel = operator.is_private ? 'Public' : 'Private';
 
-  const switcher = useMutation({
-    mutationFn: () => {
-      const contract = getContractByName(EContractName.SETTER);
-      const successTimestamp = Date.now() + 60 * 1000;
-      return executor({
-        contractMethod: operator.is_private
-          ? contract.setOperatorsPublicUnchecked
-          : contract.setOperatorsPrivateUnchecked,
-        payload: [[operator.id]],
-        getterTransactionState: () => {
-          console.log('Date.now() > successTimestamp:', Date.now() > successTimestamp);
-          return Date.now() > successTimestamp;
-        },
-        prevState: false
-      });
-    },
-    onSuccess: () => {
-      console.log('success');
-    }
-  });
+  const setOperatorVisibility = useSetOperatorVisibility();
 
   return (
     <BorderScreen
@@ -73,9 +48,14 @@ const OperatorStatus = () => {
             disabled={isFeeZero && operator.is_private}
             size="xl"
             className="w-full"
-            isLoading={switcher.isPending}
+            isLoading={setOperatorVisibility.isPending}
             isActionBtn
-            onClick={() => switcher.mutate()}
+            onClick={() =>
+              setOperatorVisibility.mutate({
+                isPrivate: !operator.is_private,
+                operatorIds: [operator.id]
+              })
+            }
           >
             Switch to {switchLabel}
           </Button>

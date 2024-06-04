@@ -19,7 +19,7 @@ import { isJsonFile } from '~root/utils/dkg.utils';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
-import { getIsSecondRegistration } from '~app/redux/account.slice.ts';
+import { getIsClusterSelected } from '~app/redux/account.slice.ts';
 
 const KeyStoreFlow = () => {
   const stores = useStores();
@@ -29,7 +29,7 @@ const KeyStoreFlow = () => {
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
   const inputRef = useRef(null);
   const removeButtons = useRef(null);
-  const isSecondRegistration = useAppSelector(getIsSecondRegistration);
+  const isSecondRegistration = useAppSelector(getIsClusterSelected);
   const validatorStore: ValidatorStore = stores.Validator;
   const [errorMessage, setErrorMessage] = useState('');
   const [isProcessingFile, setIsProcessingFile] = useState(false);

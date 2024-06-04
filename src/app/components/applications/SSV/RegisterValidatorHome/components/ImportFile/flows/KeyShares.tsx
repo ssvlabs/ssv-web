@@ -46,7 +46,7 @@ import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getClusterSize, getOperatorValidatorsLimit, getSelectedOperators, selectOperators, setClusterSize, unselectAllOperators } from '~app/redux/operator.slice.ts';
-import { setExcludedCluster, getIsSecondRegistration, getSelectedCluster } from '~app/redux/account.slice.ts';
+import { getIsClusterSelected, getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
@@ -60,7 +60,7 @@ const KeyShareFlow = () => {
   const removeButtons = useRef(null);
   const validatorStore: ValidatorStore = stores.Validator;
   const cluster = useAppSelector(getSelectedCluster);
-  const isSecondRegistration = useAppSelector(getIsSecondRegistration);
+  const isSecondRegistration = useAppSelector(getIsClusterSelected);
   const [warningMessage, setWarningMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
   const [validatorsList, setValidatorsList] = useState<Record<string, ValidatorType>>({});

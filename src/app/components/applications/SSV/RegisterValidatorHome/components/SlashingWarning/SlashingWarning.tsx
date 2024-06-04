@@ -13,7 +13,7 @@ import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHom
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
-import { getIsSecondRegistration } from '~app/redux/account.slice.ts';
+import { getIsClusterSelected } from '~app/redux/account.slice.ts';
 import { NewValidatorRouteState } from '~app/Routes';
 
 const SlashingWarning = () => {
@@ -24,7 +24,7 @@ const SlashingWarning = () => {
   const validatorStore: ValidatorStore = stores.Validator;
   const [hasUserAgreed, setHasUserAgreed] = useState(false);
   const publicKey = validatorStore.keyStorePublicKey || validatorStore.keySharePublicKey;
-  const isSecondRegistration = useAppSelector(getIsSecondRegistration);
+  const isSecondRegistration = useAppSelector(getIsClusterSelected);
 
   const goToConfirmation = () => {
     if (isSecondRegistration) {

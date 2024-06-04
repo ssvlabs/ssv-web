@@ -29,7 +29,7 @@ import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { getSelectedOperators, getSelectedOperatorsFee } from '~app/redux/operator.slice.ts';
 import { NewValidatorRouteState } from '~app/Routes';
-import { getIsSecondRegistration } from '~app/redux/account.slice.ts';
+import { getIsClusterSelected } from '~app/redux/account.slice.ts';
 
 const ValidatorRegistrationConfirmation = () => {
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ const ValidatorRegistrationConfirmation = () => {
   const validatorStore: ValidatorStore = stores.Validator;
   const selectedOperatorsFee = useAppSelector(getSelectedOperatorsFee);
   const selectedOperators = useAppSelector(getSelectedOperators);
-  const isSecondRegistration = useAppSelector(getIsSecondRegistration);
+  const isSecondRegistration = useAppSelector(getIsClusterSelected);
 
   const location: Location<NewValidatorRouteState> = useLocation();
 

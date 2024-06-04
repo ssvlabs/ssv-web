@@ -12,7 +12,7 @@ import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHom
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
-import { getIsSecondRegistration } from '~app/redux/account.slice.ts';
+import { getIsClusterSelected } from '~app/redux/account.slice.ts';
 import { BulkActionRouteState } from '~app/Routes';
 
 const AccountBalanceAndFee = () => {
@@ -20,7 +20,7 @@ const AccountBalanceAndFee = () => {
   const navigate = useNavigate();
   const location: Location<BulkActionRouteState> = useLocation();
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
-  const isSecondRegistration = useAppSelector(getIsSecondRegistration);
+  const isSecondRegistration = useAppSelector(getIsClusterSelected);
   const [firstCheckBox, setFirstCheckBox] = useState(false);
   const [secondCheckBox, setSecondCheckBox] = useState(false);
 

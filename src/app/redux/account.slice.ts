@@ -20,7 +20,7 @@ export interface AccountState {
   clusters: ICluster[];
   isFetchingClusters: boolean;
   clustersPagination: Pagination;
-  selectedClusterId: string;
+  selectedClusterId: string | undefined;
   selectedOperator: IOperator | undefined;
   excludedCluster: ICluster | null;
 }
@@ -32,7 +32,7 @@ const initialState: AccountState = {
   clusters: [] as ICluster[],
   isFetchingClusters: false,
   clustersPagination: DEFAULT_PAGINATION,
-  selectedClusterId: '',
+  selectedClusterId: undefined,
   selectedOperator: undefined,
   excludedCluster: null
 };
@@ -100,7 +100,7 @@ export const slice = createSlice({
       state.operatorsPagination = DEFAULT_PAGINATION;
       state.clustersPagination = DEFAULT_PAGINATION;
     },
-    setSelectedClusterId: (state, action: { payload: string }) => {
+    setSelectedClusterId: (state, action: { payload: AccountState['selectedClusterId'] }) => {
       state.selectedClusterId = action.payload;
     },
     setSelectedOperator: (state, action: { payload: IOperator }) => {
@@ -163,4 +163,4 @@ export const getClustersPagination = (state: RootState) => state.accountState.cl
 export const getSelectedCluster = (state: RootState) =>
   state.accountState.excludedCluster || state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId) || ({} as ICluster);
 export const getSelectedOperator = (state: RootState) => state.accountState.selectedOperator;
-export const getIsSecondRegistration = (state: RootState) => state.accountState.clusters.filter(({ id }) => state.accountState.excludedCluster?.id !== id).length > 0;
+export const getIsClusterSelected = (state: RootState) => Boolean(state.accountState.selectedClusterId);

@@ -76,7 +76,7 @@ const SingleCluster = () => {
   };
 
   const backToClustersDashboard = () => {
-    dispatch(setSelectedClusterId(''));
+    dispatch(setSelectedClusterId(undefined));
     dispatch(setExcludedCluster(null));
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };

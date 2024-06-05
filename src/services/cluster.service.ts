@@ -20,12 +20,24 @@ const extendClusterEntity = async (cluster: ICluster, ownerAddress: string, liqu
   const operatorIds = cluster.operators.map((operator) => operator.id);
   const clusterData = clusterDataDTO({ cluster });
   if (cluster.isLiquidated) {
-    return { ...cluster, runWay: '0', burnRate: '0', balance: '0', clusterData };
+    return {
+      ...cluster,
+      runWay: '0',
+      burnRate: '0',
+      balance: '0',
+      clusterData
+    };
   }
   const balance = await getClusterBalance(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, false, clusterData);
   const burnRate = await getClusterBurnRate(operatorIds, ownerAddress, clusterData);
   const runWay: number = getClusterRunWay({ balance, burnRate }, liquidationCollateralPeriod, minimumLiquidationCollateral);
-  return { ...cluster, runWay, burnRate: burnRate.toString(), balance: balance.toString(), clusterData };
+  return {
+    ...cluster,
+    runWay,
+    burnRate: burnRate.toString(),
+    balance: balance.toString(),
+    clusterData
+  };
 };
 
 const getClustersByOwnerAddress = async ({

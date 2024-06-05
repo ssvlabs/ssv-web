@@ -32,6 +32,9 @@ import { OperatingSystemsEnum } from '~app/enums/os.enum';
 import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getSelectedOperators } from '~app/redux/operator.slice.ts';
+import { useOperatorsDKGHealth } from '~app/hooks/useOperatorsDKGHealth';
+import Spinner from '~app/components/common/Spinner';
+import { cn } from '~lib/utils/tailwind';
 
 const DkgTitleWrapper = styled.div`
   width: 100%;
@@ -63,7 +66,7 @@ const OFFLINE_FLOWS = {
   COMMAND_LINE: 1,
   DESKTOP_APP: 2,
   DKG: 3
-};
+} as const;
 
 const XS = 12;
 const MIN_VALIDATORS_COUNT = 1;
@@ -88,7 +91,10 @@ const OfflineKeyShareGeneration = () => {
   const [selectedBox, setSelectedBox] = useState(0);
   const [textCopied, setTextCopied] = useState(false);
   const [withdrawalAddress, setWithdrawalAddress] = useState('');
-  const [addressValidationError, setAddressValidationError] = useState({ shouldDisplay: true, errorMessage: '' });
+  const [addressValidationError, setAddressValidationError] = useState({
+    shouldDisplay: true,
+    errorMessage: ''
+  });
   const [ownerNonce, setOwnerNonce] = useState<number | undefined>(undefined);
   const [confirmedWithdrawalAddress, setConfirmedWithdrawalAddress] = useState(false);
   const [validatorsCount, setValidatorsCount] = useState(MIN_VALIDATORS_COUNT);
@@ -102,7 +108,16 @@ const OfflineKeyShareGeneration = () => {
   const processStore: ProcessStore = stores.Process;
   const selectedOperators = useAppSelector(getSelectedOperators);
   const { apiNetwork } = getStoredNetwork();
-  const operatorsAcceptDkg = Object.values(selectedOperators).every((operator: IOperator) => isDkgAddressValid(operator.dkg_address ?? ''));
+
+  const isEveryOperatorDkgAddressValid = Object.values(selectedOperators).every((operator: IOperator) => isDkgAddressValid(operator.dkg_address ?? ''));
+
+  const operatorsDKGHealth = useOperatorsDKGHealth({
+    operators: Object.values(selectedOperators),
+    enabled: selectedBox === OFFLINE_FLOWS.DKG
+  });
+
+  const operatorsAcceptDkg = isEveryOperatorDkgAddressValid && operatorsDKGHealth.data?.every((o) => o.isHealthy);
+
   const isWindowOs = operatingSystemName === OperatingSystemsEnum.Windows;
   const dynamicFullPath = isWindowOs ? '%cd%' : '$(pwd)';
 
@@ -194,7 +209,12 @@ const OfflineKeyShareGeneration = () => {
   const copyToClipboard = () => {
     const command = selectedBox === OFFLINE_FLOWS.COMMAND_LINE ? cliCommand : dkgCliCommand;
     navigator.clipboard.writeText(command);
-    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
+    dispatch(
+      setMessageAndSeverity({
+        message: 'Copied to clipboard.',
+        severity: 'success'
+      })
+    );
     setTextCopied(true);
   };
 
@@ -249,8 +269,10 @@ const OfflineKeyShareGeneration = () => {
     return true;
   };
 
-  // @ts-ignore
-  const enableDesktopAppKeysharesGeneration = JSON.parse(getFromLocalStorageByKey(DEVELOPER_FLAGS.ENABLE_DESKTOP_APP_KEYSHARES_GENERATION));
+  const enableDesktopAppKeysharesGeneration = JSON.parse(
+    // @ts-ignore
+    getFromLocalStorageByKey(DEVELOPER_FLAGS.ENABLE_DESKTOP_APP_KEYSHARES_GENERATION)
+  );
 
   const MainScreen = (
     <BorderScreen
@@ -268,7 +290,7 @@ const OfflineKeyShareGeneration = () => {
               className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.COMMAND_LINE) ? classes.BoxSelected : ''}`}
               onClick={() => checkBox(OFFLINE_FLOWS.COMMAND_LINE)}
             >
-              <Grid item xs={XS} className={classes.Image} />
+              <Grid item xs={XS} className={cn(classes.ImageContainer, classes.CMDImage)} />
               <Typography className={classes.BlueText}>Command Line Interface</Typography>
               <Typography className={classes.AdditionalGrayText}>Generate from Existing Key</Typography>
             </Grid>
@@ -284,7 +306,7 @@ const OfflineKeyShareGeneration = () => {
                     className={`${classes.Box} ${enableDesktopAppKeysharesGeneration ? '' : classes.Disable} ${isSelected(OFFLINE_FLOWS.DESKTOP_APP) ? classes.BoxSelected : ''}`}
                     onClick={() => checkBox(OFFLINE_FLOWS.DESKTOP_APP)}
                   >
-                    <Grid item xs={XS} className={`${classes.Image} ${classes.Desktop}`} />
+                    <Grid item xs={XS} className={cn(classes.ImageContainer, classes.Desktop)} />
                     <Typography className={classes.BlueText}>Desktop App</Typography>
                     <Typography className={classes.AdditionalGrayText}>Generate from Existing Key</Typography>
                   </Grid>
@@ -292,7 +314,23 @@ const OfflineKeyShareGeneration = () => {
               }
             />
             <Grid container item className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.DKG) ? classes.BoxSelected : ''}`} onClick={() => checkBox(OFFLINE_FLOWS.DKG)}>
-              <Grid item xs={XS} className={`${classes.Image} ${classes.DkgImage} ${!isSelected(OFFLINE_FLOWS.DKG) && classes.DkgImageUnselected}`} />
+              {operatorsDKGHealth.isLoading ? (
+                <Grid item xs={XS} className={cn(classes.ImageContainer)}>
+                  <div className="flex justify-center">
+                    <div className="-mr-5">
+                      <Spinner isWhite />
+                    </div>
+                  </div>
+                </Grid>
+              ) : (
+                <Grid
+                  item
+                  xs={XS}
+                  className={cn(classes.ImageContainer, classes.DkgImage, {
+                    [classes.DkgImageUnselected]: !isSelected(OFFLINE_FLOWS.DKG)
+                  })}
+                />
+              )}
               <Grid className={classes.OptionTextWrapper}>
                 <Typography className={classes.BlueText}>DKG</Typography>
                 <Typography className={classes.AdditionalGrayText}>Generate from New Key</Typography>
@@ -324,7 +362,7 @@ const OfflineKeyShareGeneration = () => {
               </Grid>
             </Grid>
           )}
-          {selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg && (
+          {selectedBox === OFFLINE_FLOWS.DKG && operatorsAcceptDkg && !operatorsDKGHealth.isLoading && (
             <Grid container item className={classes.DkgInstructionsWrapper}>
               <Grid className={classes.DkgSectionWrapper}>
                 <Typography className={classes.DkgTitle}>Prerequisite</Typography>
@@ -391,11 +429,11 @@ const OfflineKeyShareGeneration = () => {
               )}
             </Grid>
           )}
-          {selectedBox === 3 && !operatorsAcceptDkg && (
+          {selectedBox === OFFLINE_FLOWS.DKG && !operatorsAcceptDkg && !operatorsDKGHealth.isLoading && (
             <Grid className={classes.DkgOperatorsWrapper}>
               <ErrorMessage text={translations.VALIDATOR.DISTRIBUTE_OFFLINE.DKG.OPERATOR_DOESNT_SUPPORT_DKG_ERROR_TEXT} />
               {Object.values(selectedOperators)
-                .sort((a: any, b: any) => {
+                .sort((a, b) => {
                   if (a.dkg_address && !b.dkg_address) {
                     return 1;
                   } else if (!a.dkg_address && b.dkg_address) {
@@ -403,9 +441,10 @@ const OfflineKeyShareGeneration = () => {
                   }
                   return a.id - b.id;
                 })
-                .map((operator: IOperator) => (
-                  <DkgOperator operator={operator} />
-                ))}
+                .map((operator: IOperator) => {
+                  const isHealthy = operatorsDKGHealth.data?.find((o) => o.id === operator.id)?.isHealthy;
+                  return <DkgOperator operator={operator} isHealthy={isHealthy} />;
+                })}
             </Grid>
           )}
           {selectedBox === 1 && (

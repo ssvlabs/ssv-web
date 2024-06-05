@@ -48,7 +48,8 @@ const OfflineKeyShareCeremony = () => {
         <Grid container item className={classes.DkgInstructionsWrapper}>
           <Grid className={classes.StepAndBadgeWrapper}>
             <Typography className={classes.DkgTitle}>
-              <Typography className={classes.StepTitle}>Step 1:</Typography>&nbsp;Validator Key Generation
+              <Typography className={classes.StepTitle}>Step 1:</Typography>
+              &nbsp;Validator Key Generation
             </Typography>
             <Grid className={classes.CompletedBadge}>
               <Typography className={classes.CompletedBadgeText}>Completed</Typography>
@@ -87,7 +88,8 @@ const OfflineKeyShareCeremony = () => {
         <Grid container item className={classes.DkgInstructionsWrapper}>
           <Grid className={classes.StepAndBadgeWrapper}>
             <Typography className={classes.DkgTitle}>
-              <Typography className={classes.StepTitle}>Step 2:</Typography>&nbsp;Deposit Validator
+              <Typography className={classes.StepTitle}>Step 2:</Typography>
+              &nbsp;Deposit Validator
             </Typography>
             {isValidatorActivated && (
               <Grid className={classes.CompletedBadge}>
@@ -109,7 +111,8 @@ const OfflineKeyShareCeremony = () => {
       <Grid className={`${classes.TitleBox} ${isValidatorActivated ? classes.SelectedBoxBorder : null}`}>
         <Grid container item className={classes.DkgInstructionsWrapper}>
           <Typography className={classes.DkgTitle}>
-            <Typography className={classes.StepTitle}>Step 3:</Typography>&nbsp;Register Validator
+            <Typography className={classes.StepTitle}>Step 3:</Typography>
+            &nbsp;Register Validator
           </Typography>
           <Typography className={classes.DkgText}>Run your validator on the SSV Network by registering and distributing its key shares to your cluster operators.</Typography>
           <PrimaryButton text={'Register Validator'} onClick={goToNextPage[`${processStore.secondRegistration}`]} isDisabled={!isValidatorActivated} size={ButtonSize.XL} />

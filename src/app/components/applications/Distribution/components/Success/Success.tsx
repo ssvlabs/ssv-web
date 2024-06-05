@@ -52,7 +52,18 @@ const Success = () => {
               </span>
             }
           />
-          <Grid item container className={classes.AddSsvToWallet} onClick={() => wallet && registerSSVTokenInMetamask({ provider: wallet.provider, notificationHandler })}>
+          <Grid
+            item
+            container
+            className={classes.AddSsvToWallet}
+            onClick={() =>
+              wallet &&
+              registerSSVTokenInMetamask({
+                provider: wallet.provider,
+                notificationHandler
+              })
+            }
+          >
             <Grid item className={classes.MetaMask} />
             <Typography component={'span'}>Add SSV to Metamask</Typography>
           </Grid>

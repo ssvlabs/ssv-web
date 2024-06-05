@@ -96,6 +96,7 @@ const App = () => {
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={MuiTheme}>
         <ThemeProviderLegacy theme={MuiTheme}>
+          {/* @ts-ignore */}
           <ScThemeProvider theme={theme}>
             <div
               className={cn({ dark: isDarkMode })}
@@ -103,6 +104,7 @@ const App = () => {
                 color: theme.colors.black
               }}
             >
+              {/* @ts-ignore */}
               <GlobalStyle />
               {isShowSsvLoader && (
                 <LoaderWrapper>

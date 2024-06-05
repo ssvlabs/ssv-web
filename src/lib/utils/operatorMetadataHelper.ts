@@ -210,8 +210,7 @@ export const isValidLink = (value: string) => {
 
 export const isDkgAddressValid = (value: string, isForm?: boolean) => {
   if (isForm && value === HTTPS_PREFIX) return false;
-
-  if (!value.startsWith(HTTPS_PREFIX)) return true;
+  if (!value.startsWith(HTTPS_PREFIX)) return false;
 
   const addressWithoutHttps = value.substring(HTTPS_PREFIX.length);
 

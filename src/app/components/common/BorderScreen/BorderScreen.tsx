@@ -55,7 +55,14 @@ const BorderScreen = (props: Props) => {
     sideElementShowCondition = true,
     children
   } = props;
-  const classes = useStyles({ overFlow, gray80, blackHeader, marginTop, width, wrapperHeight });
+  const classes = useStyles({
+    overFlow,
+    gray80,
+    blackHeader,
+    marginTop,
+    width,
+    wrapperHeight
+  });
 
   const switchCurrency = (selectedCurrency: string) => {
     setCurrency(selectedCurrency);
@@ -110,13 +117,7 @@ const BorderScreen = (props: Props) => {
 
           {body.map((section: any, index: number) => {
             return (
-              <Grid
-                key={index}
-                item
-                container
-                style={{ borderBottom: body.length === 1 || withoutBorderBottom ? 'none' : '' }}
-                className={sectionClass ?? classes.Section}
-              >
+              <Grid key={index} item container style={{ borderBottom: body.length === 1 || withoutBorderBottom ? 'none' : '' }} className={sectionClass ?? classes.Section}>
                 {section}
               </Grid>
             );

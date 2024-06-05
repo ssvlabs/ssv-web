@@ -95,7 +95,12 @@ export const transactionExecutor = async ({ contractMethod, payload, isContractW
       return false;
     }
   } catch (e: any) {
-    dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
+    dispatch(
+      setMessageAndSeverity({
+        message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE,
+        severity: 'error'
+      })
+    );
     dispatch(setIsLoading(false));
     return false;
   } finally {

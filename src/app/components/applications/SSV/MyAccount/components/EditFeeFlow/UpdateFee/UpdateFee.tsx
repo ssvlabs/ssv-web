@@ -34,7 +34,10 @@ const UpdateFee = () => {
   const classes = useStyles({ operatorLogo: logo });
   const [currency, setCurrency] = useState('SSV');
   const [currentFlowStep, setCurrentFlowStep] = useState(FeeUpdateSteps.START);
-  const [error, setError] = useState({ shouldDisplay: false, errorMessage: '' });
+  const [error, setError] = useState({
+    shouldDisplay: false,
+    errorMessage: ''
+  });
   const dispatch = useAppDispatch();
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const processOperatorId = useAppSelector(getOperatorProcessId);

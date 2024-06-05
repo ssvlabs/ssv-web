@@ -50,7 +50,10 @@ const OperatorDashboard = () => {
           // eslint-disable-next-line no-async-promise-executor
           new Promise(async () => {
             const balance = await getOperatorBalance({ id: operator.id });
-            setOperatorBalances((prevState: {}) => ({ ...prevState, [operator.id]: balance }));
+            setOperatorBalances((prevState: {}) => ({
+              ...prevState,
+              [operator.id]: balance
+            }));
           })
       );
       await Promise.all(promises);
@@ -64,7 +67,14 @@ const OperatorDashboard = () => {
   };
 
   const createData = (operatorName: JSX.Element, status: JSX.Element, performance: string, balance: JSX.Element, yearlyFee: JSX.Element, validators: number) => {
-    return { operatorName, status, performance, balance, yearlyFee, validators };
+    return {
+      operatorName,
+      status,
+      performance,
+      balance,
+      yearlyFee,
+      validators
+    };
   };
 
   const rows = operators.map((operator: any) => {

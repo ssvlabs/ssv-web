@@ -22,7 +22,13 @@ enum StepperProcessesSteps {
 }
 
 const ReactStepper = ({ step, registerButtonEnabled, subTextAlign, subText, isCanceled, prevStep }: StepperProps) => {
-  const classes = useStyles({ step, registerButtonEnabled, subTextAlign, isCanceled, prevStep });
+  const classes = useStyles({
+    step,
+    registerButtonEnabled,
+    subTextAlign,
+    isCanceled,
+    prevStep
+  });
   const operatorFeeData = useAppSelector(getOperatorFeeData);
   const feeIncreaseAndPeriods = useAppSelector(getFeeIncreaseAndPeriods);
 

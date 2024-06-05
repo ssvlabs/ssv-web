@@ -22,7 +22,7 @@ const initialState: WalletSliceState = {
   isNotMetamask: false,
   isContractWallet: false,
   connectedNetwork: getStoredNetwork(),
-  isMainnet: getStoredNetwork().networkId === MAINNET_NETWORK_ID
+  isMainnet: false
 };
 
 const checkIfWalletIsContractAction = createAsyncThunk('wallet/checkIfWalletIsContractStatus', async (provider: ethers.providers.JsonRpcProvider, thunkAPI) => {

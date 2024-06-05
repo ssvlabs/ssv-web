@@ -142,7 +142,11 @@ const KeyShareFlow = () => {
           }
         }
       }
-      return { response: getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID), operatorsData, clusterSizeData };
+      return {
+        response: getResponse(KeyShareValidationResponseId.OK_RESPONSE_ID),
+        operatorsData,
+        clusterSizeData
+      };
     } catch (e: any) {
       return {
         response: getResponse(KeyShareValidationResponseId.ERROR_RESPONSE_ID, 'Failed to process KeyShares file'),
@@ -342,7 +346,11 @@ const KeyShareFlow = () => {
   const removeFile = () => {
     setProcessFile(true);
     validatorStore.clearKeyShareFlowData();
-    setValidationError({ id: KeyShareValidationResponseId.OK_RESPONSE_ID, name: '', errorMessage: '' });
+    setValidationError({
+      id: KeyShareValidationResponseId.OK_RESPONSE_ID,
+      name: '',
+      errorMessage: ''
+    });
     validatorStore.keyShareFile = null;
     setProcessFile(false);
     setValidatorsCount(0);
@@ -428,7 +436,12 @@ const KeyShareFlow = () => {
         await getClusterData(getClusterHash(Object.values(selectedStoreOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true).then(
           (clusterData) => {
             if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
-              dispatch(setExcludedCluster({ ...clusterData, operators: Object.values(selectedStoreOperators) }));
+              dispatch(
+                setExcludedCluster({
+                  ...clusterData,
+                  operators: Object.values(selectedStoreOperators)
+                })
+              );
               nextRouteAction = EValidatorFlowAction.SECOND_REGISTER;
             }
           }
@@ -508,8 +521,8 @@ const KeyShareFlow = () => {
             <ErrorMessage
               text={
                 <Typography className={classes.ErrorMessageText}>
-                  Validators within this file have an incorrect <LinkText textSize={14} link={config.links.INCORRECT_OWNER_NONCE_LINK} text={'registration nonce'} />.<br /> Please
-                  split the validator keys to new key shares aligned with the correct one.
+                  Validators within this file have an incorrect <LinkText textSize={14} link={config.links.INCORRECT_OWNER_NONCE_LINK} text={'registration nonce'} />
+                  .<br /> Please split the validator keys to new key shares aligned with the correct one.
                 </Typography>
               }
             />

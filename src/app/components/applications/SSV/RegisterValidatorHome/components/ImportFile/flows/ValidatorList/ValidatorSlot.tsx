@@ -23,7 +23,12 @@ const ValidatorSlot = ({
 
   const copyToClipboard = (publicKey: string) => {
     navigator.clipboard.writeText(publicKey);
-    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
+    dispatch(
+      setMessageAndSeverity({
+        message: 'Copied to clipboard.',
+        severity: 'success'
+      })
+    );
   };
 
   const openBeaconcha = (publicKey: string) => {

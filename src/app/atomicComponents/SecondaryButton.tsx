@@ -2,7 +2,13 @@ import styled from 'styled-components';
 import { ButtonSize } from '~app/enums/Button.enum';
 import Spinner from '~app/components/common/Spinner';
 
-const Button = styled.div<{ theme: any; size: ButtonSize; hasBgColor: boolean; isDisabled: boolean; isReverseDirection: boolean }>`
+const Button = styled.div<{
+  theme: any;
+  size: ButtonSize;
+  hasBgColor: boolean;
+  isDisabled: boolean;
+  isReverseDirection: boolean;
+}>`
   width: 100%;
   height: ${({ size }) => {
     if (size === ButtonSize.SM) {

@@ -1,8 +1,8 @@
-import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import { putRequest, getRequest, IHttpResponse } from '~root/services/httpApi.service';
+import { DEFAULT_PAGINATION } from '~app/common/config/config';
 import { IOperator } from '~app/model/operator.model';
 import { IPagination } from '~app/model/pagination.model';
-import { DEFAULT_PAGINATION } from '~app/common/config/config';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { IHttpResponse, getRequest, postRequest, putRequest } from '~root/services/httpApi.service';
 
 type OperatorsListQuery = {
   page?: number;
@@ -47,7 +47,10 @@ const getOperators = async (props: OperatorsListQuery, skipRetry?: boolean) => {
   url += `ts=${new Date().getTime()}`;
 
   const res = await getRequest(url, skipRetry);
-  return res ?? { operators: [], pagination: DEFAULT_PAGINATION };
+  return (res ?? { operators: [], pagination: DEFAULT_PAGINATION }) as {
+    operators: IOperator[];
+    pagination: IPagination;
+  };
 };
 
 const getOperator = async (operatorId: number | string, skipRetry?: boolean) => {
@@ -101,14 +104,21 @@ const getOperatorValidators = async (props: OperatorValidatorListQuery, skipRetr
   return res ?? { validators: [], pagination: {} };
 };
 
+const checkOperatorDKGHealth = async (dkgAddress: string): Promise<IHttpResponse<boolean>> => {
+  return postRequest(`${getStoredNetwork().api}/operators/dkg_health_check`, {
+    dkgAddress
+  });
+};
+
 export {
-  getOperatorsByOwnerAddress,
+  checkOperatorDKGHealth,
   getOperator,
+  getOperatorAvailableLocations,
+  getOperatorByPublicKey,
+  getOperatorNodes,
+  getOperatorValidators,
   getOperators,
   getOperatorsByIds,
-  getOperatorByPublicKey,
-  updateOperatorMetadata,
-  getOperatorNodes,
-  getOperatorAvailableLocations,
-  getOperatorValidators
+  getOperatorsByOwnerAddress,
+  updateOperatorMetadata
 };

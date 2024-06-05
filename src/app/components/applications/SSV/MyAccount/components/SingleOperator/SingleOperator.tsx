@@ -77,7 +77,10 @@ const SingleOperator = () => {
 
   const onChangePage = (obj: any) => {
     // @ts-ignore
-    loadOperatorValidators({ page: obj.paginationPage, perPage: operatorsValidatorsPagination?.per_page ?? 5 });
+    loadOperatorValidators({
+      page: obj.paginationPage,
+      perPage: operatorsValidatorsPagination?.per_page ?? 5
+    });
   };
 
   // @ts-ignore
@@ -87,11 +90,19 @@ const SingleOperator = () => {
   const { logo, validators_count, fee, performance } = operator || {};
   const validator30dPerformance = operator ? performance['30d'] : 0;
   const yearlyFee = formatNumberToUi(getFeeForYear(fromWei(fee)));
-  const classes = useStyles({ operatorLogo: logo, noValidators: operatorsValidators.length === 0 });
+  const classes = useStyles({
+    operatorLogo: logo,
+    noValidators: operatorsValidators.length === 0
+  });
 
   const copyToClipboard = (key: string) => {
     navigator.clipboard.writeText(key);
-    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
+    dispatch(
+      setMessageAndSeverity({
+        message: 'Copied to clipboard.',
+        severity: 'success'
+      })
+    );
   };
 
   const openExplorer = (key: string, linkType: string) => {

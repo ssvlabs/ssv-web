@@ -37,7 +37,12 @@ class DistributionStore {
         this.claimed = true;
         resolve(true);
       } catch (error: any) {
-        store.dispatch(setMessageAndSeverity({ message: error.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
+        store.dispatch(
+          setMessageAndSeverity({
+            message: error.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE,
+            severity: 'error'
+          })
+        );
         resolve(false);
       } finally {
         store.dispatch(setIsLoading(false));

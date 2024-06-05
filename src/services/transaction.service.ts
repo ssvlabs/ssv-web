@@ -80,7 +80,12 @@ export const transactionExecutor = async ({ contractMethod, payload, isContractW
           await dispatch(refreshOperatorsAndClusters());
           return true;
         }
-        return await executeAfterEvent({ updatedStateGetter: getterTransactionState, prevState, callBack: () => dispatch(refreshOperatorsAndClusters()), txHash: tx.hash });
+        return await executeAfterEvent({
+          updatedStateGetter: getterTransactionState,
+          prevState,
+          callBack: () => dispatch(refreshOperatorsAndClusters()),
+          txHash: tx.hash
+        });
       } else {
         return false;
       }
@@ -88,7 +93,12 @@ export const transactionExecutor = async ({ contractMethod, payload, isContractW
       return false;
     }
   } catch (e: any) {
-    dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
+    dispatch(
+      setMessageAndSeverity({
+        message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE,
+        severity: 'error'
+      })
+    );
     dispatch(setIsLoading(false));
     return false;
   } finally {

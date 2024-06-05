@@ -125,7 +125,13 @@ const BulkComponent = () => {
       const validatorIds = condition
         ? selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected)
         : formatValidatorPublicKey(selectedValidatorValues.filter((selectedValidator) => selectedValidator.isSelected)[0].validator.public_key);
-      res = await exitValidators({ isContractWallet, validatorIds, operatorIds: process.item.operators.map((operator: IOperator) => operator.id), isBulk: condition, dispatch });
+      res = await exitValidators({
+        isContractWallet,
+        validatorIds,
+        operatorIds: process.item.operators.map((operator: IOperator) => operator.id),
+        isBulk: condition,
+        dispatch
+      });
       if (res && !isContractWallet) {
         setCurrentStep(BULK_STEPS.BULK_EXIT_FINISH);
       }

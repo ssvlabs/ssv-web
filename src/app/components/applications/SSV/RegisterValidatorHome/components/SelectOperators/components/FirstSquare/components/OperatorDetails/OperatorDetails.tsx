@@ -40,7 +40,12 @@ const OperatorDetails = (props: Props) => {
 
   const copyId = () => {
     navigator.clipboard.writeText(operator.id.toString());
-    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
+    dispatch(
+      setMessageAndSeverity({
+        message: 'Copied to clipboard.',
+        severity: 'success'
+      })
+    );
   };
 
   const openExplorer = () => {

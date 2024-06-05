@@ -1,5 +1,5 @@
 import CssBaseline from '@mui/material/CssBaseline';
-import { createTheme, StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
+import { StyledEngineProvider, ThemeProvider, createTheme } from '@mui/material/styles';
 import { ThemeProvider as ThemeProviderLegacy } from '@mui/styles';
 import { configure } from 'mobx';
 import { useEffect, useMemo } from 'react';
@@ -95,6 +95,7 @@ const App = () => {
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={MuiTheme}>
         <ThemeProviderLegacy theme={MuiTheme}>
+          {/* @ts-ignore */}
           <ScThemeProvider theme={theme}>
             <div
               className={cn({ dark: isDarkMode })}
@@ -102,6 +103,7 @@ const App = () => {
                 color: theme.colors.black
               }}
             >
+              {/* @ts-ignore */}
               <GlobalStyle />
               {isShowSsvLoader && (
                 <LoaderWrapper>

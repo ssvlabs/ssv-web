@@ -1,27 +1,38 @@
 import { ErrorType } from '~app/components/common/ConversionInput/ConversionInput.tsx';
 
 export interface IOperator {
-  is_deleted: boolean; // TODO: is valid?
   id: number;
-  fee?: string;
-  name: string;
-  logo?: string;
-  type?: string;
-  address: string;
-  score?: number;
-  public_key: string;
-  selected?: boolean;
-  dappNode?: boolean;
-  ownerAddress: string;
-  dkg_address?: string;
-  mev_relays?: string;
-  autoSelected?: boolean;
-  validators_count: number;
+  id_str: string;
   declared_fee: string;
   previous_fee: string;
+  fee: string;
+  public_key: string;
+  owner_address: string;
   address_whitelist: string;
-  verified_operator?: boolean;
-  balance: number;
+  location: string;
+  setup_provider: string;
+  eth1_node_client: string;
+  eth2_node_client: string;
+  mev_relays: string;
+  description: string;
+  website_url: string;
+  twitter_url: string;
+  linkedin_url: string;
+  dkg_address: string;
+  logo: string;
+  type: string;
+  name: string;
+  performance: {
+    '24h': number;
+    '30d': number;
+  };
+  is_valid: boolean;
+  is_deleted: boolean;
+  is_active: number;
+  status: string;
+  validators_count: number;
+  version: string;
+  network: string;
 }
 
 export interface IOperatorRawData {

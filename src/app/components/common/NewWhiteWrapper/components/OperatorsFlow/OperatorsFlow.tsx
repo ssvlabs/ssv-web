@@ -59,7 +59,12 @@ const OperatorsFlow = (props: Props) => {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(operator?.id.toString() ?? '');
-    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
+    dispatch(
+      setMessageAndSeverity({
+        message: 'Copied to clipboard.',
+        severity: 'success'
+      })
+    );
   };
 
   const goToAccessSettings = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS);

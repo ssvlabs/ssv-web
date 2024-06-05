@@ -63,7 +63,13 @@ export const ClusterDashboard = () => {
   };
 
   const createData = (clusterID: string, operators: ReactElement, validators: number, operational_runway: string | ReactElement, runWayError: ReactElement | undefined) => {
-    return { clusterID, operators, validators, operational_runway, runWayError };
+    return {
+      clusterID,
+      operators,
+      validators,
+      operational_runway,
+      runWayError
+    };
   };
 
   const sortedClusters = accountClusters.slice().sort(

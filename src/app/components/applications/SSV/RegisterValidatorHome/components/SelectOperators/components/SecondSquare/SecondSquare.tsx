@@ -35,7 +35,10 @@ import { getOperatorValidatorsLimit, getSelectedOperators, getSelectedOperatorsF
 
 const SecondSquare = ({ editPage, clusterBox }: { editPage: boolean; clusterBox: number[] }) => {
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
-  const classes = useStyles({ editPage, shouldBeScrollable: clusterBox.length > 4 });
+  const classes = useStyles({
+    editPage,
+    shouldBeScrollable: clusterBox.length > 4
+  });
   const navigate = useNavigate();
   const location = useLocation();
   const selectedOperators = useAppSelector(getSelectedOperators);

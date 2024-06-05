@@ -126,7 +126,7 @@ const BulkComponent = () => {
       res = await exitValidators({
         isContractWallet,
         validatorIds,
-        operatorIds: cluster.operators.map((operator: IOperator) => operator.id) ?? [],
+        operatorIds: cluster.operators.map((operator: IOperator) => operator.id),
         isBulk: condition,
         dispatch
       });

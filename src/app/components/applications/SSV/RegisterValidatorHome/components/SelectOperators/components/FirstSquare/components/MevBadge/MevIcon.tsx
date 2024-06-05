@@ -5,7 +5,10 @@ import { MEV_RELAYS_LOGOS } from '~lib/utils/operatorMetadataHelper';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevRelays.styles';
 
 const MevIcon = ({ mevRelay, hasMevRelay }: { mevRelay: string; hasMevRelay: boolean | undefined }) => {
-  const classes = useStyles({ mevIcon: MEV_RELAYS_LOGOS[mevRelay], hasMevRelay });
+  const classes = useStyles({
+    mevIcon: MEV_RELAYS_LOGOS[mevRelay],
+    hasMevRelay
+  });
   const [hoveredGrid, setHoveredGrid] = useState(false);
   const timeoutRef = useRef(null);
 

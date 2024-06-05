@@ -77,7 +77,11 @@ const IncreaseFlow = ({ oldFee, newFee, currency, declareNewFeeHandler }: Update
   };
 
   const cancelUpdateFee = async () => {
-    const res = await cancelChangeFeeProcess({ operator, isContractWallet, dispatch });
+    const res = await cancelChangeFeeProcess({
+      operator,
+      isContractWallet,
+      dispatch
+    });
     if (res) {
       setPrevStep(currentStep);
       setCurrentStep(IncreaseSteps.CANCEL);

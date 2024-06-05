@@ -20,7 +20,12 @@ const OperatorId = ({ id, text, successPage, withoutExplorer }: Props) => {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(String(id));
-    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
+    dispatch(
+      setMessageAndSeverity({
+        message: 'Copied to clipboard.',
+        severity: 'success'
+      })
+    );
   };
 
   const openExplorer = () => {

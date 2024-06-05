@@ -58,7 +58,11 @@ const SsvAppBar = () => {
       onClick: () => null,
       options: [
         { label: 'Governance Forum', link: config.links.GOVERNANCE_FORUM_LINK },
-        { label: 'Snapshot', link: config.links.SNAPSHOT_LINK, bottomLine: true },
+        {
+          label: 'Snapshot',
+          link: config.links.SNAPSHOT_LINK,
+          bottomLine: true
+        },
         { label: 'Terms of Use', link: config.links.TERMS_OF_USE_LINK },
         { label: 'Privacy Policy', link: config.links.PRIVACY_POLICY_LINK }
       ]

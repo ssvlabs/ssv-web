@@ -25,7 +25,16 @@ export const slice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(
       fetchAndSetNetworkFeeAndLiquidationCollateral.fulfilled,
-      (state, action: { payload: { networkFee: number; liquidationCollateralPeriod: number; minimumLiquidationCollateral: number } }) => {
+      (
+        state,
+        action: {
+          payload: {
+            networkFee: number;
+            liquidationCollateralPeriod: number;
+            minimumLiquidationCollateral: number;
+          };
+        }
+      ) => {
         state.networkFee = action.payload.networkFee;
         state.liquidationCollateralPeriod = action.payload.liquidationCollateralPeriod;
         state.minimumLiquidationCollateral = action.payload.minimumLiquidationCollateral;

@@ -14,6 +14,7 @@ import { setIsLoading } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { clearOperatorFeeInfo, fetchAndSetOperatorFeeInfo, getFeeIncreaseAndPeriods, getMaxOperatorFeePerYear, getOperatorProcessId } from '~app/redux/operator.slice.ts';
 import { formatNumberToUi } from '~lib/utils/numbers';
+import { isOperatorPrivate } from '~lib/utils/operatorMetadataHelper';
 import { validateFeeUpdate } from '~lib/utils/validatesInputs';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { getOperator } from '~root/services/operator.service';
@@ -91,7 +92,7 @@ const UpdateFee = () => {
   const onInputChange = (e: any) => {
     const { value } = e.target;
     setNewFee(value.trim());
-    const isPrivateOperator = operator.is_private;
+    const isPrivateOperator = isOperatorPrivate(operator);
     validateFeeUpdate({
       previousValue: new Decimal(getFeeForYear(fromWei(operator.fee))),
       newValue: value,

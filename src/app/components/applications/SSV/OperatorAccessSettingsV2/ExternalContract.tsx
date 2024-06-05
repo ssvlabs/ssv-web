@@ -68,11 +68,7 @@ const ExternalContract = () => {
               <h1 className="text-xl font-bold">External Contract</h1>
               <p>
                 Manage whitelisted addresses through an external contract. Learn how to set an{' '}
-                <a
-                  href="https://docs.ssv.network/learn/operators/permissioned-operators"
-                  className="text-primary-500"
-                  target="_blank"
-                >
+                <a href="https://docs.ssv.network/learn/operators/permissioned-operators" className="text-primary-500" target="_blank">
                   External Contract
                 </a>
                 .
@@ -87,13 +83,7 @@ const ExternalContract = () => {
                     <Input
                       {...field}
                       placeholder="0xCONT...RACT"
-                      leftSlot={
-                        isWhitelistingContract.isPending ? (
-                          <Loader2 className="w-6 h-6 text-primary-500" />
-                        ) : (
-                          <IoDocumentTextOutline className="w-6 h-6 text-gray-600" />
-                        )
-                      }
+                      leftSlot={isWhitelistingContract.isPending ? <Loader2 className="w-6 h-6 text-primary-500" /> : <IoDocumentTextOutline className="w-6 h-6 text-gray-600" />}
                     />
                   </FormControl>
                   <FormMessage />
@@ -101,23 +91,10 @@ const ExternalContract = () => {
               )}
             />{' '}
             <div className="flex gap-3">
-              <Button
-                type="button"
-                disabled={setExternalContract.isPending}
-                size="xl"
-                variant="secondary"
-                className="w-full"
-                onClick={() => navigate(-1)}
-              >
+              <Button type="button" disabled={setExternalContract.isPending} size="xl" variant="secondary" className="w-full" onClick={() => navigate(-1)}>
                 Cancel
               </Button>
-              <Button
-                disabled={hasErrors}
-                isLoading={setExternalContract.isPending}
-                isActionBtn
-                size="xl"
-                className="w-full"
-              >
+              <Button type="submit" disabled={hasErrors} isLoading={setExternalContract.isPending} isActionBtn size="xl" className="w-full">
                 Save
               </Button>
             </div>

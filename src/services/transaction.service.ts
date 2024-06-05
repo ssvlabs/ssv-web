@@ -58,14 +58,7 @@ export type TxProps = {
   dispatch: Function;
 };
 
-export const transactionExecutor = async ({
-  contractMethod,
-  payload,
-  isContractWallet,
-  getterTransactionState,
-  prevState,
-  dispatch
-}: TxProps) => {
+export const transactionExecutor = async ({ contractMethod, payload, isContractWallet, getterTransactionState, prevState, dispatch }: TxProps) => {
   try {
     if (isContractWallet) {
       contractMethod(...payload);
@@ -80,39 +73,29 @@ export const transactionExecutor = async ({
       dispatch(setIsShowTxPendingPopup(true));
     }
 
-    console.time('transaction itself took');
     const receipt = await tx.wait();
-    console.timeEnd('transaction itself took');
 
-    console.time('transaction processing took');
     if (receipt.blockHash) {
       const event: boolean = receipt.hasOwnProperty('events');
       if (event) {
         if (!getterTransactionState) {
           await dispatch(refreshOperatorsAndClusters());
-          console.timeEnd('transaction processing took');
           return true;
         }
-        const after = await executeAfterEvent({
+        return await executeAfterEvent({
           updatedStateGetter: getterTransactionState,
           prevState,
           callBack: () => dispatch(refreshOperatorsAndClusters()),
           txHash: tx.hash
         });
-        console.timeEnd('transaction processing took');
-        return after;
       } else {
-        console.timeEnd('transaction processing took');
         return false;
       }
     } else {
-      console.timeEnd('transaction processing took');
       return false;
     }
   } catch (e: any) {
-    dispatch(
-      setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' })
-    );
+    dispatch(setMessageAndSeverity({ message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE, severity: 'error' }));
     dispatch(setIsLoading(false));
     return false;
   } finally {

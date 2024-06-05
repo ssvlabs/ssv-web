@@ -48,6 +48,7 @@ import { ButtonSize } from '~app/enums/Button.enum';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getClusterSize, getOperatorValidatorsLimit, getSelectedOperators, selectOperators, setClusterSize, unselectAllOperators } from '~app/redux/operator.slice.ts';
 import { getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
+import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
@@ -213,11 +214,7 @@ const KeyShareFlow = () => {
           warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.OPERATOR_REACHED_MAX_VALIDATORS;
           hasError = true;
         }
-        if (
-          operator.address_whitelist &&
-          !isEqualsAddresses(operator.address_whitelist, accountAddress) &&
-          operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST
-        ) {
+        if (!canAccountUseOperator(accountAddress, operator)) {
           warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.WHITELIST_OPERATOR;
           setHasPermissionedOperator(true);
           hasError = true;
@@ -508,8 +505,8 @@ const KeyShareFlow = () => {
             <ErrorMessage
               text={
                 <Typography className={classes.ErrorMessageText}>
-                  Validators within this file have an incorrect <LinkText textSize={14} link={config.links.INCORRECT_OWNER_NONCE_LINK} text={'registration nonce'} />.<br /> Please
-                  split the validator keys to new key shares aligned with the correct one.
+                  Validators within this file have an incorrect <LinkText textSize={14} link={config.links.INCORRECT_OWNER_NONCE_LINK} text={'registration nonce'} />.
+                  <br /> Please split the validator keys to new key shares aligned with the correct one.
                 </Typography>
               }
             />

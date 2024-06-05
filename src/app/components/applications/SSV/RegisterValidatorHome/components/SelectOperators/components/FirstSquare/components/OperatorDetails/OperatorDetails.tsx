@@ -34,7 +34,7 @@ const OperatorDetails = (props: Props) => {
     gray80
   });
   const operatorName = operator?.name;
-  const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
+  const isPrivateOperator = operator.is_private;
   const dispatch = useAppDispatch();
 
   const copyId = () => {

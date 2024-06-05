@@ -1,4 +1,6 @@
 import { translations } from '~app/common/config';
+import { IOperator } from '~app/model/operator.model';
+import { isEqualsAddresses } from '~lib/utils/strings';
 
 export const FIELD_KEYS = {
   OPERATOR_NAME: 'operatorName',
@@ -220,4 +222,9 @@ export const isDkgAddressValid = (value: string, isForm?: boolean) => {
   const pattern = new RegExp(`(${domainPattern}|${ipPattern})${portPattern}$`);
 
   return value.length <= DKG_ADDRESS_MIN_LENGTH && pattern.test(addressWithoutHttps);
+};
+
+export const canAccountUseOperator = (account: string, operator: IOperator) => {
+  if (!operator.is_private) return true;
+  return operator.whitelist_addresses?.some((address) => isEqualsAddresses(address, account)) ?? false;
 };

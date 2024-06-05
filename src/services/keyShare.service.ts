@@ -76,7 +76,10 @@ export const getResponse = (keyShareResponseId: KeyShareValidationResponseId, er
   const { KEYSHARE_RESPONSE } = translations.VALIDATOR;
   switch (keyShareResponseId) {
     case KeyShareValidationResponseId.OK_RESPONSE_ID: {
-      return { ...KEYSHARE_RESPONSE.OK_RESPONSE, id: KeyShareValidationResponseId.OK_RESPONSE_ID };
+      return {
+        ...KEYSHARE_RESPONSE.OK_RESPONSE,
+        id: KeyShareValidationResponseId.OK_RESPONSE_ID
+      };
     }
     case KeyShareValidationResponseId.OPERATOR_NOT_EXIST_ID: {
       return {
@@ -91,7 +94,10 @@ export const getResponse = (keyShareResponseId: KeyShareValidationResponseId, er
       };
     }
     case KeyShareValidationResponseId.VALIDATOR_EXIST_ID: {
-      return { ...KEYSHARE_RESPONSE.VALIDATOR_EXIST_RESPONSE, id: KeyShareValidationResponseId.VALIDATOR_EXIST_ID };
+      return {
+        ...KEYSHARE_RESPONSE.VALIDATOR_EXIST_RESPONSE,
+        id: KeyShareValidationResponseId.VALIDATOR_EXIST_ID
+      };
     }
     case KeyShareValidationResponseId.ERROR_RESPONSE_ID: {
       if (!errorMsg) {
@@ -104,7 +110,10 @@ export const getResponse = (keyShareResponseId: KeyShareValidationResponseId, er
       };
     }
     case KeyShareValidationResponseId.PUBLIC_KEY_ERROR_ID: {
-      return { ...KEYSHARE_RESPONSE.VALIDATOR_PUBLIC_KEY_ERROR, id: KeyShareValidationResponseId.PUBLIC_KEY_ERROR_ID };
+      return {
+        ...KEYSHARE_RESPONSE.VALIDATOR_PUBLIC_KEY_ERROR,
+        id: KeyShareValidationResponseId.PUBLIC_KEY_ERROR_ID
+      };
     }
     case KeyShareValidationResponseId.INCONSISTENT_OPERATOR_CLUSTER: {
       return {

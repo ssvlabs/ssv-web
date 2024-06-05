@@ -37,6 +37,7 @@ import {
   selectOperator,
   unselectOperator
 } from '~app/redux/operator.slice.ts';
+import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
 
 const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { editPage: boolean; clusterSize: number; setClusterSize: Function; clusterBox: number[] }) => {
   const [loading, setLoading] = useState(false);
@@ -47,6 +48,13 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
   const [operatorsData, setOperatorsData]: [any[], any] = useState([]);
   const [operatorsPagination, setOperatorsPagination] = useState(DEFAULT_PAGINATION);
   const [dkgEnabled, selectDkgEnabled] = useState(false);
+
+  const filteredOperators = !dkgEnabled
+    ? operatorsData
+    : operatorsData.filter(({ dkg_address }) => {
+        return isDkgAddressValid(dkg_address ?? '');
+      });
+
   const accountAddress = useAppSelector(getAccountAddress);
   const wrapperRef = useRef(null);
   const scrollRef: any = useRef(null);
@@ -140,7 +148,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
   };
 
   const dataRows = () => {
-    if (operatorsData?.length === 0 && !loading) {
+    if (filteredOperators?.length === 0 && !loading) {
       return (
         <TableRow hover>
           <StyledCell className={classes.NoRecordsWrapper}>
@@ -158,7 +166,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
       );
     }
 
-    return operatorsData.map((operator) => {
+    return filteredOperators.map((operator) => {
       const isDeleted = operator.is_deleted;
       const hasValidators = operator.validators_count !== 0;
       const isSelected = Object.values(selectedOperators).some((selectedOperator: IOperator) => selectedOperator.id === operator.id);

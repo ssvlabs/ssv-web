@@ -1,13 +1,21 @@
 import Grid from '@mui/material/Grid';
-import { truncateText } from '~lib/utils/strings';
-import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
-import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator.styles';
+import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import { IOperator } from '~app/model/operator.model';
+import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
+import { truncateText } from '~lib/utils/strings';
 
-const DkgOperator = ({ operator }: { operator: IOperator }) => {
+interface Props {
+  operator: IOperator;
+  isHealthy?: boolean;
+}
+const DkgOperator = ({ operator, isHealthy }: Props) => {
   const isDkgEnabled = isDkgAddressValid(operator.dkg_address ?? '');
-  const classes = useStyles({ operatorLogo: operator.logo, dkgEnabled: isDkgEnabled });
+
+  const classes = useStyles({
+    operatorLogo: operator.logo,
+    dkgEnabled: isHealthy && isDkgEnabled
+  });
 
   return (
     <Grid className={classes.OperatorDetails}>
@@ -24,7 +32,7 @@ const DkgOperator = ({ operator }: { operator: IOperator }) => {
           <Grid className={classes.OperatorId}>ID: {operator.id}</Grid>
         </Grid>
       </Grid>
-      <Grid className={classes.DkgEnabledBudge}>DKG {isDkgEnabled ? 'Enabled' : 'Disabled'}</Grid>
+      <Grid className={classes.DkgEnabledBudge}>DKG {isHealthy && isDkgEnabled ? 'Enabled' : 'Disabled'}</Grid>
     </Grid>
   );
 };

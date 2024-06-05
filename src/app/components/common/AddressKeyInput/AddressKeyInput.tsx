@@ -20,7 +20,12 @@ const AddressKeyInput = ({ address, withBeaconcha, withEtherScan, whiteBackgroun
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(address);
-    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
+    dispatch(
+      setMessageAndSeverity({
+        message: 'Copied to clipboard.',
+        severity: 'success'
+      })
+    );
   };
 
   const openBeaconcha = () => {

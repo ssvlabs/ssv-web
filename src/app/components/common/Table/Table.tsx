@@ -82,7 +82,14 @@ export const Table = ({
           rowsPerPage={actionProps.perPage ?? 0}
           totalPages={actionProps.totalPages ?? 0}
           count={actionProps.totalAmountOfItems}
-          onChangePage={(changedPage: number) => (actionProps.onChangePage ? actionProps.onChangePage({ type: actionProps.type, paginationPage: changedPage }) : null)}
+          onChangePage={(changedPage: number) =>
+            actionProps.onChangePage
+              ? actionProps.onChangePage({
+                  type: actionProps.type,
+                  paginationPage: changedPage
+                })
+              : null
+          }
           onChangeRowsPerPage={(rowNumber: number) => (actionProps.onChangeRowsPerPage ? actionProps.onChangeRowsPerPage(actionProps.type, rowNumber) : null)}
         />
       )}

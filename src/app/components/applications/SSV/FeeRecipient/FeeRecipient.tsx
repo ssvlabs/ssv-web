@@ -35,7 +35,10 @@ const FeeRecipient = () => {
 
   const submitFeeRecipient = async () => {
     setIsLoading(true);
-    await setFeeRecipientAccountService({ feeRecipientAddress: userInput, isContractWallet });
+    await setFeeRecipientAccountService({
+      feeRecipientAddress: userInput,
+      isContractWallet
+    });
     setIsLoading(false);
   };
 

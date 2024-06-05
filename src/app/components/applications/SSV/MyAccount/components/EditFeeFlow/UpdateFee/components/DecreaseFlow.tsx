@@ -33,7 +33,12 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
       navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
     } else {
       setIsLoading(true);
-      const res = await decreaseOperatorFee({ operator, newFee, isContractWallet, dispatch });
+      const res = await decreaseOperatorFee({
+        operator,
+        newFee,
+        isContractWallet,
+        dispatch
+      });
       if (res) {
         const newOperatorData = await getOperator(processOperatorId);
         const balance = await getOperatorBalance(newOperatorData.id);

@@ -45,7 +45,12 @@ const OperatorAccessSettings = () => {
   };
 
   const updateAddressHandler = async () => {
-    const res = await updateOperatorAddressWhitelist({ operator, address, isContractWallet, dispatch });
+    const res = await updateOperatorAddressWhitelist({
+      operator,
+      address,
+      isContractWallet,
+      dispatch
+    });
     if (res) {
       navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
     }

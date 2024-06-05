@@ -28,6 +28,18 @@ const httpErrorMessage = (url: string, errorCode: string, errorMessage: string, 
 
 const httpGeneralErrorMessage = (url: string) => `Http request to url ${url} failed.`;
 
+const formatError = (error: unknown, url: string) => {
+  if (axios.isAxiosError(error)) {
+    return { error: error.response!.data, data: null, result: HttpResult.FAIL };
+  } else {
+    return {
+      error: httpGeneralErrorMessage(url),
+      data: null,
+      result: HttpResult.FAIL
+    };
+  }
+};
+
 const putRequest = async <T>(url: string, data?: any, requestConfig?: AxiosRequestConfig): Promise<IHttpResponse<T>> => {
   try {
     const response = await axios.put(url, data, requestConfig);
@@ -36,7 +48,11 @@ const putRequest = async <T>(url: string, data?: any, requestConfig?: AxiosReque
     if (axios.isAxiosError(error)) {
       return { error: error.message, data: null, result: HttpResult.FAIL };
     } else {
-      return { error: httpGeneralErrorMessage(url), data: null, result: HttpResult.FAIL };
+      return {
+        error: httpGeneralErrorMessage(url),
+        data: null,
+        result: HttpResult.FAIL
+      };
     }
   }
 };
@@ -48,21 +64,23 @@ const getRequest = async (url: string, skipRetry: boolean = true) => {
     if (skipRetry) {
       return null;
     }
-    return await retryWithDelay({ caller: async () => (await axios.get(url)).data, ...RETRY_CONFIG.default });
+    return await retryWithDelay({
+      caller: async () => (await axios.get(url)).data,
+      ...RETRY_CONFIG.default
+    });
   }
 };
 
-const postRequest = async <T>(url: string, body: any): Promise<IHttpResponse<T>> => {
+const postRequest = async <T>(url: string, body: unknown): Promise<IHttpResponse<T>> => {
   try {
     const response = await axios.post(url, body);
     return { error: null, data: response.data, result: HttpResult.SUCCESS };
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log(httpErrorMessage(url, error.code!, error.message, `Body: ${JSON.stringify(body)}`));
-      return { error: error.response!.data, data: null, result: HttpResult.FAIL };
-    } else {
-      return { error: httpGeneralErrorMessage(url), data: null, result: HttpResult.FAIL };
     }
+
+    return formatError(error, url);
   }
 };
 

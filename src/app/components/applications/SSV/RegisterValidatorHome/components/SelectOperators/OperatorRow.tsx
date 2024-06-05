@@ -1,0 +1,112 @@
+import Grid from '@mui/material/Grid';
+import TableRow from '@mui/material/TableRow';
+import { FC } from 'react';
+import config from '~app/common/config';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
+import MevCounterBadge from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevCounterBadge';
+import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import StyledCell from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
+import Checkbox from '~app/components/common/CheckBox';
+import Status from '~app/components/common/Status';
+import ToolTip from '~app/components/common/ToolTip';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { IOperator } from '~app/model/operator.model';
+import { getOperatorValidatorsLimit } from '~app/redux/operator.slice';
+import { getAccountAddress } from '~app/redux/wallet.slice';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
+import { isEqualsAddresses } from '~lib/utils/strings';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+
+type Props = {
+  operator: IOperator;
+  isSelected: boolean;
+  isDisabled?: boolean;
+  onClick: (operator: IOperator) => void;
+};
+
+export const OperatorRow: FC<Props> = ({ operator, isSelected, isDisabled, onClick }) => {
+  const classes = useStyles({ loading: true });
+
+  const operatorValidatorsLimit = useAppSelector(getOperatorValidatorsLimit);
+  const accountAddress = useAppSelector(getAccountAddress);
+
+  const reachedMaxValidators = operatorValidatorsLimit <= operator.validators_count;
+
+  const hasValidators = operator.validators_count !== 0;
+  const isInactive = operator.is_active < 1;
+  const mevRelays = operator?.mev_relays || '';
+  const mevRelaysCount = mevRelays ? mevRelays.split(',').filter((item: string) => item).length : 0;
+
+  const isPrivateOperator = Boolean(
+    operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !isEqualsAddresses(operator.address_whitelist, accountAddress)
+  );
+
+  const isPrivateOrDeleted = Boolean(operator.is_deleted || isPrivateOperator);
+
+  return (
+    <TableRow
+      className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''} ${isPrivateOrDeleted ? classes.RowDisabled : ''}`}
+      onClick={() => {
+        !isPrivateOrDeleted && onClick(operator);
+      }}
+    >
+      <StyledCell style={{ paddingLeft: 20, width: 60, paddingTop: 35 }}>
+        <Checkbox isDisabled={isPrivateOrDeleted || isDisabled} grayBackGround text={''} isChecked={isSelected} toggleIsChecked={() => {}} />
+      </StyledCell>
+      <StyledCell>
+        <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator} />
+      </StyledCell>
+      <StyledCell>
+        <Grid container>
+          <Grid item>{operator.validators_count}</Grid>
+          {reachedMaxValidators && (
+            <Grid item style={{ alignSelf: 'center', marginLeft: 4 }}>
+              <ToolTip text={'Operator reached  maximum amount of validators'} />
+            </Grid>
+          )}
+        </Grid>
+      </StyledCell>
+      <StyledCell>
+        <Grid container>
+          <Grid item className={hasValidators && isInactive ? classes.Inactive : ''}>
+            {roundNumber(operator.performance['30d'], 2)}%
+          </Grid>
+          {isInactive && (
+            <Grid item xs={12}>
+              <Status item={operator} />
+            </Grid>
+          )}
+        </Grid>
+      </StyledCell>
+      <StyledCell>
+        <Grid container>
+          <Grid item className={classes.FeeColumn}>
+            {formatNumberToUi(getFeeForYear(fromWei(operator.fee)))} SSV
+          </Grid>
+        </Grid>
+      </StyledCell>
+      <StyledCell>
+        <Grid container>
+          <MevCounterBadge mevRelaysList={mevRelays.split(',')} mevCount={mevRelaysCount} />
+        </Grid>
+      </StyledCell>
+      <StyledCell>
+        <Grid
+          className={classes.ChartIcon}
+          onClick={(ev) => {
+            ev.stopPropagation();
+            GoogleTagManager.getInstance().sendEvent({
+              category: 'explorer_link',
+              action: 'click',
+              label: 'operator'
+            });
+            window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');
+          }}
+        />
+      </StyledCell>
+    </TableRow>
+  );
+};
+
+OperatorRow.displayName = 'OperatorRow';

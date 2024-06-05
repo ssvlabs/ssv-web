@@ -35,7 +35,11 @@ const TableHeader = styled.div`
   align-items: center;
 `;
 
-const TableHeaderTitle = styled.h6<{ theme: any; marginLeft?: number; children: React.ReactNode }>`
+const TableHeaderTitle = styled.h6<{
+  theme: any;
+  marginLeft?: number;
+  children: React.ReactNode;
+}>`
   font-size: 12px;
   font-weight: 500;
   color: ${({ theme }) => theme.colors.gray40};
@@ -85,7 +89,11 @@ const LinksWrapper = styled.div`
   position: static;
 `;
 
-const Link = styled.div<{ isDarkMode: boolean; logo: string; onClick: Function }>`
+const Link = styled.div<{
+  isDarkMode: boolean;
+  logo: string;
+  onClick: Function;
+}>`
     width: 24px;
     height: 24px;
     cursor: pointer;
@@ -169,7 +177,10 @@ const ValidatorsList = ({
           setNoValidatorsData(true);
         }
         if (fillSelectedValidators) fillSelectedValidators(response.validators);
-        setClusterValidatorsPagination({ ...response.pagination, rowsPerPage: cluster.validatorCount });
+        setClusterValidatorsPagination({
+          ...response.pagination,
+          rowsPerPage: cluster.validatorCount
+        });
       });
     }
   }, []);
@@ -206,7 +217,12 @@ const ValidatorsList = ({
 
   const copyToClipboard = (publicKey: string) => {
     navigator.clipboard.writeText(publicKey);
-    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
+    dispatch(
+      setMessageAndSeverity({
+        message: 'Copied to clipboard.',
+        severity: 'success'
+      })
+    );
   };
 
   if (clusterValidators.length === 0 && !noValidatorsData) {
@@ -284,7 +300,11 @@ const ValidatorsList = ({
                         withTooltip={disableButtonCondition}
                         tooltipText={checkboxTooltipTitle}
                         withoutMarginBottom
-                        toggleIsChecked={() => onCheckboxClickHandler({ publicKey: formattedPublicKey })}
+                        toggleIsChecked={() =>
+                          onCheckboxClickHandler({
+                            publicKey: formattedPublicKey
+                          })
+                        }
                         isChecked={res}
                       />
                     )}

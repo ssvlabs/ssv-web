@@ -129,7 +129,13 @@ const validatorRegistrationFlow = (currentRoute: string) => {
     return isBulkMode(EBulkMode.MULTI) ? multi : single;
   };
 
-  return { getNextNavigation, getBulkKeyShareComponent, getBulkMode, isBulkMode, getMaxValidatorsCountPerRegistration };
+  return {
+    getNextNavigation,
+    getBulkKeyShareComponent,
+    getBulkMode,
+    isBulkMode,
+    getMaxValidatorsCountPerRegistration
+  };
 };
 
 export default validatorRegistrationFlow;

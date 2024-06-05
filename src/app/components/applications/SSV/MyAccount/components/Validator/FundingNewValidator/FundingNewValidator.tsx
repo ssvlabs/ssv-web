@@ -30,7 +30,11 @@ import { NewValidatorRouteState } from '~app/Routes';
 const FundingNewValidator = () => {
   const [checkedId, setCheckedId] = useState(0);
   const [depositSSV, setDepositSSV] = useState<string | number>(0);
-  const [errorMessage, setErrorMessage] = useState({ text: '', disableButton: false, link: { text: '', path: '' } });
+  const [errorMessage, setErrorMessage] = useState({
+    text: '',
+    disableButton: false,
+    link: { text: '', path: '' }
+  });
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const { networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const stores = useStores();
@@ -62,7 +66,11 @@ const FundingNewValidator = () => {
 
   useEffect(() => {
     if (checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) === 0) {
-      setErrorMessage({ text: '', disableButton: false, link: { text: '', path: '' } });
+      setErrorMessage({
+        text: '',
+        disableButton: false,
+        link: { text: '', path: '' }
+      });
       setShowErrorMessage(false);
       return;
     }
@@ -90,13 +98,20 @@ const FundingNewValidator = () => {
       setShowErrorMessage(true);
       return;
     }
-    setErrorMessage({ text: '', disableButton: false, link: { text: '', path: '' } });
+    setErrorMessage({
+      text: '',
+      disableButton: false,
+      link: { text: '', path: '' }
+    });
     setShowErrorMessage(false);
   }, [depositSSV, checkedId]);
 
   const options = [
     { id: OPTION_USE_CURRENT_BALANCE, timeText: 'No - use current balance' },
-    { id: OPTION_DEPOSIT_ADDITIONAL_FUNDS, timeText: 'Yes - deposit additional funds' }
+    {
+      id: OPTION_DEPOSIT_ADDITIONAL_FUNDS,
+      timeText: 'Yes - deposit additional funds'
+    }
   ];
 
   const checkBox = (id: number) => {

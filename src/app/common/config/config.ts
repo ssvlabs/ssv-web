@@ -112,7 +112,7 @@ export const config = {
       return getStoredNetwork().api;
     },
     get SSV_COMPLIANCE_URL() {
-      return `${getStoredNetwork().api}/compliance/countries/restricted`;
+      return 'https://api.stage.ssv.network/api/v4/mainnet/compliance/countries/restricted';
     },
     get EXPLORER_URL() {
       return getStoredNetwork().explorerUrl;

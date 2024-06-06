@@ -13,7 +13,7 @@ import BarMessage from '~app/components/common/BarMessage';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import { GlobalStyle } from '~app/globalStyle';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { getIsDarkMode, getIsShowSsvLoader, getRestrictedUserGeo, getShouldCheckCountryRestriction, setRestrictedUserGeo } from '~app/redux/appState.slice';
+import { getIsDarkMode, getIsShowSsvLoader, getRestrictedUserGeo, setRestrictedUserGeo } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
 import { cn } from '~lib/utils/tailwind';
@@ -22,6 +22,7 @@ import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider'
 import { getColors } from '~root/themes';
 import './globals.css';
 import { useWalletConnectivity } from '~app/hooks/useWalletConnectivity';
+import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice.ts';
 
 const LoaderWrapper = styled.div<{ theme: any }>`
   display: flex;
@@ -57,10 +58,11 @@ const App = () => {
   const isDarkMode = useAppSelector(getIsDarkMode);
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const isShowSsvLoader = useAppSelector(getIsShowSsvLoader);
-  const shouldCheckCountryRestriction = useAppSelector(getShouldCheckCountryRestriction);
   const theme = { colors: getColors({ isDarkMode }) };
   const isRestrictedCountry = useAppSelector(getRestrictedUserGeo);
   const navigate = useNavigate();
+  const isMainnet = useAppSelector(getIsMainnet);
+  const accountAddress = useAppSelector(getAccountAddress);
 
   useWalletConnectivity();
 
@@ -68,7 +70,7 @@ const App = () => {
     if (getFromLocalStorageByKey('locationRestrictionDisabled')) {
       console.debug('Skipping location restriction functionality in this app.');
       dispatch(setRestrictedUserGeo(''));
-    } else if (shouldCheckCountryRestriction) {
+    } else if (isMainnet) {
       checkUserCountryRestriction().then((res: any) => {
         if (!!res) {
           dispatch(setRestrictedUserGeo(res));
@@ -82,7 +84,7 @@ const App = () => {
       dispatch(setRestrictedUserGeo(''));
       navigate(config.routes.SSV.ROOT);
     }
-  }, [shouldCheckCountryRestriction]);
+  }, [isMainnet, accountAddress]);
 
   useEffect(() => {
     if (!isRestrictedCountry) {
@@ -96,6 +98,7 @@ const App = () => {
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={MuiTheme}>
         <ThemeProviderLegacy theme={MuiTheme}>
+          {/* @ts-ignore */}
           <ScThemeProvider theme={theme}>
             <div
               className={cn({ dark: isDarkMode })}
@@ -103,6 +106,7 @@ const App = () => {
                 color: theme.colors.black
               }}
             >
+              {/* @ts-ignore */}
               <GlobalStyle />
               {isShowSsvLoader && (
                 <LoaderWrapper>

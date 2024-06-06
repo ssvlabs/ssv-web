@@ -71,7 +71,13 @@ const ClusterDashboard = () => {
   };
 
   const createData = (clusterID: string, operators: JSX.Element, validators: number, operational_runway: string | JSX.Element, runWayError: JSX.Element | undefined) => {
-    return { clusterID, operators, validators, operational_runway, runWayError };
+    return {
+      clusterID,
+      operators,
+      validators,
+      operational_runway,
+      runWayError
+    };
   };
 
   const sortedClusters = accountClusters.slice().sort(

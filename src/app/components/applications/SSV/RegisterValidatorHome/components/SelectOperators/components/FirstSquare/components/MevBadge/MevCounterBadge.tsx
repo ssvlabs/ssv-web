@@ -8,7 +8,10 @@ const MevCounterBadge = ({ mevCount, mevRelaysList }: { mevCount: number | strin
   const [hoveredGrid, setHoveredGrid] = useState(false);
   const timeoutRef = useRef(null);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-  const classes = useStyles({ hasMevRelays: Number(mevCount) > 0, popUpTop: cursorPos.y + 15 });
+  const classes = useStyles({
+    hasMevRelays: Number(mevCount) > 0,
+    popUpTop: cursorPos.y + 15
+  });
 
   const handleMouseMove = (event: any) => {
     if (hoveredGrid) {

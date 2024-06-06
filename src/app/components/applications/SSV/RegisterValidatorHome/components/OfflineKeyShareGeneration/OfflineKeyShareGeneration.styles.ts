@@ -4,12 +4,12 @@ import { Theme } from '@mui/material/styles';
 const text = {
   fontSize: 16,
   fontWeight: 500,
-  lineHeight: 1.62,
+  lineHeight: 1.62
 };
 
 const smallerText = {
   ...text,
-  fontSize: 14,
+  fontSize: 14
 };
 
 export const useStyles = makeStyles((theme: Theme) => ({
@@ -24,51 +24,54 @@ export const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: 'row',
     justifyContent: 'center',
     textWrap: 'wrap',
-    border: `solid 1px ${theme.colors.primaryBlue}`,
+    border: `solid 1px ${theme.colors.primaryBlue}`
   },
   Disable: {
     border: 'none',
     cursor: 'default',
     pointerEvents: 'none',
-    backgroundColor: theme.colors.gray20,
+    backgroundColor: theme.colors.gray20
   },
   BoxSelected: {
     '&:first-child': {
       '& div': {
-        backgroundImage: 'url(/images/offlineKeyShares/white_desktop.svg)',
-      },
-    },
-    '&:nth-child(2)': {
-      '& div': {
-        backgroundImage: 'url(/images/offlineKeyShares/white_command_line.svg)',
-      },
+        backgroundImage: 'url(/images/offlineKeyShares/white_command_line.svg)'
+      }
     },
     '& p': {
-      color: `${theme.colors.gray10} !important`,
+      color: `${theme.colors.gray10} !important`
     },
     backgroundColor: theme.colors.primaryBlue,
-    border: `solid 1px ${theme.colors.primaryBlue}`,
+    border: `solid 1px ${theme.colors.primaryBlue}`
   },
-  Image: {
+  ImageContainer: {
+    marginBottom: 8,
+    width: 50,
+    height: 36,
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat'
+  },
+  CMDImage: {
     marginBottom: 8,
     width: 50,
     height: 36,
     backgroundSize: 'contain',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
-    backgroundImage: 'url(/images/offlineKeyShares/command_line.svg)',
+    backgroundImage: 'url(/images/offlineKeyShares/command_line.svg)'
   },
   Desktop: {
     backgroundImage: 'url(/images/offlineKeyShares/desktop.svg)',
     '& div': {
-      backgroundImage: 'url(/images/offlineKeyShares/white_desktop.svg)',
-    },
+      backgroundImage: 'url(/images/offlineKeyShares/white_desktop.svg)'
+    }
   },
   DkgImage: {
-    backgroundImage: 'url(/images/dkg_icons/dkg_icon.svg)',
+    backgroundImage: 'url(/images/dkg_icons/dkg_icon.svg)'
   },
   DkgImageUnselected: {
-    backgroundImage: 'url(/images/dkg_icons/dkg_icon_blue.svg)',
+    backgroundImage: 'url(/images/dkg_icons/dkg_icon_blue.svg)'
   },
   UnofficialTool: {
     ...smallerText,
@@ -76,36 +79,36 @@ export const useStyles = makeStyles((theme: Theme) => ({
     padding: '12px 16px',
     color: theme.colors.gray90,
     backgroundColor: theme.colors.white,
-    border: `solid 1px ${theme.colors.gray30}`,
+    border: `solid 1px ${theme.colors.gray30}`
   },
   ColumnDirection: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column'
   },
   OptionTextWrapper: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   BlueText: {
     ...text,
     marginLeft: '10%',
     marginRight: '10%',
-    color: theme.colors.primaryBlue,
+    color: theme.colors.primaryBlue
   },
   AdditionalGrayText: {
     fontSize: 12,
     fontWeight: 500,
-    color: theme.colors.gray40,
+    color: theme.colors.gray40
   },
   GrayText: {
     ...text,
-    color: theme.colors.gray60,
+    color: theme.colors.gray60
   },
   BlackText: {
     ...text,
-    color: theme.colors.gray90,
+    color: theme.colors.gray90
   },
   CopyButton: {
     width: 56,
@@ -118,7 +121,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     padding: '4px 8px',
     textAlign: 'center',
     color: theme.colors.gray90,
-    backgroundColor: theme.colors.gray20,
+    backgroundColor: theme.colors.gray20
   },
   ButtonCopied: {
     gap: 2,
@@ -128,13 +131,13 @@ export const useStyles = makeStyles((theme: Theme) => ({
     cursor: 'pointer',
     alignItems: 'center',
     padding: '4px 8px',
-    backgroundColor: '#1fcf98',
+    backgroundColor: '#1fcf98'
   },
   TextCopied: {
     fontSize: 16,
     fontWeight: 600,
     lineHeight: 1.25,
-    color: theme.colors.gray90,
+    color: theme.colors.gray90
   },
   V: {
     width: 14,
@@ -143,7 +146,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     backgroundSize: 'contain',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
-    backgroundImage: 'url(/images/v/black.svg)',
+    backgroundImage: 'url(/images/v/black.svg)'
   },
   CopyWrapper: {
     height: 48,
@@ -151,7 +154,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
     padding: '0 16px 0 16px',
     justifyContent: 'space-between',
-    backgroundColor: theme.colors.gray80,
+    backgroundColor: theme.colors.gray80
   },
   CopyText: {
     height: 22,
@@ -163,13 +166,13 @@ export const useStyles = makeStyles((theme: Theme) => ({
     // textOverflow: 'ellipsis',
     color: theme.colors.gray10,
     '&::-webkit-scrollbar': {
-      display: 'none',  /* Safari and Chrome */
-    },
+      display: 'none' /* Safari and Chrome */
+    }
   },
   DkgInstructionsWrapper: {
     gap: 24,
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column'
   },
   DkgNotification: {
     width: '100%',
@@ -179,51 +182,51 @@ export const useStyles = makeStyles((theme: Theme) => ({
     padding: '12px 16px 12px 16px',
     color: theme.colors.gray90,
     border: `1px solid ${theme.colors.gray30}`,
-    backgroundColor: theme.darkMode ? theme.colors.white : '#F8FCFF',
+    backgroundColor: theme.darkMode ? theme.colors.white : '#F8FCFF'
   },
   DkgText: {
     gap: 4,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    color: theme.colors.gray90,
+    color: theme.colors.gray90
   },
   DkgErrorMessage: {
-    color: theme.colors.primaryError,
+    color: theme.colors.primaryError
   },
   DkgTitle: {
     fontSize: 16,
     fontWeight: 700,
-    color: theme.colors.gray40,
+    color: theme.colors.gray40
   },
   DkgWithdrawAddressWrapper: {
     gap: 8,
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column'
   },
   DkgInputLabel: {
     fontSize: 14,
     fontWeight: 600,
-    color: theme.colors.gray40,
+    color: theme.colors.gray40
   },
   DkgOperatorsWrapper: {
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   DkgSectionWrapper: {
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
     gap: 12,
-    overflow: 'hidden',
+    overflow: 'hidden'
   },
   DkgCliAdditionalText: {
     fontSize: 14,
     fontWeight: 500,
     color: theme.colors.gray60,
     position: 'relative',
-    bottom: 4,
-  },
+    bottom: 4
+  }
 }));

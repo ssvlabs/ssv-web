@@ -33,7 +33,12 @@ const ValidatorWhiteHeader = (props: Props) => {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(props.address ?? validator.public_key);
-    dispatch(setMessageAndSeverity({ message: 'Copied to clipboard.', severity: 'success' }));
+    dispatch(
+      setMessageAndSeverity({
+        message: 'Copied to clipboard.',
+        severity: 'success'
+      })
+    );
   };
 
   const openExplorer = () => {

@@ -17,20 +17,23 @@ import { fromWei, toWei } from '~root/services/conversions.service';
 import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { getClusterNewBurnRate, getClusterRunWay } from '~root/services/cluster.service';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import { SingleCluster } from '~app/model/processes.model';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
+import { getSelectedCluster } from '~app/redux/account.slice.ts';
 
 const FundingNewValidator = () => {
   const [checkedId, setCheckedId] = useState(0);
   const [depositSSV, setDepositSSV] = useState<string | number>(0);
-  const [errorMessage, setErrorMessage] = useState({ text: '', disableButton: false, link: { text: '', path: '' } });
+  const [errorMessage, setErrorMessage] = useState({
+    text: '',
+    disableButton: false,
+    link: { text: '', path: '' }
+  });
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const { networkFee, liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const stores = useStores();
@@ -39,10 +42,8 @@ const FundingNewValidator = () => {
   const OPTION_USE_CURRENT_BALANCE = 1;
   const { walletSsvBalance } = useFetchWalletBalance();
   const OPTION_DEPOSIT_ADDITIONAL_FUNDS = 2;
-  const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
-  const process: SingleCluster = processStore.getProcess;
-  const cluster = process.item;
+  const cluster = useAppSelector(getSelectedCluster);
   const newValidatorsCount = validatorStore.validatorsCount ? validatorStore.validatorsCount : 1;
   const newBurnRate = getClusterNewBurnRate(cluster.operators, cluster.validatorCount + newValidatorsCount, networkFee);
   const newRunWay = getClusterRunWay(
@@ -64,7 +65,11 @@ const FundingNewValidator = () => {
 
   useEffect(() => {
     if (checkedId === OPTION_DEPOSIT_ADDITIONAL_FUNDS && Number(depositSSV) === 0) {
-      setErrorMessage({ text: '', disableButton: false, link: { text: '', path: '' } });
+      setErrorMessage({
+        text: '',
+        disableButton: false,
+        link: { text: '', path: '' }
+      });
       setShowErrorMessage(false);
       return;
     }
@@ -92,13 +97,20 @@ const FundingNewValidator = () => {
       setShowErrorMessage(true);
       return;
     }
-    setErrorMessage({ text: '', disableButton: false, link: { text: '', path: '' } });
+    setErrorMessage({
+      text: '',
+      disableButton: false,
+      link: { text: '', path: '' }
+    });
     setShowErrorMessage(false);
   }, [depositSSV, checkedId]);
 
   const options = [
     { id: OPTION_USE_CURRENT_BALANCE, timeText: 'No - use current balance' },
-    { id: OPTION_DEPOSIT_ADDITIONAL_FUNDS, timeText: 'Yes - deposit additional funds' }
+    {
+      id: OPTION_DEPOSIT_ADDITIONAL_FUNDS,
+      timeText: 'Yes - deposit additional funds'
+    }
   ];
 
   const checkBox = (id: number) => {

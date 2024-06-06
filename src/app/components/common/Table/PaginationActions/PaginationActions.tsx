@@ -16,7 +16,10 @@ export interface TablePaginationActionsProps {
 
 const PaginationActions = (props: TablePaginationActionsProps) => {
   const { count, page, rowsPerPage, totalPages, onChangePage } = props;
-  const classes = useStyles({ firstPage: page === 1, lastPage: page === totalPages });
+  const classes = useStyles({
+    firstPage: page === 1,
+    lastPage: page === totalPages
+  });
   const startAt = rowsPerPage * (page - 1) + 1;
   const [currentPage, setCurrentPage] = useState(page);
   const endAt = startAt + rowsPerPage - 1 > count ? count : startAt + rowsPerPage - 1;

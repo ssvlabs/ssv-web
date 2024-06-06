@@ -26,6 +26,18 @@ const AddressesList = () => {
     }, 10);
   };
 
+  const handlePaste = (index: number) => (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const text = e.clipboardData.getData('text');
+    const matches = text.match(/0x[a-fA-F0-9]{40}/gm) || [];
+    if (matches.length > 1) {
+      e.preventDefault();
+      addManager.fieldArray.remove(index);
+      const mapped = matches.map((value) => ({ value }));
+      addManager.fieldArray.append(mapped, { shouldFocus: true });
+      addManager.form.trigger('addresses');
+    }
+  };
+
   useEffect(() => {
     window.onbeforeunload = () => {
       return mode !== 'view' ? `Are you sure that you want to cancel? Any unsaved changes will be lost.` : undefined;
@@ -73,6 +85,7 @@ const AddressesList = () => {
                     <FormControl>
                       <Input
                         {...field}
+                        onPaste={handlePaste(index)}
                         rightSlot={
                           <Button variant="ghost" size="icon" onClick={() => addManager.fieldArray.remove(index)}>
                             <X className="size-5" />

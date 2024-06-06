@@ -9,7 +9,7 @@ import { getSelectedOperator } from '~app/redux/account.slice';
 
 const PermissionSettingsDashboard = () => {
   const selectedOperator = useAppSelector(getSelectedOperator);
-  console.log('selectedOperator:', selectedOperator);
+  const hasWhitelistingContract = Boolean(selectedOperator.whitelisting_contract && selectedOperator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
 
   return (
     <BorderScreen blackHeader width={872}>
@@ -19,13 +19,8 @@ const PermissionSettingsDashboard = () => {
           title={<h2 className="text-xl">Permission Settings</h2>}
           description={
             <p>
-              Use the options below to activate permissioned operator settings and restrict validator registration to
-              authorized addresses only. Learn more about{' '}
-              <a
-                href="https://docs.ssv.network/learn/operators/permissioned-operators"
-                className="text-primary-500"
-                target="_blank"
-              >
+              Use the options below to activate permissioned operator settings and restrict validator registration to authorized addresses only. Learn more about{' '}
+              <a href="https://docs.ssv.network/learn/operators/permissioned-operators" className="text-primary-500" target="_blank">
                 Permissioned Operators
               </a>
               .
@@ -34,10 +29,7 @@ const PermissionSettingsDashboard = () => {
         />
         <PermissionSettingsItem
           title="Operator Status"
-          description={
-            'Switch between public and private statuses for the operator.\n' +
-            'Set the operator to private to enforce whitelisted addresses.'
-          }
+          description={'Switch between public and private statuses for the operator.\n' + 'Set the operator to private to enforce whitelisted addresses.'}
           route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.STATUS}
           addon={<OperatorStatusBadge isPrivate={selectedOperator.is_private} />}
         />
@@ -51,7 +43,7 @@ const PermissionSettingsDashboard = () => {
           className="pb-8"
           title="External Contract"
           description="Manage whitelisted addresses through an external contract"
-          addon={<ActiveBadge isActive={Boolean(selectedOperator.whitelisting_contract)} />}
+          addon={<ActiveBadge isActive={hasWhitelistingContract} />}
           route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.EXTERNAL_CONTRACT}
         />
       </Card>

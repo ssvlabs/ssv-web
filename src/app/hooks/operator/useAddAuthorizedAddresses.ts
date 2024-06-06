@@ -13,10 +13,7 @@ type FormValues = {
 export const useAddAuthorizedAddresses = () => {
   const operator = useAppSelector(getSelectedOperator);
 
-  const addressesMap = useMemo(
-    () => new Map(operator.whitelist_addresses?.map((a) => [a, true])),
-    [operator.whitelist_addresses]
-  );
+  const addressesMap = useMemo(() => new Map(operator.whitelist_addresses?.map((a) => [a, true])), [operator.whitelist_addresses]);
 
   const formSchema = useMemo(
     () =>
@@ -31,22 +28,24 @@ export const useAddAuthorizedAddresses = () => {
             return arr.length + (operator.whitelist_addresses?.length || 0) <= 500;
           }, 'You can add up to 500 addresses')
           .superRefine((arr, ctx) => {
-            arr.forEach((address, index) => {
-              const foundIndex = arr.findIndex((a) => a.value === address.value);
-              if (foundIndex !== index || addressesMap.has(address.value)) {
+            const set = new Set<`0x${string}`>();
+            for (let i = 0; i < arr.length; i++) {
+              if (set.has(arr[i].value) || addressesMap.has(arr[i].value)) {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   message: 'The address you specified is already in use',
-                  path: [index, 'value']
+                  path: [i, 'value']
                 });
               }
-            });
+              set.add(arr[i].value);
+            }
           })
       }) satisfies z.ZodType<FormValues>,
     [addressesMap, operator.whitelist_addresses?.length]
   );
 
   const form = useForm<FormValues>({
+    mode: 'all',
     defaultValues: {
       addresses: []
     },

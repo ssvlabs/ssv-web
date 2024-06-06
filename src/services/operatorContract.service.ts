@@ -19,7 +19,7 @@ const addNewOperator = async ({
   operatorRawData: IOperatorRawData;
   dispatch: Function;
 }): Promise<boolean> => {
-  const contract: Contract = getContractByName(EContractName.SETTER);
+  const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
   }
@@ -27,7 +27,7 @@ const addNewOperator = async ({
 
   return await transactionExecutor({
     contractMethod: contract.registerOperator,
-    payload: [operatorRawData.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock))],
+    payload: [operatorRawData.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock)), false],
     isContractWallet,
     getterTransactionState: async () => {
       const res = await getOperatorByPublicKey(decodeParameter('string', operatorRawData.publicKey));

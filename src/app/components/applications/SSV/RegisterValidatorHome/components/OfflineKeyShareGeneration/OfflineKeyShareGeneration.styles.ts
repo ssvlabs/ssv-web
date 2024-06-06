@@ -38,11 +38,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
         backgroundImage: 'url(/images/offlineKeyShares/white_command_line.svg)'
       }
     },
-    // '&:nth-child(2)': {
-    //   '& div': {
-    //     backgroundImage: 'url(/images/offlineKeyShares/white_command_line.svg)'
-    //   }
-    // },
     '& p': {
       color: `${theme.colors.gray10} !important`
     },

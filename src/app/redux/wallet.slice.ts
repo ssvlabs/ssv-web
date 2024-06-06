@@ -48,6 +48,7 @@ export const slice = createSlice({
       state.accountAddress = '';
       state.isNotMetamask = false;
       state.isContractWallet = false;
+      state.isMainnet = false;
     },
     setConnectedNetwork: (state, action: { payload: number }) => {
       state.connectedNetwork = changeNetwork(action.payload);

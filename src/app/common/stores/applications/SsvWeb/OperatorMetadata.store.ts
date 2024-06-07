@@ -2,17 +2,18 @@ import * as _ from 'lodash';
 import { makeObservable, observable } from 'mobx';
 import { translations } from '~app/common/config';
 import {
+  camelToSnakeFieldsMapping,
   CountryType,
-  FIELDS,
+  exceptions,
   FIELD_CONDITIONS,
   FIELD_KEYS,
+  FIELDS,
   HTTPS_PREFIX,
+  isDkgAddressValid,
+  isValidLink,
   MetadataEntity,
   OPERATOR_NODE_TYPES,
-  camelToSnakeFieldsMapping,
-  exceptions,
-  isValidLink,
-  isDkgAddressValid
+  sortMevRelays
 } from '~lib/utils/operatorMetadataHelper';
 import { checkSpecialCharacters } from '~lib/utils/strings';
 import { getOperatorAvailableLocations, getOperatorNodes } from '~root/services/operator.service';
@@ -48,19 +49,19 @@ class OperatorMetadataStore {
   }
 
   // Init operator metadata
-  async initMetadata(operator: any) {
+  initMetadata(operator: any) {
     const metadata = new Map<string, MetadataEntity>();
     Object.values(FIELD_KEYS).forEach((metadataFieldName) => {
       if (camelToSnakeFieldsMapping.includes(metadataFieldName)) {
         if (metadataFieldName === FIELD_KEYS.MEV_RELAYS) {
           metadata.set(metadataFieldName, {
             ...FIELDS[metadataFieldName],
-            value: operator[exceptions[metadataFieldName]].split(',') || ''
+            value: operator[exceptions[metadataFieldName]!].split(',') || ''
           });
         } else {
           metadata.set(metadataFieldName, {
             ...FIELDS[metadataFieldName],
-            value: operator[exceptions[metadataFieldName]] || ''
+            value: operator[exceptions[metadataFieldName]!] || ''
           });
         }
       } else {
@@ -81,7 +82,7 @@ class OperatorMetadataStore {
   }
 
   async updateOperatorNodeOptions() {
-    for (const key of Object.keys(OPERATOR_NODE_TYPES)) {
+    for (const key of Object.keys(OPERATOR_NODE_TYPES) as (keyof typeof OPERATOR_NODE_TYPES)[]) {
       const options = await getOperatorNodes(OPERATOR_NODE_TYPES[key]);
       const data = this.metadata.get(key);
       data!.options = options;
@@ -125,40 +126,13 @@ class OperatorMetadataStore {
     this.metadata.set(metadataFieldName, data);
   }
 
-  /**
-   * Sorting case-insensitively by each word in the string
-   * @param relays
-   * @private
-   */
-  private sortMevRelays(relays: string | string[]) {
-    if (!relays) {
-      return relays;
-    }
-    let splitStr: string[];
-    if (typeof relays === 'string') {
-      splitStr = relays.split(',');
-    } else {
-      splitStr = relays;
-    }
-    const sortedStr: string[] = splitStr.sort((a, b) => {
-      const aSplit = a.toLowerCase().split(' ');
-      const bSplit = b.toLowerCase().split(' ');
-      for (let i = 0; i < Math.min(aSplit.length, bSplit.length); ++i) {
-        const cmp = aSplit[i].localeCompare(bSplit[i]);
-        if (cmp !== 0) return cmp;
-      }
-      return 0;
-    });
-    return sortedStr.join(',');
-  }
-
   // return payload for transaction
   createMetadataPayload() {
     const payload: Record<string, string> = {};
     fieldsToValidateSignature.forEach((field: string) => {
       let value = this.getMetadataValue(field);
       if (field === FIELD_KEYS.MEV_RELAYS && typeof value !== 'string') {
-        value = this.sortMevRelays(value);
+        value = sortMevRelays(value);
       } else if (field === FIELD_KEYS.DKG_ADDRESS && value === HTTPS_PREFIX) {
         value = '';
       }

@@ -24,8 +24,8 @@ export const useOperatorMetadataStore = () => {
   // return payload for transaction
   const createMetadataPayload = (): Record<string, string> => {
     const payload: Record<string, string> = {};
-    fieldsToValidateSignature.forEach((field: string) => {
-      let value = metadata.get(field)!.value;
+    fieldsToValidateSignature.forEach((field: FIELD_KEYS) => {
+      let value = metadata[field].value;
       if (field === FIELD_KEYS.MEV_RELAYS && typeof value !== 'string') {
         value = sortMevRelays(value);
       } else if (field === FIELD_KEYS.DKG_ADDRESS && value === HTTPS_PREFIX) {
@@ -39,7 +39,7 @@ export const useOperatorMetadataStore = () => {
   // validate metadata values
   const validateOperatorMetaData = (): boolean => {
     let metadataContainsError = false;
-    for (const [metadataFieldName, fieldEntity] of metadata.entries()) {
+    for (const [metadataFieldName, fieldEntity] of Object.entries(metadata)) {
       if (metadataFieldName === FIELD_KEYS.OPERATOR_IMAGE) {
         metadataContainsError = !!fieldEntity.errorMessage || metadataContainsError;
       } else {

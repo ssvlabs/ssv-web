@@ -6,13 +6,13 @@ import { snakeCase } from 'lodash';
 import { getOperatorAvailableLocations, getOperatorNodes } from '~root/services/operator.service.ts';
 
 export interface OperatorMetadataSlice {
-  metadata: Map<string, MetadataEntity>;
+  metadata: Record<FIELD_KEYS, MetadataEntity>;
   locationsData: CountryType[];
   locationsList: Record<string, string>;
 }
 
 const initialState: OperatorMetadataSlice = {
-  metadata: new Map<string, MetadataEntity>(),
+  metadata: {} as Record<FIELD_KEYS, MetadataEntity>,
   locationsData: [],
   locationsList: {}
 };
@@ -22,53 +22,53 @@ export const slice = createSlice({
   initialState,
   reducers: {
     initMetadata(state, { payload }: { payload: IOperator }) {
-      const metadata = new Map<string, MetadataEntity>();
+      const metadata = {} as Record<FIELD_KEYS, MetadataEntity>;
       Object.values(FIELD_KEYS).forEach((metadataFieldName) => {
         if (camelToSnakeFieldsMapping.includes(metadataFieldName)) {
           if (metadataFieldName === FIELD_KEYS.MEV_RELAYS) {
-            metadata.set(metadataFieldName, {
+            metadata[metadataFieldName] = {
               ...FIELDS[metadataFieldName],
               value: (payload[exceptions[metadataFieldName]!] as string).split(',') || ''
-            });
+            };
           } else {
-            metadata.set(metadataFieldName, {
+            metadata[metadataFieldName] = {
               ...FIELDS[metadataFieldName],
               value: payload[exceptions[metadataFieldName]!] || ''
-            });
+            };
           }
         } else {
           if (metadataFieldName === FIELD_KEYS.OPERATOR_IMAGE) {
-            metadata.set(metadataFieldName, {
+            metadata[metadataFieldName] = {
               ...FIELDS[metadataFieldName],
               imageFileName: payload[metadataFieldName] || ''
-            });
+            };
           } else {
-            metadata.set(metadataFieldName, {
+            metadata[metadataFieldName] = {
               ...FIELDS[metadataFieldName],
               value: payload[snakeCase(metadataFieldName) as keyof IOperator] || ''
-            });
+            };
           }
         }
       });
       state.metadata = metadata;
     },
-    setMetadataEntity(state, { payload }: { payload: { metadataFieldName: string; value: MetadataEntity } }) {
-      state.metadata.set(payload.metadataFieldName, payload.value);
+    setMetadataEntity(state, { payload }: { payload: { metadataFieldName: FIELD_KEYS; value: MetadataEntity } }) {
+      state.metadata[payload.metadataFieldName] = payload.value;
     },
-    setMetadataValue(state, { payload }: { payload: { metadataFieldName: string; value: MetadataEntity['value'] } }) {
-      const data = state.metadata.get(payload.metadataFieldName)!;
+    setMetadataValue(state, { payload }: { payload: { metadataFieldName: FIELD_KEYS; value: MetadataEntity['value'] } }) {
+      const data = state.metadata[payload.metadataFieldName];
       data.value = payload.value;
-      state.metadata.set(payload.metadataFieldName, data);
+      // state.metadata[payload.metadataFieldName] = data;
     },
-    setMetadataOptions(state, { payload }: { payload: { metadataFieldName: string; options: MetadataEntity['options'] } }) {
-      const data = state.metadata.get(payload.metadataFieldName)!;
+    setMetadataOptions(state, { payload }: { payload: { metadataFieldName: FIELD_KEYS; options: MetadataEntity['options'] } }) {
+      const data = state.metadata[payload.metadataFieldName];
       data.options = payload.options;
-      state.metadata.set(payload.metadataFieldName, data);
+      // state.metadata[payload.metadataFieldName] = data;
     },
-    setErrorMessage(state, { payload }: { payload: { metadataFieldName: string; message: string } }) {
-      const data = state.metadata.get(payload.metadataFieldName)!;
+    setErrorMessage(state, { payload }: { payload: { metadataFieldName: FIELD_KEYS; message: string } }) {
+      const data = state.metadata[payload.metadataFieldName];
       data.errorMessage = payload.message;
-      state.metadata.set(payload.metadataFieldName, data);
+      // state.metadata[payload.metadataFieldName] = data;
     },
     setLocations(state, { payload }: { payload: CountryType[] }) {
       payload.forEach((option: CountryType) => {
@@ -103,6 +103,6 @@ export const getMetadata = (state: RootState) => state.operatorMetadataState.met
 export const getLocationsData = (state: RootState) => state.operatorMetadataState.locationsData;
 export const getLocationsList = (state: RootState) => state.operatorMetadataState.locationsList;
 
-export const getMetadataEntityByName = createSelector([getMetadata, (_, name) => name], (metadata, name): MetadataEntity => metadata.get(name)!);
+export const getMetadataEntityByName = createSelector([getMetadata, (_, name: FIELD_KEYS) => name], (metadata, name): MetadataEntity => metadata[name]);
 
 export const getMetadataValueByName = createSelector([getMetadataEntityByName], (getMetadataEntity) => getMetadataEntity?.value);

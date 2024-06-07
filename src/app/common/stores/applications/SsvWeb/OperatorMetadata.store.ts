@@ -187,7 +187,7 @@ class OperatorMetadataStore {
   }
 
   checkExceptionFields(fieldName: string, value: any): boolean {
-    return [FIELD_KEYS.LINKEDIN_URL, FIELD_KEYS.WEBSITE_URL, FIELD_KEYS.TWITTER_URL, FIELD_KEYS.DKG_ADDRESS].includes(fieldName) && typeof value === 'string';
+    return [FIELD_KEYS.LINKEDIN_URL, FIELD_KEYS.WEBSITE_URL, FIELD_KEYS.TWITTER_URL, FIELD_KEYS.DKG_ADDRESS].includes(fieldName as FIELD_KEYS) && typeof value === 'string';
   }
 
   checkFieldValue(metadataFieldName: string, fieldValue: string) {

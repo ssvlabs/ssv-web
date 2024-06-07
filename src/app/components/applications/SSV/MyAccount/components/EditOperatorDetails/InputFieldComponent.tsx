@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { useStores } from '~app/hooks/useStores';
 import TextInput from '~app/components/common/TextInput';
-import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import { FIELD_KEYS, HTTPS_PREFIX } from '~lib/utils/operatorMetadataHelper';
 
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook.ts';
+import { getMetadataValueByName, setMetadataValue } from '~app/redux/operatorMetadata.slice.ts';
 
 const InputFieldComponent = ({ fieldKey, extendClass, placeholder }: { fieldKey: string; placeholder: string; extendClass?: string }) => {
   const classes = useStyles();
-  const stores = useStores();
-  const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-  const [currentValue, setCurrentValue] = useState(metadataStore.getMetadataValue(fieldKey));
+  const dispatch = useAppDispatch();
+
+  const [currentValue, setCurrentValue] = useState(useAppSelector((state) => getMetadataValueByName(state, fieldKey)));
 
   const onPasteHandler = (event: any) => {
     if (fieldKey === FIELD_KEYS.DKG_ADDRESS) {
@@ -26,7 +26,7 @@ const InputFieldComponent = ({ fieldKey, extendClass, placeholder }: { fieldKey:
       }
 
       setCurrentValue(HTTPS_PREFIX + pastedValue);
-      metadataStore.setMetadataValue(fieldKey, HTTPS_PREFIX + pastedValue);
+      dispatch(setMetadataValue({ metadataFieldName: fieldKey, value: HTTPS_PREFIX + pastedValue }));
     }
   };
 
@@ -34,10 +34,10 @@ const InputFieldComponent = ({ fieldKey, extendClass, placeholder }: { fieldKey:
     const { value } = event.target;
     if (fieldKey === FIELD_KEYS.DKG_ADDRESS) {
       setCurrentValue(value);
-      metadataStore.setMetadataValue(fieldKey, value);
+      dispatch(setMetadataValue({ metadataFieldName: fieldKey, value }));
     } else {
       setCurrentValue(value.length > 1 ? value : value.trim());
-      metadataStore.setMetadataValue(fieldKey, value.trim());
+      dispatch(setMetadataValue({ metadataFieldName: fieldKey, value: value.trim() }));
     }
   };
 

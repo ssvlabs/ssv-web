@@ -4,20 +4,20 @@ import { checkSpecialCharacters } from '~lib/utils/strings.ts';
 import { Dispatch } from '@reduxjs/toolkit';
 import { setErrorMessage } from '~app/redux/operatorMetadata.slice.ts';
 
-export const FIELD_KEYS = {
-  OPERATOR_NAME: 'operatorName',
-  OPERATOR_IMAGE: 'logo',
-  DESCRIPTION: 'description',
-  SETUP_PROVIDER: 'setupProvider',
-  MEV_RELAYS: 'mevRelays',
-  LOCATION: 'location',
-  EXECUTION_CLIENT: 'eth1NodeClient',
-  CONSENSUS_CLIENT: 'eth2NodeClient',
-  WEBSITE_URL: 'websiteUrl',
-  TWITTER_URL: 'twitterUrl',
-  LINKEDIN_URL: 'linkedinUrl',
-  DKG_ADDRESS: 'dkgAddress'
-} as const;
+export enum FIELD_KEYS {
+  OPERATOR_NAME = 'operatorName',
+  OPERATOR_IMAGE = 'logo',
+  DESCRIPTION = 'description',
+  SETUP_PROVIDER = 'setupProvider',
+  MEV_RELAYS = 'mevRelays',
+  LOCATION = 'location',
+  EXECUTION_CLIENT = 'eth1NodeClient',
+  CONSENSUS_CLIENT = 'eth2NodeClient',
+  WEBSITE_URL = 'websiteUrl',
+  TWITTER_URL = 'twitterUrl',
+  LINKEDIN_URL = 'linkedinUrl',
+  DKG_ADDRESS = 'dkgAddress'
+}
 
 export const MEV_RELAYS = {
   AESTUS: 'Aestus',
@@ -177,7 +177,7 @@ export const FIELDS: { [key: string]: MetadataEntity } = {
   }
 };
 
-export const photoValidation = (file: any, callback: Function) => {
+export const photoValidation = (file: File, callback: Function) => {
   let errorMessage = '';
   if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
     errorMessage = translations.OPERATOR_METADATA.IMAGE_TYPE_ERROR;
@@ -285,7 +285,7 @@ export const checkWithConditions = (metadataFieldName: string, fieldEntity: Meta
 };
 
 export const checkExceptionFields = (fieldName: string, value: any): boolean => {
-  return ([FIELD_KEYS.LINKEDIN_URL, FIELD_KEYS.WEBSITE_URL, FIELD_KEYS.TWITTER_URL, FIELD_KEYS.DKG_ADDRESS] as string[]).includes(fieldName) && typeof value === 'string';
+  return [FIELD_KEYS.LINKEDIN_URL, FIELD_KEYS.WEBSITE_URL, FIELD_KEYS.TWITTER_URL, FIELD_KEYS.DKG_ADDRESS].includes(fieldName as FIELD_KEYS) && typeof value === 'string';
 };
 
 export const checkFieldValue = (metadataFieldName: string, fieldValue: string): { result: boolean; errorMessage: string } => {

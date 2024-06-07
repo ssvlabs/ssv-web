@@ -1,24 +1,23 @@
 import { useEffect, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import { useStores } from '~app/hooks/useStores';
 import { CountryType } from '~lib/utils/operatorMetadataHelper';
-import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook.ts';
+import { getLocationsData, getLocationsList, getMetadataValueByName, setMetadataValue } from '~app/redux/operatorMetadata.slice.ts';
 
 const CountriesAutocompleteInput = ({ fieldKey, placeholder }: { fieldKey: string; placeholder: string }) => {
   const classes = useStyles();
-  const stores = useStores();
-  const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-  const [currentCountry, setCurrentCountry] = useState(metadataStore.getMetadataValue(fieldKey));
+  const dispatch = useAppDispatch();
+  const [currentCountry, setCurrentCountry] = useState(useAppSelector((state) => getMetadataValueByName(state, fieldKey)));
+  const locationsData = useAppSelector(getLocationsData);
+  const locationsList = useAppSelector(getLocationsList);
 
-  useEffect(() => setCurrentCountry(countryWithAlpha(currentCountry)), [metadataStore.locationsData.toString()]);
+  useEffect(() => setCurrentCountry(countryWithAlpha(currentCountry)), [locationsData.toString()]);
 
   const customFilterOptions = (_options: any, state: any) => {
     const inputValue = state.inputValue.toLowerCase();
-    return metadataStore.locationsData
-      .filter((d) => d.name.toLowerCase().includes(inputValue) || d['alpha-3'].toLowerCase().includes(inputValue))
-      .map((d) => `${d.name} (${d['alpha-3']})`);
+    return locationsData.filter((d) => d.name.toLowerCase().includes(inputValue) || d['alpha-3'].toLowerCase().includes(inputValue)).map((d) => `${d.name} (${d['alpha-3']})`);
   };
 
   const onFocusHandler = () => {
@@ -32,12 +31,17 @@ const CountriesAutocompleteInput = ({ fieldKey, placeholder }: { fieldKey: strin
   const onTagsChange = (event: any, value: any) => {
     if (event) {
       setCurrentCountry(value);
-      metadataStore.setMetadataValue(fieldKey, metadataStore.locationsList[value]);
+      dispatch(
+        setMetadataValue({
+          metadataFieldName: fieldKey,
+          value: locationsList[value]
+        })
+      );
     }
   };
 
   const countryWithAlpha = (location: string) => {
-    const country = metadataStore.locationsData.find((c) => c.name === location);
+    const country = locationsData.find((c) => c.name === location);
     return country ? `${location} (${country['alpha-3']})` : location;
   };
 
@@ -49,7 +53,7 @@ const CountriesAutocompleteInput = ({ fieldKey, placeholder }: { fieldKey: strin
       onBlur={onBlurHandler}
       filterOptions={customFilterOptions}
       onInputChange={(e: any, value: any) => onTagsChange(e, value)}
-      options={metadataStore.locationsData.map((country: CountryType) => country.name)}
+      options={locationsData.map((country: CountryType) => country.name)}
       renderInput={(params) => <TextField placeholder={placeholder} className={classes.AutocompleteInner} {...params} />}
     />
   );

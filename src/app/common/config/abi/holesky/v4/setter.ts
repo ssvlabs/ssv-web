@@ -1718,9 +1718,14 @@ export const HoleskyV4SetterABI = [
         internalType: 'uint64[]',
         name: 'operatorIds',
         type: 'uint64[]'
+      },
+      {
+        internalType: 'address[]',
+        name: 'whitelistAddresses',
+        type: 'address[]'
       }
     ],
-    name: 'removeOperatorsWhitelistingContract',
+    name: 'removeOperatorMultipleWhitelists',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
@@ -1731,14 +1736,9 @@ export const HoleskyV4SetterABI = [
         internalType: 'uint64[]',
         name: 'operatorIds',
         type: 'uint64[]'
-      },
-      {
-        internalType: 'address[]',
-        name: 'whitelistAddresses',
-        type: 'address[]'
       }
     ],
-    name: 'removeOperatorsWhitelists',
+    name: 'removeOperatorsWhitelistingContract',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
@@ -1819,6 +1819,24 @@ export const HoleskyV4SetterABI = [
         internalType: 'uint64[]',
         name: 'operatorIds',
         type: 'uint64[]'
+      },
+      {
+        internalType: 'address[]',
+        name: 'whitelistAddresses',
+        type: 'address[]'
+      }
+    ],
+    name: 'setOperatorMultipleWhitelists',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint64[]',
+        name: 'operatorIds',
+        type: 'uint64[]'
       }
     ],
     name: 'setOperatorsPrivateUnchecked',
@@ -1853,24 +1871,6 @@ export const HoleskyV4SetterABI = [
       }
     ],
     name: 'setOperatorsWhitelistingContract',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint64[]',
-        name: 'operatorIds',
-        type: 'uint64[]'
-      },
-      {
-        internalType: 'address[]',
-        name: 'whitelistAddresses',
-        type: 'address[]'
-      }
-    ],
-    name: 'setOperatosWhitelists',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'

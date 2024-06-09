@@ -25,32 +25,21 @@ type Props = {
   onClick: (operator: IOperator) => void;
 };
 
-export const OperatorRow: FC<Props> = ({
-  operator,
-  isSelected,
-  isDisabled,
-  onClick
-}) => {
+export const OperatorRow: FC<Props> = ({ operator, isSelected, isDisabled, onClick }) => {
   const classes = useStyles({ loading: true });
 
   const operatorValidatorsLimit = useAppSelector(getOperatorValidatorsLimit);
   const accountAddress = useAppSelector(getAccountAddress);
 
-  const reachedMaxValidators =
-    operatorValidatorsLimit <= operator.validators_count;
+  const reachedMaxValidators = operatorValidatorsLimit <= operator.validators_count;
 
   const hasValidators = operator.validators_count !== 0;
   const isInactive = operator.is_active < 1;
   const mevRelays = operator?.mev_relays || '';
-  const mevRelaysCount = mevRelays
-    ? mevRelays.split(',').filter((item: string) => item).length
-    : 0;
+  const mevRelaysCount = mevRelays ? mevRelays.split(',').filter((item: string) => item).length : 0;
 
   const isPrivateOperator = Boolean(
-    operator.address_whitelist &&
-      operator.address_whitelist !==
-        config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST &&
-      !isEqualsAddresses(operator.address_whitelist, accountAddress)
+    operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !isEqualsAddresses(operator.address_whitelist, accountAddress)
   );
 
   const isPrivateOrDeleted = Boolean(operator.is_deleted || isPrivateOperator);
@@ -63,41 +52,24 @@ export const OperatorRow: FC<Props> = ({
       }}
     >
       <StyledCell style={{ paddingLeft: 20, width: 60, paddingTop: 35 }}>
-        <Checkbox
-          isDisabled={isPrivateOrDeleted || isDisabled}
-          grayBackGround
-          text={''}
-          isChecked={isSelected}
-          toggleIsChecked={() => {}}
-        />
+        <Checkbox isDisabled={isPrivateOrDeleted || isDisabled} grayBackGround text={''} isChecked={isSelected} toggleIsChecked={() => {}} />
       </StyledCell>
       <StyledCell>
-        <OperatorDetails
-          nameFontSize={14}
-          idFontSize={12}
-          logoSize={24}
-          withoutExplorer
-          operator={operator}
-        />
+        <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator} />
       </StyledCell>
       <StyledCell>
         <Grid container>
           <Grid item>{operator.validators_count}</Grid>
           {reachedMaxValidators && (
             <Grid item style={{ alignSelf: 'center', marginLeft: 4 }}>
-              <ToolTip
-                text={'Operator reached  maximum amount of validators'}
-              />
+              <ToolTip text={'Operator reached  maximum amount of validators'} />
             </Grid>
           )}
         </Grid>
       </StyledCell>
       <StyledCell>
         <Grid container>
-          <Grid
-            item
-            className={hasValidators && isInactive ? classes.Inactive : ''}
-          >
+          <Grid item className={hasValidators && isInactive ? classes.Inactive : ''}>
             {roundNumber(operator.performance['30d'], 2)}%
           </Grid>
           {isInactive && (
@@ -116,10 +88,7 @@ export const OperatorRow: FC<Props> = ({
       </StyledCell>
       <StyledCell>
         <Grid container>
-          <MevCounterBadge
-            mevRelaysList={mevRelays.split(',')}
-            mevCount={mevRelaysCount}
-          />
+          <MevCounterBadge mevRelaysList={mevRelays.split(',')} mevCount={mevRelaysCount} />
         </Grid>
       </StyledCell>
       <StyledCell>
@@ -132,10 +101,7 @@ export const OperatorRow: FC<Props> = ({
               action: 'click',
               label: 'operator'
             });
-            window.open(
-              `${config.links.EXPLORER_URL}/operators/${operator.id}`,
-              '_blank'
-            );
+            window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');
           }}
         />
       </StyledCell>

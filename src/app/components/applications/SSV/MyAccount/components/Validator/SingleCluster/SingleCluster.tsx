@@ -10,7 +10,7 @@ import OperatorBox from '~app/components/applications/SSV/MyAccount/components/V
 import ActionsButton from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/ActionsButton';
 import ValidatorsList from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
+import { Tooltip } from '~app/components/ui/tooltip';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { useStores } from '~app/hooks/useStores';
@@ -66,9 +66,18 @@ const SingleCluster = () => {
   const cluster = useAppSelector(getSelectedCluster);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const accountAddress = useAppSelector(getAccountAddress);
+
   const hasPrivateOperator = cluster.operators.some((operator) => !canAccountUseOperator(accountAddress, operator));
-  const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated || hasPrivateOperator;
+  const hasDeletedOperators = cluster.operators.some((operator) => operator.is_deleted);
+
+  const canAddValidator = !hasDeletedOperators && !cluster.isLiquidated && !hasPrivateOperator;
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
+
+  const getTooltipContent = () => {
+    if (cluster.isLiquidated) return 'You cannot perform this operation when your cluster is liquidated. Please reactivate to proceed.';
+    if (hasDeletedOperators) return `One of your chosen operators has been removed by its owner. To onboard validators, you'll need to select a new cluster.`;
+    if (hasPrivateOperator) return `One of your chosen operators has shifted to a permissioned status. To onboard validators, you'll need to select a new cluster.`;
+  };
 
   const addToCluster = () => {
     process.processName = 'cluster_registration';
@@ -119,21 +128,15 @@ const SingleCluster = () => {
               </TitleWrapper>
               <Grid className={classes.ButtonsWrapper}>
                 {cluster.validatorCount > 1 && <ActionsButton />}
-                <AnchorTooltip
-                  title={"One of your chosen operators has shifted to a permissioned status. To onboard validators, you'll need to select a new cluster."}
-                  shouldDisableHoverListener={!hasPrivateOperator}
-                  placement="top"
-                >
-                  <div>
-                    <PrimaryButton
-                      isDisabled={showAddValidatorBtnCondition}
-                      text={'Add Validator'}
-                      icon={`/images/plusIcon/plus${isDarkMode ? '-dark' : ''}.svg`}
-                      size={ButtonSize.SM}
-                      onClick={addToCluster}
-                    />
-                  </div>
-                </AnchorTooltip>
+                <Tooltip content={getTooltipContent()}>
+                  <PrimaryButton
+                    isDisabled={!canAddValidator}
+                    text={'Add Validator'}
+                    icon={`/images/plusIcon/plus${isDarkMode ? '-dark' : ''}.svg`}
+                    size={ButtonSize.SM}
+                    onClick={addToCluster}
+                  />
+                </Tooltip>
               </Grid>
             </Grid>
             <ValidatorsList />

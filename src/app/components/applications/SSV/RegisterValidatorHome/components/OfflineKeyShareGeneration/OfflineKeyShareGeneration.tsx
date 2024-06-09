@@ -177,7 +177,8 @@ const OfflineKeyShareGeneration = () => {
     return isWindowOs ? `"${jsonOperatorInfo}"` : `'${jsonOperatorInfo}'`;
   };
 
-  const cliCommand = `--operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',')} --owner-address=${accountAddress} --owner-nonce=${ownerNonce}`;
+  const cliCommandPrefix = isWindowOs ? 'ssv-keys.exe' : './ssv-keys-mac';
+  const cliCommand = `${cliCommandPrefix} --operator-keys=${operatorsKeys.join(',')} --operator-ids=${operatorsIds.join(',')} --owner-address=${accountAddress} --owner-nonce=${ownerNonce}`;
   const dkgCliCommand = `docker pull bloxstaking/ssv-dkg:v2.1.0 && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v2.1.0" init --owner ${accountAddress} --nonce ${ownerNonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorsIds.join(',')} --operatorsInfo ${getOperatorsData()} --network ${apiNetwork} --validators ${validatorsCount} --logFilePath /data/debug.log --outputPath /data`;
   const instructions = [
     {

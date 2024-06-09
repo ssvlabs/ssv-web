@@ -92,9 +92,6 @@ export const validateFeeUpdate = ({
   if (Number.isNaN(Number(newValue)) || Number.isFinite(newValue) || !newValue) {
     response.shouldDisplay = true;
     response.errorMessage = 'Please use numbers only.';
-  } else if (Number(newValue) > maxFeePerYear) {
-    response.shouldDisplay = true;
-    response.errorMessage = ` Fee must be lower than ${maxFeePerYear} SSV`;
   } else if (Number(previousValue) === Number(newValue)) {
     response.shouldDisplay = true;
     response.errorMessage = "State for fee hasn't changed";
@@ -104,9 +101,10 @@ export const validateFeeUpdate = ({
   } else if (feeMaximumIncrease.lessThan(newValue)) {
     response.shouldDisplay = true;
     response.errorMessage = `You can only increase your fee up to ${formatNumberToUi(feeMaximumIncrease)}`;
-  }
-  // eslint-disable-next-line radix
-  else if (
+  } else if (Number(newValue) > maxFeePerYear) {
+    response.shouldDisplay = true;
+    response.errorMessage = ` Fee must be lower than ${maxFeePerYear} SSV`;
+  } else if (
     (new Decimal(newValue).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK) && Number(newValue) > 0) ||
     Number(newValue) < 0
   ) {

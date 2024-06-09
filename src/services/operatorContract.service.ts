@@ -22,14 +22,13 @@ const addNewOperator = async ({
   if (!contract) {
     return false;
   }
-  const feePerBlock = new Decimal(operatorRawData.fee)
-    .dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR)
-    .toFixed()
-    .toString();
+  const feePerBlock = new Decimal(operatorRawData.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
 
+  const { networkId } = getStoredNetwork();
+  const payload = [operatorRawData.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock))];
   return await transactionExecutor({
     contractMethod: contract.registerOperator,
-    payload: [operatorRawData.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock))],
+    payload: networkId === 1 ? payload : [...payload, false],
     isContractWallet,
     getterTransactionState: async () => {
       const res = await getOperatorByPublicKey(decodeParameter('string', operatorRawData.publicKey));
@@ -55,17 +54,7 @@ const getOperatorBalance = async ({ id }: { id: number }): Promise<number> => {
   }
 };
 
-const withdrawRewards = async ({
-  operator,
-  amount,
-  isContractWallet,
-  dispatch
-}: {
-  operator: IOperator;
-  amount: string;
-  isContractWallet: boolean;
-  dispatch: Function;
-}) => {
+const withdrawRewards = async ({ operator, amount, isContractWallet, dispatch }: { operator: IOperator; amount: string; isContractWallet: boolean; dispatch: Function }) => {
   const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -113,15 +102,7 @@ const updateOperatorAddressWhitelist = async ({
   });
 };
 
-const removeOperator = async ({
-  operatorId,
-  isContractWallet,
-  dispatch
-}: {
-  operatorId: number;
-  isContractWallet: boolean;
-  dispatch: Function;
-}): Promise<boolean> => {
+const removeOperator = async ({ operatorId, isContractWallet, dispatch }: { operatorId: number; isContractWallet: boolean; dispatch: Function }): Promise<boolean> => {
   const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -136,15 +117,7 @@ const removeOperator = async ({
   });
 };
 
-const approveOperatorFee = async ({
-  operator,
-  isContractWallet,
-  dispatch
-}: {
-  operator: IOperator;
-  isContractWallet: boolean;
-  dispatch: Function;
-}): Promise<boolean> => {
+const approveOperatorFee = async ({ operator, isContractWallet, dispatch }: { operator: IOperator; isContractWallet: boolean; dispatch: Function }): Promise<boolean> => {
   const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -181,9 +154,7 @@ const decreaseOperatorFee = async ({
   if (!contract) {
     return false;
   }
-  const formattedFee = prepareSsvAmountToTransfer(
-    toWei(new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString())
-  );
+  const formattedFee = prepareSsvAmountToTransfer(toWei(new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString()));
 
   return await transactionExecutor({
     contractMethod: contract.reduceOperatorFee,
@@ -232,15 +203,7 @@ const syncOperatorFeeInfo = async (operatorId: number): Promise<any> => {
   }
 };
 
-const cancelChangeFeeProcess = async ({
-  operator,
-  isContractWallet,
-  dispatch
-}: {
-  operator: IOperator;
-  isContractWallet: boolean;
-  dispatch: Function;
-}) => {
+const cancelChangeFeeProcess = async ({ operator, isContractWallet, dispatch }: { operator: IOperator; isContractWallet: boolean; dispatch: Function }) => {
   const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
@@ -303,24 +266,12 @@ const getMaxOperatorFee = async (): Promise<number> => {
   }
 };
 
-const updateOperatorFee = async ({
-  operator,
-  newFee,
-  isContractWallet,
-  dispatch
-}: {
-  operator: IOperator;
-  newFee: any;
-  isContractWallet: boolean;
-  dispatch: Function;
-}) => {
+const updateOperatorFee = async ({ operator, newFee, isContractWallet, dispatch }: { operator: IOperator; newFee: any; isContractWallet: boolean; dispatch: Function }) => {
   const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
   }
-  const formattedFee = prepareSsvAmountToTransfer(
-    toWei(new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString())
-  );
+  const formattedFee = prepareSsvAmountToTransfer(toWei(new Decimal(newFee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString()));
 
   return await transactionExecutor({
     contractMethod: contract.declareOperatorFee,

@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from '~app/store';
 import { getFromLocalStorageByKey, removeFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
-import { getStoredNetwork, MAINNET_NETWORK_ID } from '~root/providers/networkInfo.provider';
 
 export interface AppState {
   strategyName: string;
@@ -13,7 +12,6 @@ export interface AppState {
   isShowSsvLoader: boolean;
   txHash: string;
   restrictedUserGeo: string;
-  shouldCheckCountryRestriction: boolean;
 }
 
 const getInitialStrategyName = () => {
@@ -35,8 +33,7 @@ const initialState: AppState = {
   isShowTxPendingPopup: false,
   isShowSsvLoader: true,
   txHash: '',
-  restrictedUserGeo: '',
-  shouldCheckCountryRestriction: getStoredNetwork().networkId === MAINNET_NETWORK_ID
+  restrictedUserGeo: ''
 };
 
 export const slice = createSlice({
@@ -50,9 +47,6 @@ export const slice = createSlice({
         saveInLocalStorage('isDarkMode', '1');
       }
       state.isDarkMode = !state.isDarkMode;
-    },
-    setShouldCheckCountryRestriction: (state, action: { payload: boolean }) => {
-      state.shouldCheckCountryRestriction = action.payload;
     },
     setRestrictedUserGeo: (state, action: { payload: string }) => {
       state.restrictedUserGeo = action.payload;
@@ -80,21 +74,11 @@ export const slice = createSlice({
 
 export const appStateReducer = slice.reducer;
 
-export const {
-  toggleDarkMode,
-  setIsShowSsvLoader,
-  setRestrictedUserGeo,
-  setIsLoading,
-  setIsShowWalletPopup,
-  setIsShowTxPendingPopup,
-  setTxHash,
-  setShouldCheckCountryRestriction,
-  setIsShowConnectWallet
-} = slice.actions;
+export const { toggleDarkMode, setIsShowSsvLoader, setRestrictedUserGeo, setIsLoading, setIsShowWalletPopup, setIsShowTxPendingPopup, setTxHash, setIsShowConnectWallet } =
+  slice.actions;
 
 export const getStrategyName = (state: RootState) => state.appState.strategyName;
 export const getIsDarkMode = (state: RootState) => state.appState.isDarkMode;
-export const getShouldCheckCountryRestriction = (state: RootState) => state.appState.shouldCheckCountryRestriction;
 export const getRestrictedUserGeo = (state: RootState) => state.appState.restrictedUserGeo;
 export const getIsShowSsvLoader = (state: RootState) => state.appState.isShowSsvLoader;
 export const getIsLoading = (state: RootState) => state.appState.isLoading;

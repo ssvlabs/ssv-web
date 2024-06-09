@@ -1,40 +1,37 @@
-import { useEffect, useState } from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
-import Tooltip from '@mui/material/Tooltip';
-import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
+import { observer } from 'mobx-react';
+import { useEffect, useState } from 'react';
 import { osName } from 'react-device-detect';
-import { useStores } from '~app/hooks/useStores';
-import LinkText from '~app/components/common/LinkText';
-import TextInput from '~app/components/common/TextInput';
-import config, { translations } from '~app/common/config';
-import BorderScreen from '~app/components/common/BorderScreen';
-import ErrorMessage from '~app/components/common/ErrorMessage';
-import { validateAddressInput } from '~lib/utils/validatesInputs';
-import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
-import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import { CopyButton } from '~app/atomicComponents';
-import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import { DEVELOPER_FLAGS } from '~lib/utils/developerHelper';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import config, { translations } from '~app/common/config';
+import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import DkgOperator from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration/OfflineKeyShareGeneration.styles';
-import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
-import { IOperator } from '~app/model/operator.model';
-import { getOwnerNonce } from '~root/services/account.service';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getAccountAddress } from '~app/redux/wallet.slice';
-import { setMessageAndSeverity } from '~app/redux/notifications.slice';
-import styled from 'styled-components';
-import { OperatingSystemsEnum } from '~app/enums/os.enum';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
-import { ButtonSize } from '~app/enums/Button.enum';
-import { getSelectedOperators } from '~app/redux/operator.slice.ts';
-import { useOperatorsDKGHealth } from '~app/hooks/useOperatorsDKGHealth';
+import BorderScreen from '~app/components/common/BorderScreen';
+import ErrorMessage from '~app/components/common/ErrorMessage';
+import LinkText from '~app/components/common/LinkText';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import Spinner from '~app/components/common/Spinner';
+import TextInput from '~app/components/common/TextInput';
+import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
+import { ButtonSize } from '~app/enums/Button.enum';
+import { OperatingSystemsEnum } from '~app/enums/os.enum';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { useOperatorsDKGHealth } from '~app/hooks/useOperatorsDKGHealth';
+import { useStores } from '~app/hooks/useStores';
+import { IOperator } from '~app/model/operator.model';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
+import { getSelectedOperators } from '~app/redux/operator.slice.ts';
+import { getAccountAddress } from '~app/redux/wallet.slice';
+import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
 import { cn } from '~lib/utils/tailwind';
+import { validateAddressInput } from '~lib/utils/validatesInputs';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { getOwnerNonce } from '~root/services/account.service';
 
 const DkgTitleWrapper = styled.div`
   width: 100%;
@@ -263,16 +260,12 @@ const OfflineKeyShareGeneration = () => {
   };
 
   const hideButtonCondition = () => {
+    if (operatorsDKGHealth.isLoading) return false;
     if (submitFunctionCondition) {
       return !processStore.secondRegistration;
     }
     return true;
   };
-
-  const enableDesktopAppKeysharesGeneration = JSON.parse(
-    // @ts-ignore
-    getFromLocalStorageByKey(DEVELOPER_FLAGS.ENABLE_DESKTOP_APP_KEYSHARES_GENERATION)
-  );
 
   const MainScreen = (
     <BorderScreen
@@ -287,33 +280,14 @@ const OfflineKeyShareGeneration = () => {
             <Grid
               container
               item
-              className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.COMMAND_LINE) ? classes.BoxSelected : ''}`}
+              className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.COMMAND_LINE) ? classes.BoxSelected : ''} flex-1`}
               onClick={() => checkBox(OFFLINE_FLOWS.COMMAND_LINE)}
             >
               <Grid item xs={XS} className={cn(classes.ImageContainer, classes.CMDImage)} />
               <Typography className={classes.BlueText}>Command Line Interface</Typography>
               <Typography className={classes.AdditionalGrayText}>Generate from Existing Key</Typography>
             </Grid>
-            <Tooltip
-              disableHoverListener={enableDesktopAppKeysharesGeneration}
-              title="Coming soon..."
-              placement="top-end"
-              children={
-                <Grid>
-                  <Grid
-                    container
-                    item
-                    className={`${classes.Box} ${enableDesktopAppKeysharesGeneration ? '' : classes.Disable} ${isSelected(OFFLINE_FLOWS.DESKTOP_APP) ? classes.BoxSelected : ''}`}
-                    onClick={() => checkBox(OFFLINE_FLOWS.DESKTOP_APP)}
-                  >
-                    <Grid item xs={XS} className={cn(classes.ImageContainer, classes.Desktop)} />
-                    <Typography className={classes.BlueText}>Desktop App</Typography>
-                    <Typography className={classes.AdditionalGrayText}>Generate from Existing Key</Typography>
-                  </Grid>
-                </Grid>
-              }
-            />
-            <Grid container item className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.DKG) ? classes.BoxSelected : ''}`} onClick={() => checkBox(OFFLINE_FLOWS.DKG)}>
+            <Grid container item className={`${classes.Box} ${isSelected(OFFLINE_FLOWS.DKG) ? classes.BoxSelected : ''} flex-1`} onClick={() => checkBox(OFFLINE_FLOWS.DKG)}>
               {operatorsDKGHealth.isLoading ? (
                 <Grid item xs={XS} className={cn(classes.ImageContainer)}>
                   <div className="flex justify-center">

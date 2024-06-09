@@ -1621,6 +1621,11 @@ export const HoleskyV4SetterABI = [
         internalType: 'uint256',
         name: 'fee',
         type: 'uint256'
+      },
+      {
+        internalType: 'bool',
+        name: 'setPrivate',
+        type: 'bool'
       }
     ],
     name: 'registerOperator',

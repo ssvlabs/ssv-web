@@ -5,7 +5,6 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig(({ mode }) => {
   return {
-    publicDir: 'public',
     build: {
       outDir: 'build',
       sourcemap: true,

@@ -9,6 +9,11 @@ export interface IOperator {
   public_key: string;
   owner_address: string;
   address_whitelist: string;
+  verified_operator?: boolean;
+  balance: number;
+  whitelist_addresses?: string[];
+  whitelisting_contract?: string;
+  is_private?: boolean;
   location: string;
   setup_provider: string;
   eth1_node_client: string;

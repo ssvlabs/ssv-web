@@ -47,7 +47,7 @@ export const executeAfterEvent = async ({
   return true;
 };
 
-type TxProps = {
+export type TxProps = {
   contractMethod: Function;
   payload: any;
   isContractWallet: boolean;

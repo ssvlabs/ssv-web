@@ -18,10 +18,10 @@ import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlo
 import { SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
 import { getSelectedCluster, setExcludedCluster, setSelectedClusterId } from '~app/redux/account.slice';
 import { getIsDarkMode } from '~app/redux/appState.slice';
-import { getAccountAddress } from '~app/redux/wallet.slice';
-import { isEqualsAddresses } from '~lib/utils/strings';
-import { useStyles } from './SingleCluster.styles';
 import { selectOperators } from '~app/redux/operator.slice.ts';
+import { getAccountAddress } from '~app/redux/wallet.slice';
+import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
+import { useStyles } from './SingleCluster.styles';
 
 const ValidatorsWrapper = styled.div`
   width: 872px;
@@ -66,12 +66,7 @@ const SingleCluster = () => {
   const cluster = useAppSelector(getSelectedCluster);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const accountAddress = useAppSelector(getAccountAddress);
-  const hasPrivateOperator = cluster.operators.some(
-    (operator: any) =>
-      operator.address_whitelist &&
-      !isEqualsAddresses(operator.address_whitelist, accountAddress) &&
-      operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST
-  );
+  const hasPrivateOperator = cluster.operators.some((operator) => !canAccountUseOperator(accountAddress, operator));
   const showAddValidatorBtnCondition = cluster.operators.some((operator: any) => operator.is_deleted) || cluster.isLiquidated || hasPrivateOperator;
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 

@@ -33,7 +33,13 @@ export const config = {
           ROOT: '/my-account/operator',
           WITHDRAW: '/my-account/operator/withdraw',
           META_DATA: '/my-account/operator/edit-metadata',
-          ACCESS_SETTINGS: '/my-account/operator/permission-change',
+          ACCESS_SETTINGS: {
+            ROOT: '/my-account/operator/permission-change',
+            AUTHORIZED_ADDRESSES: '/my-account/operator/permission-change/addresses',
+            STATUS: '/my-account/operator/permission-change/status',
+            EXTERNAL_CONTRACT: '/my-account/operator/permission-change/external-contract'
+          },
+          STATUS: '/my-account/operator/authorized-addresses',
           META_DATA_CONFIRMATION: '/my-account/operator/edit-metadata/confirmation',
           REMOVE: {
             ROOT: '/my-account/operator/remove',

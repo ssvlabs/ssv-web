@@ -1,14 +1,13 @@
-import { getContractByName } from '~root/wagmi/utils';
-import { EContractName } from '~app/model/contracts.model';
-import { decodeParameter, fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
-import { IOperator, IOperatorRawData } from '~app/model/operator.model';
-import { transactionExecutor } from '~root/services/transaction.service';
-import { getOperator, getOperatorByPublicKey } from '~root/services/operator.service';
-import { isEqualsAddresses } from '~lib/utils/strings';
-import { Contract } from 'ethers';
 import Decimal from 'decimal.js';
 import config from '~app/common/config';
+import { EContractName } from '~app/model/contracts.model';
+import { IOperator, IOperatorRawData } from '~app/model/operator.model';
+import { isEqualsAddresses } from '~lib/utils/strings';
 import { getStoredNetwork, testNets } from '~root/providers/networkInfo.provider.ts';
+import { decodeParameter, fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
+import { getOperator, getOperatorByPublicKey } from '~root/services/operator.service';
+import { transactionExecutor } from '~root/services/transaction.service';
+import { getContractByName } from '~root/wagmi/utils';
 
 const addNewOperator = async ({
   isContractWallet,
@@ -104,7 +103,7 @@ const updateOperatorAddressWhitelist = async ({
 };
 
 const removeOperator = async ({ operatorId, isContractWallet, dispatch }: { operatorId: number; isContractWallet: boolean; dispatch: Function }): Promise<boolean> => {
-  const contract: Contract = getContractByName(EContractName.SETTER);
+  const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
   }
@@ -119,7 +118,7 @@ const removeOperator = async ({ operatorId, isContractWallet, dispatch }: { oper
 };
 
 const approveOperatorFee = async ({ operator, isContractWallet, dispatch }: { operator: IOperator; isContractWallet: boolean; dispatch: Function }): Promise<boolean> => {
-  const contract: Contract = getContractByName(EContractName.SETTER);
+  const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
   }
@@ -151,7 +150,7 @@ const decreaseOperatorFee = async ({
   isContractWallet: boolean;
   dispatch: Function;
 }): Promise<boolean> => {
-  const contract: Contract = getContractByName(EContractName.SETTER);
+  const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
   }
@@ -205,7 +204,7 @@ const syncOperatorFeeInfo = async (operatorId: number): Promise<any> => {
 };
 
 const cancelChangeFeeProcess = async ({ operator, isContractWallet, dispatch }: { operator: IOperator; isContractWallet: boolean; dispatch: Function }) => {
-  const contract: Contract = getContractByName(EContractName.SETTER);
+  const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
   }
@@ -268,7 +267,7 @@ const getMaxOperatorFee = async (): Promise<number> => {
 };
 
 const updateOperatorFee = async ({ operator, newFee, isContractWallet, dispatch }: { operator: IOperator; newFee: any; isContractWallet: boolean; dispatch: Function }) => {
-  const contract: Contract = getContractByName(EContractName.SETTER);
+  const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
     return false;
   }
@@ -284,18 +283,24 @@ const updateOperatorFee = async ({ operator, newFee, isContractWallet, dispatch 
   });
 };
 
+const isWhitelistingContract = async (contractAddress: string) => {
+  const contract = getContractByName(EContractName.GETTER);
+  return contract.isWhitelistingContract(contractAddress);
+};
+
 export {
-  getMaxOperatorFee,
-  updateOperatorFee,
-  initFeeIncreaseAndPeriods,
-  getOperatorBalance,
-  updateOperatorValidatorsLimit,
-  withdrawRewards,
-  updateOperatorAddressWhitelist,
-  removeOperator,
-  syncOperatorFeeInfo,
   addNewOperator,
   approveOperatorFee,
   cancelChangeFeeProcess,
-  decreaseOperatorFee
+  decreaseOperatorFee,
+  getMaxOperatorFee,
+  getOperatorBalance,
+  initFeeIncreaseAndPeriods,
+  isWhitelistingContract,
+  removeOperator,
+  syncOperatorFeeInfo,
+  updateOperatorAddressWhitelist,
+  updateOperatorFee,
+  updateOperatorValidatorsLimit,
+  withdrawRewards
 };

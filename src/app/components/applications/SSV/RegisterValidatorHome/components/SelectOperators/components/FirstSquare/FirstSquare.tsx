@@ -1,34 +1,28 @@
-import { useEffect, useRef, useState } from 'react';
-import _ from 'underscore';
-import debounce from 'lodash/debounce';
+import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
-import TableRow from '@mui/material/TableRow';
-import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
-import CircularProgress from '@mui/material/CircularProgress';
-import Status from '~app/components/common/Status';
-import ToolTip from '~app/components/common/ToolTip';
-import { isEqualsAddresses } from '~lib/utils/strings';
-import Checkbox from '~app/components/common/CheckBox';
-import TextInput from '~app/components/common/TextInput';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import debounce from 'lodash/debounce';
+import { useEffect, useRef, useState } from 'react';
+import _ from 'underscore';
 import config, { translations } from '~app/common/config';
-import BorderScreen from '~app/components/common/BorderScreen';
-import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
-import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import Filters from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
-import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
-import StyledCell from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
-import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import ClusterSize from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/ClusterSize/ClusterSize';
-import MevCounterBadge from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevCounterBadge';
-import { fromWei, getFeeForYear } from '~root/services/conversions.service';
-import { IOperator } from '~app/model/operator.model';
-import { getOperators as getOperatorsOperatorService } from '~root/services/operator.service';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
+import ClusterSize from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/ClusterSize/ClusterSize';
+import Filters from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
+import MevCounterBadge from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevCounterBadge';
+import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import StyledCell from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
+import BorderScreen from '~app/components/common/BorderScreen';
+import Checkbox from '~app/components/common/CheckBox';
+import Status from '~app/components/common/Status';
+import TextInput from '~app/components/common/TextInput';
+import ToolTip from '~app/components/common/ToolTip';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getAccountAddress } from '~app/redux/wallet.slice';
+import { IOperator } from '~app/model/operator.model';
 import {
   fetchAndSetOperatorValidatorsLimit,
   getOperatorValidatorsLimit,
@@ -37,27 +31,22 @@ import {
   selectOperator,
   unselectOperator
 } from '~app/redux/operator.slice.ts';
+import { getAccountAddress } from '~app/redux/wallet.slice';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
+import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { getOperators as getOperatorsOperatorService } from '~root/services/operator.service';
 import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
 
-const FirstSquare = ({
-  editPage,
-  clusterSize,
-  setClusterSize,
-  clusterBox
-}: {
-  editPage: boolean;
-  clusterSize: number;
-  setClusterSize: Function;
-  clusterBox: number[];
-}) => {
+const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { editPage: boolean; clusterSize: number; setClusterSize: Function; clusterBox: number[] }) => {
   const [loading, setLoading] = useState(false);
   const [sortBy, setSortBy] = useState('');
   const [filterBy, setFilterBy] = useState([]);
   const [sortOrder, setSortOrder] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [operatorsData, setOperatorsData]: [any[], any] = useState([]);
-  const [operatorsPagination, setOperatorsPagination] =
-    useState(DEFAULT_PAGINATION);
+  const [operatorsPagination, setOperatorsPagination] = useState(DEFAULT_PAGINATION);
   const [dkgEnabled, selectDkgEnabled] = useState(false);
 
   const filteredOperators = !dkgEnabled
@@ -86,8 +75,7 @@ const FirstSquare = ({
   ];
 
   const getOperators = async (page: number) => {
-    if (page > operatorsPagination.pages && operatorsPagination.pages !== 0)
-      return;
+    if (page > operatorsPagination.pages && operatorsPagination.pages !== 0) return;
     const ordering: string = `${sortBy ? `${sortBy}:${sortOrder}` : 'id:asc'}`;
 
     const payload = {
@@ -102,9 +90,7 @@ const FirstSquare = ({
     const response = await getOperatorsOperatorService(payload);
     if (response?.pagination?.page > 1) {
       const operatorListInString = operatorsData.map((operator) => operator.id);
-      const operators = response.operators.filter(
-        (operator: any) => !operatorListInString.includes(operator.id)
-      );
+      const operators = response.operators.filter((operator: any) => !operatorListInString.includes(operator.id));
       setOperatorsData([...operatorsData, ...operators]);
     } else {
       setOperatorsData(response.operators);
@@ -115,11 +101,7 @@ const FirstSquare = ({
   const selectOperatorHandling = (e: any, operator: IOperator) => {
     // @ts-ignore
     if (wrapperRef.current?.isEqualNode(e.target)) return;
-    if (
-      Object.values(selectedOperators).some(
-        (selectedOperator: IOperator) => selectedOperator.id === operator.id
-      )
-    ) {
+    if (Object.values(selectedOperators).some((selectedOperator: IOperator) => selectedOperator.id === operator.id)) {
       for (const [key, value] of Object.entries(selectedOperators)) {
         if (JSON.stringify(value) === JSON.stringify(operator)) {
           dispatch(unselectOperator(Number(key)));
@@ -135,9 +117,7 @@ const FirstSquare = ({
       }
     });
     if (availableIndex) {
-      dispatch(
-        selectOperator({ operator, selectedIndex: availableIndex, clusterBox })
-      );
+      dispatch(selectOperator({ operator, selectedIndex: availableIndex, clusterBox }));
     }
   };
 
@@ -147,10 +127,7 @@ const FirstSquare = ({
       action: 'click',
       label: 'operator'
     });
-    window.open(
-      `${config.links.EXPLORER_URL}/operators/${publicKey}`,
-      '_blank'
-    );
+    window.open(`${config.links.EXPLORER_URL}/operators/${publicKey}`, '_blank');
   };
 
   const sortHandler = (sortType: string) => {
@@ -192,22 +169,13 @@ const FirstSquare = ({
     return filteredOperators.map((operator) => {
       const isDeleted = operator.is_deleted;
       const hasValidators = operator.validators_count !== 0;
-      const isSelected = Object.values(selectedOperators).some(
-        (selectedOperator: IOperator) => selectedOperator.id === operator.id
-      );
-      const reachedMaxValidators =
-        operatorValidatorsLimit <= operator.validators_count;
-      const isPrivateOperator =
-        operator.address_whitelist &&
-        operator.address_whitelist !==
-          config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST &&
-        !isEqualsAddresses(operator.address_whitelist, accountAddress);
+      const isSelected = Object.values(selectedOperators).some((selectedOperator: IOperator) => selectedOperator.id === operator.id);
+      const reachedMaxValidators = operatorValidatorsLimit <= operator.validators_count;
+      const isPrivateOperator = !canAccountUseOperator(accountAddress, operator);
       const disabled = isDeleted || isPrivateOperator;
       const isInactive = operator.is_active < 1;
       const mevRelays = operator?.mev_relays || '';
-      const mevRelaysCount = mevRelays
-        ? mevRelays.split(',').filter((item: string) => item).length
-        : 0;
+      const mevRelaysCount = mevRelays ? mevRelays.split(',').filter((item: string) => item).length : 0;
 
       return (
         <TableRow
@@ -218,41 +186,24 @@ const FirstSquare = ({
           }}
         >
           <StyledCell style={{ paddingLeft: 20, width: 60, paddingTop: 35 }}>
-            <Checkbox
-              isDisabled={(hasEnoughOperators && !isSelected) || disabled}
-              grayBackGround
-              text={''}
-              isChecked={isSelected}
-              toggleIsChecked={() => {}}
-            />
+            <Checkbox isDisabled={(hasEnoughOperators && !isSelected) || disabled} grayBackGround text={''} isChecked={isSelected} toggleIsChecked={() => {}} />
           </StyledCell>
           <StyledCell>
-            <OperatorDetails
-              nameFontSize={14}
-              idFontSize={12}
-              logoSize={24}
-              withoutExplorer
-              operator={operator}
-            />
+            <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator} />
           </StyledCell>
           <StyledCell>
             <Grid container>
               <Grid item>{operator.validators_count}</Grid>
               {reachedMaxValidators && (
                 <Grid item style={{ alignSelf: 'center', marginLeft: 4 }}>
-                  <ToolTip
-                    text={'Operator reached  maximum amount of validators'}
-                  />
+                  <ToolTip text={'Operator reached  maximum amount of validators'} />
                 </Grid>
               )}
             </Grid>
           </StyledCell>
           <StyledCell>
             <Grid container>
-              <Grid
-                item
-                className={hasValidators && isInactive ? classes.Inactive : ''}
-              >
+              <Grid item className={hasValidators && isInactive ? classes.Inactive : ''}>
                 {roundNumber(operator.performance['30d'], 2)}%
               </Grid>
               {isInactive && (
@@ -271,10 +222,7 @@ const FirstSquare = ({
           </StyledCell>
           <StyledCell>
             <Grid container>
-              <MevCounterBadge
-                mevRelaysList={mevRelays.split(',')}
-                mevCount={mevRelaysCount}
-              />
+              <MevCounterBadge mevRelaysList={mevRelays.split(',')} mevCount={mevRelaysCount} />
             </Grid>
           </StyledCell>
           <StyledCell>
@@ -346,36 +294,19 @@ const FirstSquare = ({
       header={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
       body={[
         <Grid container>
-          <ClusterSize
-            currentClusterSize={clusterSize}
-            changeClusterSize={setClusterSize}
-          />
+          <ClusterSize currentClusterSize={clusterSize} changeClusterSize={setClusterSize} />
           <Grid item container>
             <Grid item xs className={classes.SearchInputWrapper}>
               <TextInput
                 withSideText
                 placeHolder={'Search...'}
                 onChangeCallback={inputHandler}
-                sideIcon={
-                  loading ? (
-                    <CircularProgress size={25} className={classes.Loading} />
-                  ) : (
-                    <div className={classes.SearchIcon} />
-                  )
-                }
+                sideIcon={loading ? <CircularProgress size={25} className={classes.Loading} /> : <div className={classes.SearchIcon} />}
               />
             </Grid>
-            <Filters
-              setFilterBy={setFilterBy}
-              dkgEnabled={dkgEnabled}
-              selectDkgEnabled={selectDkgEnabled}
-            />
+            <Filters setFilterBy={setFilterBy} dkgEnabled={dkgEnabled} selectDkgEnabled={selectDkgEnabled} />
           </Grid>
-          <TableContainer
-            className={classes.OperatorsTable}
-            ref={scrollRef}
-            onScroll={handleScroll}
-          >
+          <TableContainer className={classes.OperatorsTable} ref={scrollRef} onScroll={handleScroll}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
@@ -392,20 +323,10 @@ const FirstSquare = ({
                       }
 
                       return (
-                        <StyledCell
-                          key={index}
-                          className={classes.HeaderWrapper}
-                        >
-                          <Grid
-                            container
-                            onClick={() =>
-                              header.sortable && sortHandler(header.type)
-                            }
-                          >
+                        <StyledCell key={index} className={classes.HeaderWrapper}>
+                          <Grid container onClick={() => header.sortable && sortHandler(header.type)}>
                             <Grid item>{header.displayName}</Grid>
-                            {header.sortable && header.displayName !== '' && (
-                              <Grid item className={headerClasses} />
-                            )}
+                            {header.sortable && header.displayName !== '' && <Grid item className={headerClasses} />}
                           </Grid>
                         </StyledCell>
                       );

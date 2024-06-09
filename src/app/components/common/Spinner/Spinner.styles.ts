@@ -10,11 +10,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
   SpinnerWrapper: {
     marginRight: 20,
     color: (props: Props) => {
-      return props.isWhite
-        ? theme.colors.white
-        : props.errorSpinner
-          ? theme.colors.primaryError
-          : theme.colors.tint20;
+      return props.isWhite ? theme.colors.white : props.errorSpinner ? theme.colors.primaryError : theme.colors.tint20;
     }
   }
 }));

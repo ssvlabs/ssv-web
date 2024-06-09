@@ -5,6 +5,7 @@ import config from '~app/common/config';
 import Announcement from '~app/components/common/Annotation/Announcement';
 import SsvAppBar from '~app/components/common/AppBar/SsvAppBar';
 import Layout from '~app/components/common/Layout';
+import { MAINNET_NETWORK_ID } from '~root/providers/networkInfo.provider';
 
 const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
 const FeeRecipient = lazy(() => import('~app/components/applications/SSV/FeeRecipient'));
@@ -56,7 +57,7 @@ const SsvWebRoutes: any = () => {
     // TODO: add future flag V2 should be for testnet only
     {
       path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.ROOT,
-      Component: chainId === 1 ? OperatorAccessSettings : OperatorPermissionSettingsDashboard
+      Component: chainId === MAINNET_NETWORK_ID ? OperatorAccessSettings : OperatorPermissionSettingsDashboard
     },
     {
       path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.AUTHORIZED_ADDRESSES,

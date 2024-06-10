@@ -3,15 +3,15 @@ import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import { truncateText } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText/LinkText';
-import { photoValidation } from '~lib/utils/operatorMetadataHelper';
+import { FIELD_KEYS, photoValidation } from '~lib/utils/operatorMetadataHelper';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common/ImportInput';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook.ts';
-import { getMetadataEntityByName, setMetadataEntity } from '~app/redux/operatorMetadata.slice.ts';
+import { selectMetadataEntityByName, setMetadataEntity } from '~app/redux/operatorMetadata.slice.ts';
 
-const UploadImageInput = ({ fieldKey, extendClass }: { fieldKey: string; extendClass?: string }) => {
+const UploadImageInput = ({ fieldKey, extendClass }: { fieldKey: FIELD_KEYS; extendClass?: string }) => {
   const classes = useStyles();
-  const currentData = useAppSelector((state) => getMetadataEntityByName(state, fieldKey));
+  const currentData = useAppSelector((state) => selectMetadataEntityByName(state, fieldKey));
   const removeButtons = useRef(null);
   const dispatch = useAppDispatch();
 

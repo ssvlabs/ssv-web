@@ -9,11 +9,11 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 import CountriesAutocompleteInput from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/CountriesAutocompleteInput';
 import DynamicTextarea from '~app/components/common/DynamicTextArea/DynamicTextArea';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
-import { getMetadataEntityByName } from '~app/redux/operatorMetadata.slice.ts';
+import { selectMetadataEntityByName } from '~app/redux/operatorMetadata.slice.ts';
 
 const FieldWrapper = ({ fieldKey }: { fieldKey: FIELD_KEYS }) => {
   const classes = useStyles();
-  const { label, errorMessage, placeholderText, additionalLabelText, toolTipText } = useAppSelector((state) => getMetadataEntityByName(state, fieldKey));
+  const { label, errorMessage, placeholderText, additionalLabelText, toolTipText } = useAppSelector((state) => selectMetadataEntityByName(state, fieldKey));
 
   const extendClasses: { [key in FIELD_KEYS]?: string } = {
     [FIELD_KEYS.DESCRIPTION]: classes.DescriptionInput,

@@ -97,12 +97,10 @@ export const updateOperatorLocations = createAsyncThunk('operatorMetadata/update
 
 // SELECTORS
 
-// TODO rename selectors to "select*"
+export const selectMetadata = (state: RootState) => state.operatorMetadataState.metadata;
+export const selectLocationsData = (state: RootState) => state.operatorMetadataState.locationsData;
+export const selectLocationsList = (state: RootState) => state.operatorMetadataState.locationsList;
 
-export const getMetadata = (state: RootState) => state.operatorMetadataState.metadata;
-export const getLocationsData = (state: RootState) => state.operatorMetadataState.locationsData;
-export const getLocationsList = (state: RootState) => state.operatorMetadataState.locationsList;
+export const selectMetadataEntityByName = createSelector([selectMetadata, (_, name: FIELD_KEYS) => name], (metadata, name): MetadataEntity => metadata[name]);
 
-export const getMetadataEntityByName = createSelector([getMetadata, (_, name: FIELD_KEYS) => name], (metadata, name): MetadataEntity => metadata[name]);
-
-export const getMetadataValueByName = createSelector([getMetadataEntityByName], (getMetadataEntity) => getMetadataEntity?.value);
+export const selectMetadataValueByName = createSelector([selectMetadataEntityByName], (getMetadataEntity) => getMetadataEntity?.value);

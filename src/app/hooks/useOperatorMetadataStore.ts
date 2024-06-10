@@ -1,10 +1,10 @@
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook.ts';
-import { getMetadata } from '~app/redux/operatorMetadata.slice.ts';
+import { selectMetadata } from '~app/redux/operatorMetadata.slice.ts';
 import { FIELD_KEYS, fieldsToValidateSignature, HTTPS_PREFIX, MetadataEntity, processField, sortMevRelays } from '~lib/utils/operatorMetadataHelper.ts';
 
 export const useOperatorMetadataStore = () => {
   const dispatch = useAppDispatch();
-  const metadata = useAppSelector(getMetadata);
+  const metadata = useAppSelector(selectMetadata);
 
   // return payload for transaction
   const createMetadataPayload = (): Record<string, string> => {

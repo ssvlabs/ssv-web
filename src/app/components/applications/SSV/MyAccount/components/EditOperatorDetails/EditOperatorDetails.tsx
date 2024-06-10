@@ -19,7 +19,7 @@ import { fetchOperators } from '~app/redux/account.slice';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { FIELD_KEYS, fieldsToValidateSignature } from '~lib/utils/operatorMetadataHelper';
 import { updateOperatorMetadata } from '~root/services/operator.service';
-import { getMetadata, updateOperatorLocations, updateOperatorNodeOptions } from '~app/redux/operatorMetadata.slice.ts';
+import { selectMetadata, updateOperatorLocations, updateOperatorNodeOptions } from '~app/redux/operatorMetadata.slice.ts';
 import { useOperatorMetadataStore } from '~app/hooks/useOperatorMetadataStore.ts';
 
 const EditOperatorDetails = () => {
@@ -44,28 +44,29 @@ const EditOperatorDetails = () => {
     dispatch(updateOperatorNodeOptions());
   }, []);
 
+  const metadataString = JSON.stringify(useAppSelector(selectMetadata));
+
   useEffect(() => {
     setButtonDisable(validateOperatorMetaData());
-  }, [JSON.stringify(useAppSelector(getMetadata))]);
+  }, [metadataString]);
 
   const submitHandler = async () => {
     const isNotValidity = validateOperatorMetaData();
     setButtonDisable(isNotValidity);
     if (!isNotValidity) {
       const payload = createMetadataPayload();
-      let rawDataToValidate: any = [];
+      const rawDataToValidate: string[] = [];
       fieldsToValidateSignature.forEach((field) => {
         if (payload[field]) {
           const newItem = field === FIELD_KEYS.OPERATOR_IMAGE ? `logo:sha256:${sha256(payload[field])}` : payload[field];
           rawDataToValidate.push(newItem);
         }
       });
-      rawDataToValidate = rawDataToValidate.join(',');
       setIsLoading(true);
       let signatureHash;
       try {
         signatureHash = await signMessage.signMessageAsync({
-          message: rawDataToValidate
+          message: rawDataToValidate.join(',')
         });
         setErrorMessage(['']);
       } catch (e: any) {

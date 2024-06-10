@@ -5,12 +5,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import { useStyles } from '~app/components/common/SelectField/SelectField.styles';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook.ts';
-import { getMetadataEntityByName, setMetadataValue } from '~app/redux/operatorMetadata.slice.ts';
+import { selectMetadataEntityByName, setMetadataValue } from '~app/redux/operatorMetadata.slice.ts';
+import { FIELD_KEYS } from '~lib/utils/operatorMetadataHelper.ts';
 
-const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: string; placeholder: string }) => {
+const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: FIELD_KEYS; placeholder: string }) => {
   const classes = useStyles({});
   const dispatch = useAppDispatch();
-  const { value, options } = useAppSelector((state) => getMetadataEntityByName(state, fieldKey));
+  const { value, options } = useAppSelector((state) => selectMetadataEntityByName(state, fieldKey));
   const [values, setValues] = useState<string[]>([]);
 
   useEffect(() => {

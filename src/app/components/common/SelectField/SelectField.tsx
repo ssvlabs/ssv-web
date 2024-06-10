@@ -4,12 +4,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import { useStyles } from '~app/components/common/SelectField/SelectField.styles';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook.ts';
-import { getMetadataEntityByName, getMetadataValueByName, setMetadataValue } from '~app/redux/operatorMetadata.slice.ts';
+import { selectMetadataEntityByName, selectMetadataValueByName, setMetadataValue } from '~app/redux/operatorMetadata.slice.ts';
+import { FIELD_KEYS } from '~lib/utils/operatorMetadataHelper.ts';
 
-const SelectField = ({ fieldKey, placeholder }: { fieldKey: string; placeholder: string }) => {
+const SelectField = ({ fieldKey, placeholder }: { fieldKey: FIELD_KEYS; placeholder: string }) => {
   const dispatch = useAppDispatch();
-  const options = useAppSelector((state) => getMetadataEntityByName(state, fieldKey)).options ?? [];
-  const [currentValue, setCurrentValue] = useState(useAppSelector((state) => getMetadataValueByName(state, fieldKey)));
+  const options = useAppSelector((state) => selectMetadataEntityByName(state, fieldKey)).options ?? [];
+  const [currentValue, setCurrentValue] = useState(useAppSelector((state) => selectMetadataValueByName(state, fieldKey)));
   const [isPlaceholder, setIsPlaceholder] = useState(!currentValue);
 
   const changeValueHandler = (event: SelectChangeEvent) => {

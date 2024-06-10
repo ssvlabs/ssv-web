@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { truncateText } from '~lib/utils/strings';
 import { useStyles } from '~app/components/common/DynamicTextArea/DynamicTextArea.style';
-import { getMetadataValueByName, setMetadataValue } from '~app/redux/operatorMetadata.slice.ts';
+import { selectMetadataValueByName, setMetadataValue } from '~app/redux/operatorMetadata.slice.ts';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook.ts';
+import { FIELD_KEYS } from '~lib/utils/operatorMetadataHelper.ts';
 
-const DynamicTextarea = ({ fieldKey }: { fieldKey: string }) => {
+const DynamicTextarea = ({ fieldKey }: { fieldKey: FIELD_KEYS }) => {
   const dispatch = useAppDispatch();
-  const description = useAppSelector((state) => getMetadataValueByName(state, fieldKey));
+  const description = useAppSelector((state) => selectMetadataValueByName(state, fieldKey));
   const [value, setValue] = useState<string>(description);
   const [showingValue, setShowingValue] = useState(value);
   const textareaRef = useRef<HTMLTextAreaElement>(null);

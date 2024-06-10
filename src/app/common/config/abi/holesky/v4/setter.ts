@@ -5,17 +5,6 @@ export const HoleskyV4SetterABI = [
     type: 'constructor'
   },
   {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'contractAddress',
-        type: 'address'
-      }
-    ],
-    name: 'AddressIsWhitelistingContract',
-    type: 'error'
-  },
-  {
     inputs: [],
     name: 'ApprovalNotWithinTimeframe',
     type: 'error'
@@ -26,35 +15,8 @@ export const HoleskyV4SetterABI = [
     type: 'error'
   },
   {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'caller',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: 'owner',
-        type: 'address'
-      }
-    ],
-    name: 'CallerNotOwnerWithData',
-    type: 'error'
-  },
-  {
     inputs: [],
     name: 'CallerNotWhitelisted',
-    type: 'error'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint64',
-        name: 'operatorId',
-        type: 'uint64'
-      }
-    ],
-    name: 'CallerNotWhitelistedWithData',
     type: 'error'
   },
   {
@@ -79,29 +41,7 @@ export const HoleskyV4SetterABI = [
   },
   {
     inputs: [],
-    name: 'EmptyPublicKeysList',
-    type: 'error'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint64',
-        name: 'operatorId',
-        type: 'uint64'
-      }
-    ],
     name: 'ExceedValidatorLimit',
-    type: 'error'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint64',
-        name: 'operatorId',
-        type: 'uint64'
-      }
-    ],
-    name: 'ExceedValidatorLimitWithData',
     type: 'error'
   },
   {
@@ -152,33 +92,12 @@ export const HoleskyV4SetterABI = [
   },
   {
     inputs: [],
-    name: 'InvalidContractAddress',
-    type: 'error'
-  },
-  {
-    inputs: [],
     name: 'InvalidOperatorIdsLength',
     type: 'error'
   },
   {
     inputs: [],
     name: 'InvalidPublicKeyLength',
-    type: 'error'
-  },
-  {
-    inputs: [],
-    name: 'InvalidWhitelistAddressesLength',
-    type: 'error'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'contractAddress',
-        type: 'address'
-      }
-    ],
-    name: 'InvalidWhitelistingContract',
     type: 'error'
   },
   {
@@ -232,17 +151,6 @@ export const HoleskyV4SetterABI = [
     type: 'error'
   },
   {
-    inputs: [
-      {
-        internalType: 'uint8',
-        name: 'moduleId',
-        type: 'uint8'
-      }
-    ],
-    name: 'TargetModuleDoesNotExistWithData',
-    type: 'error'
-  },
-  {
     inputs: [],
     name: 'TokenTransferFailed',
     type: 'error'
@@ -271,11 +179,6 @@ export const HoleskyV4SetterABI = [
   {
     inputs: [],
     name: 'ValidatorDoesNotExist',
-    type: 'error'
-  },
-  {
-    inputs: [],
-    name: 'ZeroAddressNotAllowed',
     type: 'error'
   },
   {
@@ -618,25 +521,6 @@ export const HoleskyV4SetterABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: 'enum SSVModules',
-        name: 'moduleId',
-        type: 'uint8'
-      },
-      {
-        indexed: false,
-        internalType: 'address',
-        name: 'moduleAddress',
-        type: 'address'
-      }
-    ],
-    name: 'ModuleUpgraded',
-    type: 'event'
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
         indexed: false,
         internalType: 'uint256',
         name: 'value',
@@ -813,63 +697,6 @@ export const HoleskyV4SetterABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: 'uint64[]',
-        name: 'operatorIds',
-        type: 'uint64[]'
-      },
-      {
-        indexed: false,
-        internalType: 'address[]',
-        name: 'whitelistAddresses',
-        type: 'address[]'
-      }
-    ],
-    name: 'OperatorMultipleWhitelistRemoved',
-    type: 'event'
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'uint64[]',
-        name: 'operatorIds',
-        type: 'uint64[]'
-      },
-      {
-        indexed: false,
-        internalType: 'address[]',
-        name: 'whitelistAddresses',
-        type: 'address[]'
-      }
-    ],
-    name: 'OperatorMultipleWhitelistUpdated',
-    type: 'event'
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'uint64[]',
-        name: 'operatorIds',
-        type: 'uint64[]'
-      },
-      {
-        indexed: false,
-        internalType: 'bool',
-        name: 'toPrivate',
-        type: 'bool'
-      }
-    ],
-    name: 'OperatorPrivacyStatusUpdated',
-    type: 'event'
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
         indexed: true,
         internalType: 'uint64',
         name: 'operatorId',
@@ -883,19 +710,19 @@ export const HoleskyV4SetterABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: 'uint64[]',
-        name: 'operatorIds',
-        type: 'uint64[]'
+        indexed: true,
+        internalType: 'uint64',
+        name: 'operatorId',
+        type: 'uint64'
       },
       {
         indexed: false,
         internalType: 'address',
-        name: 'whitelistingContract',
+        name: 'whitelisted',
         type: 'address'
       }
     ],
-    name: 'OperatorWhitelistingContractUpdated',
+    name: 'OperatorWhitelistUpdated',
     type: 'event'
   },
   {
@@ -1621,11 +1448,6 @@ export const HoleskyV4SetterABI = [
         internalType: 'uint256',
         name: 'fee',
         type: 'uint256'
-      },
-      {
-        internalType: 'bool',
-        name: 'setPrivate',
-        type: 'bool'
       }
     ],
     name: 'registerOperator',
@@ -1715,37 +1537,6 @@ export const HoleskyV4SetterABI = [
   {
     inputs: [
       {
-        internalType: 'uint64[]',
-        name: 'operatorIds',
-        type: 'uint64[]'
-      }
-    ],
-    name: 'removeOperatorsWhitelistingContract',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint64[]',
-        name: 'operatorIds',
-        type: 'uint64[]'
-      },
-      {
-        internalType: 'address[]',
-        name: 'whitelistAddresses',
-        type: 'address[]'
-      }
-    ],
-    name: 'removeOperatorsWhitelists',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
         internalType: 'bytes',
         name: 'publicKey',
         type: 'bytes'
@@ -1816,61 +1607,17 @@ export const HoleskyV4SetterABI = [
   {
     inputs: [
       {
-        internalType: 'uint64[]',
-        name: 'operatorIds',
-        type: 'uint64[]'
-      }
-    ],
-    name: 'setOperatorsPrivateUnchecked',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint64[]',
-        name: 'operatorIds',
-        type: 'uint64[]'
-      }
-    ],
-    name: 'setOperatorsPublicUnchecked',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint64[]',
-        name: 'operatorIds',
-        type: 'uint64[]'
+        internalType: 'uint64',
+        name: 'operatorId',
+        type: 'uint64'
       },
       {
-        internalType: 'contract ISSVWhitelistingContract',
-        name: 'whitelistingContract',
+        internalType: 'address',
+        name: 'whitelisted',
         type: 'address'
       }
     ],
-    name: 'setOperatorsWhitelistingContract',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint64[]',
-        name: 'operatorIds',
-        type: 'uint64[]'
-      },
-      {
-        internalType: 'address[]',
-        name: 'whitelistAddresses',
-        type: 'address[]'
-      }
-    ],
-    name: 'setOperatosWhitelists',
+    name: 'setOperatorWhitelist',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'

@@ -121,11 +121,9 @@ const AppBar = ({ buttons }: { buttons?: Button[] }) => {
       </Grid>
       <Grid item className={classes.GridItem}>
         <Grid item container style={{ alignItems: 'center' }}>
-          {!restrictedUserGeo && (
-            <Grid item>
-              <WalletButton />
-            </Grid>
-          )}
+          <Grid item>
+            <WalletButton />
+          </Grid>
           <Grid item className={classes.DarkModeWrapper}>
             <DarkModeSwitcher margin />
           </Grid>

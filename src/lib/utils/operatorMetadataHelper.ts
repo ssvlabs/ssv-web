@@ -1,5 +1,7 @@
-import { translations } from '~app/common/config';
-import { IOperator } from '~app/model/operator.model.ts';
+import config, { translations } from '~app/common/config';
+import { IOperator } from '~app/model/operator.model';
+import { isEqualsAddresses } from '~lib/utils/strings';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { checkSpecialCharacters } from '~lib/utils/strings.ts';
 import { Dispatch } from '@reduxjs/toolkit';
 import { setErrorMessage } from '~app/redux/operatorMetadata.slice.ts';
@@ -225,6 +227,24 @@ export const isDkgAddressValid = (value: string, isForm?: boolean) => {
   return value.length <= DKG_ADDRESS_MIN_LENGTH && pattern.test(addressWithoutHttps);
 };
 
+export const isOperatorPrivate = (operator: IOperator) => {
+  const network = getStoredNetwork();
+
+  if (network.networkId === 1) return Boolean(operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
+  return operator.is_private ?? false;
+};
+
+export const canAccountUseOperator = (account: string, operator: IOperator) => {
+  const network = getStoredNetwork();
+  if (!isOperatorPrivate(operator)) return true;
+
+  if (network.networkId === 1) {
+    return isEqualsAddresses(operator.address_whitelist, account);
+  }
+
+  return operator.whitelist_addresses?.some((address) => isEqualsAddresses(address, account)) ?? false;
+};
+
 /**
  * Sorting case-insensitively by each word in the string
  * @param relays
@@ -302,7 +322,7 @@ export const checkFieldValue = (metadataFieldName: string, fieldValue: string): 
   }
 };
 
-export const processField = (metadataFieldName: string, fieldEntity: MetadataEntity, metadataContainsError: boolean, dispatch: Dispatch) => {
+export const processField = (metadataFieldName: FIELD_KEYS, fieldEntity: MetadataEntity, metadataContainsError: boolean, dispatch: Dispatch) => {
   const exceptionField = checkExceptionFields(metadataFieldName, fieldEntity.value);
   const { result, errorMessage } = exceptionField ? checkFieldValue(metadataFieldName, fieldEntity.value) : checkWithConditions(metadataFieldName, fieldEntity);
 

@@ -23,7 +23,8 @@ const light: Theme = merge(
     },
     shadows: {
       profileDetailsAction: 'none',
-      selectedOption: '0px 2px 6px 0px #0000001F'
+      selectedOption: 'none',
+      dialog: 'none'
     }
   } as Theme
 );
@@ -52,7 +53,8 @@ const dark = merge(
     },
     shadows: {
       profileDetailsAction: 'none',
-      selectedOption: '0px 2px 6px 0px #0000001F'
+      selectedOption: 'none',
+      dialog: 'none'
     }
   } as Theme
 );

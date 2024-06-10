@@ -5,6 +5,17 @@ export const HoleskyV4GetterABI = [
     type: 'constructor'
   },
   {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'contractAddress',
+        type: 'address'
+      }
+    ],
+    name: 'AddressIsWhitelistingContract',
+    type: 'error'
+  },
+  {
     inputs: [],
     name: 'ApprovalNotWithinTimeframe',
     type: 'error'
@@ -15,8 +26,35 @@ export const HoleskyV4GetterABI = [
     type: 'error'
   },
   {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'caller',
+        type: 'address'
+      },
+      {
+        internalType: 'address',
+        name: 'owner',
+        type: 'address'
+      }
+    ],
+    name: 'CallerNotOwnerWithData',
+    type: 'error'
+  },
+  {
     inputs: [],
     name: 'CallerNotWhitelisted',
+    type: 'error'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint64',
+        name: 'operatorId',
+        type: 'uint64'
+      }
+    ],
+    name: 'CallerNotWhitelistedWithData',
     type: 'error'
   },
   {
@@ -41,7 +79,29 @@ export const HoleskyV4GetterABI = [
   },
   {
     inputs: [],
+    name: 'EmptyPublicKeysList',
+    type: 'error'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint64',
+        name: 'operatorId',
+        type: 'uint64'
+      }
+    ],
     name: 'ExceedValidatorLimit',
+    type: 'error'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint64',
+        name: 'operatorId',
+        type: 'uint64'
+      }
+    ],
+    name: 'ExceedValidatorLimitWithData',
     type: 'error'
   },
   {
@@ -75,8 +135,24 @@ export const HoleskyV4GetterABI = [
     type: 'error'
   },
   {
+    inputs: [
+      {
+        internalType: 'bytes',
+        name: 'publicKey',
+        type: 'bytes'
+      }
+    ],
+    name: 'IncorrectValidatorStateWithData',
+    type: 'error'
+  },
+  {
     inputs: [],
     name: 'InsufficientBalance',
+    type: 'error'
+  },
+  {
+    inputs: [],
+    name: 'InvalidContractAddress',
     type: 'error'
   },
   {
@@ -87,6 +163,22 @@ export const HoleskyV4GetterABI = [
   {
     inputs: [],
     name: 'InvalidPublicKeyLength',
+    type: 'error'
+  },
+  {
+    inputs: [],
+    name: 'InvalidWhitelistAddressesLength',
+    type: 'error'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'contractAddress',
+        type: 'address'
+      }
+    ],
+    name: 'InvalidWhitelistingContract',
     type: 'error'
   },
   {
@@ -126,12 +218,28 @@ export const HoleskyV4GetterABI = [
   },
   {
     inputs: [],
+    name: 'PublicKeysSharesLengthMismatch',
+    type: 'error'
+  },
+  {
+    inputs: [],
     name: 'SameFeeChangeNotAllowed',
     type: 'error'
   },
   {
     inputs: [],
     name: 'TargetModuleDoesNotExist',
+    type: 'error'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint8',
+        name: 'moduleId',
+        type: 'uint8'
+      }
+    ],
+    name: 'TargetModuleDoesNotExistWithData',
     type: 'error'
   },
   {
@@ -150,8 +258,24 @@ export const HoleskyV4GetterABI = [
     type: 'error'
   },
   {
+    inputs: [
+      {
+        internalType: 'bytes',
+        name: 'publicKey',
+        type: 'bytes'
+      }
+    ],
+    name: 'ValidatorAlreadyExistsWithData',
+    type: 'error'
+  },
+  {
     inputs: [],
     name: 'ValidatorDoesNotExist',
+    type: 'error'
+  },
+  {
+    inputs: [],
+    name: 'ZeroAddressNotAllowed',
     type: 'error'
   },
   {
@@ -388,7 +512,7 @@ export const HoleskyV4GetterABI = [
     outputs: [
       {
         internalType: 'uint64',
-        name: 'operatorMaxFee',
+        name: '',
         type: 'uint64'
       }
     ],
@@ -429,6 +553,19 @@ export const HoleskyV4GetterABI = [
         internalType: 'uint256',
         name: '',
         type: 'uint256'
+      }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'getNetworkValidatorsCount',
+    outputs: [
+      {
+        internalType: 'uint32',
+        name: '',
+        type: 'uint32'
       }
     ],
     stateMutability: 'view',
@@ -556,7 +693,7 @@ export const HoleskyV4GetterABI = [
     outputs: [
       {
         internalType: 'uint64',
-        name: 'operatorMaxFeeIncrease',
+        name: '',
         type: 'uint64'
       }
     ],
@@ -569,12 +706,12 @@ export const HoleskyV4GetterABI = [
     outputs: [
       {
         internalType: 'uint64',
-        name: 'declareOperatorFeePeriod',
+        name: '',
         type: 'uint64'
       },
       {
         internalType: 'uint64',
-        name: 'executeOperatorFeePeriod',
+        name: '',
         type: 'uint64'
       }
     ],
@@ -598,7 +735,7 @@ export const HoleskyV4GetterABI = [
     outputs: [
       {
         internalType: 'bool',
-        name: 'active',
+        name: '',
         type: 'bool'
       }
     ],
@@ -624,8 +761,32 @@ export const HoleskyV4GetterABI = [
     outputs: [
       {
         internalType: 'string',
-        name: 'version',
+        name: '',
         type: 'string'
+      }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint64[]',
+        name: 'operatorIds',
+        type: 'uint64[]'
+      },
+      {
+        internalType: 'address',
+        name: 'whitelistedAddress',
+        type: 'address'
+      }
+    ],
+    name: 'getWhitelistedOperators',
+    outputs: [
+      {
+        internalType: 'uint64[]',
+        name: 'whitelistedOperatorIds',
+        type: 'uint64[]'
       }
     ],
     stateMutability: 'view',
@@ -642,6 +803,35 @@ export const HoleskyV4GetterABI = [
     name: 'initialize',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'addressToCheck',
+        type: 'address'
+      },
+      {
+        internalType: 'uint256',
+        name: 'operatorId',
+        type: 'uint256'
+      },
+      {
+        internalType: 'address',
+        name: 'whitelistingContract',
+        type: 'address'
+      }
+    ],
+    name: 'isAddressWhitelistedInWhitelistingContract',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: 'isWhitelisted',
+        type: 'bool'
+      }
+    ],
+    stateMutability: 'view',
     type: 'function'
   },
   {
@@ -746,6 +936,25 @@ export const HoleskyV4GetterABI = [
       }
     ],
     name: 'isLiquidated',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool'
+      }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'contractAddress',
+        type: 'address'
+      }
+    ],
+    name: 'isWhitelistingContract',
     outputs: [
       {
         internalType: 'bool',

@@ -33,7 +33,13 @@ export const config = {
           ROOT: '/my-account/operator',
           WITHDRAW: '/my-account/operator/withdraw',
           META_DATA: '/my-account/operator/edit-metadata',
-          ACCESS_SETTINGS: '/my-account/operator/permission-change',
+          ACCESS_SETTINGS: {
+            ROOT: '/my-account/operator/permission-change',
+            AUTHORIZED_ADDRESSES: '/my-account/operator/permission-change/addresses',
+            STATUS: '/my-account/operator/permission-change/status',
+            EXTERNAL_CONTRACT: '/my-account/operator/permission-change/external-contract'
+          },
+          STATUS: '/my-account/operator/authorized-addresses',
           META_DATA_CONFIRMATION: '/my-account/operator/edit-metadata/confirmation',
           REMOVE: {
             ROOT: '/my-account/operator/remove',
@@ -111,6 +117,9 @@ export const config = {
     get SSV_API_ENDPOINT() {
       return getStoredNetwork().api;
     },
+    get SSV_COMPLIANCE_URL() {
+      return `${getStoredNetwork().api}/compliance/countries/restricted`;
+    },
     get EXPLORER_URL() {
       return getStoredNetwork().explorerUrl;
     },
@@ -131,8 +140,6 @@ export const config = {
     GASNOW_API_URL: 'https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network',
     ETHER_RESPONSIBILITIES: 'https://launchpad.ethereum.org/en/faq#responsibilities',
     REACTIVATION_LINK: 'https://docs.ssv.network/learn/stakers/clusters/reactivation',
-    // TODO: blox-infra-api calls organization-center, if organization center will be archived, need to update this endpoint
-    COMPLIANCE_URL: `${import.meta.env.VITE_BLOX_API}/compliance/countries/restricted`,
     UPDATE_OPERATORS_LINK: 'https://docs.ssv.network/learn/stakers/validators/update-operators',
     MORE_ABOUT_UPDATE_FEES: 'https://docs.ssv.network/learn/operators/update-fee#_nn1qsdauoghf',
     MORE_ON_FEES: 'https://docs.ssv.network/learn/protocol-overview/tokenomics/fees#_k4tw9to38r3v',

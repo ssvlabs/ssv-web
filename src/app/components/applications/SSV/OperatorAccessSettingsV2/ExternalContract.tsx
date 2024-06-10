@@ -35,17 +35,21 @@ const ExternalContract = () => {
       z.object({
         externalContract: z
           .custom<string>(isAddress, 'Contract address must be a in a valid address format')
-          .refine(isWhitelistingContract.mutateAsync, 'Address is not a valid whitelisting contract')
+          .refine(isWhitelistingContract.mutateAsync, 'Contract is not a compatible whitelisting contract')
       }) satisfies z.ZodType<FormValues>,
     [isWhitelistingContract.mutateAsync]
   );
 
   const form = useForm<FormValues>({
+    mode: 'all',
     defaultValues: {
-      externalContract: ''
+      externalContract: operator.whitelisting_contract
     },
     resolver: zodResolver(schema, { async: true }, { mode: 'async' })
   });
+
+  const address = form.watch('externalContract');
+  const isChanged = address !== operator.whitelisting_contract;
 
   const hasErrors = Boolean(form.formState.errors.externalContract);
 
@@ -66,12 +70,10 @@ const ExternalContract = () => {
           <form className="flex flex-col gap-8 w-full" onSubmit={submit}>
             <div className="flex flex-col gap-2">
               <h1 className="text-xl font-bold">External Contract</h1>
-              <p>
-                Manage whitelisted addresses through an external contract. Learn how to set an{' '}
-                <a href="https://docs.ssv.network/learn/operators/permissioned-operators" className="text-primary-500" target="_blank">
-                  External Contract
-                </a>
-                .
+              <p className="font-medium text-sm">
+                Delegate the management of whitelisted addresses to an external contract.
+                <br />
+                Whitelisted addresses are effective only when your operator status is set to Private.
               </p>
             </div>
             <FormField
@@ -94,7 +96,7 @@ const ExternalContract = () => {
               <Button type="button" disabled={setExternalContract.isPending} size="xl" variant="secondary" className="w-full" onClick={() => navigate(-1)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={hasErrors} isLoading={setExternalContract.isPending} isActionBtn size="xl" className="w-full">
+              <Button type="submit" disabled={hasErrors || !isChanged} isLoading={setExternalContract.isPending} isActionBtn size="xl" className="w-full">
                 Save
               </Button>
             </div>

@@ -19,7 +19,7 @@ const PermissionSettingsDashboard = () => {
           title={<h2 className="text-xl">Permission Settings</h2>}
           description={
             <p>
-              Use the options below to activate permissioned operator settings and restrict validator registration to authorized addresses only. Learn more about{' '}
+              Use the options below to activate permissioned operator settings and restrict validator registration to whitelisted addresses only. Learn more about{' '}
               <a href="https://docs.ssv.network/learn/operators/permissioned-operators" className="text-primary-500" target="_blank">
                 Permissioned Operators
               </a>
@@ -29,13 +29,13 @@ const PermissionSettingsDashboard = () => {
         />
         <PermissionSettingsItem
           title="Operator Status"
-          description={'Switch between public and private statuses for the operator.\n' + 'Set the operator to private to enforce whitelisted addresses.'}
+          description={'Switch between public and private modes for operator access control'}
           route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.STATUS}
           addon={<OperatorStatusBadge isPrivate={selectedOperator.is_private} />}
         />
         <PermissionSettingsItem
           title="Authorized Addresses"
-          description="Add Ethereum addresses to the whitelist for authorization"
+          description="Manage owner addresses authorized to register validators to your operator."
           route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.AUTHORIZED_ADDRESSES}
           addon={<ActiveBadge isActive={Boolean(selectedOperator.whitelist_addresses?.length)} />}
         />

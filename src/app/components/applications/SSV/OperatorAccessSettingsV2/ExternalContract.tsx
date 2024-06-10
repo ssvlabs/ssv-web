@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { isAddress } from 'viem';
 import { z } from 'zod';
 import BorderScreen from '~app/components/common/BorderScreen';
+import { Alert, AlertDescription } from '~app/components/ui/alert';
 import { Button } from '~app/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '~app/components/ui/form';
 import { Input } from '~app/components/ui/input';
@@ -76,6 +77,11 @@ const ExternalContract = () => {
                 Whitelisted addresses are effective only when your operator status is set to Private.
               </p>
             </div>
+            <Alert variant="warning">
+              <AlertDescription>
+                If you have configured an external contract for managing whitelists, both the whitelisted addresses and the external contract will apply simultaneously.
+              </AlertDescription>
+            </Alert>
             <FormField
               control={form.control}
               name="externalContract"
@@ -92,14 +98,16 @@ const ExternalContract = () => {
                 </FormItem>
               )}
             />{' '}
-            <div className="flex gap-3">
-              <Button type="button" disabled={setExternalContract.isPending} size="xl" variant="secondary" className="w-full" onClick={() => navigate(-1)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={hasErrors || !isChanged} isLoading={setExternalContract.isPending} isActionBtn size="xl" className="w-full">
-                Save
-              </Button>
-            </div>
+            {isChanged && (
+              <div className="flex gap-3">
+                <Button type="button" disabled={setExternalContract.isPending} size="xl" variant="secondary" className="w-full" onClick={() => navigate(-1)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={hasErrors} isLoading={setExternalContract.isPending} isActionBtn size="xl" className="w-full">
+                  Save
+                </Button>
+              </div>
+            )}
           </form>
         </Form>
       ]}

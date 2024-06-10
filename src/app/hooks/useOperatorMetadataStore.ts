@@ -1,21 +1,6 @@
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook.ts';
 import { getMetadata } from '~app/redux/operatorMetadata.slice.ts';
-import { FIELD_KEYS, HTTPS_PREFIX, processField, sortMevRelays } from '~lib/utils/operatorMetadataHelper.ts';
-
-export const fieldsToValidateSignature = [
-  FIELD_KEYS.OPERATOR_NAME,
-  FIELD_KEYS.DESCRIPTION,
-  FIELD_KEYS.LOCATION,
-  FIELD_KEYS.SETUP_PROVIDER,
-  FIELD_KEYS.EXECUTION_CLIENT,
-  FIELD_KEYS.CONSENSUS_CLIENT,
-  FIELD_KEYS.MEV_RELAYS,
-  FIELD_KEYS.WEBSITE_URL,
-  FIELD_KEYS.TWITTER_URL,
-  FIELD_KEYS.LINKEDIN_URL,
-  FIELD_KEYS.DKG_ADDRESS,
-  FIELD_KEYS.OPERATOR_IMAGE
-];
+import { FIELD_KEYS, fieldsToValidateSignature, HTTPS_PREFIX, MetadataEntity, processField, sortMevRelays } from '~lib/utils/operatorMetadataHelper.ts';
 
 export const useOperatorMetadataStore = () => {
   const dispatch = useAppDispatch();
@@ -39,7 +24,7 @@ export const useOperatorMetadataStore = () => {
   // validate metadata values
   const validateOperatorMetaData = (): boolean => {
     let metadataContainsError = false;
-    for (const [metadataFieldName, fieldEntity] of Object.entries(metadata)) {
+    for (const [metadataFieldName, fieldEntity] of Object.entries(metadata) as [FIELD_KEYS, MetadataEntity][]) {
       if (metadataFieldName === FIELD_KEYS.OPERATOR_IMAGE) {
         metadataContainsError = !!fieldEntity.errorMessage || metadataContainsError;
       } else {

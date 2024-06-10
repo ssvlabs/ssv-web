@@ -179,6 +179,21 @@ export const FIELDS: { [key: string]: MetadataEntity } = {
   }
 };
 
+export const fieldsToValidateSignature = [
+  FIELD_KEYS.OPERATOR_NAME,
+  FIELD_KEYS.DESCRIPTION,
+  FIELD_KEYS.LOCATION,
+  FIELD_KEYS.SETUP_PROVIDER,
+  FIELD_KEYS.EXECUTION_CLIENT,
+  FIELD_KEYS.CONSENSUS_CLIENT,
+  FIELD_KEYS.MEV_RELAYS,
+  FIELD_KEYS.WEBSITE_URL,
+  FIELD_KEYS.TWITTER_URL,
+  FIELD_KEYS.LINKEDIN_URL,
+  FIELD_KEYS.DKG_ADDRESS,
+  FIELD_KEYS.OPERATOR_IMAGE
+];
+
 export const photoValidation = (file: File, callback: Function) => {
   let errorMessage = '';
   if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {

@@ -67,16 +67,16 @@ const SingleCluster = () => {
   const isDarkMode = useAppSelector(getIsDarkMode);
   const accountAddress = useAppSelector(getAccountAddress);
 
-  const hasPrivateOperator = cluster.operators.some((operator) => !canAccountUseOperator(accountAddress, operator));
+  const hasPrivateOperators = cluster.operators.some((operator) => !canAccountUseOperator(accountAddress, operator));
   const hasDeletedOperators = cluster.operators.some((operator) => operator.is_deleted);
 
-  const canAddValidator = !hasDeletedOperators && !cluster.isLiquidated && !hasPrivateOperator;
+  const canAddValidator = !hasDeletedOperators && !cluster.isLiquidated && !hasPrivateOperators;
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 
   const getTooltipContent = () => {
     if (cluster.isLiquidated) return 'You cannot perform this operation when your cluster is liquidated. Please reactivate to proceed.';
     if (hasDeletedOperators) return `One of your chosen operators has been removed by its owner. To onboard validators, you'll need to select a new cluster.`;
-    if (hasPrivateOperator) return `One of your chosen operators has shifted to a permissioned status. To onboard validators, you'll need to select a new cluster.`;
+    if (hasPrivateOperators) return `One of your chosen operators has shifted to a permissioned status. To onboard validators, you'll need to select a new cluster.`;
   };
 
   const addToCluster = () => {
@@ -109,9 +109,9 @@ const SingleCluster = () => {
     <Grid container className={classes.Wrapper}>
       <NewWhiteWrapper stepBack={backToClustersDashboard} type={0} header={'Cluster'} />
       <Grid container item className={classes.Section}>
-        {cluster.operators.map((operator: any, index: number) => {
-          return <OperatorBox key={index} operator={operator} />;
-        })}
+        {cluster.operators.map((operator, index) => (
+          <OperatorBox key={index} operator={operator} />
+        ))}
       </Grid>
       <Section>
         <Grid item>

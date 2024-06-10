@@ -13,16 +13,15 @@ import BarMessage from '~app/components/common/BarMessage';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import { GlobalStyle } from '~app/globalStyle';
 import { useAppSelector } from '~app/hooks/redux.hook';
+import { useWalletConnectivity } from '~app/hooks/useWalletConnectivity';
 import { getIsDarkMode, getIsShowSsvLoader, getRestrictedUserGeo, setRestrictedUserGeo } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
+import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice.ts';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
-import { cn } from '~lib/utils/tailwind';
 import { AppTheme } from '~root/Theme';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { getColors } from '~root/themes';
 import './globals.css';
-import { useWalletConnectivity } from '~app/hooks/useWalletConnectivity';
-import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice.ts';
 
 const LoaderWrapper = styled.div<{ theme: any }>`
   display: flex;
@@ -94,6 +93,14 @@ const App = () => {
 
   const MuiTheme = useMemo(() => createTheme(AppTheme({ isDarkMode })), [isDarkMode]);
 
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={MuiTheme}>
@@ -101,7 +108,6 @@ const App = () => {
           {/* @ts-ignore */}
           <ScThemeProvider theme={theme}>
             <div
-              className={cn({ dark: isDarkMode })}
               style={{
                 color: theme.colors.black
               }}

@@ -209,7 +209,7 @@ const ValidatorRegistrationConfirmation = () => {
               <NameAndAddress name={'SSV Deposit'} />
             </Grid>
             <Grid item>
-              <NameAndAddress name={`${totalAmountOfSsv} ssSSV`} />
+              <NameAndAddress name={`${totalAmountOfSsv} SSV`} />
             </Grid>
           </Grid>
         </Grid>,

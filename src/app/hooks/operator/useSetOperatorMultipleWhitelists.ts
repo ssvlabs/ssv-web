@@ -18,8 +18,8 @@ type Mutation = UseMutationResult<
 >;
 
 const methods: Record<MutationType, ContractMethod> = {
-  add: getContractByName(EContractName.SETTER).setOperatorMultipleWhitelists,
-  delete: getContractByName(EContractName.SETTER).removeOperatorMultipleWhitelists
+  add: getContractByName(EContractName.SETTER).setOperatosWhitelists,
+  delete: getContractByName(EContractName.SETTER).removeOperatorsWhitelists
 };
 
 export const useSetOperatorMultipleWhitelists = () => {

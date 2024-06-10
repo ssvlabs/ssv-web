@@ -11,12 +11,13 @@ import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHom
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { isOperatorPrivate } from '~lib/utils/operatorMetadataHelper';
+import { IOperator } from '~app/model/operator.model';
 
 type Props = {
   gray80?: boolean;
   withCopy?: boolean;
   withoutExplorer?: boolean;
-  operator: any;
+  operator: IOperator;
   setOpenExplorerRefs?: Function;
   logoSize?: number;
   nameFontSize?: number;
@@ -34,12 +35,12 @@ const OperatorDetails = (props: Props) => {
     operatorLogo: operator.logo,
     gray80
   });
-  const operatorName = operator?.name;
+  const operatorName = operator?.name || 'NoName';
   const isPrivateOperator = isOperatorPrivate(operator);
   const dispatch = useAppDispatch();
 
   const copyId = () => {
-    navigator.clipboard.writeText(operator?.id);
+    navigator.clipboard.writeText(operator?.id.toString());
     dispatch(
       setMessageAndSeverity({
         message: 'Copied to clipboard.',

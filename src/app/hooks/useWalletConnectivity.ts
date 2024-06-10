@@ -6,7 +6,7 @@ import config from '~app/common/config';
 import { METAMASK_LABEL } from '~app/constants/constants';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { useEthersSignerProvider } from '~app/hooks/useEthersSigner';
-import { fetchClusters, fetchOperators } from '~app/redux/account.slice';
+import { fetchClusters, fetchOperators, reset as resetAccount } from '~app/redux/account.slice';
 import { setIsShowSsvLoader } from '~app/redux/appState.slice';
 import { setStrategyRedirect } from '~app/redux/navigation.slice';
 import { fetchAndSetNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
@@ -37,6 +37,7 @@ export const useWalletConnectivity = () => {
   const reset = () => {
     dispatch(resetWallet());
     dispatch(clearAllSettings());
+    dispatch(resetAccount());
     removeFromLocalStorageByKey('params');
     store.dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
     resetContracts();

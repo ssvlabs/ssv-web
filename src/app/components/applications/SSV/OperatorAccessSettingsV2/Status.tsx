@@ -22,16 +22,20 @@ const OperatorStatus = () => {
         <div className="flex flex-col gap-8 w-full">
           <div className="flex flex-col gap-4">
             <h1 className="text-xl font-bold">Operator Status</h1>
-            <p className="font-medium text-sm =">
-              Control validator access by toggling between public and private modes.
-              <br />
-              In public mode, any validator can register with the operator, while in private mode, only authorized
-              addresses can register.
-              <br />
-              <br />
-              Please note that switching to Private only impacts future validator registrations and will not disrupt the
-              functionality of already registered validators in clusters that include this Operator.
-            </p>
+            <div className="flex flex-col gap-3 font-medium text-sm">
+              <p>Control validator access by switching between public and private modes.</p>
+              <ul className="list-disc pl-6">
+                <li>
+                  <span className="font-bold">Public mode</span> - Any validator can register with the operator.
+                </li>
+                <li>
+                  <span className="font-bold">Private mode</span> Only authorized addresses can register.
+                </li>
+              </ul>
+              <p className="font-medium text-sm pt-3">
+                Please note that switching to private only impacts future validator registrations and will not affect validators that the operator already manages.
+              </p>
+            </div>
           </div>
           <div className="flex items-center justify-between bg-gray-100 px-6 py-5 rounded-lg">
             <OperatorDetails operator={operator} />
@@ -39,9 +43,7 @@ const OperatorStatus = () => {
           </div>
           {isFeeZero && operator.is_private && (
             <Alert variant="error">
-              <AlertDescription>
-                Switching the operator to public when the fee is set to 0 is not possible.{' '}
-              </AlertDescription>
+              <AlertDescription>Switching the operator to public when the fee is set to 0 is not possible. </AlertDescription>
             </Alert>
           )}
           <Button

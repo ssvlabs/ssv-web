@@ -21,13 +21,13 @@ import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 import { useStores } from '~app/hooks/useStores';
 import { IOperator } from '~app/model/operator.model';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
+import { getSelectedOperators, getSelectedOperatorsFee } from '~app/redux/operator.slice.ts';
 import { getAccountAddress, getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { formatNumberToUi, propertyCostByPeriod } from '~lib/utils/numbers';
-import { isEqualsAddresses } from '~lib/utils/strings';
+import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
-import { getSelectedOperators, getSelectedOperatorsFee } from '~app/redux/operator.slice.ts';
 import { NewValidatorRouteState } from '~app/Routes';
 import { getIsClusterSelected } from '~app/redux/account.slice.ts';
 
@@ -76,12 +76,7 @@ const ValidatorRegistrationConfirmation = () => {
 
   useEffect(() => {
     try {
-      const hasWhitelistedOperator = Object.values(selectedOperators).some(
-        (operator: IOperator) =>
-          operator.address_whitelist &&
-          operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST &&
-          !isEqualsAddresses(operator.address_whitelist, accountAddress)
-      );
+      const hasWhitelistedOperator = Object.values(selectedOperators).some((operator: IOperator) => !canAccountUseOperator(accountAddress, operator));
       setRegisterButtonDisabled((isMainnet && !isChecked) || hasWhitelistedOperator);
     } catch (e: any) {
       setRegisterButtonDisabled(true);

@@ -5,7 +5,7 @@ import { useStyles } from './BorderScreen.styles';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 
 type Props = {
-  body: any;
+  body?: any;
   bottom?: any;
   header?: string;
   SideHeader?: any;
@@ -26,6 +26,7 @@ type Props = {
   withoutBorderBottom?: boolean;
   sideElementShowCondition?: boolean;
   onBackButtonClick?: () => void | null | undefined;
+  children?: React.ReactNode;
 };
 
 const BorderScreen = (props: Props) => {
@@ -51,7 +52,8 @@ const BorderScreen = (props: Props) => {
     wrapperHeight,
     tooltipText,
     sideElement,
-    sideElementShowCondition = true
+    sideElementShowCondition = true,
+    children
   } = props;
   const classes = useStyles({
     overFlow,
@@ -73,65 +75,62 @@ const BorderScreen = (props: Props) => {
           <BackNavigation onClick={props.onBackButtonClick} />
         </Grid>
       )}
-      <Grid item container className={classes.ScreenWrapper} style={{ borderRadius }}>
-        {(header || withConversion) && (
-          <Grid container item className={classes.HeaderSection} justifyContent={'space-between'}>
-            <Grid item className={classes.Header} xs>
-              {header}
-              {tooltipText && <Tooltip text={tooltipText} />}
-            </Grid>
-            {SideHeader && !withConversion && (
-              <Grid item>
-                <SideHeader />
+      {children ? (
+        children
+      ) : (
+        <Grid item container className={classes.ScreenWrapper} style={{ borderRadius }}>
+          {(header || withConversion) && (
+            <Grid container item className={classes.HeaderSection} justifyContent={'space-between'}>
+              <Grid item className={classes.Header} xs>
+                {header}
+                {tooltipText && <Tooltip text={tooltipText} />}
               </Grid>
-            )}
-            {withConversion && false && (
-              <Grid item>
-                <Grid container item className={classes.Conversion}>
-                  {coins.map((coin: string, index: number) => {
-                    return (
-                      <Grid
-                        key={index}
-                        item
-                        xs={6}
-                        className={`${classes.Currency} ${currency === coin && classes.SelectedCurrency}`}
-                        onClick={() => {
-                          switchCurrency(coin);
-                        }}
-                      >
-                        {coin}
-                      </Grid>
-                    );
-                  })}
+              {SideHeader && !withConversion && (
+                <Grid item>
+                  <SideHeader />
                 </Grid>
+              )}
+              {withConversion && false && (
+                <Grid item>
+                  <Grid container item className={classes.Conversion}>
+                    {coins.map((coin: string, index: number) => {
+                      return (
+                        <Grid
+                          key={index}
+                          item
+                          xs={6}
+                          className={`${classes.Currency} ${currency === coin && classes.SelectedCurrency}`}
+                          onClick={() => {
+                            switchCurrency(coin);
+                          }}
+                        >
+                          {coin}
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
+                </Grid>
+              )}
+              {sideElement && sideElementShowCondition && sideElement}
+            </Grid>
+          )}
+
+          {body.map((section: any, index: number) => {
+            return (
+              <Grid key={index} item container style={{ borderBottom: body.length === 1 || withoutBorderBottom ? 'none' : '' }} className={sectionClass ?? classes.Section}>
+                {section}
               </Grid>
-            )}
-            {sideElement && sideElementShowCondition && sideElement}
-          </Grid>
-        )}
-        {body.map((section: any, index: number) => {
-          return (
-            <Grid
-              key={index}
-              item
-              container
-              style={{
-                borderBottom: body.length === 1 || withoutBorderBottom ? 'none' : ''
-              }}
-              className={sectionClass ?? classes.Section}
-            >
-              {section}
-            </Grid>
-          );
-        })}
-        {bottom?.map((section: any, index: number) => {
-          return (
-            <Grid key={index} item container className={bottomWrapper ?? classes.Section}>
-              {section}
-            </Grid>
-          );
-        })}
-      </Grid>
+            );
+          })}
+          {bottom?.map((section: any, index: number) => {
+            return (
+              <Grid key={index} item container className={bottomWrapper ?? classes.Section}>
+                {section}
+              </Grid>
+            );
+          })}
+        </Grid>
+      )}
     </Grid>
   );
 };

@@ -1,34 +1,28 @@
-import { useEffect, useRef, useState } from 'react';
-import _ from 'underscore';
-import debounce from 'lodash/debounce';
+import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
-import TableRow from '@mui/material/TableRow';
-import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
-import CircularProgress from '@mui/material/CircularProgress';
-import Status from '~app/components/common/Status';
-import ToolTip from '~app/components/common/ToolTip';
-import { isEqualsAddresses } from '~lib/utils/strings';
-import Checkbox from '~app/components/common/CheckBox';
-import TextInput from '~app/components/common/TextInput';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import debounce from 'lodash/debounce';
+import { useEffect, useRef, useState } from 'react';
+import _ from 'underscore';
 import config, { translations } from '~app/common/config';
-import BorderScreen from '~app/components/common/BorderScreen';
-import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
-import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import Filters from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
-import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
-import StyledCell from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
-import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import ClusterSize from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/ClusterSize/ClusterSize';
-import MevCounterBadge from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevCounterBadge';
-import { fromWei, getFeeForYear } from '~root/services/conversions.service';
-import { IOperator } from '~app/model/operator.model';
-import { getOperators as getOperatorsOperatorService } from '~root/services/operator.service';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
+import ClusterSize from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/ClusterSize/ClusterSize';
+import Filters from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
+import MevCounterBadge from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevCounterBadge';
+import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
+import StyledCell from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
+import BorderScreen from '~app/components/common/BorderScreen';
+import Checkbox from '~app/components/common/CheckBox';
+import Status from '~app/components/common/Status';
+import TextInput from '~app/components/common/TextInput';
+import ToolTip from '~app/components/common/ToolTip';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getAccountAddress } from '~app/redux/wallet.slice';
+import { IOperator } from '~app/model/operator.model';
 import {
   fetchAndSetOperatorValidatorsLimit,
   getOperatorValidatorsLimit,
@@ -37,6 +31,12 @@ import {
   selectOperator,
   unselectOperator
 } from '~app/redux/operator.slice.ts';
+import { getAccountAddress } from '~app/redux/wallet.slice';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
+import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { getOperators as getOperatorsOperatorService } from '~root/services/operator.service';
 import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
 
 const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { editPage: boolean; clusterSize: number; setClusterSize: Function; clusterBox: number[] }) => {
@@ -171,10 +171,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
       const hasValidators = operator.validators_count !== 0;
       const isSelected = Object.values(selectedOperators).some((selectedOperator: IOperator) => selectedOperator.id === operator.id);
       const reachedMaxValidators = operatorValidatorsLimit <= operator.validators_count;
-      const isPrivateOperator =
-        operator.address_whitelist &&
-        operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST &&
-        !isEqualsAddresses(operator.address_whitelist, accountAddress);
+      const isPrivateOperator = !canAccountUseOperator(accountAddress, operator);
       const disabled = isDeleted || isPrivateOperator;
       const isInactive = operator.is_active < 1;
       const mevRelays = operator?.mev_relays || '';

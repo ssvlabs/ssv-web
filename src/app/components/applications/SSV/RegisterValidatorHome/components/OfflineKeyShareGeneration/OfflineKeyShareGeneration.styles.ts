@@ -35,11 +35,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
   BoxSelected: {
     '&:first-child': {
       '& div': {
-        backgroundImage: 'url(/images/offlineKeyShares/white_desktop.svg)'
-      }
-    },
-    '&:nth-child(2)': {
-      '& div': {
         backgroundImage: 'url(/images/offlineKeyShares/white_command_line.svg)'
       }
     },

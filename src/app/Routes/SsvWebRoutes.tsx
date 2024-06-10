@@ -1,9 +1,11 @@
 import { ComponentProps, ComponentType, lazy, Suspense } from 'react';
 import { Route, Routes as Wrapper } from 'react-router-dom';
+import { useChainId } from 'wagmi';
 import config from '~app/common/config';
 import Announcement from '~app/components/common/Annotation/Announcement';
 import SsvAppBar from '~app/components/common/AppBar/SsvAppBar';
 import Layout from '~app/components/common/Layout';
+import { MAINNET_NETWORK_ID } from '~root/providers/networkInfo.provider';
 
 const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
 const FeeRecipient = lazy(() => import('~app/components/applications/SSV/FeeRecipient'));
@@ -34,6 +36,10 @@ const SelectOperators = lazy(() => import('~app/components/applications/SSV/Regi
 const ValidatorTransactionConfirmation = lazy(() => import('~app/components/applications/SSV/ValidatorRegistrationConfirmation'));
 const GenerateKeyShares = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares'));
 const OperatorAccessSettings = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettings/OperatorAccessSettings'));
+const OperatorPermissionSettingsDashboard = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/PermissionSettingsDashboard.tsx'));
+const OperatorPermissionAddressesList = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/AddressesList.tsx'));
+const OperatorPermissionExternalContract = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/ExternalContract.tsx'));
+const OperatorPermissionStatus = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/Status.tsx'));
 const FundingNewValidator = lazy(() => import('~app/components/applications/SSV/MyAccount/components/Validator/FundingNewValidator'));
 const DepositViaLaunchpad = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/DepositViaLaunchpad'));
 const AccountBalanceAndFee = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/AccountBalanceAndFee'));
@@ -49,12 +55,26 @@ interface RouteConfig {
 }
 
 const SsvWebRoutes = () => {
+  const chainId = useChainId();
   const ssvRoutes = config.routes.SSV;
 
   const dashboardRoutes: RouteConfig[] = [
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DEPOSIT, Component: Deposit },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ROOT, Component: SingleOperator },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS, Component: OperatorAccessSettings },
+    // TODO: add future flag V2 should be for testnet only
+    {
+      path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.ROOT,
+      Component: chainId === MAINNET_NETWORK_ID ? OperatorAccessSettings : OperatorPermissionSettingsDashboard
+    },
+    {
+      path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.AUTHORIZED_ADDRESSES,
+      Component: OperatorPermissionAddressesList
+    },
+    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.STATUS, Component: OperatorPermissionStatus },
+    {
+      path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.EXTERNAL_CONTRACT,
+      Component: OperatorPermissionExternalContract
+    },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ROOT, Component: SingleCluster },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.WITHDRAW, Component: NewWithdraw, props: { isValidatorFlow: true } satisfies ComponentProps<typeof NewWithdraw> },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.WITHDRAW, Component: NewWithdraw, props: { isValidatorFlow: false } satisfies ComponentProps<typeof NewWithdraw> },

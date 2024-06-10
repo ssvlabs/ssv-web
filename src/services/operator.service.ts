@@ -53,7 +53,7 @@ const getOperators = async (props: OperatorsListQuery, skipRetry?: boolean) => {
   };
 };
 
-const getOperator = async (operatorId: number | string, skipRetry?: boolean) => {
+const getOperator = async (operatorId: number | string, skipRetry?: boolean): Promise<IOperator> => {
   const utcTimestamp = new Date(new Date().toUTCString()).getTime();
   const url = `${getStoredNetwork().api}/operators/${operatorId}?performances=${PERFORMANCE_PERIOD}&withFee=true&ts=${utcTimestamp}`;
   return await getRequest(url, skipRetry);

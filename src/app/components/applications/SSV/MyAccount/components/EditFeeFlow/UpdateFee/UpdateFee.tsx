@@ -1,23 +1,23 @@
+import Decimal from 'decimal.js';
 import { useEffect, useState } from 'react';
-import { Grid } from '~app/atomicComponents';
 import { useNavigate } from 'react-router-dom';
-import { formatNumberToUi } from '~lib/utils/numbers';
-import WhiteWrapper from '~app/components/common/WhiteWrapper';
-import { validateFeeUpdate } from '~lib/utils/validatesInputs';
-import { ErrorType } from '~app/components/common/ConversionInput/ConversionInput';
-import OperatorId from '~app/components/applications/SSV/MyAccount/components/OperatorId';
+import { Grid } from '~app/atomicComponents';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/UpdateFee.styles';
 import ChangeFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/ChangeFee';
-import IncreaseFlow from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
 import DecreaseFlow from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DecreaseFlow';
-import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import IncreaseFlow from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
+import OperatorId from '~app/components/applications/SSV/MyAccount/components/OperatorId';
+import { ErrorType } from '~app/components/common/ConversionInput/ConversionInput';
+import WhiteWrapper from '~app/components/common/WhiteWrapper';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
-import { getOperator } from '~root/services/operator.service';
-import config from '~app/common/config';
-import Decimal from 'decimal.js';
 import { clearOperatorFeeInfo, fetchAndSetOperatorFeeInfo, getFeeIncreaseAndPeriods, getMaxOperatorFeePerYear, getOperatorProcessId } from '~app/redux/operator.slice.ts';
+import { formatNumberToUi } from '~lib/utils/numbers';
+import { isOperatorPrivate } from '~lib/utils/operatorMetadataHelper';
+import { validateFeeUpdate } from '~lib/utils/validatesInputs';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { getOperator } from '~root/services/operator.service';
 
 enum FeeUpdateSteps {
   START = 'Start',
@@ -92,7 +92,7 @@ const UpdateFee = () => {
   const onInputChange = (e: any) => {
     const { value } = e.target;
     setNewFee(value.trim());
-    const isPrivateOperator = operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST;
+    const isPrivateOperator = isOperatorPrivate(operator);
     validateFeeUpdate({
       previousValue: new Decimal(getFeeForYear(fromWei(operator.fee))),
       newValue: value,

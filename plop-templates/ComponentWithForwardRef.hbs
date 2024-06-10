@@ -1,0 +1,18 @@
+
+import React, { forwardRef } from 'react';
+import type { {{pascalCase componentType}}Props } from '@chakra-ui/react';
+import { {{pascalCase componentType}} } from '@chakra-ui/react';
+
+export type {{pascalCase name}}Props = {
+  // TODO: Add props or remove this type
+};
+
+export const {{pascalCase name}} = forwardRef<HTMLDivElement, {{pascalCase componentType}}Props & {{pascalCase name}}Props>(({...props}, ref) => {
+  return (
+    <{{pascalCase componentType}} ref={ref} {...props}>
+      {{pascalCase name}}
+    </{{pascalCase componentType}}>
+  );
+});
+
+{{pascalCase name}}.displayName = '{{pascalCase name}}';

@@ -1,27 +1,33 @@
 import { EContractName } from '~app/model/contracts.model';
 
 import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
+import { ExtractAbiFunctionNames } from 'abitype';
+import type { Contract } from 'ethers';
+import { WaitForTransactionReceiptReturnType, decodeEventLog } from 'viem';
 import { HoleskyV4SetterABI } from '~app/common/config/abi/holesky/v4/setter';
+import { MainnetV4SetterABI } from '~app/common/config/abi/mainnet/v4/setter';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { getContractByName as _getContractByName } from '~root/services/contracts.service';
 import { config } from '~root/wagmi/config';
-import { MainnetV4SetterABI } from '../app/common/config/abi/mainnet/v4/setter';
-import { WaitForTransactionReceiptReturnType } from 'viem';
-import { ExtractAbiFunctionNames } from 'abitype';
-import type { Contract } from 'ethers';
+import { TokenABI } from '~app/common/config/abi/token';
 
 type MainnetSetterFnNames = ExtractAbiFunctionNames<typeof MainnetV4SetterABI>;
+type HoleskySetterFnNames = ExtractAbiFunctionNames<typeof HoleskyV4SetterABI>;
 
-type ContractMethod = (...args: unknown[]) => Promise<{
+export type ContractMethod = (...args: unknown[]) => Promise<{
   hash: string;
-  wait: () => Promise<WaitForTransactionReceiptReturnType & { events?: string }>;
+  wait: () => Promise<WaitForTransactionReceiptReturnType & { events?: ReturnType<typeof decodeEventLog>[] }>;
 }>;
 
-type SetterContract = Record<MainnetSetterFnNames, ContractMethod>;
+type SetterContract = Record<MainnetSetterFnNames | HoleskySetterFnNames, ContractMethod>;
 
 const getSetter = () => {
-  const { networkId } = getStoredNetwork();
-  const abi = networkId === 1 ? MainnetV4SetterABI : HoleskyV4SetterABI;
+  const { networkId, tokenAddress } = getStoredNetwork();
+  const abi = networkId == 1 ? MainnetV4SetterABI : HoleskyV4SetterABI;
+
+  const abis = {
+    [tokenAddress.toLowerCase()]: TokenABI
+  };
 
   return abi.reduce((acc, item) => {
     if (item.type === 'function') {
@@ -42,7 +48,16 @@ const getSetter = () => {
             });
             return {
               ...recipient,
-              events: 'this is a placeholder'
+              events: recipient.logs.map((log) => {
+                try {
+                  return decodeEventLog({
+                    abi: abis[log.address.toLowerCase()] || abi,
+                    ...log
+                  });
+                } catch (error) {
+                  return { error: (error as Error)?.message || error };
+                }
+              })
             };
           }
         };

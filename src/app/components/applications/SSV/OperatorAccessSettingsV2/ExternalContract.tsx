@@ -41,11 +41,15 @@ const ExternalContract = () => {
   );
 
   const form = useForm<FormValues>({
+    mode: 'all',
     defaultValues: {
-      externalContract: ''
+      externalContract: operator.whitelisting_contract
     },
     resolver: zodResolver(schema, { async: true }, { mode: 'async' })
   });
+
+  const address = form.watch('externalContract');
+  const isChanged = address !== operator.whitelisting_contract;
 
   const hasErrors = Boolean(form.formState.errors.externalContract);
 
@@ -92,7 +96,7 @@ const ExternalContract = () => {
               <Button type="button" disabled={setExternalContract.isPending} size="xl" variant="secondary" className="w-full" onClick={() => navigate(-1)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={hasErrors} isLoading={setExternalContract.isPending} isActionBtn size="xl" className="w-full">
+              <Button type="submit" disabled={hasErrors || !isChanged} isLoading={setExternalContract.isPending} isActionBtn size="xl" className="w-full">
                 Save
               </Button>
             </div>

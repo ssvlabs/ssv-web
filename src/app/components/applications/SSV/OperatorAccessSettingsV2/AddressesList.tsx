@@ -52,9 +52,9 @@ const AddressesList = () => {
           <div className="flex flex-col gap-2">
             <h2 className="text-xl font-bold">Authorized Addresses</h2>
             <p className="text-sm font-medium text-gray-700">
-              Add Ethereum addresses to the whitelist for authorization
+              Manage the owner addresses that are authorized to register validators to your operator.
               <br />
-              You can use both authorized addresses and an external contract simultaneously.
+              Whitelisted addresses are effective only when your operator status is set to Private.
             </p>
           </div>
           {(mode === 'add' || hasWhitelistedAddresses) && !operator.is_private && (

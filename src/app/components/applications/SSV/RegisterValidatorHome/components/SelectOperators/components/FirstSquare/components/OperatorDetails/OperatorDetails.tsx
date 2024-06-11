@@ -35,7 +35,7 @@ const OperatorDetails = (props: Props) => {
     operatorLogo: operator.logo,
     gray80
   });
-  const operatorName = operator?.name;
+  const operatorName = operator?.name || 'NoName';
   const isPrivateOperator = isOperatorPrivate(operator);
   const dispatch = useAppDispatch();
 

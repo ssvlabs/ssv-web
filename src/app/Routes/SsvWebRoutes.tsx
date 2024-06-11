@@ -1,11 +1,9 @@
 import { ComponentProps, ComponentType, lazy, Suspense } from 'react';
 import { Route, Routes as Wrapper } from 'react-router-dom';
-import { useChainId } from 'wagmi';
 import config from '~app/common/config';
 import Announcement from '~app/components/common/Annotation/Announcement';
 import SsvAppBar from '~app/components/common/AppBar/SsvAppBar';
 import Layout from '~app/components/common/Layout';
-import { MAINNET_NETWORK_ID } from '~root/providers/networkInfo.provider';
 
 const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
 const FeeRecipient = lazy(() => import('~app/components/applications/SSV/FeeRecipient'));
@@ -36,7 +34,7 @@ const SelectOperators = lazy(() => import('~app/components/applications/SSV/Regi
 const ValidatorTransactionConfirmation = lazy(() => import('~app/components/applications/SSV/ValidatorRegistrationConfirmation'));
 const GenerateKeyShares = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares'));
 const OperatorAccessSettings = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettings/OperatorAccessSettings'));
-const OperatorPermissionSettingsDashboard = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/PermissionSettingsDashboard.tsx'));
+// const OperatorPermissionSettingsDashboard = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/PermissionSettingsDashboard.tsx'));
 const OperatorPermissionAddressesList = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/AddressesList.tsx'));
 const OperatorPermissionExternalContract = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/ExternalContract.tsx'));
 const OperatorPermissionStatus = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/Status.tsx'));
@@ -55,7 +53,6 @@ interface RouteConfig {
 }
 
 const SsvWebRoutes = () => {
-  const chainId = useChainId();
   const ssvRoutes = config.routes.SSV;
 
   const dashboardRoutes: RouteConfig[] = [
@@ -64,7 +61,7 @@ const SsvWebRoutes = () => {
     // TODO: add future flag V2 should be for testnet only
     {
       path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.ROOT,
-      Component: chainId === MAINNET_NETWORK_ID ? OperatorAccessSettings : OperatorPermissionSettingsDashboard
+      Component: OperatorAccessSettings
     },
     {
       path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.AUTHORIZED_ADDRESSES,

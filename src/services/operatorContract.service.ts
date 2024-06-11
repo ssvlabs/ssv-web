@@ -24,11 +24,11 @@ const addNewOperator = async ({
   }
   const feePerBlock = new Decimal(operatorRawData.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
 
-  const { networkId } = getStoredNetwork();
+  // const { networkId } = getStoredNetwork();
   const payload = [operatorRawData.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock))];
   return await transactionExecutor({
     contractMethod: contract.registerOperator,
-    payload: networkId === 1 ? payload : [...payload, false],
+    payload: payload /* networkId === 1 ? payload : [...payload, false] */,
     isContractWallet,
     getterTransactionState: async () => {
       const res = await getOperatorByPublicKey(decodeParameter('string', operatorRawData.publicKey));

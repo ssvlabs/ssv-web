@@ -1,7 +1,6 @@
 import config, { translations } from '~app/common/config';
 import { IOperator } from '~app/model/operator.model';
 import { isEqualsAddresses } from '~lib/utils/strings';
-import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { checkSpecialCharacters } from '~lib/utils/strings.ts';
 import { Dispatch } from '@reduxjs/toolkit';
 import { setErrorMessage } from '~app/redux/operatorMetadata.slice.ts';
@@ -243,17 +242,19 @@ export const isDkgAddressValid = (value: string, isForm?: boolean) => {
 };
 
 export const isOperatorPrivate = (operator: IOperator) => {
-  const network = getStoredNetwork();
+  // const network = getStoredNetwork();
 
-  if (network.networkId === 1) return Boolean(operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
+  // eslint-disable-next-line no-constant-condition
+  if (/* network.networkId === 1 */ true) return Boolean(operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
   return operator.is_private ?? false;
 };
 
 export const canAccountUseOperator = (account: string, operator: IOperator) => {
-  const network = getStoredNetwork();
+  // const network = getStoredNetwork();
   if (!isOperatorPrivate(operator)) return true;
 
-  if (network.networkId === 1) {
+  // eslint-disable-next-line no-constant-condition
+  if (/* network.networkId === 1 */ true) {
     return isEqualsAddresses(operator.address_whitelist, account);
   }
 

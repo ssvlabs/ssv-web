@@ -8,7 +8,7 @@ import config from '~app/common/config';
 import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings/Settings.styles';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from '~app/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuShortcut, DropdownMenuTrigger } from '~app/components/ui/dropdown-menu';
 import { Tooltip } from '~app/components/ui/tooltip';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { useStores } from '~app/hooks/useStores';
@@ -78,12 +78,10 @@ const Settings = ({ validator, withoutSettings }: { validator: any; withoutSetti
                 <ExternalLink className="size-3" />
               </DropdownMenuShortcut>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={() => moveToRemoveValidator(BULK_FLOWS.BULK_REMOVE)}>
               <LuTrash2 className="size-4" />
               <span>Remove Validator</span>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
             <Tooltip
               side="bottom"
               delayDuration={350}

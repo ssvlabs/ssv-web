@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { isAddress } from 'viem';
 import { z } from 'zod';
 import BorderScreen from '~app/components/common/BorderScreen';
+import { Alert, AlertDescription } from '~app/components/ui/alert';
 import { Button } from '~app/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '~app/components/ui/form';
 import { Input } from '~app/components/ui/input';
@@ -35,17 +36,21 @@ const ExternalContract = () => {
       z.object({
         externalContract: z
           .custom<string>(isAddress, 'Contract address must be a in a valid address format')
-          .refine(isWhitelistingContract.mutateAsync, 'Address is not a valid whitelisting contract')
+          .refine(isWhitelistingContract.mutateAsync, 'Contract is not a compatible whitelisting contract')
       }) satisfies z.ZodType<FormValues>,
     [isWhitelistingContract.mutateAsync]
   );
 
   const form = useForm<FormValues>({
+    mode: 'all',
     defaultValues: {
-      externalContract: ''
+      externalContract: operator.whitelisting_contract
     },
     resolver: zodResolver(schema, { async: true }, { mode: 'async' })
   });
+
+  const address = form.watch('externalContract');
+  const isChanged = address !== operator.whitelisting_contract;
 
   const hasErrors = Boolean(form.formState.errors.externalContract);
 
@@ -66,14 +71,17 @@ const ExternalContract = () => {
           <form className="flex flex-col gap-8 w-full" onSubmit={submit}>
             <div className="flex flex-col gap-2">
               <h1 className="text-xl font-bold">External Contract</h1>
-              <p>
-                Manage whitelisted addresses through an external contract. Learn how to set an{' '}
-                <a href="https://docs.ssv.network/learn/operators/permissioned-operators" className="text-primary-500" target="_blank">
-                  External Contract
-                </a>
-                .
+              <p className="font-medium text-sm">
+                Delegate the management of whitelisted addresses to an external contract.
+                <br />
+                Whitelisted addresses are effective only when your operator status is set to Private.
               </p>
             </div>
+            <Alert variant="warning">
+              <AlertDescription>
+                If you have configured an external contract for managing whitelists, both the whitelisted addresses and the external contract will apply simultaneously.
+              </AlertDescription>
+            </Alert>
             <FormField
               control={form.control}
               name="externalContract"
@@ -90,14 +98,16 @@ const ExternalContract = () => {
                 </FormItem>
               )}
             />{' '}
-            <div className="flex gap-3">
-              <Button type="button" disabled={setExternalContract.isPending} size="xl" variant="secondary" className="w-full" onClick={() => navigate(-1)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={hasErrors} isLoading={setExternalContract.isPending} isActionBtn size="xl" className="w-full">
-                Save
-              </Button>
-            </div>
+            {isChanged && (
+              <div className="flex gap-3">
+                <Button type="button" disabled={setExternalContract.isPending} size="xl" variant="secondary" className="w-full" onClick={() => navigate(-1)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={hasErrors} isLoading={setExternalContract.isPending} isActionBtn size="xl" className="w-full">
+                  Save
+                </Button>
+              </div>
+            )}
           </form>
         </Form>
       ]}

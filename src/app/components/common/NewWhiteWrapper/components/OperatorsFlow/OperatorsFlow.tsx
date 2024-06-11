@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import config from '~app/common/config';
+import config, { translations } from '~app/common/config';
 import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
@@ -133,7 +133,7 @@ const OperatorsFlow = (props: Props) => {
               <Grid ref={settingsRef} container item className={classes.Settings}>
                 <Grid container item className={classes.Button} onClick={goToAccessSettings}>
                   <Grid className={classes.SettingsImage} />
-                  <Typography>Access setting</Typography>
+                  <Typography>{translations.OPERATOR_WHITELIST_ADDRESS.TITLE}</Typography>
                 </Grid>
                 <Grid container item className={classes.Button} onClick={moveToMetaData}>
                   <Grid className={classes.MetadataImage} />

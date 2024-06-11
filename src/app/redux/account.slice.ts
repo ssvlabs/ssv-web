@@ -121,6 +121,9 @@ export const slice = createSlice({
           return b.status === 'No Validators' ? 0 : 1;
         }
       });
+    },
+    reset: () => {
+      return initialState;
     }
   },
   extraReducers: (builder) => {
@@ -152,7 +155,7 @@ export const slice = createSlice({
 
 export const accountStateReducer = slice.reducer;
 
-export const { resetPagination, setExcludedCluster, setSelectedClusterId, setSelectedOperatorId, sortOperatorsByStatus } = slice.actions;
+export const { resetPagination, setExcludedCluster, setSelectedClusterId, setSelectedOperatorId, sortOperatorsByStatus, reset } = slice.actions;
 
 export const getAccountOperators = (state: RootState) => state.accountState.operators;
 // export const getIsFetchingOperators = (state: RootState) => state.accountState.isFetchingOperators;

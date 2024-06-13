@@ -23,6 +23,7 @@ import { getColors } from '~root/themes';
 import './globals.css';
 import { useWalletConnectivity } from '~app/hooks/useWalletConnectivity';
 import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice.ts';
+import { useNavigateToRoot } from '~app/hooks/useNavigateToRoot';
 
 const LoaderWrapper = styled.div<{ theme: any }>`
   display: flex;
@@ -63,6 +64,7 @@ const App = () => {
   const navigate = useNavigate();
   const isMainnet = useAppSelector(getIsMainnet);
   const accountAddress = useAppSelector(getAccountAddress);
+  const { navigateToRoot } = useNavigateToRoot();
 
   useWalletConnectivity();
 
@@ -77,14 +79,14 @@ const App = () => {
           navigate(config.routes.COUNTRY_NOT_SUPPORTED);
         } else {
           dispatch(setRestrictedUserGeo(''));
-          navigate(config.routes.SSV.ROOT);
+          navigateToRoot();
         }
       });
     } else {
       dispatch(setRestrictedUserGeo(''));
-      navigate(config.routes.SSV.ROOT);
+      navigateToRoot();
     }
-  }, [isMainnet, accountAddress]);
+  }, [isMainnet, accountAddress, dispatch, navigate, navigateToRoot]);
 
   useEffect(() => {
     if (!isRestrictedCountry) {

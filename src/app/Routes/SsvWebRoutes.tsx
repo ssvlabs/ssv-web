@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { ComponentProps, ComponentType, lazy, Suspense } from 'react';
 import { Route, Routes as Wrapper } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 import config from '~app/common/config';
@@ -46,12 +46,19 @@ const OfflineKeyShareGeneration = lazy(() => import('~app/components/application
 const OfflineKeyShareCeremony = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareCeremony'));
 const MetadataConfirmationPage = lazy(() => import('~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/MetadataConfirmationPage'));
 
-const SsvWebRoutes: any = () => {
+// TODO: Make it generic with type inference
+interface RouteConfig {
+  path: string;
+  Component: ComponentType<any>;
+  props?: ComponentProps<any>;
+}
+
+const SsvWebRoutes = () => {
   const { chain } = useAccount();
 
   const ssvRoutes = config.routes.SSV;
 
-  const dashboardRoutes: { path: string; Component: React.ComponentType; index?: boolean; keyShares?: boolean }[] = [
+  const dashboardRoutes: RouteConfig[] = [
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DEPOSIT, Component: Deposit },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.ROOT, Component: SingleOperator },
     // TODO: add future flag V2 should be for testnet only
@@ -70,8 +77,8 @@ const SsvWebRoutes: any = () => {
       Component: OperatorPermissionExternalContract
     },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ROOT, Component: SingleCluster },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.WITHDRAW, Component: NewWithdraw },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.WITHDRAW, Component: NewWithdraw },
+    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.WITHDRAW, Component: NewWithdraw, props: { isValidatorFlow: true } satisfies ComponentProps<typeof NewWithdraw> },
+    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.WITHDRAW, Component: NewWithdraw, props: { isValidatorFlow: false } satisfies ComponentProps<typeof NewWithdraw> },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER_DASHBOARD, Component: ClusterDashboard },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.FEE_RECIPIENT, Component: FeeRecipient },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.UPLOAD_KEY_STORE, Component: ImportFile },
@@ -83,22 +90,22 @@ const SsvWebRoutes: any = () => {
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.ADD_VALIDATOR, Component: FundingNewValidator },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.SUCCESS_PAGE, Component: ValidatorSuccessScreen },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK, Component: BulkComponent },
-    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, Component: UpdateFee, index: true },
-    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true },
+    { path: ssvRoutes.MY_ACCOUNT.OPERATOR.UPDATE_FEE.ROOT, Component: UpdateFee },
+    { path: ssvRoutes.MY_ACCOUNT.CLUSTER.UPLOAD_KEYSHARES, Component: ImportFile, props: { type: 2 } satisfies ComponentProps<typeof ImportFile> },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DISTRIBUTE_OFFLINE, Component: OfflineKeyShareGeneration },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.DISTRIBUTION_METHOD_START, Component: GenerateKeyShares },
     { path: ssvRoutes.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION, Component: MetadataConfirmationPage },
     { path: ssvRoutes.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE, Component: ValidatorTransactionConfirmation }
   ];
 
-  const operatorRoutes = [
+  const operatorRoutes: RouteConfig[] = [
     { path: ssvRoutes.OPERATOR.SET_FEE_PAGE, Component: SetOperatorFee },
     { path: ssvRoutes.OPERATOR.SUCCESS_PAGE, Component: OperatorSuccessPage },
     { path: ssvRoutes.OPERATOR.GENERATE_KEYS, Component: GenerateOperatorKeys },
     { path: ssvRoutes.OPERATOR.CONFIRMATION_PAGE, Component: OperatorTransactionConfirmation }
   ];
 
-  const validatorsRoutes = [
+  const validatorsRoutes: RouteConfig[] = [
     { path: ssvRoutes.VALIDATOR.IMPORT, Component: ImportFile },
     { path: ssvRoutes.VALIDATOR.CREATE, Component: CreateValidator },
     { path: ssvRoutes.VALIDATOR.SELECT_OPERATORS, Component: SelectOperators },
@@ -111,7 +118,7 @@ const SsvWebRoutes: any = () => {
     { path: ssvRoutes.VALIDATOR.CONFIRMATION_PAGE, Component: ValidatorTransactionConfirmation },
     { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_OFFLINE, Component: OfflineKeyShareGeneration },
     { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.DISTRIBUTE_SUMMARY, Component: OfflineKeyShareCeremony },
-    { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES, Component: ImportFile, keyShares: true }
+    { path: ssvRoutes.VALIDATOR.DISTRIBUTION_METHOD.UPLOAD_KEYSHARES, Component: ImportFile, props: { type: 2 } satisfies ComponentProps<typeof ImportFile> }
   ];
 
   return (
@@ -124,22 +131,20 @@ const SsvWebRoutes: any = () => {
           <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
           <Route path={ssvRoutes.ROOT} element={<Welcome />} />
           <Route path={ssvRoutes.MY_ACCOUNT.ROOT}>
-            {dashboardRoutes.map((route: any, index: number) => {
-              if (!route.keyShares) return <Route key={index} path={route.path} element={<route.Component />} />;
-              return <Route key={index} path={route.path} element={<route.Component type={2} />} />;
+            {dashboardRoutes.map((route, index: number) => {
+              return <Route key={index} path={route.path} element={<route.Component {...route.props} />} />;
             })}
           </Route>
           <Route path={ssvRoutes.OPERATOR.HOME}>
             <Route index element={<RegisterOperatorHome />} />
             {operatorRoutes.map((route, index: number) => {
-              return <Route key={index} path={route.path} element={<route.Component />} />;
+              return <Route key={index} path={route.path} element={<route.Component {...route.props} />} />;
             })}
           </Route>
           <Route path={ssvRoutes.VALIDATOR.HOME}>
             <Route index element={<RegisterValidatorHome />} />
             {validatorsRoutes.map((route, index: number) => {
-              if (!route.keyShares) return <Route key={index} path={route.path} element={<route.Component />} />;
-              return <Route key={index} path={route.path} element={<route.Component type={2} />} />;
+              return <Route key={index} path={route.path} element={<route.Component {...route.props} />} />;
             })}
           </Route>
         </Wrapper>

@@ -3,29 +3,23 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
-import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/actions.styles';
-import { BULK_FLOWS, SingleCluster } from '~app/model/processes.model';
+import { BULK_FLOWS } from '~app/enums/bulkFlow.enum.ts';
 import { SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
 const ActionsButton = () => {
   const classes = useStyles();
-  const actionsRef = useRef(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [showActions, setShowActions] = useState(false);
-  const stores = useStores();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleCluster = processStore.getProcess;
 
   useEffect(() => {
     /**
      * Close menu drop down when click outside
      */
-    const handleClickOutside = (e: any) => {
-      // @ts-ignore
-      if (showActions && actionsRef.current && !actionsRef.current.contains(e.target)) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (showActions && actionsRef.current && !actionsRef.current.contains(e.target as Node)) {
         setShowActions(false);
       }
     };
@@ -42,8 +36,7 @@ const ActionsButton = () => {
   };
 
   const goToBulkActions = (bulkFlow: BULK_FLOWS) => {
-    process.currentBulkFlow = bulkFlow;
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK, { state: { currentBulkFlow: bulkFlow } });
   };
 
   return (

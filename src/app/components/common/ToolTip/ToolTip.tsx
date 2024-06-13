@@ -1,9 +1,10 @@
 import Grid from '@mui/material/Grid';
 import { useStyles } from './ToolTip.styles';
 import AnchorTooltip from './components/AnchorTooltip';
+import { ReactElement } from 'react';
 
 type ToolTipProps = {
-  text?: string;
+  text?: ReactElement | string;
   classExtend?: string;
   placement?: 'top' | 'bottom' | 'left' | 'right';
 };

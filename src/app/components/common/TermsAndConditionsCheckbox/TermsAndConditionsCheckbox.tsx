@@ -3,9 +3,10 @@ import styled from 'styled-components';
 import config from '~app/common/config';
 import LinkText from '~app/components/common/LinkText';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
+import { ReactElement } from 'react';
 
 type TermsAndConditionsType = {
-  children: JSX.Element;
+  children: ReactElement;
   isChecked: boolean;
   toggleIsChecked: () => void;
   isMainnet: boolean;

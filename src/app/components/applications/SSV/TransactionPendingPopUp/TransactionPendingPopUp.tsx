@@ -1,19 +1,16 @@
 import Grid from '@mui/material/Grid';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
 import Dialog from '@mui/material/Dialog';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import LinkText from '~app/components/common/LinkText';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import { getEtherScanLink } from '~root/providers/networkInfo.provider';
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
 import { getIsShowTxPendingPopup, getTxHash, setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
-import { SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
+import { getSelectedOperator } from '~app/redux/account.slice.ts';
 
 const DialogWrapper = styled(Dialog)<{ theme: any }>`
   & > div > div {
@@ -66,21 +63,18 @@ const POP_UP_DATA = {
 
 const TransactionPendingPopUp = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isShowTxPendingPopup = useAppSelector(getIsShowTxPendingPopup);
   const txHash = useAppSelector(getTxHash);
-  const stores = useStores();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleClusterProcess = processStore.getProcess;
-  const cluster = process?.item;
+  const operator = useAppSelector(getSelectedOperator);
 
   const closeButtonAction = () => {
     let nextNavigation;
-    if (cluster) {
-      nextNavigation = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
-    } else {
+    if (operator) {
       nextNavigation = config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD;
+    } else {
+      nextNavigation = config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD;
     }
     dispatch(setIsLoading(false));
     dispatch(setIsShowTxPendingPopup(false));

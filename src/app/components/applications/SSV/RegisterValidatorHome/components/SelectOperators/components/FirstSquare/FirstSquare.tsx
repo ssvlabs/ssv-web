@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import debounce from 'lodash/debounce';
-import { useEffect, useRef, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import _ from 'underscore';
 import config, { translations } from '~app/common/config';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
@@ -20,7 +20,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import Checkbox from '~app/components/common/CheckBox';
 import Status from '~app/components/common/Status';
 import TextInput from '~app/components/common/TextInput';
-import ToolTip from '~app/components/common/ToolTip';
+import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
 import {
@@ -34,10 +34,9 @@ import {
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
-import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
+import { canAccountUseOperator, isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { getOperators as getOperatorsOperatorService } from '~root/services/operator.service';
-import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
 
 const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { editPage: boolean; clusterSize: number; setClusterSize: Function; clusterBox: number[] }) => {
   const [loading, setLoading] = useState(false);
@@ -45,7 +44,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
   const [filterBy, setFilterBy] = useState([]);
   const [sortOrder, setSortOrder] = useState('');
   const [searchInput, setSearchInput] = useState('');
-  const [operatorsData, setOperatorsData]: [any[], any] = useState([]);
+  const [operatorsData, setOperatorsData] = useState<IOperator[]>([]);
   const [operatorsPagination, setOperatorsPagination] = useState(DEFAULT_PAGINATION);
   const [dkgEnabled, selectDkgEnabled] = useState(false);
 
@@ -147,7 +146,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
     }
   };
 
-  const dataRows = () => {
+  const dataRows = (): ReactElement | ReactElement[] => {
     if (filteredOperators?.length === 0 && !loading) {
       return (
         <TableRow hover>
@@ -170,71 +169,67 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
       const isDeleted = operator.is_deleted;
       const hasValidators = operator.validators_count !== 0;
       const isSelected = Object.values(selectedOperators).some((selectedOperator: IOperator) => selectedOperator.id === operator.id);
-      const reachedMaxValidators = operatorValidatorsLimit <= operator.validators_count;
+      const doesReachedMaxValidators = operatorValidatorsLimit <= operator.validators_count;
       const isPrivateOperator = !canAccountUseOperator(accountAddress, operator);
-      const disabled = isDeleted || isPrivateOperator;
+      const disabled = isDeleted || isPrivateOperator || doesReachedMaxValidators;
       const isInactive = operator.is_active < 1;
       const mevRelays = operator?.mev_relays || '';
       const mevRelaysCount = mevRelays ? mevRelays.split(',').filter((item: string) => item).length : 0;
 
       return (
-        <TableRow
-          key={Math.floor(Math.random() * 10000000)}
-          className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''} ${disabled ? classes.RowDisabled : ''}`}
-          onClick={(e) => {
-            !disabled && selectOperatorHandling(e, operator);
-          }}
-        >
-          <StyledCell style={{ paddingLeft: 20, width: 60, paddingTop: 35 }}>
-            <Checkbox isDisabled={(hasEnoughOperators && !isSelected) || disabled} grayBackGround text={''} isChecked={isSelected} toggleIsChecked={() => {}} />
-          </StyledCell>
-          <StyledCell>
-            <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator} />
-          </StyledCell>
-          <StyledCell>
-            <Grid container>
-              <Grid item>{operator.validators_count}</Grid>
-              {reachedMaxValidators && (
-                <Grid item style={{ alignSelf: 'center', marginLeft: 4 }}>
-                  <ToolTip text={'Operator reached  maximum amount of validators'} />
-                </Grid>
-              )}
-            </Grid>
-          </StyledCell>
-          <StyledCell>
-            <Grid container>
-              <Grid item className={hasValidators && isInactive ? classes.Inactive : ''}>
-                {roundNumber(operator.performance['30d'], 2)}%
+        <AnchorTooltip title={'Operator reached maximum amount of validators'} placement={'top'} dontUseGridWrapper key={Math.floor(Math.random() * 10000000)}>
+          <TableRow
+            className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''} ${disabled ? classes.RowDisabled : ''}`}
+            onClick={(e) => {
+              !disabled && selectOperatorHandling(e, operator);
+            }}
+          >
+            <StyledCell style={{ paddingLeft: 20, width: 60, paddingTop: 35 }}>
+              <Checkbox isDisabled={(hasEnoughOperators && !isSelected) || disabled} grayBackGround text={''} isChecked={isSelected} toggleIsChecked={() => {}} />
+            </StyledCell>
+            <StyledCell>
+              <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator} />
+            </StyledCell>
+            <StyledCell>
+              <Grid container>
+                <Grid item>{operator.validators_count}</Grid>
               </Grid>
-              {isInactive && (
-                <Grid item xs={12}>
-                  <Status item={operator} />
+            </StyledCell>
+            <StyledCell>
+              <Grid container>
+                <Grid item className={hasValidators && isInactive ? classes.Inactive : ''}>
+                  {roundNumber(operator.performance['30d'], 2)}%
                 </Grid>
-              )}
-            </Grid>
-          </StyledCell>
-          <StyledCell>
-            <Grid container>
-              <Grid item className={classes.FeeColumn}>
-                {formatNumberToUi(getFeeForYear(fromWei(operator.fee)))} SSV
+                {isInactive && (
+                  <Grid item xs={12}>
+                    <Status item={operator} />
+                  </Grid>
+                )}
               </Grid>
-            </Grid>
-          </StyledCell>
-          <StyledCell>
-            <Grid container>
-              <MevCounterBadge mevRelaysList={mevRelays.split(',')} mevCount={mevRelaysCount} />
-            </Grid>
-          </StyledCell>
-          <StyledCell>
-            <Grid
-              ref={wrapperRef}
-              className={classes.ChartIcon}
-              onClick={() => {
-                redirectTo(operator.id);
-              }}
-            />
-          </StyledCell>
-        </TableRow>
+            </StyledCell>
+            <StyledCell>
+              <Grid container>
+                <Grid item className={classes.FeeColumn}>
+                  {formatNumberToUi(getFeeForYear(fromWei(operator.fee)))} SSV
+                </Grid>
+              </Grid>
+            </StyledCell>
+            <StyledCell>
+              <Grid container>
+                <MevCounterBadge mevRelaysList={mevRelays.split(',')} mevCount={mevRelaysCount} />
+              </Grid>
+            </StyledCell>
+            <StyledCell>
+              <Grid
+                ref={wrapperRef}
+                className={classes.ChartIcon}
+                onClick={() => {
+                  redirectTo(operator.id.toString());
+                }}
+              />
+            </StyledCell>
+          </TableRow>
+        </AnchorTooltip>
       );
     });
   };
@@ -256,7 +251,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
     }
   };
 
-  const inputHandler = debounce((e: any) => {
+  const inputHandler = debounce((e) => {
     const userInput = e.target.value.trim();
     if (userInput.length >= 1 || userInput.length === 0) {
       GoogleTagManager.getInstance().sendEvent({
@@ -268,7 +263,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
     }
   }, 1000);
 
-  const rows: any = dataRows();
+  const rows = dataRows();
 
   useEffect(() => {
     setLoading(true);
@@ -310,8 +305,9 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  {rows.length > 0 &&
-                    headers.map((header: any, index: number) => {
+                  {'length' in rows &&
+                    rows.length > 0 &&
+                    headers.map((header, index: number) => {
                       const sortByType = sortBy === header.type;
                       const ascending = sortOrder === 'asc';
                       const descending = sortOrder === 'desc';

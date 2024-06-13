@@ -27,7 +27,7 @@ type FormValues = {
 const ExternalContract = () => {
   const navigate = useNavigate();
 
-  const operator = useAppSelector(getSelectedOperator);
+  const operator = useAppSelector(getSelectedOperator)!;
   const setExternalContract = useSetOperatorsWhitelistingContract();
 
   const isWhitelistingContract = useMutation({

@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { FaCircleInfo } from 'react-icons/fa6';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import { isAddress } from 'viem';
@@ -12,6 +13,7 @@ import { Alert, AlertDescription } from '~app/components/ui/alert';
 import { Button } from '~app/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '~app/components/ui/form';
 import { Input } from '~app/components/ui/input';
+import { Tooltip } from '~app/components/ui/tooltip';
 import { useSetOperatorsWhitelistingContract } from '~app/hooks/operator/useSetOperatorsWhitelistingContract';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
@@ -70,7 +72,25 @@ const ExternalContract = () => {
         <Form {...form}>
           <form className="flex flex-col gap-8 w-full" onSubmit={submit}>
             <div className="flex flex-col gap-2">
-              <h1 className="text-xl font-bold">External Contract</h1>
+              <h1 className="text-xl font-bold flex items-center gap-2">
+                <span>External Contract</span>
+                <Tooltip
+                  content={
+                    <div>
+                      Learn how to set an{' '}
+                      <a
+                        href="https://docs.ssv.network/operator-user-guides/operator-management/configuring-a-permissioned-operator/external-whitelist-contracts"
+                        className="link text-primary-500"
+                        target="_blank"
+                      >
+                        External Contract
+                      </a>
+                    </div>
+                  }
+                >
+                  <FaCircleInfo className="size-4 text-gray-500" />
+                </Tooltip>
+              </h1>
               <p className="font-medium text-sm">
                 Delegate the management of whitelisted addresses to an external contract.
                 <br />

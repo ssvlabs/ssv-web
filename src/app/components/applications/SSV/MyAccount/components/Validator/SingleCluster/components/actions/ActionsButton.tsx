@@ -1,66 +1,44 @@
-import { useEffect, useRef, useState } from 'react';
-import Grid from '@mui/material/Grid';
+import { LuLogOut, LuTrash2 } from 'react-icons/lu';
 import { useNavigate } from 'react-router-dom';
-import Typography from '@mui/material/Typography';
-import config from '~app/common/config';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/actions.styles';
-import { BULK_FLOWS } from '~app/enums/bulkFlow.enum.ts';
 import { SecondaryButton } from '~app/atomicComponents';
+import config from '~app/common/config';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '~app/components/ui/dropdown-menu';
+import { Tooltip } from '~app/components/ui/tooltip';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { BULK_FLOWS } from '~app/enums/bulkFlow.enum.ts';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getSelectedCluster } from '~app/redux/account.slice';
 
 const ActionsButton = () => {
-  const classes = useStyles();
-  const actionsRef = useRef<HTMLDivElement>(null);
+  const cluster = useAppSelector(getSelectedCluster);
   const navigate = useNavigate();
-  const [showActions, setShowActions] = useState(false);
-
-  useEffect(() => {
-    /**
-     * Close menu drop down when click outside
-     */
-    const handleClickOutside = (e: MouseEvent) => {
-      if (showActions && actionsRef.current && !actionsRef.current.contains(e.target as Node)) {
-        setShowActions(false);
-      }
-    };
-    // Bind the event listener
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      // Unbind the event listener on clean up
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [actionsRef, showActions]);
-
-  const onButtonClickHandler = () => {
-    setShowActions(true);
-  };
 
   const goToBulkActions = (bulkFlow: BULK_FLOWS) => {
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK, { state: { currentBulkFlow: bulkFlow } });
   };
 
   return (
-    <Grid>
-      <SecondaryButton text={'Actions'} onClick={onButtonClickHandler} icon={'/images/arrowDown/arrow.svg'} size={ButtonSize.SM} />
-      {showActions && (
-        <Grid item className={classes.SettingsWrapper}>
-          <Grid ref={actionsRef} className={classes.Settings}>
-            <Grid container item className={classes.Button} onClick={() => goToBulkActions(BULK_FLOWS.BULK_REMOVE)} style={{ justifyContent: 'space-between' }}>
-              <Grid container item xs style={{ gap: 8, width: '100%' }}>
-                <Grid className={classes.Remove} />
-                <Typography>Remove Validators</Typography>
-              </Grid>
-            </Grid>
-            <Grid container item className={classes.Button} onClick={() => goToBulkActions(BULK_FLOWS.BULK_EXIT)}>
-              <Grid container item xs style={{ gap: 8, width: '100%' }}>
-                <Grid className={classes.Exit} />
-                <Typography>Exit Validators</Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-      )}
-    </Grid>
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <SecondaryButton text={'Actions'} onClick={() => ''} icon={'/images/arrowDown/arrow.svg'} size={ButtonSize.SM} />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem onSelect={() => goToBulkActions(BULK_FLOWS.BULK_REMOVE)}>
+          <LuTrash2 className="size-4" />
+          <span>Remove Validators</span>
+        </DropdownMenuItem>
+        <Tooltip
+          side="bottom"
+          delayDuration={350}
+          content={cluster.isLiquidated ? 'You cannot perform this operation when your cluster is liquidated. Please reactivate to proceed.' : undefined}
+        >
+          <DropdownMenuItem disabled={cluster.isLiquidated} onSelect={() => goToBulkActions(BULK_FLOWS.BULK_EXIT)}>
+            <LuLogOut className="size-4" />
+            <span>Exit Validators</span>
+          </DropdownMenuItem>
+        </Tooltip>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

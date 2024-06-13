@@ -1,6 +1,5 @@
 import Grid from '@mui/material/Grid';
 import { ExternalLink } from 'lucide-react';
-import { observer } from 'mobx-react';
 import { LuLogOut, LuTrash2 } from 'react-icons/lu';
 import { TbRefresh } from 'react-icons/tb';
 import { useNavigate } from 'react-router-dom';
@@ -12,11 +11,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuShortc
 import { Tooltip } from '~app/components/ui/tooltip';
 import { BULK_FLOWS } from '~app/enums/bulkFlow.enum';
 import { useAppSelector } from '~app/hooks/redux.hook';
+import { IValidator } from '~app/model/validator.model';
 import { getSelectedCluster } from '~app/redux/account.slice';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 
-const Settings = ({ validator, withoutSettings }: { validator: any; withoutSettings?: boolean }) => {
+const Settings = ({ validator, withoutSettings }: { validator: IValidator; withoutSettings?: boolean }) => {
   const classes = useStyles();
   const navigate = useNavigate();
 
@@ -93,4 +93,4 @@ const Settings = ({ validator, withoutSettings }: { validator: any; withoutSetti
   );
 };
 
-export default observer(Settings);
+export default Settings;

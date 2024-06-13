@@ -1,34 +1,26 @@
 import { Typography } from '@mui/material';
 import { sha256 } from 'js-sha256';
-import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSignMessage } from 'wagmi';
 import { PrimaryButton } from '~app/atomicComponents';
 import config from '~app/common/config';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
-import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/FieldWrapper';
-import BorderScreen from '~app/components/common/BorderScreen';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
-import { IOperator } from '~app/model/operator.model';
-import { SingleOperator } from '~app/model/processes.model';
-import { fetchOperators } from '~app/redux/account.slice';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { FIELD_KEYS, fieldsToValidateSignature } from '~lib/utils/operatorMetadataHelper';
+import BorderScreen from '~app/components/common/BorderScreen';
+import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/FieldWrapper';
 import { updateOperatorMetadata } from '~root/services/operator.service';
 import { selectMetadata, updateOperatorLocations, updateOperatorNodeOptions } from '~app/redux/operatorMetadata.slice.ts';
 import { useOperatorMetadataStore } from '~app/hooks/useOperatorMetadataStore.ts';
+import { fetchOperators, getSelectedOperator } from '~app/redux/account.slice';
 
 const EditOperatorDetails = () => {
-  const stores = useStores();
   const navigate = useNavigate();
   const classes = useStyles({});
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleOperator = processStore.getProcess;
-  const operator: IOperator = process?.item;
+  const operator = useAppSelector(getSelectedOperator)!;
   const [errorMessage, setErrorMessage] = useState(['']);
   const [buttonDisable, setButtonDisable] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -75,7 +67,7 @@ const EditOperatorDetails = () => {
         setIsLoading(false);
         return;
       }
-      const updateOperatorResponse = await updateOperatorMetadata(operator.id, signatureHash, payload, isContractWallet);
+      const updateOperatorResponse = await updateOperatorMetadata(operator?.id ?? 0, signatureHash, payload, isContractWallet);
       if (updateOperatorResponse.data) {
         dispatch(fetchOperators({}));
         navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);
@@ -104,4 +96,4 @@ const EditOperatorDetails = () => {
   );
 };
 
-export default observer(EditOperatorDetails);
+export default EditOperatorDetails;

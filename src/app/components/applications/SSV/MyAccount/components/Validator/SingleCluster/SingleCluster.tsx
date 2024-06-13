@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { PrimaryButton } from '~app/atomicComponents';
 import config from '~app/common/config';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import Balance from '~app/components/applications/SSV/MyAccount/components/Balance';
 import OperatorBox from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox';
 import ActionsButton from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/ActionsButton';
@@ -13,15 +12,14 @@ import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrap
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
-import { SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
 import { getSelectedCluster, setExcludedCluster, setSelectedClusterId } from '~app/redux/account.slice';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { selectOperators } from '~app/redux/operator.slice.ts';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
 import { useStyles } from './SingleCluster.styles';
+import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
+import { NewValidatorRouteState } from '~app/Routes';
 
 const ValidatorsWrapper = styled.div`
   width: 872px;
@@ -57,12 +55,9 @@ const ValidatorsCountBadge = styled.div`
 `;
 
 const SingleCluster = () => {
-  const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleClusterProcess = processStore.getProcess;
   const cluster = useAppSelector(getSelectedCluster);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const accountAddress = useAppSelector(getAccountAddress);
@@ -71,15 +66,12 @@ const SingleCluster = () => {
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 
   const addToCluster = () => {
-    process.processName = 'cluster_registration';
-    // @ts-ignore
-    process.registerValidator = { depositAmount: 0 };
     dispatch(selectOperators(cluster.operators));
-    navigate(getNextNavigation());
+    navigate(getNextNavigation(), { state: { newValidatorDepositAmount: 0 } satisfies NewValidatorRouteState });
   };
 
   const backToClustersDashboard = () => {
-    dispatch(setSelectedClusterId(''));
+    dispatch(setSelectedClusterId(undefined));
     dispatch(setExcludedCluster(null));
     navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };

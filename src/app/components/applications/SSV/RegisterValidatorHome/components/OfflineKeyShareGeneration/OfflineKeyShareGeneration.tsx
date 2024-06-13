@@ -7,31 +7,30 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { CopyButton } from '~app/atomicComponents';
 import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import LinkText from '~app/components/common/LinkText';
+import TextInput from '~app/components/common/TextInput';
 import config, { translations } from '~app/common/config';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import DkgOperator from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator';
-import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration/OfflineKeyShareGeneration.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
-import LinkText from '~app/components/common/LinkText';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import Spinner from '~app/components/common/Spinner';
-import TextInput from '~app/components/common/TextInput';
+import { validateAddressInput } from '~lib/utils/validatesInputs';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
+import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import DkgOperator from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator';
+import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration/OfflineKeyShareGeneration.styles';
+import Spinner from '~app/components/common/Spinner';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { OperatingSystemsEnum } from '~app/enums/os.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { useOperatorsDKGHealth } from '~app/hooks/useOperatorsDKGHealth';
-import { useStores } from '~app/hooks/useStores';
 import { IOperator } from '~app/model/operator.model';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { getSelectedOperators } from '~app/redux/operator.slice.ts';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
 import { cn } from '~lib/utils/tailwind';
-import { validateAddressInput } from '~lib/utils/validatesInputs';
-import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { getOwnerNonce } from '~root/services/account.service';
+import { getIsClusterSelected } from '~app/redux/account.slice.ts';
 
 const DkgTitleWrapper = styled.div`
   width: 100%;
@@ -100,9 +99,7 @@ const OfflineKeyShareGeneration = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const accountAddress = useAppSelector(getAccountAddress);
-  const stores = useStores();
   const classes = useStyles();
-  const processStore: ProcessStore = stores.Process;
   const selectedOperators = useAppSelector(getSelectedOperators);
   const { apiNetwork } = getStoredNetwork();
 
@@ -117,6 +114,7 @@ const OfflineKeyShareGeneration = () => {
 
   const isWindowOs = operatingSystemName === OperatingSystemsEnum.Windows;
   const dynamicFullPath = isWindowOs ? '%cd%' : '$(pwd)';
+  const isSecondRegistration = useAppSelector(getIsClusterSelected);
 
   useEffect(() => {
     const fetchOwnerNonce = async () => {
@@ -262,7 +260,7 @@ const OfflineKeyShareGeneration = () => {
   const hideButtonCondition = () => {
     if (operatorsDKGHealth.isLoading) return false;
     if (submitFunctionCondition) {
-      return !processStore.secondRegistration;
+      return !isSecondRegistration;
     }
     return true;
   };
@@ -270,7 +268,7 @@ const OfflineKeyShareGeneration = () => {
   const MainScreen = (
     <BorderScreen
       blackHeader
-      withoutNavigation={processStore.secondRegistration}
+      withoutNavigation={isSecondRegistration}
       header={translations.VALIDATOR.OFFLINE_KEY_SHARE_GENERATION.HEADER}
       overFlow={'none'}
       width={872}
@@ -432,7 +430,7 @@ const OfflineKeyShareGeneration = () => {
           {hideButtonCondition() && (
             <PrimaryButton
               text={buttonLabel}
-              onClick={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, processStore.secondRegistration)}
+              onClick={submitFunctionCondition ? goToChangeOperators : () => goToNextPage(selectedBox, isSecondRegistration)}
               isDisabled={disabledCondition()}
               size={ButtonSize.XL}
             />
@@ -442,7 +440,7 @@ const OfflineKeyShareGeneration = () => {
     />
   );
 
-  if (processStore.secondRegistration) {
+  if (isSecondRegistration) {
     return (
       <Grid container>
         <NewWhiteWrapper type={0} header={'Cluster'} />

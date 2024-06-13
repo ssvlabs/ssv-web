@@ -6,7 +6,7 @@ import { DEFAULT_PAGINATION } from '~app/common/config/config';
 import { getOperatorsByOwnerAddress } from '~root/services/operator.service';
 import { getClustersByOwnerAddress } from '~root/services/cluster.service';
 
-interface Pagination {
+export interface Pagination {
   page: number;
   pages: number;
   total: number;
@@ -20,8 +20,8 @@ export interface AccountState {
   clusters: ICluster[];
   isFetchingClusters: boolean;
   clustersPagination: Pagination;
-  selectedClusterId: string;
-  selectedOperatorId: number;
+  selectedClusterId: string | undefined;
+  selectedOperator: IOperator | undefined;
   excludedCluster: ICluster | null;
 }
 
@@ -32,8 +32,8 @@ const initialState: AccountState = {
   clusters: [] as ICluster[],
   isFetchingClusters: false,
   clustersPagination: DEFAULT_PAGINATION,
-  selectedClusterId: '',
-  selectedOperatorId: -1,
+  selectedClusterId: undefined,
+  selectedOperator: undefined,
   excludedCluster: null
 };
 
@@ -100,11 +100,11 @@ export const slice = createSlice({
       state.operatorsPagination = DEFAULT_PAGINATION;
       state.clustersPagination = DEFAULT_PAGINATION;
     },
-    setSelectedClusterId: (state, action: { payload: string }) => {
+    setSelectedClusterId: (state, action: { payload: AccountState['selectedClusterId'] }) => {
       state.selectedClusterId = action.payload;
     },
-    setSelectedOperatorId: (state, action: { payload: number }) => {
-      state.selectedOperatorId = action.payload;
+    setSelectedOperator: (state, action: { payload: IOperator }) => {
+      state.selectedOperator = action.payload;
     },
     setExcludedCluster: (state, action: { payload: ICluster | null }) => {
       state.excludedCluster = action.payload;
@@ -155,7 +155,7 @@ export const slice = createSlice({
 
 export const accountStateReducer = slice.reducer;
 
-export const { resetPagination, setExcludedCluster, setSelectedClusterId, setSelectedOperatorId, sortOperatorsByStatus, reset } = slice.actions;
+export const { resetPagination, setExcludedCluster, setSelectedClusterId, setSelectedOperator, sortOperatorsByStatus, reset } = slice.actions;
 
 export const getAccountOperators = (state: RootState) => state.accountState.operators;
 // export const getIsFetchingOperators = (state: RootState) => state.accountState.isFetchingOperators;
@@ -165,5 +165,5 @@ export const getAccountClusters = (state: RootState) => state.accountState.clust
 export const getClustersPagination = (state: RootState) => state.accountState.clustersPagination;
 export const getSelectedCluster = (state: RootState) =>
   state.accountState.excludedCluster || state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId) || ({} as ICluster);
-export const getSelectedOperator = (state: RootState) =>
-  state.accountState.operators.find((operator: IOperator) => operator.id === state.accountState.selectedOperatorId) || ({} as IOperator);
+export const getSelectedOperator = (state: RootState) => state.accountState.selectedOperator;
+export const getIsClusterSelected = (state: RootState) => Boolean(state.accountState.selectedClusterId);

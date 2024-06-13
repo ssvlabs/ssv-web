@@ -11,8 +11,9 @@
  * */
 
 import config from '~app/common/config';
-import { getStoredNetwork, MAINNET_NETWORK_ID, HOLESKY_NETWORK_ID } from '~root/providers/networkInfo.provider';
+import { getStoredNetwork, HOLESKY_NETWORK_ID, MAINNET_NETWORK_ID } from '~root/providers/networkInfo.provider';
 import { getLocalStorageFlagValue, MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
+import { ReactElement } from 'react';
 
 type NavigationRoutes = Record<string, string | Record<number, string>>;
 
@@ -124,7 +125,7 @@ const validatorRegistrationFlow = (currentRoute: string) => {
 
   const isBulkMode = (mode: EBulkMode) => getBulkMode() === mode;
 
-  const getBulkKeyShareComponent = (single: JSX.Element, multi: JSX.Element): JSX.Element => {
+  const getBulkKeyShareComponent = (single: ReactElement, multi: ReactElement): ReactElement => {
     return isBulkMode(EBulkMode.MULTI) ? multi : single;
   };
 

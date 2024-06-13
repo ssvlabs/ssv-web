@@ -1,33 +1,36 @@
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
-import { useNavigate } from 'react-router-dom';
+import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useStores } from '~app/hooks/useStores';
 import config, { translations } from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning/SlashingWarning.styles';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppSelector } from '~app/hooks/redux.hook.ts';
+import { getIsClusterSelected } from '~app/redux/account.slice.ts';
+import { NewValidatorRouteState } from '~app/Routes';
 
 const SlashingWarning = () => {
   const classes = useStyles();
   const stores = useStores();
   const navigate = useNavigate();
-  const processStore: ProcessStore = stores.Process;
+  const location: Location<NewValidatorRouteState> = useLocation();
   const validatorStore: ValidatorStore = stores.Validator;
   const [hasUserAgreed, setHasUserAgreed] = useState(false);
   const publicKey = validatorStore.keyStorePublicKey || validatorStore.keySharePublicKey;
+  const isSecondRegistration = useAppSelector(getIsClusterSelected);
 
   const goToConfirmation = () => {
-    if (processStore.secondRegistration) {
-      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE);
+    if (isSecondRegistration) {
+      navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.CONFIRMATION_PAGE, { state: location.state });
     } else {
-      navigate(config.routes.SSV.VALIDATOR.CONFIRMATION_PAGE);
+      navigate(config.routes.SSV.VALIDATOR.CONFIRMATION_PAGE, { state: location.state });
     }
   };
 
@@ -45,7 +48,7 @@ const SlashingWarning = () => {
   const MainScreen = (
     <BorderScreen
       blackHeader
-      withoutNavigation={processStore.secondRegistration}
+      withoutNavigation={isSecondRegistration}
       header={translations.VALIDATOR.SLASHING_WARNING.TITLE}
       body={[
         <Grid container>
@@ -67,7 +70,7 @@ const SlashingWarning = () => {
     />
   );
 
-  if (processStore.secondRegistration) {
+  if (isSecondRegistration) {
     return (
       <Grid container>
         <NewWhiteWrapper type={0} header={'Cluster'} />

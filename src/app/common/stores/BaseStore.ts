@@ -1,10 +1,8 @@
 import { distributionStore } from './applications/Distribution/Distribution.store';
 import { distributionTestnetStore } from './applications/Distribution/DistributionTestnet.store';
-import { processStore } from './applications/SsvWeb/Process.store';
 import { validatorStore } from './applications/SsvWeb/Validator.store';
 
 const _stores = {
-  Process: processStore,
   Validator: validatorStore,
   Distribution: distributionStore,
   DistributionTestnet: distributionTestnetStore

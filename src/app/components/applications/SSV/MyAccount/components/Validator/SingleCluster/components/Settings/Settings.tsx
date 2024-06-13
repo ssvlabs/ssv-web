@@ -4,30 +4,25 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings/Settings.styles';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
-import { SingleCluster, BULK_FLOWS } from '~app/model/processes.model';
+import { BULK_FLOWS } from '~app/enums/bulkFlow.enum.ts';
+import { BulkActionRouteState } from '~app/Routes';
 
 const Settings = ({ validator, withoutSettings }: { validator: any; withoutSettings?: boolean }) => {
-  const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const settingsRef = useRef(null);
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleCluster = processStore.getProcess;
+  const settingsRef = useRef<HTMLDivElement>(null);
   const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     /**
      * Close menu drop down when click outside
      */
-    const handleClickOutside = (e: any) => {
-      // @ts-ignore
-      if (showSettings && settingsRef.current && !settingsRef.current.contains(e.target)) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (showSettings && settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
         setShowSettings(false);
       }
     };
@@ -69,9 +64,7 @@ const Settings = ({ validator, withoutSettings }: { validator: any; withoutSetti
   };
 
   const moveToRemoveValidator = (flow: BULK_FLOWS) => {
-    process.validator = validator;
-    process.currentBulkFlow = flow;
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK, { state: { validator, currentBulkFlow: flow } satisfies BulkActionRouteState });
   };
 
   return (

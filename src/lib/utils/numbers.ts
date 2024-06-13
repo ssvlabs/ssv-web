@@ -135,9 +135,14 @@ export const formatNumberFromBeaconcha = (num: number) => {
   return formatNumberToUi(num * 10 ** -9);
 };
 
-export const propertyCostByPeriod = (value: number, days: number) => {
+export const propertyCostByPeriod = (value: number, days: number | undefined) => {
   const wrapFee = new Decimal(value);
-  return Number(wrapFee.mul(7160).mul(days ?? 1).toFixed( 2));
+  return Number(
+    wrapFee
+      .mul(7160)
+      .mul(days ?? 1)
+      .toFixed(2)
+  );
 };
 
 export const operatorCostForYear = (value: number) => {

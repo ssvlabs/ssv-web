@@ -1,5 +1,6 @@
 import { ComponentProps, ComponentType, lazy, Suspense } from 'react';
 import { Route, Routes as Wrapper } from 'react-router-dom';
+import { useAccount } from 'wagmi';
 import config from '~app/common/config';
 import Announcement from '~app/components/common/Annotation/Announcement';
 import SsvAppBar from '~app/components/common/AppBar/SsvAppBar';
@@ -34,7 +35,7 @@ const SelectOperators = lazy(() => import('~app/components/applications/SSV/Regi
 const ValidatorTransactionConfirmation = lazy(() => import('~app/components/applications/SSV/ValidatorRegistrationConfirmation'));
 const GenerateKeyShares = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares'));
 const OperatorAccessSettings = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettings/OperatorAccessSettings'));
-// const OperatorPermissionSettingsDashboard = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/PermissionSettingsDashboard.tsx'));
+const OperatorPermissionSettingsDashboard = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/PermissionSettingsDashboard.tsx'));
 const OperatorPermissionAddressesList = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/AddressesList.tsx'));
 const OperatorPermissionExternalContract = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/ExternalContract.tsx'));
 const OperatorPermissionStatus = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/Status.tsx'));
@@ -53,6 +54,8 @@ interface RouteConfig {
 }
 
 const SsvWebRoutes = () => {
+  const { chain } = useAccount();
+
   const ssvRoutes = config.routes.SSV;
 
   const dashboardRoutes: RouteConfig[] = [
@@ -61,7 +64,8 @@ const SsvWebRoutes = () => {
     // TODO: add future flag V2 should be for testnet only
     {
       path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.ROOT,
-      Component: OperatorAccessSettings
+
+      Component: chain?.testnet ? OperatorPermissionSettingsDashboard : OperatorAccessSettings
     },
     {
       path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.AUTHORIZED_ADDRESSES,

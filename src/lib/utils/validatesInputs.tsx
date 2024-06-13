@@ -5,6 +5,7 @@ import { getFeeForYear, isAddress } from '~root/services/conversions.service';
 import LinkText from '~app/components/common/LinkText/LinkText';
 
 const OPERATOR_VALID_KEY_LENGTH = 612;
+const THRESHOLD = 1;
 
 interface ErrorObject {
   errorMessage: any;
@@ -87,7 +88,7 @@ export const validateFeeUpdate = ({
   const feeMaximumIncrease = previousValue
     .mul(maxFeeIncrease)
     .dividedBy(100)
-    .plus(Number(previousValue) < 1 ? previousValue : Number(previousValue) - 0.01);
+    .plus(Number(previousValue) < THRESHOLD ? previousValue : Number(previousValue) - 0.01);
   const maxFeePerYear = Number(getFeeForYear(maxFee));
   if (Number.isNaN(Number(newValue)) || Number.isFinite(newValue) || !newValue) {
     response.shouldDisplay = true;

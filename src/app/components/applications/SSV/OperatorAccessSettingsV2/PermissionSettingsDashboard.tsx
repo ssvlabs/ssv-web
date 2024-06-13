@@ -25,7 +25,7 @@ const PermissionSettingsDashboard = () => {
                 content={
                   <div>
                     Learn more about{' '}
-                    <a href="https://docs.ssv.network/learn/operators/permissioned-operators" className="link text-primary-500" target="_blank">
+                    <a href={config.links.PERMISSIONED_OPERATORS} className="link text-primary-500" target="_blank">
                       Permissioned Operators
                     </a>
                   </div>

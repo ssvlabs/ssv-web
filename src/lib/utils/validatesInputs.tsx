@@ -49,13 +49,16 @@ export const validateAddressInput = (value: string, callback: React.Dispatch<Err
   callback(response);
 };
 
-export const validateFeeInput = ({ value, maxFee, callback }: { value: string; maxFee: number; callback: Function }): void => {
+export const validateFeeInput = ({ value, maxFee, callback, isPrivate }: { value: string; maxFee: number; callback: Function; isPrivate: boolean }): void => {
   const response = { shouldDisplay: false, errorMessage: '' };
   const maxFeePerYear = Number(getFeeForYear(maxFee));
-  if (new Decimal(Number(value) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK)) {
+  if (new Decimal(Number(value) / config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK) && Number(value) !== 0) {
     response.shouldDisplay = true;
     const minimumFeePerYear = config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR * config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK;
     response.errorMessage = `Fee must be higher than ${minimumFeePerYear} SSV`;
+  } else if (Number(value) === 0 && !isPrivate) {
+    response.shouldDisplay = true;
+    response.errorMessage = 'You must set your operator as private before updating your fee to 0.';
   } else if (Number(value) > maxFeePerYear) {
     response.shouldDisplay = true;
     response.errorMessage = ` Fee must be lower than ${maxFeePerYear} SSV`;

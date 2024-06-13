@@ -5,6 +5,7 @@ import { getFeeForYear, isAddress } from '~root/services/conversions.service';
 import LinkText from '~app/components/common/LinkText/LinkText';
 
 const OPERATOR_VALID_KEY_LENGTH = 612;
+const THRESHOLD = 1;
 
 interface ErrorObject {
   errorMessage: any;
@@ -90,14 +91,11 @@ export const validateFeeUpdate = ({
   const feeMaximumIncrease = previousValue
     .mul(maxFeeIncrease)
     .dividedBy(100)
-    .plus(Math.abs(Number(previousValue) - 0.01));
+    .plus(Number(previousValue) < THRESHOLD ? previousValue : Number(previousValue) - 0.01);
   const maxFeePerYear = Number(getFeeForYear(maxFee));
   if (Number.isNaN(Number(newValue)) || Number.isFinite(newValue) || !newValue) {
     response.shouldDisplay = true;
     response.errorMessage = 'Please use numbers only.';
-  } else if (Number(newValue) > maxFeePerYear) {
-    response.shouldDisplay = true;
-    response.errorMessage = ` Fee must be lower than ${maxFeePerYear} SSV`;
   } else if (Number(previousValue) === Number(newValue)) {
     response.shouldDisplay = true;
     response.errorMessage = "State for fee hasn't changed";
@@ -107,9 +105,10 @@ export const validateFeeUpdate = ({
   } else if (feeMaximumIncrease.lessThan(newValue)) {
     response.shouldDisplay = true;
     response.errorMessage = `You can only increase your fee up to ${formatNumberToUi(feeMaximumIncrease)}`;
-  }
-  // eslint-disable-next-line radix
-  else if (
+  } else if (Number(newValue) > maxFeePerYear) {
+    response.shouldDisplay = true;
+    response.errorMessage = ` Fee must be lower than ${maxFeePerYear} SSV`;
+  } else if (
     (new Decimal(newValue).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).lessThan(config.GLOBAL_VARIABLE.MINIMUM_OPERATOR_FEE_PER_BLOCK) && Number(newValue) > 0) ||
     Number(newValue) < 0
   ) {

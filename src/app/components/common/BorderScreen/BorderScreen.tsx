@@ -1,5 +1,5 @@
 import Grid from '@mui/material/Grid';
-import { useState } from 'react';
+import { ReactElement, useState } from 'react';
 import BackNavigation from '~app/components/common/BackNavigation';
 import { useStyles } from './BorderScreen.styles';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
@@ -21,7 +21,7 @@ type Props = {
   wrapperHeight?: number;
   width?: number | string;
   withConversion?: boolean;
-  sideElement?: JSX.Element;
+  sideElement?: ReactElement;
   withoutNavigation?: boolean;
   withoutBorderBottom?: boolean;
   sideElementShowCondition?: boolean;

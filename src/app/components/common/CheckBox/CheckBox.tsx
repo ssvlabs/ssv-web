@@ -1,6 +1,7 @@
 import Grid from '@mui/material/Grid';
 import { useStyles } from '~app/components/common/CheckBox/CheckBox.styles';
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
+import { ReactElement } from 'react';
 
 type CheckboxProps = {
   text: any;
@@ -11,7 +12,7 @@ type CheckboxProps = {
   smallLine?: boolean;
   grayBackGround?: boolean;
   withTooltip?: boolean;
-  tooltipText?: JSX.Element | string;
+  tooltipText?: ReactElement | string;
   withoutMarginBottom?: boolean;
   toggleIsChecked: () => void;
 };

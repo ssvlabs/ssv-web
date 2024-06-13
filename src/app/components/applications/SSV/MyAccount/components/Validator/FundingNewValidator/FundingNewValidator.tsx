@@ -25,6 +25,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 import { getSelectedCluster } from '~app/redux/account.slice.ts';
+import { NewValidatorRouteState } from '~app/Routes';
 
 const FundingNewValidator = () => {
   const [checkedId, setCheckedId] = useState(0);
@@ -131,9 +132,7 @@ const FundingNewValidator = () => {
   };
 
   const moveToNextPage = () => {
-    // @ts-ignore
-    process.registerValidator = { depositAmount: Number(depositSSV) };
-    navigate(getNextNavigation());
+    navigate(getNextNavigation(), { state: { newValidatorDepositAmount: Number(depositSSV) } satisfies NewValidatorRouteState });
   };
 
   const changeDepositSsvHandler = (event: ChangeEvent<HTMLInputElement>) => {

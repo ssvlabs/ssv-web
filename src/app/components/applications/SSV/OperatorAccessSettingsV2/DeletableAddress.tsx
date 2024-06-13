@@ -16,16 +16,12 @@ type FCProps = FC<Omit<ComponentPropsWithoutRef<'div'>, keyof DeletableAddressPr
 export const DeletableAddress: FCProps = ({ className, address, onDelete, onUndo, isMarked, disabled, ...props }) => {
   return (
     <div
-      className={cn(
-        className,
-        'flex items-center justify-between gap-4 p-1 pl-5 h-12 rounded-lg border border-gray-300',
-        {
-          'pointer-events-none': disabled,
-          'bg-gray-200': isMarked,
-          'bg-gray-100': disabled,
-          'text-gray-500': disabled
-        }
-      )}
+      className={cn(className, 'flex items-center justify-between gap-4 p-1 pl-5 h-12 rounded-lg border border-gray-300', {
+        'pointer-events-none': disabled,
+        'bg-gray-200': isMarked,
+        'bg-gray-100': disabled,
+        'text-gray-500': disabled
+      })}
       {...props}
     >
       <div className="flex gap-1">

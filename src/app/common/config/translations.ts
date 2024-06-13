@@ -264,7 +264,7 @@ const translations = {
     }
   },
   OPERATOR_WHITELIST_ADDRESS: {
-    TITLE: 'Access setting',
+    TITLE: 'Permission Settings',
     INPUT_LABEL: 'Authorized Address',
     INPUT_LABEL_TOOLTIP: 'Any Ethereum address, contract or wallet. Can be changed in the future',
     SECOND_TITLE: 'Permissioned Operator',

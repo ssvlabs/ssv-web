@@ -4,7 +4,7 @@ import AnchorTooltip from './components/AnchorTooltip';
 import { ReactElement } from 'react';
 
 type ToolTipProps = {
-  text?: string | ReactElement;
+  text?: ReactElement | string;
   classExtend?: string;
   placement?: 'top' | 'bottom' | 'left' | 'right';
 };

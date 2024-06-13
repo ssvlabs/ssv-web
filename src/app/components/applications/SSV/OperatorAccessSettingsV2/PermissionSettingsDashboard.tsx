@@ -6,6 +6,8 @@ import { PermissionSettingsItem } from '~app/components/applications/SSV/Operato
 import BorderScreen from '~app/components/common/BorderScreen';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
+import { FaCircleInfo } from 'react-icons/fa6';
+import { Tooltip } from '~app/components/ui/tooltip';
 
 const PermissionSettingsDashboard = () => {
   const selectedOperator = useAppSelector(getSelectedOperator);
@@ -16,16 +18,24 @@ const PermissionSettingsDashboard = () => {
       <Card variant="unstyled" className="not-last:border-b not-last:border-gray-300 overflow-hidden">
         <PermissionSettingsItem
           className="pt-8"
-          title={<h2 className="text-xl">Permission Settings</h2>}
-          description={
-            <p>
-              Use the options below to activate permissioned operator settings and restrict validator registration to whitelisted addresses only. Learn more about{' '}
-              <a href={config.links.PERMISSIONED_OPERATORS} className="text-primary-500" target="_blank">
-                Permissioned Operators
-              </a>
-              .
-            </p>
+          title={
+            <h2 className="text-xl flex items-center gap-2">
+              <span>Permission Settings</span>
+              <Tooltip
+                content={
+                  <div>
+                    Learn more about{' '}
+                    <a href={config.links.PERMISSIONED_OPERATORS} className="link text-primary-500" target="_blank">
+                      Permissioned Operators
+                    </a>
+                  </div>
+                }
+              >
+                <FaCircleInfo className="size-4 text-gray-500" />
+              </Tooltip>
+            </h2>
           }
+          description={<p>Use the options below to activate permissioned operator settings and restrict validator registration to whitelisted addresses only.</p>}
         />
         <PermissionSettingsItem
           title="Operator Status"

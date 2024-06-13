@@ -87,7 +87,7 @@ export const validateFeeUpdate = ({
   const feeMaximumIncrease = previousValue
     .mul(maxFeeIncrease)
     .dividedBy(100)
-    .plus(Math.abs(Number(previousValue) - 0.01));
+    .plus(Number(previousValue) < 1 ? previousValue : Number(previousValue) - 0.01);
   const maxFeePerYear = Number(getFeeForYear(maxFee));
   if (Number.isNaN(Number(newValue)) || Number.isFinite(newValue) || !newValue) {
     response.shouldDisplay = true;

@@ -20,7 +20,7 @@ const PermissionSettingsDashboard = () => {
           description={
             <p>
               Use the options below to activate permissioned operator settings and restrict validator registration to whitelisted addresses only. Learn more about{' '}
-              <a href="https://docs.ssv.network/learn/operators/permissioned-operators" className="text-primary-500" target="_blank">
+              <a href={config.links.PERMISSIONED_OPERATORS} className="text-primary-500" target="_blank">
                 Permissioned Operators
               </a>
               .

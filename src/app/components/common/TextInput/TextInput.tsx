@@ -2,6 +2,7 @@ import Grid from '@mui/material/Grid';
 import { ComponentPropsWithRef, useState } from 'react';
 import { useStyles } from './TextInput.styles';
 import { InputSideButton } from '~app/atomicComponents';
+import styled from 'styled-components';
 
 type InputProps = {
   type?: ComponentPropsWithRef<'input'>['type'];
@@ -24,11 +25,21 @@ type InputProps = {
   extendInputClass?: string;
   isTextArea?: boolean;
   sideButton?: boolean;
+  isShowSsvLogo?: boolean;
   sideButtonClicked?: boolean;
   sideButtonLabel?: string;
   sideButtonAction?: Function;
   sideButtonDisabled?: boolean;
 };
+
+const SsvLogo = styled.div`
+  width: 14px;
+  height: 20px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url(/images/ssvIcons/logo.svg);
+`;
 
 const TextInput = ({
   type,
@@ -54,6 +65,7 @@ const TextInput = ({
   sideButtonClicked,
   sideButton,
   isTextArea,
+  isShowSsvLogo,
   sideButtonDisabled,
   ...params
 }: InputProps) => {
@@ -118,6 +130,7 @@ const TextInput = ({
       )}
       {withSideText && (
         <Grid item className={classes.Text}>
+          {isShowSsvLogo && <SsvLogo />}
           {sideIcon ?? sideText ?? 'SSV'}
         </Grid>
       )}

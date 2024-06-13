@@ -13,6 +13,7 @@ import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
 import { getMaxOperatorFeePerYear } from '~app/redux/operator.slice.ts';
+import WarningBox from '~app/components/common/WarningBox';
 
 type UserInput = string;
 
@@ -23,7 +24,7 @@ const SetOperatorFee = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const maxFee = useAppSelector(getMaxOperatorFeePerYear);
-  const { operatorRawData } = location.state;
+  const { operatorRawData, isPrivate } = location.state;
   const [error, setError] = useState(INITIAL_ERROR_STATE);
   const [userInput, setUserInput] = useState<UserInput>('');
   const [registerButtonDisabled, setRegisterButtonDisabled] = useState(true);
@@ -37,7 +38,8 @@ const SetOperatorFee = () => {
     validateFeeInput({
       value: userInput,
       maxFee,
-      callback: setError
+      callback: setError,
+      isPrivate
     });
     setUserInput(removeLeadingZeros(userInput));
     const isRegisterButtonDisabled = typeof userInput === 'object' || error.shouldDisplay;
@@ -46,7 +48,7 @@ const SetOperatorFee = () => {
 
   const moveToSubmitConfirmation = () => {
     operatorRawData.fee = parseFloat(userInput) || 0;
-    navigate(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE, { state: { operatorRawData } });
+    navigate(config.routes.SSV.OPERATOR.CONFIRMATION_PAGE, { state: { operatorRawData, isPrivate } });
   };
 
   const removeLeadingZeros = (num: string): string => {
@@ -80,13 +82,22 @@ const SetOperatorFee = () => {
             </Grid>
           </Grid>
           <Grid item container className={classes.InputWrapper} style={{ gap: 24 }}>
-            <Grid item container>
+            <Grid item container style={{ gap: 24 }}>
               <Grid item container>
                 <Grid item className={classes.InputText}>
                   <Typography>Annual fee</Typography>
                 </Grid>
+                <TextInput
+                  isShowSsvLogo
+                  withSideText
+                  value={userInput}
+                  placeHolder={'0.0'}
+                  showError={error.shouldDisplay}
+                  dataTestId={'edit-operator-fee'}
+                  onChangeCallback={verifyFeeNumber}
+                />
               </Grid>
-              <TextInput withSideText value={userInput} placeHolder={'0.0'} showError={error.shouldDisplay} dataTestId={'edit-operator-fee'} onChangeCallback={verifyFeeNumber} />
+              {isPrivate && userInput && Number(userInput) === 0 && <WarningBox text={'If you set your fee to 0 you will not be able to change it in the future'} />}
               {error.shouldDisplay && <Typography className={classes.TextError}>{error.errorMessage}</Typography>}
             </Grid>
             <PrimaryButton text={'Next'} isDisabled={registerButtonDisabled} onClick={moveToSubmitConfirmation} size={ButtonSize.XL} />

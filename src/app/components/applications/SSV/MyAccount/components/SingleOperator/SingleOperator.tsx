@@ -1,36 +1,36 @@
-import { useEffect, useMemo, useState } from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
-import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
+import { observer } from 'mobx-react';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import config from '~app/common/config';
-import Status from '~app/components/common/Status';
-import { formatNumberToUi } from '~lib/utils/numbers';
-import { longStringShorten } from '~lib/utils/strings';
-import { Table } from '~app/components/common/Table/Table';
-import ToolTip from '~app/components/common/ToolTip/ToolTip';
+import UpdateFeeState from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/UpdateFeeState';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/SingleOperator/SingleOperator.styles';
+import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import LinkText from '~app/components/common/LinkText/LinkText';
-import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/SingleOperator/SingleOperator.styles';
-import UpdateFeeState from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/UpdateFeeState';
-import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
+import Status from '~app/components/common/Status';
+import { Table } from '~app/components/common/Table/Table';
+import ToolTip from '~app/components/common/ToolTip/ToolTip';
+import { ButtonSize } from '~app/enums/Button.enum';
+import { useOperatorBalance } from '~app/hooks/operator/useOperatorBalance';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { getSelectedOperator } from '~app/redux/account.slice.ts';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
-import { getOperatorValidators } from '~root/services/operator.service';
-import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
-import { PrimaryButton, SecondaryButton } from '~app/atomicComponents';
-import { ButtonSize } from '~app/enums/Button.enum';
 import { fetchAndSetOperatorFeeInfo } from '~app/redux/operator.slice.ts';
-import { getOperatorBalance } from '~root/services/operatorContract.service.ts';
-import { getSelectedOperator, setSelectedOperator } from '~app/redux/account.slice.ts';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import { formatNumberToUi } from '~lib/utils/numbers';
+import { longStringShorten } from '~lib/utils/strings';
+import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { getOperatorValidators } from '~root/services/operator.service';
 
 const SingleOperator = () => {
   const navigate = useNavigate();
@@ -38,19 +38,12 @@ const SingleOperator = () => {
   const [operatorsValidators, setOperatorsValidators] = useState([]);
   const [operatorsValidatorsPagination, setOperatorsValidatorsPagination] = useState<{ per_page: number } | null>(null);
   const operator = useAppSelector(getSelectedOperator)!;
-  const [balance, setBalance] = useState(operator?.balance);
+  const { data: balance } = useOperatorBalance();
   const isDarkMode = useAppSelector(getIsDarkMode);
   const strategyRedirect = useAppSelector(getStrategyRedirect);
 
-  const updateOperatorBalance = async () => {
-    const res = await getOperatorBalance({ id: operator.id });
-    dispatch(setSelectedOperator({ ...operator, balance: res }));
-    setBalance(res);
-  };
-
   useEffect(() => {
     if (!operator) return navigate(strategyRedirect);
-    updateOperatorBalance();
     loadOperatorValidators({ page: 1, perPage: 5 });
     dispatch(fetchAndSetOperatorFeeInfo(operator.id));
   }, []);

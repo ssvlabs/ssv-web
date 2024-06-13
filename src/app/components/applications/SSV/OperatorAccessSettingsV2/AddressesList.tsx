@@ -14,7 +14,7 @@ import { getSelectedOperator } from '~app/redux/account.slice';
 const AddressesList = () => {
   const formRef = useRef<HTMLDivElement>(null);
 
-  const operator = useAppSelector(getSelectedOperator);
+  const operator = useAppSelector(getSelectedOperator)!;
   const hasWhitelistedAddresses = (operator.whitelist_addresses || []).length > 0;
 
   const { addManager, deleteManager, mode, submit, reset, setter } = useManageAuthorizedAddresses();
@@ -111,7 +111,7 @@ const AddressesList = () => {
               <Button type="button" className="flex-1" size="xl" variant="secondary" onClick={reset} disabled={setter.isPending}>
                 Cancel
               </Button>
-              <Button className="flex-1" size="xl" type="submit" isActionBtn isLoading={setter.isPending} disabled={Boolean(addManager.form.formState.errors.addresses)}>
+              <Button className="flex-1" size="xl" type="submit" isActionBtn isLoading={setter.isPending} disabled={addManager.isSubmitDisabled}>
                 {mode === 'delete' ? 'Remove and Save' : 'Add and Save'}
               </Button>
             </div>

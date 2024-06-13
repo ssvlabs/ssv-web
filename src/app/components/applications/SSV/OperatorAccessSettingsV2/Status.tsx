@@ -8,7 +8,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
 
 const OperatorStatus = () => {
-  const operator = useAppSelector(getSelectedOperator);
+  const operator = useAppSelector(getSelectedOperator)!;
   const isFeeZero = !Number(operator.fee);
   const switchLabel = operator.is_private ? 'Public' : 'Private';
 

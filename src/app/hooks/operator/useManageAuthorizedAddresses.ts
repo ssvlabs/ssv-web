@@ -7,7 +7,7 @@ import { getSelectedOperator } from '~app/redux/account.slice';
 type Mode = 'add' | 'delete' | 'view';
 
 export const useManageAuthorizedAddresses = () => {
-  const operator = useAppSelector(getSelectedOperator);
+  const operator = useAppSelector(getSelectedOperator)!;
   const setter = useSetOperatorMultipleWhitelists();
 
   const addManager = useAddAuthorizedAddresses();

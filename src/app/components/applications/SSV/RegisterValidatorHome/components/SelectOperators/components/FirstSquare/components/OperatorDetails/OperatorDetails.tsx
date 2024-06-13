@@ -11,7 +11,7 @@ import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHom
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { isOperatorPrivate } from '~lib/utils/operatorMetadataHelper';
-import { IOperator } from '~app/model/operator.model';
+import { IOperator } from '~app/model/operator.model.ts';
 
 type Props = {
   gray80?: boolean;
@@ -40,7 +40,7 @@ const OperatorDetails = (props: Props) => {
   const dispatch = useAppDispatch();
 
   const copyId = () => {
-    navigator.clipboard.writeText(operator?.id.toString());
+    navigator.clipboard.writeText(operator.id.toString());
     dispatch(
       setMessageAndSeverity({
         message: 'Copied to clipboard.',

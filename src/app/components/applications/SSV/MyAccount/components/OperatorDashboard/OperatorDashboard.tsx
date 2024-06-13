@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import Status from '~app/components/common/Status';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
 import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards/ToggleDashboards';
@@ -18,7 +16,7 @@ import { IOperator } from '~app/model/operator.model';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getOperatorBalance } from '~root/services/operatorContract.service';
-import { fetchOperators, getAccountOperators, getOperatorsPagination, setSelectedOperatorId, sortOperatorsByStatus } from '~app/redux/account.slice';
+import { fetchOperators, getAccountOperators, getOperatorsPagination, setSelectedOperator, sortOperatorsByStatus } from '~app/redux/account.slice';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { setOperatorProcessId } from '~app/redux/operator.slice.ts';
@@ -28,13 +26,11 @@ const ButtonWrapper = styled.div`
 `;
 
 const OperatorDashboard = () => {
-  const stores = useStores();
   const classes = useStyles({});
   const navigate = useNavigate();
-  const processStore: ProcessStore = stores.Process;
   const dispatch = useAppDispatch();
   const [openExplorerRefs, setOpenExplorerRefs] = useState<any[]>([]);
-  const [operatorBalances, setOperatorBalances] = useState({});
+  const [operatorBalances, setOperatorBalances] = useState<Record<string, number>>({});
   const [loadingOperators, setLoadingOperators] = useState(false);
   const { page, pages, per_page, total } = useAppSelector(getOperatorsPagination);
   const operators = useAppSelector(getAccountOperators);
@@ -66,7 +62,7 @@ const OperatorDashboard = () => {
     navigate(config.routes.SSV.OPERATOR.HOME);
   };
 
-  const createData = (operatorName: JSX.Element, status: JSX.Element, performance: string, balance: JSX.Element, yearlyFee: JSX.Element, validators: number) => {
+  const createData = (operatorName: ReactElement, status: ReactElement, performance: string, balance: ReactElement, yearlyFee: ReactElement, validators: number) => {
     return {
       operatorName,
       status,
@@ -82,11 +78,7 @@ const OperatorDashboard = () => {
       <OperatorDetails operator={operator} setOpenExplorerRefs={setOpenExplorerRefs} />,
       <Status item={operator} />,
       `${operator.validators_count === 0 ? '- -' : `${operator.performance['30d'].toFixed(2)}%`}`,
-      <SsvAndSubTitle
-        // @ts-ignore
-        ssv={operatorBalances[operator.id] === undefined ? 'n/a' : formatNumberToUi(operatorBalances[operator.id])}
-        leftTextAlign
-      />,
+      <SsvAndSubTitle ssv={operatorBalances[operator.id] === undefined ? 'n/a' : formatNumberToUi(operatorBalances[operator.id])} leftTextAlign />,
       <SsvAndSubTitle ssv={formatNumberToUi(getFeeForYear(fromWei(operator.fee)))} leftTextAlign />,
       operator.validators_count
     );
@@ -97,15 +89,7 @@ const OperatorDashboard = () => {
       return;
     }
     const operator = operators[listIndex];
-    processStore.setProcess(
-      {
-        processName: 'single_operator',
-        // @ts-ignore
-        item: { ...operator, balance: operatorBalances[operator.id] }
-      },
-      1
-    );
-    dispatch(setSelectedOperatorId(operators[listIndex].id));
+    dispatch(setSelectedOperator({ ...operator, balance: operatorBalances[operator.id] })); // TODO does the balance refetch required?
     dispatch(setOperatorProcessId(operators[listIndex].id));
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
   };

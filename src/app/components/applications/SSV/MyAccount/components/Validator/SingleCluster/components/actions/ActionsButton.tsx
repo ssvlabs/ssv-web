@@ -2,26 +2,19 @@ import { LuLogOut, LuTrash2 } from 'react-icons/lu';
 import { useNavigate } from 'react-router-dom';
 import { SecondaryButton } from '~app/atomicComponents';
 import config from '~app/common/config';
-import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '~app/components/ui/dropdown-menu';
 import { Tooltip } from '~app/components/ui/tooltip';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { BULK_FLOWS } from '~app/enums/bulkFlow.enum.ts';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
-import { BULK_FLOWS, SingleCluster } from '~app/model/processes.model';
 import { getSelectedCluster } from '~app/redux/account.slice';
 
 const ActionsButton = () => {
   const cluster = useAppSelector(getSelectedCluster);
-
   const navigate = useNavigate();
-  const stores = useStores();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleCluster = processStore.getProcess;
 
   const goToBulkActions = (bulkFlow: BULK_FLOWS) => {
-    process.currentBulkFlow = bulkFlow;
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK, { state: { currentBulkFlow: bulkFlow } });
   };
 
   return (

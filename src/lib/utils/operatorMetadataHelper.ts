@@ -1,6 +1,7 @@
 import config, { translations } from '~app/common/config';
 import { IOperator } from '~app/model/operator.model';
 import { isEqualsAddresses } from '~lib/utils/strings';
+import { MAINNET_NETWORK_ID, getStoredNetwork } from '~root/providers/networkInfo.provider';
 
 export const FIELD_KEYS = {
   OPERATOR_NAME: 'operatorName',
@@ -224,19 +225,19 @@ export const isDkgAddressValid = (value: string, isForm?: boolean) => {
 };
 
 export const isOperatorPrivate = (operator: IOperator) => {
-  // const network = getStoredNetwork();
+  const network = getStoredNetwork();
 
   // eslint-disable-next-line no-constant-condition
-  if (/* network.networkId === 1 */ true) return Boolean(operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
+  if (network.networkId === MAINNET_NETWORK_ID) return Boolean(operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
   return operator.is_private ?? false;
 };
 
 export const canAccountUseOperator = (account: string, operator: IOperator) => {
-  // const network = getStoredNetwork();
+  const network = getStoredNetwork();
   if (!isOperatorPrivate(operator)) return true;
 
   // eslint-disable-next-line no-constant-condition
-  if (/* network.networkId === 1 */ true) {
+  if (network.networkId === MAINNET_NETWORK_ID) {
     return isEqualsAddresses(operator.address_whitelist, account);
   }
 

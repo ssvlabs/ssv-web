@@ -4,25 +4,21 @@ import { observer } from 'mobx-react';
 import { LuLogOut, LuTrash2 } from 'react-icons/lu';
 import { TbRefresh } from 'react-icons/tb';
 import { useNavigate } from 'react-router-dom';
+import { BulkActionRouteState } from '~app/Routes';
 import config from '~app/common/config';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings/Settings.styles';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuShortcut, DropdownMenuTrigger } from '~app/components/ui/dropdown-menu';
 import { Tooltip } from '~app/components/ui/tooltip';
+import { BULK_FLOWS } from '~app/enums/bulkFlow.enum';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
-import { BULK_FLOWS, SingleCluster } from '~app/model/processes.model';
 import { getSelectedCluster } from '~app/redux/account.slice';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { getBeaconChainLink } from '~root/providers/networkInfo.provider';
 
 const Settings = ({ validator, withoutSettings }: { validator: any; withoutSettings?: boolean }) => {
-  const stores = useStores();
   const classes = useStyles();
   const navigate = useNavigate();
-  const processStore: ProcessStore = stores.Process;
-  const process: SingleCluster = processStore.getProcess;
 
   const cluster = useAppSelector(getSelectedCluster);
 
@@ -56,9 +52,7 @@ const Settings = ({ validator, withoutSettings }: { validator: any; withoutSetti
   };
 
   const moveToRemoveValidator = (flow: BULK_FLOWS) => {
-    process.validator = validator;
-    process.currentBulkFlow = flow;
-    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK);
+    navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.VALIDATOR_REMOVE.BULK, { state: { validator, currentBulkFlow: flow } satisfies BulkActionRouteState });
   };
 
   return (

@@ -4,7 +4,6 @@ import { ThemeProvider as ThemeProviderLegacy } from '@mui/styles';
 import { configure } from 'mobx';
 import { useEffect, useMemo } from 'react';
 import { BrowserView, MobileView } from 'react-device-detect';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider as ScThemeProvider } from 'styled-components';
 import Routes from '~app/Routes/Routes';
@@ -12,9 +11,9 @@ import config from '~app/common/config';
 import BarMessage from '~app/components/common/BarMessage';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import { GlobalStyle } from '~app/globalStyle';
-import { useAppSelector } from '~app/hooks/redux.hook';
 import { useWalletConnectivity } from '~app/hooks/useWalletConnectivity';
 import { getIsDarkMode, getIsShowSsvLoader, getRestrictedUserGeo, setRestrictedUserGeo } from '~app/redux/appState.slice';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice.ts';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
@@ -53,7 +52,7 @@ if (import.meta.env.VITE_CLAIM_PAGE) {
 }
 
 const App = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const isDarkMode = useAppSelector(getIsDarkMode);
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const isShowSsvLoader = useAppSelector(getIsShowSsvLoader);

@@ -10,7 +10,6 @@ import InputLabel from '~app/components/common/InputLabel';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
@@ -19,6 +18,8 @@ import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/
 import { isJsonFile } from '~root/utils/dkg.utils';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppSelector } from '~app/hooks/redux.hook.ts';
+import { getIsClusterSelected } from '~app/redux/account.slice.ts';
 
 const KeyStoreFlow = () => {
   const stores = useStores();
@@ -28,13 +29,13 @@ const KeyStoreFlow = () => {
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
   const inputRef = useRef(null);
   const removeButtons = useRef(null);
-  const processStore: ProcessStore = stores.Process;
+  const isSecondRegistration = useAppSelector(getIsClusterSelected);
   const validatorStore: ValidatorStore = stores.Validator;
   const [errorMessage, setErrorMessage] = useState('');
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const [keyStorePassword, setKeyStorePassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const keyStoreFileIsJson = isJsonFile(validatorStore.keyStoreFile);
+  const keyStoreFileIsJson = isJsonFile(validatorStore.keyStoreFile as File);
 
   useEffect(() => {
     validatorStore.clearKeyStoreFlowData();
@@ -147,7 +148,7 @@ const KeyStoreFlow = () => {
         await validatorStore.extractKeyStoreData(keyStorePassword);
         // TODO fix this dummy value.
         const deposited = true; // await isDeposited()
-        const nextRouteAction = processStore.secondRegistration ? EValidatorFlowAction.SECOND_REGISTER : EValidatorFlowAction.FIRST_REGISTER;
+        const nextRouteAction = isSecondRegistration ? EValidatorFlowAction.SECOND_REGISTER : EValidatorFlowAction.FIRST_REGISTER;
         setIsLoading(false);
         validatorStore.registrationMode = 1;
         validatorStore.setMultiSharesMode(1);
@@ -178,7 +179,7 @@ const KeyStoreFlow = () => {
     <BorderScreen
       blackHeader
       header={translations.VALIDATOR.IMPORT.TITLE}
-      withoutNavigation={processStore.secondRegistration}
+      withoutNavigation={isSecondRegistration}
       body={[
         <Grid item container>
           <Grid item xs={12} className={classes.SubHeader}>
@@ -202,7 +203,7 @@ const KeyStoreFlow = () => {
     />
   );
 
-  if (processStore.secondRegistration) {
+  if (isSecondRegistration) {
     return (
       <Grid container>
         <NewWhiteWrapper type={0} header={'Cluster'} />

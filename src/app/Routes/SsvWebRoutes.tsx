@@ -48,7 +48,6 @@ const MetadataConfirmationPage = lazy(() => import('~app/components/applications
 
 const SsvWebRoutes: any = () => {
   const { chain } = useAccount();
-  console.log('chain:', chain);
 
   const ssvRoutes = config.routes.SSV;
 

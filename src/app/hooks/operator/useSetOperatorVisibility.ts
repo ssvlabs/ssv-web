@@ -1,7 +1,6 @@
 import { UseMutationResult, useMutation } from '@tanstack/react-query';
 import { useTransactionExecutor } from '~app/hooks/useTransactionExecutor';
 import { EContractName } from '~app/model/contracts.model';
-import { getOperator } from '~root/services/operator.service';
 import { getContractByName } from '~root/wagmi/utils';
 
 type Mutation = UseMutationResult<
@@ -23,8 +22,7 @@ export const useSetOperatorVisibility = () => {
       return executor({
         contractMethod: isPrivate ? contract.setOperatorsPrivateUnchecked : contract.setOperatorsPublicUnchecked,
         payload: [operatorIds],
-        getterTransactionState: () => getOperator(operatorIds[0]).then((o) => o.is_private),
-        prevState: isPrivate
+        refreshMS: 29000
       });
     }
   }) satisfies Mutation;

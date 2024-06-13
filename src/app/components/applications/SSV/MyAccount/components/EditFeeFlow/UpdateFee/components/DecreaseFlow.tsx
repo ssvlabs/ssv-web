@@ -3,12 +3,9 @@ import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import { SingleOperator } from '~app/model/processes.model';
 import { getOperator } from '~root/services/operator.service';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
@@ -18,17 +15,15 @@ import LinkText from '~app/components/common/LinkText';
 import { decreaseOperatorFee, getOperatorBalance } from '~root/services/operatorContract.service';
 import { UpdateFeeProps } from '~app/model/operator.model.ts';
 import { getOperatorProcessId } from '~app/redux/operator.slice.ts';
+import { getSelectedOperator, setSelectedOperator } from '~app/redux/account.slice.ts';
 
 const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
-  const stores = useStores();
   const navigate = useNavigate();
   const classes = useStyles({});
-  const processStore: ProcessStore = stores.Process;
   const [buttonText, setButtonText] = useState('Update Fee');
   const [updated, setUpdated] = useState(false);
   const isContractWallet = useAppSelector(getIsContractWallet);
-  const process: SingleOperator = processStore.getProcess;
-  const operator = process.item;
+  const operator = useAppSelector(getSelectedOperator)!;
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const processOperatorId = useAppSelector(getOperatorProcessId);
@@ -47,13 +42,7 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
       if (res) {
         const newOperatorData = await getOperator(processOperatorId);
         const balance = await getOperatorBalance(newOperatorData.id);
-        processStore.setProcess(
-          {
-            processName: 'single_operator',
-            item: { ...newOperatorData, balance }
-          },
-          1
-        );
+        dispatch(setSelectedOperator({ ...newOperatorData, balance }));
         setButtonText('Back To My Account');
         setUpdated(true);
       }

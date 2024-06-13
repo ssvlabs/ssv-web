@@ -11,6 +11,7 @@ import TableContainer from '@mui/material/TableContainer';
 import ToolTip from '~app/components/common/ToolTip';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Dashboard/Dashboard.styles';
 import PaginationActions, { TablePaginationActionsProps } from '~app/components/common/Table/PaginationActions/PaginationActions';
+import { ReactElement } from 'react';
 
 type DashboardProps = {
   rows: any[];
@@ -19,11 +20,11 @@ type DashboardProps = {
   rowsAction?: any;
   loading?: boolean;
   noItemsText: string;
-  header?: JSX.Element;
+  header?: ReactElement;
   headerPadding?: number;
   rowBackgroundColor?: any;
   // eslint-disable-next-line no-unused-vars
-  extraActions?: (item: any) => JSX.Element;
+  extraActions?: (item: any) => ReactElement;
   paginationActions: TablePaginationActionsProps;
 };
 

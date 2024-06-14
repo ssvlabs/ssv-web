@@ -12,10 +12,12 @@ import { getContractByName } from '~root/wagmi/utils';
 const addNewOperator = async ({
   isContractWallet,
   operatorRawData,
+  isPrivate,
   dispatch
 }: {
   isContractWallet: boolean;
   operatorRawData: IOperatorRawData;
+  isPrivate: boolean;
   dispatch: Function;
 }): Promise<boolean> => {
   const contract = getContractByName(EContractName.SETTER);
@@ -28,7 +30,7 @@ const addNewOperator = async ({
   const payload = [operatorRawData.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock))];
   return await transactionExecutor({
     contractMethod: contract.registerOperator,
-    payload: networkId === 1 ? payload : [...payload, false],
+    payload: networkId === 1 ? payload : [...payload, isPrivate],
     isContractWallet,
     getterTransactionState: async () => {
       const res = await getOperatorByPublicKey(decodeParameter('string', operatorRawData.publicKey));

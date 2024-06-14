@@ -1,21 +1,20 @@
-import { useState } from 'react';
 import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { PrimaryButton } from '~app/atomicComponents';
 import config from '~app/common/config';
+import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ChangeFeeDisplayValues from '~app/components/common/FeeUpdateTo/ChangeFeeDisplayValues';
-import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/index.styles';
-import { getOperator } from '~root/services/operator.service';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getIsContractWallet } from '~app/redux/wallet.slice';
-import { PrimaryButton } from '~app/atomicComponents';
-import { ButtonSize } from '~app/enums/Button.enum';
 import LinkText from '~app/components/common/LinkText';
-import { decreaseOperatorFee, getOperatorBalance } from '~root/services/operatorContract.service';
+import { ButtonSize } from '~app/enums/Button.enum';
+import { invalidateOperatorBalance } from '~app/hooks/operator/useOperatorBalance';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { UpdateFeeProps } from '~app/model/operator.model.ts';
-import { getOperatorProcessId } from '~app/redux/operator.slice.ts';
-import { getSelectedOperator, setSelectedOperator } from '~app/redux/account.slice.ts';
+import { getSelectedOperator } from '~app/redux/account.slice.ts';
+import { getIsContractWallet } from '~app/redux/wallet.slice';
+import { decreaseOperatorFee } from '~root/services/operatorContract.service';
 
 const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
   const navigate = useNavigate();
@@ -26,7 +25,6 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
   const operator = useAppSelector(getSelectedOperator)!;
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
-  const processOperatorId = useAppSelector(getOperatorProcessId);
 
   const onUpdateFeeHandle = async () => {
     if (updated) {
@@ -40,10 +38,8 @@ const DecreaseFlow = ({ oldFee, newFee, currency }: UpdateFeeProps) => {
         dispatch
       });
       if (res) {
-        const newOperatorData = await getOperator(processOperatorId);
-        const balance = await getOperatorBalance(newOperatorData.id);
-        dispatch(setSelectedOperator({ ...newOperatorData, balance }));
         setButtonText('Back To My Account');
+        invalidateOperatorBalance(operator.id);
         setUpdated(true);
       }
       setIsLoading(false);

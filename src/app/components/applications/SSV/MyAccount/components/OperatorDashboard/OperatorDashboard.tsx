@@ -1,25 +1,25 @@
-import { ReactElement, useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
+import { observer } from 'mobx-react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import { PrimaryButton } from '~app/atomicComponents';
 import config from '~app/common/config';
-import Status from '~app/components/common/Status';
-import { formatNumberToUi } from '~lib/utils/numbers';
-import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/MyAccount.styles';
 import Dashboard from '~app/components/applications/SSV/MyAccount/components/Dashboard';
 import ToggleDashboards from '~app/components/applications/SSV/MyAccount/components/ToggleDashboards/ToggleDashboards';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import { fromWei, getFeeForYear } from '~root/services/conversions.service';
-import { IOperator } from '~app/model/operator.model';
-import { setMessageAndSeverity } from '~app/redux/notifications.slice';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getOperatorBalance } from '~root/services/operatorContract.service';
-import { fetchOperators, getAccountOperators, getOperatorsPagination, setSelectedOperator, sortOperatorsByStatus } from '~app/redux/account.slice';
-import { PrimaryButton } from '~app/atomicComponents';
+import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
+import Status from '~app/components/common/Status';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { IOperator } from '~app/model/operator.model';
+import { fetchOperators, getAccountOperators, getOperatorsPagination, setSelectedOperatorId, sortOperatorsByStatus } from '~app/redux/account.slice';
+import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { setOperatorProcessId } from '~app/redux/operator.slice.ts';
+import { formatNumberToUi } from '~lib/utils/numbers';
+import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { getOperatorBalance } from '~root/services/operatorContract.service';
 
 const ButtonWrapper = styled.div`
   width: 164px;
@@ -89,8 +89,8 @@ const OperatorDashboard = () => {
       return;
     }
     const operator = operators[listIndex];
-    dispatch(setSelectedOperator({ ...operator, balance: operatorBalances[operator.id] })); // TODO does the balance refetch required?
-    dispatch(setOperatorProcessId(operators[listIndex].id));
+    dispatch(setSelectedOperatorId(operator.id));
+    dispatch(setOperatorProcessId(operator.id));
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ROOT);
   };
 

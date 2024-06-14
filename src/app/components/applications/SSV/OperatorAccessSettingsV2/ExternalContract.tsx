@@ -18,6 +18,7 @@ import { useSetOperatorsWhitelistingContract } from '~app/hooks/operator/useSetO
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
 import { isWhitelistingContract as _isWhitelistingContract } from '~root/services/operatorContract.service';
+import config from '~app/common/config';
 
 type FormValues = {
   externalContract: string;
@@ -26,7 +27,7 @@ type FormValues = {
 const ExternalContract = () => {
   const navigate = useNavigate();
 
-  const operator = useAppSelector(getSelectedOperator);
+  const operator = useAppSelector(getSelectedOperator)!;
   const setExternalContract = useSetOperatorsWhitelistingContract();
 
   const isWhitelistingContract = useMutation({
@@ -91,10 +92,11 @@ const ExternalContract = () => {
                   <FaCircleInfo className="size-4 text-gray-500" />
                 </Tooltip>
               </h1>
-              <p className="font-medium text-sm">
-                Delegate the management of whitelisted addresses to an external contract.
-                <br />
-                Whitelisted addresses are effective only when your operator status is set to Private.
+              <p>
+                Manage whitelisted addresses through an external contract. Learn how to set an{' '}
+                <a href={config.links.PERMISSIONED_OPERATORS} className="text-primary-500" target="_blank">
+                  External Contract
+                </a>
               </p>
             </div>
             <Alert variant="warning">

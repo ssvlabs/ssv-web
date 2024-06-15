@@ -205,7 +205,7 @@ const ValidatorRegistrationConfirmation = () => {
               <NameAndAddress name={'SSV Deposit'} />
             </Grid>
             <Grid item>
-              <NameAndAddress name={`${'registerValidator' in process ? process.registerValidator?.depositAmount : 0} SSV`} />
+              <NameAndAddress name={`${'depositAmount' in process ? process?.depositAmount : 0} SSV`} />
             </Grid>
           </Grid>
         </Grid>,

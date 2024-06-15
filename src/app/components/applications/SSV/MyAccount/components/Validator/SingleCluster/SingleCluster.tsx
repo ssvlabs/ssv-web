@@ -15,7 +15,7 @@ import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { useStores } from '~app/hooks/useStores';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
-import { SingleCluster as SingleClusterProcess } from '~app/model/processes.model';
+import { RegisterValidator } from '~app/model/processes.model';
 import { getSelectedCluster, setExcludedCluster, setSelectedClusterId } from '~app/redux/account.slice';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { selectOperators } from '~app/redux/operator.slice.ts';
@@ -62,7 +62,6 @@ const SingleCluster = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const processStore: ProcessStore = stores.Process;
-  const process: SingleClusterProcess = processStore.getProcess;
   const cluster = useAppSelector(getSelectedCluster);
   const isDarkMode = useAppSelector(getIsDarkMode);
   const accountAddress = useAppSelector(getAccountAddress);
@@ -71,9 +70,7 @@ const SingleCluster = () => {
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
 
   const addToCluster = () => {
-    process.processName = 'cluster_registration';
-    // @ts-ignore
-    process.registerValidator = { depositAmount: 0 };
+    processStore.process = { depositAmount: 0 } as RegisterValidator;
     dispatch(selectOperators(cluster.operators));
     navigate(getNextNavigation());
   };

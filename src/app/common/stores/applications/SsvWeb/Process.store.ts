@@ -29,7 +29,7 @@ class ProcessStore {
   }
 
   get secondRegistration() {
-    return 'registerValidator' in this.process;
+    return 'depositAmount' in this.process;
   }
 }
 

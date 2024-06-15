@@ -201,7 +201,8 @@ class ValidatorStore {
         // const keyShares = new KeyShares();
         const threshold = await ssvKeys.createThreshold(this.keyStorePrivateKey, operators);
         const encryptedShares = await ssvKeys.encryptShares(operators, threshold.shares);
-        let totalCost = 'registerValidator' in process ? prepareSsvAmountToTransfer(toWei(process.registerValidator?.depositAmount)) : 0;
+        let totalCost = 'depositAmount' in process ? prepareSsvAmountToTransfer(toWei(process?.depositAmount)) : 0;
+
         if (process && 'fundingPeriod' in process) {
           const networkCost = propertyCostByPeriod(networkFee, process.fundingPeriod);
           const operatorsCost = propertyCostByPeriod(selectedOperatorsFee, process.fundingPeriod);
@@ -254,7 +255,7 @@ class ValidatorStore {
     return new Promise(async (resolve) => {
       const processStore: ProcessStore = rootStore.Process;
       const process: RegisterValidator | SingleCluster = <RegisterValidator | SingleCluster>processStore.process;
-      let totalCost = 'registerValidator' in process ? prepareSsvAmountToTransfer(toWei(process.registerValidator?.depositAmount)) : 0;
+      let totalCost = 'depositAmount' in process ? prepareSsvAmountToTransfer(toWei(process?.depositAmount)) : 0;
       if (process && 'fundingPeriod' in process) {
         const networkCost = propertyCostByPeriod(networkFee, process.fundingPeriod);
         const operatorsCost = propertyCostByPeriod(selectedOperatorsFee, process.fundingPeriod);

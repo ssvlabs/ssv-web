@@ -232,7 +232,7 @@ export const isOperatorPrivate = (operator: IOperator) => {
   return operator.is_private ?? false;
 };
 
-export const canAccountUseOperator = (account: string, operator: IOperator) => {
+export const canAccountUseOperator = (account: string | `0x${string}`, operator: IOperator) => {
   const network = getStoredNetwork();
   if (!isOperatorPrivate(operator)) return true;
 
@@ -241,5 +241,5 @@ export const canAccountUseOperator = (account: string, operator: IOperator) => {
     return isEqualsAddresses(operator.address_whitelist, account);
   }
 
-  return operator.whitelist_addresses?.some((address) => isEqualsAddresses(address, account)) ?? false;
+  return operator?.whitelist_addresses?.some((address) => isEqualsAddresses(address, account)) ?? false;
 };

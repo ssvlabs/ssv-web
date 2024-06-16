@@ -64,7 +64,7 @@ const ValidatorRegistrationConfirmation = () => {
     validatorsCount: validatorStore.validatorsCount
   });
   const amountOfSsv: number = Number(liquidationCollateralCost.add(networkCost).add(operatorsCost).mul(validatorStore.validatorsCount));
-  const totalAmountOfSsv: number = 'depositAmount' in process && process.depositAmount ? process.depositAmount : amountOfSsv;
+  const totalAmountOfSsv: number = 'depositAmount' in process ? process.depositAmount || 0 : amountOfSsv;
   const successPageNavigate = {
     true: () => navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER.SUCCESS_PAGE),
     false: () => navigate(config.routes.SSV.VALIDATOR.SUCCESS_PAGE)
@@ -109,7 +109,7 @@ const ValidatorRegistrationConfirmation = () => {
         <NameAndAddress name={'Total'} />
       </Grid>
       <Grid item style={{ marginBottom: 20 }}>
-        <Grid className={classes.TotalSSV}>{formatNumberToUi(totalAmountOfSsv)} SSV</Grid>
+        <Grid className={classes.TotalSSV}>{totalAmountOfSsv ? formatNumberToUi(totalAmountOfSsv) : 0} SSV</Grid>
       </Grid>
       {totalAmountOfSsv > walletSsvBalance && (
         <Grid container item className={classes.InsufficientBalanceWrapper}>

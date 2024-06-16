@@ -36,6 +36,11 @@ const getOperatorsByOwnerAddress = async ({
   return res ?? { operators: [], pagination: DEFAULT_PAGINATION };
 };
 
+type OperatorSearchResponse = {
+  operators: IOperator[];
+  pagination: IPagination;
+};
+
 const getOperators = async (props: OperatorsListQuery, skipRetry?: boolean) => {
   const { page, perPage, type, ordering, search, dkgEnabled } = props;
   let url = `${getStoredNetwork().api}/operators?`;
@@ -47,10 +52,22 @@ const getOperators = async (props: OperatorsListQuery, skipRetry?: boolean) => {
   if (dkgEnabled) url += 'has_dkg_address=true&';
   url += `ts=${new Date().getTime()}`;
 
-  const res = await getRequest(url, skipRetry);
-  return (res ?? { operators: [], pagination: DEFAULT_PAGINATION }) as {
-    operators: IOperator[];
-    pagination: IPagination;
+  const res = (await getRequest(url, skipRetry)) as OperatorSearchResponse;
+  if (!res) return { operators: [], pagination: DEFAULT_PAGINATION } as OperatorSearchResponse;
+
+  const enrichedOperators = await Promise.all(
+    res.operators.map(async (operator) =>
+      getOperatorByPublicKey(operator.public_key, skipRetry).then((response) => {
+        const converted = mapKeys(response.data, (_, key) => snakeCase(key));
+        return { ...operator, ...converted };
+      })
+    )
+  );
+
+  return {
+    ...res,
+    operators: enrichedOperators,
+    pagination: res.pagination
   };
 };
 

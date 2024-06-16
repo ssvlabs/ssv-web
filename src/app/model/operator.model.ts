@@ -40,6 +40,31 @@ export interface IOperator {
   network: string;
 }
 
+export interface GetOperatorByPublicKeyResponse {
+  type: string;
+  data: {
+    primaryId: number;
+    id: number;
+    network: string;
+    version: string;
+    ownerAddress: string;
+    publicKey: string;
+    fee: string;
+    previousFee: string;
+    declaredFee: string;
+    addressWhitelist: string;
+    memo: null;
+    blockNumber: number;
+    isValid: boolean;
+    isDeleted: boolean;
+    createdAt: string;
+    updatedAt: string;
+    whitelistAddresses: string[];
+    isPrivate: boolean;
+    whitelistingContract: string;
+  };
+}
+
 export interface IOperatorRawData {
   id: number;
   fee: number;

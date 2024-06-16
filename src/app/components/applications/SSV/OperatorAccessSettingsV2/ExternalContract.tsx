@@ -48,7 +48,7 @@ const ExternalContract = () => {
             return isWhitelistingContract.mutateAsync(address);
           }, 'Contract is not a compatible whitelisting contract')
       }) satisfies z.ZodType<FormValues>,
-    [isWhitelistingContract.mutateAsync]
+    [isWhitelistingContract]
   );
 
   const form = useForm<FormValues>({

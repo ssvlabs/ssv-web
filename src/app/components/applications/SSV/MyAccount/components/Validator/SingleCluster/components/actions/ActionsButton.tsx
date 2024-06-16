@@ -1,14 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
+import { ChevronDown } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import { ProcessStore } from '~app/common/stores/applications/SsvWeb';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/actions.styles';
+import { Button } from '~app/components/ui/button';
+import { useStores } from '~app/hooks/useStores';
 import { BULK_FLOWS, SingleCluster } from '~app/model/processes.model';
-import { SecondaryButton } from '~app/atomicComponents';
-import { ButtonSize } from '~app/enums/Button.enum';
 
 const ActionsButton = () => {
   const classes = useStyles();
@@ -37,8 +37,11 @@ const ActionsButton = () => {
     };
   }, [actionsRef, showActions]);
 
-  const onButtonClickHandler = () => {
+  const [rect, setRect] = useState<Partial<DOMRect>>({});
+
+  const onButtonClickHandler = (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setShowActions(true);
+    setRect((ev.currentTarget as HTMLButtonElement).getBoundingClientRect());
   };
 
   const goToBulkActions = (bulkFlow: BULK_FLOWS) => {
@@ -48,9 +51,19 @@ const ActionsButton = () => {
 
   return (
     <Grid>
-      <SecondaryButton text={'Actions'} onClick={onButtonClickHandler} icon={'/images/arrowDown/arrow.svg'} size={ButtonSize.SM} />
+      <Button variant="secondary" onClick={onButtonClickHandler}>
+        Actions <ChevronDown className="size-4" />
+      </Button>
+      {/* <SecondaryButton text={'Actions'} onClick={onButtonClickHandler} icon={'/images/arrowDown/arrow.svg'} size={ButtonSize.SM} /> */}
       {showActions && (
-        <Grid item className={classes.SettingsWrapper}>
+        <Grid
+          item
+          className={classes.SettingsWrapper}
+          style={{
+            top: (rect.bottom || 0) + 4,
+            left: rect.left || 0
+          }}
+        >
           <Grid ref={actionsRef} className={classes.Settings}>
             <Grid container item className={classes.Button} onClick={() => goToBulkActions(BULK_FLOWS.BULK_REMOVE)} style={{ justifyContent: 'space-between' }}>
               <Grid container item xs style={{ gap: 8, width: '100%' }}>

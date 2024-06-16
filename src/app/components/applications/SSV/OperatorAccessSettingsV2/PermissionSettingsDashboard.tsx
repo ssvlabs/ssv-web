@@ -10,7 +10,7 @@ import { FaCircleInfo } from 'react-icons/fa6';
 import { Tooltip } from '~app/components/ui/tooltip';
 
 const PermissionSettingsDashboard = () => {
-  const selectedOperator = useAppSelector(getSelectedOperator);
+  const selectedOperator = useAppSelector(getSelectedOperator)!;
   const hasWhitelistingContract = Boolean(selectedOperator.whitelisting_contract && selectedOperator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
 
   return (

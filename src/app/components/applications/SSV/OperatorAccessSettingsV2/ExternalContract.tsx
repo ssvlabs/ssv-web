@@ -28,8 +28,9 @@ const ExternalContract = () => {
   const navigate = useNavigate();
 
   const operator = useAppSelector(getSelectedOperator)!;
-  const setExternalContract = useSetOperatorsWhitelistingContract();
+  const whitelistingContractAddress = operator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator.whitelisting_contract : '';
 
+  const setExternalContract = useSetOperatorsWhitelistingContract();
   const isWhitelistingContract = useMutation({
     mutationFn: _isWhitelistingContract
   });
@@ -38,31 +39,42 @@ const ExternalContract = () => {
     () =>
       z.object({
         externalContract: z
-          .custom<string>(isAddress, 'Contract address must be a in a valid address format')
-          .refine(isWhitelistingContract.mutateAsync, 'Contract is not a compatible whitelisting contract')
+          .custom<string>((address) => {
+            if (!address) return true;
+            return isAddress(address);
+          }, 'Contract address must be a in a valid address format')
+          .refine((address) => {
+            if (!address) return true;
+            return isWhitelistingContract.mutateAsync(address);
+          }, 'Contract is not a compatible whitelisting contract')
       }) satisfies z.ZodType<FormValues>,
-    [isWhitelistingContract.mutateAsync]
+    [isWhitelistingContract]
   );
 
   const form = useForm<FormValues>({
     mode: 'all',
     defaultValues: {
-      externalContract: operator.whitelisting_contract
+      externalContract: whitelistingContractAddress
     },
     resolver: zodResolver(schema, { async: true }, { mode: 'async' })
   });
 
-  const address = form.watch('externalContract');
-  const isChanged = address !== operator.whitelisting_contract;
-
+  const isChanged = form.watch('externalContract') !== whitelistingContractAddress;
   const hasErrors = Boolean(form.formState.errors.externalContract);
 
   const submit = form.handleSubmit((values) => {
-    setExternalContract.mutate({
-      type: 'set',
-      operatorIds: [operator.id],
-      contractAddress: values.externalContract
-    });
+    setExternalContract.mutate(
+      {
+        type: values.externalContract ? 'set' : 'remove',
+        operatorIds: [operator.id],
+        contractAddress: values.externalContract
+      },
+      {
+        onSuccess: () => {
+          form.reset({ externalContract: values.externalContract });
+        }
+      }
+    );
   });
 
   return (
@@ -92,12 +104,7 @@ const ExternalContract = () => {
                   <FaCircleInfo className="size-4 text-gray-500" />
                 </Tooltip>
               </h1>
-              <p>
-                Manage whitelisted addresses through an external contract. Learn how to set an{' '}
-                <a href={config.links.PERMISSIONED_OPERATORS} className="text-primary-500" target="_blank">
-                  External Contract
-                </a>
-              </p>
+              <p>Manage whitelisted addresses through an external contract</p>
             </div>
             <Alert variant="warning">
               <AlertDescription>
@@ -113,7 +120,13 @@ const ExternalContract = () => {
                     <Input
                       {...field}
                       placeholder="0xCONT...RACT"
-                      leftSlot={isWhitelistingContract.isPending ? <Loader2 className="w-6 h-6 text-primary-500" /> : <IoDocumentTextOutline className="w-6 h-6 text-gray-600" />}
+                      leftSlot={
+                        isWhitelistingContract.isPending ? (
+                          <Loader2 className="w-6 h-6 text-primary-500 animate-spin" />
+                        ) : (
+                          <IoDocumentTextOutline className="w-6 h-6 text-gray-600" />
+                        )
+                      }
                     />
                   </FormControl>
                   <FormMessage />

@@ -26,9 +26,10 @@ export const useSetOperatorsWhitelistingContract = () => {
 
   return useMutation({
     mutationFn: ({ type, operatorIds, contractAddress }) => {
+      const isSet = type === 'set';
       return executor({
         contractMethod: methods[type],
-        payload: [operatorIds, contractAddress],
+        payload: isSet ? [operatorIds, contractAddress] : [operatorIds],
         refreshMS: 29000
       });
     }

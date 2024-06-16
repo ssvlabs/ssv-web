@@ -1,12 +1,13 @@
 import Decimal from 'decimal.js';
-import config from '~app/common/config';
 import { keccak256 } from 'web3-utils';
-import { EContractName } from '~app/model/contracts.model';
-import { getContractByName } from '~root/wagmi/utils';
-import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
-import { IOperator } from '~app/model/operator.model';
+import config from '~app/common/config';
 import { ICluster } from '~app/model/cluster.model';
+import { EContractName } from '~app/model/contracts.model';
+import { IOperator } from '~app/model/operator.model';
+import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { getRequest } from '~root/services/httpApi.service';
+import { enrichOperator } from '~root/services/operator.service';
+import { getContractByName } from '~root/wagmi/utils';
 
 const clusterDataDTO = ({ cluster }: { cluster: ICluster }) => ({
   validatorCount: cluster.validatorCount,
@@ -28,12 +29,18 @@ const extendClusterEntity = async (cluster: ICluster, ownerAddress: string, liqu
       clusterData
     };
   }
-  const balance = await getClusterBalance(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, false, clusterData);
-  const burnRate = await getClusterBurnRate(operatorIds, ownerAddress, clusterData);
+
+  const [operators, balance, burnRate] = await Promise.all([
+    Promise.all(cluster.operators.map(enrichOperator)),
+    getClusterBalance(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, false, clusterData),
+    getClusterBurnRate(operatorIds, ownerAddress, clusterData)
+  ]);
+
   const runWay: number = getClusterRunWay({ balance, burnRate }, liquidationCollateralPeriod, minimumLiquidationCollateral);
   return {
     ...cluster,
     runWay,
+    operators,
     burnRate: burnRate.toString(),
     balance: balance.toString(),
     clusterData
@@ -189,14 +196,14 @@ const getClusterData = async (clusterHash: string, liquidationCollateralPeriod?:
 };
 
 export {
-  extendClusterEntity,
-  getClustersByOwnerAddress,
   clusterDataDTO,
-  getSortedOperatorsIds,
-  getClusterHash,
-  getClusterByHash,
+  extendClusterEntity,
   getClusterBalance,
+  getClusterByHash,
+  getClusterData,
+  getClusterHash,
   getClusterNewBurnRate,
   getClusterRunWay,
-  getClusterData
+  getClustersByOwnerAddress,
+  getSortedOperatorsIds
 };

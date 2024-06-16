@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { useStyles } from '~app/components/common/ImageDiv/ImageDiv.styles';
 
 type ImageDivProps = {
-  onClick?: any;
+  onClick?: (ev: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   image: string;
   width: number;
   height: number;

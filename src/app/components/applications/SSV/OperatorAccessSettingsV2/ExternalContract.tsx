@@ -63,6 +63,7 @@ const ExternalContract = () => {
   const hasErrors = Boolean(form.formState.errors.externalContract);
 
   const submit = form.handleSubmit((values) => {
+    if (!isChanged) return;
     setExternalContract.mutate(
       {
         type: values.externalContract ? 'set' : 'remove',
@@ -88,6 +89,7 @@ const ExternalContract = () => {
               <h1 className="text-xl font-bold flex items-center gap-2">
                 <span>External Contract</span>
                 <Tooltip
+                  asChild
                   content={
                     <div>
                       Learn how to set an{' '}
@@ -101,10 +103,16 @@ const ExternalContract = () => {
                     </div>
                   }
                 >
-                  <FaCircleInfo className="size-4 text-gray-500" />
+                  <div>
+                    <FaCircleInfo className="size-4 text-gray-500" />
+                  </div>
                 </Tooltip>
               </h1>
-              <p>Manage whitelisted addresses through an external contract</p>
+              <p>
+                Delegate the management of whitelisted addresses to an external contract.
+                <br />
+                Whitelisted addresses are effective only when your operator status is set to Private.
+              </p>
             </div>
             <Alert variant="warning">
               <AlertDescription>

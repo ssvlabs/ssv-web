@@ -6,12 +6,12 @@ export const useStyles = makeStyles((theme: Theme) => ({
     gap: 10,
     width: '100%',
     borderRadius: 2,
+    fontSize: 14,
     padding: '12px 16px',
     alignItems: 'center',
     color: theme.colors.black,
     justifyContent: 'flex-start',
-    marginBottom: theme.spacing(5),
     border: `solid 1px ${theme.colors.primaryError}`,
-    backgroundColor: theme.colors.primaryErrorRegular,
-  },
+    backgroundColor: theme.colors.primaryErrorRegular
+  }
 }));

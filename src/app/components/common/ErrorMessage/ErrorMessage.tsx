@@ -1,9 +1,10 @@
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useStyles } from './ErrorMessage.styles';
+import { ReactElement } from 'react';
 
 type MessageDivProps = {
-  text: any;
+  text: string | ReactElement;
   extendClasses?: any;
 };
 

@@ -5,9 +5,9 @@ import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaCircleInfo } from 'react-icons/fa6';
 import { IoDocumentTextOutline } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
 import { isAddress } from 'viem';
 import { z } from 'zod';
+import config from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { Alert, AlertDescription } from '~app/components/ui/alert';
 import { Button } from '~app/components/ui/button';
@@ -18,15 +18,12 @@ import { useSetOperatorsWhitelistingContract } from '~app/hooks/operator/useSetO
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
 import { isWhitelistingContract as _isWhitelistingContract } from '~root/services/operatorContract.service';
-import config from '~app/common/config';
 
 type FormValues = {
   externalContract: string;
 };
 
 const ExternalContract = () => {
-  const navigate = useNavigate();
-
   const operator = useAppSelector(getSelectedOperator)!;
   const whitelistingContractAddress = operator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator.whitelisting_contract : '';
 
@@ -61,6 +58,12 @@ const ExternalContract = () => {
 
   const isChanged = form.watch('externalContract') !== whitelistingContractAddress;
   const hasErrors = Boolean(form.formState.errors.externalContract);
+
+  const reset = () => {
+    form.reset({
+      externalContract: whitelistingContractAddress
+    });
+  };
 
   const submit = form.handleSubmit((values) => {
     if (!isChanged) return;
@@ -143,7 +146,7 @@ const ExternalContract = () => {
             />{' '}
             {isChanged && (
               <div className="flex gap-3">
-                <Button type="button" disabled={setExternalContract.isPending} size="xl" variant="secondary" className="w-full" onClick={() => navigate(-1)}>
+                <Button type="button" disabled={setExternalContract.isPending} size="xl" variant="secondary" className="w-full" onClick={reset}>
                   Cancel
                 </Button>
                 <Button type="submit" disabled={hasErrors} isLoading={setExternalContract.isPending} isActionBtn size="xl" className="w-full">

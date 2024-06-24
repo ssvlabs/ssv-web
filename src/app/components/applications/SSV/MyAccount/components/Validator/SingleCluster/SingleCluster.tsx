@@ -115,7 +115,13 @@ const SingleCluster = () => {
       </Grid>
       <Section>
         <Grid item>
-          <Balance cluster={cluster} moveToReactivateCluster={moveToReactivateCluster} moveToDeposit={moveToDeposit} moveToWithdraw={moveToWithdraw} />
+          <Balance
+            cluster={cluster}
+            hasPrivateOperators={hasPrivateOperators || false}
+            moveToReactivateCluster={moveToReactivateCluster}
+            moveToDeposit={moveToDeposit}
+            moveToWithdraw={moveToWithdraw}
+          />
         </Grid>
         <div>
           <ValidatorsWrapper>

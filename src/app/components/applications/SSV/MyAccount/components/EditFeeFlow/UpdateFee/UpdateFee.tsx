@@ -48,7 +48,7 @@ const UpdateFee = () => {
   useEffect(() => {
     if (!processOperatorId) return navigate(strategyRedirect);
     dispatch(setIsLoading(true));
-    getOperator(processOperatorId).then(async (response: any) => {
+    getOperator(processOperatorId).then(async (response) => {
       if (response) {
         const operatorFee = formatNumberToUi(getFeeForYear(fromWei(response.fee)));
         setOperator(response);

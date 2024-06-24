@@ -5,35 +5,21 @@ import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 
 type ToolTipProps = {
-  title?: any,
-  children: any,
-  shouldDisableHoverListener?: boolean,
-  placement:
-      | 'bottom-end'
-      | 'bottom-start'
-      | 'bottom'
-      | 'left-end'
-      | 'left-start'
-      | 'left'
-      | 'right-end'
-      | 'right-start'
-      | 'right'
-      | 'top-end'
-      | 'top-start'
-      | 'top';
+  title?: any;
+  children: any;
+  shouldDisableHoverListener?: boolean;
+  placement: 'bottom-end' | 'bottom-start' | 'bottom' | 'left-end' | 'left-start' | 'left' | 'right-end' | 'right-start' | 'right' | 'top-end' | 'top-start' | 'top';
 };
 
-const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
-    <Tooltip {...props} classes={{ popper: className }} />
-))(({ theme }) => ({
+const LightTooltip = styled(({ className, ...props }: TooltipProps) => <Tooltip {...props} classes={{ popper: className }} />)(({ theme }) => ({
   [`& .${tooltipClasses.tooltip}`]: {
     [`& .${tooltipClasses.arrow}`]: {
-      color: theme.colors.gray80,
+      color: theme.colors.gray80
     },
     padding: 10,
     zIndex: 9999,
     fontSize: 12,
-    maxWidth: 474,
+    maxWidth: 507,
     fontWeight: 500,
     lineHeight: 1.62,
     textAlign: 'left',
@@ -46,16 +32,16 @@ const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
       fontSize: 12,
       fontWeight: 500,
       lineHeight: 1.62,
-      color: theme.colors.primaryBlue,
-    },
-  },
+      color: theme.colors.primaryBlue
+    }
+  }
 }));
 
 export default function AnchorElTooltips(props: ToolTipProps) {
   const { children, placement, title, shouldDisableHoverListener } = props;
   const positionRef = React.useRef<{ x: number; y: number }>({
     x: 0,
-    y: 0,
+    y: 0
   });
   const popperRef = React.useRef<Instance>(null);
   const areaRef = React.useRef<HTMLDivElement>(null);
@@ -69,29 +55,24 @@ export default function AnchorElTooltips(props: ToolTipProps) {
   };
 
   return (
-      <LightTooltip
-          title={title}
-          // style={{ alignItems: alignItems ?? 'center', display: 'flex' }}
-          placement={placement ?? 'top'}
-          disableHoverListener={shouldDisableHoverListener}
-          arrow
-          PopperProps={{
-            popperRef,
-            anchorEl: {
-              getBoundingClientRect: () => {
-                return new DOMRect(
-                    positionRef.current.x,
-                    areaRef.current!.getBoundingClientRect().y,
-                    0,
-                    0,
-                );
-              },
-            },
-          }}
-      >
-        <Grid ref={areaRef} onMouseMove={handleMouseMove}>
-          {children}
-        </Grid>
-      </LightTooltip>
+    <LightTooltip
+      title={title}
+      // style={{ alignItems: alignItems ?? 'center', display: 'flex' }}
+      placement={placement ?? 'top'}
+      disableHoverListener={shouldDisableHoverListener}
+      arrow
+      PopperProps={{
+        popperRef,
+        anchorEl: {
+          getBoundingClientRect: () => {
+            return new DOMRect(positionRef.current.x, areaRef.current!.getBoundingClientRect().y, 0, 0);
+          }
+        }
+      }}
+    >
+      <Grid ref={areaRef} onMouseMove={handleMouseMove}>
+        {children}
+      </Grid>
+    </LightTooltip>
   );
 }

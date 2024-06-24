@@ -133,6 +133,7 @@ export const config = {
     SNAPSHOT_LINK: 'https://snapshot.org/#/mainnet.ssvnetwork.eth',
     SSV_DOCUMENTATION: 'https://docs.ssv.network/learn/introduction',
     DKG_DOCKER_INSTALL_URL: 'https://docs.docker.com/engine/install/',
+    PERMISSIONED_OPERATORS: 'https://docs.ssv.network/learn/operators/permissioned-operators',
     MORE_ON_CLUSTERS: 'https://docs.ssv.network/learn/stakers/clusters',
     SSV_KEYS_RELEASES_URL: 'https://github.com/bloxapp/ssv-keys/releases',
     SSV_UPDATE_FEE_DOCS: 'https://docs.ssv.network/learn/operators/update-fee',

@@ -132,9 +132,11 @@ const ExternalContract = () => {
                       {...field}
                       placeholder="0xCONT...RACT"
                       rightSlot={
-                        <Button variant="ghost" size="icon" onClick={() => field.onChange('')}>
-                          <X className="size-5" />
-                        </Button>
+                        field.value && (
+                          <Button variant="ghost" size="icon" onClick={() => field.onChange('')}>
+                            <X className="size-5" />
+                          </Button>
+                        )
                       }
                       leftSlot={
                         isWhitelistingContract.isPending ? (

@@ -67,6 +67,7 @@ const App = () => {
   useWalletConnectivity();
 
   useEffect(() => {
+    if (import.meta.env.VITE_FAUCET_PAGE) return;
     if (getFromLocalStorageByKey('locationRestrictionDisabled')) {
       console.debug('Skipping location restriction functionality in this app.');
       dispatch(setRestrictedUserGeo(''));
@@ -84,7 +85,7 @@ const App = () => {
       dispatch(setRestrictedUserGeo(''));
       navigateToRoot();
     }
-  }, [isMainnet, accountAddress, dispatch, navigate, navigateToRoot]);
+  }, [isMainnet, accountAddress, navigateToRoot, dispatch]);
 
   useEffect(() => {
     if (!isRestrictedCountry) {

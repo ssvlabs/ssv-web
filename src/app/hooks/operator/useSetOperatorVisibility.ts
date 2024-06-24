@@ -1,6 +1,9 @@
 import { UseMutationResult, useMutation } from '@tanstack/react-query';
+import { useAppSelector } from '~app/hooks/redux.hook';
 import { useTransactionExecutor } from '~app/hooks/useTransactionExecutor';
 import { EContractName } from '~app/model/contracts.model';
+import { getSelectedOperator } from '~app/redux/account.slice';
+import { getOperator } from '~root/services/operator.service';
 import { getContractByName } from '~root/wagmi/utils';
 
 type Mutation = UseMutationResult<
@@ -14,6 +17,7 @@ type Mutation = UseMutationResult<
 >;
 
 export const useSetOperatorVisibility = () => {
+  const operator = useAppSelector(getSelectedOperator);
   const executor = useTransactionExecutor();
 
   return useMutation({
@@ -22,7 +26,8 @@ export const useSetOperatorVisibility = () => {
       return executor({
         contractMethod: isPrivate ? contract.setOperatorsPrivateUnchecked : contract.setOperatorsPublicUnchecked,
         payload: [operatorIds],
-        refreshMS: 29000
+        prevState: operator?.is_private,
+        getterTransactionState: async () => getOperator(operatorIds[0]).then((res) => res.is_private)
       });
     }
   }) satisfies Mutation;

@@ -1,13 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaCircleInfo } from 'react-icons/fa6';
 import { IoDocumentTextOutline } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
 import { isAddress } from 'viem';
 import { z } from 'zod';
+import config from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { Alert, AlertDescription } from '~app/components/ui/alert';
 import { Button } from '~app/components/ui/button';
@@ -18,18 +18,16 @@ import { useSetOperatorsWhitelistingContract } from '~app/hooks/operator/useSetO
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
 import { isWhitelistingContract as _isWhitelistingContract } from '~root/services/operatorContract.service';
-import config from '~app/common/config';
 
 type FormValues = {
   externalContract: string;
 };
 
 const ExternalContract = () => {
-  const navigate = useNavigate();
+  const operator = useAppSelector(getSelectedOperator)!;
+  const whitelistingContractAddress = operator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator.whitelisting_contract : '';
 
-  const operator = useAppSelector(getSelectedOperator);
   const setExternalContract = useSetOperatorsWhitelistingContract();
-
   const isWhitelistingContract = useMutation({
     mutationFn: _isWhitelistingContract
   });
@@ -38,31 +36,49 @@ const ExternalContract = () => {
     () =>
       z.object({
         externalContract: z
-          .custom<string>(isAddress, 'Contract address must be a in a valid address format')
-          .refine(isWhitelistingContract.mutateAsync, 'Contract is not a compatible whitelisting contract')
+          .custom<string>((address) => {
+            if (!address) return true;
+            return isAddress(address);
+          }, 'Contract address must be a in a valid address format')
+          .refine((address) => {
+            if (!address) return true;
+            return isWhitelistingContract.mutateAsync(address);
+          }, 'Contract is not a compatible whitelisting contract')
       }) satisfies z.ZodType<FormValues>,
-    [isWhitelistingContract.mutateAsync]
+    [isWhitelistingContract]
   );
 
   const form = useForm<FormValues>({
     mode: 'all',
     defaultValues: {
-      externalContract: operator.whitelisting_contract
+      externalContract: whitelistingContractAddress
     },
     resolver: zodResolver(schema, { async: true }, { mode: 'async' })
   });
 
-  const address = form.watch('externalContract');
-  const isChanged = address !== operator.whitelisting_contract;
-
+  const isChanged = form.watch('externalContract') !== whitelistingContractAddress;
   const hasErrors = Boolean(form.formState.errors.externalContract);
 
-  const submit = form.handleSubmit((values) => {
-    setExternalContract.mutate({
-      type: 'set',
-      operatorIds: [operator.id],
-      contractAddress: values.externalContract
+  const reset = () => {
+    form.reset({
+      externalContract: whitelistingContractAddress
     });
+  };
+
+  const submit = form.handleSubmit((values) => {
+    if (!isChanged) return;
+    setExternalContract.mutate(
+      {
+        type: values.externalContract ? 'set' : 'remove',
+        operatorIds: [operator.id],
+        contractAddress: values.externalContract
+      },
+      {
+        onSuccess: () => {
+          form.reset({ externalContract: values.externalContract });
+        }
+      }
+    );
   });
 
   return (
@@ -76,6 +92,7 @@ const ExternalContract = () => {
               <h1 className="text-xl font-bold flex items-center gap-2">
                 <span>External Contract</span>
                 <Tooltip
+                  asChild
                   content={
                     <div>
                       Learn how to set an{' '}
@@ -89,14 +106,15 @@ const ExternalContract = () => {
                     </div>
                   }
                 >
-                  <FaCircleInfo className="size-4 text-gray-500" />
+                  <div>
+                    <FaCircleInfo className="size-4 text-gray-500" />
+                  </div>
                 </Tooltip>
               </h1>
               <p>
-                Manage whitelisted addresses through an external contract. Learn how to set an{' '}
-                <a href={config.links.PERMISSIONED_OPERATORS} className="text-primary-500" target="_blank">
-                  External Contract
-                </a>
+                Delegate the management of whitelisted addresses to an external contract.
+                <br />
+                Whitelisted addresses are effective only when your operator status is set to Private.
               </p>
             </div>
             <Alert variant="warning">
@@ -113,7 +131,20 @@ const ExternalContract = () => {
                     <Input
                       {...field}
                       placeholder="0xCONT...RACT"
-                      leftSlot={isWhitelistingContract.isPending ? <Loader2 className="w-6 h-6 text-primary-500" /> : <IoDocumentTextOutline className="w-6 h-6 text-gray-600" />}
+                      rightSlot={
+                        field.value && (
+                          <Button variant="ghost" size="icon" onClick={() => field.onChange('')}>
+                            <X className="size-5" />
+                          </Button>
+                        )
+                      }
+                      leftSlot={
+                        isWhitelistingContract.isPending ? (
+                          <Loader2 className="w-6 h-6 text-primary-500 animate-spin" />
+                        ) : (
+                          <IoDocumentTextOutline className="w-6 h-6 text-gray-600" />
+                        )
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -122,7 +153,7 @@ const ExternalContract = () => {
             />{' '}
             {isChanged && (
               <div className="flex gap-3">
-                <Button type="button" disabled={setExternalContract.isPending} size="xl" variant="secondary" className="w-full" onClick={() => navigate(-1)}>
+                <Button type="button" disabled={setExternalContract.isPending} size="xl" variant="secondary" className="w-full" onClick={reset}>
                   Cancel
                 </Button>
                 <Button type="submit" disabled={hasErrors} isLoading={setExternalContract.isPending} isActionBtn size="xl" className="w-full">

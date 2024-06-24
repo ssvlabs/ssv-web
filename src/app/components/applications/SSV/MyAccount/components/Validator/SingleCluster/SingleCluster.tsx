@@ -1,7 +1,9 @@
 import Grid from '@mui/material/Grid';
+import { useQuery } from '@tanstack/react-query';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { NewValidatorRouteState } from '~app/Routes';
 import { PrimaryButton } from '~app/atomicComponents';
 import config from '~app/common/config';
 import Balance from '~app/components/applications/SSV/MyAccount/components/Balance';
@@ -17,9 +19,8 @@ import { getSelectedCluster, setExcludedCluster, setSelectedClusterId } from '~a
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { selectOperators } from '~app/redux/operator.slice.ts';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import { useStyles } from './SingleCluster.styles';
 import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
-import { NewValidatorRouteState } from '~app/Routes';
+import { useStyles } from './SingleCluster.styles';
 
 const ValidatorsWrapper = styled.div`
   width: 872px;
@@ -62,7 +63,14 @@ const SingleCluster = () => {
   const isDarkMode = useAppSelector(getIsDarkMode);
   const accountAddress = useAppSelector(getAccountAddress);
 
-  const hasPrivateOperators = cluster.operators.some((operator) => !canAccountUseOperator(accountAddress, operator));
+  const { data: hasPrivateOperators } = useQuery({
+    queryKey: ['has-private-operators', cluster.operators, accountAddress],
+    queryFn: async () => {
+      const result = await Promise.all(cluster.operators.map((operator) => canAccountUseOperator(accountAddress, operator)));
+      return result.some((isUsable) => isUsable === false);
+    }
+  });
+
   const hasDeletedOperators = cluster.operators.some((operator) => operator.is_deleted);
 
   const canAddValidator = !hasDeletedOperators && !cluster.isLiquidated && !hasPrivateOperators;

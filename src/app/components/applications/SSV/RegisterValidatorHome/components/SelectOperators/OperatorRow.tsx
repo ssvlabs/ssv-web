@@ -1,6 +1,8 @@
 import Grid from '@mui/material/Grid';
 import TableRow from '@mui/material/TableRow';
+import { useQuery } from '@tanstack/react-query';
 import { FC } from 'react';
+import { useAccount } from 'wagmi';
 import config from '~app/common/config';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import MevCounterBadge from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevCounterBadge';
@@ -12,10 +14,10 @@ import ToolTip from '~app/components/common/ToolTip';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
 import { getOperatorValidatorsLimit } from '~app/redux/operator.slice';
-import { getAccountAddress } from '~app/redux/wallet.slice';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
-import { isEqualsAddresses } from '~lib/utils/strings';
+import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
+import { cn } from '~lib/utils/tailwind';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 
 type Props = {
@@ -26,27 +28,30 @@ type Props = {
 };
 
 export const OperatorRow: FC<Props> = ({ operator, isSelected, isDisabled, onClick }) => {
+  const account = useAccount();
   const classes = useStyles({ loading: true });
 
   const operatorValidatorsLimit = useAppSelector(getOperatorValidatorsLimit);
-  const accountAddress = useAppSelector(getAccountAddress);
-
   const reachedMaxValidators = operatorValidatorsLimit <= operator.validators_count;
-
   const hasValidators = operator.validators_count !== 0;
   const isInactive = operator.is_active < 1;
   const mevRelays = operator?.mev_relays || '';
   const mevRelaysCount = mevRelays ? mevRelays.split(',').filter((item: string) => item).length : 0;
 
-  const isPrivateOperator = Boolean(
-    operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST && !isEqualsAddresses(operator.address_whitelist, accountAddress)
-  );
+  const canUseOperator = useQuery({
+    queryKey: ['can-account-use-operator', operator, account.address],
+    queryFn: () => canAccountUseOperator(account.address!, operator)
+  });
 
+  const isPrivateOperator = !canUseOperator.data;
   const isPrivateOrDeleted = Boolean(operator.is_deleted || isPrivateOperator);
 
   return (
     <TableRow
-      className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''} ${isPrivateOrDeleted ? classes.RowDisabled : ''}`}
+      className={cn(classes.RowWrapper, {
+        [classes.Selected]: isSelected,
+        [classes.RowDisabled]: isPrivateOrDeleted
+      })}
       onClick={() => {
         !isPrivateOrDeleted && onClick(operator);
       }}

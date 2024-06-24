@@ -14,6 +14,7 @@ import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
 import { getMaxOperatorFeePerYear } from '~app/redux/operator.slice.ts';
 import WarningBox from '~app/components/common/WarningBox';
+import ErrorMessage from '~app/components/common/ErrorMessage';
 
 type UserInput = string;
 
@@ -98,7 +99,7 @@ const SetOperatorFee = () => {
                 />
               </Grid>
               {isPrivate && userInput && Number(userInput) === 0 && <WarningBox text={'If you set your fee to 0 you will not be able to change it in the future'} />}
-              {error.shouldDisplay && <Typography className={classes.TextError}>{error.errorMessage}</Typography>}
+              {error.shouldDisplay && <ErrorMessage text={error.errorMessage} />}
             </Grid>
             <PrimaryButton text={'Next'} isDisabled={registerButtonDisabled} onClick={moveToSubmitConfirmation} size={ButtonSize.XL} />
           </Grid>

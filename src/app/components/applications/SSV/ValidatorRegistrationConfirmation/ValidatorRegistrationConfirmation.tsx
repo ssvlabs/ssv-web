@@ -30,6 +30,7 @@ import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { NewValidatorRouteState } from '~app/Routes';
 import { getIsClusterSelected } from '~app/redux/account.slice.ts';
+import { useQuery } from '@tanstack/react-query';
 
 const ValidatorRegistrationConfirmation = () => {
   const navigate = useNavigate();
@@ -74,10 +75,17 @@ const ValidatorRegistrationConfirmation = () => {
     false: () => navigate(config.routes.SSV.VALIDATOR.SUCCESS_PAGE)
   };
 
+  const { data: hasPrivateOperators } = useQuery({
+    queryKey: ['has-private-operators', selectedOperators, accountAddress],
+    queryFn: async () => {
+      const result = await Promise.all(Object.values(selectedOperators).map((operator) => canAccountUseOperator(accountAddress, operator)));
+      return result.some((isUsable) => isUsable === false);
+    }
+  });
+
   useEffect(() => {
     try {
-      const hasWhitelistedOperator = Object.values(selectedOperators).some((operator: IOperator) => !canAccountUseOperator(accountAddress, operator));
-      setRegisterButtonDisabled((isMainnet && !isChecked) || hasWhitelistedOperator);
+      setRegisterButtonDisabled(isMainnet && !isChecked);
     } catch (e: any) {
       setRegisterButtonDisabled(true);
       console.error(`Something went wrong: ${e.message}`);
@@ -137,7 +145,7 @@ const ValidatorRegistrationConfirmation = () => {
             isLoading={isLoading}
             text={actionButtonText}
             onClick={onRegisterValidatorClick}
-            disable={registerButtonDisabled}
+            disable={registerButtonDisabled || Boolean(hasPrivateOperators)}
             totalAmount={totalAmountOfSsv.toString()}
           />
         </TermsAndConditionsCheckbox>

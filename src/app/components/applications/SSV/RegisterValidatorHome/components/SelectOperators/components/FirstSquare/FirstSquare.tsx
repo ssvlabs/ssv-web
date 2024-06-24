@@ -8,34 +8,20 @@ import TableRow from '@mui/material/TableRow';
 import debounce from 'lodash/debounce';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import _ from 'underscore';
-import config, { translations } from '~app/common/config';
+import { translations } from '~app/common/config';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
+import { OperatorRow } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/OperatorRow';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import ClusterSize from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/ClusterSize/ClusterSize';
 import Filters from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
-import MevCounterBadge from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevCounterBadge';
-import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
 import StyledCell from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import BorderScreen from '~app/components/common/BorderScreen';
-import Checkbox from '~app/components/common/CheckBox';
-import Status from '~app/components/common/Status';
 import TextInput from '~app/components/common/TextInput';
-import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import {
-  fetchAndSetOperatorValidatorsLimit,
-  getOperatorValidatorsLimit,
-  getSelectedOperators,
-  hasEnoughSelectedOperators,
-  selectOperator,
-  unselectOperator
-} from '~app/redux/operator.slice.ts';
-import { getAccountAddress } from '~app/redux/wallet.slice';
+import { fetchAndSetOperatorValidatorsLimit, getSelectedOperators, selectOperator, unselectOperator } from '~app/redux/operator.slice.ts';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
-import { canAccountUseOperator, isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
-import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
 import { getOperators as getOperatorsOperatorService } from '~root/services/operator.service';
 
 const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { editPage: boolean; clusterSize: number; setClusterSize: Function; clusterBox: number[] }) => {
@@ -54,14 +40,10 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
         return isDkgAddressValid(dkg_address ?? '');
       });
 
-  const accountAddress = useAppSelector(getAccountAddress);
-  const wrapperRef = useRef(null);
   const scrollRef: any = useRef(null);
   const classes = useStyles({ loading });
   const dispatch = useAppDispatch();
   const selectedOperators = useAppSelector(getSelectedOperators);
-  const operatorValidatorsLimit = useAppSelector(getOperatorValidatorsLimit);
-  const hasEnoughOperators = useAppSelector(hasEnoughSelectedOperators);
 
   const headers = [
     { type: '', displayName: '' },
@@ -97,9 +79,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
     setOperatorsPagination(response.pagination);
   };
 
-  const selectOperatorHandling = (e: any, operator: IOperator) => {
-    // @ts-ignore
-    if (wrapperRef.current?.isEqualNode(e.target)) return;
+  const selectOperatorHandling = (operator: IOperator) => {
     if (Object.values(selectedOperators).some((selectedOperator: IOperator) => selectedOperator.id === operator.id)) {
       for (const [key, value] of Object.entries(selectedOperators)) {
         if (JSON.stringify(value) === JSON.stringify(operator)) {
@@ -118,15 +98,6 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
     if (availableIndex) {
       dispatch(selectOperator({ operator, selectedIndex: availableIndex, clusterBox }));
     }
-  };
-
-  const redirectTo = (publicKey: string) => {
-    GoogleTagManager.getInstance().sendEvent({
-      category: 'explorer_link',
-      action: 'click',
-      label: 'operator'
-    });
-    window.open(`${config.links.EXPLORER_URL}/operators/${publicKey}`, '_blank');
   };
 
   const sortHandler = (sortType: string) => {
@@ -165,72 +136,9 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
       );
     }
 
-    return filteredOperators.map((operator) => {
-      const isDeleted = operator.is_deleted;
-      const hasValidators = operator.validators_count !== 0;
+    return filteredOperators.map((operator: IOperator) => {
       const isSelected = Object.values(selectedOperators).some((selectedOperator: IOperator) => selectedOperator.id === operator.id);
-      const doesReachedMaxValidators = operatorValidatorsLimit <= operator.validators_count;
-      const isPrivateOperator = !canAccountUseOperator(accountAddress, operator);
-      const disabled = isDeleted || isPrivateOperator || doesReachedMaxValidators;
-      const isInactive = operator.is_active < 1;
-      const mevRelays = operator?.mev_relays || '';
-      const mevRelaysCount = mevRelays ? mevRelays.split(',').filter((item: string) => item).length : 0;
-
-      return (
-        <AnchorTooltip title={'Operator reached maximum amount of validators'} placement={'top'} dontUseGridWrapper key={Math.floor(Math.random() * 10000000)}>
-          <TableRow
-            className={`${classes.RowWrapper} ${isSelected ? classes.Selected : ''} ${disabled ? classes.RowDisabled : ''}`}
-            onClick={(e) => {
-              !disabled && selectOperatorHandling(e, operator);
-            }}
-          >
-            <StyledCell style={{ paddingLeft: 20, width: 60, paddingTop: 35 }}>
-              <Checkbox isDisabled={(hasEnoughOperators && !isSelected) || disabled} grayBackGround text={''} isChecked={isSelected} toggleIsChecked={() => {}} />
-            </StyledCell>
-            <StyledCell>
-              <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator} />
-            </StyledCell>
-            <StyledCell>
-              <Grid container>
-                <Grid item>{operator.validators_count}</Grid>
-              </Grid>
-            </StyledCell>
-            <StyledCell>
-              <Grid container>
-                <Grid item className={hasValidators && isInactive ? classes.Inactive : ''}>
-                  {roundNumber(operator.performance['30d'], 2)}%
-                </Grid>
-                {isInactive && (
-                  <Grid item xs={12}>
-                    <Status item={operator} />
-                  </Grid>
-                )}
-              </Grid>
-            </StyledCell>
-            <StyledCell>
-              <Grid container>
-                <Grid item className={classes.FeeColumn}>
-                  {formatNumberToUi(getFeeForYear(fromWei(operator.fee)))} SSV
-                </Grid>
-              </Grid>
-            </StyledCell>
-            <StyledCell>
-              <Grid container>
-                <MevCounterBadge mevRelaysList={mevRelays.split(',')} mevCount={mevRelaysCount} />
-              </Grid>
-            </StyledCell>
-            <StyledCell>
-              <Grid
-                ref={wrapperRef}
-                className={classes.ChartIcon}
-                onClick={() => {
-                  redirectTo(operator.id.toString());
-                }}
-              />
-            </StyledCell>
-          </TableRow>
-        </AnchorTooltip>
-      );
+      return <OperatorRow key={operator.public_key} operator={operator} isSelected={isSelected} onClick={selectOperatorHandling} />;
     });
   };
 

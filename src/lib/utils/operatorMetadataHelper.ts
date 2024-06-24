@@ -1,7 +1,9 @@
 import config, { translations } from '~app/common/config';
+import { EContractName } from '~app/model/contracts.model';
 import { IOperator } from '~app/model/operator.model';
 import { isEqualsAddresses } from '~lib/utils/strings';
 import { MAINNET_NETWORK_ID, getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { getContractByName } from '~root/wagmi/utils';
 
 export const FIELD_KEYS = {
   OPERATOR_NAME: 'operatorName',
@@ -232,7 +234,7 @@ export const isOperatorPrivate = (operator: IOperator) => {
   return operator.is_private ?? false;
 };
 
-export const canAccountUseOperator = (account: string | `0x${string}`, operator: IOperator) => {
+export const canAccountUseOperator = async (account: string | `0x${string}`, operator: IOperator): Promise<boolean> => {
   const network = getStoredNetwork();
   if (!isOperatorPrivate(operator)) return true;
 
@@ -241,5 +243,13 @@ export const canAccountUseOperator = (account: string | `0x${string}`, operator:
     return isEqualsAddresses(operator.address_whitelist, account);
   }
 
-  return operator?.whitelist_addresses?.some((address) => isEqualsAddresses(address, account)) ?? false;
+  const hasExternalContract = Boolean(operator.whitelisting_contract && operator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
+
+  const isWhitelistedAddress = operator?.whitelist_addresses?.some((address) => isEqualsAddresses(address, account)) ?? false;
+  if (!hasExternalContract) return isWhitelistedAddress;
+
+  const contract = getContractByName(EContractName.GETTER);
+  const isWhitelistedViaContract = hasExternalContract ? await contract.isAddressWhitelistedInWhitelistingContract(account, operator.id, operator.whitelisting_contract) : false;
+
+  return isWhitelistedAddress || isWhitelistedViaContract;
 };

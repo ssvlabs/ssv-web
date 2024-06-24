@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaCircleInfo } from 'react-icons/fa6';
@@ -131,6 +131,13 @@ const ExternalContract = () => {
                     <Input
                       {...field}
                       placeholder="0xCONT...RACT"
+                      rightSlot={
+                        field.value && (
+                          <Button variant="ghost" size="icon" onClick={() => field.onChange('')}>
+                            <X className="size-5" />
+                          </Button>
+                        )
+                      }
                       leftSlot={
                         isWhitelistingContract.isPending ? (
                           <Loader2 className="w-6 h-6 text-primary-500 animate-spin" />

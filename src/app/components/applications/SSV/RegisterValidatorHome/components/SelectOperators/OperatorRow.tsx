@@ -1,5 +1,6 @@
 import Grid from '@mui/material/Grid';
 import TableRow from '@mui/material/TableRow';
+import { useQuery } from '@tanstack/react-query';
 import { FC } from 'react';
 import { useAccount } from 'wagmi';
 import config from '~app/common/config';
@@ -37,7 +38,12 @@ export const OperatorRow: FC<Props> = ({ operator, isSelected, isDisabled, onCli
   const mevRelays = operator?.mev_relays || '';
   const mevRelaysCount = mevRelays ? mevRelays.split(',').filter((item: string) => item).length : 0;
 
-  const isPrivateOperator = !canAccountUseOperator(account.address ?? '', operator);
+  const canUseOperator = useQuery({
+    queryKey: ['can-account-use-operator', operator, account.address],
+    queryFn: () => canAccountUseOperator(account.address!, operator)
+  });
+
+  const isPrivateOperator = !canUseOperator.data;
   const isPrivateOrDeleted = Boolean(operator.is_deleted || isPrivateOperator);
 
   return (

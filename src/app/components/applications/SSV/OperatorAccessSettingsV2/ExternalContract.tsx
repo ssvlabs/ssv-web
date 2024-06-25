@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaCircleInfo } from 'react-icons/fa6';
 import { IoDocumentTextOutline } from 'react-icons/io5';
-import { isAddress } from 'viem';
+import { isAddress, zeroAddress } from 'viem';
 import { z } from 'zod';
 import config from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -17,6 +17,7 @@ import { Tooltip } from '~app/components/ui/tooltip';
 import { useSetOperatorsWhitelistingContract } from '~app/hooks/operator/useSetOperatorsWhitelistingContract';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
+import { isEqualsAddresses } from '~lib/utils/strings';
 import { isWhitelistingContract as _isWhitelistingContract } from '~root/services/operatorContract.service';
 
 type FormValues = {
@@ -25,7 +26,7 @@ type FormValues = {
 
 const ExternalContract = () => {
   const operator = useAppSelector(getSelectedOperator)!;
-  const whitelistingContractAddress = operator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator.whitelisting_contract : '';
+  const whitelistingContractAddress = operator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator.whitelisting_contract ?? '' : '';
 
   const setExternalContract = useSetOperatorsWhitelistingContract();
   const isWhitelistingContract = useMutation({
@@ -56,7 +57,8 @@ const ExternalContract = () => {
     resolver: zodResolver(schema, { async: true }, { mode: 'async' })
   });
 
-  const isChanged = form.watch('externalContract') !== whitelistingContractAddress;
+  const externalContract = form.watch('externalContract') || zeroAddress;
+  const isChanged = !isEqualsAddresses(externalContract, operator.whitelisting_contract ?? zeroAddress);
   const hasErrors = Boolean(form.formState.errors.externalContract);
 
   const reset = () => {

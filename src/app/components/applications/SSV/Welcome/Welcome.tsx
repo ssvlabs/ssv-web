@@ -8,11 +8,38 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import styled from 'styled-components';
+import { WalletButton } from '~app/components/common/AppBar/components/ConnectWalletButton/ConnectWalletButton.tsx';
+
+const WelcomeImage = styled.div`
+  width: 420px;
+  height: 274px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url(/images/robot_rocket.svg);
+  margin: auto auto 32px;
+`;
 
 const Welcome = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const accountAddress = useAppSelector(getAccountAddress);
+
+  if (!accountAddress) {
+    return (
+      <BorderScreen
+        withoutNavigation
+        body={[
+          <Grid container>
+            <HeaderSubHeader title={'Welcome to SSV Network'} subtitle={'Connect your wallet to run distributed validators, or join as an operator.'} />
+            <WelcomeImage />
+            <WalletButton />
+          </Grid>
+        ]}
+      />
+    );
+  }
 
   return (
     <BorderScreen

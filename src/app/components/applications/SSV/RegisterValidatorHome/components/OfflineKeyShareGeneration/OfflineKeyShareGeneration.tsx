@@ -16,7 +16,7 @@ import { validateAddressInput } from '~lib/utils/validatesInputs';
 import CustomTooltip from '~app/components/common/ToolTip/ToolTip';
 import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import DkgOperator from '~app/components/applications/SSV/RegisterValidatorHome/components/DkgOperator/DkgOperator';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/OfflineKeyShareGeneration/OfflineKeyShareGeneration.styles';
 import Spinner from '~app/components/common/Spinner';
@@ -444,7 +444,7 @@ const OfflineKeyShareGeneration = () => {
   if (isSecondRegistration) {
     return (
       <Grid container>
-        <NewWhiteWrapper type={0} header={'Cluster'} />
+        <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
         {MainScreen}
       </Grid>
     );

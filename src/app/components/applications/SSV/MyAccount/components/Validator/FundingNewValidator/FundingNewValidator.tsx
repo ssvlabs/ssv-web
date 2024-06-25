@@ -16,7 +16,7 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import { fromWei, toWei } from '~root/services/conversions.service';
 import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { getClusterNewBurnRate, getClusterRunWay } from '~root/services/cluster.service';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { PrimaryButton } from '~app/atomicComponents';
@@ -143,7 +143,7 @@ const FundingNewValidator = () => {
 
   return (
     <Grid container>
-      <NewWhiteWrapper type={0} header={'Cluster'} />
+      <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
       <BorderScreen
         blackHeader
         withConversion

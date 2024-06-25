@@ -39,7 +39,7 @@ const PermissionSettingsDashboard = () => {
         />
         <PermissionSettingsItem
           title="Operator Status"
-          description={'Switch between public and private modes for operator access control'}
+          description={'Switch between public and private modes for operator access control.'}
           route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.STATUS}
           addon={<OperatorStatusBadge isPrivate={selectedOperator.is_private} />}
         />
@@ -52,7 +52,7 @@ const PermissionSettingsDashboard = () => {
         <PermissionSettingsItem
           className="pb-8"
           title="External Contract"
-          description="Manage whitelisted addresses through an external contract"
+          description="Manage whitelisted addresses through an external contract."
           addon={<ActiveBadge isActive={hasWhitelistingContract} />}
           route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.EXTERNAL_CONTRACT}
         />

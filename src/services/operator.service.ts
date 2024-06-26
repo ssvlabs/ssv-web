@@ -4,7 +4,6 @@ import { IPagination } from '~app/model/pagination.model';
 import { GetOperatorValidatorsResponse } from '~app/model/validator.model';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { IHttpResponse, getRequest, postRequest, putRequest } from '~root/services/httpApi.service';
-import { getOperatorBalance } from '~root/services/operatorContract.service.ts';
 
 type OperatorsListQuery = {
   page?: number;
@@ -34,15 +33,7 @@ const getOperatorsByOwnerAddress = async ({
 }): Promise<{ operators: IOperator[]; pagination: IPagination }> => {
   const url = `${getStoredNetwork().api}/operators/owned_by/${accountAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}&ordering=id:asc`;
   const res = await getRequest(url, false);
-  const operators = res?.operators || [];
-  const operatorsWithBalance = await Promise.all(
-    operators.map(async (operator: any) => {
-      const { id } = operator;
-      const balance = await getOperatorBalance({ id });
-      return { ...operator, balance };
-    })
-  );
-  return { operators: operatorsWithBalance, pagination: DEFAULT_PAGINATION };
+  return res || { operators: [], pagination: DEFAULT_PAGINATION };
 };
 
 type OperatorSearchResponse = {

@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import debounce from 'lodash/debounce';
-import { useEffect, useRef, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import _ from 'underscore';
 import { translations } from '~app/common/config';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
@@ -30,7 +30,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
   const [filterBy, setFilterBy] = useState([]);
   const [sortOrder, setSortOrder] = useState('');
   const [searchInput, setSearchInput] = useState('');
-  const [operatorsData, setOperatorsData]: [any[], any] = useState([]);
+  const [operatorsData, setOperatorsData] = useState<IOperator[]>([]);
   const [operatorsPagination, setOperatorsPagination] = useState(DEFAULT_PAGINATION);
   const [dkgEnabled, selectDkgEnabled] = useState(false);
 
@@ -117,7 +117,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
     }
   };
 
-  const dataRows = () => {
+  const dataRows = (): ReactElement | ReactElement[] => {
     if (filteredOperators?.length === 0 && !loading) {
       return (
         <TableRow hover>
@@ -159,7 +159,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
     }
   };
 
-  const inputHandler = debounce((e: any) => {
+  const inputHandler = debounce((e) => {
     const userInput = e.target.value.trim();
     if (userInput.length >= 1 || userInput.length === 0) {
       GoogleTagManager.getInstance().sendEvent({
@@ -171,7 +171,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
     }
   }, 1000);
 
-  const rows: any = dataRows();
+  const rows = dataRows();
 
   useEffect(() => {
     setLoading(true);
@@ -213,8 +213,9 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  {rows.length > 0 &&
-                    headers.map((header: any, index: number) => {
+                  {'length' in rows &&
+                    rows.length > 0 &&
+                    headers.map((header, index: number) => {
                       const sortByType = sortBy === header.type;
                       const ascending = sortOrder === 'asc';
                       const descending = sortOrder === 'desc';

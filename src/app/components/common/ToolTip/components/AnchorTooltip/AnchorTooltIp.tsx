@@ -9,6 +9,7 @@ type ToolTipProps = {
   children: any;
   shouldDisableHoverListener?: boolean;
   placement: 'bottom-end' | 'bottom-start' | 'bottom' | 'left-end' | 'left-start' | 'left' | 'right-end' | 'right-start' | 'right' | 'top-end' | 'top-start' | 'top';
+  dontUseGridWrapper?: boolean;
 };
 
 const LightTooltip = styled(({ className, ...props }: TooltipProps) => <Tooltip {...props} classes={{ popper: className }} />)(({ theme }) => ({
@@ -37,8 +38,7 @@ const LightTooltip = styled(({ className, ...props }: TooltipProps) => <Tooltip 
   }
 }));
 
-export default function AnchorElTooltips(props: ToolTipProps) {
-  const { children, placement, title, shouldDisableHoverListener } = props;
+export default function AnchorElTooltips({ children, placement, shouldDisableHoverListener, title, dontUseGridWrapper = false }: ToolTipProps) {
   const positionRef = React.useRef<{ x: number; y: number }>({
     x: 0,
     y: 0
@@ -61,18 +61,26 @@ export default function AnchorElTooltips(props: ToolTipProps) {
       placement={placement ?? 'top'}
       disableHoverListener={shouldDisableHoverListener}
       arrow
-      PopperProps={{
-        popperRef,
-        anchorEl: {
-          getBoundingClientRect: () => {
-            return new DOMRect(positionRef.current.x, areaRef.current!.getBoundingClientRect().y, 0, 0);
-          }
-        }
-      }}
+      PopperProps={
+        dontUseGridWrapper
+          ? {}
+          : {
+              popperRef,
+              anchorEl: {
+                getBoundingClientRect: () => {
+                  return new DOMRect(positionRef.current.x, areaRef.current!.getBoundingClientRect().y, 0, 0);
+                }
+              }
+            }
+      }
     >
-      <Grid ref={areaRef} onMouseMove={handleMouseMove}>
-        {children}
-      </Grid>
+      {dontUseGridWrapper ? (
+        children
+      ) : (
+        <Grid ref={areaRef} onMouseMove={handleMouseMove}>
+          {children}
+        </Grid>
+      )}
     </LightTooltip>
   );
 }

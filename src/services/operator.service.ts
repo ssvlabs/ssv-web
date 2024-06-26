@@ -35,14 +35,15 @@ const getOperatorsByOwnerAddress = async ({
 }): Promise<{ operators: IOperator[]; pagination: IPagination }> => {
   const url = `${getStoredNetwork().api}/operators/owned_by/${accountAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}&ordering=id:asc`;
   const res = await getRequest(url, false);
-  const operators = await Promise.all(
-    res.operators.map(async (operator: any) => {
+  const operators = res?.operators || [];
+  const operatorsWithBalance = await Promise.all(
+    operators.map(async (operator: any) => {
       const { id } = operator;
       const balance = await getOperatorBalance({ id });
       return { ...operator, balance };
     })
   );
-  return { operators: operators || [], pagination: DEFAULT_PAGINATION };
+  return { operators: operatorsWithBalance, pagination: DEFAULT_PAGINATION };
 };
 
 type OperatorSearchResponse = {

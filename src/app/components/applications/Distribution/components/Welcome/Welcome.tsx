@@ -1,28 +1,29 @@
 import Grid from '@mui/material/Grid';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useChainId } from 'wagmi';
+import PrimaryButton from '~app/atomicComponents/PrimaryButton';
+import { useStyles } from '~app/components/applications/SSV/Welcome/Welcome.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import { useStyles } from '~app/components/applications/SSV/Welcome/Welcome.styles';
-import { useConnectWallet } from '@web3-onboard/react';
-import { getStoredNetwork, MAINNET_NETWORK_ID } from '~root/providers/networkInfo.provider';
+import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsShowWalletPopup } from '~app/redux/appState.slice';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import PrimaryButton from '~app/atomicComponents/PrimaryButton';
-import { ButtonSize } from '~app/enums/Button.enum';
+import { MAINNET_NETWORK_ID } from '~root/providers/networkInfo.provider';
 
 const Welcome = () => {
   const classes = useStyles();
   const accountAddress = useAppSelector(getAccountAddress);
-  const { networkId } = getStoredNetwork();
-  const [, connect] = useConnectWallet();
-  const titleNetwork = networkId === MAINNET_NETWORK_ID ? 'Mainnet' : 'Testnet';
+  const chainId = useChainId();
+  const { openConnectModal } = useConnectModal();
+  const titleNetwork = chainId === MAINNET_NETWORK_ID ? 'Mainnet' : 'Testnet';
   const dispatch = useAppDispatch();
 
   const connectToWallet = async () => {
     if (!!accountAddress) {
       dispatch(setIsShowWalletPopup(true));
     } else {
-      await connect();
+      return openConnectModal?.();
     }
   };
 

@@ -22,7 +22,7 @@ const OperatorStatus = () => {
         <div className="flex flex-col gap-8 w-full">
           <div className="flex flex-col gap-4">
             <h1 className="text-xl font-bold">Operator Status</h1>
-            <div className="flex flex-col gap-3 font-medium text-sm">
+            <div className="flex flex-col gap-3 font-medium text-sm text-gray-700">
               <p>Control validator access by switching between public and private modes.</p>
               <ul className="list-disc pl-6">
                 <li>

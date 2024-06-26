@@ -41,6 +41,11 @@ type OperatorSearchResponse = {
   pagination: IPagination;
 };
 
+type OperatorSearchResponse = {
+  operators: IOperator[];
+  pagination: IPagination;
+};
+
 const getOperators = async (props: OperatorsListQuery, skipRetry?: boolean) => {
   const { page, perPage, type, ordering, search, dkgEnabled } = props;
   let url = `${getStoredNetwork().api}/operators?`;

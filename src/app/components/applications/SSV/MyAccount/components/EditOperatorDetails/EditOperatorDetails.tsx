@@ -6,16 +6,16 @@ import { useSignMessage } from 'wagmi';
 import { PrimaryButton } from '~app/atomicComponents';
 import config from '~app/common/config';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
+import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/FieldWrapper';
+import BorderScreen from '~app/components/common/BorderScreen';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getIsContractWallet } from '~app/redux/wallet.slice';
-import { FIELD_KEYS, fieldsToValidateSignature } from '~lib/utils/operatorMetadataHelper';
-import BorderScreen from '~app/components/common/BorderScreen';
-import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/FieldWrapper';
-import { updateOperatorMetadata } from '~root/services/operator.service';
-import { selectMetadata, updateOperatorLocations, updateOperatorNodeOptions } from '~app/redux/operatorMetadata.slice.ts';
 import { useOperatorMetadataStore } from '~app/hooks/useOperatorMetadataStore.ts';
 import { fetchOperators, getSelectedOperator } from '~app/redux/account.slice';
+import { selectMetadata, updateOperatorLocations, updateOperatorNodeOptions } from '~app/redux/operatorMetadata.slice.ts';
+import { getIsContractWallet } from '~app/redux/wallet.slice';
+import { FIELD_KEYS, fieldsToValidateSignature } from '~lib/utils/operatorMetadataHelper';
+import { updateOperatorMetadata } from '~root/services/operator.service';
 
 const EditOperatorDetails = () => {
   const navigate = useNavigate();

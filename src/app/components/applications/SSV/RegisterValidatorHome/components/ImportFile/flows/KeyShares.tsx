@@ -201,36 +201,39 @@ const KeyShareFlow = () => {
           : getMaxValidatorsCountPerRegistration(clusterSizeData);
       let previousSmallCount = validatorStore.validatorsCount;
 
-      const operatorsData = selectedOperatorsData.map((operator: IOperator) => {
-        const availableValidatorsAmount = operatorValidatorsLimit - operator.validators_count;
-        let hasError = false;
-        if (availableValidatorsAmount < validatorStore.validatorsCount && availableValidatorsAmount > 0) {
-          hasError = true;
-          if (availableValidatorsAmount < previousSmallCount && maxAvailableValidatorsCount > 0) {
-            previousSmallCount = availableValidatorsAmount;
-            warningTextMessage = getValidatorCountErrorMessage(availableValidatorsAmount);
-            maxValidatorsCount = availableValidatorsAmount > maxAvailableValidatorsCount ? maxAvailableValidatorsCount : availableValidatorsAmount;
+      const operatorsData = await Promise.all(
+        selectedOperatorsData.map(async (operator: IOperator) => {
+          const availableValidatorsAmount = operatorValidatorsLimit - operator.validators_count;
+          let hasError = false;
+          if (availableValidatorsAmount < validatorStore.validatorsCount && availableValidatorsAmount > 0) {
+            hasError = true;
+            if (availableValidatorsAmount < previousSmallCount && maxAvailableValidatorsCount > 0) {
+              previousSmallCount = availableValidatorsAmount;
+              warningTextMessage = getValidatorCountErrorMessage(availableValidatorsAmount);
+              maxValidatorsCount = availableValidatorsAmount > maxAvailableValidatorsCount ? maxAvailableValidatorsCount : availableValidatorsAmount;
+            }
           }
-        }
-        if (availableValidatorsAmount <= 0) {
-          maxValidatorsCount = 0;
-          warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.OPERATOR_REACHED_MAX_VALIDATORS;
-          hasError = true;
-        }
-        if (!canAccountUseOperator(accountAddress, operator)) {
-          warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.WHITELIST_OPERATOR;
-          setHasPermissionedOperator(true);
-          hasError = true;
-        }
-        return {
-          key: operator.id,
-          hasError,
-          name: operator.name,
-          type: operator.type,
-          operatorLogo: operator.logo ?? '',
-          operatorId: operator.id
-        };
-      });
+          if (availableValidatorsAmount <= 0) {
+            maxValidatorsCount = 0;
+            warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.OPERATOR_REACHED_MAX_VALIDATORS;
+            hasError = true;
+          }
+          const canUseOperator = await canAccountUseOperator(accountAddress, operator);
+          if (!canUseOperator) {
+            warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.WHITELIST_OPERATOR;
+            setHasPermissionedOperator(true);
+            hasError = true;
+          }
+          return {
+            key: operator.id,
+            hasError,
+            name: operator.name,
+            type: operator.type,
+            operatorLogo: operator.logo ?? '',
+            operatorId: operator.id
+          };
+        })
+      );
 
       for (let i = 0; i < Object.values(validators).length; i++) {
         const validatorPublicKey = validatorsArray[i].publicKey;

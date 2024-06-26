@@ -29,7 +29,7 @@ const OperatorStatus = () => {
                   <span className="font-bold">Public mode</span> - Any validator can register with the operator.
                 </li>
                 <li>
-                  <span className="font-bold">Private mode</span> Only authorized addresses can register.
+                  <span className="font-bold">Private mode</span> - Only whitelisted addresses can register.
                 </li>
               </ul>
               <p className="font-medium text-sm pt-3">
@@ -43,7 +43,7 @@ const OperatorStatus = () => {
           </div>
           {isFeeZero && operator.is_private && (
             <Alert variant="error">
-              <AlertDescription>Switching the operator to public when the fee is set to 0 is not possible. </AlertDescription>
+              <AlertDescription>You cannot switch your operator to public mode when you have a set fee of 0.</AlertDescription>
             </Alert>
           )}
           <Button

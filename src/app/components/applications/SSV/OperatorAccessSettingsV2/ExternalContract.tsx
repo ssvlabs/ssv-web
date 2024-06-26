@@ -1,13 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaCircleInfo } from 'react-icons/fa6';
 import { IoDocumentTextOutline } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
-import { isAddress } from 'viem';
+import { isAddress, zeroAddress } from 'viem';
 import { z } from 'zod';
+import config from '~app/common/config';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { Alert, AlertDescription } from '~app/components/ui/alert';
 import { Button } from '~app/components/ui/button';
@@ -17,18 +17,16 @@ import { Tooltip } from '~app/components/ui/tooltip';
 import { useSetOperatorsWhitelistingContract } from '~app/hooks/operator/useSetOperatorsWhitelistingContract';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
+import { isEqualsAddresses } from '~lib/utils/strings';
 import { isWhitelistingContract as _isWhitelistingContract } from '~root/services/operatorContract.service';
-import config from '~app/common/config';
 
 type FormValues = {
   externalContract: string;
 };
 
 const ExternalContract = () => {
-  const navigate = useNavigate();
-
   const operator = useAppSelector(getSelectedOperator)!;
-  const whitelistingContractAddress = operator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator.whitelisting_contract : '';
+  const whitelistingContractAddress = operator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator.whitelisting_contract ?? '' : '';
 
   const setExternalContract = useSetOperatorsWhitelistingContract();
   const isWhitelistingContract = useMutation({
@@ -59,8 +57,15 @@ const ExternalContract = () => {
     resolver: zodResolver(schema, { async: true }, { mode: 'async' })
   });
 
-  const isChanged = form.watch('externalContract') !== whitelistingContractAddress;
+  const externalContract = form.watch('externalContract') || zeroAddress;
+  const isChanged = !isEqualsAddresses(externalContract, operator.whitelisting_contract ?? zeroAddress);
   const hasErrors = Boolean(form.formState.errors.externalContract);
+
+  const reset = () => {
+    form.reset({
+      externalContract: whitelistingContractAddress
+    });
+  };
 
   const submit = form.handleSubmit((values) => {
     if (!isChanged) return;
@@ -128,6 +133,13 @@ const ExternalContract = () => {
                     <Input
                       {...field}
                       placeholder="0xCONT...RACT"
+                      rightSlot={
+                        field.value && (
+                          <Button variant="ghost" size="icon" onClick={() => field.onChange('')}>
+                            <X className="size-5" />
+                          </Button>
+                        )
+                      }
                       leftSlot={
                         isWhitelistingContract.isPending ? (
                           <Loader2 className="w-6 h-6 text-primary-500 animate-spin" />
@@ -143,7 +155,7 @@ const ExternalContract = () => {
             />{' '}
             {isChanged && (
               <div className="flex gap-3">
-                <Button type="button" disabled={setExternalContract.isPending} size="xl" variant="secondary" className="w-full" onClick={() => navigate(-1)}>
+                <Button type="button" disabled={setExternalContract.isPending} size="xl" variant="secondary" className="w-full" onClick={reset}>
                   Cancel
                 </Button>
                 <Button type="submit" disabled={hasErrors} isLoading={setExternalContract.isPending} isActionBtn size="xl" className="w-full">

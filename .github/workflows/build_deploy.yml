@@ -229,7 +229,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
       # </sumbat-app.stage.ssv.network>
 
-
       # <beta.app.ssv.network>
       - name: Run prod webapp build
         if: github.ref == 'refs/heads/main'

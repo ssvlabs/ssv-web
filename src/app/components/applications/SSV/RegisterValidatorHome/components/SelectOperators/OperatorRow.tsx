@@ -23,11 +23,10 @@ import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 type Props = {
   operator: IOperator;
   isSelected: boolean;
-  isDisabled?: boolean;
   onClick: (operator: IOperator) => void;
 };
 
-export const OperatorRow: FC<Props> = ({ operator, isSelected, isDisabled, onClick }) => {
+export const OperatorRow: FC<Props> = ({ operator, isSelected, onClick }) => {
   const account = useAccount();
   const classes = useStyles({ loading: true });
 
@@ -58,7 +57,7 @@ export const OperatorRow: FC<Props> = ({ operator, isSelected, isDisabled, onCli
         }}
       >
         <StyledCell style={{ paddingLeft: 20, width: 60, paddingTop: 35 }}>
-          <Checkbox isDisabled={isPrivateOrDeleted || isDisabled} grayBackGround text={''} isChecked={isSelected} toggleIsChecked={() => {}} />
+          <Checkbox isDisabled={isPrivateOrDeleted || reachedMaxValidators} grayBackGround text={''} isChecked={isSelected} toggleIsChecked={() => {}} />
         </StyledCell>
         <StyledCell>
           <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator} />

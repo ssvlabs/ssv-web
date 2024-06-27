@@ -5,7 +5,6 @@ import { observer } from 'mobx-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { KeyShares, KeySharesItem } from 'ssv-keys';
 import config, { translations } from '~app/common/config';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
@@ -27,28 +26,28 @@ import { isEqualsAddresses } from '~lib/utils/strings';
 import { getOwnerNonce } from '~root/services/account.service';
 import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 import {
-  KeyShareMulti,
-  KeyShareValidationResponse,
-  KeyShareValidationResponseId,
-  SelectedOperatorData,
-  ValidatorType,
   createValidatorsRecord,
   getResponse,
   getTooltipText,
   getValidatorCountErrorMessage,
+  KeyShareMulti,
+  KeyShareValidationResponse,
+  KeyShareValidationResponseId,
+  KeyShareValidationResult,
   parseToMultiShareFormat,
+  SelectedOperatorData,
   validateConsistentOperatorIds,
-  KeyShareValidationResult
+  ValidatorType
 } from '~root/services/keyShare.service';
 import { getOperatorsByIds } from '~root/services/operator.service';
-import { getIsRegisteredValidator } from '~root/services/validator.service';
+import { fetchIsRegisteredValidator } from '~root/services/validator.service';
 import { isJsonFile } from '~root/utils/dkg.utils';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getClusterSize, getOperatorValidatorsLimit, getSelectedOperators, selectOperators, setClusterSize, unselectAllOperators } from '~app/redux/operator.slice.ts';
-import { getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
 import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
+import { getIsClusterSelected, getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
@@ -60,9 +59,9 @@ const KeyShareFlow = () => {
   const dispatch = useAppDispatch();
   const inputRef = useRef(null);
   const removeButtons = useRef(null);
-  const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const cluster = useAppSelector(getSelectedCluster);
+  const isSecondRegistration = useAppSelector(getIsClusterSelected);
   const [warningMessage, setWarningMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
   const [validatorsList, setValidatorsList] = useState<Record<string, ValidatorType>>({});
@@ -85,7 +84,7 @@ const KeyShareFlow = () => {
   const operatorValidatorsLimit = useAppSelector(getOperatorValidatorsLimit);
 
   useEffect(() => {
-    if (!processStore.secondRegistration) {
+    if (!isSecondRegistration) {
       dispatch(unselectAllOperators());
     }
     validatorStore.clearKeyShareFlowData();
@@ -96,7 +95,7 @@ const KeyShareFlow = () => {
     try {
       let operatorsData = Object.values(selectedStoreOperators);
       let clusterSizeData = clusterSize;
-      if (processStore.secondRegistration) {
+      if (isSecondRegistration) {
         const clusterOperatorsIds = cluster.operators.map((operator: IOperator) => operator.id).sort();
         if (shares.some((keyShare: KeySharesItem) => !validateConsistentOperatorIds(keyShare, clusterOperatorsIds))) {
           return {
@@ -127,7 +126,7 @@ const KeyShareFlow = () => {
         clusterSizeData = dispatch(setClusterSize(selectedOperators.length)).payload;
       }
 
-      if (processStore.secondRegistration) {
+      if (isSecondRegistration) {
         for (const keyShare of shares) {
           if (
             keyShare.data.operators?.some((operatorData: { id: number; operatorKey: string }) => {
@@ -177,7 +176,7 @@ const KeyShareFlow = () => {
           // eslint-disable-next-line no-async-promise-executor
           new Promise(async (resolve, reject) => {
             try {
-              const res = await getIsRegisteredValidator(validator.publicKey);
+              const res = await fetchIsRegisteredValidator(validator.publicKey);
               if (res.data && isEqualsAddresses(res.data.ownerAddress, accountAddress)) {
                 validators[res.data.publicKey].registered = true;
               }
@@ -202,36 +201,39 @@ const KeyShareFlow = () => {
           : getMaxValidatorsCountPerRegistration(clusterSizeData);
       let previousSmallCount = validatorStore.validatorsCount;
 
-      const operatorsData = selectedOperatorsData.map((operator: IOperator) => {
-        const availableValidatorsAmount = operatorValidatorsLimit - operator.validators_count;
-        let hasError = false;
-        if (availableValidatorsAmount < validatorStore.validatorsCount && availableValidatorsAmount > 0) {
-          hasError = true;
-          if (availableValidatorsAmount < previousSmallCount && maxAvailableValidatorsCount > 0) {
-            previousSmallCount = availableValidatorsAmount;
-            warningTextMessage = getValidatorCountErrorMessage(availableValidatorsAmount);
-            maxValidatorsCount = availableValidatorsAmount > maxAvailableValidatorsCount ? maxAvailableValidatorsCount : availableValidatorsAmount;
+      const operatorsData = await Promise.all(
+        selectedOperatorsData.map(async (operator: IOperator) => {
+          const availableValidatorsAmount = operatorValidatorsLimit - operator.validators_count;
+          let hasError = false;
+          if (availableValidatorsAmount < validatorStore.validatorsCount && availableValidatorsAmount > 0) {
+            hasError = true;
+            if (availableValidatorsAmount < previousSmallCount && maxAvailableValidatorsCount > 0) {
+              previousSmallCount = availableValidatorsAmount;
+              warningTextMessage = getValidatorCountErrorMessage(availableValidatorsAmount);
+              maxValidatorsCount = availableValidatorsAmount > maxAvailableValidatorsCount ? maxAvailableValidatorsCount : availableValidatorsAmount;
+            }
           }
-        }
-        if (availableValidatorsAmount <= 0) {
-          maxValidatorsCount = 0;
-          warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.OPERATOR_REACHED_MAX_VALIDATORS;
-          hasError = true;
-        }
-        if (!canAccountUseOperator(accountAddress, operator)) {
-          warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.WHITELIST_OPERATOR;
-          setHasPermissionedOperator(true);
-          hasError = true;
-        }
-        return {
-          key: operator.id,
-          hasError,
-          name: operator.name,
-          type: operator.type,
-          operatorLogo: operator.logo ?? '',
-          operatorId: operator.id
-        };
-      });
+          if (availableValidatorsAmount <= 0) {
+            maxValidatorsCount = 0;
+            warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.OPERATOR_REACHED_MAX_VALIDATORS;
+            hasError = true;
+          }
+          const canUseOperator = await canAccountUseOperator(accountAddress, operator);
+          if (!canUseOperator) {
+            warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.WHITELIST_OPERATOR;
+            setHasPermissionedOperator(true);
+            hasError = true;
+          }
+          return {
+            key: operator.id,
+            hasError,
+            name: operator.name,
+            type: operator.type,
+            operatorLogo: operator.logo ?? '',
+            operatorId: operator.id
+          };
+        })
+      );
 
       for (let i = 0; i < Object.values(validators).length; i++) {
         const validatorPublicKey = validatorsArray[i].publicKey;
@@ -429,7 +431,7 @@ const KeyShareFlow = () => {
       if (validatorsCount === 1) {
         validatorStore.setKeySharePublicKey(validatorStore.registerValidatorsPublicKeys[0]);
       }
-      if (!processStore.secondRegistration) {
+      if (!isSecondRegistration) {
         await getClusterData(getClusterHash(Object.values(selectedStoreOperators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral, true).then(
           (clusterData) => {
             if (clusterData?.validatorCount !== 0 || clusterData?.index > 0 || !clusterData?.active) {
@@ -484,7 +486,7 @@ const KeyShareFlow = () => {
   const MainScreen = (
     <BorderScreen
       blackHeader
-      withoutNavigation={processStore.secondRegistration}
+      withoutNavigation={isSecondRegistration}
       header={translations.VALIDATOR.IMPORT.KEY_SHARES_TITLE}
       wrapperClass={classes.marginNone}
       body={[
@@ -501,7 +503,7 @@ const KeyShareFlow = () => {
       withoutNavigation
       blackHeader
       header={translations.VALIDATOR.BULK_REGISTRATION.SELECTED_VALIDATORS}
-      wrapperClass={processStore.secondRegistration ? classes.marginNone : classes.marginTop}
+      wrapperClass={isSecondRegistration ? classes.marginNone : classes.marginTop}
       sideElement={
         <ValidatorCounter
           changeCountOfValidators={changeCountOfValidators}
@@ -533,7 +535,7 @@ const KeyShareFlow = () => {
     />
   );
 
-  if (processStore.secondRegistration) {
+  if (isSecondRegistration) {
     return (
       <>
         <NewWhiteWrapper type={0} header={'Cluster'} />

@@ -10,8 +10,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:opacity-100',
+        default: 'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:opacity-100',
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline: 'border dark:border-white/10 hover:bg-accent hover:text-accent-foreground',
         secondary: 'bg-primary-50 text-primary-500 hover:bg-primary-100 active:bg-primary-200',
@@ -29,18 +28,21 @@ const buttonVariants = cva(
         icon: 'h-10 w-10 rounded-lg',
         network: 'h-12 pl-3 pr-4 font-semibold text-md rounded-lg',
         wallet: 'h-12 px-4 font-semibold text-md rounded-lg'
+      },
+      width: {
+        full: 'w-full',
+        default: ''
       }
     },
     defaultVariants: {
       variant: 'default',
-      size: 'default'
+      size: 'default',
+      width: 'default'
     }
   }
 );
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   isLoading?: boolean;
   loadingText?: string;
@@ -48,27 +50,12 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      variant,
-      size,
-      colorScheme,
-      asChild = false,
-      isLoading,
-      loadingText,
-      children,
-      isActionBtn,
-      type = 'button',
-      ...props
-    },
-    ref
-  ) => {
+  ({ className, variant, size, colorScheme, width, asChild = false, isLoading, loadingText, children, isActionBtn, type = 'button', ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
     const _loadingText = loadingText ?? 'Waiting for Wallet Confirmation...';
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, colorScheme, className }), {
+        className={cn(buttonVariants({ variant, size, colorScheme, className, width }), {
           'opacity-50': isLoading
         })}
         type={type}

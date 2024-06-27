@@ -11,9 +11,7 @@ export type PermissionSettingsItemProps = {
   description?: React.ReactNode;
 };
 
-type FCProps = FC<
-  Omit<ComponentPropsWithoutRef<'div'>, keyof PermissionSettingsItemProps> & PermissionSettingsItemProps
->;
+type FCProps = FC<Omit<ComponentPropsWithoutRef<'div'>, keyof PermissionSettingsItemProps> & PermissionSettingsItemProps>;
 
 export const PermissionSettingsItem: FCProps = ({ className, route, title, addon, description, ...props }) => {
   const navigate = useNavigate();

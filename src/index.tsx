@@ -16,7 +16,7 @@ import { RainbowKitProvider } from '~root/RainbowKitProvider';
 // @ts-ignore
 globalThis.Buffer = Buffer;
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);

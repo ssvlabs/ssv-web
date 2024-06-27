@@ -8,14 +8,17 @@ import { decodeParameter, fromWei, prepareSsvAmountToTransfer, toWei } from '~ro
 import { getOperator, getOperatorByPublicKey } from '~root/services/operator.service';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { getContractByName } from '~root/wagmi/utils';
+import { formatNumberToUi } from '~lib/utils/numbers.ts';
 
 const addNewOperator = async ({
   isContractWallet,
   operatorRawData,
+  isPrivate,
   dispatch
 }: {
   isContractWallet: boolean;
   operatorRawData: IOperatorRawData;
+  isPrivate: boolean;
   dispatch: Function;
 }): Promise<boolean> => {
   const contract = getContractByName(EContractName.SETTER);
@@ -24,11 +27,11 @@ const addNewOperator = async ({
   }
   const feePerBlock = new Decimal(operatorRawData.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
 
-  // const { networkId } = getStoredNetwork();
+  const { networkId } = getStoredNetwork();
   const payload = [operatorRawData.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock))];
   return await transactionExecutor({
     contractMethod: contract.registerOperator,
-    payload: payload /* networkId === 1 ? payload : [...payload, false] */,
+    payload: networkId === 1 ? payload : [...payload, isPrivate],
     isContractWallet,
     getterTransactionState: async () => {
       const res = await getOperatorByPublicKey(decodeParameter('string', operatorRawData.publicKey));
@@ -63,8 +66,8 @@ const withdrawRewards = async ({ operator, amount, isContractWallet, dispatch }:
   return await transactionExecutor({
     contractMethod: contract.withdrawOperatorEarnings,
     payload: [operator.id, ssvAmount],
-    getterTransactionState: async () => await getOperatorBalance({ id: operator.id }),
-    prevState: operator.balance,
+    getterTransactionState: async () => formatNumberToUi(await getOperatorBalance({ id: operator.id })),
+    prevState: formatNumberToUi(operator.balance),
     isContractWallet,
     dispatch
   });

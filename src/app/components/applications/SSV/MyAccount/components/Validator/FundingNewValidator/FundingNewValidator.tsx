@@ -14,7 +14,7 @@ import ToolTip from '~app/components/common/ToolTip/ToolTip';
 import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import { fromWei, toWei } from '~root/services/conversions.service';
-import { ProcessStore, ValidatorStore } from '~app/common/stores/applications/SsvWeb';
+import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { getClusterNewBurnRate, getClusterRunWay } from '~root/services/cluster.service';
@@ -25,7 +25,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 import { getSelectedCluster } from '~app/redux/account.slice.ts';
-import { RegisterValidator } from '~app/model/processes.model.ts';
+import { NewValidatorRouteState } from '~app/Routes';
 
 const FundingNewValidator = () => {
   const [checkedId, setCheckedId] = useState(0);
@@ -44,7 +44,6 @@ const FundingNewValidator = () => {
   const { walletSsvBalance } = useFetchWalletBalance();
   const OPTION_DEPOSIT_ADDITIONAL_FUNDS = 2;
   const validatorStore: ValidatorStore = stores.Validator;
-  const processStore: ProcessStore = stores.Process;
   const cluster = useAppSelector(getSelectedCluster);
   const newValidatorsCount = validatorStore.validatorsCount ? validatorStore.validatorsCount : 1;
   const newBurnRate = getClusterNewBurnRate(cluster.operators, cluster.validatorCount + newValidatorsCount, networkFee);
@@ -133,8 +132,7 @@ const FundingNewValidator = () => {
   };
 
   const moveToNextPage = () => {
-    processStore.process = { depositAmount: Number(depositSSV) } as RegisterValidator;
-    navigate(getNextNavigation());
+    navigate(getNextNavigation(), { state: { newValidatorDepositAmount: Number(depositSSV) } satisfies NewValidatorRouteState });
   };
 
   const changeDepositSsvHandler = (event: ChangeEvent<HTMLInputElement>) => {

@@ -133,6 +133,7 @@ export const config = {
     SNAPSHOT_LINK: 'https://snapshot.org/#/mainnet.ssvnetwork.eth',
     SSV_DOCUMENTATION: 'https://docs.ssv.network/learn/introduction',
     DKG_DOCKER_INSTALL_URL: 'https://docs.docker.com/engine/install/',
+    PERMISSIONED_OPERATORS: 'https://docs.ssv.network/learn/operators/permissioned-operators',
     MORE_ON_CLUSTERS: 'https://docs.ssv.network/learn/stakers/clusters',
     SSV_KEYS_RELEASES_URL: 'https://github.com/bloxapp/ssv-keys/releases',
     SSV_UPDATE_FEE_DOCS: 'https://docs.ssv.network/learn/operators/update-fee',
@@ -187,13 +188,19 @@ export const config = {
       ADDRESS: tokenAddress,
       ABI: ABI_VERSION.tokenContract
     },
-    SSV_NETWORK_SETTER: {
-      ADDRESS: setterContractAddress,
-      ABI: ABI_VERSION.setterContract[`${networkId}_${apiVersion}`]
+    get SSV_NETWORK_SETTER() {
+      const { networkId, apiVersion } = getStoredNetwork();
+      return {
+        ADDRESS: setterContractAddress,
+        ABI: ABI_VERSION.setterContract[`${networkId}_${apiVersion}`]
+      };
     },
-    SSV_NETWORK_GETTER: {
-      ADDRESS: getterContractAddress,
-      ABI: ABI_VERSION.getterContract[`${networkId}_${apiVersion}`]
+    get SSV_NETWORK_GETTER() {
+      const { networkId, apiVersion } = getStoredNetwork();
+      return {
+        ADDRESS: getterContractAddress,
+        ABI: ABI_VERSION.getterContract[`${networkId}_${apiVersion}`]
+      };
     },
     SSV_DISTRIBUTION: {
       // ADDRESS: contract,

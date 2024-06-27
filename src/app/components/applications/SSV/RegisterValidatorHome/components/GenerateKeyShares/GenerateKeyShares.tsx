@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useStores } from '~app/hooks/useStores';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
 import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
@@ -15,6 +14,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsMainnet } from '~app/redux/wallet.slice';
 import { SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { getIsClusterSelected } from '~app/redux/account.slice.ts';
 
 type ButtonData = {
   isShow: boolean;
@@ -34,11 +34,11 @@ const GenerateKeyShares = () => {
   const stores = useStores();
   const navigate = useNavigate();
   const { networkId } = getStoredNetwork();
-  const processStore: ProcessStore = stores.Process;
   const validatorStore: ValidatorStore = stores.Validator;
   const classes = useStyles({ networkId });
   const { getNextNavigation } = useValidatorRegistrationFlow(window.location.pathname);
   const isMainnet = useAppSelector(getIsMainnet);
+  const isSecondRegistration = useAppSelector(getIsClusterSelected);
 
   const buttonsData: ButtonData[] = [
     {
@@ -74,7 +74,7 @@ const GenerateKeyShares = () => {
       }
     },
     {
-      isShow: processStore.secondRegistration,
+      isShow: isSecondRegistration,
       wrapperProps: {
         className: `${classes.LinkButtonWrapper} ${classes.SecondRegistrationExistKeyShares}`
       },
@@ -97,7 +97,7 @@ const GenerateKeyShares = () => {
 
   const MainScreen = (
     <BorderScreen
-      withoutNavigation={processStore.secondRegistration}
+      withoutNavigation={isSecondRegistration}
       body={[
         <Grid container style={{ gap: 24 }}>
           <HeaderSubHeader
@@ -117,10 +117,10 @@ const GenerateKeyShares = () => {
           <Grid container item className={classes.LinkButtonsWrapper}>
             {buttonsData
               .filter((buttonData: ButtonData) => buttonData.isShow)
-              .map((buttonData: ButtonData) => (
-                <Grid container item {...buttonData.wrapperProps}>
+              .map((buttonData: ButtonData, i) => (
+                <Grid container item {...buttonData.wrapperProps} key={i}>
                   <SecondaryButton {...buttonData.buttonProps} />
-                  {!processStore.secondRegistration && buttonData.subText && (
+                  {!isSecondRegistration && buttonData.subText && (
                     <Grid item xs={12} className={classes.UnderButtonText}>
                       {buttonData.subText}
                     </Grid>
@@ -133,7 +133,7 @@ const GenerateKeyShares = () => {
     />
   );
 
-  if (processStore.secondRegistration) {
+  if (isSecondRegistration) {
     return (
       <Grid container>
         <NewWhiteWrapper type={0} header={'Cluster'} />

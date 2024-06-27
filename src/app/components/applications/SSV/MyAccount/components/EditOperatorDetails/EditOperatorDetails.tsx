@@ -1,34 +1,26 @@
 import { Typography } from '@mui/material';
 import { sha256 } from 'js-sha256';
-import { observer } from 'mobx-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSignMessage } from 'wagmi';
 import { PrimaryButton } from '~app/atomicComponents';
 import config from '~app/common/config';
-import OperatorMetadataStore, { fieldsToValidateSignature } from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
 import FieldWrapper from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/FieldWrapper';
 import BorderScreen from '~app/components/common/BorderScreen';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { useStores } from '~app/hooks/useStores';
-import { IOperator } from '~app/model/operator.model';
-import { SingleOperator } from '~app/model/processes.model';
-import { fetchOperators } from '~app/redux/account.slice';
+import { useOperatorMetadataStore } from '~app/hooks/useOperatorMetadataStore.ts';
+import { fetchOperators, getSelectedOperator } from '~app/redux/account.slice';
+import { selectMetadata, updateOperatorLocations, updateOperatorNodeOptions } from '~app/redux/operatorMetadata.slice.ts';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
-import { FIELD_KEYS } from '~lib/utils/operatorMetadataHelper';
+import { FIELD_KEYS, fieldsToValidateSignature } from '~lib/utils/operatorMetadataHelper';
 import { updateOperatorMetadata } from '~root/services/operator.service';
 
 const EditOperatorDetails = () => {
-  const stores = useStores();
   const navigate = useNavigate();
   const classes = useStyles({});
-  const processStore: ProcessStore = stores.Process;
-  const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-  const process: SingleOperator = processStore.getProcess;
-  const operator: IOperator = process?.item;
+  const operator = useAppSelector(getSelectedOperator)!;
   const [errorMessage, setErrorMessage] = useState(['']);
   const [buttonDisable, setButtonDisable] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,35 +29,36 @@ const EditOperatorDetails = () => {
 
   const signMessage = useSignMessage();
 
+  const { validateOperatorMetaData, createMetadataPayload } = useOperatorMetadataStore();
+
   useEffect(() => {
-    (async () => {
-      await metadataStore.updateOperatorLocations();
-      await metadataStore.updateOperatorNodeOptions();
-    })();
+    dispatch(updateOperatorLocations());
+    dispatch(updateOperatorNodeOptions());
   }, []);
 
+  const metadataString = JSON.stringify(useAppSelector(selectMetadata));
+
   useEffect(() => {
-    setButtonDisable(metadataStore.validateOperatorMetaData());
-  }, [JSON.stringify(metadataStore.metadata)]);
+    setButtonDisable(validateOperatorMetaData());
+  }, [metadataString]);
 
   const submitHandler = async () => {
-    const isNotValidity = metadataStore.validateOperatorMetaData();
+    const isNotValidity = validateOperatorMetaData();
     setButtonDisable(isNotValidity);
     if (!isNotValidity) {
-      const payload = metadataStore.createMetadataPayload();
-      let rawDataToValidate: any = [];
+      const payload = createMetadataPayload();
+      const rawDataToValidate: string[] = [];
       fieldsToValidateSignature.forEach((field) => {
         if (payload[field]) {
           const newItem = field === FIELD_KEYS.OPERATOR_IMAGE ? `logo:sha256:${sha256(payload[field])}` : payload[field];
           rawDataToValidate.push(newItem);
         }
       });
-      rawDataToValidate = rawDataToValidate.join(',');
       setIsLoading(true);
       let signatureHash;
       try {
         signatureHash = await signMessage.signMessageAsync({
-          message: rawDataToValidate
+          message: rawDataToValidate.join(',')
         });
         setErrorMessage(['']);
       } catch (e: any) {
@@ -74,7 +67,7 @@ const EditOperatorDetails = () => {
         setIsLoading(false);
         return;
       }
-      const updateOperatorResponse = await updateOperatorMetadata(operator.id, signatureHash, payload, isContractWallet);
+      const updateOperatorResponse = await updateOperatorMetadata(operator?.id ?? 0, signatureHash, payload, isContractWallet);
       if (updateOperatorResponse.data) {
         dispatch(fetchOperators({}));
         navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA_CONFIRMATION);
@@ -93,7 +86,7 @@ const EditOperatorDetails = () => {
       blackHeader
       header={'Edit details'}
       body={[
-        ...Object.values(FIELD_KEYS).map((key: string) => {
+        ...Object.values(FIELD_KEYS).map((key: FIELD_KEYS) => {
           return <FieldWrapper fieldKey={key} />;
         }),
         ...errorMessage.map((error) => <Typography className={classes.ErrorMessage}>{error}</Typography>),
@@ -103,4 +96,4 @@ const EditOperatorDetails = () => {
   );
 };
 
-export default observer(EditOperatorDetails);
+export default EditOperatorDetails;

@@ -1,18 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import config, { translations } from '~app/common/config';
-import { useStores } from '~app/hooks/useStores';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { useStyles } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper.styles';
-import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
-import ProcessStore from '~app/common/stores/applications/SsvWeb/Process.store';
-import { SingleOperator } from '~app/model/processes.model';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
-import { useAppDispatch } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { getSelectedOperator } from '~app/redux/account.slice.ts';
+import { initMetadata } from '~app/redux/operatorMetadata.slice.ts';
 
 type Props = {
   header: string;
@@ -20,15 +17,11 @@ type Props = {
 };
 
 const OperatorsFlow = (props: Props) => {
-  const stores = useStores();
   const navigate = useNavigate();
   const { header, mainFlow } = props;
-  const settingsRef = useRef(null);
+  const settingsRef = useRef<HTMLDivElement>(null);
   const classes = useStyles({ mainFlow });
-  const processStore: ProcessStore = stores.Process;
-  const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-  const process: SingleOperator = processStore.getProcess;
-  const operator = process?.item;
+  const operator = useAppSelector(getSelectedOperator)!;
   const dispatch = useAppDispatch();
 
   const [showSettings, setShowSettings] = useState(false);
@@ -37,9 +30,8 @@ const OperatorsFlow = (props: Props) => {
     /**
      * Close menu drop down when click outside
      */
-    const handleClickOutside = (e: any) => {
-      // @ts-ignore
-      if (showSettings && settingsRef.current && !settingsRef.current.contains(e.target)) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (showSettings && settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
         setShowSettings(false);
       }
     };
@@ -53,7 +45,7 @@ const OperatorsFlow = (props: Props) => {
 
   const moveToRemoveOperator = () => navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.REMOVE.ROOT);
   const moveToMetaData = async () => {
-    await metadataStore.initMetadata(operator);
+    dispatch(initMetadata(operator));
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.META_DATA);
   };
 
@@ -62,7 +54,7 @@ const OperatorsFlow = (props: Props) => {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(operator.id);
+    navigator.clipboard.writeText(operator?.id.toString() ?? '');
     dispatch(
       setMessageAndSeverity({
         message: 'Copied to clipboard.',
@@ -79,7 +71,7 @@ const OperatorsFlow = (props: Props) => {
       action: 'click',
       label: 'operator'
     });
-    window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');
+    window.open(`${config.links.EXPLORER_URL}/operators/${operator?.id}`, '_blank');
   };
 
   const secondaryFlowDom = () => {
@@ -92,7 +84,7 @@ const OperatorsFlow = (props: Props) => {
         <Grid item className={classes.Line} />
         <Grid item container xs style={{ gap: 8, alignItems: 'center' }}>
           <Grid item>
-            <Typography className={classes.subHeaderText}>ID: {operator.id}</Typography>
+            <Typography className={classes.subHeaderText}>ID: {operator?.id}</Typography>
           </Grid>
           <ImageDiv onClick={copyToClipboard} image={'copy'} width={24} height={24} />
           <ImageDiv onClick={openExplorer} image={'explorer'} width={23} height={23} />
@@ -152,4 +144,4 @@ const OperatorsFlow = (props: Props) => {
   );
 };
 
-export default observer(OperatorsFlow);
+export default OperatorsFlow;

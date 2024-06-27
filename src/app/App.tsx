@@ -4,7 +4,6 @@ import { ThemeProvider as ThemeProviderLegacy } from '@mui/styles';
 import { configure } from 'mobx';
 import { useEffect, useMemo } from 'react';
 import { BrowserView, MobileView } from 'react-device-detect';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled, { ThemeProvider as ScThemeProvider } from 'styled-components';
 import Routes from '~app/Routes/Routes';
@@ -12,17 +11,17 @@ import config from '~app/common/config';
 import BarMessage from '~app/components/common/BarMessage';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import { GlobalStyle } from '~app/globalStyle';
-import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { useNavigateToRoot } from '~app/hooks/useNavigateToRoot';
+import { useWalletConnectivity } from '~app/hooks/useWalletConnectivity';
 import { getIsDarkMode, getIsShowSsvLoader, getRestrictedUserGeo, setRestrictedUserGeo } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
+import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice.ts';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
-import { cn } from '~lib/utils/tailwind';
 import { AppTheme } from '~root/Theme';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { getColors } from '~root/themes';
 import './globals.css';
-import { useWalletConnectivity } from '~app/hooks/useWalletConnectivity';
-import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice.ts';
 
 const LoaderWrapper = styled.div<{ theme: any }>`
   display: flex;
@@ -54,7 +53,7 @@ if (import.meta.env.VITE_CLAIM_PAGE) {
 }
 
 const App = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const isDarkMode = useAppSelector(getIsDarkMode);
   const strategyRedirect = useAppSelector(getStrategyRedirect);
   const isShowSsvLoader = useAppSelector(getIsShowSsvLoader);
@@ -63,10 +62,12 @@ const App = () => {
   const navigate = useNavigate();
   const isMainnet = useAppSelector(getIsMainnet);
   const accountAddress = useAppSelector(getAccountAddress);
+  const { navigateToRoot } = useNavigateToRoot();
 
   useWalletConnectivity();
 
   useEffect(() => {
+    if (import.meta.env.VITE_FAUCET_PAGE) return;
     if (getFromLocalStorageByKey('locationRestrictionDisabled')) {
       console.debug('Skipping location restriction functionality in this app.');
       dispatch(setRestrictedUserGeo(''));
@@ -77,14 +78,14 @@ const App = () => {
           navigate(config.routes.COUNTRY_NOT_SUPPORTED);
         } else {
           dispatch(setRestrictedUserGeo(''));
-          navigate(config.routes.SSV.ROOT);
+          navigateToRoot();
         }
       });
     } else {
       dispatch(setRestrictedUserGeo(''));
-      navigate(config.routes.SSV.ROOT);
+      navigateToRoot();
     }
-  }, [isMainnet, accountAddress]);
+  }, [isMainnet, accountAddress, navigateToRoot, dispatch]);
 
   useEffect(() => {
     if (!isRestrictedCountry) {
@@ -94,6 +95,14 @@ const App = () => {
 
   const MuiTheme = useMemo(() => createTheme(AppTheme({ isDarkMode })), [isDarkMode]);
 
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={MuiTheme}>
@@ -101,7 +110,6 @@ const App = () => {
           {/* @ts-ignore */}
           <ScThemeProvider theme={theme}>
             <div
-              className={cn({ dark: isDarkMode })}
               style={{
                 color: theme.colors.black
               }}

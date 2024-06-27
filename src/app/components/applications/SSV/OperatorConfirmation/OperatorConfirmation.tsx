@@ -23,7 +23,7 @@ const OperatorConfirmation = () => {
   const [actionButtonText, setActionButtonText] = useState('Register Operator');
   const navigate = useNavigate();
   const location = useLocation();
-  const { operatorRawData } = location.state;
+  const { operatorRawData, isPrivate } = location.state;
   const dispatch = useAppDispatch();
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isMainnet = useAppSelector(getIsMainnet);
@@ -32,7 +32,7 @@ const OperatorConfirmation = () => {
   const onRegisterClick = async () => {
     setIsLoading(true);
     setActionButtonText('Waiting for confirmation...');
-    const operatorAdded = await addNewOperator({ isContractWallet, operatorRawData, dispatch });
+    const operatorAdded = await addNewOperator({ isContractWallet, operatorRawData, isPrivate, dispatch });
     if (operatorAdded) {
       const res = await getOperatorByPublicKey(decodeParameter('string', operatorRawData.publicKey));
       navigate(isContractWallet ? config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD : config.routes.SSV.OPERATOR.SUCCESS_PAGE, {

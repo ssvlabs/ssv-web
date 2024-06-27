@@ -8,7 +8,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
 
 const OperatorStatus = () => {
-  const operator = useAppSelector(getSelectedOperator);
+  const operator = useAppSelector(getSelectedOperator)!;
   const isFeeZero = !Number(operator.fee);
   const switchLabel = operator.is_private ? 'Public' : 'Private';
 
@@ -22,14 +22,14 @@ const OperatorStatus = () => {
         <div className="flex flex-col gap-8 w-full">
           <div className="flex flex-col gap-4">
             <h1 className="text-xl font-bold">Operator Status</h1>
-            <div className="flex flex-col gap-3 font-medium text-sm">
+            <div className="flex flex-col gap-3 font-medium text-sm text-gray-700">
               <p>Control validator access by switching between public and private modes.</p>
               <ul className="list-disc pl-6">
                 <li>
                   <span className="font-bold">Public mode</span> - Any validator can register with the operator.
                 </li>
                 <li>
-                  <span className="font-bold">Private mode</span> Only authorized addresses can register.
+                  <span className="font-bold">Private mode</span> - Only whitelisted addresses can register.
                 </li>
               </ul>
               <p className="font-medium text-sm pt-3">
@@ -43,7 +43,7 @@ const OperatorStatus = () => {
           </div>
           {isFeeZero && operator.is_private && (
             <Alert variant="error">
-              <AlertDescription>Switching the operator to public when the fee is set to 0 is not possible. </AlertDescription>
+              <AlertDescription>You cannot switch your operator to public mode when you have a set fee of 0.</AlertDescription>
             </Alert>
           )}
           <Button

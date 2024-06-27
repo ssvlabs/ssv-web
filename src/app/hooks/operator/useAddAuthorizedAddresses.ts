@@ -11,8 +11,7 @@ type FormValues = {
 };
 
 export const useAddAuthorizedAddresses = () => {
-  const operator = useAppSelector(getSelectedOperator);
-
+  const operator = useAppSelector(getSelectedOperator)!;
   const addressesMap = useMemo(() => new Map(operator.whitelist_addresses?.map((a) => [a, true])), [operator.whitelist_addresses]);
 
   const formSchema = useMemo(
@@ -57,9 +56,15 @@ export const useAddAuthorizedAddresses = () => {
     control: form.control
   });
 
+  const addresses = form.watch('addresses');
+  const hasEmptyAddresses = addresses.some((field) => !field.value);
+  const hasAddresses = addresses.length > 0;
+
   return {
     form,
     fieldArray,
-    hasAddresses: fieldArray.fields.length > 0
+    hasAddresses,
+    hasEmptyAddresses,
+    isSubmitDisabled: Boolean(form.formState.errors.addresses) || hasEmptyAddresses
   };
 };

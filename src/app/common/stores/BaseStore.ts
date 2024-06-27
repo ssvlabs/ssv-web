@@ -1,14 +1,10 @@
 import { distributionStore } from './applications/Distribution/Distribution.store';
 import { distributionTestnetStore } from './applications/Distribution/DistributionTestnet.store';
-import { operatorMetadataStore } from './applications/SsvWeb/OperatorMetadata.store';
-import { processStore } from './applications/SsvWeb/Process.store';
 import { validatorStore } from './applications/SsvWeb/Validator.store';
 
 const _stores = {
-  Process: processStore,
   Validator: validatorStore,
   Distribution: distributionStore,
-  OperatorMetadata: operatorMetadataStore,
   DistributionTestnet: distributionTestnetStore
 } as const;
 

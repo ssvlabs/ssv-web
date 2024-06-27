@@ -43,21 +43,23 @@ export const OperatorRow: FC<Props> = ({ operator, isSelected, onClick }) => {
   });
 
   const isPrivateOperator = !canUseOperator.data;
-  const isPrivateOrDeleted = Boolean(operator.is_deleted || isPrivateOperator);
+  const isDisabled = operator.is_deleted || isPrivateOperator || reachedMaxValidators;
 
   return (
     <AnchorTooltip title={'Operator reached maximum amount of validators'} placement={'top'} dontUseGridWrapper shouldDisableHoverListener={!reachedMaxValidators}>
       <TableRow
         className={cn(classes.RowWrapper, {
           [classes.Selected]: isSelected,
-          [classes.RowDisabled]: isPrivateOrDeleted || reachedMaxValidators
+          [classes.RowDisabled]: isDisabled
         })}
         onClick={() => {
-          !isPrivateOrDeleted && onClick(operator);
+          if (!isDisabled) {
+            onClick(operator);
+          }
         }}
       >
         <StyledCell style={{ paddingLeft: 20, width: 60, paddingTop: 35 }}>
-          <Checkbox isDisabled={isPrivateOrDeleted || reachedMaxValidators} grayBackGround text={''} isChecked={isSelected} toggleIsChecked={() => {}} />
+          <Checkbox isDisabled={isDisabled} grayBackGround text={''} isChecked={isSelected} toggleIsChecked={() => {}} />
         </StyledCell>
         <StyledCell>
           <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator} />

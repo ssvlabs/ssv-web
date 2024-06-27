@@ -42,7 +42,7 @@ const getOperatorsByOwnerAddress = async ({
       return { ...operator, balance };
     })
   );
-  return { operators: operators || [], pagination: DEFAULT_PAGINATION };
+  return { operators: operators || [], pagination: res ? res.pagination : DEFAULT_PAGINATION };
 };
 
 type OperatorSearchResponse = {

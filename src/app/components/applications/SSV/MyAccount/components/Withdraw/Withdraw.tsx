@@ -21,8 +21,8 @@ const Withdraw = ({ isValidatorFlow }: { isValidatorFlow: boolean }) => {
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const classes = useStyles();
   const cluster = useAppSelector(getSelectedCluster);
-  const operator = useAppSelector(getSelectedOperator)!;
-  const { data: balance } = useOperatorBalance(operator.id);
+  const operator = useAppSelector(getSelectedOperator);
+  const { data: balance } = useOperatorBalance(operator?.id);
   const [processItemBalance, setProcessItemBalance] = useState<number>(isValidatorFlow ? fromWei(cluster.balance) : +(balance ?? 0));
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const Withdraw = ({ isValidatorFlow }: { isValidatorFlow: boolean }) => {
         {isValidatorFlow ? (
           <ClusterFlow clusterBalance={processItemBalance} minimumLiquidationCollateral={minimumLiquidationCollateral} liquidationCollateralPeriod={liquidationCollateralPeriod} />
         ) : (
-          <OperatorFlow operator={operator} />
+          operator && <OperatorFlow operator={operator} />
         )}
       </Grid>
     </Grid>

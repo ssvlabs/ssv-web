@@ -59,6 +59,14 @@ const FundingPeriod = () => {
   const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
   const totalAmount = formatNumberToUi(Number(totalCost.mul(validatorStore.validatorsCount).toFixed(18)));
 
+  const onPerionChange = (event: any) => {
+    const value = Math.floor(Number(event.target.value));
+    if (isNaN(value)) {
+      return;
+    }
+    setCustomPeriod(value);
+  };
+
   const getDisableStateCondition = () => {
     if (isCustomPayment) {
       return customPeriod <= 0 || isNaN(customPeriod) || insufficientBalance;
@@ -104,15 +112,7 @@ const FundingPeriod = () => {
                     )}{' '}
                     SSV
                   </Grid>
-                  {isCustom && (
-                    <TextInput
-                      value={customPeriod}
-                      onChangeCallback={(e: any) => setCustomPeriod(Number(e.target.value))}
-                      extendClass={classes.DaysInput}
-                      withSideText
-                      sideText={'Days'}
-                    />
-                  )}
+                  {isCustom && <TextInput value={customPeriod} onChangeCallback={onPerionChange} extendClass={classes.DaysInput} withSideText sideText={'Days'} />}
                 </Grid>
               );
             })}

@@ -230,11 +230,10 @@ export const isValidLink = (value: string) => {
 };
 
 export const isDkgAddressValid = (value: string, isForm?: boolean) => {
-  if (isForm && value === HTTPS_PREFIX) return false;
-  if (!value.startsWith(HTTPS_PREFIX)) return false;
-
+  if (isForm && value === HTTPS_PREFIX) return true;
   const addressWithoutHttps = value.substring(HTTPS_PREFIX.length);
-
+  if (!value.startsWith(HTTPS_PREFIX)) return false;
+  if (addressWithoutHttps.length === 0) return true;
   const domainPattern = '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,9}';
   const ipPattern = '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)';
   const portPattern = ':\\d{1,5}';

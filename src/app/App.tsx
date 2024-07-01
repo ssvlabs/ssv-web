@@ -11,9 +11,10 @@ import config from '~app/common/config';
 import BarMessage from '~app/components/common/BarMessage';
 import MobileNotSupported from '~app/components/common/MobileNotSupported';
 import { GlobalStyle } from '~app/globalStyle';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { useNavigateToRoot } from '~app/hooks/useNavigateToRoot';
 import { useWalletConnectivity } from '~app/hooks/useWalletConnectivity';
 import { getIsDarkMode, getIsShowSsvLoader, getRestrictedUserGeo, setRestrictedUserGeo } from '~app/redux/appState.slice';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice.ts';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
@@ -61,10 +62,12 @@ const App = () => {
   const navigate = useNavigate();
   const isMainnet = useAppSelector(getIsMainnet);
   const accountAddress = useAppSelector(getAccountAddress);
+  const { navigateToRoot } = useNavigateToRoot();
 
   useWalletConnectivity();
 
   useEffect(() => {
+    if (import.meta.env.VITE_FAUCET_PAGE) return;
     if (getFromLocalStorageByKey('locationRestrictionDisabled')) {
       console.debug('Skipping location restriction functionality in this app.');
       dispatch(setRestrictedUserGeo(''));
@@ -75,14 +78,14 @@ const App = () => {
           navigate(config.routes.COUNTRY_NOT_SUPPORTED);
         } else {
           dispatch(setRestrictedUserGeo(''));
-          navigate(config.routes.SSV.ROOT);
+          navigateToRoot();
         }
       });
     } else {
       dispatch(setRestrictedUserGeo(''));
-      navigate(config.routes.SSV.ROOT);
+      navigateToRoot();
     }
-  }, [isMainnet, accountAddress]);
+  }, [isMainnet, accountAddress, navigateToRoot, dispatch]);
 
   useEffect(() => {
     if (!isRestrictedCountry) {

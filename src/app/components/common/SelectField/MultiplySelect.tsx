@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
 import Chip from '@mui/material/Chip';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import { useStores } from '~app/hooks/useStores';
 import FormControl from '@mui/material/FormControl';
 import { useStyles } from '~app/components/common/SelectField/SelectField.styles';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook.ts';
-import { selectMetadataEntityByName, setMetadataValue } from '~app/redux/operatorMetadata.slice.ts';
-import { FIELD_KEYS } from '~lib/utils/operatorMetadataHelper.ts';
+import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 
-const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: FIELD_KEYS; placeholder: string }) => {
+const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: string; placeholder: string }) => {
   const classes = useStyles({});
-  const dispatch = useAppDispatch();
-  const { value, options } = useAppSelector((state) => selectMetadataEntityByName(state, fieldKey));
+  const stores = useStores();
+  const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
+  const { value, options } = metadataStore.getMetadataEntity(fieldKey);
   const [values, setValues] = useState<string[]>([]);
 
   useEffect(() => {
@@ -19,14 +19,8 @@ const MultiplySelect = ({ fieldKey, placeholder }: { fieldKey: FIELD_KEYS; place
     setValues(operatorMevRelays.filter((v: string) => v));
   }, []);
 
-  const handleChange = (event: SelectChangeEvent<string[]>) => {
-    dispatch(
-      setMetadataValue({
-        metadataFieldName: fieldKey,
-        value: event.target.value
-      })
-    );
-    setValues(event.target.value as string[]);
+  const handleChange = (event: any) => {
+    setValues(metadataStore.setMetadataValue(fieldKey, event.target.value));
   };
 
   return (

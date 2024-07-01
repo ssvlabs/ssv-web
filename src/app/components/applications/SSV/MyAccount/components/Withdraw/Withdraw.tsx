@@ -12,7 +12,6 @@ import { fromWei } from '~root/services/conversions.service';
 import OperatorFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/OperatorFlow';
 import ClusterFlow from '~app/components/applications/SSV/MyAccount/components/Withdraw/ClusterFlow';
 import { getSelectedCluster, getSelectedOperator } from '~app/redux/account.slice.ts';
-import { useOperatorBalance } from '~app/hooks/operator/useOperatorBalance.ts';
 
 let interval: NodeJS.Timeout;
 
@@ -21,9 +20,8 @@ const Withdraw = ({ isValidatorFlow }: { isValidatorFlow: boolean }) => {
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const classes = useStyles();
   const cluster = useAppSelector(getSelectedCluster);
-  const operator = useAppSelector(getSelectedOperator);
-  const { data: balance } = useOperatorBalance(operator?.id);
-  const [processItemBalance, setProcessItemBalance] = useState<number>(isValidatorFlow ? fromWei(cluster.balance) : +(balance ?? 0));
+  const operator = useAppSelector(getSelectedOperator)!;
+  const [processItemBalance, setProcessItemBalance] = useState<number>(isValidatorFlow ? fromWei(cluster.balance) : +(operator?.balance ?? 0));
 
   useEffect(() => {
     if (isValidatorFlow) {
@@ -56,7 +54,7 @@ const Withdraw = ({ isValidatorFlow }: { isValidatorFlow: boolean }) => {
         {isValidatorFlow ? (
           <ClusterFlow clusterBalance={processItemBalance} minimumLiquidationCollateral={minimumLiquidationCollateral} liquidationCollateralPeriod={liquidationCollateralPeriod} />
         ) : (
-          operator && <OperatorFlow operator={operator} />
+          <OperatorFlow operator={operator} />
         )}
       </Grid>
     </Grid>

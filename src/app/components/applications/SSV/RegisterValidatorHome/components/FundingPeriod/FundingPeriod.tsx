@@ -97,12 +97,7 @@ const FundingPeriod = () => {
                     </Grid>
                   </Grid>
                   <Grid item className={classes.SsvPrice}>
-                    {formatNumberToUi(
-                      Number(
-                        propertyCostByPeriod(selectedOperatorsFee, isCustom ? customPeriod : option.days) + propertyCostByPeriod(networkFee, isCustom ? customPeriod : option.days)
-                      ) * validatorStore.validatorsCount
-                    )}{' '}
-                    SSV
+                    {formatNumberToUi(Number(propertyCostByPeriod(selectedOperatorsFee, isCustom ? customPeriod : option.days) * validatorStore.validatorsCount))} SSV
                   </Grid>
                   {isCustom && (
                     <TextInput

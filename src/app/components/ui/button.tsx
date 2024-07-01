@@ -28,16 +28,11 @@ const buttonVariants = cva(
         icon: 'h-10 w-10 rounded-lg',
         network: 'h-12 pl-3 pr-4 font-semibold text-md rounded-lg',
         wallet: 'h-12 px-4 font-semibold text-md rounded-lg'
-      },
-      width: {
-        full: 'w-full',
-        default: ''
       }
     },
     defaultVariants: {
       variant: 'default',
-      size: 'default',
-      width: 'default'
+      size: 'default'
     }
   }
 );
@@ -50,12 +45,12 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, colorScheme, width, asChild = false, isLoading, loadingText, children, isActionBtn, type = 'button', ...props }, ref) => {
+  ({ className, variant, size, colorScheme, asChild = false, isLoading, loadingText, children, isActionBtn, type = 'button', ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
     const _loadingText = loadingText ?? 'Waiting for Wallet Confirmation...';
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, colorScheme, className, width }), {
+        className={cn(buttonVariants({ variant, size, colorScheme, className }), {
           'opacity-50': isLoading
         })}
         type={type}

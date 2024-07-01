@@ -18,7 +18,7 @@ const getAmountToTransfer = async () => {
 const requestSsvFromFaucet = async ({ address }: { address: string }) => {
   const { faucetApi, networkId, apiVersion } = getStoredNetwork();
   try {
-    await postRequest(faucetApi, { owner_address: address, networkId: networkId, version: apiVersion });
+    await postRequest(faucetApi, { owner_address: address, networkId: networkId, version: apiVersion }, true);
     return { status: true };
   } catch (e: any) {
     return {

@@ -71,13 +71,16 @@ const getRequest = async (url: string, skipRetry: boolean = true) => {
   }
 };
 
-const postRequest = async <T>(url: string, body: unknown): Promise<IHttpResponse<T>> => {
+const postRequest = async <T>(url: string, body: unknown, shouldThrow = false): Promise<IHttpResponse<T>> => {
   try {
     const response = await axios.post(url, body);
     return { error: null, data: response.data, result: HttpResult.SUCCESS };
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log(httpErrorMessage(url, error.code!, error.message, `Body: ${JSON.stringify(body)}`));
+    }
+    if (shouldThrow) {
+      throw error;
     }
 
     return formatError(error, url);

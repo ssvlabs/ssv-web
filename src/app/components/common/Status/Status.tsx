@@ -20,7 +20,7 @@ const Status = ({ item }: { item: IOperator | IValidator }) => {
     if (noValidators) return { statusLabel: 'No Validators', statusClasses: `${classesStatus} ${classes.NoValidators}` };
     if (isActive) return { statusLabel: 'Active', statusClasses: `${classesStatus} ${classes.Active}` };
     return { statusLabel: 'Inactive', statusClasses: `${classesStatus} ${classes.Inactive}` };
-  }, [inValid, isActive, isDeleted, noValidators]);
+  }, [classes.Active, classes.Inactive, classes.Invalid, classes.IsDeleted, classes.NoValidators, classes.Status, inValid, isActive, isDeleted, noValidators]);
 
   return (
     <Grid container item className={statusClasses}>

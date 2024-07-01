@@ -7,7 +7,7 @@ const Layout = ({ children }: any) => {
 
   return (
     <>
-      <div className={cn(classes.Root, 'flex flex-col h-screen overflow-auto')}>{children}</div>
+      <div className={cn(classes.Root, 'flex flex-col h-screen overflow-auto pb-6')}>{children}</div>
       <TransactionPendingPopUp />
     </>
   );

@@ -3,22 +3,25 @@ import { EContractName } from '~app/model/contracts.model';
 import { IOperator } from '~app/model/operator.model';
 import { isEqualsAddresses } from '~lib/utils/strings';
 import { MAINNET_NETWORK_ID, getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { checkSpecialCharacters } from '~lib/utils/strings.ts';
+import { Dispatch } from '@reduxjs/toolkit';
+import { setErrorMessage } from '~app/redux/operatorMetadata.slice.ts';
 import { getContractByName } from '~root/wagmi/utils';
 
-export const FIELD_KEYS = {
-  OPERATOR_NAME: 'operatorName',
-  OPERATOR_IMAGE: 'logo',
-  DESCRIPTION: 'description',
-  SETUP_PROVIDER: 'setupProvider',
-  MEV_RELAYS: 'mevRelays',
-  LOCATION: 'location',
-  EXECUTION_CLIENT: 'eth1NodeClient',
-  CONSENSUS_CLIENT: 'eth2NodeClient',
-  WEBSITE_URL: 'websiteUrl',
-  TWITTER_URL: 'twitterUrl',
-  LINKEDIN_URL: 'linkedinUrl',
-  DKG_ADDRESS: 'dkgAddress'
-};
+export enum FIELD_KEYS {
+  OPERATOR_NAME = 'operatorName',
+  OPERATOR_IMAGE = 'logo',
+  DESCRIPTION = 'description',
+  SETUP_PROVIDER = 'setupProvider',
+  MEV_RELAYS = 'mevRelays',
+  LOCATION = 'location',
+  EXECUTION_CLIENT = 'eth1NodeClient',
+  CONSENSUS_CLIENT = 'eth2NodeClient',
+  WEBSITE_URL = 'websiteUrl',
+  TWITTER_URL = 'twitterUrl',
+  LINKEDIN_URL = 'linkedinUrl',
+  DKG_ADDRESS = 'dkgAddress'
+}
 
 export const MEV_RELAYS = {
   AESTUS: 'Aestus',
@@ -80,20 +83,20 @@ export const FIELD_CONDITIONS: Record<string, FieldCondition> = {
   [FIELD_KEYS.OPERATOR_NAME]: { maxLength: 30, errorMessage: 'Operator name up to 30 characters' },
   [FIELD_KEYS.DESCRIPTION]: { maxLength: 350, errorMessage: 'Description up to 350 characters' },
   [FIELD_KEYS.SETUP_PROVIDER]: { maxLength: 50, errorMessage: 'Cloud provider up to 50 characters' }
-};
+} as const;
 
-export const exceptions: Record<string, string> = {
-  operatorName: 'name',
-  eth1NodeClient: 'eth1_node_client',
-  eth2NodeClient: 'eth2_node_client'
-};
+export const exceptions: { [key in (typeof FIELD_KEYS)[keyof typeof FIELD_KEYS]]?: keyof IOperator } = {
+  [FIELD_KEYS.OPERATOR_NAME]: 'name',
+  [FIELD_KEYS.EXECUTION_CLIENT]: 'eth1_node_client',
+  [FIELD_KEYS.CONSENSUS_CLIENT]: 'eth2_node_client'
+} as const;
 
 export const OPERATOR_NODE_TYPES = {
   [FIELD_KEYS.EXECUTION_CLIENT]: 1,
   [FIELD_KEYS.CONSENSUS_CLIENT]: 2
-};
+} as const;
 
-export const camelToSnakeFieldsMapping = [FIELD_KEYS.EXECUTION_CLIENT, FIELD_KEYS.CONSENSUS_CLIENT, FIELD_KEYS.OPERATOR_NAME];
+export const camelToSnakeFieldsMapping: (typeof FIELD_KEYS)[keyof typeof FIELD_KEYS][] = [FIELD_KEYS.EXECUTION_CLIENT, FIELD_KEYS.CONSENSUS_CLIENT, FIELD_KEYS.OPERATOR_NAME];
 export const HTTPS_PREFIX = 'https://';
 
 export const FIELDS: { [key: string]: MetadataEntity } = {
@@ -178,7 +181,22 @@ export const FIELDS: { [key: string]: MetadataEntity } = {
   }
 };
 
-export const photoValidation = (file: any, callback: Function) => {
+export const fieldsToValidateSignature = [
+  FIELD_KEYS.OPERATOR_NAME,
+  FIELD_KEYS.DESCRIPTION,
+  FIELD_KEYS.LOCATION,
+  FIELD_KEYS.SETUP_PROVIDER,
+  FIELD_KEYS.EXECUTION_CLIENT,
+  FIELD_KEYS.CONSENSUS_CLIENT,
+  FIELD_KEYS.MEV_RELAYS,
+  FIELD_KEYS.WEBSITE_URL,
+  FIELD_KEYS.TWITTER_URL,
+  FIELD_KEYS.LINKEDIN_URL,
+  FIELD_KEYS.DKG_ADDRESS,
+  FIELD_KEYS.OPERATOR_IMAGE
+];
+
+export const photoValidation = (file: File, callback: Function) => {
   let errorMessage = '';
   if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
     errorMessage = translations.OPERATOR_METADATA.IMAGE_TYPE_ERROR;
@@ -252,4 +270,94 @@ export const canAccountUseOperator = async (account: string | `0x${string}`, ope
   const isWhitelistedViaContract = hasExternalContract ? await contract.isAddressWhitelistedInWhitelistingContract(account, operator.id, operator.whitelisting_contract) : false;
 
   return isWhitelistedAddress || isWhitelistedViaContract;
+};
+
+/**
+ * Sorting case-insensitively by each word in the string
+ * @param relays
+ * @private
+ */
+export const sortMevRelays = (relays: string | string[]): string => {
+  if (!relays) {
+    return relays;
+  }
+  let splitStr: string[];
+  if (typeof relays === 'string') {
+    splitStr = relays.split(',');
+  } else {
+    splitStr = relays;
+  }
+  const sortedStr: string[] = splitStr.sort((a, b) => {
+    const aSplit = a.toLowerCase().split(' ');
+    const bSplit = b.toLowerCase().split(' ');
+    for (let i = 0; i < Math.min(aSplit.length, bSplit.length); ++i) {
+      const cmp = aSplit[i].localeCompare(bSplit[i]);
+      if (cmp !== 0) return cmp;
+    }
+    return 0;
+  });
+  return sortedStr.join(',');
+};
+
+export const checkWithConditions = (metadataFieldName: string, fieldEntity: MetadataEntity) => {
+  const condition = FIELD_CONDITIONS[metadataFieldName];
+  const response = {
+    result: false,
+    errorMessage: ''
+  };
+
+  if (condition) {
+    const innerConditions: { condition: boolean; response: string }[] = [
+      {
+        condition: metadataFieldName === FIELD_KEYS.OPERATOR_NAME && fieldEntity.value?.length === 0,
+        response: translations.OPERATOR_METADATA.REQUIRED_FIELD_ERROR
+      },
+      {
+        condition: fieldEntity.value?.length > condition.maxLength,
+        response: condition.errorMessage
+      },
+      {
+        condition: fieldEntity.value && !checkSpecialCharacters(fieldEntity.value),
+        response: translations.OPERATOR_METADATA.SPECIAL_CHARACTERS_ERROR
+      }
+    ];
+    for (const innerCondition of innerConditions) {
+      if (innerCondition.condition) {
+        response.result = innerCondition.condition;
+        response.errorMessage = innerCondition.response;
+      }
+    }
+  }
+  return response;
+};
+
+export const checkExceptionFields = (fieldName: string, value: any): boolean => {
+  return [FIELD_KEYS.LINKEDIN_URL, FIELD_KEYS.WEBSITE_URL, FIELD_KEYS.TWITTER_URL, FIELD_KEYS.DKG_ADDRESS].includes(fieldName as FIELD_KEYS) && typeof value === 'string';
+};
+
+export const checkFieldValue = (metadataFieldName: string, fieldValue: string): { result: boolean; errorMessage: string } => {
+  if (metadataFieldName === FIELD_KEYS.DKG_ADDRESS) {
+    return {
+      result: !isDkgAddressValid(fieldValue, true),
+      errorMessage: translations.OPERATOR_METADATA.DKG_ADDRESS_ERROR
+    };
+  } else {
+    return {
+      result: !isValidLink(fieldValue),
+      errorMessage: translations.OPERATOR_METADATA.LINK_ERROR
+    };
+  }
+};
+
+export const processField = (metadataFieldName: FIELD_KEYS, fieldEntity: MetadataEntity, metadataContainsError: boolean, dispatch: Dispatch) => {
+  const exceptionField = checkExceptionFields(metadataFieldName, fieldEntity.value);
+  const { result, errorMessage } = exceptionField ? checkFieldValue(metadataFieldName, fieldEntity.value) : checkWithConditions(metadataFieldName, fieldEntity);
+
+  if (fieldEntity.value && result) {
+    dispatch(setErrorMessage({ metadataFieldName, message: errorMessage }));
+    return true;
+  } else {
+    dispatch(setErrorMessage({ metadataFieldName, message: '' }));
+    return metadataContainsError;
+  }
 };

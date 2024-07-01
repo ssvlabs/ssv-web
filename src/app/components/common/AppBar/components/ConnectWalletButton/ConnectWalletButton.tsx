@@ -27,7 +27,6 @@ export const WalletButton = () => {
 
         return (
           <div
-            className="w-full"
             {...(!mounted && {
               'aria-hidden': true,
               style: {
@@ -40,7 +39,7 @@ export const WalletButton = () => {
             {(() => {
               if (!connected) {
                 return (
-                  <Button size="lg" width="full" onClick={openConnectModal}>
+                  <Button size="lg" onClick={openConnectModal}>
                     Connect Wallet
                   </Button>
                 );

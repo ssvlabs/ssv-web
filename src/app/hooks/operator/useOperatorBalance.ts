@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { useBlock } from 'wagmi';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperatorId } from '~app/redux/account.slice';
 import { queryClient } from '~root/index';
@@ -9,13 +8,11 @@ export const OPERATOR_BALANCE_QUERY_KEY = 'operatorBalance';
 export const getOperatorBalanceQueryKey = (id: number) => [OPERATOR_BALANCE_QUERY_KEY, id];
 
 export const useOperatorBalance = (operatorId?: number) => {
-  const block = useBlock({ watch: true });
-
   const selectedOperatorId = useAppSelector(getSelectedOperatorId);
   const id = operatorId ?? selectedOperatorId;
 
   return useQuery({
-    queryKey: [OPERATOR_BALANCE_QUERY_KEY, id, block.data?.number.toString()],
+    queryKey: [OPERATOR_BALANCE_QUERY_KEY, id],
     queryFn: () => getOperatorBalance({ id: id! }),
     placeholderData: 0,
     refetchOnMount: false,

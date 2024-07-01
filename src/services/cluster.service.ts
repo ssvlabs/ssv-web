@@ -6,6 +6,7 @@ import { EContractName } from '~app/model/contracts.model';
 import { IOperator } from '~app/model/operator.model';
 import { encodePacked, fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { getRequest } from '~root/services/httpApi.service';
+import { enrichOperator } from '~root/services/operator.service';
 import { getContractByName } from '~root/wagmi/utils';
 
 const clusterDataDTO = ({ cluster }: { cluster: ICluster }) => ({
@@ -29,7 +30,8 @@ const extendClusterEntity = async (cluster: ICluster, ownerAddress: string, liqu
     };
   }
 
-  const [balance, burnRate] = await Promise.all([
+  const [operators, balance, burnRate] = await Promise.all([
+    Promise.all(cluster.operators.map(enrichOperator)),
     getClusterBalance(cluster.operators, ownerAddress, liquidationCollateralPeriod, minimumLiquidationCollateral, false, clusterData),
     getClusterBurnRate(operatorIds, ownerAddress, clusterData)
   ]);
@@ -38,6 +40,7 @@ const extendClusterEntity = async (cluster: ICluster, ownerAddress: string, liqu
   return {
     ...cluster,
     runWay,
+    operators,
     burnRate: burnRate.toString(),
     balance: balance.toString(),
     clusterData

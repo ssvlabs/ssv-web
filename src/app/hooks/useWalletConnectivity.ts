@@ -39,19 +39,8 @@ export const useWalletConnectivity = () => {
     dispatch(clearAllSettings());
     dispatch(resetAccount());
     removeFromLocalStorageByKey('params');
-
-    resetContracts();
-    if (import.meta.env.VITE_CLAIM_PAGE) {
-      dispatch(setStrategyRedirect(config.routes.DISTRIBUTION.ROOT));
-      navigate(config.routes.DISTRIBUTION.ROOT);
-      return;
-    }
-    if (import.meta.env.VITE_FAUCET_PAGE) {
-      dispatch(setStrategyRedirect(config.routes.FAUCET.ROOT));
-      navigate(config.routes.FAUCET.ROOT);
-      return;
-    }
     store.dispatch(setStrategyRedirect(config.routes.SSV.ROOT));
+    resetContracts();
     navigate(config.routes.SSV.ROOT);
   };
 
@@ -71,14 +60,6 @@ export const useWalletConnectivity = () => {
       network: getStoredNetwork(),
       shouldUseRpcUrl: connectorName !== METAMASK_LABEL
     });
-    if (import.meta.env.VITE_CLAIM_PAGE) {
-      dispatch(setStrategyRedirect(config.routes.DISTRIBUTION.ROOT));
-      return dispatch(setIsShowSsvLoader(false));
-    }
-    if (import.meta.env.VITE_FAUCET_PAGE) {
-      dispatch(setStrategyRedirect(config.routes.FAUCET.ROOT));
-      return dispatch(setIsShowSsvLoader(false));
-    }
 
     await Promise.all([await dispatch(fetchAndSetNetworkFeeAndLiquidationCollateral()), await dispatch(fetchAndSetFeeIncreaseAndPeriods())]);
     const [accountClusters, accountOperators] = await Promise.all([dispatch(fetchClusters({})), dispatch(fetchOperators({}))]);

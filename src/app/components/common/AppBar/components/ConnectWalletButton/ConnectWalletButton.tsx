@@ -48,7 +48,7 @@ export const WalletButton = () => {
 
               if (chain.unsupported) {
                 return (
-                  <Button size="lg" variant="destructive" onClick={openChainModal}>
+                  <Button size="lg" width="full" variant="destructive" onClick={openChainModal}>
                     <div className="flex gap-1 items-center">
                       <span>Wrong Network</span> <ChevronDown className="size-5" />
                     </div>

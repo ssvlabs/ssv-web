@@ -34,7 +34,7 @@ const Welcome = () => {
           <Grid container>
             <HeaderSubHeader title={'Welcome to SSV Network'} subtitle={'Connect your wallet to run distributed validators, or join as an operator.'} />
             <WelcomeImage />
-            <WalletButton />
+            <WalletButton dontShowConnectedStatus />
           </Grid>
         ]}
       />

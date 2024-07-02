@@ -1,11 +1,9 @@
-import { mapKeys, snakeCase } from 'lodash';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
 import { GetOperatorByPublicKeyResponse, IOperator } from '~app/model/operator.model';
 import { IPagination } from '~app/model/pagination.model';
 import { GetOperatorValidatorsResponse } from '~app/model/validator.model';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { IHttpResponse, getRequest, postRequest, putRequest } from '~root/services/httpApi.service';
-import { getOperatorBalance } from '~root/services/operatorContract.service.ts';
 
 type OperatorsListQuery = {
   page?: number;
@@ -35,14 +33,7 @@ const getOperatorsByOwnerAddress = async ({
 }): Promise<{ operators: IOperator[]; pagination: IPagination }> => {
   const url = `${getStoredNetwork().api}/operators/owned_by/${accountAddress}?page=${page}&perPage=${perPage}&withFee=true&ts=${new Date().getTime()}&ordering=id:asc`;
   const res = await getRequest(url, false);
-  const operators = await Promise.all(
-    res.operators.map(async (operator: any) => {
-      const { id } = operator;
-      const balance = await getOperatorBalance({ id });
-      return { ...operator, balance };
-    })
-  );
-  return { operators: operators || [], pagination: res ? res.pagination : DEFAULT_PAGINATION };
+  return res || { operators: [], pagination: DEFAULT_PAGINATION };
 };
 
 type OperatorSearchResponse = {
@@ -64,20 +55,10 @@ const getOperators = async (props: OperatorsListQuery, skipRetry?: boolean) => {
   const res = (await getRequest(url, skipRetry)) as OperatorSearchResponse;
   if (!res) return { operators: [], pagination: DEFAULT_PAGINATION } as OperatorSearchResponse;
 
-  const enrichedOperators = await Promise.all(res.operators.map(enrichOperator));
-
   return {
     ...res,
-    operators: enrichedOperators,
     pagination: res.pagination
   };
-};
-
-const enrichOperator = async (operator: IOperator) => {
-  return getOperatorByPublicKey(operator.public_key).then((response) => {
-    const converted = mapKeys(response.data, (_, key) => snakeCase(key));
-    return { ...operator, ...converted };
-  });
 };
 
 const getOperatorByPublicKey = async (publicKey: string, skipRetry: boolean = true): Promise<GetOperatorByPublicKeyResponse> => {
@@ -88,7 +69,7 @@ const getOperatorByPublicKey = async (publicKey: string, skipRetry: boolean = tr
 const getOperator = async (operatorId: number | string, skipRetry?: boolean): Promise<IOperator> => {
   const utcTimestamp = new Date(new Date().toUTCString()).getTime();
   const url = `${getStoredNetwork().api}/operators/${operatorId}?performances=${PERFORMANCE_PERIOD}&withFee=true&ts=${utcTimestamp}`;
-  return await getRequest(url, skipRetry).then(enrichOperator);
+  return await getRequest(url, skipRetry);
 };
 
 const getOperatorsByIds = async (operatorIds: number[]): Promise<IOperator[]> => {
@@ -138,7 +119,6 @@ const checkOperatorDKGHealth = async (dkgAddress: string): Promise<IHttpResponse
 };
 
 export {
-  enrichOperator,
   checkOperatorDKGHealth,
   getOperator,
   getOperatorAvailableLocations,

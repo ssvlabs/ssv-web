@@ -113,7 +113,7 @@ const ExternalContract = () => {
                   </div>
                 </Tooltip>
               </h1>
-              <p>
+              <p className="text-sm font-medium text-gray-700">
                 Delegate the management of whitelisted addresses to an external contract.
                 <br />
                 Whitelisted addresses are effective only when your operator status is set to Private.

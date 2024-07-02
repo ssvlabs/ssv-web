@@ -1,14 +1,14 @@
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
-import { useStores } from '~app/hooks/useStores';
 import { truncateText } from '~lib/utils/strings';
 import { useStyles } from '~app/components/common/DynamicTextArea/DynamicTextArea.style';
-import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
+import { selectMetadataValueByName, setMetadataValue } from '~app/redux/operatorMetadata.slice.ts';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook.ts';
+import { FIELD_KEYS } from '~lib/utils/operatorMetadataHelper.ts';
 
-const DynamicTextarea = ({ fieldKey }: { fieldKey: string }) => {
-  const stores = useStores();
-  const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-  const description = metadataStore.getMetadataValue(fieldKey);
+const DynamicTextarea = ({ fieldKey }: { fieldKey: FIELD_KEYS }) => {
+  const dispatch = useAppDispatch();
+  const description = useAppSelector((state) => selectMetadataValueByName(state, fieldKey));
   const [value, setValue] = useState<string>(description);
   const [showingValue, setShowingValue] = useState(value);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -16,7 +16,12 @@ const DynamicTextarea = ({ fieldKey }: { fieldKey: string }) => {
   const [amountOfField, setAmountOfField] = useState<number>(1);
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    metadataStore.setMetadataValue(fieldKey, event.target.value);
+    dispatch(
+      setMetadataValue({
+        metadataFieldName: fieldKey,
+        value: event.target.value
+      })
+    );
     setValue(event.target.value);
     setShowingValue(event.target.value);
   };

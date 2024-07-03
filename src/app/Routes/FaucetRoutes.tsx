@@ -9,8 +9,8 @@ import CountryNotSupported from '~app/components/applications/SSV/CountryNotSupp
 import AppBar from '~app/components/common/AppBar/AppBar';
 import Layout from '~app/components/common/Layout/Layout';
 
-const FaucetRoutes: any = () => {
-  const { isConnected } = useAccount();
+const FaucetRoutes = () => {
+  const { isConnected, address } = useAccount();
 
   return (
     <Layout>
@@ -18,7 +18,7 @@ const FaucetRoutes: any = () => {
       <Wrapper>
         <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
         {!isConnected && <Route path={config.routes.FAUCET.ROOT} element={<ConnectWallet />} />}
-        {isConnected && <Route path={config.routes.FAUCET.ROOT} element={<RequestForSsv />} />}
+        {isConnected && <Route path={config.routes.FAUCET.ROOT} element={<RequestForSsv key={address} />} />}
         {isConnected && <Route path={config.routes.FAUCET.SUCCESS} element={<SuccessPage />} />}
         {isConnected && <Route path={config.routes.FAUCET.DEPLETED} element={<FaucetDepleted />} />}
       </Wrapper>

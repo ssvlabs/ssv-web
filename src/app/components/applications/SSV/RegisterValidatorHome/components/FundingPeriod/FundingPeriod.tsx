@@ -55,9 +55,9 @@ const FundingPeriod = () => {
     minimumLiquidationCollateral
   });
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
-  const insufficientBalance = totalCost.comparedTo(walletSsvBalance) === 1;
-  const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
   const totalAmount = formatNumberToUi(Number(totalCost.mul(validatorStore.validatorsCount).toFixed(18)));
+  const insufficientBalance = new Decimal(totalAmount).comparedTo(walletSsvBalance) === 1;
+  const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
 
   const getDisableStateCondition = () => {
     if (isCustomPayment) {

@@ -17,7 +17,7 @@ const getWalletIconSrc = (connectorName?: string) => {
   return iconMap[connectorName?.toLowerCase() as WalletType] || '/images/wallets/metamask.svg';
 };
 
-export const WalletButton = () => {
+export const WalletButton = ({ dontShowConnectedStatus = false }: { dontShowConnectedStatus?: boolean }) => {
   const { connector } = useAccount();
 
   return (
@@ -54,6 +54,10 @@ export const WalletButton = () => {
                     </div>
                   </Button>
                 );
+              }
+
+              if (dontShowConnectedStatus) {
+                return null;
               }
 
               return (

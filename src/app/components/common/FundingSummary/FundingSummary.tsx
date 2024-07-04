@@ -65,13 +65,11 @@ const FundingSummary = (props: Props) => {
   const mandatoryColumns = isMultiSharesMode
     ? Object.values(FundingSummeryColumns)
     : Object.values(FundingSummeryColumns).filter((flow: string) => flow !== FundingSummeryColumns.FEE && flow !== FundingSummeryColumns.VALIDATORS);
-
   const columnValues = {
     [FundingSummeryColumns.FUNDING_SUMMARY]: (value: number) => payments.find((payment) => payment.id === value)?.name,
     [FundingSummeryColumns.FEE]: (value: number) => `${formatNumberToUi(paymentsValue(value))} SSV`,
     [FundingSummeryColumns.VALIDATORS]: () => countOfValidators,
-    [FundingSummeryColumns.SUBTOTAL]: (value: number) =>
-      `${formatNumberToUi(isMultiSharesMode ? (Number(paymentsValue(value)) * countOfValidators).toFixed(2) : paymentsValue(value))} SSV`
+    [FundingSummeryColumns.SUBTOTAL]: (value: number) => `${formatNumberToUi(isMultiSharesMode ? Number(paymentsValue(value)) * countOfValidators : paymentsValue(value))} SSV`
   };
 
   const columnStyles: any = {

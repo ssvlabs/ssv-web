@@ -109,6 +109,10 @@ export const slice = createSlice({
     setExcludedCluster: (state, action: { payload: ICluster | null }) => {
       state.excludedCluster = action.payload;
     },
+
+    addOperator: (state, action: { payload: IOperator }) => {
+      state.operators = [...state.operators, action.payload];
+    },
     sortOperatorsByStatus: (state) => {
       state.operators = state.operators.sort((a: any, b: any) => {
         if (a.status === 'Inactive') {
@@ -155,7 +159,22 @@ export const slice = createSlice({
 
 export const accountStateReducer = slice.reducer;
 
-export const { resetPagination, setExcludedCluster, setSelectedClusterId, setSelectedOperatorId, sortOperatorsByStatus, reset } = slice.actions;
+export const {
+  resetPagination,
+  setExcludedCluster,
+  setSelectedClusterId,
+  setSelectedOperatorId,
+  sortOperatorsByStatus,
+  /**
+   * @deprecated This function should not be used to add an operator to the list.
+   * This is a temporary solution to add an operator to the list without fetching the operators again.
+   * @param state - The account state.
+   * @param action - The action containing the payload.
+   */
+  addOperator,
+
+  reset
+} = slice.actions;
 
 export const getAccountOperators = (state: RootState) => state.accountState.operators;
 // export const getIsFetchingOperators = (state: RootState) => state.accountState.isFetchingOperators;

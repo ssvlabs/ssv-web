@@ -14,6 +14,7 @@ import Status from '~app/components/common/Status';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
+import { getOptimisticOperators } from '~app/performance/addOperator';
 import { fetchOperators, getAccountOperators, getOperatorsPagination, setSelectedOperatorId, sortOperatorsByStatus } from '~app/redux/account.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { setOperatorProcessId } from '~app/redux/operator.slice.ts';
@@ -32,8 +33,12 @@ const OperatorDashboard = () => {
   const [openExplorerRefs, setOpenExplorerRefs] = useState<any[]>([]);
   const [operatorBalances, setOperatorBalances] = useState<Record<string, number>>({});
   const [loadingOperators, setLoadingOperators] = useState(false);
-  const { page, pages, per_page, total } = useAppSelector(getOperatorsPagination);
+  const pagination = useAppSelector(getOperatorsPagination);
   const operators = useAppSelector(getAccountOperators);
+  const {
+    operators: _operators,
+    pagination: { page, pages, per_page, total }
+  } = getOptimisticOperators({ operators, pagination });
 
   useEffect(() => {
     fetchData();
@@ -73,7 +78,7 @@ const OperatorDashboard = () => {
     };
   };
 
-  const rows = operators.map((operator: any) => {
+  const rows = _operators.map((operator) => {
     return createData(
       <OperatorDetails operator={operator} setOpenExplorerRefs={setOpenExplorerRefs} />,
       <Status item={operator} />,

@@ -54,6 +54,7 @@ const OperatorConfirmation = () => {
       blackHeader
       withConversion
       sectionClass={classes.Section}
+      subHeaderText={'Register Operator'}
       header={translations.OPERATOR.CONFIRMATION.TITLE}
       body={[
         <Grid container>

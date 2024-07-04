@@ -17,7 +17,7 @@ const getWalletIconSrc = (connectorName?: string) => {
   return iconMap[connectorName?.toLowerCase() as WalletType] || '/images/wallets/metamask.svg';
 };
 
-export const WalletButton = () => {
+export const WalletButton = ({ dontShowConnectedStatus = false }: { dontShowConnectedStatus?: boolean }) => {
   const { connector } = useAccount();
 
   return (
@@ -27,6 +27,7 @@ export const WalletButton = () => {
 
         return (
           <div
+            className="w-full"
             {...(!mounted && {
               'aria-hidden': true,
               style: {
@@ -39,7 +40,7 @@ export const WalletButton = () => {
             {(() => {
               if (!connected) {
                 return (
-                  <Button size="lg" onClick={openConnectModal}>
+                  <Button size="lg" width="full" onClick={openConnectModal}>
                     Connect Wallet
                   </Button>
                 );
@@ -53,6 +54,10 @@ export const WalletButton = () => {
                     </div>
                   </Button>
                 );
+              }
+
+              if (dontShowConnectedStatus) {
+                return null;
               }
 
               return (

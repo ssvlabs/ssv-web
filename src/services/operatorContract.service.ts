@@ -8,6 +8,7 @@ import { decodeParameter, fromWei, prepareSsvAmountToTransfer, toWei } from '~ro
 import { getOperator, getOperatorByPublicKey } from '~root/services/operator.service';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { getContractByName } from '~root/wagmi/utils';
+import { formatNumberToUi } from '~lib/utils/numbers.ts';
 
 const addNewOperator = async ({
   isContractWallet,
@@ -65,8 +66,8 @@ const withdrawRewards = async ({ operator, amount, isContractWallet, dispatch }:
   return await transactionExecutor({
     contractMethod: contract.withdrawOperatorEarnings,
     payload: [operator.id, ssvAmount],
-    getterTransactionState: async () => await getOperatorBalance({ id: operator.id }),
-    prevState: operator.balance,
+    getterTransactionState: async () => formatNumberToUi(await getOperatorBalance({ id: operator.id })),
+    prevState: formatNumberToUi(operator.balance),
     isContractWallet,
     dispatch
   });

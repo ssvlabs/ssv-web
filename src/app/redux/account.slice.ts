@@ -5,6 +5,7 @@ import { ICluster } from '~app/model/cluster.model';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
 import { getOperatorsByOwnerAddress } from '~root/services/operator.service';
 import { getClustersByOwnerAddress } from '~root/services/cluster.service';
+import { getOptimisticOperators } from '~app/performance/addOperator';
 
 export interface Pagination {
   page: number;
@@ -110,9 +111,6 @@ export const slice = createSlice({
       state.excludedCluster = action.payload;
     },
 
-    addOperator: (state, action: { payload: IOperator }) => {
-      state.operators = [...state.operators, action.payload];
-    },
     sortOperatorsByStatus: (state) => {
       state.operators = state.operators.sort((a: any, b: any) => {
         if (a.status === 'Inactive') {
@@ -159,22 +157,7 @@ export const slice = createSlice({
 
 export const accountStateReducer = slice.reducer;
 
-export const {
-  resetPagination,
-  setExcludedCluster,
-  setSelectedClusterId,
-  setSelectedOperatorId,
-  sortOperatorsByStatus,
-  /**
-   * @deprecated This function should not be used to add an operator to the list.
-   * This is a temporary solution to add an operator to the list without fetching the operators again.
-   * @param state - The account state.
-   * @param action - The action containing the payload.
-   */
-  addOperator,
-
-  reset
-} = slice.actions;
+export const { resetPagination, setExcludedCluster, setSelectedClusterId, setSelectedOperatorId, sortOperatorsByStatus, reset } = slice.actions;
 
 export const getAccountOperators = (state: RootState) => state.accountState.operators;
 // export const getIsFetchingOperators = (state: RootState) => state.accountState.isFetchingOperators;
@@ -184,6 +167,10 @@ export const getAccountClusters = (state: RootState) => state.accountState.clust
 export const getClustersPagination = (state: RootState) => state.accountState.clustersPagination;
 export const getSelectedCluster = (state: RootState) =>
   state.accountState.excludedCluster || state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId) || ({} as ICluster);
-export const getSelectedOperator = (state: RootState) => state.accountState.operators.find((operator: IOperator) => operator.id === state.accountState.selectedOperatorId);
+export const getSelectedOperator = (state: RootState) =>
+  getOptimisticOperators({
+    operators: state.accountState.operators,
+    pagination: state.accountState.operatorsPagination
+  }).operators.find((operator: IOperator) => operator.id === state.accountState.selectedOperatorId);
 export const getSelectedOperatorId = (state: RootState) => state.accountState.selectedOperatorId;
 export const getIsClusterSelected = (state: RootState) => Boolean(state.accountState.selectedClusterId);

@@ -34,11 +34,11 @@ const OperatorDashboard = () => {
   const [operatorBalances, setOperatorBalances] = useState<Record<string, number>>({});
   const [loadingOperators, setLoadingOperators] = useState(false);
   const pagination = useAppSelector(getOperatorsPagination);
-  const operators = useAppSelector(getAccountOperators);
+  const _operators = useAppSelector(getAccountOperators);
   const {
-    operators: _operators,
+    operators,
     pagination: { page, pages, per_page, total }
-  } = getOptimisticOperators({ operators, pagination });
+  } = getOptimisticOperators({ operators: _operators, pagination });
 
   useEffect(() => {
     fetchData();
@@ -78,7 +78,7 @@ const OperatorDashboard = () => {
     };
   };
 
-  const rows = _operators.map((operator) => {
+  const rows = operators.map((operator) => {
     return createData(
       <OperatorDetails operator={operator} setOpenExplorerRefs={setOpenExplorerRefs} />,
       <Status item={operator} />,

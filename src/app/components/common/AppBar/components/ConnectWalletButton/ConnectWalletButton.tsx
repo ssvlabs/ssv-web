@@ -17,7 +17,7 @@ const getWalletIconSrc = (connectorName?: string) => {
   return iconMap[connectorName?.toLowerCase() as WalletType] || '/images/wallets/metamask.svg';
 };
 
-export const WalletButton = ({ dontShowConnectedStatus = false }: { dontShowConnectedStatus?: boolean }) => {
+export const WalletButton = ({ dontShowConnectedStatus = false, disableOnUnsupported = false }: { dontShowConnectedStatus?: boolean; disableOnUnsupported?: boolean }) => {
   const { connector } = useAccount();
 
   return (
@@ -38,9 +38,9 @@ export const WalletButton = ({ dontShowConnectedStatus = false }: { dontShowConn
             })}
           >
             {(() => {
-              if (!connected) {
+              if (!connected || (chain.unsupported && disableOnUnsupported)) {
                 return (
-                  <Button size="lg" width="full" onClick={openConnectModal}>
+                  <Button size="lg" width="full" onClick={openConnectModal} disabled={chain?.unsupported}>
                     Connect Wallet
                   </Button>
                 );

@@ -1,67 +1,63 @@
-import { chunk } from 'lodash';
+import { chunk, differenceBy } from 'lodash';
 import { IOperator } from '~app/model/operator.model';
 import { Pagination } from '~app/redux/account.slice';
 import { tryCatch } from '~lib/utils/tryCatch';
 
-type OptimisticOperators = {
-  operators: IOperator[];
-  pagination: {
-    total: number;
-  };
-};
-
 const operatorCacheKey = 'newOperatorCache';
 
-type Params = {
-  operators: IOperator[];
-  pagination: Pagination;
-};
-
-const getCachedData = (): OptimisticOperators | null => {
+const getCachedData = (): IOperator[] => {
   return tryCatch(() => {
     const stored = localStorage.getItem(operatorCacheKey);
-    return stored ? (JSON.parse(stored) as OptimisticOperators) : null;
-  }, null);
+    const parsed = JSON.parse(stored!);
+    return Array.isArray(parsed) ? parsed : [];
+  }, [] as IOperator[]);
 };
 
-const setCachedData = (data: OptimisticOperators): void => {
+const setCachedData = (data: IOperator[]): void => {
   tryCatch(() => {
     localStorage.setItem(operatorCacheKey, JSON.stringify(data));
   }, null);
-};
-
-export const updateOptimisticPagination = (pagination: Pagination): void => {
-  const cached = getCachedData();
-  if (!cached) return;
-  const totalDiff = pagination.total - cached.pagination.total;
-  setCachedData({ operators: cached.operators.slice(totalDiff), pagination });
 };
 
 export const clearOptimisticOperators = (): void => {
   localStorage.removeItem(operatorCacheKey);
 };
 
-export const addOptimisticOperators = ({ operators, pagination }: Params): void => {
-  const cached = getCachedData();
-  if (!cached) return setCachedData({ operators, pagination });
-  const newOperators = [...cached.operators, ...operators];
-  setCachedData({ operators: newOperators, pagination });
+export const addOptimisticOperators = (operators: IOperator[]): void => {
+  const optimisticOperators = getCachedData();
+  if (!optimisticOperators) return setCachedData(operators);
+  const newOperators = [...optimisticOperators, ...operators].map((operator) => ({ ...operator, isOptimistic: true }));
+  setCachedData(newOperators);
+};
+
+const filterUniqueOptimisticOperators = (operators: IOperator[]): IOperator[] => {
+  const optimisticOperators = getCachedData();
+
+  const uniques = differenceBy(optimisticOperators, operators, 'id');
+  if (uniques.length !== operators.length) setCachedData(uniques);
+
+  return uniques;
+};
+
+type Params = {
+  operators: IOperator[];
+  pagination: Pagination;
 };
 
 export const getOptimisticOperators = ({ operators, pagination }: Params): Params => {
-  const cached = getCachedData();
-  if (!cached) return { operators, pagination };
+  const optimisticOperators = filterUniqueOptimisticOperators(operators);
+  if (!optimisticOperators.length) return { operators, pagination };
 
-  const optimistic = chunk([...Array(pagination.total), ...(cached.operators || [])], pagination.per_page);
-  const optimisticPage = (optimistic[pagination.page - 1] || []).filter(Boolean);
+  const pages = chunk([...Array(pagination.total), ...optimisticOperators], pagination.per_page);
+  const optimisticPage = (pages[pagination.page - 1] || []).filter(Boolean);
 
   const [pageOperators] = chunk([...operators, ...optimisticPage], pagination.per_page);
   return {
     operators: pageOperators,
     pagination: {
       ...pagination,
-      total: cached.pagination.total,
-      pages: optimistic.length
+      total: pagination.total + optimisticOperators.length,
+      pages: pages.length
     }
   };
 };

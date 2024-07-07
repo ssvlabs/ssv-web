@@ -12,7 +12,6 @@ import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
 import { addOptimisticOperators } from '~app/performance/addOperator';
-import { getOperatorsPagination } from '~app/redux/account.slice';
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
@@ -80,8 +79,6 @@ const OperatorConfirmation = () => {
   const isMainnet = useAppSelector(getIsMainnet);
   const classes = useStyles();
 
-  const operatorPagination = useAppSelector(getOperatorsPagination);
-
   const onRegisterClick = async () => {
     setIsLoading(true);
     setActionButtonText('Waiting for confirmation...');
@@ -95,10 +92,7 @@ const OperatorConfirmation = () => {
         const operatorAddedEvent = events?.find((event) => (event as OperatorAddedEvent).eventName === 'OperatorAdded') as OperatorAddedEvent | undefined;
         if (operatorAddedEvent) {
           newOperator = createDefaultOperator({ ...operatorAddedEvent.args, isPrivate });
-          addOptimisticOperators({
-            operators: [newOperator],
-            pagination: operatorPagination
-          });
+          addOptimisticOperators([newOperator]);
         }
       }
     });

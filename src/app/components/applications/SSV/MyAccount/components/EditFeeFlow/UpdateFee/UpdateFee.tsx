@@ -6,9 +6,7 @@ import { useStyles } from '~app/components/applications/SSV/MyAccount/components
 import ChangeFee from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/ChangeFee';
 import DecreaseFlow from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/DecreaseFlow';
 import IncreaseFlow from '~app/components/applications/SSV/MyAccount/components/EditFeeFlow/UpdateFee/components/IncreaseFlow';
-import OperatorId from '~app/components/applications/SSV/MyAccount/components/OperatorId';
 import { ErrorType } from '~app/components/common/ConversionInput/ConversionInput';
-import WhiteWrapper from '~app/components/common/WhiteWrapper';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
@@ -18,6 +16,7 @@ import { isOperatorPrivate } from '~lib/utils/operatorMetadataHelper';
 import { validateFeeUpdate } from '~lib/utils/validatesInputs';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 import { getOperator } from '~root/services/operator.service';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper.tsx';
 
 enum FeeUpdateSteps {
   START = 'Start',
@@ -30,7 +29,7 @@ const UpdateFee = () => {
   const [operator, setOperator] = useState<any>(null);
   const [newFee, setNewFee] = useState<any>(0);
   const [nextIsDisabled, setNextIsDisabled] = useState(true);
-  const { logo, id } = operator || {};
+  const { logo } = operator || {};
   const [oldFee, setOldFee] = useState('0');
   const classes = useStyles({ operatorLogo: logo });
   const [currency, setCurrency] = useState('SSV');
@@ -120,9 +119,7 @@ const UpdateFee = () => {
 
   return (
     <Grid container item>
-      <WhiteWrapper header={'Update Operator Fee'}>
-        <OperatorId id={id} />
-      </WhiteWrapper>
+      <NewWhiteWrapper type={WhiteWrapperDisplayType.OPERATOR} header={'Update Operator Fee'} />
       <Grid className={classes.BodyWrapper}>
         <Component
           onNextHandler={onNextHandler}

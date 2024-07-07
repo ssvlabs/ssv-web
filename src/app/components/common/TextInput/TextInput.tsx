@@ -1,5 +1,5 @@
 import Grid from '@mui/material/Grid';
-import { ComponentPropsWithRef, useState } from 'react';
+import { ChangeEvent, ComponentPropsWithRef, useState } from 'react';
 import { useStyles } from './TextInput.styles';
 import { InputSideButton } from '~app/atomicComponents';
 import styled from 'styled-components';
@@ -71,7 +71,7 @@ const TextInput = ({
 }: InputProps) => {
   const classes = useStyles({ showError, disable, isTextArea });
   const [password, showPassword] = useState(false);
-  const onChangeWrapper = (e: any) => {
+  const onChangeWrapper = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const inputValue = e.target.value;
     if (inputValue.length >= 614) return;
     onChangeCallback(e);

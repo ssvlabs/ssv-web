@@ -12,7 +12,7 @@ import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorH
 import BorderScreen from '~app/components/common/BorderScreen';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
 import LinkText from '~app/components/common/LinkText/LinkText';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import Status from '~app/components/common/Status';
 import { Table } from '~app/components/common/Table/Table';
@@ -258,7 +258,7 @@ const SingleOperator = () => {
 
   return (
     <Grid container item style={{ gap: 26 }}>
-      <NewWhiteWrapper type={1} mainFlow stepBack={backToClustersDashboard} header={'Operator Details'}>
+      <NewWhiteWrapper type={WhiteWrapperDisplayType.OPERATOR} mainFlow stepBack={backToClustersDashboard} header={'Operator Details'}>
         <Grid item container className={classes.ItemsWrapper}>
           {operatorView.map((item: any, index: number) => (
             <Grid item key={index}>

@@ -48,6 +48,7 @@ import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice'
 import { getClusterSize, getOperatorValidatorsLimit, getSelectedOperators, selectOperators, setClusterSize, unselectAllOperators } from '~app/redux/operator.slice.ts';
 import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
 import { getIsClusterSelected, getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
+import { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper.tsx';
 
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
@@ -538,7 +539,7 @@ const KeyShareFlow = () => {
   if (isSecondRegistration) {
     return (
       <>
-        <NewWhiteWrapper type={0} header={'Cluster'} />
+        <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
         <Grid className={classes.KeysharesWrapper}>
           {MainScreen}
           {validatorStore.validatorsCount > 0 && !validationError.errorMessage && !processingFile && SecondScreen}

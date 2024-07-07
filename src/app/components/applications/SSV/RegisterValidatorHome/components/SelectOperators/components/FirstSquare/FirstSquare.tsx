@@ -16,7 +16,6 @@ import { IOperator } from '~app/model/operator.model';
 import TextInput from '~app/components/common/TextInput';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
 import BorderScreen from '~app/components/common/BorderScreen';
-import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import { getOperators as getOperatorsOperatorService } from '~root/services/operator.service';
@@ -44,13 +43,6 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
   const [operatorsData, setOperatorsData] = useState<IOperator[]>([]);
   const [operatorsPagination, setOperatorsPagination] = useState(DEFAULT_PAGINATION);
   const [dkgEnabled, selectDkgEnabled] = useState(false);
-
-  const filteredOperators = !dkgEnabled
-    ? operatorsData
-    : operatorsData.filter(({ dkg_address }) => {
-        return isDkgAddressValid(dkg_address ?? '');
-      });
-
   const scrollRef: any = useRef(null);
   const classes = useStyles({ loading });
   const dispatch = useAppDispatch();
@@ -129,7 +121,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
   };
 
   const dataRows = (): ReactElement | ReactElement[] => {
-    if (filteredOperators?.length === 0 && !loading) {
+    if (operatorsData?.length === 0 && !loading) {
       return (
         <TableRow hover>
           <StyledCell className={classes.NoRecordsWrapper}>
@@ -147,7 +139,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
       );
     }
 
-    return filteredOperators.map((operator: IOperator) => {
+    return operatorsData.map((operator: IOperator) => {
       const isSelected = Object.values(selectedOperators).some((selectedOperator: IOperator) => selectedOperator.id === operator.id);
       return <OperatorRow key={operator.public_key} operator={operator} isSelected={isSelected} onClick={selectOperatorHandling} />;
     });
@@ -215,7 +207,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
           </Grid>
           <TableContainer id={'scrollableDiv'} ref={scrollRef} className={classes.OperatorsTable}>
             <InfiniteScroll
-              dataLength={filteredOperators?.length}
+              dataLength={operatorsData?.length}
               next={() => {
                 updateValue();
               }}

@@ -14,7 +14,7 @@ import Status from '~app/components/common/Status';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import { getOptimisticOperators } from '~app/performance/addOperator';
+import { getOptimisticOperators } from '~app/optimistic/operatorsList';
 import { fetchOperators, getAccountOperators, getOperatorsPagination, setSelectedOperatorId, sortOperatorsByStatus } from '~app/redux/account.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { setOperatorProcessId } from '~app/redux/operator.slice.ts';

@@ -3,11 +3,11 @@ import { IOperator } from '~app/model/operator.model';
 import { Pagination } from '~app/redux/account.slice';
 import { tryCatch } from '~lib/utils/tryCatch';
 
-const operatorCacheKey = 'newOperatorCache';
+const storageKey = 'operatorsList';
 
 const getCachedData = (): IOperator[] => {
   return tryCatch(() => {
-    const stored = localStorage.getItem(operatorCacheKey);
+    const stored = localStorage.getItem(storageKey);
     const parsed = JSON.parse(stored!);
     return Array.isArray(parsed) ? parsed : [];
   }, [] as IOperator[]);
@@ -15,12 +15,8 @@ const getCachedData = (): IOperator[] => {
 
 const setCachedData = (data: IOperator[]): void => {
   tryCatch(() => {
-    localStorage.setItem(operatorCacheKey, JSON.stringify(data));
+    localStorage.setItem(storageKey, JSON.stringify(data));
   }, null);
-};
-
-export const clearOptimisticOperators = (): void => {
-  localStorage.removeItem(operatorCacheKey);
 };
 
 export const addOptimisticOperators = (operators: IOperator[]): void => {

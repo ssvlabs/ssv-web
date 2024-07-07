@@ -38,6 +38,7 @@ export interface IOperator {
   validators_count: number;
   version: string;
   network: string;
+  updated_at: string;
 }
 
 export interface GetOperatorByPublicKeyResponse {

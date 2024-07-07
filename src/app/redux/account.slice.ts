@@ -1,11 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { RootState } from '~app/store';
-import { IOperator } from '~app/model/operator.model';
-import { ICluster } from '~app/model/cluster.model';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
-import { getOperatorsByOwnerAddress } from '~root/services/operator.service';
+import { ICluster } from '~app/model/cluster.model';
+import { IOperator } from '~app/model/operator.model';
+import { RootState, store } from '~app/store';
 import { getClustersByOwnerAddress } from '~root/services/cluster.service';
-import { getOptimisticOperators } from '~app/performance/addOperator';
+import { getOperatorsByOwnerAddress } from '~root/services/operator.service';
 
 export interface Pagination {
   page: number;
@@ -14,8 +13,18 @@ export interface Pagination {
   per_page: number;
 }
 
+type ModifiedOperatorData = {
+  operator: IOperator;
+  type: 'created' | 'updated' | 'deleted';
+};
+
+type ModifiedOperatorMap = {
+  [id: string]: ModifiedOperatorData;
+};
+
 export interface AccountState {
   operators: IOperator[];
+  optimisticOperatorsMap: ModifiedOperatorMap;
   isFetchingOperators: boolean;
   operatorsPagination: Pagination;
   clusters: ICluster[];
@@ -28,6 +37,7 @@ export interface AccountState {
 
 const initialState: AccountState = {
   operators: [] as IOperator[],
+  optimisticOperatorsMap: {},
   isFetchingOperators: false,
   operatorsPagination: DEFAULT_PAGINATION,
   clusters: [] as ICluster[],
@@ -107,10 +117,16 @@ export const slice = createSlice({
     setSelectedOperatorId: (state, action: { payload: AccountState['selectedOperatorId'] }) => {
       state.selectedOperatorId = action.payload;
     },
+    setOptimisticOperator: (state, action: { payload: ModifiedOperatorData }) => {
+      state.optimisticOperatorsMap[action.payload.operator.id.toString()] = action.payload;
+      console.log('state.optimisticOperatorsMap:', state.optimisticOperatorsMap);
+    },
+    removeOptimisticOperator: (state, action: { payload: number }) => {
+      delete state.optimisticOperatorsMap[action.payload?.toString()];
+    },
     setExcludedCluster: (state, action: { payload: ICluster | null }) => {
       state.excludedCluster = action.payload;
     },
-
     sortOperatorsByStatus: (state) => {
       state.operators = state.operators.sort((a: any, b: any) => {
         if (a.status === 'Inactive') {
@@ -157,7 +173,8 @@ export const slice = createSlice({
 
 export const accountStateReducer = slice.reducer;
 
-export const { resetPagination, setExcludedCluster, setSelectedClusterId, setSelectedOperatorId, sortOperatorsByStatus, reset } = slice.actions;
+export const { resetPagination, setExcludedCluster, setOptimisticOperator, removeOptimisticOperator, setSelectedClusterId, setSelectedOperatorId, sortOperatorsByStatus, reset } =
+  slice.actions;
 
 export const getAccountOperators = (state: RootState) => state.accountState.operators;
 // export const getIsFetchingOperators = (state: RootState) => state.accountState.isFetchingOperators;
@@ -167,10 +184,19 @@ export const getAccountClusters = (state: RootState) => state.accountState.clust
 export const getClustersPagination = (state: RootState) => state.accountState.clustersPagination;
 export const getSelectedCluster = (state: RootState) =>
   state.accountState.excludedCluster || state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId) || ({} as ICluster);
-export const getSelectedOperator = (state: RootState) =>
-  getOptimisticOperators({
-    operators: state.accountState.operators,
-    pagination: state.accountState.operatorsPagination
-  }).operators.find((operator: IOperator) => operator.id === state.accountState.selectedOperatorId);
+
+export const getSelectedOperator = (state: RootState) => {
+  const selectedOperator = state.accountState.operators.find((operator: IOperator) => operator.id === state.accountState.selectedOperatorId);
+
+  if (!selectedOperator) return undefined;
+
+  const optimisticOperator = state.accountState.optimisticOperatorsMap[selectedOperator.id.toString()];
+  if (!optimisticOperator) return selectedOperator;
+
+  if (optimisticOperator.operator.updated_at === selectedOperator.updated_at) return optimisticOperator.operator;
+  store.dispatch(removeOptimisticOperator(optimisticOperator.operator.id));
+  return selectedOperator;
+};
+
 export const getSelectedOperatorId = (state: RootState) => state.accountState.selectedOperatorId;
 export const getIsClusterSelected = (state: RootState) => Boolean(state.accountState.selectedClusterId);

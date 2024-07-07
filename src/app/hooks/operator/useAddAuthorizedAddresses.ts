@@ -50,6 +50,8 @@ export const useAddAuthorizedAddresses = () => {
     },
     resolver: zodResolver(formSchema)
   });
+  const values = form.watch();
+  console.log('values:', values);
 
   const fieldArray = useFieldArray({
     name: 'addresses',

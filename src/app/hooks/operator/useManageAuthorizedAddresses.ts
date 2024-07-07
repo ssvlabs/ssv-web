@@ -1,12 +1,14 @@
+import { difference } from 'lodash';
 import { useAddAuthorizedAddresses } from '~app/hooks/operator/useAddAuthorizedAddresses';
 import { useDeleteAuthorizedAddresses } from '~app/hooks/operator/useDeleteAuthorizedAddresses';
 import { useSetOperatorMultipleWhitelists } from '~app/hooks/operator/useSetOperatorMultipleWhitelists';
-import { useAppSelector } from '~app/hooks/redux.hook';
-import { getSelectedOperator } from '~app/redux/account.slice';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { getSelectedOperator, setOptimisticOperator } from '~app/redux/account.slice';
 
 type Mode = 'add' | 'delete' | 'view';
 
 export const useManageAuthorizedAddresses = () => {
+  const dispatch = useAppDispatch();
   const operator = useAppSelector(getSelectedOperator)!;
   const setter = useSetOperatorMultipleWhitelists();
 
@@ -23,6 +25,17 @@ export const useManageAuthorizedAddresses = () => {
     setter.mutate(args, {
       onSuccess: () => {
         reset();
+        const whitelistedAddresses = args.mode === 'add' ? [...(operator.whitelist_addresses || []), ...args.addresses] : difference(operator.whitelist_addresses, args.addresses);
+        dispatch(
+          setOptimisticOperator({
+            operator: {
+              ...operator,
+              whitelist_addresses: whitelistedAddresses
+            },
+            type: 'updated'
+          })
+        );
+        setTimeout(reset, 100);
       }
     });
   };
@@ -30,11 +43,13 @@ export const useManageAuthorizedAddresses = () => {
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     switch (mode) {
-      case 'add':
+      case 'add': {
         addManager.form.handleSubmit(({ addresses }) => {
-          update({ mode: 'add', operatorIds: [operator.id], addresses: addresses.map((a) => a.value).filter((addr) => addr && addr.trim() !== '') });
+          const trimmedAddresses = addresses.map((a) => a.value).filter((addr) => addr && addr.trim() !== '');
+          update({ mode: 'add', operatorIds: [operator.id], addresses: trimmedAddresses });
         })(event);
         break;
+      }
       case 'delete':
         update({
           mode: 'delete',

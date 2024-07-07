@@ -113,7 +113,7 @@ const GenerateOperatorKeys = () => {
     </Grid>
   ];
 
-  return <BorderScreen overFlow={'visible'} body={components} />;
+  return <BorderScreen subHeaderText={'Join the SSV Network Operators'} overFlow={'visible'} body={components} />;
 };
 
 export default GenerateOperatorKeys;

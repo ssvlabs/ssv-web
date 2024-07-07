@@ -128,12 +128,7 @@ As said upper, on every commit attempt husky runs linter to check source code.
 
 ## Docs (TBD)
 
-See our [docs and guides here](https://www.bloxstaking.com/blox-blog/)
-
-## Maintainers
-- [Demitri Meshin](https://github.com/meshin-blox)
-- [Guy Muroch](https://github.com/guym-blox)
-- [Lior Rutenberg](https://github.com/lior-blox)
+See our [docs and guides here](https://docs.ssv.network/)
 
 ## License
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -27,7 +27,6 @@ const KeyStoreFlow = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
-  const inputRef = useRef(null);
   const removeButtons = useRef(null);
   const isSecondRegistration = useAppSelector(getIsClusterSelected);
   const validatorStore: ValidatorStore = stores.Validator;
@@ -41,14 +40,14 @@ const KeyStoreFlow = () => {
     validatorStore.clearKeyStoreFlowData();
   }, []);
 
-  const fileHandler = (file: any) => {
+  const fileHandler = (file: File) => {
     setIsProcessingFile(true);
     validatorStore.setKeyStore(file, () => {
       setIsProcessingFile(false);
     });
   };
 
-  const handlePassword = (e: any) => {
+  const handlePassword = (e: ChangeEvent<HTMLInputElement>) => {
     const inputText = e.target.value;
     setKeyStorePassword(inputText);
     if (errorMessage !== '') {
@@ -73,17 +72,10 @@ const KeyStoreFlow = () => {
     validatorStore.clearKeyStoreFlowData();
     validatorStore.keyStoreFile = null;
     setIsProcessingFile(false);
-
-    try {
-      // @ts-ignore
-      inputRef.current.value = null;
-    } catch (e: any) {
-      console.log(e.message);
-    }
   };
 
   const renderFileImage = () => {
-    let fileClass: any = classes.FileImage;
+    let fileClass = classes.FileImage;
     if (validatorStore.validatorPublicKeyExist) {
       fileClass += ` ${classes.Fail}`;
     } else if (keyStoreFileIsJson) {
@@ -172,6 +164,12 @@ const KeyStoreFlow = () => {
     }, 200);
   };
 
+  const submitOnEnter = (event: KeyboardEvent) => {
+    if (event.key.toLowerCase() === 'enter' && !buttonDisableConditions) {
+      submitHandler();
+    }
+  };
+
   const inputDisableConditions = !keyStoreFileIsJson || isProcessingFile || validatorStore.validatorPublicKeyExist;
   const buttonDisableConditions = isProcessingFile || !keyStoreFileIsJson || !keyStorePassword || !!errorMessage || validatorStore.validatorPublicKeyExist;
 
@@ -190,7 +188,7 @@ const KeyStoreFlow = () => {
             <>
               <InputLabel title="Keystore Password" />
               <Grid item xs={12} className={classes.ItemWrapper}>
-                <TextInput withLock disable={inputDisableConditions} value={keyStorePassword} onChangeCallback={handlePassword} />
+                <TextInput withLock disable={inputDisableConditions} value={keyStorePassword} onChangeCallback={handlePassword} onKeyDownCallback={submitOnEnter} />
               </Grid>
               <Grid item xs={12} className={classes.ErrorWrapper}>
                 {errorMessage && <ErrorMessage text={errorMessage} />}

@@ -1,5 +1,5 @@
 import Grid from '@mui/material/Grid';
-import { ChangeEvent, ComponentPropsWithRef, useState } from 'react';
+import { ChangeEvent, ComponentPropsWithRef, KeyboardEventHandler, useState } from 'react';
 import { useStyles } from './TextInput.styles';
 import { InputSideButton } from '~app/atomicComponents';
 import styled from 'styled-components';
@@ -22,6 +22,7 @@ type InputProps = {
   onFocusCallback?: any;
   onPasteCallback?: any;
   onChangeCallback?: any;
+  onKeyDownCallback?: KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   extendInputClass?: string;
   isTextArea?: boolean;
   sideButton?: boolean;
@@ -59,6 +60,7 @@ const TextInput = ({
   onBlurCallBack,
   onChangeCallback,
   onPasteCallback,
+  onKeyDownCallback,
   extendInputClass,
   sideButtonAction,
   sideButtonLabel,
@@ -103,6 +105,7 @@ const TextInput = ({
             maxLength={614}
             disabled={disable}
             onBlur={onBlurCallBack}
+            onKeyDown={onKeyDownCallback}
             data-testid={dataTestId}
             className={`${classes.Input} ${extendInputClass}`}
             onChange={onChangeWrapper}
@@ -117,6 +120,7 @@ const TextInput = ({
             onFocus={onFocusCallback}
             onPaste={onPasteCallback}
             onBlur={onBlurCallBack}
+            onKeyDown={onKeyDownCallback}
             data-testid={dataTestId}
             className={`${classes.Input} ${extendInputClass}`}
             onChange={onChangeWrapper}

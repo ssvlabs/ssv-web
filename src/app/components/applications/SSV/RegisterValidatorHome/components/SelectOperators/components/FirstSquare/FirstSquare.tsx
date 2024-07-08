@@ -1,39 +1,28 @@
+import CircularProgress from '@mui/material/CircularProgress';
+import Grid from '@mui/material/Grid';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import debounce from 'lodash/debounce';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import _ from 'underscore';
-import Grid from '@mui/material/Grid';
-import debounce from 'lodash/debounce';
-import styled from 'styled-components';
-import Table from '@mui/material/Table';
-import TableRow from '@mui/material/TableRow';
-import TableBody from '@mui/material/TableBody';
-import TableHead from '@mui/material/TableHead';
-import TableContainer from '@mui/material/TableContainer';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import CircularProgress from '@mui/material/CircularProgress';
 import { translations } from '~app/common/config';
-import Spinner from '~app/components/common/Spinner';
-import { IOperator } from '~app/model/operator.model';
-import TextInput from '~app/components/common/TextInput';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
-import BorderScreen from '~app/components/common/BorderScreen';
-import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import { getOperators as getOperatorsOperatorService } from '~root/services/operator.service';
 import { OperatorRow } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/OperatorRow';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
+import ClusterSize from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/ClusterSize/ClusterSize';
 import Filters from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/Filters';
 import StyledCell from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
-import ClusterSize from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/ClusterSize/ClusterSize';
+import BorderScreen from '~app/components/common/BorderScreen';
+import TextInput from '~app/components/common/TextInput';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { IOperator } from '~app/model/operator.model';
 import { fetchAndSetOperatorValidatorsLimit, getSelectedOperators, selectOperator, unselectOperator } from '~app/redux/operator.slice.ts';
-
-const SpinnerWrapper = styled.div`
-  width: 100%;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import { isDkgAddressValid } from '~lib/utils/operatorMetadataHelper';
+import { getOperators as getOperatorsOperatorService } from '~root/services/operator.service';
 
 const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { editPage: boolean; clusterSize: number; setClusterSize: Function; clusterBox: number[] }) => {
   const [loading, setLoading] = useState(false);
@@ -162,6 +151,14 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
     }
   }, 200);
 
+  const handleScroll = (event: any) => {
+    const element = event.target;
+    if (loading) return;
+    if (element.scrollTop + element.offsetHeight > element.scrollHeight * 0.8) {
+      updateValue();
+    }
+  };
+
   const inputHandler = debounce((e) => {
     const userInput = e.target.value.trim();
     if (userInput.length >= 1 || userInput.length === 0) {
@@ -178,7 +175,6 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
 
   useEffect(() => {
     setLoading(true);
-    setOperatorsPagination(DEFAULT_PAGINATION);
     getOperators(1).then(() => {
       setLoading(false);
       scrollRef.current.scrollTop = 0;
@@ -198,7 +194,6 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
       withoutNavigation={editPage}
       wrapperClass={classes.ScreenWrapper}
       wrapperHeight={791}
-      width={850}
       header={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
       body={[
         <Grid container>
@@ -214,48 +209,36 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
             </Grid>
             <Filters setFilterBy={setFilterBy} dkgEnabled={dkgEnabled} selectDkgEnabled={selectDkgEnabled} />
           </Grid>
-          <TableContainer id={'scrollableDiv'} ref={scrollRef} className={classes.OperatorsTable}>
-            <InfiniteScroll
-              dataLength={filteredOperators?.length}
-              next={() => {
-                updateValue();
-              }}
-              hasMore={operatorsData?.length !== operatorsPagination.total}
-              loader={
-                <SpinnerWrapper>
-                  <Spinner />
-                </SpinnerWrapper>
-              }
-              scrollableTarget={'scrollableDiv'}
-            >
-              <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                  <TableRow>
-                    {'length' in rows &&
-                      rows.length > 0 &&
-                      headers.map((header, index: number) => {
-                        const sortByType = sortBy === header.type;
-                        const ascending = sortOrder === 'asc';
-                        const descending = sortOrder === 'desc';
-                        let headerClasses = classes.SortArrow;
-                        if (sortByType) {
-                          if (ascending) headerClasses += ` ${classes.ArrowDown}`;
-                          if (descending) headerClasses += ` ${classes.ArrowUp}`;
-                        }
-                        return (
-                          <StyledCell key={index} className={classes.HeaderWrapper}>
-                            <Grid container onClick={() => header.sortable && sortHandler(header.type)}>
-                              <Grid item>{header.displayName}</Grid>
-                              {header.sortable && header.displayName !== '' && <Grid item className={headerClasses} />}
-                            </Grid>
-                          </StyledCell>
-                        );
-                      })}
-                  </TableRow>
-                </TableHead>
-                <TableBody>{rows}</TableBody>
-              </Table>
-            </InfiniteScroll>
+          <TableContainer className={classes.OperatorsTable} ref={scrollRef} onScroll={handleScroll}>
+            <Table stickyHeader aria-label="sticky table">
+              <TableHead>
+                <TableRow>
+                  {'length' in rows &&
+                    rows.length > 0 &&
+                    headers.map((header, index: number) => {
+                      const sortByType = sortBy === header.type;
+                      const ascending = sortOrder === 'asc';
+                      const descending = sortOrder === 'desc';
+                      let headerClasses = classes.SortArrow;
+
+                      if (sortByType) {
+                        if (ascending) headerClasses += ` ${classes.ArrowDown}`;
+                        if (descending) headerClasses += ` ${classes.ArrowUp}`;
+                      }
+
+                      return (
+                        <StyledCell key={index} className={classes.HeaderWrapper}>
+                          <Grid container onClick={() => header.sortable && sortHandler(header.type)}>
+                            <Grid item>{header.displayName}</Grid>
+                            {header.sortable && header.displayName !== '' && <Grid item className={headerClasses} />}
+                          </Grid>
+                        </StyledCell>
+                      );
+                    })}
+                </TableRow>
+              </TableHead>
+              <TableBody>{rows}</TableBody>
+            </Table>
           </TableContainer>
         </Grid>
       ]}

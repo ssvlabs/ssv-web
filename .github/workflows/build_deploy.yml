@@ -83,12 +83,14 @@ jobs:
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 
+          BLOX_INFRA_API="$BLOX_INFRA_API" 
           yarn build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          BLOX_INFRA_API: "https://api.bloxstaking.com"
 
       - name: Deploy stage webapp
         if: github.ref == 'refs/heads/stage'
@@ -112,12 +114,14 @@ jobs:
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
+          BLOX_INFRA_API="$BLOX_INFRA_API"
           yarn build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          BLOX_INFRA_API: "https://api.stage.bloxstaking.com"
 
       - name: Deploy ilya-dev webapp
         if: github.ref == 'refs/heads/ilya-dev'
@@ -141,12 +145,14 @@ jobs:
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
+          BLOX_INFRA_API="$BLOX_INFRA_API"
           yarn build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          BLOX_INFRA_API: "https://api.stage.bloxstaking.com"
 
       - name: Deploy chris-dev webapp
         if: github.ref == 'refs/heads/chris-dev'
@@ -170,12 +176,14 @@ jobs:
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
+          BLOX_INFRA_API="$BLOX_INFRA_API"
           yarn build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          BLOX_INFRA_API: "https://api.stage.bloxstaking.com"
 
       - name: Deploy dima-dev webapp
         if: github.ref == 'refs/heads/dima-dev'
@@ -199,12 +207,14 @@ jobs:
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
+          BLOX_INFRA_API="$BLOX_INFRA_API"
           yarn build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          BLOX_INFRA_API: "https://api.stage.bloxstaking.com"
 
       - name: Deploy sumbat-dev webapp
         if: github.ref == 'refs/heads/sumbat-dev'
@@ -227,13 +237,15 @@ jobs:
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
-          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
+          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 
+          BLOX_INFRA_API="$BLOX_INFRA_API"  
           yarn build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          BLOX_INFRA_API: "https://api.bloxstaking.com"
 
       - name: Deploy prod webapp
         if: github.ref == 'refs/heads/main'
@@ -284,6 +296,7 @@ jobs:
       #          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
       #        env:
       #          PROD_CLAIM_PAGE: "true"
+      #          BLOX_INFRA_API: 'https://api.bloxstaking.com'
       #          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
       #          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
       #          SSV_NETWORKS: ${{ env.STAGE_SSV_NETWORKS }}
@@ -337,6 +350,7 @@ jobs:
       #          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
       #        env:
       #          PROD_CLAIM_PAGE: "true"
+      #          BLOX_INFRA_API: 'https://api.bloxstaking.com'
       #          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
       #          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
       #          SSV_NETWORKS: ${{ env.PROD_SSV_NETWORKS }}

@@ -215,7 +215,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
         return 'none';
       },
       backgroundImage: (props: any) => {
-        if (props.step === StepperSteps.EXPIRED || props.isCanceled) {
+        if (props.step === StepperSteps.EXPIRED) {
+          return theme.colors.primaryError;
+        }
+        if (props.isCanceled) {
           return 'url(/images/x/white.svg)';
         }
         if (props.step === StepperSteps.UPDATED) {

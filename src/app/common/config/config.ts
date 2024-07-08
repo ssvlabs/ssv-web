@@ -2,7 +2,7 @@ import { ABI_VERSION } from '~app/common/config/abi';
 import { distributionHelper } from '~lib/utils/distributionHelper';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 
-const { networkId, tokenAddress, setterContractAddress, getterContractAddress } = getStoredNetwork();
+const { networkId, tokenAddress, setterContractAddress, getterContractAddress, apiVersion } = getStoredNetwork();
 
 const {
   abi
@@ -135,7 +135,7 @@ export const config = {
     DKG_DOCKER_INSTALL_URL: 'https://docs.docker.com/engine/install/',
     PERMISSIONED_OPERATORS: 'https://docs.ssv.network/learn/operators/permissioned-operators',
     MORE_ON_CLUSTERS: 'https://docs.ssv.network/learn/stakers/clusters',
-    SSV_KEYS_RELEASES_URL: 'https://github.com/ssvlabs/ssv-keys/releases',
+    SSV_KEYS_RELEASES_URL: 'https://github.com/bloxapp/ssv-keys/releases',
     SSV_UPDATE_FEE_DOCS: 'https://docs.ssv.network/learn/operators/update-fee',
     TOOL_TIP_KEY_LINK: 'https://docs.ssv.network/operators/install-instructions',
     GASNOW_API_URL: 'https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network',

@@ -7,7 +7,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 500,
     lineHeight: 1.62,
     color: theme.colors.gray80,
-    marginBottom: theme.spacing(5)
+    marginBottom: theme.spacing(5),
   },
   DropZone: {
     height: 254,
@@ -15,10 +15,10 @@ export const useStyles = makeStyles((theme: Theme) => ({
     cursor: 'pointer',
     marginBottom: theme.spacing(5),
     backgroundColor: theme.colors.gray0,
-    border: `solid 1px ${theme.colors.gray20}`
+    border: `solid 1px ${theme.colors.gray20}`,
   },
   Input: {
-    display: 'none'
+    display: 'none',
   },
   FileImage: {
     width: 48,
@@ -29,13 +29,13 @@ export const useStyles = makeStyles((theme: Theme) => ({
     marginTop: theme.spacing(20),
     marginBottom: theme.spacing(-4),
     backgroundRepeat: 'no-repeat',
-    backgroundImage: 'url(/images/file/white.svg)'
+    backgroundImage: 'url(/images/file/white.svg)',
   },
   Fail: {
-    backgroundImage: 'url(/images/file/fail.svg)'
+    backgroundImage: 'url(/images/file/fail.svg)',
   },
   Success: {
-    backgroundImage: 'url(/images/file/success.svg)'
+    backgroundImage: 'url(/images/file/success.svg)',
   },
   FileText: {
     fontSize: 16,
@@ -44,68 +44,74 @@ export const useStyles = makeStyles((theme: Theme) => ({
     overflow: 'hidden',
     textAlign: 'center',
     textOverflow: 'ellipsis',
-    color: theme.colors.gray40
+    color: theme.colors.gray40,
   },
   Remove: {
     fontSize: 16,
     fontWeight: 500,
     lineHeight: 1.62,
     cursor: 'pointer',
+    // marginTop: theme.spacing(2),
     textDecoration: 'underline',
     color: theme.colors.primaryBlue,
-    zIndex: theme.opacity.highPriority
+    zIndex: theme.opacity.highPriority,
   },
   ErrorText: {
-    color: theme.colors.primaryError
+    color: theme.colors.primaryError,
   },
   SuccessText: {
-    color: theme.colors.primarySuccessDark
+    color: theme.colors.primarySuccessDark,
   },
   ItemWrapper: {
-    marginBottom: theme.spacing(10)
+    marginBottom: theme.spacing(10),
   },
   ErrorWrapper: {
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(1),
   },
   SummaryWrapper: {
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
     gap: 8,
-    marginBottom: 31
+    marginBottom: 31,
   },
   KeysharesSummaryTitle: {
     fontSize: 14,
     fontWeight: 600,
-    color: theme.colors.gray40
+    color: theme.colors.gray40,
   },
   SummaryInfoFieldWrapper: {
     width: '100%',
     display: 'flex',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   SummaryText: {
     fontSize: 16,
     fontWeight: 500,
-    color: theme.colors.gray90
+    color: theme.colors.gray90,
   },
   OperatorsWrapper: {
     display: 'flex',
     flexDirection: 'row',
-    gap: 5.69
+    gap: 5.69,
   },
-  KeysharesWrapper: {
+  KeysharesWrapper:{
+    marginTop: 24,
     display: 'flex',
     justifyContent: 'center',
     gap: 24,
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
+  },
+  marginNone: {
+    margin: 0,
+    // marginTop: 50x,
   },
   marginTop: {
     margin: 0,
-    marginTop: (props: any) => (props.isSecondRegistration ? 50 : 90)
+    marginTop: 50,
   },
   ErrorMessageText: {
     fontSize: 14,
-    weight: 500
-  }
+    weight: 500,
+  },
 }));

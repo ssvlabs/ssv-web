@@ -18,15 +18,13 @@ import Settings from '~app/components/applications/SSV/MyAccount/components/Vali
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { getSelectedCluster } from '~app/redux/account.slice.ts';
 
-const TableWrapper = styled.div<{ children: React.ReactNode; id: string; isLoading: boolean }>`
+const TableWrapper = styled.div<{ children: React.ReactNode; id: string }>`
   margin-top: 12px;
   width: 808px;
   max-height: 600px;
   border: ${({ theme }) => `1px solid ${theme.colors.gray30}`};
   border-radius: 8px;
   overflow: auto;
-  opacity: ${({ isLoading }) => (isLoading ? 0.2 : 1)};
-  pointer-events: ${({ isLoading }) => (isLoading ? 'none' : 'auto')};
 `;
 
 const TableHeader = styled.div`
@@ -138,7 +136,7 @@ const ValidatorsList = ({
   maxValidatorsCount,
   checkboxTooltipTitle,
   setIsLoading,
-  isLoading = false,
+  isLoading,
   withoutSettings
 }: {
   onCheckboxClickHandler?: Function;
@@ -245,7 +243,7 @@ const ValidatorsList = ({
   }
 
   return (
-    <TableWrapper id={'scrollableDiv'} isLoading={isLoading}>
+    <TableWrapper id={'scrollableDiv'}>
       <InfiniteScroll
         dataLength={clusterValidators.length}
         next={async () => {

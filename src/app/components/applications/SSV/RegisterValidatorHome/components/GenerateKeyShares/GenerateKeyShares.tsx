@@ -6,7 +6,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import useValidatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares/GenerateKeyShares.styles';
 import { translations } from '~app/common/config';
@@ -15,7 +15,6 @@ import { getIsMainnet } from '~app/redux/wallet.slice';
 import { SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getIsClusterSelected } from '~app/redux/account.slice.ts';
-import styled from 'styled-components';
 
 type ButtonData = {
   isShow: boolean;
@@ -30,10 +29,6 @@ type ButtonData = {
     withoutBackgroundColor?: boolean;
   };
 };
-
-const Container = styled.div`
-  width: 100%;
-`;
 
 const GenerateKeyShares = () => {
   const stores = useStores();
@@ -140,10 +135,10 @@ const GenerateKeyShares = () => {
 
   if (isSecondRegistration) {
     return (
-      <Container>
-        <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
+      <Grid container>
+        <NewWhiteWrapper type={0} header={'Cluster'} />
         {MainScreen}
-      </Container>
+      </Grid>
     );
   }
 

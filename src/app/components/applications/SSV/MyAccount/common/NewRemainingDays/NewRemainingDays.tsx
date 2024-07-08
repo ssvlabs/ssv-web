@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -13,33 +12,30 @@ import LiquidationStateError, { LiquidationStateErrorType } from '~app/component
 type Props = {
   cluster: any;
   withdrawState?: boolean;
-  isInputFilled?: string | null;
+  isInputFilled?: boolean | null;
 };
 
 const NewRemainingDays = ({ cluster, withdrawState, isInputFilled = null }: Props) => {
   let errorType;
-  const [showErrorCondition, setShowErrorCondition] = useState(false);
-  const [warningLiquidationState, setWarningLiquidationState] = useState(!withdrawState);
-  const [clusterRunWay, setClusterRunWay] = useState(cluster.newRunWay ?? cluster.runWay);
+  let showError: boolean;
+  let warningLiquidationState: boolean;
+  const clusterRunWay = cluster.newRunWay ?? cluster.runWay;
   const remainingDays: number = clusterRunWay;
+  const typeOfiIsInputFilled = !!isInputFilled;
   const remainingDaysValue = formatNumberToUi(remainingDays, true);
 
-  useEffect(() => {
-    let showError: boolean;
-    const newRunWay = cluster.newRunWay ?? cluster.runWay;
-    if (newRunWay < 30) {
-      if (isInputFilled !== null) {
-        setWarningLiquidationState(!!isInputFilled);
-        showError = !!isInputFilled || !cluster.isLiquidated;
-      } else {
-        showError = !cluster.isLiquidated;
-      }
+  if (clusterRunWay < 30) {
+    if (typeOfiIsInputFilled) {
+      warningLiquidationState = isInputFilled;
+      showError = warningLiquidationState && !cluster.isLiquidated && isInputFilled;
     } else {
-      showError = false;
+      warningLiquidationState = true;
+      showError = warningLiquidationState && !cluster.isLiquidated;
     }
-    setClusterRunWay(newRunWay);
-    setShowErrorCondition(withdrawState ? !!isInputFilled && showError : showError);
-  }, [isInputFilled, cluster.newRunWay]);
+  } else {
+    warningLiquidationState = false;
+    showError = false;
+  }
 
   const setErrorType = (condition: boolean, ifCaseResponse: number, elseCaseResponse: number) => {
     if (condition) {
@@ -55,7 +51,7 @@ const NewRemainingDays = ({ cluster, withdrawState, isInputFilled = null }: Prop
     errorType = setErrorType(remainingDays === 0, LiquidationStateErrorType.WithdrawAll, LiquidationStateErrorType.Deposit);
   }
 
-  const classes = useStyles({ warningLiquidationState, withdrawState, showErrorCondition });
+  const classes = useStyles({ warningLiquidationState, withdrawState });
 
   return (
     <Grid item container>
@@ -79,7 +75,7 @@ const NewRemainingDays = ({ cluster, withdrawState, isInputFilled = null }: Prop
             {`(${withdrawState ? '' : '+'}${formatNumberToUi(cluster.newRunWay - cluster.runWay, true)} days)`}
           </Grid>
         )}
-        {showErrorCondition && (
+        {showError && (
           <Grid container>
             <ProgressBar remainingDays={remainingDays ?? 0} />
             <LiquidationStateError marginTop={'16px'} errorType={errorType} />

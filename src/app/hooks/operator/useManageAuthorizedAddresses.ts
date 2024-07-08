@@ -32,7 +32,7 @@ export const useManageAuthorizedAddresses = () => {
     switch (mode) {
       case 'add':
         addManager.form.handleSubmit(({ addresses }) => {
-          update({ mode: 'add', operatorIds: [operator.id], addresses: addresses.map((a) => a.value).filter((addr) => addr && addr.trim() !== '') });
+          update({ mode: 'add', operatorIds: [operator.id], addresses: addresses.map((a) => a.value) });
         })(event);
         break;
       case 'delete':

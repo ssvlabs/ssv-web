@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
 import { ICluster } from '~app/model/cluster.model';
 import { IOperator } from '~app/model/operator.model';
+import { getOperatorOptimisticPagination, getOptimisticOperators } from '~app/optimistic/operatorsList';
 import { RootState, store } from '~app/store';
 import { getClustersByOwnerAddress } from '~root/services/cluster.service';
 import { getOperatorsByOwnerAddress } from '~root/services/operator.service';
@@ -176,9 +177,9 @@ export const accountStateReducer = slice.reducer;
 export const { resetPagination, setExcludedCluster, setOptimisticOperator, removeOptimisticOperator, setSelectedClusterId, setSelectedOperatorId, sortOperatorsByStatus, reset } =
   slice.actions;
 
-export const getAccountOperators = (state: RootState) => state.accountState.operators;
+export const getAccountOperators = getOptimisticOperators;
 // export const getIsFetchingOperators = (state: RootState) => state.accountState.isFetchingOperators;
-export const getOperatorsPagination = (state: RootState) => state.accountState.operatorsPagination;
+export const getOperatorsPagination = getOperatorOptimisticPagination;
 export const getAccountClusters = (state: RootState) => state.accountState.clusters;
 // export const getIsFetchingClusters = (state: RootState) => state.accountState.isFetchingClusters;
 export const getClustersPagination = (state: RootState) => state.accountState.clustersPagination;
@@ -186,7 +187,7 @@ export const getSelectedCluster = (state: RootState) =>
   state.accountState.excludedCluster || state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId) || ({} as ICluster);
 
 export const getSelectedOperator = (state: RootState) => {
-  const selectedOperator = state.accountState.operators.find((operator: IOperator) => operator.id === state.accountState.selectedOperatorId);
+  const selectedOperator = getAccountOperators(state).find((operator: IOperator) => operator.id === state.accountState.selectedOperatorId);
 
   if (!selectedOperator) return undefined;
 

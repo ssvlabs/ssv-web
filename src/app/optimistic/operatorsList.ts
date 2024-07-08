@@ -1,6 +1,7 @@
 import { chunk, differenceBy } from 'lodash';
 import { IOperator } from '~app/model/operator.model';
 import { Pagination } from '~app/redux/account.slice';
+import { RootState } from '~app/store';
 import { tryCatch } from '~lib/utils/tryCatch';
 
 const storageKey = 'operatorsList';
@@ -26,34 +27,36 @@ export const addOptimisticOperators = (operators: IOperator[]): void => {
   setCachedData(newOperators);
 };
 
-const filterUniqueOptimisticOperators = (operators: IOperator[]): IOperator[] => {
-  const optimisticOperators = getCachedData();
+const filterUniqueOptimisticOperators = ({ accountState }: RootState): IOperator[] => {
+  const optimisticOperators = Object.values(accountState.optimisticOperatorsMap)
+    .filter((o) => o.type === 'created')
+    .map((o) => o.operator);
 
-  const uniques = differenceBy(optimisticOperators, operators, 'id');
-  if (uniques.length !== operators.length) setCachedData(uniques);
-
+  const uniques = differenceBy(optimisticOperators, accountState.operators, 'id');
+  if (uniques.length !== accountState.operators.length) {
+    // TODO: remove duplicates from state
+  }
   return uniques;
 };
 
-type Params = {
-  operators: IOperator[];
-  pagination: Pagination;
+export const getOperatorOptimisticPagination = (state: RootState): Pagination => {
+  const optimisticOperators = filterUniqueOptimisticOperators(state);
+  if (!optimisticOperators.length) return state.accountState.operatorsPagination;
+
+  return {
+    ...state.accountState.operatorsPagination,
+    total: state.accountState.operatorsPagination.total + optimisticOperators.length,
+    pages: Math.ceil((state.accountState.operatorsPagination.total + optimisticOperators.length) / state.accountState.operatorsPagination.per_page)
+  };
 };
 
-export const getOptimisticOperators = ({ operators, pagination }: Params): Params => {
-  const optimisticOperators = filterUniqueOptimisticOperators(operators);
-  if (!optimisticOperators.length) return { operators, pagination };
+export const getOptimisticOperators = (state: RootState): IOperator[] => {
+  const optimisticOperators = filterUniqueOptimisticOperators(state);
+  if (!optimisticOperators.length) return state.accountState.operators;
 
-  const pages = chunk([...Array(pagination.total), ...optimisticOperators], pagination.per_page);
-  const optimisticPage = (pages[pagination.page - 1] || []).filter(Boolean);
+  const pages = chunk([...Array(state.accountState.operatorsPagination.total), ...optimisticOperators], state.accountState.operatorsPagination.per_page);
+  const optimisticPage = (pages[state.accountState.operatorsPagination.page - 1] || []).filter(Boolean);
 
-  const [pageOperators] = chunk([...operators, ...optimisticPage], pagination.per_page);
-  return {
-    operators: pageOperators,
-    pagination: {
-      ...pagination,
-      total: pagination.total + optimisticOperators.length,
-      pages: pages.length
-    }
-  };
+  const [pageOperators] = chunk([...state.accountState.operators, ...optimisticPage], state.accountState.operatorsPagination.per_page);
+  return pageOperators;
 };

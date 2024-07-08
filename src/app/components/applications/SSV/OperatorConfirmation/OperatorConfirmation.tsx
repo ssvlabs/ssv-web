@@ -11,7 +11,7 @@ import TermsAndConditionsCheckbox from '~app/components/common/TermsAndCondition
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import { addOptimisticOperators } from '~app/performance/addOperator';
+import { setOptimisticOperator } from '~app/redux/account.slice';
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
@@ -54,7 +54,8 @@ const createDefaultOperator = (args: OperatorAddedEvent['args'] & { isPrivate?: 
   validators_count: 0,
   version: 'v4',
   network: 'holesky',
-  whitelist_addresses: []
+  whitelist_addresses: [],
+  updated_at: 0
 });
 
 type OperatorAddedEvent = {
@@ -92,7 +93,12 @@ const OperatorConfirmation = () => {
         const operatorAddedEvent = events?.find((event) => (event as OperatorAddedEvent).eventName === 'OperatorAdded') as OperatorAddedEvent | undefined;
         if (operatorAddedEvent) {
           newOperator = createDefaultOperator({ ...operatorAddedEvent.args, isPrivate });
-          addOptimisticOperators([newOperator]);
+          dispatch(
+            setOptimisticOperator({
+              operator: newOperator,
+              type: 'created'
+            })
+          );
         }
       }
     });

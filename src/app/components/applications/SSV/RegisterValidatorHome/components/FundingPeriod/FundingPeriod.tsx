@@ -59,7 +59,7 @@ const FundingPeriod = () => {
   const insufficientBalance = new Decimal(totalAmount).comparedTo(walletSsvBalance) === 1;
   const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
 
-  const onPerionChange = (event: any) => {
+  const onPeriodChange = (event: any) => {
     const value = Math.floor(Number(event.target.value));
     if (isNaN(value)) {
       return;
@@ -112,7 +112,7 @@ const FundingPeriod = () => {
                     )}{' '}
                     SSV
                   </Grid>
-                  {isCustom && <TextInput value={customPeriod} onChangeCallback={onPerionChange} extendClass={classes.DaysInput} withSideText sideText={'Days'} />}
+                  {isCustom && <TextInput value={customPeriod} onChangeCallback={onPeriodChange} extendClass={classes.DaysInput} withSideText sideText={'Days'} />}
                 </Grid>
               );
             })}

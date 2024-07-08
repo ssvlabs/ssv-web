@@ -1,18 +1,18 @@
-import { useState } from 'react';
-import { useStores } from '~app/hooks/useStores';
+import { ChangeEvent, ClipboardEvent, useState } from 'react';
 import TextInput from '~app/components/common/TextInput';
-import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
 import { FIELD_KEYS, HTTPS_PREFIX } from '~lib/utils/operatorMetadataHelper';
 
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook.ts';
+import { selectMetadataValueByName, setMetadataValue } from '~app/redux/operatorMetadata.slice.ts';
 
-const InputFieldComponent = ({ fieldKey, extendClass, placeholder }: { fieldKey: string; placeholder: string; extendClass?: string }) => {
+const InputFieldComponent = ({ fieldKey, extendClass, placeholder }: { fieldKey: FIELD_KEYS; placeholder: string; extendClass?: string }) => {
   const classes = useStyles();
-  const stores = useStores();
-  const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-  const [currentValue, setCurrentValue] = useState(metadataStore.getMetadataValue(fieldKey));
+  const dispatch = useAppDispatch();
 
-  const onPasteHandler = (event: any) => {
+  const [currentValue, setCurrentValue] = useState(useAppSelector((state) => selectMetadataValueByName(state, fieldKey)));
+
+  const onPasteHandler = (event: ClipboardEvent) => {
     if (fieldKey === FIELD_KEYS.DKG_ADDRESS) {
       // Prevent the default paste behavior
       event.preventDefault();
@@ -26,18 +26,18 @@ const InputFieldComponent = ({ fieldKey, extendClass, placeholder }: { fieldKey:
       }
 
       setCurrentValue(HTTPS_PREFIX + pastedValue);
-      metadataStore.setMetadataValue(fieldKey, HTTPS_PREFIX + pastedValue);
+      dispatch(setMetadataValue({ metadataFieldName: fieldKey, value: HTTPS_PREFIX + pastedValue }));
     }
   };
 
-  const onChangeHandler = (event: any) => {
+  const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     if (fieldKey === FIELD_KEYS.DKG_ADDRESS) {
       setCurrentValue(value);
-      metadataStore.setMetadataValue(fieldKey, value);
+      dispatch(setMetadataValue({ metadataFieldName: fieldKey, value }));
     } else {
       setCurrentValue(value.length > 1 ? value : value.trim());
-      metadataStore.setMetadataValue(fieldKey, value.trim());
+      dispatch(setMetadataValue({ metadataFieldName: fieldKey, value: value.trim() }));
     }
   };
 

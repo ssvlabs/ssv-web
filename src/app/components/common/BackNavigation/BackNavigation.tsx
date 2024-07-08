@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading } from '~app/redux/appState.slice';
 
-const BackNavigationWrapper = styled.div`
-  gap: 4px;
+const BackNavigationWrapper = styled.div<{ isColoredText: boolean }>`
+  gap: 12px;
   height: 16px;
   display: flex;
-  color: #1ba5f8;
+  color: ${({ theme, isColoredText }) => (isColoredText ? theme.colors.gray90 : theme.colors.primaryBlue)};
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
@@ -33,10 +33,11 @@ const BackNavigationImage = styled.div<Record<string, any>>`
 type BackNavigationProps = {
   color?: string;
   onClick?: () => void | null | undefined;
+  text?: string;
   backButtonRedirect?: string;
 };
 
-const BackNavigation = ({ color, onClick, backButtonRedirect }: BackNavigationProps) => {
+const BackNavigation = ({ color, onClick, backButtonRedirect, text }: BackNavigationProps) => {
   const navigate = useNavigate();
   const defaultColor = '#A1ACBE';
   const usedColor = color || defaultColor;
@@ -59,9 +60,9 @@ const BackNavigation = ({ color, onClick, backButtonRedirect }: BackNavigationPr
   };
 
   return (
-    <BackNavigationWrapper onClick={onNavigationClicked}>
+    <BackNavigationWrapper onClick={onNavigationClicked} isColoredText={!!text}>
       <BackNavigationImage color={usedColor} />
-      <span>Back</span>
+      <span>{text || 'Back'}</span>
     </BackNavigationWrapper>
   );
 };

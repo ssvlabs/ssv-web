@@ -6,6 +6,7 @@ import { notificationsStateReducer } from '~app/redux/notifications.slice';
 import { accountStateReducer } from '~app/redux/account.slice';
 import { networkStateReducer } from '~app/redux/network.slice';
 import { operatorStateReducer } from '~app/redux/operator.slice.ts';
+import { operatorMetadataReducer } from '~app/redux/operatorMetadata.slice.ts';
 
 export const store = configureStore({
   reducer: {
@@ -15,7 +16,8 @@ export const store = configureStore({
     notificationsState: notificationsStateReducer,
     accountState: accountStateReducer,
     networkState: networkStateReducer,
-    operatorState: operatorStateReducer
+    operatorState: operatorStateReducer,
+    operatorMetadataState: operatorMetadataReducer
   }
 });
 

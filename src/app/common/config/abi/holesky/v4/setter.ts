@@ -1870,7 +1870,7 @@ export const HoleskyV4SetterABI = [
         type: 'address[]'
       }
     ],
-    name: 'setOperatosWhitelists',
+    name: 'setOperatorsWhitelists',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'

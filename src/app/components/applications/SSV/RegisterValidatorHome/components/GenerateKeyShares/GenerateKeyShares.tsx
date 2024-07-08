@@ -6,7 +6,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import useValidatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares/GenerateKeyShares.styles';
 import { translations } from '~app/common/config';
@@ -136,7 +136,7 @@ const GenerateKeyShares = () => {
   if (isSecondRegistration) {
     return (
       <Grid container>
-        <NewWhiteWrapper type={0} header={'Cluster'} />
+        <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
         {MainScreen}
       </Grid>
     );

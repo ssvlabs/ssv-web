@@ -11,7 +11,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import ErrorMessage from '~app/components/common/ErrorMessage';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/ImportFile.styles';
 import validatorRegistrationFlow, { EValidatorFlowAction } from '~app/hooks/useValidatorRegistrationFlow';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common';
@@ -206,7 +206,7 @@ const KeyStoreFlow = () => {
   if (isSecondRegistration) {
     return (
       <Grid container>
-        <NewWhiteWrapper type={0} header={'Cluster'} />
+        <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
         {MainScreen}
       </Grid>
     );

@@ -20,7 +20,7 @@ type Mutation = UseMutationResult<
 >;
 
 const methods: Record<MutationType, ContractMethod> = {
-  add: getContractByName(EContractName.SETTER).setOperatosWhitelists,
+  add: getContractByName(EContractName.SETTER).setOperatorsWhitelists,
   delete: getContractByName(EContractName.SETTER).removeOperatorsWhitelists
 };
 

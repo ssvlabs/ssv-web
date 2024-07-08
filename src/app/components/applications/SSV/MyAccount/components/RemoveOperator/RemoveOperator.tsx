@@ -6,7 +6,7 @@ import config from '~app/common/config';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/RemoveOperator/RemoveOperator.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import CheckBox from '~app/components/common/CheckBox';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { fetchOperators, getSelectedOperator } from '~app/redux/account.slice';
@@ -46,7 +46,7 @@ const RemoveOperator = () => {
 
   return (
     <Grid container item>
-      <NewWhiteWrapper type={1} header={'Operator Details'} />
+      <NewWhiteWrapper type={WhiteWrapperDisplayType.OPERATOR} header={'Operator Details'} />
       <Grid className={classes.BodyWrapper}>
         <BorderScreen
           marginTop={0}

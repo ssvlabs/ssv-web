@@ -18,10 +18,13 @@ const getAmountToTransfer = async () => {
 const requestSsvFromFaucet = async ({ address }: { address: string }) => {
   const { faucetApi, networkId, apiVersion } = getStoredNetwork();
   try {
-    await postRequest(faucetApi, { owner_address: address, network: networkId, version: apiVersion });
+    await postRequest(faucetApi, { owner_address: address, networkId: networkId, version: apiVersion }, true);
     return { status: true };
   } catch (e: any) {
-    return { status: false, type: e.response.data.error.message === translations.FAUCET.REACHED_MAX_TRANSACTIONS ? translations.FAUCET.REACHED_MAX_TRANSACTIONS : translations.FAUCET.FAUCET_DEPLETED };
+    return {
+      status: false,
+      type: e.response.data.error.message === translations.FAUCET.REACHED_MAX_TRANSACTIONS ? translations.FAUCET.REACHED_MAX_TRANSACTIONS : translations.FAUCET.FAUCET_DEPLETED
+    };
   }
 };
 

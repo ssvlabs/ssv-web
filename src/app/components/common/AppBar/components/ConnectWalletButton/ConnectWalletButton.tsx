@@ -17,7 +17,7 @@ const getWalletIconSrc = (connectorName?: string) => {
   return iconMap[connectorName?.toLowerCase() as WalletType] || '/images/wallets/metamask.svg';
 };
 
-export const WalletButton = () => {
+export const WalletButton = ({ dontShowConnectedStatus = false, disableOnUnsupported = false }: { dontShowConnectedStatus?: boolean; disableOnUnsupported?: boolean }) => {
   const { connector } = useAccount();
 
   return (
@@ -27,6 +27,7 @@ export const WalletButton = () => {
 
         return (
           <div
+            className="w-full"
             {...(!mounted && {
               'aria-hidden': true,
               style: {
@@ -37,9 +38,9 @@ export const WalletButton = () => {
             })}
           >
             {(() => {
-              if (!connected) {
+              if (!connected || (chain.unsupported && disableOnUnsupported)) {
                 return (
-                  <Button size="lg" onClick={openConnectModal}>
+                  <Button size="lg" width="full" onClick={openConnectModal} disabled={chain?.unsupported}>
                     Connect Wallet
                   </Button>
                 );
@@ -47,12 +48,16 @@ export const WalletButton = () => {
 
               if (chain.unsupported) {
                 return (
-                  <Button size="lg" variant="destructive" onClick={openChainModal}>
+                  <Button size="lg" width="full" variant="destructive" onClick={openChainModal}>
                     <div className="flex gap-1 items-center">
                       <span>Wrong Network</span> <ChevronDown className="size-5" />
                     </div>
                   </Button>
                 );
+              }
+
+              if (dontShowConnectedStatus) {
+                return null;
               }
 
               return (

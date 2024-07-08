@@ -1,42 +1,30 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
-import { useStores } from '~app/hooks/useStores';
 import { truncateText } from '~lib/utils/strings';
 import LinkText from '~app/components/common/LinkText/LinkText';
-import { photoValidation } from '~lib/utils/operatorMetadataHelper';
-import OperatorMetadataStore from '~app/common/stores/applications/SsvWeb/OperatorMetadata.store';
+import { FIELD_KEYS, photoValidation } from '~lib/utils/operatorMetadataHelper';
 import ImportInput from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/common/ImportInput';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/EditOperatorDetails/EditOperatorDetails.styles';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook.ts';
+import { selectMetadataEntityByName, setMetadataEntity } from '~app/redux/operatorMetadata.slice.ts';
 
-const UploadImageInput = ({ fieldKey, extendClass }: { fieldKey: string; extendClass?: string }) => {
+const UploadImageInput = ({ fieldKey, extendClass }: { fieldKey: FIELD_KEYS; extendClass?: string }) => {
   const classes = useStyles();
-  const stores = useStores();
-  const metadataStore: OperatorMetadataStore = stores.OperatorMetadata;
-  const [currentData, setCurrentData] = useState(metadataStore.getMetadataEntity(fieldKey));
+  const currentData = useAppSelector((state) => selectMetadataEntityByName(state, fieldKey));
   const removeButtons = useRef(null);
+  const dispatch = useAppDispatch();
 
   const updateCurrentData = (base64ImageString: string, fileName: string, errorMessage: string) => {
-    const newData = metadataStore.getMetadataEntity(fieldKey);
-    newData.value = base64ImageString!.toString();
-    newData.imageFileName = fileName;
-    newData.errorMessage = errorMessage;
-    metadataStore.setMetadataEntity(fieldKey, newData);
-    setCurrentData(newData);
+    dispatch(setMetadataEntity({ metadataFieldName: fieldKey, value: { ...currentData, value: base64ImageString!.toString(), imageFileName: fileName, errorMessage } }));
   };
 
-  const fileHandler = (file: any) => {
+  const fileHandler = (file: File) => {
     photoValidation(file, updateCurrentData);
   };
 
   const removeFile = () => {
-    setCurrentData((prevState) => {
-      prevState.errorMessage = '';
-      prevState.imageFileName = '';
-      prevState.value = '';
-      return prevState;
-    });
-    metadataStore.setMetadataEntity(fieldKey, currentData);
+    dispatch(setMetadataEntity({ metadataFieldName: fieldKey, value: { ...currentData, errorMessage: '', imageFileName: '', value: '' } }));
   };
 
   const RemoveButton = () => <Grid ref={removeButtons} onClick={removeFile} className={classes.RemoveIcon} />;

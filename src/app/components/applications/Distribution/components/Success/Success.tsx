@@ -1,27 +1,22 @@
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import LinkText from '~app/components/common/LinkText';
+import { SecondaryButton } from '~app/atomicComponents';
+import { useStyles } from '~app/components/applications/Distribution/components/Success/Success.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
-import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
-import { useStyles } from '~app/components/applications/Distribution/components/Success/Success.styles';
-import { getTransactionLink } from '~root/providers/networkInfo.provider';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getTxHash } from '~app/redux/appState.slice';
-import { registerSSVTokenInMetamask } from '~root/services/distribution.service';
-import { getIsMainnet } from '~app/redux/wallet.slice';
-import { setMessageAndSeverity } from '~app/redux/notifications.slice';
-import { AlertColor } from '@mui/material/Alert';
-import { useConnectWallet } from '@web3-onboard/react';
-import { SecondaryButton } from '~app/atomicComponents';
+import LinkText from '~app/components/common/LinkText';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { useAddSSVTokenToMetamask } from '~app/hooks/useAddSSVTokenToMetamask';
+import { getTxHash } from '~app/redux/appState.slice';
+import { getIsMainnet } from '~app/redux/wallet.slice';
+import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import { getTransactionLink } from '~root/providers/networkInfo.provider';
 
 const Success = () => {
   const classes = useStyles();
-  const [{ wallet }] = useConnectWallet();
   const txHash = useAppSelector(getTxHash);
   const isMainnet = useAppSelector(getIsMainnet);
-  const dispatch = useAppDispatch();
 
   const openMarketingSite = () => {
     GoogleTagManager.getInstance().sendEvent({
@@ -32,9 +27,7 @@ const Success = () => {
     window.open('https://ssv.network/');
   };
 
-  const notificationHandler = ({ message, severity }: { message: string; severity: AlertColor }) => {
-    dispatch(setMessageAndSeverity({ message, severity }));
-  };
+  const addSSVTokenToMetamask = useAddSSVTokenToMetamask();
 
   return (
     <BorderScreen
@@ -52,18 +45,7 @@ const Success = () => {
               </span>
             }
           />
-          <Grid
-            item
-            container
-            className={classes.AddSsvToWallet}
-            onClick={() =>
-              wallet &&
-              registerSSVTokenInMetamask({
-                provider: wallet.provider,
-                notificationHandler
-              })
-            }
-          >
+          <Grid item container className={classes.AddSsvToWallet} onClick={() => addSSVTokenToMetamask.mutate()}>
             <Grid item className={classes.MetaMask} />
             <Typography component={'span'}>Add SSV to Metamask</Typography>
           </Grid>

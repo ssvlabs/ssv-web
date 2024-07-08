@@ -10,7 +10,7 @@ import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorH
 import StyledCell from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import Checkbox from '~app/components/common/CheckBox';
 import Status from '~app/components/common/Status';
-import ToolTip from '~app/components/common/ToolTip';
+import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
 import { getOperatorValidatorsLimit } from '~app/redux/operator.slice';
@@ -23,11 +23,10 @@ import { fromWei, getFeeForYear } from '~root/services/conversions.service';
 type Props = {
   operator: IOperator;
   isSelected: boolean;
-  isDisabled?: boolean;
   onClick: (operator: IOperator) => void;
 };
 
-export const OperatorRow: FC<Props> = ({ operator, isSelected, isDisabled, onClick }) => {
+export const OperatorRow: FC<Props> = ({ operator, isSelected, onClick }) => {
   const account = useAccount();
   const classes = useStyles({ loading: true });
 
@@ -44,73 +43,72 @@ export const OperatorRow: FC<Props> = ({ operator, isSelected, isDisabled, onCli
   });
 
   const isPrivateOperator = !canUseOperator.data;
-  const isPrivateOrDeleted = Boolean(operator.is_deleted || isPrivateOperator);
+  const isDisabled = operator.is_deleted || isPrivateOperator || reachedMaxValidators;
 
   return (
-    <TableRow
-      className={cn(classes.RowWrapper, {
-        [classes.Selected]: isSelected,
-        [classes.RowDisabled]: isPrivateOrDeleted
-      })}
-      onClick={() => {
-        !isPrivateOrDeleted && onClick(operator);
-      }}
-    >
-      <StyledCell style={{ paddingLeft: 20, width: 60, paddingTop: 35 }}>
-        <Checkbox isDisabled={isPrivateOrDeleted || isDisabled} grayBackGround text={''} isChecked={isSelected} toggleIsChecked={() => {}} />
-      </StyledCell>
-      <StyledCell>
-        <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator} />
-      </StyledCell>
-      <StyledCell>
-        <Grid container>
-          <Grid item>{operator.validators_count}</Grid>
-          {reachedMaxValidators && (
-            <Grid item style={{ alignSelf: 'center', marginLeft: 4 }}>
-              <ToolTip text={'Operator reached  maximum amount of validators'} />
-            </Grid>
-          )}
-        </Grid>
-      </StyledCell>
-      <StyledCell>
-        <Grid container>
-          <Grid item className={hasValidators && isInactive ? classes.Inactive : ''}>
-            {roundNumber(operator.performance['30d'], 2)}%
+    <AnchorTooltip title={'Operator reached maximum amount of validators'} placement={'top'} dontUseGridWrapper shouldDisableHoverListener={!reachedMaxValidators}>
+      <TableRow
+        className={cn(classes.RowWrapper, {
+          [classes.Selected]: isSelected,
+          [classes.RowDisabled]: isDisabled
+        })}
+        onClick={() => {
+          if (!isDisabled) {
+            onClick(operator);
+          }
+        }}
+      >
+        <StyledCell style={{ paddingLeft: 20, width: 60, paddingTop: 35 }}>
+          <Checkbox isDisabled={isDisabled} grayBackGround text={''} isChecked={isSelected} toggleIsChecked={() => {}} />
+        </StyledCell>
+        <StyledCell>
+          <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator} />
+        </StyledCell>
+        <StyledCell>
+          <Grid container>
+            <Grid item>{operator.validators_count}</Grid>
           </Grid>
-          {isInactive && (
-            <Grid item xs={12}>
-              <Status item={operator} />
+        </StyledCell>
+        <StyledCell>
+          <Grid container>
+            <Grid item className={hasValidators && isInactive ? classes.Inactive : ''}>
+              {roundNumber(operator.performance['30d'], 2)}%
             </Grid>
-          )}
-        </Grid>
-      </StyledCell>
-      <StyledCell>
-        <Grid container>
-          <Grid item className={classes.FeeColumn}>
-            {formatNumberToUi(getFeeForYear(fromWei(operator.fee)))} SSV
+            {isInactive && (
+              <Grid item xs={12}>
+                <Status item={operator} />
+              </Grid>
+            )}
           </Grid>
-        </Grid>
-      </StyledCell>
-      <StyledCell>
-        <Grid container>
-          <MevCounterBadge mevRelaysList={mevRelays.split(',')} mevCount={mevRelaysCount} />
-        </Grid>
-      </StyledCell>
-      <StyledCell>
-        <Grid
-          className={classes.ChartIcon}
-          onClick={(ev) => {
-            ev.stopPropagation();
-            GoogleTagManager.getInstance().sendEvent({
-              category: 'explorer_link',
-              action: 'click',
-              label: 'operator'
-            });
-            window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');
-          }}
-        />
-      </StyledCell>
-    </TableRow>
+        </StyledCell>
+        <StyledCell>
+          <Grid container>
+            <Grid item className={classes.FeeColumn}>
+              {formatNumberToUi(getFeeForYear(fromWei(operator.fee)))} SSV
+            </Grid>
+          </Grid>
+        </StyledCell>
+        <StyledCell>
+          <Grid container>
+            <MevCounterBadge mevRelaysList={mevRelays.split(',')} mevCount={mevRelaysCount} />
+          </Grid>
+        </StyledCell>
+        <StyledCell>
+          <Grid
+            className={classes.ChartIcon}
+            onClick={(ev) => {
+              ev.stopPropagation();
+              GoogleTagManager.getInstance().sendEvent({
+                category: 'explorer_link',
+                action: 'click',
+                label: 'operator'
+              });
+              window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');
+            }}
+          />
+        </StyledCell>
+      </TableRow>
+    </AnchorTooltip>
   );
 };
 

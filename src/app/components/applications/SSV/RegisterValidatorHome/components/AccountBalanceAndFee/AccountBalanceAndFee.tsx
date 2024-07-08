@@ -7,7 +7,7 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
 import validatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/AccountBalanceAndFee/AccountBalanceAndFee.styles';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
@@ -96,7 +96,7 @@ const AccountBalanceAndFee = () => {
   if (isSecondRegistration) {
     return (
       <Grid container>
-        <NewWhiteWrapper type={0} header={'Cluster'} />
+        <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
         {MainScreen}
       </Grid>
     );

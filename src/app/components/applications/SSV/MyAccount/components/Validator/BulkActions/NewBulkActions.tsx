@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import config from '~app/common/config';
 import { BulkValidatorData } from '~app/model/validator.model';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import ValidatorsList from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
 import Spinner from '~app/components/common/Spinner';
@@ -132,7 +132,7 @@ const NewBulkActions = ({
 
   return (
     <Wrapper>
-      <NewWhiteWrapper type={0} header={'Cluster'} />
+      <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
       <ValidatorsWrapper>
         <HeaderWrapper>
           <TitleWrapper>

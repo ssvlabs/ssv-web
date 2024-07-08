@@ -10,7 +10,7 @@ import Balance from '~app/components/applications/SSV/MyAccount/components/Balan
 import OperatorBox from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/OperatorBox';
 import ActionsButton from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/actions/ActionsButton';
 import ValidatorsList from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { Tooltip } from '~app/components/ui/tooltip';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
@@ -107,7 +107,7 @@ const SingleCluster = () => {
 
   return (
     <Grid container className={classes.Wrapper}>
-      <NewWhiteWrapper stepBack={backToClustersDashboard} type={0} header={'Cluster'} />
+      <NewWhiteWrapper stepBack={backToClustersDashboard} type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
       <Grid container item className={classes.Section}>
         {cluster.operators.map((operator, index) => (
           <OperatorBox key={index} operator={operator} />

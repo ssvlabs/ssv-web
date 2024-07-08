@@ -42,6 +42,7 @@ export const ClusterDashboard = () => {
 
   useEffect(() => {
     dispatch(setExcludedCluster(null));
+    dispatch(setSelectedClusterId(undefined));
     clusterIntervalRef.current = setInterval(() => dispatch(fetchClusters({})), 10000);
     return () => {
       if (clusterIntervalRef.current) {

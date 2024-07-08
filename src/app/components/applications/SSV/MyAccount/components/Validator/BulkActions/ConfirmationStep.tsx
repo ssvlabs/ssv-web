@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import Checkbox from '~app/components/common/CheckBox';
 import WarningBox from '~app/components/common/WarningBox';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import Summary from '~app/components/applications/SSV/MyAccount/components/Validator/SummaryValidators/Summary';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getIsLoading } from '~app/redux/appState.slice';
@@ -94,7 +94,7 @@ const ConfirmationStep = ({
 
   return (
     <Wrapper>
-      <NewWhiteWrapper type={0} header={'Cluster'} stepBack={stepBack} />
+      <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} stepBack={stepBack} />
       <ConfirmationWrapper>
         <Confirmation>
           <ConfirmationTitle>{title}</ConfirmationTitle>

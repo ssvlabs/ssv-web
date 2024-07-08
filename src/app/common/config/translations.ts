@@ -255,7 +255,7 @@ const translations = {
     REQUIRED_FIELD_ERROR: 'Required field',
     LINK_ERROR: 'Enter a valid link i.e - https://ssv.network/',
     SPECIAL_CHARACTERS_ERROR: "Field accepts numbers, English characters and the following characters: _!$#'-|",
-    DKG_ADDRESS_ERROR: 'Endpoint must specify ip and port',
+    DKG_ADDRESS_ERROR: 'Enter a valid IP address and port number',
     CONFIRMATION_CHANGE: {
       TITLE: 'Operator details has been updated',
       SUBTITLE: 'See your updated details on your operator page in the network Explorer',

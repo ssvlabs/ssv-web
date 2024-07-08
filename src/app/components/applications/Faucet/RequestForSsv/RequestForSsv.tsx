@@ -83,7 +83,7 @@ const RequestForSsv = () => {
               {error}
             </Grid>
           )}
-          <HCaptcha ref={captchaRef} theme={isDarkMode ? 'dark' : 'light'} onVerify={() => setDisabled(false)} sitekey={String(process.env.REACT_APP_CAPTCHA_KEY)} />
+          <HCaptcha ref={captchaRef} theme={isDarkMode ? 'dark' : 'light'} onVerify={() => setDisabled(false)} sitekey={String(import.meta.env.VITE_CAPTCHA_KEY)} />
           <PrimaryButton text={buttonText} onClick={requestForSSV} isDisabled={isMainnet || disabled || reachedMaxTransactionPerDay} isLoading={isLoading} size={ButtonSize.XL} />
         </Grid>
       ]}

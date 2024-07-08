@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import Summary from '~app/components/applications/SSV/MyAccount/components/Validator/SummaryValidators/Summary';
 import ExitIndicator from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ExitIndicator';
 import { PrimaryButton } from '~app/atomicComponents';
@@ -53,7 +53,7 @@ const ExitTextBold = styled.span`
 
 const ExitFinishPage = ({ nextStep, selectedValidators }: { nextStep: Function; selectedValidators: string[] }) => (
   <Wrapper>
-    <NewWhiteWrapper type={0} header={'Cluster'} />
+    <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
     <ExitWrapper>
       <Exit>
         <ExitTitle>Exit Validator</ExitTitle>

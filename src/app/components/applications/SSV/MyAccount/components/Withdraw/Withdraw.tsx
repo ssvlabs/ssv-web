@@ -2,7 +2,7 @@ import Grid from '@mui/material/Grid';
 import { useEffect, useState } from 'react';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Withdraw/Withdraw.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getAccountAddress } from '~app/redux/wallet.slice';
@@ -37,7 +37,7 @@ const Withdraw = ({ isValidatorFlow }: { isValidatorFlow: boolean }) => {
 
   return (
     <Grid container item style={{ gap: 32 }}>
-      <NewWhiteWrapper type={isValidatorFlow ? 0 : 1} header={isValidatorFlow ? 'Cluster' : 'Operator Details'} />
+      <NewWhiteWrapper type={isValidatorFlow ? WhiteWrapperDisplayType.VALIDATOR : WhiteWrapperDisplayType.OPERATOR} header={isValidatorFlow ? 'Cluster' : 'Operator Details'} />
       <Grid container className={classes.ScreensWrapper} item xs={12}>
         <BorderScreen
           marginTop={0}

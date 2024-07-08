@@ -13,7 +13,7 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import FundingSummary from '~app/components/common/FundingSummary';
 import LinkText from '~app/components/common/LinkText';
 import NameAndAddress from '~app/components/common/NameAndAddress/NameAndAddress';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
@@ -31,6 +31,11 @@ import { getLiquidationCollateralPerValidator } from '~root/services/validator.s
 import { NewValidatorRouteState } from '~app/Routes';
 import { getIsClusterSelected } from '~app/redux/account.slice.ts';
 import { useQuery } from '@tanstack/react-query';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  width: 100%;
+`;
 
 const ValidatorRegistrationConfirmation = () => {
   const navigate = useNavigate();
@@ -228,8 +233,8 @@ const ValidatorRegistrationConfirmation = () => {
 
   if (isSecondRegistration) {
     return (
-      <Grid container>
-        <NewWhiteWrapper type={0} header={'Cluster'} />
+      <Container>
+        <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
         <Grid container>
           <Grid item xs={12}>
             {MainScreen}
@@ -238,7 +243,7 @@ const ValidatorRegistrationConfirmation = () => {
             {SecondaryScreen}
           </Grid>
         </Grid>
-      </Grid>
+      </Container>
     );
   }
 

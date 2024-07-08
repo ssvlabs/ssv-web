@@ -119,8 +119,13 @@ export const slice = createSlice({
       state.selectedOperatorId = action.payload;
     },
     setOptimisticOperator: (state, action: { payload: ModifiedOperatorData }) => {
-      state.optimisticOperatorsMap[action.payload.operator.id.toString()] = action.payload;
-      console.log('state.optimisticOperatorsMap:', state.optimisticOperatorsMap);
+      const prevOperator = state.optimisticOperatorsMap[action.payload.operator.id.toString()];
+      const isUpdate = action.payload.type === 'updated';
+
+      state.optimisticOperatorsMap[action.payload.operator.id.toString()] = {
+        ...action.payload,
+        type: prevOperator && isUpdate ? prevOperator.type : action.payload.type
+      };
     },
     removeOptimisticOperator: (state, action: { payload: number }) => {
       delete state.optimisticOperatorsMap[action.payload?.toString()];

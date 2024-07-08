@@ -15,8 +15,9 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '~app/compon
 import { Input } from '~app/components/ui/input';
 import { Tooltip } from '~app/components/ui/tooltip';
 import { useSetOperatorsWhitelistingContract } from '~app/hooks/operator/useSetOperatorsWhitelistingContract';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getSelectedOperator, setOptimisticOperator } from '~app/redux/account.slice';
+import { useSetOptimisticOperator } from '~app/hooks/operator/useSetOptimisticOperator';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getSelectedOperator } from '~app/redux/account.slice';
 import { isEqualsAddresses } from '~lib/utils/strings';
 import { isWhitelistingContract as _isWhitelistingContract } from '~root/services/operatorContract.service';
 
@@ -25,7 +26,6 @@ type FormValues = {
 };
 
 const ExternalContract = () => {
-  const dispatch = useAppDispatch();
   const operator = useAppSelector(getSelectedOperator)!;
   const whitelistingContractAddress = operator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator.whitelisting_contract ?? '' : '';
 
@@ -68,6 +68,8 @@ const ExternalContract = () => {
     });
   };
 
+  const setOptimisticOperator = useSetOptimisticOperator();
+
   const submit = form.handleSubmit((values) => {
     if (!isChanged) return;
     setExternalContract.mutate(
@@ -78,15 +80,13 @@ const ExternalContract = () => {
       },
       {
         onSuccess: () => {
-          dispatch(
-            setOptimisticOperator({
-              operator: {
-                ...operator,
-                whitelisting_contract: values.externalContract
-              },
-              type: 'updated'
-            })
-          );
+          setOptimisticOperator({
+            operator: {
+              ...operator,
+              whitelisting_contract: values.externalContract
+            },
+            type: 'updated'
+          });
           form.reset({ externalContract: values.externalContract });
         }
       }

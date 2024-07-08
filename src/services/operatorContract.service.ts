@@ -113,7 +113,7 @@ const removeOperator = async ({ operatorId, isContractWallet, dispatch }: { oper
     contractMethod: contract.removeOperator,
     payload: [operatorId],
     isContractWallet,
-    getterTransactionState: async () => !(await getOperator(operatorId)),
+    onConfirmed: () => {},
     dispatch
   });
 };

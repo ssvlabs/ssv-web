@@ -9,9 +9,9 @@ import NameAndAddress from '~app/components/common/NameAndAddress';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useSetOptimisticOperator } from '~app/hooks/operator/useSetOptimisticOperator';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import { setOptimisticOperator } from '~app/redux/account.slice';
 import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
 import { formatNumberToUi } from '~lib/utils/numbers';
 import { longStringShorten } from '~lib/utils/strings';
@@ -79,6 +79,7 @@ const OperatorConfirmation = () => {
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isMainnet = useAppSelector(getIsMainnet);
   const classes = useStyles();
+  const setOptimisticOperator = useSetOptimisticOperator();
 
   const onRegisterClick = async () => {
     setIsLoading(true);
@@ -93,12 +94,10 @@ const OperatorConfirmation = () => {
         const operatorAddedEvent = events?.find((event) => (event as OperatorAddedEvent).eventName === 'OperatorAdded') as OperatorAddedEvent | undefined;
         if (operatorAddedEvent) {
           newOperator = createDefaultOperator({ ...operatorAddedEvent.args, isPrivate });
-          dispatch(
-            setOptimisticOperator({
-              operator: newOperator,
-              type: 'created'
-            })
-          );
+          setOptimisticOperator({
+            operator: newOperator,
+            type: 'created'
+          });
         }
       }
     });

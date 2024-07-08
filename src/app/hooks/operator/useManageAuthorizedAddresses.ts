@@ -2,13 +2,13 @@ import { difference } from 'lodash';
 import { useAddAuthorizedAddresses } from '~app/hooks/operator/useAddAuthorizedAddresses';
 import { useDeleteAuthorizedAddresses } from '~app/hooks/operator/useDeleteAuthorizedAddresses';
 import { useSetOperatorMultipleWhitelists } from '~app/hooks/operator/useSetOperatorMultipleWhitelists';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getSelectedOperator, setOptimisticOperator } from '~app/redux/account.slice';
+import { useSetOptimisticOperator } from '~app/hooks/operator/useSetOptimisticOperator';
+import { useAppSelector } from '~app/hooks/redux.hook';
+import { getSelectedOperator } from '~app/redux/account.slice';
 
 type Mode = 'add' | 'delete' | 'view';
 
 export const useManageAuthorizedAddresses = () => {
-  const dispatch = useAppDispatch();
   const operator = useAppSelector(getSelectedOperator)!;
   const setter = useSetOperatorMultipleWhitelists();
 
@@ -21,20 +21,20 @@ export const useManageAuthorizedAddresses = () => {
     deleteManager.reset();
   };
 
+  const setOptimisticOperator = useSetOptimisticOperator();
+
   const update = (args: Parameters<typeof setter.mutate>[0]) => {
     setter.mutate(args, {
       onSuccess: () => {
         reset();
         const whitelistedAddresses = args.mode === 'add' ? [...(operator.whitelist_addresses || []), ...args.addresses] : difference(operator.whitelist_addresses, args.addresses);
-        dispatch(
-          setOptimisticOperator({
-            operator: {
-              ...operator,
-              whitelist_addresses: whitelistedAddresses
-            },
-            type: 'updated'
-          })
-        );
+        setOptimisticOperator({
+          operator: {
+            ...operator,
+            whitelist_addresses: whitelistedAddresses
+          },
+          type: 'updated'
+        });
         setTimeout(reset, 100);
       }
     });

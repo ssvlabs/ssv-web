@@ -77,6 +77,14 @@ const ReactivateCluster = () => {
     if (response) navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
   };
 
+  const onPeriodChange = (event: any) => {
+    const value = Math.floor(Number(event.target.value));
+    if (isNaN(value)) {
+      return;
+    }
+    setCustomPeriod(value);
+  };
+
   return (
     <Grid container>
       <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
@@ -108,15 +116,7 @@ const ReactivateCluster = () => {
                     <Grid item className={classes.SsvPrice}>
                       {formatNumberToUi(propertyCostByPeriod(operatorsFee, isCustom ? customPeriod : option.days) * validatorsCount)} SSV
                     </Grid>
-                    {isCustom && (
-                      <TextInput
-                        value={customPeriod}
-                        onChangeCallback={(e: any) => setCustomPeriod(Number(e.target.value))}
-                        extendClass={classes.DaysInput}
-                        withSideText
-                        sideText={'Days'}
-                      />
-                    )}
+                    {isCustom && <TextInput value={customPeriod} onChangeCallback={onPeriodChange} extendClass={classes.DaysInput} withSideText sideText={'Days'} />}
                   </Grid>
                 );
               })}

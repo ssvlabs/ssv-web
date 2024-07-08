@@ -14,21 +14,31 @@ export interface Pagination {
   per_page: number;
 }
 
-type ModifiedOperatorData = {
+type OptimisticOperatorChanges = {
   operator: IOperator;
   type: 'created' | 'updated' | 'deleted';
 };
 
-type ModifiedOperatorMap = {
-  [id: string]: ModifiedOperatorData;
+type OptimisticOperatorsMap = {
+  [id: string]: OptimisticOperatorChanges;
+};
+
+type OptimisticClusterChanges = {
+  cluster: ICluster;
+  type: 'created' | 'updated' | 'deleted';
+};
+
+type OptimisticClustersMap = {
+  [id: string]: OptimisticClusterChanges;
 };
 
 export interface AccountState {
   operators: IOperator[];
-  optimisticOperatorsMap: ModifiedOperatorMap;
+  optimisticOperatorsMap: OptimisticOperatorsMap;
   isFetchingOperators: boolean;
   operatorsPagination: Pagination;
   clusters: ICluster[];
+  optimisticClustersMap: OptimisticClustersMap;
   isFetchingClusters: boolean;
   clustersPagination: Pagination;
   selectedClusterId: string | undefined;
@@ -42,6 +52,7 @@ const initialState: AccountState = {
   isFetchingOperators: false,
   operatorsPagination: DEFAULT_PAGINATION,
   clusters: [] as ICluster[],
+  optimisticClustersMap: {},
   isFetchingClusters: false,
   clustersPagination: DEFAULT_PAGINATION,
   selectedClusterId: undefined,
@@ -118,17 +129,26 @@ export const slice = createSlice({
     setSelectedOperatorId: (state, action: { payload: AccountState['selectedOperatorId'] }) => {
       state.selectedOperatorId = action.payload;
     },
-    setOptimisticOperator: (state, action: { payload: ModifiedOperatorData }) => {
-      const prevOperator = state.optimisticOperatorsMap[action.payload.operator.id.toString()];
+    setOptimisticOperator: (state, action: { payload: OptimisticOperatorChanges }) => {
+      const id = action.payload.operator.id.toString();
+
+      const prevChange = state.optimisticOperatorsMap[id];
       const isUpdate = action.payload.type === 'updated';
 
-      state.optimisticOperatorsMap[action.payload.operator.id.toString()] = {
+      state.optimisticOperatorsMap[id] = {
         ...action.payload,
-        type: prevOperator && isUpdate ? prevOperator.type : action.payload.type
+        type: prevChange && isUpdate ? prevChange.type : action.payload.type
       };
     },
     removeOptimisticOperator: (state, action: { payload: number }) => {
       delete state.optimisticOperatorsMap[action.payload?.toString()];
+    },
+    setOptimisticCluster: (state, action: { payload: OptimisticClusterChanges }) => {
+      const id = action.payload.cluster.clusterId;
+      state.optimisticClustersMap[id] = action.payload;
+    },
+    removeOptimisticCluster: (state, action: { payload: string }) => {
+      delete state.optimisticClustersMap[action.payload?.toString()];
     },
     setExcludedCluster: (state, action: { payload: ICluster | null }) => {
       state.excludedCluster = action.payload;
@@ -179,17 +199,44 @@ export const slice = createSlice({
 
 export const accountStateReducer = slice.reducer;
 
-export const { resetPagination, setExcludedCluster, setOptimisticOperator, removeOptimisticOperator, setSelectedClusterId, setSelectedOperatorId, sortOperatorsByStatus, reset } =
-  slice.actions;
+export const {
+  resetPagination,
+  setExcludedCluster,
+  setOptimisticOperator,
+  removeOptimisticOperator,
+  setOptimisticCluster,
+  removeOptimisticCluster,
+  setSelectedClusterId,
+  setSelectedOperatorId,
+  sortOperatorsByStatus,
+  reset
+} = slice.actions;
 
 export const getAccountOperators = getOptimisticOperators;
 // export const getIsFetchingOperators = (state: RootState) => state.accountState.isFetchingOperators;
 export const getOperatorsPagination = getOperatorOptimisticPagination;
-export const getAccountClusters = (state: RootState) => state.accountState.clusters;
+export const getAccountClusters = (state: RootState) => state.accountState.clusters.map((c) => state.accountState.optimisticClustersMap[c.clusterId.toString()]?.cluster || c);
 // export const getIsFetchingClusters = (state: RootState) => state.accountState.isFetchingClusters;
 export const getClustersPagination = (state: RootState) => state.accountState.clustersPagination;
-export const getSelectedCluster = (state: RootState) =>
-  state.accountState.excludedCluster || state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId) || ({} as ICluster);
+
+export const getSelectedCluster = (state: RootState): ICluster => {
+  if (state.accountState.excludedCluster) {
+    const optimisticCluster = state.accountState.optimisticClustersMap[state.accountState.excludedCluster.clusterId.toString()];
+    if (optimisticCluster.cluster.updatedAt === state.accountState.excludedCluster.updatedAt) return optimisticCluster.cluster;
+    return state.accountState.excludedCluster;
+  }
+  if (!state.accountState.selectedClusterId) return {} as ICluster;
+
+  const selectedCluster = state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId);
+  if (!selectedCluster) return {} as ICluster;
+
+  const optimisticCluster = state.accountState.optimisticClustersMap[state.accountState.selectedClusterId];
+  if (!optimisticCluster) return selectedCluster;
+
+  if (optimisticCluster.cluster.updatedAt === selectedCluster.updatedAt) return optimisticCluster.cluster;
+  store.dispatch(removeOptimisticCluster(optimisticCluster.cluster.clusterId));
+  return selectedCluster;
+};
 
 export const getSelectedOperator = (state: RootState) => {
   const selectedOperator = getAccountOperators(state).find((operator: IOperator) => operator.id === state.accountState.selectedOperatorId);

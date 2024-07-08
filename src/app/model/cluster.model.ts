@@ -21,6 +21,7 @@ interface ICluster {
     networkFeeIndex: string;
     validatorCount: number;
   };
+  updatedAt?: string;
 }
 
 export type { ICluster };

@@ -1,12 +1,33 @@
 // import { getContractByName } from '~root/wagmi/utils';
-import { EContractName } from '~app/model/contracts.model';
-import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
+import { cloneDeepWith, isArray, isPlainObject } from 'lodash';
 import { EClusterOperation } from '~app/enums/clusterOperation.enum';
-import { transactionExecutor } from '~root/services/transaction.service';
 import { ICluster } from '~app/model/cluster.model';
+import { EContractName } from '~app/model/contracts.model';
+import { setOptimisticCluster } from '~app/redux/account.slice';
+import { getClusterData, getClusterHash, getClusterRunWay, getSortedOperatorsIds } from '~root/services/cluster.service';
 import { getEventByTxHash } from '~root/services/contractEvent.service';
-import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
+import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
+import { transactionExecutor } from '~root/services/transaction.service';
 import { getContractByName } from '~root/wagmi/utils';
+
+const eventNames = ['ClusterLiquidated', 'ClusterReactivated', 'ClusterDeposited', 'ClusterWithdrawn'] as const;
+type ClusterEvent = {
+  eventName: (typeof eventNames)[number];
+  args: {
+    cluster: ICluster['clusterData'];
+  };
+};
+
+const convertBigIntsToStrings = <T>(obj: T): T => {
+  return cloneDeepWith(obj, (value) => {
+    if (isPlainObject(value) || isArray(value)) {
+      return undefined; // Continue recursion
+    }
+    if (typeof value === 'bigint') {
+      return value.toString();
+    }
+  });
+};
 
 interface ClusterBalanceInteractionProps {
   amount: string;
@@ -30,7 +51,6 @@ const depositOrWithdraw = async ({
   dispatch
 }: ClusterBalanceInteractionProps) => {
   const contract = getContractByName(EContractName.SETTER);
-  console.log('contract:', contract);
   if (!contract) {
     return false;
   }
@@ -52,6 +72,30 @@ const depositOrWithdraw = async ({
   return await transactionExecutor({
     contractMethod,
     payload,
+    onConfirmed: (events) => {
+      const newClusterData = (events as ClusterEvent[]).find((event) => eventNames.includes(event.eventName))?.args.cluster;
+      if (!newClusterData) return console.error('No new cluster data found', events, newClusterData);
+      const clusterData = convertBigIntsToStrings(newClusterData);
+      console.log('clusterData:', clusterData);
+      dispatch(
+        setOptimisticCluster({
+          cluster: {
+            ...cluster,
+            balance: cluster.balance,
+            runWay: getClusterRunWay(
+              {
+                ...clusterData,
+                burnRate: cluster.burnRate
+              },
+              liquidationCollateralPeriod,
+              minimumLiquidationCollateral
+            ),
+            clusterData
+          },
+          type: 'updated'
+        })
+      );
+    },
     getterTransactionState: async () => (await getClusterData(clusterHash, liquidationCollateralPeriod, minimumLiquidationCollateral)).balance,
     prevState: cluster.clusterData.balance,
     isContractWallet,

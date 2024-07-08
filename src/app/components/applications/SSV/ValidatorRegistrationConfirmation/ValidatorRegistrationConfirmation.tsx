@@ -31,6 +31,11 @@ import { getLiquidationCollateralPerValidator } from '~root/services/validator.s
 import { NewValidatorRouteState } from '~app/Routes';
 import { getIsClusterSelected } from '~app/redux/account.slice.ts';
 import { useQuery } from '@tanstack/react-query';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  width: 100%;
+`;
 
 const ValidatorRegistrationConfirmation = () => {
   const navigate = useNavigate();
@@ -228,7 +233,7 @@ const ValidatorRegistrationConfirmation = () => {
 
   if (isSecondRegistration) {
     return (
-      <Grid container>
+      <Container>
         <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
         <Grid container>
           <Grid item xs={12}>
@@ -238,7 +243,7 @@ const ValidatorRegistrationConfirmation = () => {
             {SecondaryScreen}
           </Grid>
         </Grid>
-      </Grid>
+      </Container>
     );
   }
 

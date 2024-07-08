@@ -14,6 +14,11 @@ import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
 import { getIsClusterSelected } from '~app/redux/account.slice.ts';
 import { BulkActionRouteState } from '~app/Routes';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  width: 100%;
+`;
 
 const AccountBalanceAndFee = () => {
   const classes = useStyles();
@@ -95,10 +100,10 @@ const AccountBalanceAndFee = () => {
 
   if (isSecondRegistration) {
     return (
-      <Grid container>
+      <Container>
         <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
         {MainScreen}
-      </Grid>
+      </Container>
     );
   }
 

@@ -22,6 +22,11 @@ import { getSelectedCluster } from '~app/redux/account.slice';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 import AllowanceButton from '~app/components/AllowanceButton';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  width: 100%;
+`;
 
 const options = [
   { id: 1, timeText: '6 Months', days: 182.5 },
@@ -86,7 +91,7 @@ const ReactivateCluster = () => {
   };
 
   return (
-    <Grid container>
+    <Container>
       <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
       <BorderScreen
         blackHeader
@@ -179,7 +184,7 @@ const ReactivateCluster = () => {
           </Grid>
         ]}
       />
-    </Grid>
+    </Container>
   );
 };
 export default ReactivateCluster;

@@ -1,11 +1,11 @@
 
-<div>
+<div align="center">
 
 
 [comment]: <> (download)
 ![Downloads][github-releases-download]
 [![Build Status][github-actions-status]][github-actions-url]
-[![Github Tag][github-tag-image]]
+[![Github Tag][github-tag-image]][github-tag-url]
 [![Discord](https://discord.com/api/guilds/723834989506068561/widget.png?style=shield)](http://bit.ly/30HwvsC)
 </div>
 <br>
@@ -128,14 +128,22 @@ As said upper, on every commit attempt husky runs linter to check source code.
 
 ## Docs (TBD)
 
-See our [docs and guides here](https://docs.ssv.network/)
+See our [docs and guides here](https://www.bloxstaking.com/blox-blog/)
+
+## Maintainers
+- [Demitri Meshin](https://github.com/meshin-blox)
+- [Guy Muroch](https://github.com/guym-blox)
+- [Lior Rutenberg](https://github.com/lior-blox)
 
 ## License
 
-GPLv3 © [SSV_LABS](https://github.com/ssvlabs/ssv-web)
+GPLv3 © [Blox SSV](https://github.com/bloxapp/ssv-web)
 
-[github-releases-download]: https://github.com/ssvlabs/ssv-web
-[github-actions-status]: https://github.com/ssvlabs/ssv-web/workflows/Test/badge.svg?branch=stage
-[github-actions-url]: https://github.com/ssvlabs/ssv-web/actions
-[github-tag-image]: https://img.shields.io/github/v/tag/ssvlabs/ssv-web.svg?label=version
+[github-actions-status]: https://github.com/bloxapp/ssv-web/workflows/Test/badge.svg?branch=stage
+[github-releases-download]: https://img.shields.io/github/downloads/guym-blox/ssv-web/total
+[github-actions-url]: https://github.com/bloxapp/ssv-web/actions
+[github-tag-image]: https://img.shields.io/github/v/tag/bloxapp/ssv-web.svg?label=version
+[github-tag-url]: https://github.com/bloxapp/blox-live.svg/releases/latest
+[david-dev-image]: https://david-dm.org/bloxapp/blox-live/stage/dev-status.svg
+[david-dev-url]: https://david-dm.org/bloxapp/blox-live/stage?type=dev	
   

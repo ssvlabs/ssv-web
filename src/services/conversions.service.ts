@@ -22,8 +22,7 @@ const toWei = (amount?: number | string): string => {
   if (typeof amount === 'string') {
     convertedAmount = amount.slice(0, 16);
   }
-  // toFixed will convert 1e-18 to '0.000000000000000001', utils.parseUnits doesn't like numbers with 'e' in it
-  return utils.parseUnits((+convertedAmount).toFixed(16), 'ether').toString();
+  return utils.parseUnits(convertedAmount.toString(), 'ether').toString();
 };
 
 const web3 = new Web3();

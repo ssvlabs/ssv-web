@@ -6,7 +6,7 @@ import NewRemainingDays from '~app/components/applications/SSV/MyAccount/common/
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/Deposit/Deposit.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import IntegerInput from '~app/components/common/IntegerInput';
-import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
 import { EClusterOperation } from '~app/enums/clusterOperation.enum';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
@@ -19,11 +19,6 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import { getClusterRunWay } from '~root/services/cluster.service';
 import { depositOrWithdraw } from '~root/services/clusterContract.service';
 import { fromWei, toWei } from '~root/services/conversions.service';
-import styled from 'styled-components';
-
-const Container = styled.div`
-  width: 100%;
-`;
 
 const Deposit = () => {
   const [inputValue, setInputValue] = useState('');
@@ -140,8 +135,8 @@ const Deposit = () => {
   }
 
   return (
-    <Container>
-      <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
+    <Grid container>
+      <NewWhiteWrapper type={0} header={'Cluster'} />
       <BorderScreen
         withoutNavigation
         header={'Deposit'}
@@ -159,7 +154,7 @@ const Deposit = () => {
           </TermsAndConditionsCheckbox>
         ]}
       />
-    </Container>
+    </Grid>
   );
 };
 

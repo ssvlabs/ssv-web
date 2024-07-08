@@ -8,18 +8,13 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import ValidatorKeyInput from '~app/components/common/AddressKeyInput';
 import ValidatorStore from '~app/common/stores/applications/SsvWeb/Validator.store';
-import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SlashingWarning/SlashingWarning.styles';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
 import { getIsClusterSelected } from '~app/redux/account.slice.ts';
 import { NewValidatorRouteState } from '~app/Routes';
-import styled from 'styled-components';
-
-const Container = styled.div`
-  width: 100%;
-`;
 
 const SlashingWarning = () => {
   const classes = useStyles();
@@ -77,10 +72,10 @@ const SlashingWarning = () => {
 
   if (isSecondRegistration) {
     return (
-      <Container>
-        <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
+      <Grid container>
+        <NewWhiteWrapper type={0} header={'Cluster'} />
         {MainScreen}
-      </Container>
+      </Grid>
     );
   }
 

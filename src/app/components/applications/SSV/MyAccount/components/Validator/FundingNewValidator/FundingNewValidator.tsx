@@ -16,7 +16,7 @@ import ErrorMessage from '~app/components/common/ErrorMessage';
 import { fromWei, toWei } from '~root/services/conversions.service';
 import { ValidatorStore } from '~app/common/stores/applications/SsvWeb';
 import useValidatorRegistrationFlow from '~app/hooks/useValidatorRegistrationFlow';
-import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { getClusterNewBurnRate, getClusterRunWay } from '~root/services/cluster.service';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { PrimaryButton } from '~app/atomicComponents';
@@ -26,11 +26,6 @@ import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice'
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 import { getSelectedCluster } from '~app/redux/account.slice.ts';
 import { NewValidatorRouteState } from '~app/Routes';
-import styled from 'styled-components';
-
-const Container = styled.div`
-  width: 100%;
-`;
 
 const FundingNewValidator = () => {
   const [checkedId, setCheckedId] = useState(0);
@@ -147,8 +142,8 @@ const FundingNewValidator = () => {
   };
 
   return (
-    <Container>
-      <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
+    <Grid container>
+      <NewWhiteWrapper type={0} header={'Cluster'} />
       <BorderScreen
         blackHeader
         withConversion
@@ -219,7 +214,7 @@ const FundingNewValidator = () => {
           </Grid>
         ]}
       />
-    </Container>
+    </Grid>
   );
 };
 export default observer(FundingNewValidator);

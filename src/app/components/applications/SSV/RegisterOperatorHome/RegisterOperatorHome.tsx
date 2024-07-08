@@ -15,8 +15,6 @@ const RegisterOperatorHome = () => {
 
   return (
     <BorderScreen
-      marginTop={0}
-      subHeaderText={'Join the SSV Network'}
       body={[
         <Grid container>
           <HeaderSubHeader

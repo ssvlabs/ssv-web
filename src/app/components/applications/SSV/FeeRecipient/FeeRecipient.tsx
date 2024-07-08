@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import config from '~app/common/config';
 import LinkText from '~app/components/common/LinkText';
@@ -21,7 +21,6 @@ const FeeRecipient = () => {
   const [readOnlyState, setReadOnlyState] = useState(true);
   const [isAddressValid, setIsAddressValid] = useState(true);
   const [userInput, setUserInput] = useState('');
-  const [currentSavedAddress, setCurrentSavedAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const isMainnet = useAppSelector(getIsMainnet);
   const [isChecked, setIsChecked] = useState(false);
@@ -30,7 +29,6 @@ const FeeRecipient = () => {
     const fetchFeeRecipientAddress = async () => {
       const res = await getFeeRecipientAddress({ address: accountAddress });
       setUserInput(res || accountAddress);
-      setCurrentSavedAddress(res || accountAddress);
     };
     fetchFeeRecipientAddress();
   }, []);
@@ -42,11 +40,9 @@ const FeeRecipient = () => {
       isContractWallet
     });
     setIsLoading(false);
-    setReadOnlyState(true);
-    setCurrentSavedAddress(userInput);
   };
 
-  const setFeeRecipient = (e: ChangeEvent<HTMLInputElement>) => {
+  const setFeeRecipient = (e: any) => {
     const textInput = e.target.value.trim();
     try {
       const isChecksumAddress = checkAddressChecksum(textInput);
@@ -57,7 +53,7 @@ const FeeRecipient = () => {
     setUserInput(textInput);
   };
 
-  const submitDisable = !isAddressValid || userInput.length !== 42 || currentSavedAddress === userInput;
+  const submitDisable = !isAddressValid || userInput.length !== 42;
 
   return (
     <BorderScreen

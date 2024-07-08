@@ -87,7 +87,7 @@ const BorderScreen = (props: Props) => {
   };
 
   return (
-    <Container>
+    <div>
       {!withoutNavigation && (
         <NavigationWrapper isColored={!!subHeaderText}>
           <TextWrapper width={width}>
@@ -153,7 +153,7 @@ const BorderScreen = (props: Props) => {
           </Grid>
         )}
       </Grid>
-    </Container>
+    </div>
   );
 };
 

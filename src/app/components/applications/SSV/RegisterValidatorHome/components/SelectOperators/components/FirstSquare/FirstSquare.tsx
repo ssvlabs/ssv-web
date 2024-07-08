@@ -198,6 +198,7 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
       withoutNavigation={editPage}
       wrapperClass={classes.ScreenWrapper}
       wrapperHeight={791}
+      width={850}
       header={translations.VALIDATOR.SELECT_OPERATORS.TITLE}
       body={[
         <Grid container>

@@ -15,6 +15,7 @@ import { getIsMainnet } from '~app/redux/wallet.slice';
 import { SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getIsClusterSelected } from '~app/redux/account.slice.ts';
+import styled from 'styled-components';
 
 type ButtonData = {
   isShow: boolean;
@@ -29,6 +30,10 @@ type ButtonData = {
     withoutBackgroundColor?: boolean;
   };
 };
+
+const Container = styled.div`
+  width: 100%;
+`;
 
 const GenerateKeyShares = () => {
   const stores = useStores();
@@ -135,10 +140,10 @@ const GenerateKeyShares = () => {
 
   if (isSecondRegistration) {
     return (
-      <Grid container>
+      <Container>
         <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
         {MainScreen}
-      </Grid>
+      </Container>
     );
   }
 

@@ -19,6 +19,11 @@ import { formatNumberToUi } from '~lib/utils/numbers';
 import { getClusterRunWay } from '~root/services/cluster.service';
 import { depositOrWithdraw } from '~root/services/clusterContract.service';
 import { fromWei, toWei } from '~root/services/conversions.service';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  width: 100%;
+`;
 
 const Deposit = () => {
   const [inputValue, setInputValue] = useState('');
@@ -135,7 +140,7 @@ const Deposit = () => {
   }
 
   return (
-    <Grid container>
+    <Container>
       <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
       <BorderScreen
         withoutNavigation
@@ -154,7 +159,7 @@ const Deposit = () => {
           </TermsAndConditionsCheckbox>
         ]}
       />
-    </Grid>
+    </Container>
   );
 };
 

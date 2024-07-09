@@ -5,10 +5,6 @@ import { useStyles } from './BorderScreen.styles';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import styled from 'styled-components';
 
-const Container = styled.div`
-  width: 100%;
-`;
-
 const NavigationWrapper = styled.div<{ isColored: boolean }>`
   width: 100%;
   height: 60px;
@@ -20,7 +16,7 @@ const NavigationWrapper = styled.div<{ isColored: boolean }>`
 `;
 
 const TextWrapper = styled.div<{ width: string | number | undefined }>`
-  width: ${({ width }) => width ?? '648px'};
+  width: ${({ width }) => (width ? `${width}px` : '648px')};
   margin: auto;
 `;
 
@@ -91,7 +87,7 @@ const BorderScreen = (props: Props) => {
   };
 
   return (
-    <Container>
+    <div>
       {!withoutNavigation && (
         <NavigationWrapper isColored={!!subHeaderText}>
           <TextWrapper width={width}>
@@ -157,7 +153,7 @@ const BorderScreen = (props: Props) => {
           </Grid>
         )}
       </Grid>
-    </Container>
+    </div>
   );
 };
 

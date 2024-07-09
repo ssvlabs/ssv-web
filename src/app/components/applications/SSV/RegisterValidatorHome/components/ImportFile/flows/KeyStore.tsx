@@ -20,6 +20,11 @@ import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
 import { getIsClusterSelected } from '~app/redux/account.slice.ts';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  width: 100%;
+`;
 
 const KeyStoreFlow = () => {
   const stores = useStores();
@@ -205,10 +210,10 @@ const KeyStoreFlow = () => {
 
   if (isSecondRegistration) {
     return (
-      <Grid container>
+      <Container>
         <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
         {MainScreen}
-      </Grid>
+      </Container>
     );
   }
 

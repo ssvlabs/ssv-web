@@ -145,6 +145,7 @@ const BulkComponent = () => {
         ? selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected)
         : formatValidatorPublicKey(validator?.public_key || selectedValidatorValues.filter((selectedValidator) => selectedValidator.isSelected)[0].validator.public_key);
       res = await removeValidators({
+        cluster,
         accountAddress,
         isContractWallet,
         validatorPks,

@@ -1,6 +1,7 @@
 import { IOperator } from '~app/model/operator.model';
 
 interface ICluster {
+  _isOptimistic: boolean;
   id: number;
   clusterId: string;
   ownerAddress: string;

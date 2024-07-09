@@ -3,8 +3,20 @@ import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/ser
 import { getContractByName } from '~root/wagmi/utils';
 import { EContractName } from '~app/model/contracts.model';
 import { transactionExecutor } from '~root/services/transaction.service';
+import { ICluster } from '~app/model/cluster.model';
+
+// type RemoveValidatorEvent = {
+//   eventName: 'ValidatorRemoved';
+//   args: {
+//     publicKey: string;
+//     owner: string;
+//     operatorIds: bigint[];
+//     cluster: ICluster['clusterData'];
+//   };
+// };
 
 interface IRemoveValidators {
+  cluster: ICluster;
   accountAddress: string;
   isContractWallet: boolean;
   validatorPks: string | string[];
@@ -35,6 +47,13 @@ const removeValidators = async ({
   return await transactionExecutor({
     contractMethod: isBulk ? contract.bulkRemoveValidator : contract.removeValidator,
     payload,
+    // onConfirmed: async (events) => {
+    //   const validatorRemovedEvents = (events as RemoveValidatorEvent[]).filter((event) => event.eventName === 'ValidatorRemoved');
+    //   if (!validatorRemovedEvents.length) return;
+    //   const publicKeysSet = new Set(validatorRemovedEvents.map((e) => e.args.publicKey));
+    //   const validators = cluster.
+
+    // },
     getterTransactionState: async () => {
       const { validatorCount } = await getClusterData(getClusterHash(operators, accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
       return validatorCount;

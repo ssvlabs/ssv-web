@@ -3,12 +3,14 @@ import { RootState } from '~app/store';
 import { fetchNetworkFeeAndLiquidationCollateral } from '~root/services/tokenContract.service';
 
 export interface NetworkState {
+  networkFeeWei: string;
   networkFee: number;
   liquidationCollateralPeriod: number;
   minimumLiquidationCollateral: number;
 }
 
 const initialState: NetworkState = {
+  networkFeeWei: '0',
   networkFee: 0,
   liquidationCollateralPeriod: 0,
   minimumLiquidationCollateral: 0
@@ -29,12 +31,14 @@ export const slice = createSlice({
         state,
         action: {
           payload: {
+            networkFeeWei: string;
             networkFee: number;
             liquidationCollateralPeriod: number;
             minimumLiquidationCollateral: number;
           };
         }
       ) => {
+        state.networkFeeWei = action.payload.networkFeeWei;
         state.networkFee = action.payload.networkFee;
         state.liquidationCollateralPeriod = action.payload.liquidationCollateralPeriod;
         state.minimumLiquidationCollateral = action.payload.minimumLiquidationCollateral;

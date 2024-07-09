@@ -2,6 +2,7 @@ import Decimal from 'decimal.js';
 import config from '~app/common/config';
 import { EContractName } from '~app/model/contracts.model';
 import { IOperator, IOperatorRawData } from '~app/model/operator.model';
+import { setOptimisticOperator } from '~app/redux/account.slice';
 import { formatNumberToUi } from '~lib/utils/numbers.ts';
 import { isEqualsAddresses } from '~lib/utils/strings';
 import { getStoredNetwork, testNets } from '~root/providers/networkInfo.provider.ts';
@@ -161,6 +162,17 @@ const decreaseOperatorFee = async ({
     contractMethod: contract.reduceOperatorFee,
     payload: [operator.id, formattedFee],
     isContractWallet,
+    onConfirmed: () => {
+      dispatch(
+        setOptimisticOperator({
+          operator: {
+            ...operator,
+            fee: formattedFee
+          },
+          type: 'updated'
+        })
+      );
+    },
     getterTransactionState: async () => {
       const { id, fee } = await getOperator(operator.id);
       return { id, fee };
@@ -278,6 +290,17 @@ const updateOperatorFee = async ({ operator, newFee, isContractWallet, dispatch 
     contractMethod: contract.declareOperatorFee,
     payload: [operator.id, formattedFee],
     isContractWallet,
+    onConfirmed: () => {
+      dispatch(
+        setOptimisticOperator({
+          operator: {
+            ...operator,
+            fee: formattedFee
+          },
+          type: 'updated'
+        })
+      );
+    },
     getterTransactionState: async () => await syncOperatorFeeInfo(operator.id),
     prevState: await syncOperatorFeeInfo(operator.id),
     dispatch

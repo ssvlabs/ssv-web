@@ -1,9 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { set, unset } from 'lodash';
 import { DEFAULT_PAGINATION } from '~app/common/config/config';
 import { ICluster } from '~app/model/cluster.model';
 import { IOperator } from '~app/model/operator.model';
+import { IValidator } from '~app/model/validator.model';
 import { getOperatorOptimisticPagination, getOptimisticOperators } from '~app/optimistic/operatorsList';
 import { RootState, store } from '~app/store';
+import { add0x } from '~lib/utils/strings';
 import { getClustersByOwnerAddress } from '~root/services/cluster.service';
 import { getOperatorsByOwnerAddress } from '~root/services/operator.service';
 
@@ -14,9 +17,11 @@ export interface Pagination {
   per_page: number;
 }
 
+type OptimisticType = 'created' | 'updated' | 'deleted';
+
 type OptimisticOperatorChanges = {
   operator: IOperator;
-  type: 'created' | 'updated' | 'deleted';
+  type: OptimisticType;
 };
 
 type OptimisticOperatorsMap = {
@@ -25,11 +30,18 @@ type OptimisticOperatorsMap = {
 
 type OptimisticClusterChanges = {
   cluster: ICluster;
-  type: 'created' | 'updated' | 'deleted';
+  type: OptimisticType;
 };
 
 type OptimisticClustersMap = {
   [id: string]: OptimisticClusterChanges;
+};
+
+type OptimisticValidatorChanges = OptimisticType;
+type OptimisticValidatorMap = {
+  [clusterHash: string]: {
+    [validatorPk: string]: OptimisticValidatorChanges;
+  };
 };
 
 export interface AccountState {
@@ -39,6 +51,7 @@ export interface AccountState {
   operatorsPagination: Pagination;
   clusters: ICluster[];
   optimisticClustersMap: OptimisticClustersMap;
+  optimisticValidatorsMap: OptimisticValidatorMap;
   isFetchingClusters: boolean;
   clustersPagination: Pagination;
   selectedClusterId: string | undefined;
@@ -53,6 +66,7 @@ const initialState: AccountState = {
   operatorsPagination: DEFAULT_PAGINATION,
   clusters: [] as ICluster[],
   optimisticClustersMap: {},
+  optimisticValidatorsMap: {},
   isFetchingClusters: false,
   clustersPagination: DEFAULT_PAGINATION,
   selectedClusterId: undefined,
@@ -150,6 +164,16 @@ export const slice = createSlice({
     removeOptimisticCluster: (state, action: { payload: string }) => {
       delete state.optimisticClustersMap[action.payload?.toString()];
     },
+    setOptimisticValidator: (state, action: { payload: { clusterId: ICluster['clusterId']; publicKeys: string[]; type: OptimisticType } }) => {
+      for (const publicKey of action.payload.publicKeys) {
+        const formattedPK = add0x(publicKey).toLocaleLowerCase();
+        set(state.optimisticValidatorsMap, [action.payload.clusterId, formattedPK], action.payload.type satisfies OptimisticValidatorChanges);
+      }
+    },
+    removeOptimisticValidator: (state, action: { payload: { clusterId: ICluster['clusterId']; publicKey: string } }) => {
+      const publicKey = add0x(action.payload.publicKey).toLocaleLowerCase();
+      unset(state.optimisticValidatorsMap, [action.payload.clusterId, publicKey]);
+    },
     setExcludedCluster: (state, action: { payload: ICluster | null }) => {
       state.excludedCluster = action.payload;
     },
@@ -209,6 +233,7 @@ export const {
   setSelectedClusterId,
   setSelectedOperatorId,
   sortOperatorsByStatus,
+  setOptimisticValidator,
   reset
 } = slice.actions;
 
@@ -218,6 +243,21 @@ export const getOperatorsPagination = getOperatorOptimisticPagination;
 export const getAccountClusters = (state: RootState) => state.accountState.clusters.map((c) => state.accountState.optimisticClustersMap[c.clusterId.toString()]?.cluster || c);
 // export const getIsFetchingClusters = (state: RootState) => state.accountState.isFetchingClusters;
 export const getClustersPagination = (state: RootState) => state.accountState.clustersPagination;
+
+type OptimisticValidatorOptions = {
+  clusterId: ICluster['clusterId'];
+  validators: IValidator[];
+};
+
+export const getOptimisticValidators = (state: RootState, { clusterId, validators }: OptimisticValidatorOptions) => {
+  const optimisticValidators = state.accountState.optimisticValidatorsMap[clusterId];
+  if (!optimisticValidators) return validators;
+
+  return validators.filter((validator) => {
+    const publicKey = add0x(validator.public_key).toLocaleLowerCase();
+    return !Boolean(optimisticValidators[publicKey]);
+  });
+};
 
 export const getSelectedCluster = (state: RootState): ICluster => {
   if (state.accountState.excludedCluster) {

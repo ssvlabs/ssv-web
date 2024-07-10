@@ -1,22 +1,22 @@
 import { ReactElement, useEffect, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import config from '~app/common/config';
-import Status from '~app/components/common/Status';
+import Settings from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
-import { getClusterHash } from '~root/services/cluster.service';
-import { fetchValidatorsByClusterHash } from '~root/services/validator.service';
-import { BulkValidatorData, IValidator } from '~app/model/validator.model';
-import { formatValidatorPublicKey, longStringShorten } from '~lib/utils/strings';
+import Spinner from '~app/components/common/Spinner';
+import Status from '~app/components/common/Status';
 import ToolTip from '~app/components/common/ToolTip';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { BulkValidatorData, IValidator } from '~app/model/validator.model';
+import { getOptimisticValidators, getSelectedCluster } from '~app/redux/account.slice.ts';
 import { getIsDarkMode } from '~app/redux/appState.slice';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import Spinner from '~app/components/common/Spinner';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
-import Settings from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import { getSelectedCluster } from '~app/redux/account.slice.ts';
+import { add0x, longStringShorten } from '~lib/utils/strings';
+import { getClusterHash } from '~root/services/cluster.service';
+import { fetchValidatorsByClusterHash } from '~root/services/validator.service';
 
 const TableWrapper = styled.div<{ children: React.ReactNode; id: string; isLoading: boolean }>`
   margin-top: 12px;
@@ -155,7 +155,15 @@ const ValidatorsList = ({
   const selectValidatorDisableCondition = Object.values(selectedValidators || {}).filter((validator: BulkValidatorData) => validator.isSelected).length === maxValidatorsCount;
   const navigate = useNavigate();
   const isDarkMode = useAppSelector(getIsDarkMode);
-  const [clusterValidators, setClusterValidators] = useState<IValidator[]>([]);
+
+  const [_clusterValidators, setClusterValidators] = useState<IValidator[]>([]);
+  const clusterValidators = useAppSelector((state) =>
+    getOptimisticValidators(state, {
+      clusterId: cluster?.clusterId,
+      validators: _clusterValidators
+    })
+  );
+
   const [noValidatorsData, setNoValidatorsData] = useState(false);
   const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
     page: 1,
@@ -247,11 +255,11 @@ const ValidatorsList = ({
   return (
     <TableWrapper id={'scrollableDiv'} isLoading={isLoading}>
       <InfiniteScroll
-        dataLength={clusterValidators.length}
+        dataLength={_clusterValidators.length}
         next={async () => {
           return await onChangePage();
         }}
-        hasMore={clusterValidators.length !== clusterValidatorsPagination.total}
+        hasMore={_clusterValidators.length !== cluster.validatorCount}
         loader={
           <SpinnerWrapper>
             <Spinner />
@@ -286,7 +294,7 @@ const ValidatorsList = ({
         </TableHeader>
         <ValidatorsListWrapper>
           {clusterValidators?.map((validator: IValidator) => {
-            const formattedPublicKey = formatValidatorPublicKey(validator.public_key);
+            const formattedPublicKey = add0x(validator.public_key);
             const res = selectedValidators && selectedValidators[formattedPublicKey]?.isSelected;
             const showingCheckboxCondition = onCheckboxClickHandler && selectedValidators;
             const disableButtonCondition = (selectValidatorDisableCondition && !res) || isLoading;

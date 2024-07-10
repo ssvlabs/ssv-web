@@ -38,6 +38,7 @@ const updateClusterFromEvent =
       setOptimisticCluster({
         cluster: {
           ...cluster,
+          validatorCount: clusterData.validatorCount,
           _isOptimistic: true,
           burnRate: burnRate.toString() as unknown as Uint8Array,
           isLiquidated: !clusterData.active,

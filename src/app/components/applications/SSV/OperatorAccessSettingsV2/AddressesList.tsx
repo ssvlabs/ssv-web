@@ -111,7 +111,7 @@ const AddressesList = () => {
               <Button type="button" className="flex-1" size="xl" variant="secondary" onClick={reset} disabled={setter.isPending}>
                 Cancel
               </Button>
-              <Button className="flex-1" size="xl" type="submit" isActionBtn isLoading={setter.isPending} disabled={addManager.isSubmitDisabled}>
+              <Button className="flex-1" size="xl" type="submit" isActionBtn isLoading={setter.isPending} disabled={mode === 'add' && addManager.isSubmitDisabled}>
                 {mode === 'delete' ? 'Remove and Save' : 'Add and Save'}
               </Button>
             </div>

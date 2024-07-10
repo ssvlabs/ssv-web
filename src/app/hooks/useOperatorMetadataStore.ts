@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook.ts';
 import { selectMetadata } from '~app/redux/operatorMetadata.slice.ts';
-import { FIELD_KEYS, fieldsToValidateSignature, HTTPS_PREFIX, MetadataEntity, processField, sortMevRelays } from '~lib/utils/operatorMetadataHelper.ts';
+import { FIELD_KEYS, fieldsToValidateSignature, HTTPS_PREFIX, MetadataEntity, processField } from '~lib/utils/operatorMetadataHelper.ts';
 
 export const useOperatorMetadataStore = () => {
   const dispatch = useAppDispatch();
@@ -12,7 +12,7 @@ export const useOperatorMetadataStore = () => {
     fieldsToValidateSignature.forEach((field: FIELD_KEYS) => {
       let value = metadata[field].value;
       if (field === FIELD_KEYS.MEV_RELAYS && typeof value !== 'string') {
-        value = sortMevRelays(value);
+        value = value.join(',');
       } else if (field === FIELD_KEYS.DKG_ADDRESS && value === HTTPS_PREFIX) {
         value = '';
       }

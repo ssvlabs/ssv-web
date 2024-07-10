@@ -271,33 +271,6 @@ export const canAccountUseOperator = async (account: string | `0x${string}`, ope
   return isWhitelistedAddress || isWhitelistedViaContract;
 };
 
-/**
- * Sorting case-insensitively by each word in the string
- * @param relays
- * @private
- */
-export const sortMevRelays = (relays: string | string[]): string => {
-  if (!relays) {
-    return relays;
-  }
-  let splitStr: string[];
-  if (typeof relays === 'string') {
-    splitStr = relays.split(',');
-  } else {
-    splitStr = relays;
-  }
-  const sortedStr: string[] = splitStr.sort((a, b) => {
-    const aSplit = a.toLowerCase().split(' ');
-    const bSplit = b.toLowerCase().split(' ');
-    for (let i = 0; i < Math.min(aSplit.length, bSplit.length); ++i) {
-      const cmp = aSplit[i].localeCompare(bSplit[i]);
-      if (cmp !== 0) return cmp;
-    }
-    return 0;
-  });
-  return sortedStr.join(',');
-};
-
 export const checkWithConditions = (metadataFieldName: string, fieldEntity: MetadataEntity) => {
   const condition = FIELD_CONDITIONS[metadataFieldName];
   const response = {

@@ -55,9 +55,17 @@ const FundingPeriod = () => {
     minimumLiquidationCollateral
   });
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
-  const insufficientBalance = totalCost.comparedTo(walletSsvBalance) === 1;
-  const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
   const totalAmount = formatNumberToUi(Number(totalCost.mul(validatorStore.validatorsCount).toFixed(18)));
+  const insufficientBalance = new Decimal(totalAmount.replace(',', '')).comparedTo(walletSsvBalance) === 1;
+  const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
+
+  const onPeriodChange = (event: any) => {
+    const value = Math.floor(Number(event.target.value));
+    if (isNaN(value)) {
+      return;
+    }
+    setCustomPeriod(value);
+  };
 
   const getDisableStateCondition = () => {
     if (isCustomPayment) {
@@ -104,15 +112,7 @@ const FundingPeriod = () => {
                     )}{' '}
                     SSV
                   </Grid>
-                  {isCustom && (
-                    <TextInput
-                      value={customPeriod}
-                      onChangeCallback={(e: any) => setCustomPeriod(Number(e.target.value))}
-                      extendClass={classes.DaysInput}
-                      withSideText
-                      sideText={'Days'}
-                    />
-                  )}
+                  {isCustom && <TextInput value={customPeriod} onChangeCallback={onPeriodChange} extendClass={classes.DaysInput} withSideText sideText={'Days'} />}
                 </Grid>
               );
             })}

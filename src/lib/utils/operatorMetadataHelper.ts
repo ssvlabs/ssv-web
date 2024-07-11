@@ -230,11 +230,10 @@ export const isValidLink = (value: string) => {
 };
 
 export const isDkgAddressValid = (value: string, isForm?: boolean) => {
-  if (isForm && value === HTTPS_PREFIX) return false;
-  if (!value.startsWith(HTTPS_PREFIX)) return false;
-
+  if (isForm && value === HTTPS_PREFIX) return true;
   const addressWithoutHttps = value.substring(HTTPS_PREFIX.length);
-
+  if (!value.startsWith(HTTPS_PREFIX)) return false;
+  if (addressWithoutHttps.length === 0) return true;
   const domainPattern = '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,9}';
   const ipPattern = '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)';
   const portPattern = ':\\d{1,5}';
@@ -270,33 +269,6 @@ export const canAccountUseOperator = async (account: string | `0x${string}`, ope
   const isWhitelistedViaContract = hasExternalContract ? await contract.isAddressWhitelistedInWhitelistingContract(account, operator.id, operator.whitelisting_contract) : false;
 
   return isWhitelistedAddress || isWhitelistedViaContract;
-};
-
-/**
- * Sorting case-insensitively by each word in the string
- * @param relays
- * @private
- */
-export const sortMevRelays = (relays: string | string[]): string => {
-  if (!relays) {
-    return relays;
-  }
-  let splitStr: string[];
-  if (typeof relays === 'string') {
-    splitStr = relays.split(',');
-  } else {
-    splitStr = relays;
-  }
-  const sortedStr: string[] = splitStr.sort((a, b) => {
-    const aSplit = a.toLowerCase().split(' ');
-    const bSplit = b.toLowerCase().split(' ');
-    for (let i = 0; i < Math.min(aSplit.length, bSplit.length); ++i) {
-      const cmp = aSplit[i].localeCompare(bSplit[i]);
-      if (cmp !== 0) return cmp;
-    }
-    return 0;
-  });
-  return sortedStr.join(',');
 };
 
 export const checkWithConditions = (metadataFieldName: string, fieldEntity: MetadataEntity) => {

@@ -44,6 +44,7 @@ const ClusterFlow = ({
   const [withdrawValue, setWithdrawValue] = useState<number | string>('');
   const [buttonDisableCondition, setButtonDisableCondition] = useState(false);
   const [buttonText, setButtonText] = useState(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW);
+
   useEffect(() => {
     if (
       getClusterRunWay(
@@ -68,8 +69,8 @@ const ClusterFlow = ({
       liquidationCollateralPeriod,
       minimumLiquidationCollateral
     );
-    const showCheckboxCondition = runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !!cluster.validatorCount;
-    const isLiqudationState = runWay <= 0 && !!cluster.validatorCount;
+    const showCheckboxCondition = !!withdrawValue && runWay <= config.GLOBAL_VARIABLE.CLUSTER_VALIDITY_PERIOD_MINIMUM && !!cluster.validatorCount;
+    const isLiqudationState = !!withdrawValue && runWay <= 0 && !!cluster.validatorCount;
     setNewBalance(balance);
     setIsClusterLiquidation(isLiqudationState);
     setShowCheckBox(showCheckboxCondition);
@@ -149,7 +150,7 @@ const ClusterFlow = ({
     </Grid>,
     <NewRemainingDays
       withdrawState
-      isInputFilled={!!withdrawValue}
+      isInputFilled={withdrawValue}
       cluster={{
         ...cluster,
         newRunWay: !withdrawValue

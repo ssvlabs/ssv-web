@@ -290,17 +290,6 @@ const updateOperatorFee = async ({ operator, newFee, isContractWallet, dispatch 
     contractMethod: contract.declareOperatorFee,
     payload: [operator.id, formattedFee],
     isContractWallet,
-    onConfirmed: () => {
-      dispatch(
-        setOptimisticOperator({
-          operator: {
-            ...operator,
-            fee: formattedFee
-          },
-          type: 'updated'
-        })
-      );
-    },
     getterTransactionState: async () => await syncOperatorFeeInfo(operator.id),
     prevState: await syncOperatorFeeInfo(operator.id),
     dispatch

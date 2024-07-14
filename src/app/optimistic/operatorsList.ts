@@ -27,16 +27,18 @@ export const getOperatorOptimisticPagination = (state: RootState): Pagination =>
 };
 
 export const getOptimisticOperators = (state: RootState): IOperator[] => {
-  const optimisticOperators = getCreatedOptimisticOperators(state);
+  const createdOperators = getCreatedOptimisticOperators(state);
 
-  const accountOperators = state.accountState.operators.filter((o) => {
+  const accountOperators = state.accountState.operators.reduce((acc, o) => {
     const optimistic = state.accountState.optimisticOperatorsMap[o.id];
-    return !optimistic || optimistic.type !== 'deleted';
-  });
+    if (!optimistic) return [...acc, o];
+    if (optimistic.type === 'deleted') return acc;
+    return [...acc, optimistic.operator];
+  }, [] as IOperator[]);
 
-  if (!optimisticOperators.length) return accountOperators;
+  if (!createdOperators.length) return accountOperators;
 
-  const pages = chunk([...Array(state.accountState.operatorsPagination.total), ...optimisticOperators], state.accountState.operatorsPagination.per_page);
+  const pages = chunk([...Array(state.accountState.operatorsPagination.total), ...createdOperators], state.accountState.operatorsPagination.per_page);
   const optimisticPage = (pages[state.accountState.operatorsPagination.page - 1] || []).filter(Boolean);
 
   const [pageOperators] = chunk([...accountOperators, ...optimisticPage], state.accountState.operatorsPagination.per_page);

@@ -65,7 +65,7 @@ const removeValidators = async ({
       );
 
       const clusterData = stringifyBigints(validatorRemovedEvents[0].args.cluster);
-      const burnRate = calcBurnRateWei(cluster.operators, cluster.validatorCount, store.getState().networkState.networkFeeWei);
+      const burnRate = calcBurnRateWei(cluster.operators, clusterData.validatorCount, store.getState().networkState.networkFeeWei);
 
       dispatch(
         setOptimisticCluster({

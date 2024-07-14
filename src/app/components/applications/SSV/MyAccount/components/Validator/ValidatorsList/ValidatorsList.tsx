@@ -164,7 +164,6 @@ const ValidatorsList = ({
     })
   );
 
-  const [noValidatorsData, setNoValidatorsData] = useState(false);
   const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
     page: 1,
     total: cluster?.validatorCount ?? 0,
@@ -183,8 +182,6 @@ const ValidatorsList = ({
       fetchValidatorsByClusterHash(1, getClusterHash(cluster.operators, accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
         if (response.validators && response.validators.length) {
           setClusterValidators(response.validators);
-        } else {
-          setNoValidatorsData(true);
         }
         if (fillSelectedValidators) fillSelectedValidators(response.validators);
         setClusterValidatorsPagination({
@@ -235,7 +232,7 @@ const ValidatorsList = ({
     );
   };
 
-  if (clusterValidators.length === 0 && !noValidatorsData) {
+  if (cluster.validatorCount && !clusterValidators.length) {
     return (
       <SpinnerWrapper>
         <Spinner />
@@ -243,7 +240,7 @@ const ValidatorsList = ({
     );
   }
 
-  if (noValidatorsData) {
+  if (!cluster.validatorCount) {
     return (
       <div>
         <NoValidatorImage />
@@ -252,18 +249,22 @@ const ValidatorsList = ({
     );
   }
 
+  const hasMore = clusterValidators.length < cluster.validatorCount;
+
   return (
     <TableWrapper id={'scrollableDiv'} isLoading={isLoading}>
       <InfiniteScroll
-        dataLength={_clusterValidators.length}
+        dataLength={clusterValidators.length}
         next={async () => {
           return await onChangePage();
         }}
-        hasMore={_clusterValidators.length !== cluster.validatorCount}
+        hasMore={hasMore}
         loader={
-          <SpinnerWrapper>
-            <Spinner />
-          </SpinnerWrapper>
+          hasMore && (
+            <SpinnerWrapper>
+              <Spinner />
+            </SpinnerWrapper>
+          )
         }
         scrollableTarget={'scrollableDiv'}
       >

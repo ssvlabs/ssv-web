@@ -1,12 +1,55 @@
 // import { getContractByName } from '~root/wagmi/utils';
-import { EContractName } from '~app/model/contracts.model';
-import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { EClusterOperation } from '~app/enums/clusterOperation.enum';
-import { transactionExecutor } from '~root/services/transaction.service';
 import { ICluster } from '~app/model/cluster.model';
-import { getEventByTxHash } from '~root/services/contractEvent.service';
-import { getClusterData, getClusterHash, getSortedOperatorsIds } from '~root/services/cluster.service';
+import { EContractName } from '~app/model/contracts.model';
+import { setOptimisticCluster } from '~app/redux/account.slice';
+import { store } from '~app/store';
+import { stringifyBigints } from '~lib/utils/bigint';
+import { calcBurnRateWei, getClusterData, getClusterHash, getClusterRunWay, getSortedOperatorsIds } from '~root/services/cluster.service';
+import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
+import { transactionExecutor } from '~root/services/transaction.service';
 import { getContractByName } from '~root/wagmi/utils';
+
+const eventNames = ['ClusterLiquidated', 'ClusterReactivated', 'ClusterDeposited', 'ClusterWithdrawn'] as const;
+type ClusterEvent = {
+  eventName: (typeof eventNames)[number];
+  args: {
+    cluster: ICluster['clusterData'];
+  };
+};
+
+type UpdateProps = {
+  dispatch: Function;
+  cluster: ICluster;
+  liquidationCollateralPeriod: number;
+  minimumLiquidationCollateral: number;
+};
+type OnConfirmed = Parameters<typeof transactionExecutor>[0]['onConfirmed'];
+
+const updateClusterFromEvent =
+  ({ cluster, dispatch, liquidationCollateralPeriod, minimumLiquidationCollateral }: UpdateProps): OnConfirmed =>
+  async (events) => {
+    const newClusterData = (events as ClusterEvent[]).find((event) => eventNames.includes(event.eventName))?.args.cluster;
+    if (!newClusterData) return console.error('No new cluster data found', events, newClusterData);
+    const clusterData = stringifyBigints(newClusterData);
+    const burnRate = calcBurnRateWei(cluster.operators, cluster.validatorCount, store.getState().networkState.networkFeeWei);
+
+    dispatch(
+      setOptimisticCluster({
+        cluster: {
+          ...cluster,
+          validatorCount: clusterData.validatorCount,
+          _isOptimistic: true,
+          burnRate: burnRate.toString() as unknown as Uint8Array,
+          isLiquidated: !clusterData.active,
+          balance: clusterData.balance,
+          runWay: getClusterRunWay({ ...clusterData, burnRate }, liquidationCollateralPeriod, minimumLiquidationCollateral),
+          clusterData
+        },
+        type: 'updated'
+      })
+    );
+  };
 
 interface ClusterBalanceInteractionProps {
   amount: string;
@@ -30,7 +73,6 @@ const depositOrWithdraw = async ({
   dispatch
 }: ClusterBalanceInteractionProps) => {
   const contract = getContractByName(EContractName.SETTER);
-  console.log('contract:', contract);
   if (!contract) {
     return false;
   }
@@ -49,9 +91,16 @@ const depositOrWithdraw = async ({
     contractMethod = contract.liquidate;
     payload = [accountAddress, operatorsIds, cluster.clusterData];
   }
+
   return await transactionExecutor({
     contractMethod,
     payload,
+    onConfirmed: updateClusterFromEvent({
+      cluster,
+      dispatch,
+      liquidationCollateralPeriod,
+      minimumLiquidationCollateral
+    }),
     getterTransactionState: async () => (await getClusterData(clusterHash, liquidationCollateralPeriod, minimumLiquidationCollateral)).balance,
     prevState: cluster.clusterData.balance,
     isContractWallet,
@@ -61,7 +110,6 @@ const depositOrWithdraw = async ({
 
 const reactivateCluster = async ({
   cluster,
-  accountAddress,
   isContractWallet,
   amount,
   liquidationCollateralPeriod,
@@ -78,13 +126,19 @@ const reactivateCluster = async ({
 }) => {
   const operatorsIds = getSortedOperatorsIds(cluster.operators);
   const amountInWei = toWei(amount);
-  const clusterData = await getClusterData(getClusterHash(cluster.operators, accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
-  const payload = [operatorsIds, amountInWei, clusterData];
+  // const clusterData = await getClusterData(getClusterHash(cluster.operators, accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
+  const payload = [operatorsIds, amountInWei, cluster.clusterData];
   const contract = getContractByName(EContractName.SETTER);
   return await transactionExecutor({
     contractMethod: contract.reactivate,
     payload,
-    getterTransactionState: async (txHash: string) => (await getEventByTxHash(txHash)).data,
+    onConfirmed: updateClusterFromEvent({
+      cluster,
+      dispatch,
+      liquidationCollateralPeriod,
+      minimumLiquidationCollateral
+    }),
+    // getterTransactionState: async (txHash: string) => (await getEventByTxHash(txHash)).data,
     isContractWallet: isContractWallet,
     dispatch
   });

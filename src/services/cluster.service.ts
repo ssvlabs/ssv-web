@@ -120,6 +120,11 @@ const getClusterNewBurnRate = (operators: IOperator[], newAmountOfValidators: nu
   return clusterBurnRate * newAmountOfValidators;
 };
 
+export const calcBurnRateWei = (operators: IOperator[], validatorCount: number, networkFee: string) => {
+  const operatorsFee = operators.reduce((acc, operator) => acc + BigInt(operator.fee), 0n);
+  return ((operatorsFee + BigInt(networkFee)) * BigInt(validatorCount)).toString();
+};
+
 const isClusterLiquidated = async (operatorsIds: number[], ownerAddress: string, clusterData: any): Promise<boolean> => {
   const sortedOperatorsIds = operatorsIds.sort((a, b) => a - b);
   const contract = getContractByName(EContractName.GETTER);

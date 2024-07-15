@@ -2,24 +2,27 @@ import Decimal from 'decimal.js';
 import config from '~app/common/config';
 import { EContractName } from '~app/model/contracts.model';
 import { IOperator, IOperatorRawData } from '~app/model/operator.model';
+import { setOptimisticOperator } from '~app/redux/account.slice';
+import { formatNumberToUi } from '~lib/utils/numbers.ts';
 import { isEqualsAddresses } from '~lib/utils/strings';
 import { getStoredNetwork, testNets } from '~root/providers/networkInfo.provider.ts';
-import { decodeParameter, fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
-import { getOperator, getOperatorByPublicKey } from '~root/services/operator.service';
+import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
+import { getOperator } from '~root/services/operator.service';
 import { transactionExecutor } from '~root/services/transaction.service';
 import { getContractByName } from '~root/wagmi/utils';
-import { formatNumberToUi } from '~lib/utils/numbers.ts';
 
 const addNewOperator = async ({
   isContractWallet,
   operatorRawData,
   isPrivate,
-  dispatch
+  dispatch,
+  onConfirmed
 }: {
   isContractWallet: boolean;
   operatorRawData: IOperatorRawData;
   isPrivate: boolean;
   dispatch: Function;
+  onConfirmed?: Parameters<typeof transactionExecutor>[0]['onConfirmed'];
 }): Promise<boolean> => {
   const contract = getContractByName(EContractName.SETTER);
   if (!contract) {
@@ -33,11 +36,7 @@ const addNewOperator = async ({
     contractMethod: contract.registerOperator,
     payload: networkId === 1 ? payload : [...payload, isPrivate],
     isContractWallet,
-    getterTransactionState: async () => {
-      const res = await getOperatorByPublicKey(decodeParameter('string', operatorRawData.publicKey));
-      return res.data;
-    },
-    prevState: null,
+    onConfirmed,
     dispatch
   });
 };
@@ -115,7 +114,7 @@ const removeOperator = async ({ operatorId, isContractWallet, dispatch }: { oper
     contractMethod: contract.removeOperator,
     payload: [operatorId],
     isContractWallet,
-    getterTransactionState: async () => !(await getOperator(operatorId)),
+    onConfirmed: () => {},
     dispatch
   });
 };
@@ -163,6 +162,17 @@ const decreaseOperatorFee = async ({
     contractMethod: contract.reduceOperatorFee,
     payload: [operator.id, formattedFee],
     isContractWallet,
+    onConfirmed: () => {
+      dispatch(
+        setOptimisticOperator({
+          operator: {
+            ...operator,
+            fee: formattedFee
+          },
+          type: 'updated'
+        })
+      );
+    },
     getterTransactionState: async () => {
       const { id, fee } = await getOperator(operator.id);
       return { id, fee };

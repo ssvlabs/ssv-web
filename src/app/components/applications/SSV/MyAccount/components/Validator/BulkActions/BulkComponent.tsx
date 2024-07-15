@@ -152,7 +152,7 @@ const BulkComponent = () => {
         operators: cluster.operators ?? [],
         liquidationCollateralPeriod,
         minimumLiquidationCollateral,
-        isBulk: isBulk,
+        isBulk,
         dispatch
       });
       if (res && !isContractWallet) {

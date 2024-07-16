@@ -222,6 +222,12 @@ const ValidatorsList = ({
     setIsLoading && setIsLoading(false);
   };
 
+  useEffect(() => {
+    if (clusterValidators.length < clusterValidatorsPagination.rowsPerPage && clusterValidators.length < cluster.validatorCount) {
+      onChangePage();
+    }
+  }, [clusterValidators.length]);
+
   const copyToClipboard = (publicKey: string) => {
     navigator.clipboard.writeText(publicKey);
     dispatch(

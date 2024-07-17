@@ -25,7 +25,7 @@ type OptimisticOperatorChanges = {
 };
 
 type OptimisticOperatorsMap = {
-  [id: string]: OptimisticOperatorChanges;
+  [id: string]: OptimisticOperatorChanges | undefined;
 };
 
 type OptimisticClusterChanges = {
@@ -34,13 +34,13 @@ type OptimisticClusterChanges = {
 };
 
 type OptimisticClustersMap = {
-  [id: string]: OptimisticClusterChanges;
+  [id: string]: OptimisticClusterChanges | undefined;
 };
 
 type OptimisticValidatorChanges = OptimisticType;
 type OptimisticValidatorMap = {
   [clusterHash: string]: {
-    [validatorPk: string]: OptimisticValidatorChanges;
+    [validatorPk: string]: OptimisticValidatorChanges | undefined;
   };
 };
 
@@ -262,9 +262,11 @@ export const getOptimisticValidators = (state: RootState, { clusterId, validator
 export const getSelectedCluster = (state: RootState): ICluster => {
   if (state.accountState.excludedCluster) {
     const optimisticCluster = state.accountState.optimisticClustersMap[state.accountState.excludedCluster.clusterId.toString()];
+    if (!optimisticCluster) return state.accountState.excludedCluster;
     if (optimisticCluster.cluster.updatedAt === state.accountState.excludedCluster.updatedAt) return optimisticCluster.cluster;
     return state.accountState.excludedCluster;
   }
+
   if (!state.accountState.selectedClusterId) return {} as ICluster;
 
   const selectedCluster = state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId);

@@ -1,22 +1,22 @@
 import { ReactElement, useEffect, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import config from '~app/common/config';
-import Status from '~app/components/common/Status';
+import Settings from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
-import { getClusterHash } from '~root/services/cluster.service';
-import { fetchValidatorsByClusterHash } from '~root/services/validator.service';
-import { BulkValidatorData, IValidator } from '~app/model/validator.model';
-import { formatValidatorPublicKey, longStringShorten } from '~lib/utils/strings';
+import Spinner from '~app/components/common/Spinner';
+import Status from '~app/components/common/Status';
 import ToolTip from '~app/components/common/ToolTip';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { BulkValidatorData, IValidator } from '~app/model/validator.model';
+import { getOptimisticValidators, getSelectedCluster } from '~app/redux/account.slice.ts';
 import { getIsDarkMode } from '~app/redux/appState.slice';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import Spinner from '~app/components/common/Spinner';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
-import Settings from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
 import { getAccountAddress } from '~app/redux/wallet.slice';
-import { getSelectedCluster } from '~app/redux/account.slice.ts';
+import { add0x, longStringShorten } from '~lib/utils/strings';
+import { getClusterHash } from '~root/services/cluster.service';
+import { fetchValidatorsByClusterHash } from '~root/services/validator.service';
 
 const TableWrapper = styled.div<{ children: React.ReactNode; id: string; isLoading: boolean }>`
   margin-top: 12px;
@@ -155,8 +155,15 @@ const ValidatorsList = ({
   const selectValidatorDisableCondition = Object.values(selectedValidators || {}).filter((validator: BulkValidatorData) => validator.isSelected).length === maxValidatorsCount;
   const navigate = useNavigate();
   const isDarkMode = useAppSelector(getIsDarkMode);
-  const [clusterValidators, setClusterValidators] = useState<IValidator[]>([]);
-  const [noValidatorsData, setNoValidatorsData] = useState(false);
+
+  const [_clusterValidators, setClusterValidators] = useState<IValidator[]>([]);
+  const clusterValidators = useAppSelector((state) =>
+    getOptimisticValidators(state, {
+      clusterId: cluster?.clusterId,
+      validators: _clusterValidators
+    })
+  );
+
   const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
     page: 1,
     total: cluster?.validatorCount ?? 0,
@@ -175,8 +182,6 @@ const ValidatorsList = ({
       fetchValidatorsByClusterHash(1, getClusterHash(cluster.operators, accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
         if (response.validators && response.validators.length) {
           setClusterValidators(response.validators);
-        } else {
-          setNoValidatorsData(true);
         }
         if (fillSelectedValidators) fillSelectedValidators(response.validators);
         setClusterValidatorsPagination({
@@ -217,6 +222,12 @@ const ValidatorsList = ({
     setIsLoading && setIsLoading(false);
   };
 
+  useEffect(() => {
+    if (clusterValidators.length < clusterValidatorsPagination.rowsPerPage && clusterValidators.length < cluster.validatorCount) {
+      onChangePage();
+    }
+  }, [clusterValidators.length]);
+
   const copyToClipboard = (publicKey: string) => {
     navigator.clipboard.writeText(publicKey);
     dispatch(
@@ -227,7 +238,7 @@ const ValidatorsList = ({
     );
   };
 
-  if (clusterValidators.length === 0 && !noValidatorsData) {
+  if (cluster.validatorCount && !clusterValidators.length) {
     return (
       <SpinnerWrapper>
         <Spinner />
@@ -235,7 +246,7 @@ const ValidatorsList = ({
     );
   }
 
-  if (noValidatorsData) {
+  if (!cluster.validatorCount) {
     return (
       <div>
         <NoValidatorImage />
@@ -244,6 +255,8 @@ const ValidatorsList = ({
     );
   }
 
+  const hasMore = clusterValidators.length < cluster.validatorCount;
+
   return (
     <TableWrapper id={'scrollableDiv'} isLoading={isLoading}>
       <InfiniteScroll
@@ -251,11 +264,13 @@ const ValidatorsList = ({
         next={async () => {
           return await onChangePage();
         }}
-        hasMore={clusterValidators.length !== clusterValidatorsPagination.total}
+        hasMore={hasMore}
         loader={
-          <SpinnerWrapper>
-            <Spinner />
-          </SpinnerWrapper>
+          hasMore && (
+            <SpinnerWrapper>
+              <Spinner />
+            </SpinnerWrapper>
+          )
         }
         scrollableTarget={'scrollableDiv'}
       >
@@ -286,7 +301,7 @@ const ValidatorsList = ({
         </TableHeader>
         <ValidatorsListWrapper>
           {clusterValidators?.map((validator: IValidator) => {
-            const formattedPublicKey = formatValidatorPublicKey(validator.public_key);
+            const formattedPublicKey = add0x(validator.public_key);
             const res = selectedValidators && selectedValidators[formattedPublicKey]?.isSelected;
             const showingCheckboxCondition = onCheckboxClickHandler && selectedValidators;
             const disableButtonCondition = (selectValidatorDisableCondition && !res) || isLoading;

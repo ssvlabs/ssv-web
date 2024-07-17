@@ -13,6 +13,7 @@ export interface IValidator {
   operators: IOperator[];
   version: string;
   network: string;
+  updated_at?: string;
 }
 
 export type GetOperatorValidatorsResponse = {

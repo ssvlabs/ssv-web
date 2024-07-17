@@ -1,1 +1,0 @@
-export { ReactTable } from './ReactTable';

@@ -1,0 +1,30 @@
+import { queryOptions, useQuery } from '@tanstack/react-query';
+
+import { QueryConfig } from '@/lib/react-query';
+
+export type {{pascalCase name}} = {
+  // TODO: Add type or remove this type
+}
+
+export const {{camelCase name}} = (): Promise<{{pascalCase name}}[]> => {
+  return // TODO: Add fetch logic
+};
+
+export const {{camelCase name}}QueryOptions = () => {
+  return queryOptions({
+    queryKey: ['{{kebabCase name}}'],
+    queryFn: () => {{camelCase name}}(),
+  });
+};
+
+type Use{{pascalCase name}}Options = {
+  options?: QueryConfig<typeof {{camelCase name}}QueryOptions>;
+};
+
+export const use{{pascalCase name}} = ({ options }: Use{{pascalCase name}}Options = {}) => {
+  return useQuery({
+    ...{{camelCase name}}QueryOptions(),
+    ...options,
+  });
+};
+

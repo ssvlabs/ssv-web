@@ -1,9 +1,0 @@
-{
-  "defaultCommandTimeout": 60000,
-  "video": false,
-  "screenshot": false,
-  "headless": false,
-  "browser": "chrome",
-  "watchForFileChanges": true,
-  "baseUrl": "https://app.stage.ssv.network"
-}

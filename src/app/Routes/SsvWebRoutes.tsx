@@ -1,6 +1,5 @@
 import { ComponentProps, ComponentType, lazy, Suspense } from 'react';
 import { Route, Routes as Wrapper } from 'react-router-dom';
-import { useAccount } from 'wagmi';
 import config from '~app/common/config';
 import Announcement from '~app/components/common/Annotation/Announcement';
 import SsvAppBar from '~app/components/common/AppBar/SsvAppBar';
@@ -34,7 +33,6 @@ const SlashingWarning = lazy(() => import('~app/components/applications/SSV/Regi
 const SelectOperators = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators'));
 const ValidatorTransactionConfirmation = lazy(() => import('~app/components/applications/SSV/ValidatorRegistrationConfirmation'));
 const GenerateKeyShares = lazy(() => import('~app/components/applications/SSV/RegisterValidatorHome/components/GenerateKeyShares'));
-const OperatorAccessSettings = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettings/OperatorAccessSettings'));
 const OperatorPermissionSettingsDashboard = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/PermissionSettingsDashboard.tsx'));
 const OperatorPermissionAddressesList = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/AddressesList.tsx'));
 const OperatorPermissionExternalContract = lazy(() => import('~app/components/applications/SSV/OperatorAccessSettingsV2/ExternalContract.tsx'));
@@ -54,8 +52,6 @@ interface RouteConfig {
 }
 
 const SsvWebRoutes = () => {
-  const { chain } = useAccount();
-
   const ssvRoutes = config.routes.SSV;
 
   const dashboardRoutes: RouteConfig[] = [
@@ -65,7 +61,7 @@ const SsvWebRoutes = () => {
     {
       path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.ROOT,
 
-      Component: chain?.testnet ? OperatorPermissionSettingsDashboard : OperatorAccessSettings
+      Component: OperatorPermissionSettingsDashboard
     },
     {
       path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.AUTHORIZED_ADDRESSES,

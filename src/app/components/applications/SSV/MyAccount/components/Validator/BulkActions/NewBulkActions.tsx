@@ -1,13 +1,11 @@
-import { useState } from 'react';
-import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import config from '~app/common/config';
-import { BulkValidatorData } from '~app/model/validator.model';
-import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
-import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
-import ValidatorsList from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
-import Spinner from '~app/components/common/Spinner';
+import styled from 'styled-components';
 import { PrimaryButton } from '~app/atomicComponents';
+import config from '~app/common/config';
+import ValidatorsList, { ValidatorsListProps } from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import Spinner from '~app/components/common/Spinner';
+import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
 import { getSelectedCluster } from '~app/redux/account.slice.ts';
@@ -90,40 +88,21 @@ const TooltipLink = styled.p`
   cursor: pointer;
 `;
 
-const NewBulkActions = ({
-  title,
-  nextStep,
-  onCheckboxClickHandler,
-  selectedValidators,
-  fillSelectedValidators,
-  maxValidatorsCount,
-  tooltipTitle,
-  checkboxTooltipTitle
-}: {
-  title: string;
-  nextStep: Function;
-  onCheckboxClickHandler: Function;
-  selectedValidators: Record<string, BulkValidatorData>;
-  fillSelectedValidators: Function;
-  maxValidatorsCount: number;
-  tooltipTitle: string;
-  checkboxTooltipTitle: string;
-}) => {
+const NewBulkActions = ({ title, nextStep, tooltipTitle, listProps }: { title: string; nextStep: Function; tooltipTitle: string; listProps: Required<ValidatorsListProps> }) => {
   const navigate = useNavigate();
   const validator = useAppSelector(getSelectedCluster);
-  const validatorsListArray = Object.values(selectedValidators);
-  const selectedValidatorsCount = validatorsListArray.filter((validator: BulkValidatorData) => validator.isSelected).length;
-  const totalCount = validator.validatorCount > maxValidatorsCount ? maxValidatorsCount : validator.validatorCount;
-  const [isLoading, setIsLoading] = useState(false);
-  const disableButtonCondition = !selectedValidatorsCount || isLoading;
+  const maxValidatorsCount = listProps.maxSelectable;
+  const selectedValidatorsCount = listProps.selectedValidators?.length || 0;
+  const totalCount = validator.validatorCount > listProps.maxSelectable ? listProps.maxSelectable : validator.validatorCount;
+  const disableButtonCondition = !selectedValidatorsCount || listProps.infiniteScroll.isLoading;
   const showIndicatorCondition = selectedValidatorsCount > 0;
-  const showSubHeaderCondition = validator.validatorCount > maxValidatorsCount;
+  const showSubHeaderCondition = validator.validatorCount > listProps.maxSelectable;
   const createValidatorsLaunchpad = () => {
     navigate(config.routes.SSV.VALIDATOR.CREATE);
   };
 
   const tooltipTitleComponent = (tooltipText: string) =>
-    validatorsListArray.length > maxValidatorsCount ? (
+    listProps.selectedValidators.length > maxValidatorsCount ? (
       <TooltipTitleWrapper>
         {tooltipText}
         <TooltipLink onClick={createValidatorsLaunchpad}>Create via Ethereum Launchpad</TooltipLink>
@@ -138,27 +117,18 @@ const NewBulkActions = ({
           <TitleWrapper>
             <Title>{title}</Title>
             {showIndicatorCondition &&
-              (isLoading ? (
+              (listProps.infiniteScroll.isLoading ? (
                 <Spinner />
               ) : (
-                <AnchorTooltip title={validatorsListArray.length > maxValidatorsCount ? tooltipTitleComponent(tooltipTitle) : null} placement={'top'}>
+                <AnchorTooltip title={listProps.validators.length > maxValidatorsCount ? tooltipTitleComponent(tooltipTitle) : null} placement={'top'} placement={'top'}>
                   <SelectedIndicator>
                     {selectedValidatorsCount} of {totalCount} selected
                   </SelectedIndicator>
                 </AnchorTooltip>
               ))}
           </TitleWrapper>
-          {showSubHeaderCondition && <SubHeader>Select up to {maxValidatorsCount} validators</SubHeader>}
-          <ValidatorsList
-            withoutSettings
-            setIsLoading={setIsLoading}
-            isLoading={isLoading}
-            checkboxTooltipTitle={tooltipTitleComponent(checkboxTooltipTitle)}
-            maxValidatorsCount={maxValidatorsCount}
-            onCheckboxClickHandler={onCheckboxClickHandler}
-            selectedValidators={selectedValidators}
-            fillSelectedValidators={fillSelectedValidators}
-          />
+          {showSubHeaderCondition && <SubHeader>Select up to {listProps.maxSelectable} validators</SubHeader>}
+          <ValidatorsList {...listProps} />
         </HeaderWrapper>
         <PrimaryButton text={'Next'} isDisabled={disableButtonCondition} onClick={nextStep} size={ButtonSize.XL} />
       </ValidatorsWrapper>

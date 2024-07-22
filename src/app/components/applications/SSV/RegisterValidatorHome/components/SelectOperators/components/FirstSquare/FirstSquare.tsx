@@ -66,6 +66,13 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
     { type: '', displayName: '', sortable: true }
   ];
 
+  const getDsrvOperator = async () => {
+    const response = await getOperatorsOperatorService({ search: 'dsrv' });
+    if (response?.operators.length > 0) {
+      selectOperatorHandling(response.operators.filter((operator) => !operator.is_private)[0]);
+    }
+  };
+
   const getOperators = async (page: number) => {
     if (page > operatorsPagination.pages && operatorsPagination.pages !== 0) return;
     const ordering: string = `${sortBy ? `${sortBy}:${sortOrder}` : 'id:asc'}`;
@@ -175,6 +182,11 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
   }, 1000);
 
   const rows = dataRows();
+
+  useEffect(() => {
+    getDsrvOperator();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     setLoading(true);

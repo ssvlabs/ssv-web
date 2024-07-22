@@ -12,7 +12,7 @@ import { encodeParameter } from '~root/services/conversions.service';
 import { useStyles } from '~app/components/applications/SSV/GenerateOperatorKeys/GenerateOperatorKeys.styles';
 import { validateAddressInput, validatePublicKeyInput } from '~lib/utils/validatesInputs';
 import { useAppSelector } from '~app/hooks/redux.hook';
-import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice';
+import { getAccountAddress } from '~app/redux/wallet.slice';
 import { Grid, PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getOperatorByPublicKey } from '~root/services/operator.service.ts';
@@ -23,7 +23,6 @@ const GenerateOperatorKeys = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const accountAddress = useAppSelector(getAccountAddress);
-  const isMainnet = useAppSelector(getIsMainnet);
   const [operatorExist, setOperatorExist] = useState(false);
   const [registerButtonEnabled, setRegisterButtonEnabled] = useState(false);
   const [inputsData, setInputsData] = useState({ publicKey: '' });
@@ -108,7 +107,7 @@ const GenerateOperatorKeys = () => {
       </Grid>
     </Grid>,
     <Grid container direction={'column'}>
-      {!isMainnet && <RegisterOperatorStatus isPrivate={isPrivate} setIsPrivate={setIsPrivate} />}
+      <RegisterOperatorStatus isPrivate={isPrivate} setIsPrivate={setIsPrivate} />
       <PrimaryButton isDisabled={!registerButtonEnabled} text={'Next'} onClick={onRegisterClick} size={ButtonSize.XL} isLoading={isLoading} />
     </Grid>
   ];

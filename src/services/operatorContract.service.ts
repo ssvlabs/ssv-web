@@ -4,7 +4,6 @@ import { EContractName } from '~app/model/contracts.model';
 import { IOperator, IOperatorRawData } from '~app/model/operator.model';
 import { setOptimisticOperator } from '~app/redux/account.slice';
 import { formatNumberToUi } from '~lib/utils/numbers.ts';
-import { isEqualsAddresses } from '~lib/utils/strings';
 import { getStoredNetwork, testNets } from '~root/providers/networkInfo.provider.ts';
 import { fromWei, prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.service';
 import { getOperator } from '~root/services/operator.service';
@@ -30,11 +29,10 @@ const addNewOperator = async ({
   }
   const feePerBlock = new Decimal(operatorRawData.fee).dividedBy(config.GLOBAL_VARIABLE.BLOCKS_PER_YEAR).toFixed().toString();
 
-  const { networkId } = getStoredNetwork();
-  const payload = [operatorRawData.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock))];
+  const payload = [operatorRawData.publicKey, prepareSsvAmountToTransfer(toWei(feePerBlock)), isPrivate];
   return await transactionExecutor({
     contractMethod: contract.registerOperator,
-    payload: networkId === 1 ? payload : [...payload, isPrivate],
+    payload,
     isContractWallet,
     onConfirmed,
     dispatch
@@ -67,38 +65,6 @@ const withdrawRewards = async ({ operator, amount, isContractWallet, dispatch }:
     payload: [operator.id, ssvAmount],
     getterTransactionState: async () => formatNumberToUi(await getOperatorBalance({ id: operator.id })),
     prevState: formatNumberToUi(operator.balance),
-    isContractWallet,
-    dispatch
-  });
-};
-
-const updateOperatorAddressWhitelist = async ({
-  operator,
-  address,
-  isContractWallet,
-  dispatch
-}: {
-  operator: IOperator;
-  address: string;
-  isContractWallet: boolean;
-  dispatch: Function;
-}) => {
-  const contract = getContractByName(EContractName.SETTER);
-  if (!contract) {
-    return false;
-  }
-  const updatedStateGetter = async () => {
-    const operatorAfter = await getOperator(operator.id);
-    return operatorAfter.address_whitelist;
-  };
-
-  return await transactionExecutor({
-    contractMethod: contract.setOperatorWhitelist,
-    payload: [operator.id, address],
-    getterTransactionState: async () => {
-      const newAddress = await updatedStateGetter();
-      return isEqualsAddresses(newAddress, address);
-    },
     isContractWallet,
     dispatch
   });
@@ -312,7 +278,6 @@ export {
   isWhitelistingContract,
   removeOperator,
   syncOperatorFeeInfo,
-  updateOperatorAddressWhitelist,
   updateOperatorFee,
   updateOperatorValidatorsLimit,
   withdrawRewards

@@ -16,7 +16,7 @@ type Props = {
   withdrawState?: boolean;
   isInputFilled?: string | number | null;
 };
-3;
+
 const NewRemainingDays = ({ cluster, withdrawState, isInputFilled = null }: Props) => {
   let errorType;
   const [showErrorCondition, setShowErrorCondition] = useState(false);

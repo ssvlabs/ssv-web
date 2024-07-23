@@ -177,6 +177,9 @@ export const slice = createSlice({
     setExcludedCluster: (state, action: { payload: ICluster | null }) => {
       state.excludedCluster = action.payload;
     },
+    removeCluster: (state, action: { payload: string }) => {
+      state.clusters = state.clusters.filter((c) => c.clusterId !== action.payload);
+    },
     sortOperatorsByStatus: (state) => {
       state.operators = state.operators.sort((a: any, b: any) => {
         if (a.status === 'Inactive') {
@@ -234,6 +237,7 @@ export const {
   setSelectedOperatorId,
   sortOperatorsByStatus,
   setOptimisticValidator,
+  removeCluster,
   reset
 } = slice.actions;
 

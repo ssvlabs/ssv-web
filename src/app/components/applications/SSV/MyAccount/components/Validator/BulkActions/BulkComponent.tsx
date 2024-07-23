@@ -10,7 +10,6 @@ import { BULK_FLOWS } from '~app/enums/bulkFlow.enum.ts';
 import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getAccountAddress, getIsContractWallet } from '~app/redux/wallet.slice';
-import { MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
 import { add0x } from '~lib/utils/strings';
 import { exitValidators, removeValidators } from '~root/services/validatorContract.service';
 import { getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
@@ -25,18 +24,6 @@ enum BULK_STEPS {
 const BULK_FLOWS_ACTION_TITLE = {
   [BULK_FLOWS.BULK_REMOVE]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TITLES.SELECT_REMOVE_VALIDATORS,
   [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TITLES.SELECT_EXIT_VALIDATORS
-};
-
-const MAX_VALIDATORS_COUNT = Number(window.localStorage.getItem(MAXIMUM_VALIDATOR_COUNT_FLAG)) || 100;
-
-const BULK_ACTIONS_TOOLTIP_TITLES = {
-  [BULK_FLOWS.BULK_REMOVE]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TOOLTIPS.REMOVE_VALIDATORS(MAX_VALIDATORS_COUNT),
-  [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TOOLTIPS.EXIT_VALIDATORS(MAX_VALIDATORS_COUNT)
-};
-
-const BULK_ACTIONS_TOOLTIP_CHECKBOX_TITLES = {
-  [BULK_FLOWS.BULK_REMOVE]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TOOLTIPS.REMOVE_VALIDATORS_CHECKBOX(MAX_VALIDATORS_COUNT),
-  [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TOOLTIPS.EXIT_VALIDATORS_CHECKBOX(MAX_VALIDATORS_COUNT)
 };
 
 const BULK_FLOWS_CONFIRMATION_DATA = {
@@ -73,10 +60,10 @@ const BulkComponent = () => {
 
   const selectMaxValidatorsCount = (validators: IValidator[], validatorList: Record<string, BulkValidatorData>): Record<string, BulkValidatorData> => {
     const isSelected = Object.values(selectedValidators).every((validator: { validator: IValidator; isSelected: boolean }) => !validator.isSelected);
-    validators.forEach((validator: IValidator, index: number) => {
+    validators.forEach((validator: IValidator) => {
       validatorList[add0x(validator.public_key)] = {
         validator,
-        isSelected: isSelected && index < MAX_VALIDATORS_COUNT
+        isSelected: isSelected
       };
     });
     return validatorList;
@@ -168,9 +155,7 @@ const BulkComponent = () => {
     return (
       <NewBulkActions
         nextStep={nextStep}
-        tooltipTitle={BULK_ACTIONS_TOOLTIP_TITLES[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
-        checkboxTooltipTitle={BULK_ACTIONS_TOOLTIP_CHECKBOX_TITLES[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
-        maxValidatorsCount={MAX_VALIDATORS_COUNT}
+        maxValidatorsCount={cluster.validatorCount}
         title={BULK_FLOWS_ACTION_TITLE[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
         fillSelectedValidators={fillSelectedValidators}
         selectedValidators={selectedValidators}

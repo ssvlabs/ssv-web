@@ -13,12 +13,13 @@ import { fetchAndSetNetworkFeeAndLiquidationCollateral } from '~app/redux/networ
 import { checkIfWalletIsContractAction, resetWallet, setConnectedNetwork, setWallet } from '~app/redux/wallet.slice';
 import { store } from '~app/store';
 import { removeFromLocalStorageByKey } from '~root/providers/localStorage.provider';
-import { getNetworkInfoIndexByNetworkId, getStoredNetwork } from '~root/providers/networkInfo.provider';
+import { getNetworkInfoIndexByNetworkId, getStoredNetwork, MAINNET_NETWORK_ID } from '~root/providers/networkInfo.provider';
 import { initContracts, resetContracts } from '~root/services/contracts.service';
 import notifyService from '~root/services/notify.service';
 import { isChainSupported } from '~root/wagmi/config';
 import { clearAllSettings, fetchAndSetFeeIncreaseAndPeriods, fetchAndSetMaxOperatorFee, fetchAndSetOperatorValidatorsLimit } from '~app/redux/operator.slice.ts';
 import { useDebounce } from 'react-use';
+import { postTermsAndConditions } from '~root/services/account.service.ts';
 
 type InitProps = {
   walletAddress: string;
@@ -63,6 +64,9 @@ export const useWalletConnectivity = () => {
     dispatch(setIsShowSsvLoader(true));
     dispatch(setWallet({ label: connectorName, address: walletAddress }));
     walletAddress && (await dispatch(checkIfWalletIsContractAction(provider)));
+    if (walletAddress && chainId === MAINNET_NETWORK_ID) {
+      await postTermsAndConditions(walletAddress);
+    }
     notifyService.init(chainId.toString());
     const index = getNetworkInfoIndexByNetworkId(Number(chainId));
     dispatch(setConnectedNetwork(index));

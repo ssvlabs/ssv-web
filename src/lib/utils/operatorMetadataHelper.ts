@@ -2,7 +2,6 @@ import config, { translations } from '~app/common/config';
 import { EContractName } from '~app/model/contracts.model';
 import { IOperator } from '~app/model/operator.model';
 import { isEqualsAddresses } from '~lib/utils/strings';
-import { MAINNET_NETWORK_ID, getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { checkSpecialCharacters } from '~lib/utils/strings.ts';
 import { Dispatch } from '@reduxjs/toolkit';
 import { setErrorMessage } from '~app/redux/operatorMetadata.slice.ts';
@@ -243,22 +242,10 @@ export const isDkgAddressValid = (value: string, isForm?: boolean) => {
   return value.length <= DKG_ADDRESS_MIN_LENGTH && pattern.test(addressWithoutHttps);
 };
 
-export const isOperatorPrivate = (operator: IOperator) => {
-  const network = getStoredNetwork();
-
-  // eslint-disable-next-line no-constant-condition
-  if (network.networkId === MAINNET_NETWORK_ID) return Boolean(operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
-  return operator.is_private ?? false;
-};
+export const isOperatorPrivate = (operator: IOperator) => operator.is_private ?? false;
 
 export const canAccountUseOperator = async (account: string | `0x${string}`, operator: IOperator): Promise<boolean> => {
-  const network = getStoredNetwork();
   if (!isOperatorPrivate(operator)) return true;
-
-  // eslint-disable-next-line no-constant-condition
-  if (network.networkId === MAINNET_NETWORK_ID) {
-    return isEqualsAddresses(operator.address_whitelist, account);
-  }
 
   const hasExternalContract = Boolean(operator.whitelisting_contract && operator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
 

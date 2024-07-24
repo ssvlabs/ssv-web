@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Grid';
-import { useStyles } from '~app/components/common/CheckBox/CheckBox.styles';
-import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import { ReactElement } from 'react';
+import { useStyles } from '~app/components/common/CheckBox/CheckBox.styles';
+import { Tooltip } from '~app/components/ui/tooltip';
 
 type CheckboxProps = {
   text: any;
@@ -51,9 +51,9 @@ const CheckBox = ({
   );
 
   return withTooltip && tooltipText ? (
-    <AnchorTooltip title={tooltipText} placement={'top'}>
+    <Tooltip asChild content={tooltipText}>
       {Content}
-    </AnchorTooltip>
+    </Tooltip>
   ) : (
     Content
   );

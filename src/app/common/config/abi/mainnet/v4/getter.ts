@@ -5,6 +5,17 @@ export const MainnetV4GetterABI = [
     type: 'constructor'
   },
   {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'contractAddress',
+        type: 'address'
+      }
+    ],
+    name: 'AddressIsWhitelistingContract',
+    type: 'error'
+  },
+  {
     inputs: [],
     name: 'ApprovalNotWithinTimeframe',
     type: 'error'
@@ -15,8 +26,35 @@ export const MainnetV4GetterABI = [
     type: 'error'
   },
   {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'caller',
+        type: 'address'
+      },
+      {
+        internalType: 'address',
+        name: 'owner',
+        type: 'address'
+      }
+    ],
+    name: 'CallerNotOwnerWithData',
+    type: 'error'
+  },
+  {
     inputs: [],
     name: 'CallerNotWhitelisted',
+    type: 'error'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint64',
+        name: 'operatorId',
+        type: 'uint64'
+      }
+    ],
+    name: 'CallerNotWhitelistedWithData',
     type: 'error'
   },
   {
@@ -41,7 +79,29 @@ export const MainnetV4GetterABI = [
   },
   {
     inputs: [],
+    name: 'EmptyPublicKeysList',
+    type: 'error'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint64',
+        name: 'operatorId',
+        type: 'uint64'
+      }
+    ],
     name: 'ExceedValidatorLimit',
+    type: 'error'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint64',
+        name: 'operatorId',
+        type: 'uint64'
+      }
+    ],
+    name: 'ExceedValidatorLimitWithData',
     type: 'error'
   },
   {
@@ -92,12 +152,33 @@ export const MainnetV4GetterABI = [
   },
   {
     inputs: [],
+    name: 'InvalidContractAddress',
+    type: 'error'
+  },
+  {
+    inputs: [],
     name: 'InvalidOperatorIdsLength',
     type: 'error'
   },
   {
     inputs: [],
     name: 'InvalidPublicKeyLength',
+    type: 'error'
+  },
+  {
+    inputs: [],
+    name: 'InvalidWhitelistAddressesLength',
+    type: 'error'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'contractAddress',
+        type: 'address'
+      }
+    ],
+    name: 'InvalidWhitelistingContract',
     type: 'error'
   },
   {
@@ -151,6 +232,17 @@ export const MainnetV4GetterABI = [
     type: 'error'
   },
   {
+    inputs: [
+      {
+        internalType: 'uint8',
+        name: 'moduleId',
+        type: 'uint8'
+      }
+    ],
+    name: 'TargetModuleDoesNotExistWithData',
+    type: 'error'
+  },
+  {
     inputs: [],
     name: 'TokenTransferFailed',
     type: 'error'
@@ -179,6 +271,11 @@ export const MainnetV4GetterABI = [
   {
     inputs: [],
     name: 'ValidatorDoesNotExist',
+    type: 'error'
+  },
+  {
+    inputs: [],
+    name: 'ZeroAddressNotAllowed',
     type: 'error'
   },
   {
@@ -674,6 +771,30 @@ export const MainnetV4GetterABI = [
   {
     inputs: [
       {
+        internalType: 'uint64[]',
+        name: 'operatorIds',
+        type: 'uint64[]'
+      },
+      {
+        internalType: 'address',
+        name: 'whitelistedAddress',
+        type: 'address'
+      }
+    ],
+    name: 'getWhitelistedOperators',
+    outputs: [
+      {
+        internalType: 'uint64[]',
+        name: 'whitelistedOperatorIds',
+        type: 'uint64[]'
+      }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
         internalType: 'contract ISSVViews',
         name: 'ssvNetwork_',
         type: 'address'
@@ -682,6 +803,35 @@ export const MainnetV4GetterABI = [
     name: 'initialize',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'addressToCheck',
+        type: 'address'
+      },
+      {
+        internalType: 'uint256',
+        name: 'operatorId',
+        type: 'uint256'
+      },
+      {
+        internalType: 'address',
+        name: 'whitelistingContract',
+        type: 'address'
+      }
+    ],
+    name: 'isAddressWhitelistedInWhitelistingContract',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: 'isWhitelisted',
+        type: 'bool'
+      }
+    ],
+    stateMutability: 'view',
     type: 'function'
   },
   {
@@ -786,6 +936,25 @@ export const MainnetV4GetterABI = [
       }
     ],
     name: 'isLiquidated',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool'
+      }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'contractAddress',
+        type: 'address'
+      }
+    ],
+    name: 'isWhitelistingContract',
     outputs: [
       {
         internalType: 'bool',

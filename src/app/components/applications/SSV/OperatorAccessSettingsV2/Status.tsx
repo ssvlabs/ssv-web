@@ -4,10 +4,13 @@ import BorderScreen from '~app/components/common/BorderScreen';
 import { Alert, AlertDescription } from '~app/components/ui/alert';
 import { Button } from '~app/components/ui/button';
 import { useSetOperatorVisibility } from '~app/hooks/operator/useSetOperatorVisibility';
+import { useSetOptimisticOperator } from '~app/hooks/operator/useSetOptimisticOperator';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
 
 const OperatorStatus = () => {
+  const setOptimisticOperator = useSetOptimisticOperator();
+
   const operator = useAppSelector(getSelectedOperator)!;
   const isFeeZero = !Number(operator.fee);
   const switchLabel = operator.is_private ? 'Public' : 'Private';
@@ -53,10 +56,23 @@ const OperatorStatus = () => {
             isLoading={setOperatorVisibility.isPending}
             isActionBtn
             onClick={() =>
-              setOperatorVisibility.mutate({
-                isPrivate: !operator.is_private,
-                operatorIds: [operator.id]
-              })
+              setOperatorVisibility.mutate(
+                {
+                  isPrivate: !operator.is_private,
+                  operatorIds: [operator.id]
+                },
+                {
+                  onSuccess: () => {
+                    setOptimisticOperator({
+                      operator: {
+                        ...operator,
+                        is_private: !operator.is_private
+                      },
+                      type: 'updated'
+                    });
+                  }
+                }
+              )
             }
           >
             Switch to {switchLabel}

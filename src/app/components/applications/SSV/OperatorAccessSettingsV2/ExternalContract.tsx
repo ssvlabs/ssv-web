@@ -15,6 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '~app/compon
 import { Input } from '~app/components/ui/input';
 import { Tooltip } from '~app/components/ui/tooltip';
 import { useSetOperatorsWhitelistingContract } from '~app/hooks/operator/useSetOperatorsWhitelistingContract';
+import { useSetOptimisticOperator } from '~app/hooks/operator/useSetOptimisticOperator';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
 import { isEqualsAddresses } from '~lib/utils/strings';
@@ -58,7 +59,7 @@ const ExternalContract = () => {
   });
 
   const externalContract = form.watch('externalContract') || zeroAddress;
-  const isChanged = !isEqualsAddresses(externalContract, operator.whitelisting_contract ?? zeroAddress);
+  const isChanged = !isEqualsAddresses(externalContract, operator.whitelisting_contract || zeroAddress);
   const hasErrors = Boolean(form.formState.errors.externalContract);
 
   const reset = () => {
@@ -66,6 +67,8 @@ const ExternalContract = () => {
       externalContract: whitelistingContractAddress
     });
   };
+
+  const setOptimisticOperator = useSetOptimisticOperator();
 
   const submit = form.handleSubmit((values) => {
     if (!isChanged) return;
@@ -77,6 +80,13 @@ const ExternalContract = () => {
       },
       {
         onSuccess: () => {
+          setOptimisticOperator({
+            operator: {
+              ...operator,
+              whitelisting_contract: values.externalContract
+            },
+            type: 'updated'
+          });
           form.reset({ externalContract: values.externalContract });
         }
       }

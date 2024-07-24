@@ -1,21 +1,72 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { formatNumberToUi } from '~lib/utils/numbers';
-import { longStringShorten } from '~lib/utils/strings';
+import { Grid, PrimaryButton } from '~app/atomicComponents';
 import config, { translations } from '~app/common/config';
+import { useStyles } from '~app/components/applications/SSV/OperatorConfirmation/OperatorConfirmation.styles';
+import AddressKeyInput from '~app/components/common/AddressKeyInput';
 import BorderScreen from '~app/components/common/BorderScreen';
 import NameAndAddress from '~app/components/common/NameAndAddress';
 import SsvAndSubTitle from '~app/components/common/SsvAndSubTitle';
-import { decodeParameter } from '~root/services/conversions.service';
-import AddressKeyInput from '~app/components/common/AddressKeyInput';
-import { useStyles } from '~app/components/applications/SSV/OperatorConfirmation/OperatorConfirmation.styles';
 import TermsAndConditionsCheckbox from '~app/components/common/TermsAndConditionsCheckbox/TermsAndConditionsCheckbox';
-import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
-import { Grid, PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useSetOptimisticOperator } from '~app/hooks/operator/useSetOptimisticOperator';
+import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
+import { IOperator } from '~app/model/operator.model';
+import { getIsContractWallet, getIsMainnet } from '~app/redux/wallet.slice';
+import { formatNumberToUi } from '~lib/utils/numbers';
+import { longStringShorten } from '~lib/utils/strings';
+import { decodeParameter } from '~root/services/conversions.service';
 import { addNewOperator } from '~root/services/operatorContract.service.ts';
-import { getOperatorByPublicKey } from '~root/services/operator.service.ts';
+
+const createDefaultOperator = (args: OperatorAddedEvent['args'] & { isPrivate?: boolean }): IOperator => ({
+  id: Number(args.operatorId),
+  id_str: args.operatorId.toString(),
+  declared_fee: '0',
+  previous_fee: '0',
+  balance: 0,
+  fee: args.fee.toString(),
+  public_key: args.publicKey,
+  owner_address: args.owner,
+  address_whitelist: '',
+  is_private: args.isPrivate ?? false,
+  whitelisting_contract: '',
+  location: '',
+  setup_provider: '',
+  eth1_node_client: '',
+  eth2_node_client: '',
+  mev_relays: '',
+  description: '',
+  website_url: '',
+  twitter_url: '',
+  linkedin_url: '',
+  dkg_address: '',
+  logo: '',
+  type: 'operator',
+  name: `Operator ${args.operatorId}`,
+  performance: {
+    '24h': 0,
+    '30d': 0
+  },
+  is_valid: true,
+  is_deleted: false,
+  is_active: 0,
+  status: 'Inactive',
+  validators_count: 0,
+  version: 'v4',
+  network: 'holesky',
+  whitelist_addresses: [],
+  updated_at: 0
+});
+
+type OperatorAddedEvent = {
+  eventName: 'OperatorAdded';
+  args: {
+    operatorId: bigint;
+    owner: `0x${string}`;
+    fee: bigint;
+    publicKey: `0x${string}`;
+  };
+};
 
 const OperatorConfirmation = () => {
   const [isChecked, setIsChecked] = useState(false);
@@ -28,18 +79,34 @@ const OperatorConfirmation = () => {
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isMainnet = useAppSelector(getIsMainnet);
   const classes = useStyles();
+  const setOptimisticOperator = useSetOptimisticOperator();
 
   const onRegisterClick = async () => {
     setIsLoading(true);
     setActionButtonText('Waiting for confirmation...');
-    const operatorAdded = await addNewOperator({ isContractWallet, operatorRawData, isPrivate, dispatch });
-    if (operatorAdded) {
-      const res = await getOperatorByPublicKey(decodeParameter('string', operatorRawData.publicKey));
+    let newOperator: IOperator | undefined;
+    await addNewOperator({
+      isContractWallet,
+      operatorRawData,
+      isPrivate,
+      dispatch,
+      onConfirmed: (events) => {
+        const operatorAddedEvent = events?.find((event) => (event as OperatorAddedEvent).eventName === 'OperatorAdded') as OperatorAddedEvent | undefined;
+        if (operatorAddedEvent) {
+          newOperator = createDefaultOperator({ ...operatorAddedEvent.args, isPrivate });
+          setOptimisticOperator({
+            operator: newOperator,
+            type: 'created'
+          });
+        }
+      }
+    });
+    if (newOperator) {
       navigate(isContractWallet ? config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD : config.routes.SSV.OPERATOR.SUCCESS_PAGE, {
         state: {
           operatorRawData: {
             ...operatorRawData,
-            id: res.data.id
+            id: newOperator.id
           }
         }
       });

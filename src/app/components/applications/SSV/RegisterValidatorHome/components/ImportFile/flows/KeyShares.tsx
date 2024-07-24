@@ -49,12 +49,16 @@ import { getClusterSize, getOperatorValidatorsLimit, getSelectedOperators, selec
 import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
 import { getIsClusterSelected, getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
 import { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper.tsx';
+import styled from 'styled-components';
 
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
 const KeyShareFlow = () => {
   const accountAddress = useAppSelector(getAccountAddress);
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
   const stores = useStores();
-  const classes = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
@@ -63,6 +67,7 @@ const KeyShareFlow = () => {
   const validatorStore: ValidatorStore = stores.Validator;
   const cluster = useAppSelector(getSelectedCluster);
   const isSecondRegistration = useAppSelector(getIsClusterSelected);
+  const classes = useStyles({ isSecondRegistration });
   const [warningMessage, setWarningMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
   const [validatorsList, setValidatorsList] = useState<Record<string, ValidatorType>>({});
@@ -483,18 +488,17 @@ const KeyShareFlow = () => {
       {warningMessage && <WarningBox text={warningMessage} />}
     </Grid>
   );
-
+  // const condition = validatorStore.validatorsCount > 0 && !validationError.errorMessage && !processingFile;
   const MainScreen = (
     <BorderScreen
       blackHeader
       withoutNavigation={isSecondRegistration}
       header={translations.VALIDATOR.IMPORT.KEY_SHARES_TITLE}
-      wrapperClass={classes.marginNone}
       body={[
-        <Grid item container>
+        <>
           <ImportInput removeButtons={removeButtons} processingFile={processingFile} fileText={renderFileText} fileHandler={fileHandler} fileImage={renderFileImage} />
           {Object.values(validatorsList).length > 0 && !processingFile && MainMultiKeyShare}
-        </Grid>
+        </>
       ]}
     />
   );
@@ -504,7 +508,7 @@ const KeyShareFlow = () => {
       withoutNavigation
       blackHeader
       header={translations.VALIDATOR.BULK_REGISTRATION.SELECTED_VALIDATORS}
-      wrapperClass={isSecondRegistration ? classes.marginNone : classes.marginTop}
+      wrapperClass={classes.marginTop}
       sideElement={
         <ValidatorCounter
           changeCountOfValidators={changeCountOfValidators}
@@ -540,10 +544,12 @@ const KeyShareFlow = () => {
     return (
       <>
         <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
-        <Grid className={classes.KeysharesWrapper}>
-          {MainScreen}
-          {validatorStore.validatorsCount > 0 && !validationError.errorMessage && !processingFile && SecondScreen}
-        </Grid>
+        <Wrapper>
+          <Grid className={classes.KeysharesWrapper}>
+            {MainScreen}
+            {validatorStore.validatorsCount > 0 && !validationError.errorMessage && !processingFile && SecondScreen}
+          </Grid>
+        </Wrapper>
       </>
     );
   }

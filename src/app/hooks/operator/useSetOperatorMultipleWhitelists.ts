@@ -1,9 +1,6 @@
 import { UseMutationResult, useMutation } from '@tanstack/react-query';
-import { useAppSelector } from '~app/hooks/redux.hook';
 import { useTransactionExecutor } from '~app/hooks/useTransactionExecutor';
 import { EContractName } from '~app/model/contracts.model';
-import { getSelectedOperator } from '~app/redux/account.slice';
-import { getOperator } from '~root/services/operator.service';
 import { ContractMethod, getContractByName } from '~root/wagmi/utils';
 
 type MutationType = 'add' | 'delete';
@@ -25,7 +22,6 @@ const methods: Record<MutationType, ContractMethod> = {
 };
 
 export const useSetOperatorMultipleWhitelists = () => {
-  const operator = useAppSelector(getSelectedOperator);
   const executor = useTransactionExecutor();
 
   return useMutation({
@@ -33,8 +29,7 @@ export const useSetOperatorMultipleWhitelists = () => {
       return executor({
         contractMethod: methods[mode],
         payload: [operatorIds, addresses],
-        prevState: operator?.whitelist_addresses?.toSorted(),
-        getterTransactionState: async () => getOperator(operatorIds[0]).then((res) => res.whitelist_addresses?.toSorted())
+        onConfirmed: () => {}
       });
     }
   }) satisfies Mutation;

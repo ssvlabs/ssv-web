@@ -73,7 +73,7 @@ const OperatorDashboard = () => {
     };
   };
 
-  const rows = operators.map((operator: any) => {
+  const rows = operators.map((operator) => {
     return createData(
       <OperatorDetails operator={operator} setOpenExplorerRefs={setOpenExplorerRefs} />,
       <Status item={operator} />,

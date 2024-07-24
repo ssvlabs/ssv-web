@@ -138,4 +138,3 @@ GPLv3 © [SSV_LABS](https://github.com/ssvlabs/ssv-web)
 [github-actions-status]: https://github.com/ssvlabs/ssv-web/workflows/Test/badge.svg?branch=stage
 [github-actions-url]: https://github.com/ssvlabs/ssv-web/actions
 [github-tag-image]: https://img.shields.io/github/v/tag/ssvlabs/ssv-web.svg?label=version
-  

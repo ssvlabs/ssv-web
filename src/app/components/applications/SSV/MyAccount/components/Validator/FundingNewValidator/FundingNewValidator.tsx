@@ -26,6 +26,11 @@ import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice'
 import useFetchWalletBalance from '~app/hooks/useFetchWalletBalance';
 import { getSelectedCluster } from '~app/redux/account.slice.ts';
 import { NewValidatorRouteState } from '~app/Routes';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  width: 100%;
+`;
 
 const FundingNewValidator = () => {
   const [checkedId, setCheckedId] = useState(0);
@@ -142,7 +147,7 @@ const FundingNewValidator = () => {
   };
 
   return (
-    <Grid container>
+    <Container>
       <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
       <BorderScreen
         blackHeader
@@ -214,7 +219,7 @@ const FundingNewValidator = () => {
           </Grid>
         ]}
       />
-    </Grid>
+    </Container>
   );
 };
 export default observer(FundingNewValidator);

@@ -56,7 +56,7 @@ const FundingPeriod = () => {
   });
   const totalCost = new Decimal(operatorsCost).add(networkCost).add(liquidationCollateralCost);
   const totalAmount = formatNumberToUi(Number(totalCost.mul(validatorStore.validatorsCount).toFixed(18)));
-  const insufficientBalance = new Decimal(totalAmount).comparedTo(walletSsvBalance) === 1;
+  const insufficientBalance = new Decimal(totalAmount.replace(',', '')).comparedTo(walletSsvBalance) === 1;
   const showLiquidationError = isCustomPayment && !insufficientBalance && timePeriodNotValid;
 
   const onPeriodChange = (event: any) => {

@@ -23,5 +23,10 @@
     "test/**/__snapshots__": true,
     "yarn.lock": true
   },
-  "cSpell.words": ["holesky", "ssvweb", "Wagmi"]
+  "cSpell.words": [
+    "holesky",
+    "pageview",
+    "ssvweb",
+    "Wagmi"
+  ]
 }

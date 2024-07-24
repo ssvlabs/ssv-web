@@ -89,8 +89,8 @@ const EditOperatorDetails = () => {
         ...Object.values(FIELD_KEYS).map((key: FIELD_KEYS) => {
           return <FieldWrapper fieldKey={key} />;
         }),
-        ...errorMessage.map((error) => <Typography className={classes.ErrorMessage}>{error}</Typography>),
-        <PrimaryButton text={'Update'} isDisabled={buttonDisable} isLoading={isLoading} onClick={submitHandler} size={ButtonSize.XL} />
+        <PrimaryButton text={'Update'} isDisabled={buttonDisable} isLoading={isLoading} onClick={submitHandler} size={ButtonSize.XL} />,
+        ...errorMessage.map((error) => <Typography className={classes.ErrorMessage}>{error}</Typography>)
       ]}
     />
   );

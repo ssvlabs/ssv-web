@@ -1,6 +1,7 @@
 import { IOperator } from '~app/model/operator.model';
 
 interface ICluster {
+  _isOptimistic: boolean;
   id: number;
   clusterId: string;
   ownerAddress: string;
@@ -21,6 +22,7 @@ interface ICluster {
     networkFeeIndex: string;
     validatorCount: number;
   };
+  updatedAt?: string;
 }
 
 export type { ICluster };

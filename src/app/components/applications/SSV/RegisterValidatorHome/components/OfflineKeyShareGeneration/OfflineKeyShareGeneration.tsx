@@ -32,6 +32,10 @@ import { cn } from '~lib/utils/tailwind';
 import { getOwnerNonce } from '~root/services/account.service';
 import { getIsClusterSelected } from '~app/redux/account.slice.ts';
 
+const Container = styled.div`
+  width: 100%;
+`;
+
 const DkgTitleWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -443,10 +447,10 @@ const OfflineKeyShareGeneration = () => {
 
   if (isSecondRegistration) {
     return (
-      <Grid container>
+      <Container>
         <NewWhiteWrapper type={WhiteWrapperDisplayType.VALIDATOR} header={'Cluster'} />
         {MainScreen}
-      </Grid>
+      </Container>
     );
   }
 

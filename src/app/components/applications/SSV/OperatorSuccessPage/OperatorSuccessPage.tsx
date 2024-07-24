@@ -1,16 +1,15 @@
-import { useLocation, useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Grid, PrimaryButton } from '~app/atomicComponents';
 import config from '~app/common/config';
-import BorderScreen from '~app/components/common/BorderScreen';
-import LinkText from '~app/components/common/LinkText/LinkText';
-import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import OperatorId from '~app/components/applications/SSV/MyAccount/components/OperatorId';
 import { useStyles } from '~app/components/applications/SSV/OperatorSuccessPage/OperatorSuccessPage.styles';
+import BorderScreen from '~app/components/common/BorderScreen';
+import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
+import LinkText from '~app/components/common/LinkText/LinkText';
+import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setIsLoading } from '~app/redux/appState.slice';
-import { fetchOperators } from '~app/redux/account.slice';
-import { Grid, PrimaryButton } from '~app/atomicComponents';
-import { ButtonSize } from '~app/enums/Button.enum';
 
 const SetOperatorFee = () => {
   const classes = useStyles();
@@ -21,7 +20,6 @@ const SetOperatorFee = () => {
   console.log(operatorRawData);
   const moveToMyAccount = async () => {
     dispatch(setIsLoading(true));
-    await dispatch(fetchOperators({}));
     dispatch(setIsLoading(false));
     navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
   };

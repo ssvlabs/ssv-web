@@ -22,6 +22,8 @@ import { AppTheme } from '~root/Theme';
 import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider';
 import { getColors } from '~root/themes';
 import './globals.css';
+import { useTrackPageViews } from '~root/mixpanel/useTrackPageViews';
+import { useIdentify } from '~root/mixpanel/useIdentify';
 
 const LoaderWrapper = styled.div<{ theme: any }>`
   display: flex;
@@ -64,6 +66,8 @@ const App = () => {
   const accountAddress = useAppSelector(getAccountAddress);
   const { navigateToRoot } = useNavigateToRoot();
 
+  useTrackPageViews();
+  useIdentify();
   useWalletConnectivity();
 
   useEffect(() => {

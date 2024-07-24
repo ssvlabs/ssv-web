@@ -1,5 +1,4 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { MAX_VALIDATORS_COUNT } from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/BulkComponent';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { ICluster } from '~app/model/cluster.model';
 import { getOptimisticDeletedValidators, removeOptimisticDeletedValidators } from '~app/redux/account.slice';
@@ -36,7 +35,7 @@ export const useClusterValidators = (cluster: ICluster | undefined, { per_page =
         queryKey: ['cluster-validators', cluster.clusterId, per_page]
       });
 
-      const max = Math.min(MAX_VALIDATORS_COUNT, lastPage.pagination.total);
+      const max = lastPage.pagination.total;
       const { page } = lastPage.pagination;
       const loaded = page * per_page;
       const elementsToLoad = max - loaded + optimisticDeletedValidatorPks.length;

@@ -9,11 +9,12 @@ import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import ProgressBar from '~app/components/applications/SSV/MyAccount/common/ProgressBar/ProgressBar';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/common/NewRemainingDays/NewRemainingDays.styles';
 import LiquidationStateError, { LiquidationStateErrorType } from '~app/components/applications/SSV/MyAccount/common/LiquidationStateError/LiquidationStateError';
+import { ICluster } from '~app/model/cluster.model.ts';
 
 type Props = {
-  cluster: any;
+  cluster: ICluster & { newRunWay?: number };
   withdrawState?: boolean;
-  isInputFilled?: string | null;
+  isInputFilled?: string | number | null;
 };
 
 const NewRemainingDays = ({ cluster, withdrawState, isInputFilled = null }: Props) => {

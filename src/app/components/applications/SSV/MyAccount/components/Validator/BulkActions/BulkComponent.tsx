@@ -30,16 +30,6 @@ const BULK_FLOWS_ACTION_TITLE = {
 
 export const MAX_VALIDATORS_COUNT = Number(window.localStorage.getItem(MAXIMUM_VALIDATOR_COUNT_FLAG)) || 100;
 
-const BULK_ACTIONS_TOOLTIP_TITLES = {
-  [BULK_FLOWS.BULK_REMOVE]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TOOLTIPS.REMOVE_VALIDATORS(MAX_VALIDATORS_COUNT),
-  [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TOOLTIPS.EXIT_VALIDATORS(MAX_VALIDATORS_COUNT)
-};
-
-// const BULK_ACTIONS_TOOLTIP_CHECKBOX_TITLES = {
-//   [BULK_FLOWS.BULK_REMOVE]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TOOLTIPS.REMOVE_VALIDATORS_CHECKBOX(MAX_VALIDATORS_COUNT),
-//   [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TOOLTIPS.EXIT_VALIDATORS_CHECKBOX(MAX_VALIDATORS_COUNT)
-// };
-
 const BULK_FLOWS_CONFIRMATION_DATA = {
   [BULK_FLOWS.BULK_REMOVE]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.FLOW_CONFIRMATION_DATA.REMOVE,
   [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.FLOW_CONFIRMATION_DATA.EXIT
@@ -56,7 +46,7 @@ const BulkComponent = () => {
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
 
   const { infiniteQuery, fetchAll, validators } = useClusterValidators(cluster);
-  const maxSelectable = Math.min(MAX_VALIDATORS_COUNT, cluster.validatorCount);
+  const maxSelectable = cluster.validatorCount;
 
   const isAllSelected = selectedValidators.length === maxSelectable;
 
@@ -143,7 +133,6 @@ const BulkComponent = () => {
       <NewBulkActions
         title={BULK_FLOWS_ACTION_TITLE[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
         nextStep={nextStep}
-        tooltipTitle={BULK_ACTIONS_TOOLTIP_TITLES[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
         listProps={{
           type: 'select',
           validators: validators,

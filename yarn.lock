@@ -21934,6 +21934,11 @@ viem@^2.1.1, viem@^2.9.32:
     isows "1.0.4"
     ws "8.17.1"
 
+virtua@^0.33.3:
+  version "0.33.3"
+  resolved "https://registry.yarnpkg.com/virtua/-/virtua-0.33.3.tgz#3471568d02e3e0cacef63107bf4b2c0c55fc15cc"
+  integrity sha512-Zxr2hhmTHARMHdZjs5fvd17bHH2YJ1uZZGaw4SKmynDEXtHFzJn/pL9xYJeXWZ8UfXNIBbPvGlHGpruCRbLHIg==
+
 vite-plugin-mkcert@^1.17.5:
   version "1.17.5"
   resolved "https://registry.yarnpkg.com/vite-plugin-mkcert/-/vite-plugin-mkcert-1.17.5.tgz#175f1a2a99c110fa87b2f2e6390b22656674a67b"

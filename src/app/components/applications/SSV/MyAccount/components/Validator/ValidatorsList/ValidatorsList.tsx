@@ -181,9 +181,7 @@ const ValidatorsList = ({
 
   useDebounce(
     () => {
-      console.log('intersection?.isIntersecting:', intersection?.isIntersecting);
       if (intersection?.isIntersecting && infiniteScroll.hasNextPage && !infiniteScroll.isFetching) {
-        console.log('fetching next page');
         infiniteScroll.fetchNextPage();
       }
     },

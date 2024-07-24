@@ -1,11 +1,8 @@
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { PrimaryButton } from '~app/atomicComponents';
-import config from '~app/common/config';
 import ValidatorsList, { ValidatorsListProps } from '~app/components/applications/SSV/MyAccount/components/Validator/ValidatorsList/ValidatorsList';
 import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import Spinner from '~app/components/common/Spinner';
-import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip/AnchorTooltIp';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
 import { getSelectedCluster } from '~app/redux/account.slice.ts';
@@ -70,44 +67,13 @@ const ValidatorsWrapper = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
 `;
 
-const TooltipTitleWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-`;
-
-const TooltipLink = styled.p`
-  margin: 0;
-  font-size: 14px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.colors.tint40};
-  text-decoration: underline;
-  white-space: nowrap;
-  cursor: pointer;
-`;
-
-const NewBulkActions = ({ title, nextStep, tooltipTitle, listProps }: { title: string; nextStep: Function; tooltipTitle: string; listProps: Required<ValidatorsListProps> }) => {
-  const navigate = useNavigate();
+const NewBulkActions = ({ title, nextStep, listProps }: { title: string; nextStep: Function; listProps: Required<ValidatorsListProps> }) => {
   const validator = useAppSelector(getSelectedCluster);
-  const maxValidatorsCount = listProps.maxSelectable;
   const selectedValidatorsCount = listProps.selectedValidators?.length || 0;
   const totalCount = validator.validatorCount > listProps.maxSelectable ? listProps.maxSelectable : validator.validatorCount;
   const disableButtonCondition = !selectedValidatorsCount || listProps.infiniteScroll.isLoading;
   const showIndicatorCondition = selectedValidatorsCount > 0;
   const showSubHeaderCondition = validator.validatorCount > listProps.maxSelectable;
-  const createValidatorsLaunchpad = () => {
-    navigate(config.routes.SSV.VALIDATOR.CREATE);
-  };
-
-  const tooltipTitleComponent = (tooltipText: string) =>
-    listProps.selectedValidators.length > maxValidatorsCount ? (
-      <TooltipTitleWrapper>
-        {tooltipText}
-        <TooltipLink onClick={createValidatorsLaunchpad}>Create via Ethereum Launchpad</TooltipLink>
-      </TooltipTitleWrapper>
-    ) : undefined;
 
   return (
     <Wrapper>
@@ -120,11 +86,9 @@ const NewBulkActions = ({ title, nextStep, tooltipTitle, listProps }: { title: s
               (listProps.infiniteScroll.isLoading ? (
                 <Spinner />
               ) : (
-                <AnchorTooltip title={listProps.validators.length > maxValidatorsCount ? tooltipTitleComponent(tooltipTitle) : null} placement={'top'} placement={'top'}>
-                  <SelectedIndicator>
-                    {selectedValidatorsCount} of {totalCount} selected
-                  </SelectedIndicator>
-                </AnchorTooltip>
+                <SelectedIndicator>
+                  {selectedValidatorsCount} of {totalCount} selected
+                </SelectedIndicator>
               ))}
           </TitleWrapper>
           {showSubHeaderCondition && <SubHeader>Select up to {listProps.maxSelectable} validators</SubHeader>}

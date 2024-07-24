@@ -39,12 +39,6 @@ const translations = {
         SELECT_REMOVE_VALIDATORS: 'Select Validators to Remove',
         SELECT_EXIT_VALIDATORS: 'Select Validators to Exit'
       },
-      BULK_TOOLTIPS: {
-        REMOVE_VALIDATORS: (count: number) => `Bulk remove is capped at ${count} validators per batch.`,
-        REMOVE_VALIDATORS_CHECKBOX: (count: number) => `You have reached the limit of ${count} validators`,
-        EXIT_VALIDATORS: (count: number) => `The maximum number of validators for bulk exit is ${count}.`,
-        EXIT_VALIDATORS_CHECKBOX: (count: number) => `You can't select more than ${count} validators per batch.`
-      },
       FLOW_CONFIRMATION_DATA: {
         REMOVE: {
           title: 'Remove Validator',

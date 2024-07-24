@@ -25,7 +25,7 @@ type OptimisticOperatorChanges = {
 };
 
 type OptimisticOperatorsMap = {
-  [id: string]: OptimisticOperatorChanges;
+  [id: string]: OptimisticOperatorChanges | undefined;
 };
 
 type OptimisticClusterChanges = {
@@ -34,7 +34,7 @@ type OptimisticClusterChanges = {
 };
 
 type OptimisticClustersMap = {
-  [id: string]: OptimisticClusterChanges;
+  [id: string]: OptimisticClusterChanges | undefined;
 };
 
 type OptimisticValidatorChanges = OptimisticType;
@@ -177,6 +177,9 @@ export const slice = createSlice({
     setExcludedCluster: (state, action: { payload: ICluster | null }) => {
       state.excludedCluster = action.payload;
     },
+    removeCluster: (state, action: { payload: string }) => {
+      state.clusters = state.clusters.filter((c) => c.clusterId !== action.payload);
+    },
     sortOperatorsByStatus: (state) => {
       state.operators = state.operators.sort((a: any, b: any) => {
         if (a.status === 'Inactive') {
@@ -234,6 +237,7 @@ export const {
   setSelectedOperatorId,
   sortOperatorsByStatus,
   setOptimisticValidator,
+  removeCluster,
   reset
 } = slice.actions;
 
@@ -266,9 +270,11 @@ export const removeOptimisticDeletedValidators = (state: RootState, { clusterId,
 export const getSelectedCluster = (state: RootState): ICluster => {
   if (state.accountState.excludedCluster) {
     const optimisticCluster = state.accountState.optimisticClustersMap[state.accountState.excludedCluster.clusterId.toString()];
+    if (!optimisticCluster) return state.accountState.excludedCluster;
     if (optimisticCluster.cluster.updatedAt === state.accountState.excludedCluster.updatedAt) return optimisticCluster.cluster;
     return state.accountState.excludedCluster;
   }
+
   if (!state.accountState.selectedClusterId) return {} as ICluster;
 
   const selectedCluster = state.accountState.clusters.find((cluster: ICluster) => cluster.clusterId === state.accountState.selectedClusterId);

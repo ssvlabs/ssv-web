@@ -62,10 +62,23 @@ export type TxProps = {
         }[]
       | undefined
   ) => void;
+  onSuccess?: (receipt: any) => void;
+  onError?: (error: any) => void;
   refreshMS?: number;
 };
 
-export const transactionExecutor = async ({ contractMethod, payload, isContractWallet, getterTransactionState, prevState, dispatch, refreshMS, onConfirmed }: TxProps) => {
+export const transactionExecutor = async ({
+  contractMethod,
+  payload,
+  isContractWallet,
+  getterTransactionState,
+  prevState,
+  dispatch,
+  refreshMS,
+  onConfirmed,
+  onSuccess,
+  onError
+}: TxProps) => {
   try {
     if (isContractWallet) {
       contractMethod(...payload);
@@ -81,6 +94,8 @@ export const transactionExecutor = async ({ contractMethod, payload, isContractW
     }
 
     const receipt = await tx.wait();
+
+    onSuccess?.(receipt);
 
     if (receipt.blockHash) {
       if (onConfirmed) {
@@ -120,6 +135,7 @@ export const transactionExecutor = async ({ contractMethod, payload, isContractW
       })
     );
     dispatch(setIsLoading(false));
+    onError?.(e);
     return false;
   } finally {
     if (!isContractWallet) {

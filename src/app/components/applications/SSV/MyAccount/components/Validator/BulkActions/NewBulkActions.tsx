@@ -106,8 +106,8 @@ const NewBulkActions = ({
   selectedValidators: Record<string, BulkValidatorData>;
   fillSelectedValidators: Function;
   maxValidatorsCount: number;
-  tooltipTitle: string;
-  checkboxTooltipTitle: string;
+  tooltipTitle?: string;
+  checkboxTooltipTitle?: string;
 }) => {
   const navigate = useNavigate();
   const validator = useAppSelector(getSelectedCluster);
@@ -141,7 +141,7 @@ const NewBulkActions = ({
               (isLoading ? (
                 <Spinner />
               ) : (
-                <AnchorTooltip title={validatorsListArray.length > maxValidatorsCount ? tooltipTitleComponent(tooltipTitle) : null} placement={'top'}>
+                <AnchorTooltip title={validatorsListArray.length > maxValidatorsCount && tooltipTitle ? tooltipTitleComponent(tooltipTitle) : null} placement={'top'}>
                   <SelectedIndicator>
                     {selectedValidatorsCount} of {totalCount} selected
                   </SelectedIndicator>
@@ -153,7 +153,7 @@ const NewBulkActions = ({
             withoutSettings
             setIsLoading={setIsLoading}
             isLoading={isLoading}
-            checkboxTooltipTitle={tooltipTitleComponent(checkboxTooltipTitle)}
+            checkboxTooltipTitle={checkboxTooltipTitle ? tooltipTitleComponent(checkboxTooltipTitle) : undefined}
             maxValidatorsCount={maxValidatorsCount}
             onCheckboxClickHandler={onCheckboxClickHandler}
             selectedValidators={selectedValidators}

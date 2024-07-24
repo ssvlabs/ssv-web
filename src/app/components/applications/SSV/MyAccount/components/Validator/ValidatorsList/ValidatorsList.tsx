@@ -221,11 +221,6 @@ const ValidatorsList = ({
         </TableHeaderTitle>
       </TableHeader>
       <ValidatorsListWrapper className="relative">
-        {infiniteScroll.isLoading && (
-          <SpinnerWrapper>
-            <Spinner />
-          </SpinnerWrapper>
-        )}
         {validators?.map((validator) => {
           const formattedPublicKey = add0x(validator.public_key);
           const isChecked = selectedValidators.includes(formattedPublicKey);

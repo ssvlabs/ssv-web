@@ -1,19 +1,21 @@
+import { xor } from 'lodash';
 import { useEffect, useState } from 'react';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { translations } from '~app/common/config';
 import ConfirmationStep from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ConfirmationStep';
 import ExitFinishPage from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/ExitFinishPage';
 import NewBulkActions from '~app/components/applications/SSV/MyAccount/components/Validator/BulkActions/NewBulkActions';
+import { BULK_FLOWS } from '~app/enums/bulkFlow.enum.ts';
+import { useClusterValidators } from '~app/hooks/cluster/useClusterValidators';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
-import { BULK_FLOWS } from '~app/enums/bulkFlow.enum.ts';
-import { BulkValidatorData, IValidator } from '~app/model/validator.model';
+import { getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getAccountAddress, getIsContractWallet } from '~app/redux/wallet.slice';
+import { BulkActionRouteState } from '~app/Routes';
+import { MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
 import { add0x } from '~lib/utils/strings';
 import { exitValidators, removeValidators } from '~root/services/validatorContract.service';
-import { getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
-import { BulkActionRouteState } from '~app/Routes';
 
 enum BULK_STEPS {
   BULK_ACTIONS = 'BULK_ACTIONS',
@@ -26,71 +28,57 @@ const BULK_FLOWS_ACTION_TITLE = {
   [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.BULK_TITLES.SELECT_EXIT_VALIDATORS
 };
 
+export const MAX_VALIDATORS_COUNT = Number(window.localStorage.getItem(MAXIMUM_VALIDATOR_COUNT_FLAG)) || 100;
+
 const BULK_FLOWS_CONFIRMATION_DATA = {
   [BULK_FLOWS.BULK_REMOVE]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.FLOW_CONFIRMATION_DATA.REMOVE,
   [BULK_FLOWS.BULK_EXIT]: translations.VALIDATOR.REMOVE_EXIT_VALIDATOR.FLOW_CONFIRMATION_DATA.EXIT
 };
 
 const BulkComponent = () => {
-  const [selectedValidators, setSelectedValidators] = useState<Record<string, BulkValidatorData>>({});
+  const [selectedValidators, setSelectedValidators] = useState<string[]>([]);
   const [currentStep, setCurrentStep] = useState(BULK_STEPS.BULK_ACTIONS);
   const navigate = useNavigate();
   const accountAddress = useAppSelector(getAccountAddress);
   const isContractWallet = useAppSelector(getIsContractWallet);
   const cluster = useAppSelector(getSelectedCluster);
+
   const { liquidationCollateralPeriod, minimumLiquidationCollateral } = useAppSelector(getNetworkFeeAndLiquidationCollateral);
+
+  const { infiniteQuery, fetchAll, validators } = useClusterValidators(cluster);
+  const maxSelectable = cluster.validatorCount;
+
+  const isAllSelected = selectedValidators.length === maxSelectable;
 
   const location: Location<BulkActionRouteState> = useLocation();
   const { validator, currentBulkFlow } = location.state;
 
-  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (validator) {
-      setSelectedValidators({
-        [add0x(validator.public_key)]: {
-          validator,
-          isSelected: true
-        }
-      });
+      setSelectedValidators([add0x(validator.public_key)]);
       setCurrentStep(BULK_STEPS.BULK_CONFIRMATION);
     }
   }, []);
 
-  const selectMaxValidatorsCount = (validators: IValidator[], validatorList: Record<string, BulkValidatorData>): Record<string, BulkValidatorData> => {
-    const isSelected = Object.values(selectedValidators).every((validator: { validator: IValidator; isSelected: boolean }) => !validator.isSelected);
-    validators.forEach((validator: IValidator) => {
-      validatorList[add0x(validator.public_key)] = {
-        validator,
-        isSelected: isSelected
-      };
-    });
-    return validatorList;
-  };
+  const onToggleAll = () => {
+    if (!isAllSelected && validators.length < maxSelectable) {
+      return fetchAll.mutateAsync().then((data) => {
+        if (!data) return;
+        return setSelectedValidators(data.slice(0, maxSelectable)?.map((validator) => add0x(validator.public_key)));
+      });
+    }
 
-  const fillSelectedValidators = (validators: IValidator[], selectAll: boolean = false) => {
-    if (validators) {
-      let validatorList: Record<string, BulkValidatorData> = {};
-      if (selectAll) {
-        validatorList = selectMaxValidatorsCount(validators, validatorList);
-      } else {
-        validators.forEach((validator: IValidator) => {
-          validatorList[add0x(validator.public_key)] = {
-            validator,
-            isSelected: selectedValidators[add0x(validator.public_key)]?.isSelected || false
-          };
-        });
-      }
-      setSelectedValidators(validatorList);
+    if (!isAllSelected) {
+      setSelectedValidators(validators.slice(0, maxSelectable).map((validator) => add0x(validator.public_key)));
+    } else {
+      setSelectedValidators([]);
     }
   };
 
-  const onCheckboxClickHandler = ({ publicKey }: { publicKey: string }) => {
-    setSelectedValidators((prevState: any) => {
-      prevState[publicKey].isSelected = !prevState[publicKey].isSelected;
-      return { ...prevState };
-    });
+  const onValidatorToggle = (publicKey: string) => {
+    setSelectedValidators((prev) => xor(prev, [publicKey]));
   };
 
   const backToSingleClusterPage = (validatorsCount?: number) => {
@@ -98,21 +86,16 @@ const BulkComponent = () => {
   };
 
   const nextStep = async () => {
-    const selectedValidatorKeys = Object.keys(selectedValidators);
-    const selectedValidatorValues = Object.values(selectedValidators);
     let res;
-    const selectedValidatorsCount = selectedValidatorValues.filter((validator) => validator.isSelected).length;
-    const isBulk = selectedValidatorsCount > 1;
+    const selectedValidatorsCount = selectedValidators.length;
+    const isBulk = selectedValidators.length > 1;
+    const validatorPks = isBulk ? selectedValidators : selectedValidators[0];
     if (currentStep === BULK_STEPS.BULK_ACTIONS) {
       setCurrentStep(BULK_STEPS.BULK_CONFIRMATION);
     } else if (currentStep === BULK_STEPS.BULK_CONFIRMATION && currentBulkFlow === BULK_FLOWS.BULK_EXIT) {
-      setIsLoading(true);
-      const validatorIds = isBulk
-        ? selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected)
-        : add0x(selectedValidatorValues.filter((selectedValidator) => selectedValidator.isSelected)[0].validator.public_key);
       res = await exitValidators({
         isContractWallet,
-        validatorIds,
+        validatorIds: validatorPks,
         operatorIds: cluster.operators.map((operator: IOperator) => operator.id),
         isBulk,
         dispatch
@@ -120,17 +103,12 @@ const BulkComponent = () => {
       if (res && !isContractWallet) {
         setCurrentStep(BULK_STEPS.BULK_EXIT_FINISH);
       }
-      setIsLoading(false);
     } else if (currentStep === BULK_STEPS.BULK_EXIT_FINISH) {
       backToSingleClusterPage();
     } else {
-      setIsLoading(true);
       if (selectedValidatorsCount === cluster.validatorCount && cluster.isLiquidated) {
         dispatch(setExcludedCluster(cluster));
       }
-      const validatorPks = isBulk
-        ? selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected)
-        : add0x(validator?.public_key || selectedValidatorValues.filter((selectedValidator) => selectedValidator.isSelected)[0].validator.public_key);
       res = await removeValidators({
         cluster,
         accountAddress,
@@ -145,7 +123,6 @@ const BulkComponent = () => {
       if (res && !isContractWallet) {
         backToSingleClusterPage(selectedValidatorsCount);
       }
-      setIsLoading(false);
     }
   };
 
@@ -154,12 +131,20 @@ const BulkComponent = () => {
   if (currentStep === BULK_STEPS.BULK_ACTIONS && !validator) {
     return (
       <NewBulkActions
-        nextStep={nextStep}
-        maxValidatorsCount={cluster.validatorCount}
         title={BULK_FLOWS_ACTION_TITLE[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
-        fillSelectedValidators={fillSelectedValidators}
-        selectedValidators={selectedValidators}
-        onCheckboxClickHandler={onCheckboxClickHandler}
+        nextStep={nextStep}
+        listProps={{
+          type: 'select',
+          validators: validators,
+          withoutSettings: true,
+          onToggleAll,
+          maxSelectable,
+          selectedValidators,
+          onValidatorToggle,
+          isEmpty: infiniteQuery.isSuccess && validators.length === 0,
+          infiniteScroll: infiniteQuery,
+          isFetchingAll: fetchAll.isPending
+        }}
       />
     );
   }
@@ -169,8 +154,8 @@ const BulkComponent = () => {
       <ConfirmationStep
         stepBack={!validator ? stepBack : undefined}
         flowData={BULK_FLOWS_CONFIRMATION_DATA[currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE]}
-        selectedValidators={Object.keys(selectedValidators).filter((publicKey: string) => selectedValidators[publicKey].isSelected)}
-        isLoading={isLoading}
+        selectedValidators={selectedValidators}
+        isLoading={false}
         currentBulkFlow={currentBulkFlow ?? BULK_FLOWS.BULK_REMOVE}
         nextStep={nextStep}
       />
@@ -178,7 +163,7 @@ const BulkComponent = () => {
   }
 
   // BULK_STEPS.BULK_EXIT_FINISH === currentStep
-  return <ExitFinishPage nextStep={nextStep} selectedValidators={Object.keys(selectedValidators).filter((publicKey: string) => selectedValidators[publicKey].isSelected)} />;
+  return <ExitFinishPage nextStep={nextStep} selectedValidators={selectedValidators} />;
 };
 
 export default BulkComponent;

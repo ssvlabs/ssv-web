@@ -21,6 +21,7 @@ import { selectOperators } from '~app/redux/operator.slice.ts';
 import { getAccountAddress } from '~app/redux/wallet.slice';
 import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
 import { useStyles } from './SingleCluster.styles';
+import { useClusterValidators } from '~app/hooks/cluster/useClusterValidators';
 
 const ValidatorsWrapper = styled.div`
   width: 872px;
@@ -70,6 +71,8 @@ const SingleCluster = () => {
       return result.some((isUsable) => isUsable === false);
     }
   });
+
+  const { validators, infiniteQuery } = useClusterValidators(cluster);
 
   const hasDeletedOperators = cluster.operators.some((operator) => operator.is_deleted);
 
@@ -139,7 +142,7 @@ const SingleCluster = () => {
                 </Tooltip>
               </Grid>
             </Grid>
-            <ValidatorsList />
+            <ValidatorsList type="view" validators={validators} isEmpty={infiniteQuery.isSuccess && validators.length === 0} infiniteScroll={{ ...infiniteQuery }} />
           </ValidatorsWrapper>
         </div>
       </Section>

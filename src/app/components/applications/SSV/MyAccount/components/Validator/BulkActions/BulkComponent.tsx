@@ -141,7 +141,7 @@ const BulkComponent = () => {
           maxSelectable,
           selectedValidators,
           onValidatorToggle,
-          isEmpty: false,
+          isEmpty: infiniteQuery.isSuccess && validators.length === 0,
           infiniteScroll: infiniteQuery,
           isFetchingAll: fetchAll.isPending
         }}

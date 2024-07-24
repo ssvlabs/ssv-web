@@ -73,7 +73,6 @@ const SingleCluster = () => {
   });
 
   const { validators, infiniteQuery } = useClusterValidators(cluster);
-  console.log('validators:', validators);
 
   const hasDeletedOperators = cluster.operators.some((operator) => operator.is_deleted);
 
@@ -143,7 +142,7 @@ const SingleCluster = () => {
                 </Tooltip>
               </Grid>
             </Grid>
-            <ValidatorsList type="view" validators={validators} infiniteScroll={{ ...infiniteQuery }} />
+            <ValidatorsList type="view" validators={validators} isEmpty={infiniteQuery.isSuccess && validators.length === 0} infiniteScroll={{ ...infiniteQuery }} />
           </ValidatorsWrapper>
         </div>
       </Section>

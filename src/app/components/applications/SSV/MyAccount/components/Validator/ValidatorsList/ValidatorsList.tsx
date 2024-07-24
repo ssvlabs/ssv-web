@@ -132,13 +132,8 @@ export type ValidatorsListProps = {
   validators: IValidator[];
   selectedValidators?: string[];
   onValidatorToggle?: (publicKey: string) => void;
-  infiniteScroll: UseInfiniteQueryResult<unknown> /* {
-    isFetchingNextPage: boolean;
-    isLoading: boolean;
-    hasNextPage: boolean;
-    fetchNextPage: () => void;
-  }; */;
-  isFetchingAll: boolean;
+  infiniteScroll: UseInfiniteQueryResult<unknown>;
+  isFetchingAll?: boolean;
   withoutSettings?: boolean;
   maxSelectable?: number;
   isEmpty?: boolean;
@@ -189,14 +184,6 @@ const ValidatorsList = ({
     [intersection?.isIntersecting, infiniteScroll]
   );
 
-  if (infiniteScroll.isLoading) {
-    return (
-      <SpinnerWrapper>
-        <Spinner />
-      </SpinnerWrapper>
-    );
-  }
-
   if (isEmpty) {
     return (
       <div>
@@ -234,6 +221,11 @@ const ValidatorsList = ({
         </TableHeaderTitle>
       </TableHeader>
       <ValidatorsListWrapper className="relative">
+        {infiniteScroll.isLoading && (
+          <SpinnerWrapper>
+            <Spinner />
+          </SpinnerWrapper>
+        )}
         {validators?.map((validator) => {
           const formattedPublicKey = add0x(validator.public_key);
           const isChecked = selectedValidators.includes(formattedPublicKey);
@@ -265,7 +257,7 @@ const ValidatorsList = ({
             </ValidatorWrapper>
           );
         })}
-        {infiniteScroll.hasNextPage && (
+        {infiniteScroll.isFetching && (
           <SpinnerWrapper>
             <Spinner />
           </SpinnerWrapper>

@@ -39,8 +39,8 @@ type OptimisticClustersMap = {
 
 type OptimisticValidatorChanges = OptimisticType;
 type OptimisticValidatorMap = {
-  [clusterHash: string]: {
-    [validatorPk: string]: OptimisticValidatorChanges | undefined;
+  [clusterId: string]: {
+    [validatorPk: string]: OptimisticValidatorChanges;
   };
 };
 
@@ -253,7 +253,11 @@ type OptimisticValidatorOptions = {
   validators: IValidator[];
 };
 
-export const getOptimisticValidators = (state: RootState, { clusterId, validators }: OptimisticValidatorOptions) => {
+export const getOptimisticDeletedValidators = (state: RootState, clusterId: ICluster['clusterId']) => {
+  return Object.keys(state.accountState.optimisticValidatorsMap[clusterId] || {});
+};
+
+export const removeOptimisticDeletedValidators = (state: RootState, { clusterId, validators }: OptimisticValidatorOptions) => {
   const optimisticValidators = state.accountState.optimisticValidatorsMap[clusterId];
   if (!optimisticValidators) return validators;
 

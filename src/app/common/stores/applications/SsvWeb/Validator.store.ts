@@ -330,7 +330,7 @@ class ValidatorStore {
    * @param keyStore
    * @param callBack
    */
-  async setKeyStore(keyStore: any, callBack?: any) {
+  async setKeyStore(keyStore: File, callBack?: () => void) {
     try {
       this.keyStorePrivateKey = '';
       this.keyStoreFile = keyStore;

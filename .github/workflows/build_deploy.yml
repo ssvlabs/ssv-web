@@ -130,6 +130,12 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET_ILYA }}
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: 'https://discord.com/api/webhooks/1260155240905179160/22WSKx6WjwrDBchNLCDTJ7Y7D1BgrXMKjDkdxM_JWpp34E2CbGphMjT2VsVgR7MRHx8B'
+        uses: Ilshidur/action-discord@master
+        with:
+          args: 'The project web app has been deployed.'
       # </ilya-app.stage.ssv.network>
 
       # <chris-app.stage.ssv.network>

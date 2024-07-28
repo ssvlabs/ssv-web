@@ -244,7 +244,12 @@ export const {
 export const getAccountOperators = getOptimisticOperators;
 // export const getIsFetchingOperators = (state: RootState) => state.accountState.isFetchingOperators;
 export const getOperatorsPagination = getOperatorOptimisticPagination;
-export const getAccountClusters = (state: RootState) => state.accountState.clusters.map((c) => state.accountState.optimisticClustersMap[c.clusterId.toString()]?.cluster || c);
+export const getAccountClusters = (state: RootState) =>
+  state.accountState.clusters.map((c) => {
+    const cluster = state.accountState.optimisticClustersMap[c.clusterId.toString()]?.cluster || c;
+    return addOptimisticOperatorsToCluster(state, cluster);
+  });
+
 // export const getIsFetchingClusters = (state: RootState) => state.accountState.isFetchingClusters;
 export const getClustersPagination = (state: RootState) => state.accountState.clustersPagination;
 
@@ -267,12 +272,17 @@ export const removeOptimisticDeletedValidators = (state: RootState, { clusterId,
   });
 };
 
+export const addOptimisticOperatorsToCluster = (state: RootState, cluster: ICluster) => {
+  const clusterOperators = cluster.operators.map((operator) => state.accountState.optimisticOperatorsMap[operator.id.toString()]?.operator || operator);
+  return { ...cluster, operators: clusterOperators };
+};
+
 export const getSelectedCluster = (state: RootState): ICluster => {
   if (state.accountState.excludedCluster) {
     const optimisticCluster = state.accountState.optimisticClustersMap[state.accountState.excludedCluster.clusterId.toString()];
-    if (!optimisticCluster) return state.accountState.excludedCluster;
-    if (optimisticCluster.cluster.updatedAt === state.accountState.excludedCluster.updatedAt) return optimisticCluster.cluster;
-    return state.accountState.excludedCluster;
+    if (!optimisticCluster) return addOptimisticOperatorsToCluster(state, state.accountState.excludedCluster);
+    if (optimisticCluster.cluster.updatedAt === state.accountState.excludedCluster.updatedAt) return addOptimisticOperatorsToCluster(state, optimisticCluster.cluster);
+    return addOptimisticOperatorsToCluster(state, state.accountState.excludedCluster);
   }
 
   if (!state.accountState.selectedClusterId) return {} as ICluster;
@@ -281,11 +291,11 @@ export const getSelectedCluster = (state: RootState): ICluster => {
   if (!selectedCluster) return {} as ICluster;
 
   const optimisticCluster = state.accountState.optimisticClustersMap[state.accountState.selectedClusterId];
-  if (!optimisticCluster) return selectedCluster;
+  if (!optimisticCluster) return addOptimisticOperatorsToCluster(state, selectedCluster);
 
-  if (optimisticCluster.cluster.updatedAt === selectedCluster.updatedAt) return optimisticCluster.cluster;
+  if (optimisticCluster.cluster.updatedAt === selectedCluster.updatedAt) return addOptimisticOperatorsToCluster(state, optimisticCluster.cluster);
   store.dispatch(removeOptimisticCluster(optimisticCluster.cluster.clusterId));
-  return selectedCluster;
+  return addOptimisticOperatorsToCluster(state, selectedCluster);
 };
 
 export const getSelectedOperator = (state: RootState) => {

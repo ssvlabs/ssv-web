@@ -107,7 +107,13 @@ const AllowanceButton = ({ disable, onClick, text, checkboxText, checkBoxCallBac
       setHasGotAllowanceApproval(false);
       setApproveButtonText('Approve SSV');
     } else {
-      if (!isDoubleCheck) setHasToRequestApproval(false);
+      if (!isDoubleCheck) {
+        setHasToRequestApproval(false);
+      } else {
+        setApproveButtonText('Approved');
+        setHasGotAllowanceApproval(true);
+        allowanceApprovedCB && allowanceApprovedCB();
+      }
     }
     setHasCheckedAllowance(true);
   };
@@ -128,9 +134,6 @@ const AllowanceButton = ({ disable, onClick, text, checkboxText, checkBoxCallBac
       setApproveButtonText('Approving…');
       const res = await requestAllowance(handlePendingTransaction);
       if (res) {
-        setApproveButtonText('Approved');
-        setHasGotAllowanceApproval(true);
-        allowanceApprovedCB && allowanceApprovedCB();
         await checkUserAllowance(true);
       } else {
         setApproveButtonText('Approve SSV');

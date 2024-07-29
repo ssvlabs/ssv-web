@@ -176,7 +176,7 @@ const ReactivateCluster = () => {
               </Typography>
             </Grid>
             <AllowanceButton
-              text={'Next'}
+              text={'Reactivate'}
               onClick={reactivateClusterHandler}
               disable={disableCondition}
               totalAmount={disableCondition ? '0' : formatNumberToUi(totalCost.toFixed(18))}

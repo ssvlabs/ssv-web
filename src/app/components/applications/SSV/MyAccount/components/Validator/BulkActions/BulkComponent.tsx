@@ -11,7 +11,7 @@ import { BulkValidatorData, IValidator } from '~app/model/validator.model';
 import { getNetworkFeeAndLiquidationCollateral } from '~app/redux/network.slice';
 import { getAccountAddress, getIsContractWallet } from '~app/redux/wallet.slice';
 import { MAXIMUM_VALIDATOR_COUNT_FLAG } from '~lib/utils/developerHelper';
-import { formatValidatorPublicKey } from '~lib/utils/strings';
+import { add0x } from '~lib/utils/strings';
 import { exitValidators, removeValidators } from '~root/services/validatorContract.service';
 import { getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
 import { BulkActionRouteState } from '~app/Routes';
@@ -62,7 +62,7 @@ const BulkComponent = () => {
   useEffect(() => {
     if (validator) {
       setSelectedValidators({
-        [formatValidatorPublicKey(validator.public_key)]: {
+        [add0x(validator.public_key)]: {
           validator,
           isSelected: true
         }
@@ -74,7 +74,7 @@ const BulkComponent = () => {
   const selectMaxValidatorsCount = (validators: IValidator[], validatorList: Record<string, BulkValidatorData>): Record<string, BulkValidatorData> => {
     const isSelected = Object.values(selectedValidators).every((validator: { validator: IValidator; isSelected: boolean }) => !validator.isSelected);
     validators.forEach((validator: IValidator, index: number) => {
-      validatorList[formatValidatorPublicKey(validator.public_key)] = {
+      validatorList[add0x(validator.public_key)] = {
         validator,
         isSelected: isSelected && index < MAX_VALIDATORS_COUNT
       };
@@ -89,9 +89,9 @@ const BulkComponent = () => {
         validatorList = selectMaxValidatorsCount(validators, validatorList);
       } else {
         validators.forEach((validator: IValidator) => {
-          validatorList[formatValidatorPublicKey(validator.public_key)] = {
+          validatorList[add0x(validator.public_key)] = {
             validator,
-            isSelected: selectedValidators[formatValidatorPublicKey(validator.public_key)]?.isSelected || false
+            isSelected: selectedValidators[add0x(validator.public_key)]?.isSelected || false
           };
         });
       }
@@ -115,19 +115,19 @@ const BulkComponent = () => {
     const selectedValidatorValues = Object.values(selectedValidators);
     let res;
     const selectedValidatorsCount = selectedValidatorValues.filter((validator) => validator.isSelected).length;
-    const condition = selectedValidatorsCount > 1;
+    const isBulk = selectedValidatorsCount > 1;
     if (currentStep === BULK_STEPS.BULK_ACTIONS) {
       setCurrentStep(BULK_STEPS.BULK_CONFIRMATION);
     } else if (currentStep === BULK_STEPS.BULK_CONFIRMATION && currentBulkFlow === BULK_FLOWS.BULK_EXIT) {
       setIsLoading(true);
-      const validatorIds = condition
+      const validatorIds = isBulk
         ? selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected)
-        : formatValidatorPublicKey(selectedValidatorValues.filter((selectedValidator) => selectedValidator.isSelected)[0].validator.public_key);
+        : add0x(selectedValidatorValues.filter((selectedValidator) => selectedValidator.isSelected)[0].validator.public_key);
       res = await exitValidators({
         isContractWallet,
         validatorIds,
         operatorIds: cluster.operators.map((operator: IOperator) => operator.id),
-        isBulk: condition,
+        isBulk,
         dispatch
       });
       if (res && !isContractWallet) {
@@ -141,17 +141,18 @@ const BulkComponent = () => {
       if (selectedValidatorsCount === cluster.validatorCount && cluster.isLiquidated) {
         dispatch(setExcludedCluster(cluster));
       }
-      const validatorPks = condition
+      const validatorPks = isBulk
         ? selectedValidatorKeys.filter((publicKey: string) => selectedValidators[publicKey].isSelected)
-        : formatValidatorPublicKey(validator?.public_key || selectedValidatorValues.filter((selectedValidator) => selectedValidator.isSelected)[0].validator.public_key);
+        : add0x(validator?.public_key || selectedValidatorValues.filter((selectedValidator) => selectedValidator.isSelected)[0].validator.public_key);
       res = await removeValidators({
+        cluster,
         accountAddress,
         isContractWallet,
         validatorPks,
         operators: cluster.operators ?? [],
         liquidationCollateralPeriod,
         minimumLiquidationCollateral,
-        isBulk: condition,
+        isBulk,
         dispatch
       });
       if (res && !isContractWallet) {

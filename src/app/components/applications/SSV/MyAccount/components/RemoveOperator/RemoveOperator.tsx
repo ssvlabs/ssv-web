@@ -6,8 +6,9 @@ import config from '~app/common/config';
 import { useStyles } from '~app/components/applications/SSV/MyAccount/components/RemoveOperator/RemoveOperator.styles';
 import BorderScreen from '~app/components/common/BorderScreen';
 import CheckBox from '~app/components/common/CheckBox';
-import NewWhiteWrapper from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
+import NewWhiteWrapper, { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper';
 import { ButtonSize } from '~app/enums/Button.enum';
+import { useSetOptimisticOperator } from '~app/hooks/operator/useSetOptimisticOperator';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { fetchOperators, getSelectedOperator } from '~app/redux/account.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
@@ -32,11 +33,19 @@ const RemoveOperator = () => {
     setIsChecked(!isChecked);
   };
 
+  const setOptimisticOperator = useSetOptimisticOperator();
+
   const submitForm = async () => {
     setIsLoading(true);
     const isRemoved = await removeOperator({ operatorId: Number(operator?.id), isContractWallet, dispatch });
     setIsLoading(false);
     if (isRemoved) {
+      if (operator) {
+        setOptimisticOperator({
+          operator: operator,
+          type: 'deleted'
+        });
+      }
       await dispatch(fetchOperators({ forcePage: 1 }));
       if (!isContractWallet) {
         navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR_DASHBOARD);
@@ -46,7 +55,7 @@ const RemoveOperator = () => {
 
   return (
     <Grid container item>
-      <NewWhiteWrapper type={1} header={'Operator Details'} />
+      <NewWhiteWrapper type={WhiteWrapperDisplayType.OPERATOR} header={'Operator Details'} />
       <Grid className={classes.BodyWrapper}>
         <BorderScreen
           marginTop={0}

@@ -13,11 +13,10 @@ import { getSelectedOperator } from '~app/redux/account.slice';
 
 const AddressesList = () => {
   const formRef = useRef<HTMLDivElement>(null);
-
   const operator = useAppSelector(getSelectedOperator)!;
   const hasWhitelistedAddresses = (operator.whitelist_addresses || []).length > 0;
-
   const { addManager, deleteManager, mode, submit, reset, setter } = useManageAuthorizedAddresses();
+  const isReachedMaxAddressesCount = addManager.fieldArray.fields.length >= 500;
 
   const addNewAddressField = () => {
     addManager.fieldArray.append({ value: '' });
@@ -100,7 +99,12 @@ const AddressesList = () => {
             ))}
             {addManager.form.formState.errors.addresses && <FormMessage className="text-error-500">{addManager.form.formState.errors.addresses.message}</FormMessage>}
             {mode !== 'delete' && (
-              <button type="button" className="h-12 w-full text-center border border-gray-400 border-dashed rounded-lg text-gray-500 font-medium" onClick={addNewAddressField}>
+              <button
+                disabled={isReachedMaxAddressesCount}
+                type="button"
+                className="h-12 w-full text-center border border-gray-400 border-dashed rounded-lg text-gray-500 font-medium"
+                onClick={addNewAddressField}
+              >
                 + Add Authorized Address
               </button>
             )}
@@ -111,7 +115,7 @@ const AddressesList = () => {
               <Button type="button" className="flex-1" size="xl" variant="secondary" onClick={reset} disabled={setter.isPending}>
                 Cancel
               </Button>
-              <Button className="flex-1" size="xl" type="submit" isActionBtn isLoading={setter.isPending} disabled={addManager.isSubmitDisabled}>
+              <Button className="flex-1" size="xl" type="submit" isActionBtn isLoading={setter.isPending} disabled={mode === 'add' && addManager.isSubmitDisabled}>
                 {mode === 'delete' ? 'Remove and Save' : 'Add and Save'}
               </Button>
             </div>

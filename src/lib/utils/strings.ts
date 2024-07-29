@@ -41,7 +41,7 @@ export const isEqualsAddresses = (a: string, b: string): boolean => {
   }
 };
 
-export const formatValidatorPublicKey = (publicKey: string) => (publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`);
+export const add0x = (publicKey: string) => (publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`);
 
 const checkAddressChecksum = (address: string) => {
   try {

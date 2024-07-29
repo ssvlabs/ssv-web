@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import config from '~app/common/config';
 import LinkText from '~app/components/common/LinkText';
@@ -14,13 +14,16 @@ import { checkAddressChecksum } from '~lib/utils/strings';
 import { PrimaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum';
 
+let feeRecipientAddress = '';
+
 const FeeRecipient = () => {
   const classes = useStyles();
   const accountAddress = useAppSelector(getAccountAddress);
   const isContractWallet = useAppSelector(getIsContractWallet);
   const [readOnlyState, setReadOnlyState] = useState(true);
   const [isAddressValid, setIsAddressValid] = useState(true);
-  const [userInput, setUserInput] = useState('');
+  const [userInput, setUserInput] = useState(feeRecipientAddress);
+  const [currentSavedAddress, setCurrentSavedAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const isMainnet = useAppSelector(getIsMainnet);
   const [isChecked, setIsChecked] = useState(false);
@@ -28,7 +31,9 @@ const FeeRecipient = () => {
   useEffect(() => {
     const fetchFeeRecipientAddress = async () => {
       const res = await getFeeRecipientAddress({ address: accountAddress });
-      setUserInput(res || accountAddress);
+      feeRecipientAddress ||= res || accountAddress;
+      setUserInput(feeRecipientAddress || res || accountAddress);
+      setCurrentSavedAddress(res || accountAddress);
     };
     fetchFeeRecipientAddress();
   }, []);
@@ -39,10 +44,13 @@ const FeeRecipient = () => {
       feeRecipientAddress: userInput,
       isContractWallet
     });
+    feeRecipientAddress = userInput;
     setIsLoading(false);
+    setReadOnlyState(true);
+    setCurrentSavedAddress(userInput);
   };
 
-  const setFeeRecipient = (e: any) => {
+  const setFeeRecipient = (e: ChangeEvent<HTMLInputElement>) => {
     const textInput = e.target.value.trim();
     try {
       const isChecksumAddress = checkAddressChecksum(textInput);
@@ -53,7 +61,7 @@ const FeeRecipient = () => {
     setUserInput(textInput);
   };
 
-  const submitDisable = !isAddressValid || userInput.length !== 42;
+  const submitDisable = !isAddressValid || userInput.length !== 42 || currentSavedAddress === userInput;
 
   return (
     <BorderScreen

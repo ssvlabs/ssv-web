@@ -2,7 +2,6 @@ import config, { translations } from '~app/common/config';
 import { EContractName } from '~app/model/contracts.model';
 import { IOperator } from '~app/model/operator.model';
 import { isEqualsAddresses } from '~lib/utils/strings';
-import { MAINNET_NETWORK_ID, getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { checkSpecialCharacters } from '~lib/utils/strings.ts';
 import { Dispatch } from '@reduxjs/toolkit';
 import { setErrorMessage } from '~app/redux/operatorMetadata.slice.ts';
@@ -230,11 +229,10 @@ export const isValidLink = (value: string) => {
 };
 
 export const isDkgAddressValid = (value: string, isForm?: boolean) => {
-  if (isForm && value === HTTPS_PREFIX) return false;
-  if (!value.startsWith(HTTPS_PREFIX)) return false;
-
+  if (isForm && value === HTTPS_PREFIX) return true;
   const addressWithoutHttps = value.substring(HTTPS_PREFIX.length);
-
+  if (!value.startsWith(HTTPS_PREFIX)) return false;
+  if (addressWithoutHttps.length === 0) return true;
   const domainPattern = '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,9}';
   const ipPattern = '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)';
   const portPattern = ':\\d{1,5}';
@@ -244,22 +242,10 @@ export const isDkgAddressValid = (value: string, isForm?: boolean) => {
   return value.length <= DKG_ADDRESS_MIN_LENGTH && pattern.test(addressWithoutHttps);
 };
 
-export const isOperatorPrivate = (operator: IOperator) => {
-  const network = getStoredNetwork();
-
-  // eslint-disable-next-line no-constant-condition
-  if (network.networkId === MAINNET_NETWORK_ID) return Boolean(operator.address_whitelist && operator.address_whitelist !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
-  return operator.is_private ?? false;
-};
+export const isOperatorPrivate = (operator: IOperator) => operator.is_private ?? false;
 
 export const canAccountUseOperator = async (account: string | `0x${string}`, operator: IOperator): Promise<boolean> => {
-  const network = getStoredNetwork();
   if (!isOperatorPrivate(operator)) return true;
-
-  // eslint-disable-next-line no-constant-condition
-  if (network.networkId === MAINNET_NETWORK_ID) {
-    return isEqualsAddresses(operator.address_whitelist, account);
-  }
 
   const hasExternalContract = Boolean(operator.whitelisting_contract && operator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
 
@@ -270,33 +256,6 @@ export const canAccountUseOperator = async (account: string | `0x${string}`, ope
   const isWhitelistedViaContract = hasExternalContract ? await contract.isAddressWhitelistedInWhitelistingContract(account, operator.id, operator.whitelisting_contract) : false;
 
   return isWhitelistedAddress || isWhitelistedViaContract;
-};
-
-/**
- * Sorting case-insensitively by each word in the string
- * @param relays
- * @private
- */
-export const sortMevRelays = (relays: string | string[]): string => {
-  if (!relays) {
-    return relays;
-  }
-  let splitStr: string[];
-  if (typeof relays === 'string') {
-    splitStr = relays.split(',');
-  } else {
-    splitStr = relays;
-  }
-  const sortedStr: string[] = splitStr.sort((a, b) => {
-    const aSplit = a.toLowerCase().split(' ');
-    const bSplit = b.toLowerCase().split(' ');
-    for (let i = 0; i < Math.min(aSplit.length, bSplit.length); ++i) {
-      const cmp = aSplit[i].localeCompare(bSplit[i]);
-      if (cmp !== 0) return cmp;
-    }
-    return 0;
-  });
-  return sortedStr.join(',');
 };
 
 export const checkWithConditions = (metadataFieldName: string, fieldEntity: MetadataEntity) => {

@@ -1,6 +1,8 @@
+import { difference } from 'lodash';
 import { useAddAuthorizedAddresses } from '~app/hooks/operator/useAddAuthorizedAddresses';
 import { useDeleteAuthorizedAddresses } from '~app/hooks/operator/useDeleteAuthorizedAddresses';
 import { useSetOperatorMultipleWhitelists } from '~app/hooks/operator/useSetOperatorMultipleWhitelists';
+import { useSetOptimisticOperator } from '~app/hooks/operator/useSetOptimisticOperator';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
 
@@ -19,10 +21,21 @@ export const useManageAuthorizedAddresses = () => {
     deleteManager.reset();
   };
 
+  const setOptimisticOperator = useSetOptimisticOperator();
+
   const update = (args: Parameters<typeof setter.mutate>[0]) => {
     setter.mutate(args, {
       onSuccess: () => {
         reset();
+        const whitelistedAddresses = args.mode === 'add' ? [...(operator.whitelist_addresses || []), ...args.addresses] : difference(operator.whitelist_addresses, args.addresses);
+        setOptimisticOperator({
+          operator: {
+            ...operator,
+            whitelist_addresses: whitelistedAddresses
+          },
+          type: 'updated'
+        });
+        setTimeout(reset, 100);
       }
     });
   };
@@ -30,11 +43,13 @@ export const useManageAuthorizedAddresses = () => {
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     switch (mode) {
-      case 'add':
+      case 'add': {
         addManager.form.handleSubmit(({ addresses }) => {
-          update({ mode: 'add', operatorIds: [operator.id], addresses: addresses.map((a) => a.value) });
+          const trimmedAddresses = addresses.map((a) => a.value).filter((addr) => addr && addr.trim() !== '');
+          update({ mode: 'add', operatorIds: [operator.id], addresses: trimmedAddresses });
         })(event);
         break;
+      }
       case 'delete':
         update({
           mode: 'delete',

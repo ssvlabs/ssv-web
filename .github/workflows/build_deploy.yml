@@ -220,7 +220,7 @@ jobs:
       # </sumbat-app.stage.ssv.network>
 
       # <beta.app.ssv.network>
-      - name: Run prod webapp build
+      - name: Run prod-test webapp build
         if: github.ref == 'refs/heads/prod-test'
         run: >
           GAS_PRICE="${{ env.GAS_PRICE }}"
@@ -228,16 +228,14 @@ jobs:
           SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          BLOX_INFRA_API="$BLOX_INFRA_API"
           yarn build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          BLOX_INFRA_API: "https://api.bloxstaking.com"
 
-      - name: Deploy prod webapp
+      - name: Deploy prod-test webapp
         if: github.ref == 'refs/heads/prod-test'
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:

@@ -34,6 +34,7 @@ const initGetterContract = ({ provider, network }: { provider: Provider; network
 
 const initSetterContract = ({ provider, network }: { provider: Provider; network: NetworkInfo }) => {
   const abi: any = config.CONTRACTS.SSV_NETWORK_SETTER.ABI;
+  console.log(network);
   const contractAddress = network.setterContractAddress;
   if (contractAddress) {
     if (contracts[EContractName.SETTER] && contracts[EContractName.SETTER].address === contractAddress) {

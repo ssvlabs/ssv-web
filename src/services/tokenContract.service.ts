@@ -1,6 +1,5 @@
 import { getContractByName } from '~root/wagmi/utils';
 import { EContractName } from '~app/model/contracts.model';
-import config from '~app/common/config';
 import { fromWei } from '~root/services/conversions.service';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider.ts';
 
@@ -8,11 +7,12 @@ const MAX_WEI_AMOUNT = '11579208923731619542357098500868790785326998466564056403
 
 const checkAllowance = async ({ accountAddress }: { accountAddress: string }): Promise<number> => {
   try {
+    const { setterContractAddress } = getStoredNetwork();
     const ssvContract = getContractByName(EContractName.TOKEN_GETTER);
     if (!ssvContract) {
       return 0;
     }
-    const allowance = await ssvContract.allowance(accountAddress, config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS);
+    const allowance = await ssvContract.allowance(accountAddress, setterContractAddress);
     return allowance || 0;
   } catch (e) {
     console.warn('checkAllowance error', e);

@@ -34,7 +34,6 @@ const initGetterContract = ({ provider, network }: { provider: Provider; network
 
 const initSetterContract = ({ provider, network }: { provider: Provider; network: NetworkInfo }) => {
   const abi: any = config.CONTRACTS.SSV_NETWORK_SETTER.ABI;
-  console.log(network);
   const contractAddress = network.setterContractAddress;
   if (contractAddress) {
     if (contracts[EContractName.SETTER] && contracts[EContractName.SETTER].address === contractAddress) {
@@ -52,7 +51,6 @@ const initSetterContract = ({ provider, network }: { provider: Provider; network
 const initTokenContract = ({ provider, network }: { provider: Provider; network: NetworkInfo }) => {
   const abi: any = config.CONTRACTS.SSV_TOKEN.ABI;
   const contractAddress = network.tokenAddress;
-  console.log(contractAddress);
   if (contractAddress) {
     if (contracts[EContractName.TOKEN_GETTER] && contracts[EContractName.TOKEN_GETTER].address === contractAddress) {
       console.warn('Token contract already exists');

@@ -87,13 +87,13 @@ export const ClusterDashboard = () => {
     ) => a.runWay - b.runWay
   );
 
-  const rows = sortedClusters.map((cluster: any) => {
+  const rows = sortedClusters.map((cluster) => {
     const remainingDaysValue = formatNumberToUi(cluster.runWay, true);
     const remainingDays = cluster.runWay && cluster.runWay !== Infinity ? `${remainingDaysValue} Days` : remainingDaysValue;
     return createData(
       longStringShorten(getClusterHash(cluster.operators, accountAddress).slice(2), 4),
       <Grid container style={{ gap: 8 }}>
-        {cluster.operators.map((operator: any, index: number) => {
+        {cluster.operators.map((operator, index: number) => {
           return (
             <Tooltip key={index} content={<OperatorDetails operator={operator} />} delayDuration={300} className="bg-gray-50 px-6 pt-4">
               <Grid

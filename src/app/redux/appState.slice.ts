@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { TransactionStatus } from '~app/enums/transactionStatus.enum';
 import { RootState } from '~app/store';
 import { getFromLocalStorageByKey, removeFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
 
@@ -10,6 +11,7 @@ export interface AppState {
   isShowConnectWallet: boolean;
   isShowTxPendingPopup: boolean;
   isShowSsvLoader: boolean;
+  transactionStatus: TransactionStatus | null;
   txHash: string;
   restrictedUserGeo: string;
 }
@@ -32,6 +34,7 @@ const initialState: AppState = {
   isShowConnectWallet: false,
   isShowTxPendingPopup: false,
   isShowSsvLoader: true,
+  transactionStatus: null,
   txHash: '',
   restrictedUserGeo: ''
 };
@@ -57,6 +60,9 @@ export const slice = createSlice({
     setIsShowSsvLoader: (state, action: { payload: boolean }) => {
       state.isShowSsvLoader = action.payload;
     },
+    setTransactionStatus: (state, action: { payload: TransactionStatus | null }) => {
+      state.transactionStatus = action.payload;
+    },
     setIsShowWalletPopup: (state, action: { payload: boolean }) => {
       state.isShowWalletPopup = action.payload;
     },
@@ -74,8 +80,17 @@ export const slice = createSlice({
 
 export const appStateReducer = slice.reducer;
 
-export const { toggleDarkMode, setIsShowSsvLoader, setRestrictedUserGeo, setIsLoading, setIsShowWalletPopup, setIsShowTxPendingPopup, setTxHash, setIsShowConnectWallet } =
-  slice.actions;
+export const {
+  toggleDarkMode,
+  setIsShowSsvLoader,
+  setRestrictedUserGeo,
+  setIsLoading,
+  setIsShowWalletPopup,
+  setTransactionStatus,
+  setIsShowTxPendingPopup,
+  setTxHash,
+  setIsShowConnectWallet
+} = slice.actions;
 
 export const getStrategyName = (state: RootState) => state.appState.strategyName;
 export const getIsDarkMode = (state: RootState) => state.appState.isDarkMode;
@@ -86,3 +101,4 @@ export const getIsShowWalletPopup = (state: RootState) => state.appState.isShowW
 export const getIsShowConnectWallet = (state: RootState) => state.appState.isShowConnectWallet;
 export const getIsShowTxPendingPopup = (state: RootState) => state.appState.isShowTxPendingPopup;
 export const getTxHash = (state: RootState) => state.appState.txHash;
+export const getTransactionStatus = (state: RootState) => state.appState.transactionStatus;

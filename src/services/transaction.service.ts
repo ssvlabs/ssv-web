@@ -65,6 +65,7 @@ export type TxProps = {
   onSuccess?: (receipt: any) => void;
   onError?: (error: any) => void;
   refreshMS?: number;
+  shouldThrowError?: boolean;
 };
 
 export const transactionExecutor = async ({
@@ -77,7 +78,8 @@ export const transactionExecutor = async ({
   refreshMS,
   onConfirmed,
   onSuccess,
-  onError
+  onError,
+  shouldThrowError
 }: TxProps) => {
   try {
     if (isContractWallet) {
@@ -130,12 +132,15 @@ export const transactionExecutor = async ({
   } catch (e: any) {
     dispatch(
       setMessageAndSeverity({
-        message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE,
+        message: e.shortMessage || e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE,
         severity: 'error'
       })
     );
     dispatch(setIsLoading(false));
     onError?.(e);
+    if (shouldThrowError) {
+      throw e;
+    }
     return false;
   } finally {
     if (!isContractWallet) {

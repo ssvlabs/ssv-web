@@ -46,23 +46,6 @@ const AddressesList = () => {
     }, 10);
   };
 
-  useEffect(() => {
-    if (isReachedMaxAddressesCount) {
-      dispatch(
-        setModalPopUp({
-          title: 'Limit Exceeded',
-          text: ['It appears that you tried to paste more than 500 addresses at once.', 'Please select up to 500 addresses and try again.'],
-          buttons: [
-            {
-              component: ErrorButton,
-              props: { text: 'Close', size: ButtonSize.XL, onClick: () => dispatch(setModalPopUp(null)) }
-            }
-          ]
-        })
-      );
-    }
-  }, [isReachedMaxAddressesCount]);
-
   const currentAddressesCount =
     deleteManager.addresses.length > 0 ? whitelistedAddressesCount - deleteManager.addresses.length : whitelistedAddressesCount + addManager.validNewAddressesCount;
 
@@ -75,6 +58,21 @@ const AddressesList = () => {
   const handlePaste = (index: number) => (e: React.ClipboardEvent<HTMLInputElement>) => {
     const text = e.clipboardData.getData('text');
     const matches = text.match(/0x[a-fA-F0-9]{40}/gm) || [];
+    if (whitelistedAddressesCount + matches.length > 500) {
+      dispatch(
+        setModalPopUp({
+          title: 'Limit Exceeded',
+          text: ['It appears that you tried to paste more than 500 addresses at once.', 'Please select up to 500 addresses and try again.'],
+          buttons: [
+            {
+              component: ErrorButton,
+              props: { text: 'Close', size: ButtonSize.XL, onClick: () => dispatch(setModalPopUp(null)) }
+            }
+          ]
+        })
+      );
+      return;
+    }
     if (matches.length > 1) {
       e.preventDefault();
       addManager.fieldArray.remove(index);

@@ -87,6 +87,9 @@ export const fetchOperators = createAsyncThunk(
     thunkApi
   ) => {
     const state = thunkApi.getState() as RootState;
+    if (state.appState.isMaintenancePage) {
+      return { operators: [], pagination: DEFAULT_PAGINATION };
+    }
     const accountAddress = state.walletState.accountAddress;
     const { page, per_page } = state.accountState.operatorsPagination;
     return await getOperatorsByOwnerAddress({
@@ -110,6 +113,9 @@ export const fetchClusters = createAsyncThunk(
     thunkApi
   ) => {
     const state = thunkApi.getState() as RootState;
+    if (state.appState.isMaintenancePage) {
+      return { clusters: [], pagination: DEFAULT_PAGINATION };
+    }
     const accountAddress = state.walletState.accountAddress;
     const liquidationCollateralPeriod = state.networkState.liquidationCollateralPeriod;
     const minimumLiquidationCollateral = state.networkState.minimumLiquidationCollateral;

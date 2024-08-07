@@ -22,6 +22,7 @@ export interface AppState {
   isShowConnectWallet: boolean;
   isShowTxPendingPopup: boolean;
   isShowSsvLoader: boolean;
+  isMaintenancePage: boolean;
   transactionStatus: TransactionStatus | null;
   txHash: string;
   restrictedUserGeo: string;
@@ -38,7 +39,10 @@ const getInitialStrategyName = () => {
   return 'ssv-web';
 };
 
+const isMaintenancePage = !!getFromLocalStorageByKey('isMaintenancePage');
+
 const initialState: AppState = {
+  isMaintenancePage,
   strategyName: getInitialStrategyName(),
   isDarkMode: !!getFromLocalStorageByKey('isDarkMode') /* ?? (window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches) */,
   isLoading: false,
@@ -46,7 +50,7 @@ const initialState: AppState = {
   isShowConnectWallet: false,
   isShowTxPendingPopup: false,
   modalPopUp: null,
-  isShowSsvLoader: true,
+  isShowSsvLoader: !isMaintenancePage,
   transactionStatus: null,
   txHash: '',
   restrictedUserGeo: ''
@@ -74,7 +78,7 @@ export const slice = createSlice({
       state.isLoading = action.payload;
     },
     setIsShowSsvLoader: (state, action: { payload: boolean }) => {
-      state.isShowSsvLoader = action.payload;
+      state.isShowSsvLoader = !state.isMaintenancePage && action.payload;
     },
     setTransactionStatus: (state, action: { payload: TransactionStatus | null }) => {
       state.transactionStatus = action.payload;
@@ -120,3 +124,4 @@ export const getIsShowTxPendingPopup = (state: RootState) => state.appState.isSh
 export const getTxHash = (state: RootState) => state.appState.txHash;
 export const getTransactionStatus = (state: RootState) => state.appState.transactionStatus;
 export const getModalPopUp = (state: RootState) => state.appState.modalPopUp;
+export const getIsMaintenancePage = (state: RootState) => state.appState.isMaintenancePage;

@@ -24,6 +24,7 @@ export const config = {
     },
     SSV: {
       ROOT: '/join',
+      MAINTENANCE: '/maintenance',
       MY_ACCOUNT: {
         ROOT: '/my-account',
         WITHDRAW: '/my-account/withdraw',

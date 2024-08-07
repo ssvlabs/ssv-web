@@ -2,6 +2,17 @@ import { createSlice } from '@reduxjs/toolkit';
 import { TransactionStatus } from '~app/enums/transactionStatus.enum';
 import { RootState } from '~app/store';
 import { getFromLocalStorageByKey, removeFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
+import React from 'react';
+import { ButtonPropsType } from '~app/types/ButtonPropsType.ts';
+
+type ModalPopUpType = null | {
+  title: string;
+  text: string[];
+  buttons: {
+    component: React.FC<ButtonPropsType>;
+    props: ButtonPropsType;
+  }[];
+};
 
 export interface AppState {
   strategyName: string;
@@ -14,6 +25,7 @@ export interface AppState {
   transactionStatus: TransactionStatus | null;
   txHash: string;
   restrictedUserGeo: string;
+  modalPopUp: ModalPopUpType;
 }
 
 const getInitialStrategyName = () => {
@@ -33,6 +45,7 @@ const initialState: AppState = {
   isShowWalletPopup: false,
   isShowConnectWallet: false,
   isShowTxPendingPopup: false,
+  modalPopUp: null,
   isShowSsvLoader: true,
   transactionStatus: null,
   txHash: '',
@@ -53,6 +66,9 @@ export const slice = createSlice({
     },
     setRestrictedUserGeo: (state, action: { payload: string }) => {
       state.restrictedUserGeo = action.payload;
+    },
+    setModalPopUp: (state, action: { payload: ModalPopUpType }) => {
+      state.modalPopUp = action.payload;
     },
     setIsLoading: (state, action: { payload: boolean }) => {
       state.isLoading = action.payload;
@@ -89,7 +105,8 @@ export const {
   setTransactionStatus,
   setIsShowTxPendingPopup,
   setTxHash,
-  setIsShowConnectWallet
+  setIsShowConnectWallet,
+  setModalPopUp
 } = slice.actions;
 
 export const getStrategyName = (state: RootState) => state.appState.strategyName;
@@ -102,3 +119,4 @@ export const getIsShowConnectWallet = (state: RootState) => state.appState.isSho
 export const getIsShowTxPendingPopup = (state: RootState) => state.appState.isShowTxPendingPopup;
 export const getTxHash = (state: RootState) => state.appState.txHash;
 export const getTransactionStatus = (state: RootState) => state.appState.transactionStatus;
+export const getModalPopUp = (state: RootState) => state.appState.modalPopUp;

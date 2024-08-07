@@ -1,6 +1,5 @@
 import { Card } from '~app/atomicComponents/Card';
 import config from '~app/common/config';
-import { ActiveBadge } from '~app/components/applications/SSV/OperatorAccessSettingsV2/ActiveBadge';
 import { OperatorStatusBadge } from '~app/components/applications/SSV/OperatorAccessSettingsV2/OperatorStatusBadge';
 import { PermissionSettingsItem } from '~app/components/applications/SSV/OperatorAccessSettingsV2/PermissionSettingsItem';
 import BorderScreen from '~app/components/common/BorderScreen';
@@ -8,10 +7,14 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
 import { FaCircleInfo } from 'react-icons/fa6';
 import { Tooltip } from '~app/components/ui/tooltip';
+import SettingItemAddon from '~app/components/applications/SSV/OperatorAccessSettingsV2/SettingItemAddon.tsx';
 
 const PermissionSettingsDashboard = () => {
   const selectedOperator = useAppSelector(getSelectedOperator)!;
-  const hasWhitelistingContract = Boolean(selectedOperator.whitelisting_contract && selectedOperator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST);
+  const whitelistingContract =
+    selectedOperator.whitelisting_contract && selectedOperator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST
+      ? [selectedOperator?.whitelisting_contract]
+      : [];
 
   return (
     <BorderScreen blackHeader width={872}>
@@ -47,13 +50,13 @@ const PermissionSettingsDashboard = () => {
           title="Authorized Addresses"
           description="Manage owner addresses authorized to register validators to your operator."
           route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.AUTHORIZED_ADDRESSES}
-          addon={<ActiveBadge isActive={Boolean(selectedOperator.whitelist_addresses?.length)} />}
+          addon={<SettingItemAddon addresses={selectedOperator?.whitelist_addresses || []} />}
         />
         <PermissionSettingsItem
           className="pb-8"
           title="External Contract"
           description="Manage whitelisted addresses through an external contract."
-          addon={<ActiveBadge isActive={hasWhitelistingContract} />}
+          addon={<SettingItemAddon addresses={whitelistingContract} />}
           route={config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.EXTERNAL_CONTRACT}
         />
       </Card>

@@ -3,7 +3,9 @@ import { config } from '~root/wagmi/config';
 
 import { merge } from 'lodash';
 import _mixpanel from 'mixpanel-browser';
-_mixpanel.init('98daf7d1d9e414c2fdd786641ec5b310');
+_mixpanel.init(import.meta.env.VITE_MIXPANEL_TOKEN, {
+  ip: false
+});
 
 const getNetworkName = () => {
   const chainId = getChainId(config);

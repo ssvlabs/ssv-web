@@ -27,6 +27,8 @@ import { getOwnerNonce } from '~root/services/account.service';
 import { getClusterData, getClusterHash } from '~root/services/cluster.service';
 import {
   createValidatorsRecord,
+  Filters,
+  filtersMapping,
   getResponse,
   getTooltipText,
   getValidatorCountErrorMessage,
@@ -50,6 +52,7 @@ import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
 import { getIsClusterSelected, getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
 import { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper.tsx';
 import styled from 'styled-components';
+import KeySharesFilter from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/KeySharesFilter.tsx';
 
 const Wrapper = styled.div`
   display: flex;
@@ -87,7 +90,10 @@ const KeyShareFlow = () => {
   const keyShareFileIsJson = validatorStore.keyShareFile && isJsonFile(validatorStore.keyShareFile);
   const [maxAvailableValidatorsCount, setMaxAvailableValidatorsCount] = useState<number>(getMaxValidatorsCountPerRegistration(clusterSize));
   const [isLoading, setIsLoading] = useState(false);
+  const [currentFilter, setCurrentFilter] = useState<Filters>(Filters.AVAILABLE);
+  const [keySharesStatus, setKeySharesStatus] = useState({ available: 0, registered: 0, incorrect: 0, all: 0 });
   const operatorValidatorsLimit = useAppSelector(getOperatorValidatorsLimit);
+  const [processValidatorsCount, setProcessValidatorCount] = useState<number>(0);
 
   useEffect(() => {
     if (!isSecondRegistration) {
@@ -177,6 +183,8 @@ const KeyShareFlow = () => {
         // TODO: add proper error handling
         return;
       }
+      let registered = 0;
+      let available = 0;
       const promises = Object.values(validators).map(
         (validator: ValidatorType) =>
           // eslint-disable-next-line no-async-promise-executor
@@ -185,6 +193,7 @@ const KeyShareFlow = () => {
               const res = await fetchIsRegisteredValidator(validator.publicKey);
               if (res.data && isEqualsAddresses(res.data.ownerAddress, accountAddress)) {
                 validators[res.data.publicKey].registered = true;
+                registered++;
               }
               if (!validators[validator.publicKey].registered && !validators[validator.publicKey].errorMessage) {
                 validators[validator.publicKey].isSelected = true;
@@ -240,18 +249,20 @@ const KeyShareFlow = () => {
           };
         })
       );
-
+      let incorrect = 0;
       for (let i = 0; i < Object.values(validators).length; i++) {
         const validatorPublicKey = validatorsArray[i].publicKey;
         if (!validatorsArray[i].registered && currentNonce !== validators[validatorPublicKey].ownerNonce) {
           validators[validatorPublicKey].errorMessage = translations.VALIDATOR.BULK_REGISTRATION.INCORRECT_OWNER_NONCE_ERROR_MESSAGE;
           validators[validatorPublicKey].isSelected = false;
+          incorrect++;
         } else if (!validatorsArray[i].registered) {
           await keyShares[i].validateSingleShares(validatorsArray[i].sharesData, {
             ownerAddress: accountAddress,
             ownerNonce: currentNonce,
             publicKey: validatorsArray[i].publicKey
           });
+          available++;
           currentNonce += 1;
         }
         if (currentNonce - ownerNonce > maxValidatorsCount) {
@@ -259,7 +270,20 @@ const KeyShareFlow = () => {
         }
       }
 
+      let filter;
+      if (available) {
+        filter = Filters.AVAILABLE;
+      } else if (registered) {
+        filter = Filters.REGISTERED;
+      } else if (incorrect) {
+        filter = Filters.INCORRECT;
+      } else {
+        filter = Filters.ALL;
+      }
+
       const selectedValidatorsCount = Object.values(validators).filter((validator: ValidatorType) => validator.isSelected).length;
+      setCurrentFilter(filter);
+      setKeySharesStatus({ available, registered, incorrect, all: available + registered + incorrect });
       setValidatorsList(validators);
       setWarningMessage(warningTextMessage);
       setValidatorsCount(selectedValidatorsCount);
@@ -315,6 +339,7 @@ const KeyShareFlow = () => {
       const fileJson = await validatorStore.keyShareFile.text();
       const keyShareMulti: KeyShareMulti = parseToMultiShareFormat(fileJson);
       const keyShares: KeyShares = await KeyShares.fromJson(keyShareMulti);
+      setProcessValidatorCount(keyShares.list().length);
       const validationResponse: KeyShareValidationResult = await validateKeyShareFile(keyShares);
       if (validationResponse.response.id !== KeyShareValidationResponseId.OK_RESPONSE_ID) {
         return validationResponse.response;
@@ -496,7 +521,14 @@ const KeyShareFlow = () => {
       header={translations.VALIDATOR.IMPORT.KEY_SHARES_TITLE}
       body={[
         <>
-          <ImportInput removeButtons={removeButtons} processingFile={processingFile} fileText={renderFileText} fileHandler={fileHandler} fileImage={renderFileImage} />
+          <ImportInput
+            removeButtons={removeButtons}
+            processValidatorsCount={processValidatorsCount}
+            processingFile={processingFile}
+            fileText={renderFileText}
+            fileHandler={fileHandler}
+            fileImage={renderFileImage}
+          />
           {Object.values(validatorsList).length > 0 && !processingFile && MainMultiKeyShare}
         </>
       ]}
@@ -521,6 +553,7 @@ const KeyShareFlow = () => {
       tooltipText={getTooltipText(maxAvailableValidatorsCount, maxAvailableValidatorsCount !== 0 && maxAvailableValidatorsCount < availableToRegisterValidatorsCount)}
       body={[
         <Grid item container>
+          <KeySharesFilter setCurrentFilter={setCurrentFilter} currentFilter={currentFilter} {...keySharesStatus} />
           {ownerNonceIssueCondition && (
             <ErrorMessage
               text={
@@ -531,7 +564,7 @@ const KeyShareFlow = () => {
               }
             />
           )}
-          <ValidatorList validatorsList={Object.values(validatorsList)} />
+          <ValidatorList validatorsList={Object.values(validatorsList).filter(filtersMapping[currentFilter])} />
           <Grid container item xs={12}>
             <PrimaryButton text={'Next'} onClick={submitHandler} isDisabled={buttonDisableConditions} size={ButtonSize.XL} isLoading={isLoading} />
           </Grid>

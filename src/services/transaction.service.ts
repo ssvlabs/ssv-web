@@ -1,7 +1,8 @@
-import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
+import { setIsLoading, setIsShowTxPendingPopup, setTransactionStatus, setTxHash } from '~app/redux/appState.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { translations } from '~app/common/config';
 import { refreshOperatorsAndClusters } from '~app/redux/account.slice';
+import { TransactionStatus } from '~app/enums/transactionStatus.enum.ts';
 
 const CHECK_UPDATES_MAX_ITERATIONS = 60;
 
@@ -92,6 +93,7 @@ export const transactionExecutor = async ({
 
     if (tx.hash) {
       dispatch(setTxHash(tx.hash));
+      dispatch(setTransactionStatus(TransactionStatus.PENDING));
       dispatch(setIsShowTxPendingPopup(true));
     }
 
@@ -100,8 +102,10 @@ export const transactionExecutor = async ({
     onSuccess?.(receipt);
 
     if (receipt.blockHash) {
+      dispatch(setTransactionStatus(TransactionStatus.INDEXING));
       if (onConfirmed) {
         await onConfirmed(receipt.events || []);
+        dispatch(setTransactionStatus(null));
         return true;
       }
 
@@ -146,6 +150,7 @@ export const transactionExecutor = async ({
     if (!isContractWallet) {
       dispatch(setIsLoading(false));
       dispatch(setIsShowTxPendingPopup(false));
+      dispatch(setTransactionStatus(null));
     }
   }
 };

@@ -1,6 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { TransactionStatus } from '~app/enums/transactionStatus.enum';
 import { RootState } from '~app/store';
 import { getFromLocalStorageByKey, removeFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
+import React from 'react';
+import { ButtonPropsType } from '~app/types/ButtonPropsType.ts';
+
+type ModalPopUpType = null | {
+  title: string;
+  text: string[];
+  buttons: {
+    component: React.FC<ButtonPropsType>;
+    props: ButtonPropsType;
+  }[];
+};
 
 export interface AppState {
   strategyName: string;
@@ -10,8 +22,10 @@ export interface AppState {
   isShowConnectWallet: boolean;
   isShowTxPendingPopup: boolean;
   isShowSsvLoader: boolean;
+  transactionStatus: TransactionStatus | null;
   txHash: string;
   restrictedUserGeo: string;
+  modalPopUp: ModalPopUpType;
 }
 
 const getInitialStrategyName = () => {
@@ -31,7 +45,9 @@ const initialState: AppState = {
   isShowWalletPopup: false,
   isShowConnectWallet: false,
   isShowTxPendingPopup: false,
+  modalPopUp: null,
   isShowSsvLoader: true,
+  transactionStatus: null,
   txHash: '',
   restrictedUserGeo: ''
 };
@@ -51,11 +67,17 @@ export const slice = createSlice({
     setRestrictedUserGeo: (state, action: { payload: string }) => {
       state.restrictedUserGeo = action.payload;
     },
+    setModalPopUp: (state, action: { payload: ModalPopUpType }) => {
+      state.modalPopUp = action.payload;
+    },
     setIsLoading: (state, action: { payload: boolean }) => {
       state.isLoading = action.payload;
     },
     setIsShowSsvLoader: (state, action: { payload: boolean }) => {
       state.isShowSsvLoader = action.payload;
+    },
+    setTransactionStatus: (state, action: { payload: TransactionStatus | null }) => {
+      state.transactionStatus = action.payload;
     },
     setIsShowWalletPopup: (state, action: { payload: boolean }) => {
       state.isShowWalletPopup = action.payload;
@@ -74,8 +96,18 @@ export const slice = createSlice({
 
 export const appStateReducer = slice.reducer;
 
-export const { toggleDarkMode, setIsShowSsvLoader, setRestrictedUserGeo, setIsLoading, setIsShowWalletPopup, setIsShowTxPendingPopup, setTxHash, setIsShowConnectWallet } =
-  slice.actions;
+export const {
+  toggleDarkMode,
+  setIsShowSsvLoader,
+  setRestrictedUserGeo,
+  setIsLoading,
+  setIsShowWalletPopup,
+  setTransactionStatus,
+  setIsShowTxPendingPopup,
+  setTxHash,
+  setIsShowConnectWallet,
+  setModalPopUp
+} = slice.actions;
 
 export const getStrategyName = (state: RootState) => state.appState.strategyName;
 export const getIsDarkMode = (state: RootState) => state.appState.isDarkMode;
@@ -86,3 +118,5 @@ export const getIsShowWalletPopup = (state: RootState) => state.appState.isShowW
 export const getIsShowConnectWallet = (state: RootState) => state.appState.isShowConnectWallet;
 export const getIsShowTxPendingPopup = (state: RootState) => state.appState.isShowTxPendingPopup;
 export const getTxHash = (state: RootState) => state.appState.txHash;
+export const getTransactionStatus = (state: RootState) => state.appState.transactionStatus;
+export const getModalPopUp = (state: RootState) => state.appState.modalPopUp;

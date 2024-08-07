@@ -20,6 +20,7 @@ import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
 import { isEqualsAddresses } from '~lib/utils/strings';
 import { isWhitelistingContract as _isWhitelistingContract } from '~root/services/operatorContract.service';
+import { useNavigate } from 'react-router-dom';
 
 type FormValues = {
   externalContract: string;
@@ -29,6 +30,7 @@ const ExternalContract = () => {
   const operator = useAppSelector(getSelectedOperator)!;
   const whitelistingContractAddress = operator.whitelisting_contract !== config.GLOBAL_VARIABLE.DEFAULT_ADDRESS_WHITELIST ? operator.whitelisting_contract ?? '' : '';
 
+  const navigate = useNavigate();
   const setExternalContract = useSetOperatorsWhitelistingContract();
   const isWhitelistingContract = useMutation({
     mutationFn: _isWhitelistingContract
@@ -88,6 +90,7 @@ const ExternalContract = () => {
             type: 'updated'
           });
           form.reset({ externalContract: values.externalContract });
+          navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.ROOT);
         }
       }
     );

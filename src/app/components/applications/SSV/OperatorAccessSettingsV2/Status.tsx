@@ -7,10 +7,12 @@ import { useSetOperatorVisibility } from '~app/hooks/operator/useSetOperatorVisi
 import { useSetOptimisticOperator } from '~app/hooks/operator/useSetOptimisticOperator';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
+import { useNavigate } from 'react-router-dom';
+import config from '~app/common/config';
 
 const OperatorStatus = () => {
   const setOptimisticOperator = useSetOptimisticOperator();
-
+  const navigate = useNavigate();
   const operator = useAppSelector(getSelectedOperator)!;
   const isFeeZero = !Number(operator.fee);
   const switchLabel = operator.is_private ? 'Public' : 'Private';
@@ -70,6 +72,7 @@ const OperatorStatus = () => {
                       },
                       type: 'updated'
                     });
+                    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.ROOT);
                   }
                 }
               )

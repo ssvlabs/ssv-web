@@ -5,13 +5,15 @@ import { useSetOperatorMultipleWhitelists } from '~app/hooks/operator/useSetOper
 import { useSetOptimisticOperator } from '~app/hooks/operator/useSetOptimisticOperator';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
+import { useNavigate } from 'react-router-dom';
+import config from '~app/common/config';
 
 type Mode = 'add' | 'delete' | 'view';
 
 export const useManageAuthorizedAddresses = () => {
   const operator = useAppSelector(getSelectedOperator)!;
   const setter = useSetOperatorMultipleWhitelists();
-
+  const navigate = useNavigate();
   const addManager = useAddAuthorizedAddresses();
   const deleteManager = useDeleteAuthorizedAddresses();
   const mode: Mode = addManager.hasAddresses ? 'add' : deleteManager.hasAddresses ? 'delete' : 'view';
@@ -19,6 +21,7 @@ export const useManageAuthorizedAddresses = () => {
   const reset = () => {
     addManager.form.reset();
     deleteManager.reset();
+    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.ROOT);
   };
 
   const setOptimisticOperator = useSetOptimisticOperator();

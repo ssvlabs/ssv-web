@@ -3,6 +3,9 @@ import { config } from '~root/wagmi/config';
 
 import { merge } from 'lodash';
 import _mixpanel from 'mixpanel-browser';
+console.log('_mixpanel:', _mixpanel);
+
+console.log('import.meta.env.VITE_MIXPANEL_TOKEN:', import.meta.env.VITE_MIXPANEL_TOKEN);
 _mixpanel.init(import.meta.env.VITE_MIXPANEL_TOKEN, {
   ip: false
 });

@@ -3,8 +3,9 @@ import config from '~app/common/config';
 import AppBar from '~app/components/common/AppBar/AppBar';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getAccountClusters, getAccountOperators } from '~app/redux/account.slice';
-import { getIsLoading, getRestrictedUserGeo } from '~app/redux/appState.slice';
+import { getIsLoading, getIsMaintenancePage, getRestrictedUserGeo } from '~app/redux/appState.slice';
 import GoogleTagManager from '~lib/analytics/GoogleTag/GoogleTagManager';
+import SimpleAppBar from '~app/components/common/AppBar/components/SimpleAppBar.tsx';
 
 const SsvAppBar = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const SsvAppBar = () => {
   const operators = useAppSelector(getAccountOperators);
   const clusters = useAppSelector(getAccountClusters);
   const isRestrictedCountry = useAppSelector(getRestrictedUserGeo);
+  const isMaintenancePage = useAppSelector(getIsMaintenancePage);
 
   const moveToDashboard = () => {
     if (isLoading || isRestrictedCountry) return;
@@ -69,7 +71,14 @@ const SsvAppBar = () => {
     }
   ];
 
-  return <AppBar buttons={buttons} />;
+  const components = {
+    true: <SimpleAppBar />,
+    false: <AppBar buttons={buttons} />
+  };
+
+  const Component = components[`${isMaintenancePage}`];
+
+  return Component;
 };
 
 export default SsvAppBar;

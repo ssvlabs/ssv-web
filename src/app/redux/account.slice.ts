@@ -9,6 +9,7 @@ import { RootState, store } from '~app/store';
 import { add0x } from '~lib/utils/strings';
 import { getClustersByOwnerAddress } from '~root/services/cluster.service';
 import { getOperatorsByOwnerAddress } from '~root/services/operator.service';
+import { IPagination } from '~app/model/pagination.model.ts';
 
 export interface Pagination {
   page: number;
@@ -87,6 +88,9 @@ export const fetchOperators = createAsyncThunk(
     thunkApi
   ) => {
     const state = thunkApi.getState() as RootState;
+    if (state.appState.isMaintenancePage) {
+      return { operators: [], pagination: {} as IPagination };
+    }
     const accountAddress = state.walletState.accountAddress;
     const { page, per_page } = state.accountState.operatorsPagination;
     return await getOperatorsByOwnerAddress({
@@ -110,6 +114,9 @@ export const fetchClusters = createAsyncThunk(
     thunkApi
   ) => {
     const state = thunkApi.getState() as RootState;
+    if (state.appState.isMaintenancePage) {
+      return [];
+    }
     const accountAddress = state.walletState.accountAddress;
     const liquidationCollateralPeriod = state.networkState.liquidationCollateralPeriod;
     const minimumLiquidationCollateral = state.networkState.minimumLiquidationCollateral;

@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { TransactionStatus } from '~app/enums/transactionStatus.enum';
 import { RootState } from '~app/store';
 import { getFromLocalStorageByKey, removeFromLocalStorageByKey, saveInLocalStorage } from '~root/providers/localStorage.provider';
 import React from 'react';
@@ -21,6 +22,7 @@ export interface AppState {
   isShowConnectWallet: boolean;
   isShowTxPendingPopup: boolean;
   isShowSsvLoader: boolean;
+  transactionStatus: TransactionStatus | null;
   txHash: string;
   restrictedUserGeo: string;
   modalPopUp: ModalPopUpType;
@@ -45,6 +47,7 @@ const initialState: AppState = {
   isShowTxPendingPopup: false,
   modalPopUp: null,
   isShowSsvLoader: true,
+  transactionStatus: null,
   txHash: '',
   restrictedUserGeo: ''
 };
@@ -73,6 +76,9 @@ export const slice = createSlice({
     setIsShowSsvLoader: (state, action: { payload: boolean }) => {
       state.isShowSsvLoader = action.payload;
     },
+    setTransactionStatus: (state, action: { payload: TransactionStatus | null }) => {
+      state.transactionStatus = action.payload;
+    },
     setIsShowWalletPopup: (state, action: { payload: boolean }) => {
       state.isShowWalletPopup = action.payload;
     },
@@ -96,6 +102,7 @@ export const {
   setRestrictedUserGeo,
   setIsLoading,
   setIsShowWalletPopup,
+  setTransactionStatus,
   setIsShowTxPendingPopup,
   setTxHash,
   setIsShowConnectWallet,
@@ -111,4 +118,5 @@ export const getIsShowWalletPopup = (state: RootState) => state.appState.isShowW
 export const getIsShowConnectWallet = (state: RootState) => state.appState.isShowConnectWallet;
 export const getIsShowTxPendingPopup = (state: RootState) => state.appState.isShowTxPendingPopup;
 export const getTxHash = (state: RootState) => state.appState.txHash;
+export const getTransactionStatus = (state: RootState) => state.appState.transactionStatus;
 export const getModalPopUp = (state: RootState) => state.appState.modalPopUp;

@@ -43,10 +43,7 @@ const getSetter = () => {
         return {
           hash,
           wait: async () => {
-            const recipient = await waitForTransactionReceipt(config, {
-              hash,
-              retryCount: 7
-            });
+            const recipient = await waitForTransactionReceipt(config, { hash }).catch(() => waitForTransactionReceipt(config, { hash }));
             return {
               ...recipient,
               events: recipient.logs.map((log) => {

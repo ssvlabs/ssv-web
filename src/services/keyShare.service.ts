@@ -32,6 +32,13 @@ export enum KeyShareValidationResponseId {
   INCONSISTENT_OPERATOR_CLUSTER
 }
 
+export enum Filters {
+  AVAILABLE = 'Available',
+  REGISTERED = 'Registered',
+  INCORRECT = 'Incorrect',
+  ALL = 'All'
+}
+
 export type ValidatorType = {
   ownerNonce: number;
   publicKey: string;
@@ -144,3 +151,10 @@ export const createValidatorsRecord = (keyShareMulti: KeyShares) =>
     };
     return acc;
   }, {});
+
+export const filtersMapping = {
+  [Filters.AVAILABLE]: (validator: ValidatorType) => !validator.registered && !validator.errorMessage,
+  [Filters.REGISTERED]: (validator: ValidatorType) => validator.registered,
+  [Filters.INCORRECT]: (validator: ValidatorType) => validator.errorMessage,
+  [Filters.ALL]: (validator: ValidatorType) => validator
+};

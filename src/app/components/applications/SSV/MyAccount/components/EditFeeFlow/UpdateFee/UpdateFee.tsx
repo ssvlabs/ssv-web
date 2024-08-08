@@ -76,6 +76,8 @@ const UpdateFee = () => {
   }, [newFee, error]);
 
   const declareNewFeeHandler = () => {
+    const operatorFee = formatNumberToUi(getFeeForYear(fromWei(operator.fee)));
+    setNewFee(operatorFee);
     setCurrentFlowStep(FeeUpdateSteps.START);
   };
 

@@ -1,5 +1,4 @@
 import Grid from '@mui/material/Grid';
-import Tooltip from '@mui/material/Tooltip';
 import config from '~app/common/config';
 import { truncateText } from '~lib/utils/strings';
 import ImageDiv from '~app/components/common/ImageDiv/ImageDiv';
@@ -12,6 +11,7 @@ import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { isOperatorPrivate } from '~lib/utils/operatorMetadataHelper';
 import { IOperator } from '~app/model/operator.model.ts';
+import { Tooltip } from '~app/components/ui/tooltip';
 
 type Props = {
   gray80?: boolean;
@@ -60,37 +60,33 @@ const OperatorDetails = (props: Props) => {
 
   return (
     <Grid container className={classes.Wrapper}>
-      <Tooltip
-        disableHoverListener={!isPrivateOperator}
-        title={'Private Operator'}
-        placement={'top'}
-        children={
-          <Grid className={classes.OperatorDetailsWrapper}>
-            <Grid item className={classes.OperatorLogo}>
-              {isPrivateOperator && (
-                <Grid className={classes.PrivateOperatorWrapper}>
-                  <Grid className={classes.PrivateOperatorLockIcon} />
-                </Grid>
-              )}
-            </Grid>
-            <Grid item className={classes.TextWrapper}>
-              <Grid item className={classes.Name}>
-                {operatorName.length > 18 && !isFullOperatorName ? (
-                  <AnchorTooltip title={operatorName} placement={'top'}>
-                    {truncateText(operatorName, 18)}
-                  </AnchorTooltip>
-                ) : (
-                  operatorName
-                )}
+      <Grid className={classes.OperatorDetailsWrapper}>
+        <Grid item className={classes.OperatorLogo}>
+          {isPrivateOperator && (
+            <Tooltip asChild content={'Private Operator'}>
+              <Grid className={classes.PrivateOperatorWrapper}>
+                <Grid className={classes.PrivateOperatorLockIcon} />
               </Grid>
-              <Grid item container className={classes.Id}>
-                ID: {operator.id}
-                {withCopy && <Grid className={classes.Copy} onClick={copyId} />}
-              </Grid>
-            </Grid>
+            </Tooltip>
+          )}
+        </Grid>
+
+        <Grid item className={classes.TextWrapper}>
+          <Grid item className={classes.Name}>
+            {operatorName.length > 18 && !isFullOperatorName ? (
+              <AnchorTooltip title={operatorName} placement={'top'}>
+                {truncateText(operatorName, 18)}
+              </AnchorTooltip>
+            ) : (
+              operatorName
+            )}
           </Grid>
-        }
-      />
+          <Grid item container className={classes.Id}>
+            ID: {operator.id}
+            {withCopy && <Grid className={classes.Copy} onClick={copyId} />}
+          </Grid>
+        </Grid>
+      </Grid>
       {operator.type !== 'operator' && (
         <Grid item className={classes.OperatorType}>
           <OperatorType type={operator.type} />

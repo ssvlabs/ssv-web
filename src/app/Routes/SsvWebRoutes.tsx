@@ -4,6 +4,7 @@ import config from '~app/common/config';
 import Announcement from '~app/components/common/Annotation/Announcement';
 import SsvAppBar from '~app/components/common/AppBar/SsvAppBar';
 import Layout from '~app/components/common/Layout';
+import MaintenancePage from '~app/components/applications/SSV/Maintenance/MaintenancePage.tsx';
 
 const Welcome = lazy(() => import('~app/components/applications/SSV/Welcome/Welcome'));
 const FeeRecipient = lazy(() => import('~app/components/applications/SSV/FeeRecipient'));
@@ -60,7 +61,6 @@ const SsvWebRoutes = () => {
     // TODO: add future flag V2 should be for testnet only
     {
       path: ssvRoutes.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.ROOT,
-
       Component: OperatorPermissionSettingsDashboard
     },
     {
@@ -124,6 +124,7 @@ const SsvWebRoutes = () => {
       <Suspense fallback={<div className="container"></div>}>
         <Wrapper>
           <Route path={'/'} element={<Welcome />} />
+          <Route path={config.routes.SSV.MAINTENANCE} element={<MaintenancePage />} />
           <Route path={config.routes.COUNTRY_NOT_SUPPORTED} element={<CountryNotSupported />} />
           <Route path={ssvRoutes.ROOT} element={<Welcome />} />
           <Route path={ssvRoutes.MY_ACCOUNT.ROOT}>

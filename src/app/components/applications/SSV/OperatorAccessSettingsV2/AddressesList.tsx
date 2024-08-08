@@ -173,7 +173,7 @@ const AddressesList = () => {
           </div>
           {mode !== 'view' && (
             <div className="flex gap-2 w-full">
-              <Button type="button" className="flex-1" size="xl" variant="secondary" onClick={reset} disabled={setter.isPending}>
+              <Button type="button" className="flex-1" size="xl" variant="secondary" onClick={() => reset(true)} disabled={setter.isPending}>
                 Cancel
               </Button>
               <Button className="flex-1" size="xl" type="submit" isActionBtn isLoading={setter.isPending} disabled={mode === 'add' && addManager.isSubmitDisabled}>

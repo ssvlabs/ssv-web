@@ -1,6 +1,5 @@
 /* eslint-disable no-async-promise-executor */
 import Decimal from 'decimal.js';
-import { store } from '~app/store';
 import { action, makeObservable, observable } from 'mobx';
 import { KeyShares, KeySharesItem, SSVKeys } from 'ssv-keys';
 import { EContractName } from '~app/model/contracts.model';
@@ -171,7 +170,7 @@ class ValidatorStore {
     const publicKeys = payload.get('keyStorePublicKey') as string | string[];
     const validators_amount = Array.isArray(publicKeys) ? publicKeys.length : 1;
     const values = payload.values();
-    store.dispatch(setIsPopUpWithIndexingStatus(true));
+    dispatch(setIsPopUpWithIndexingStatus(true));
     return await transactionExecutor({
       contractMethod,
       payload: values,

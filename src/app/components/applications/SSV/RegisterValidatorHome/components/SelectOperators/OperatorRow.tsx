@@ -1,16 +1,15 @@
 import Grid from '@mui/material/Grid';
-import TableRow from '@mui/material/TableRow';
 import { useQuery } from '@tanstack/react-query';
-import { FC } from 'react';
+import { ComponentPropsWithRef, forwardRef } from 'react';
 import { useAccount } from 'wagmi';
 import config from '~app/common/config';
+import { COLUMN_WIDTHS } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare';
 import { useStyles } from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/FirstSquare.styles';
 import MevCounterBadge from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/MevBadge/MevCounterBadge';
 import OperatorDetails from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/OperatorDetails';
-import StyledCell from '~app/components/applications/SSV/RegisterValidatorHome/components/SelectOperators/components/FirstSquare/components/StyledCell';
 import Checkbox from '~app/components/common/CheckBox';
 import Status from '~app/components/common/Status';
-import AnchorTooltip from '~app/components/common/ToolTip/components/AnchorTooltip';
+import { Tooltip } from '~app/components/ui/tooltip';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { IOperator } from '~app/model/operator.model';
 import { getOperatorValidatorsLimit } from '~app/redux/operator.slice';
@@ -26,7 +25,7 @@ type Props = {
   onClick: (operator: IOperator) => void;
 };
 
-export const OperatorRow: FC<Props> = ({ operator, isSelected, onClick }) => {
+export const OperatorRow = forwardRef<HTMLTableRowElement, ComponentPropsWithRef<'tr'> & Props>(({ operator, isSelected, onClick, ...props }, ref) => {
   const account = useAccount();
   const classes = useStyles({ loading: true });
 
@@ -46,30 +45,41 @@ export const OperatorRow: FC<Props> = ({ operator, isSelected, onClick }) => {
   const isDisabled = operator.is_deleted || isPrivateOperator || reachedMaxValidators;
 
   return (
-    <AnchorTooltip title={'Operator reached maximum amount of validators'} placement={'top'} dontUseGridWrapper shouldDisableHoverListener={!reachedMaxValidators}>
-      <TableRow
-        className={cn(classes.RowWrapper, {
-          [classes.Selected]: isSelected,
-          [classes.RowDisabled]: isDisabled
-        })}
+    // <AnchorTooltip title={'Operator reached maximum amount of validators'} placement={'top'} dontUseGridWrapper shouldDisableHoverListener={!reachedMaxValidators}>
+    <Tooltip asChild content={reachedMaxValidators ? 'Operator reached maximum amount of validators' : undefined}>
+      <tr
+        ref={ref}
+        {...props}
+        className={cn(
+          classes.RowWrapper,
+          {
+            [classes.Selected]: isSelected,
+            [classes.RowDisabled]: isDisabled
+          },
+          props.className
+        )}
         onClick={() => {
           if (!isDisabled) {
             onClick(operator);
           }
         }}
       >
-        <StyledCell style={{ paddingLeft: 20, width: 60, paddingTop: 35 }}>
+        <td
+          className="text-left h-9 p-0 text-base cursor-pointer py-3 px-0 font-medium text-gray-900 border-b border-gray-300"
+          style={{ paddingLeft: 20, width: COLUMN_WIDTHS[0], paddingTop: 35 }}
+        >
           <Checkbox isDisabled={isDisabled} grayBackGround text={''} isChecked={isSelected} toggleIsChecked={() => {}} />
-        </StyledCell>
-        <StyledCell>
+        </td>
+        <td
+          className="text-left h-9 p-0 text-base cursor-pointer py-3 px-0 font-medium text-gray-900 border-b border-gray-300"
+          style={{ width: COLUMN_WIDTHS[1], minWidth: COLUMN_WIDTHS[1], maxWidth: COLUMN_WIDTHS[1] }}
+        >
           <OperatorDetails nameFontSize={14} idFontSize={12} logoSize={24} withoutExplorer operator={operator} />
-        </StyledCell>
-        <StyledCell>
-          <Grid container>
-            <Grid item>{operator.validators_count}</Grid>
-          </Grid>
-        </StyledCell>
-        <StyledCell>
+        </td>
+        <td className="text-left h-9 p-0 text-base cursor-pointer py-3 px-0 font-medium text-gray-900 border-b border-gray-300" style={{ width: COLUMN_WIDTHS[2] }}>
+          {operator.validators_count}
+        </td>
+        <td className="text-left h-9 p-0 text-base cursor-pointer py-3 px-0 font-medium text-gray-900 border-b border-gray-300" style={{ width: COLUMN_WIDTHS[3] }}>
           <Grid container>
             <Grid item className={hasValidators && isInactive ? classes.Inactive : ''}>
               {roundNumber(operator.performance['30d'], 2)}%
@@ -80,20 +90,20 @@ export const OperatorRow: FC<Props> = ({ operator, isSelected, onClick }) => {
               </Grid>
             )}
           </Grid>
-        </StyledCell>
-        <StyledCell>
+        </td>
+        <td className="text-left h-9 p-0 text-base cursor-pointer py-3 px-0 font-medium text-gray-900 border-b border-gray-300" style={{ width: COLUMN_WIDTHS[4] }}>
           <Grid container>
             <Grid item className={classes.FeeColumn}>
               {formatNumberToUi(getFeeForYear(fromWei(operator.fee)))} SSV
             </Grid>
           </Grid>
-        </StyledCell>
-        <StyledCell>
+        </td>
+        <td className="text-left h-9 p-0 text-base cursor-pointer py-3 px-0 font-medium text-gray-900 border-b border-gray-300" style={{ width: COLUMN_WIDTHS[5] }}>
           <Grid container>
             <MevCounterBadge mevRelaysList={mevRelays.split(',')} mevCount={mevRelaysCount} />
           </Grid>
-        </StyledCell>
-        <StyledCell>
+        </td>
+        <td className="text-left h-9 p-0 text-base cursor-pointer py-3 px-0 font-medium text-gray-900 border-b border-gray-300" style={{ width: COLUMN_WIDTHS[6] }}>
           <Grid
             className={classes.ChartIcon}
             onClick={(ev) => {
@@ -106,10 +116,10 @@ export const OperatorRow: FC<Props> = ({ operator, isSelected, onClick }) => {
               window.open(`${config.links.EXPLORER_URL}/operators/${operator.id}`, '_blank');
             }}
           />
-        </StyledCell>
-      </TableRow>
-    </AnchorTooltip>
+        </td>
+      </tr>
+    </Tooltip>
   );
-};
+});
 
 OperatorRow.displayName = 'OperatorRow';

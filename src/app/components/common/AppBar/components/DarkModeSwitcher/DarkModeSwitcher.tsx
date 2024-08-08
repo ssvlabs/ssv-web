@@ -13,11 +13,7 @@ const DarkModeSwitcher = (props: Props) => {
   const dispatch = useAppDispatch();
   const classes = useStyles({ isDarkMode, margin });
 
-  return (
-    <Grid item container onClick={() => dispatch(toggleDarkMode())}>
-      <Grid item className={classes.Image} />
-    </Grid>
-  );
+  return <Grid item className={classes.Image} onClick={() => dispatch(toggleDarkMode())} />;
 };
 
 export default DarkModeSwitcher;

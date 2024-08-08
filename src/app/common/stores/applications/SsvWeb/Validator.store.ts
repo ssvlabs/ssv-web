@@ -12,6 +12,7 @@ import { prepareSsvAmountToTransfer, toWei } from '~root/services/conversions.se
 import { transactionExecutor } from '~root/services/transaction.service';
 import { fetchIsRegisteredValidator, getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { createPayload } from '~root/utils/dkg.utils';
+import { track } from '~root/mixpanel';
 
 const annotations = {
   keyStoreFile: observable,
@@ -165,16 +166,25 @@ class ValidatorStore {
       return false;
     }
 
+    const publicKeys = payload.get('keyStorePublicKey') as string | string[];
+    const validators_amount = Array.isArray(publicKeys) ? publicKeys.length : 1;
+    const values = payload.values();
     return await transactionExecutor({
       contractMethod,
-      payload: payload.values(),
+      payload: values,
       getterTransactionState: async () => {
         const { validatorCount } = await getClusterData(getClusterHash(Object.values(operators), accountAddress), liquidationCollateralPeriod, minimumLiquidationCollateral);
         return validatorCount;
       },
       prevState: payload.get('clusterData').validatorCount,
       isContractWallet: isContractWallet,
-      dispatch
+      dispatch,
+      onError: (error: any) => {
+        track('Validator Registered', { validators_amount, status: 'error', error_message: error?.message ?? 'unknown error' });
+      },
+      onSuccess: () => {
+        track('Validator Registered', { validators_amount, status: 'success' });
+      }
     });
   }
 
@@ -330,7 +340,7 @@ class ValidatorStore {
    * @param keyStore
    * @param callBack
    */
-  async setKeyStore(keyStore: any, callBack?: any) {
+  async setKeyStore(keyStore: File, callBack?: () => void) {
     try {
       this.keyStorePrivateKey = '';
       this.keyStoreFile = keyStore;

@@ -2,7 +2,7 @@
 import { EClusterOperation } from '~app/enums/clusterOperation.enum';
 import { ICluster } from '~app/model/cluster.model';
 import { EContractName } from '~app/model/contracts.model';
-import { setOptimisticCluster } from '~app/redux/account.slice';
+import { removeCluster, setOptimisticCluster } from '~app/redux/account.slice';
 import { store } from '~app/store';
 import { stringifyBigints } from '~lib/utils/bigint';
 import { calcBurnRateWei, getClusterData, getClusterHash, getClusterRunWay, getSortedOperatorsIds } from '~root/services/cluster.service';
@@ -33,7 +33,9 @@ const updateClusterFromEvent =
     if (!newClusterData) return console.error('No new cluster data found', events, newClusterData);
     const clusterData = stringifyBigints(newClusterData);
     const burnRate = calcBurnRateWei(cluster.operators, cluster.validatorCount, store.getState().networkState.networkFeeWei);
-
+    if (clusterData.validatorCount === 0 && clusterData.balance === '0') {
+      dispatch(removeCluster(cluster.clusterId));
+    }
     dispatch(
       setOptimisticCluster({
         cluster: {
@@ -43,7 +45,14 @@ const updateClusterFromEvent =
           burnRate: burnRate.toString() as unknown as Uint8Array,
           isLiquidated: !clusterData.active,
           balance: clusterData.balance,
-          runWay: getClusterRunWay({ ...clusterData, burnRate }, liquidationCollateralPeriod, minimumLiquidationCollateral),
+          runWay: getClusterRunWay(
+            {
+              ...clusterData,
+              burnRate
+            },
+            liquidationCollateralPeriod,
+            minimumLiquidationCollateral
+          ),
           clusterData
         },
         type: 'updated'
@@ -60,6 +69,7 @@ interface ClusterBalanceInteractionProps {
   minimumLiquidationCollateral: number;
   operation: EClusterOperation;
   dispatch: Function;
+  isWithdrawAll?: boolean;
 }
 
 const depositOrWithdraw = async ({
@@ -70,6 +80,7 @@ const depositOrWithdraw = async ({
   liquidationCollateralPeriod,
   minimumLiquidationCollateral,
   operation,
+  isWithdrawAll = false,
   dispatch
 }: ClusterBalanceInteractionProps) => {
   const contract = getContractByName(EContractName.SETTER);
@@ -77,7 +88,7 @@ const depositOrWithdraw = async ({
     return false;
   }
   const operatorsIds = getSortedOperatorsIds(cluster.operators);
-  const ssvAmount = prepareSsvAmountToTransfer(toWei(amount));
+  const ssvAmount = isWithdrawAll ? cluster.balance : prepareSsvAmountToTransfer(toWei(amount));
   const clusterHash = getClusterHash(cluster.operators, accountAddress);
   let contractMethod;
   let payload;

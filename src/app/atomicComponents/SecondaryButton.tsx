@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { ButtonSize } from '~app/enums/Button.enum';
 import Spinner from '~app/components/common/Spinner';
+import { ButtonPropsType } from '~app/types/ButtonPropsType.ts';
 
 const Button = styled.div<{
   theme: any;
@@ -52,26 +53,8 @@ const Icon = styled.div<{ path: string; size: ButtonSize }>`
   background-image: ${({ path }) => `url(${path})`};
 `;
 
-const SecondaryButton = ({
-  size,
-  text,
-  icon,
-  isReverseDirection = false,
-  onClick,
-  hasBgColor = true,
-  isDisabled = false,
-  isLoading
-}: {
-  size: ButtonSize;
-  text: string;
-  icon?: string;
-  isReverseDirection?: boolean;
-  onClick: Function;
-  hasBgColor?: boolean;
-  isLoading?: boolean;
-  isDisabled?: boolean;
-}) => {
-  const handleOnClickFunction = () => !isDisabled && onClick();
+const SecondaryButton = ({ size, text, icon, isReverseDirection = false, onClick, hasBgColor = true, isDisabled = false, isLoading }: ButtonPropsType) => {
+  const handleOnClickFunction = () => onClick && !isDisabled && !isLoading && onClick();
 
   return (
     <Button isReverseDirection={isReverseDirection} onClick={handleOnClickFunction} size={size} hasBgColor={hasBgColor} isDisabled={isDisabled}>

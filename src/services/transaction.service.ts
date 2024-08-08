@@ -1,7 +1,8 @@
-import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
+import { setIsLoading, setIsShowTxPendingPopup, setTransactionStatus, setTxHash } from '~app/redux/appState.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { translations } from '~app/common/config';
 import { refreshOperatorsAndClusters } from '~app/redux/account.slice';
+import { TransactionStatus } from '~app/enums/transactionStatus.enum.ts';
 
 const CHECK_UPDATES_MAX_ITERATIONS = 60;
 
@@ -62,10 +63,25 @@ export type TxProps = {
         }[]
       | undefined
   ) => void;
+  onSuccess?: (receipt: any) => void;
+  onError?: (error: any) => void;
   refreshMS?: number;
+  shouldThrowError?: boolean;
 };
 
-export const transactionExecutor = async ({ contractMethod, payload, isContractWallet, getterTransactionState, prevState, dispatch, refreshMS, onConfirmed }: TxProps) => {
+export const transactionExecutor = async ({
+  contractMethod,
+  payload,
+  isContractWallet,
+  getterTransactionState,
+  prevState,
+  dispatch,
+  refreshMS,
+  onConfirmed,
+  onSuccess,
+  onError,
+  shouldThrowError
+}: TxProps) => {
   try {
     if (isContractWallet) {
       contractMethod(...payload);
@@ -77,14 +93,19 @@ export const transactionExecutor = async ({ contractMethod, payload, isContractW
 
     if (tx.hash) {
       dispatch(setTxHash(tx.hash));
+      dispatch(setTransactionStatus(TransactionStatus.PENDING));
       dispatch(setIsShowTxPendingPopup(true));
     }
 
     const receipt = await tx.wait();
 
+    onSuccess?.(receipt);
+
     if (receipt.blockHash) {
+      dispatch(setTransactionStatus(TransactionStatus.INDEXING));
       if (onConfirmed) {
         await onConfirmed(receipt.events || []);
+        dispatch(setTransactionStatus(null));
         return true;
       }
 
@@ -115,16 +136,21 @@ export const transactionExecutor = async ({ contractMethod, payload, isContractW
   } catch (e: any) {
     dispatch(
       setMessageAndSeverity({
-        message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE,
+        message: e.shortMessage || e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE,
         severity: 'error'
       })
     );
     dispatch(setIsLoading(false));
+    onError?.(e);
+    if (shouldThrowError) {
+      throw e;
+    }
     return false;
   } finally {
     if (!isContractWallet) {
       dispatch(setIsLoading(false));
       dispatch(setIsShowTxPendingPopup(false));
+      dispatch(setTransactionStatus(null));
     }
   }
 };

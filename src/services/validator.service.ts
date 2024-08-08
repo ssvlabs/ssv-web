@@ -1,6 +1,9 @@
 import config from '~app/common/config';
 import { getRequest } from '~root/services/httpApi.service';
 import Decimal from 'decimal.js';
+import { IOperator } from '~app/model/operator.model';
+import { IValidator } from '~app/model/validator.model';
+import { IPagination } from '~app/model/pagination.model';
 
 const getLiquidationCollateralPerValidator = ({
   operatorsFee,
@@ -22,10 +25,18 @@ const getLiquidationCollateralPerValidator = ({
   return liquidationCollateralCost.div(validatorsCount);
 };
 
-const fetchValidatorsByClusterHash = async (page: number, clusterHash: string, perPage: number = 7): Promise<any> => {
+const fetchValidatorsByClusterHash = async (
+  page: number,
+  clusterHash: string,
+  perPage: number = 7
+): Promise<{
+  operators: IOperator[];
+  validators: IValidator[];
+  pagination: IPagination;
+}> => {
   const url = `${String(config.links.SSV_API_ENDPOINT)}/clusters/hash/${clusterHash}/?page=${page}&perPage=${perPage}&ts=${new Date().getTime()}`;
   const res = await getRequest(url);
-  return res ?? { operators: [], clusters: [], pagination: {} };
+  return res ?? { operators: [], validators: [], pagination: {} };
 };
 
 const fetchValidator = async (publicKey: string) => {

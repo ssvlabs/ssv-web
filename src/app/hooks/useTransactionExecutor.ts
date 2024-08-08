@@ -9,7 +9,7 @@ export const useTransactionExecutor = () => {
 
   return useCallback(
     (args: Omit<TxProps, 'isContractWallet' | 'dispatch'>) => {
-      return transactionExecutor({ ...args, isContractWallet, dispatch });
+      return transactionExecutor({ ...args, isContractWallet, dispatch, shouldThrowError: true });
     },
     [dispatch, isContractWallet]
   );

@@ -1,22 +1,17 @@
-import { ReactElement, useEffect, useState } from 'react';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { useNavigate } from 'react-router-dom';
+import { UseInfiniteQueryResult } from '@tanstack/react-query';
+import { useRef } from 'react';
+import { useDebounce, useIntersection } from 'react-use';
 import styled from 'styled-components';
-import config from '~app/common/config';
 import Settings from '~app/components/applications/SSV/MyAccount/components/Validator/SingleCluster/components/Settings';
 import Checkbox from '~app/components/common/CheckBox/CheckBox';
 import Spinner from '~app/components/common/Spinner';
 import Status from '~app/components/common/Status';
 import ToolTip from '~app/components/common/ToolTip';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
-import { BulkValidatorData, IValidator } from '~app/model/validator.model';
-import { getOptimisticValidators, getSelectedCluster } from '~app/redux/account.slice.ts';
+import { IValidator } from '~app/model/validator.model';
 import { getIsDarkMode } from '~app/redux/appState.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
-import { getAccountAddress } from '~app/redux/wallet.slice';
 import { add0x, longStringShorten } from '~lib/utils/strings';
-import { getClusterHash } from '~root/services/cluster.service';
-import { fetchValidatorsByClusterHash } from '~root/services/validator.service';
 
 const TableWrapper = styled.div<{ children: React.ReactNode; id: string; isLoading: boolean }>`
   margin-top: 12px;
@@ -131,103 +126,37 @@ const NoValidatorText = styled.div`
   margin-bottom: 80px;
 `;
 
-const ValidatorsList = ({
-  onCheckboxClickHandler,
-  selectedValidators,
-  fillSelectedValidators,
-  maxValidatorsCount,
-  checkboxTooltipTitle,
-  setIsLoading,
-  isLoading = false,
-  withoutSettings
-}: {
-  onCheckboxClickHandler?: Function;
-  selectedValidators?: Record<string, BulkValidatorData>;
-  fillSelectedValidators?: Function;
-  maxValidatorsCount?: number;
+export type ValidatorsListProps = {
+  type: 'view' | 'select';
+  onToggleAll?: Function;
+  validators: IValidator[];
+  selectedValidators?: string[];
+  onValidatorToggle?: (publicKey: string) => void;
+  infiniteScroll: UseInfiniteQueryResult<unknown>;
+  isFetchingAll?: boolean;
   withoutSettings?: boolean;
-  checkboxTooltipTitle?: ReactElement | string;
-  setIsLoading?: Function;
-  isLoading?: boolean;
-}) => {
-  const accountAddress = useAppSelector(getAccountAddress);
-  const cluster = useAppSelector(getSelectedCluster);
-  const selectValidatorDisableCondition = Object.values(selectedValidators || {}).filter((validator: BulkValidatorData) => validator.isSelected).length === maxValidatorsCount;
-  const navigate = useNavigate();
+  maxSelectable?: number;
+  isEmpty?: boolean;
+};
+
+const ValidatorsList = ({
+  type,
+  onToggleAll,
+  infiniteScroll,
+  isFetchingAll,
+  validators,
+  selectedValidators = [],
+  onValidatorToggle,
+  maxSelectable = 100,
+  withoutSettings,
+  isEmpty
+}: ValidatorsListProps) => {
   const isDarkMode = useAppSelector(getIsDarkMode);
 
-  const [_clusterValidators, setClusterValidators] = useState<IValidator[]>([]);
-  const clusterValidators = useAppSelector((state) =>
-    getOptimisticValidators(state, {
-      clusterId: cluster?.clusterId,
-      validators: _clusterValidators
-    })
-  );
+  const isSelectMode = type === 'select';
+  const isMaxSelected = isSelectMode && selectedValidators.length === maxSelectable;
 
-  const [clusterValidatorsPagination, setClusterValidatorsPagination] = useState({
-    page: 1,
-    total: cluster?.validatorCount ?? 0,
-    pages: 1,
-    per_page: 5,
-    rowsPerPage: 14,
-    onChangePage: console.log
-  });
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    if (!cluster) return navigate(config.routes.SSV.MY_ACCOUNT.CLUSTER_DASHBOARD);
-    if (selectedValidators && Object.values(selectedValidators).length) {
-      setClusterValidators(Object.values(selectedValidators).map((validator: { validator: IValidator; isSelected: boolean }) => validator.validator));
-    } else {
-      fetchValidatorsByClusterHash(1, getClusterHash(cluster.operators, accountAddress), clusterValidatorsPagination.rowsPerPage).then((response: any) => {
-        if (response.validators && response.validators.length) {
-          setClusterValidators(response.validators);
-        }
-        if (fillSelectedValidators) fillSelectedValidators(response.validators);
-        setClusterValidatorsPagination({
-          ...response.pagination,
-          rowsPerPage: cluster.validatorCount
-        });
-      });
-    }
-  }, []);
-
-  const onChangePage = async (selectAll?: boolean) => {
-    if (
-      selectAll &&
-      fillSelectedValidators &&
-      maxValidatorsCount &&
-      (clusterValidators.length >= maxValidatorsCount || clusterValidators.length >= clusterValidatorsPagination.total)
-    ) {
-      fillSelectedValidators(clusterValidators, true);
-      setIsLoading && setIsLoading(false);
-      return;
-    }
-    let arraySize = clusterValidators.length;
-    let nextPage = clusterValidatorsPagination.page + 1;
-    let validators = clusterValidators;
-    let pagination = clusterValidatorsPagination;
-    do {
-      const response = await fetchValidatorsByClusterHash(nextPage, getClusterHash(cluster?.operators ?? [], accountAddress), 14);
-      validators = [...validators, ...response.validators];
-      pagination = { ...response.pagination };
-      if (fillSelectedValidators) {
-        nextPage += 1;
-        arraySize += response.validators.length;
-        fillSelectedValidators(validators, selectAll);
-      }
-    } while (selectAll && arraySize < clusterValidatorsPagination.total && maxValidatorsCount && arraySize < maxValidatorsCount);
-    setClusterValidators(validators);
-    setClusterValidatorsPagination(pagination);
-    setIsLoading && setIsLoading(false);
-  };
-
-  useEffect(() => {
-    if (clusterValidators.length < clusterValidatorsPagination.rowsPerPage && clusterValidators.length < cluster.validatorCount) {
-      onChangePage();
-    }
-  }, [clusterValidators.length]);
-
   const copyToClipboard = (publicKey: string) => {
     navigator.clipboard.writeText(publicKey);
     dispatch(
@@ -238,15 +167,24 @@ const ValidatorsList = ({
     );
   };
 
-  if (cluster.validatorCount && !clusterValidators.length) {
-    return (
-      <SpinnerWrapper>
-        <Spinner />
-      </SpinnerWrapper>
-    );
-  }
+  const fetchNextPageTriggerRef = useRef<HTMLDivElement>(null);
+  const intersection = useIntersection(fetchNextPageTriggerRef, {
+    root: document,
+    rootMargin: '0px',
+    threshold: 0
+  });
 
-  if (!cluster.validatorCount) {
+  useDebounce(
+    () => {
+      if (intersection?.isIntersecting && infiniteScroll.hasNextPage && !infiniteScroll.isFetching) {
+        infiniteScroll.fetchNextPage();
+      }
+    },
+    100,
+    [intersection?.isIntersecting, infiniteScroll]
+  );
+
+  if (isEmpty) {
     return (
       <div>
         <NoValidatorImage />
@@ -255,89 +193,72 @@ const ValidatorsList = ({
     );
   }
 
-  const hasMore = clusterValidators.length < cluster.validatorCount;
-
   return (
-    <TableWrapper id={'scrollableDiv'} isLoading={isLoading}>
-      <InfiniteScroll
-        dataLength={clusterValidators.length}
-        next={async () => {
-          return await onChangePage();
-        }}
-        hasMore={hasMore}
-        loader={
-          hasMore && (
-            <SpinnerWrapper>
-              <Spinner />
-            </SpinnerWrapper>
-          )
-        }
-        scrollableTarget={'scrollableDiv'}
-      >
-        <TableHeader>
-          {fillSelectedValidators && (
+    <TableWrapper id={'scrollableDiv'} isLoading={Boolean(infiniteScroll.isLoading)}>
+      <TableHeader>
+        {isSelectMode &&
+          (isFetchingAll ? (
+            <Spinner size={20} />
+          ) : (
             <Checkbox
-              isDisabled={isLoading}
+              isDisabled={infiniteScroll.isLoading}
               grayBackGround
               text={''}
               withoutMarginBottom
               smallLine
-              toggleIsChecked={() => {
-                setIsLoading && setIsLoading(true);
-                onChangePage(true);
-              }}
-              isChecked={selectedValidators && Object.values(selectedValidators).some((validator: { validator: IValidator; isSelected: boolean }) => validator.isSelected)}
+              toggleIsChecked={() => onToggleAll?.()}
+              isChecked={isMaxSelected}
             />
-          )}
-          <TableHeaderTitle marginLeft={onCheckboxClickHandler && selectedValidators ? 20 : 0}>Public Key</TableHeaderTitle>
-          <TableHeaderTitle marginLeft={onCheckboxClickHandler && selectedValidators ? 227 : 279}>
-            Status{' '}
-            <ToolTip
-              text={
-                'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).'
-              }
-            />
-          </TableHeaderTitle>
-        </TableHeader>
-        <ValidatorsListWrapper>
-          {clusterValidators?.map((validator: IValidator) => {
-            const formattedPublicKey = add0x(validator.public_key);
-            const res = selectedValidators && selectedValidators[formattedPublicKey]?.isSelected;
-            const showingCheckboxCondition = onCheckboxClickHandler && selectedValidators;
-            const disableButtonCondition = (selectValidatorDisableCondition && !res) || isLoading;
-            return (
-              <ValidatorWrapper key={validator.public_key}>
-                <PublicKeyWrapper>
-                  <PublicKey>
-                    {showingCheckboxCondition && (
-                      <Checkbox
-                        isDisabled={disableButtonCondition}
-                        grayBackGround
-                        text={''}
-                        withTooltip={disableButtonCondition}
-                        tooltipText={checkboxTooltipTitle}
-                        withoutMarginBottom
-                        toggleIsChecked={() =>
-                          onCheckboxClickHandler({
-                            publicKey: formattedPublicKey
-                          })
-                        }
-                        isChecked={res}
-                      />
-                    )}
-                    {longStringShorten(formattedPublicKey, 4, 4)}
-                  </PublicKey>
-                  <Link onClick={() => copyToClipboard(validator.public_key)} logo={'/images/copy/'} isDarkMode={isDarkMode} />
-                </PublicKeyWrapper>
-                <Status item={validator} />
-                <LinksWrapper>
-                  <Settings withoutSettings={withoutSettings} validator={validator} />
-                </LinksWrapper>
-              </ValidatorWrapper>
-            );
-          })}
-        </ValidatorsListWrapper>
-      </InfiniteScroll>
+          ))}
+        <TableHeaderTitle marginLeft={isSelectMode && selectedValidators ? 20 : 0}>Public Key</TableHeaderTitle>
+        <TableHeaderTitle marginLeft={isSelectMode && selectedValidators ? 227 : 279}>
+          Status{' '}
+          <ToolTip
+            text={
+              'Refers to the validator’s status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs).'
+            }
+          />
+        </TableHeaderTitle>
+      </TableHeader>
+      <ValidatorsListWrapper className="relative">
+        {validators?.map((validator) => {
+          const formattedPublicKey = add0x(validator.public_key);
+          const isChecked = selectedValidators.includes(formattedPublicKey);
+          const disabled = isSelectMode && !isChecked && isMaxSelected;
+          return (
+            <ValidatorWrapper key={validator.public_key}>
+              <PublicKeyWrapper>
+                <PublicKey>
+                  {isSelectMode && (
+                    <Checkbox
+                      isChecked={isChecked}
+                      isDisabled={disabled || isFetchingAll}
+                      grayBackGround
+                      text={''}
+                      withTooltip={disabled}
+                      tooltipText={`The maximum number of validators for bulk operation is ${maxSelectable}.`}
+                      withoutMarginBottom
+                      toggleIsChecked={() => onValidatorToggle?.(formattedPublicKey)}
+                    />
+                  )}
+                  {longStringShorten(formattedPublicKey, 4, 4)}
+                </PublicKey>
+                <Link onClick={() => copyToClipboard(validator.public_key)} logo={'/images/copy/'} isDarkMode={isDarkMode} />
+              </PublicKeyWrapper>
+              <Status item={validator} />
+              <LinksWrapper>
+                <Settings withoutSettings={withoutSettings} validator={validator} />
+              </LinksWrapper>
+            </ValidatorWrapper>
+          );
+        })}
+        {infiniteScroll.isFetching && (
+          <SpinnerWrapper>
+            <Spinner />
+          </SpinnerWrapper>
+        )}
+        <div ref={fetchNextPageTriggerRef} className="absolute bottom-0 h-80 w-full pointer-events-none" />
+      </ValidatorsListWrapper>
     </TableWrapper>
   );
 };

@@ -23,7 +23,7 @@ const ValidatorSuccessScreen = () => {
   const timeoutRef = useRef<any>(null);
   const classes = useStyles();
   const navigate = useNavigate();
-  const buttonText = 'Manage Validator';
+  const buttonText = 'Manage Cluster';
   const selectedOperators = useAppSelector(getSelectedOperators);
   const operators = Object.values(selectedOperators);
   const clusterHash = getClusterHash(operators, accountAddress);

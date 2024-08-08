@@ -8,9 +8,10 @@ import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { getEtherScanLink } from '~root/providers/networkInfo.provider';
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
-import { getIsShowTxPendingPopup, getTxHash, setIsLoading, setIsShowTxPendingPopup } from '~app/redux/appState.slice';
+import { getIsShowTxPendingPopup, getTransactionStatus, getTxHash, setIsLoading, setIsShowTxPendingPopup, setTransactionStatus } from '~app/redux/appState.slice';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { getSelectedOperator } from '~app/redux/account.slice.ts';
+import { TransactionStatus } from '~app/enums/transactionStatus.enum.ts';
 
 const DialogWrapper = styled(Dialog)<{ theme: any }>`
   & > div > div {
@@ -41,6 +42,13 @@ const AdditionText = styled.div`
   color: ${({ theme }) => theme.colors.gray80};
 `;
 
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
 const ValidatorText = styled.div<{ theme: any }>`
   font-size: 14px;
   font-weight: 600;
@@ -50,10 +58,45 @@ const ValidatorText = styled.div<{ theme: any }>`
   margin-bottom: 8px;
 `;
 
+const IndicatorWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+const Line = styled.div`
+  width: 136px;
+  height: 0;
+  margin-top: 8px;
+  border: ${({ theme }) => `1px solid ${theme.colors.gray20}`};
+`;
+
+const IndicatorBox = styled.div<{ isProcessing: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: ${({ isProcessing, theme }) => (isProcessing ? theme.colors.black : theme.colors.gray40)};
+`;
+
+const Indicator = styled.div<{ isDisabled?: boolean; isSucceed?: boolean }>`
+  width: 20px;
+  height: 20px;
+  border-radius: 100px;
+  border: ${({ theme, isDisabled }) => `2px solid ${isDisabled ? theme.colors.gray20 : theme.colors.primarySuccessDark}`};
+  background-color: ${({ theme, isDisabled, isSucceed }) => {
+    if (isSucceed) return theme.colors.primarySuccessDark;
+    return isDisabled ? theme.colors.gray10 : theme.colors.primarySuccessRegularOpacity;
+  }};
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: ${({ isSucceed }) => (isSucceed ? 'url(/images/v/light.svg)' : 'none')};
+`;
+
 const POP_UP_DATA = {
   false: {
-    title: 'Sending Transaction',
-    subTitles: "Your transaction is pending on the blockchain - please wait while it's being confirmed"
+    title: 'Transaction Details',
+    subTitles: 'Your transaction is being indexed on the SSV Network - please wait while it’s processed'
   },
   true: {
     title: 'Transaction Initiated',
@@ -68,6 +111,8 @@ const TransactionPendingPopUp = () => {
   const isShowTxPendingPopup = useAppSelector(getIsShowTxPendingPopup);
   const txHash = useAppSelector(getTxHash);
   const operator = useAppSelector(getSelectedOperator);
+  const txStatus = useAppSelector(getTransactionStatus);
+  const isPending = txStatus === TransactionStatus.PENDING;
 
   const closeButtonAction = () => {
     let nextNavigation;
@@ -78,6 +123,7 @@ const TransactionPendingPopUp = () => {
     }
     dispatch(setIsLoading(false));
     dispatch(setIsShowTxPendingPopup(false));
+    dispatch(setTransactionStatus(TransactionStatus.PENDING));
     navigate(nextNavigation);
   };
 
@@ -91,11 +137,24 @@ const TransactionPendingPopUp = () => {
           subtitle={POP_UP_DATA[`${isContractWallet}`].subTitles}
         />
         {isContractWallet && <AdditionText>Please return to this web app once approved.</AdditionText>}
-        <Grid item>
-          <ImageWrapper src={'/images/ssv-loader.svg'} alt="loader" hasMarginBottom={!isContractWallet} />
-        </Grid>
+        <Wrapper>
+          <ImageWrapper src={'/loaderIndexing.svg'} alt="loader" hasMarginBottom={!isContractWallet} />
+          {!isContractWallet && (
+            <IndicatorWrapper>
+              <IndicatorBox isProcessing={isPending}>
+                <Indicator isSucceed={!isPending} />
+                {isPending ? 'Pending...' : 'Pending'}
+              </IndicatorBox>
+              <Line />
+              <IndicatorBox isProcessing={!isPending}>
+                <Indicator isDisabled={isPending} />
+                {isPending ? 'Indexing' : 'Indexing...'}
+              </IndicatorBox>
+            </IndicatorWrapper>
+          )}
+        </Wrapper>
         {!isContractWallet && (
-          <Grid item container style={{ marginBottom: 20 }}>
+          <Grid item container style={{ marginBottom: 20, marginTop: 20 }}>
             <Grid item xs>
               <ValidatorText>Transaction Hash</ValidatorText>
             </Grid>

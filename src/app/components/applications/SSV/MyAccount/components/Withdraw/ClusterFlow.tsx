@@ -19,30 +19,31 @@ import { depositOrWithdraw } from '~root/services/clusterContract.service';
 import { getSelectedCluster, setExcludedCluster } from '~app/redux/account.slice.ts';
 
 const ClusterFlow = ({
-  minimumLiquidationCollateral,
+  clusterBalance,
   liquidationCollateralPeriod,
-  clusterBalance
+  minimumLiquidationCollateral
 }: {
-  minimumLiquidationCollateral: number;
-  liquidationCollateralPeriod: number;
   clusterBalance: number;
+  liquidationCollateralPeriod: number;
+  minimumLiquidationCollateral: number;
 }) => {
-  const accountAddress = useAppSelector(getAccountAddress);
-  const isContractWallet = useAppSelector(getIsContractWallet);
+  const navigate = useNavigate();
+  const classes = useStyles();
   const isMainnet = useAppSelector(getIsMainnet);
   const dispatch = useAppDispatch();
-  const classes = useStyles();
-  const navigate = useNavigate();
   const cluster = useAppSelector(getSelectedCluster);
+  const accountAddress = useAppSelector(getAccountAddress);
+  const isContractWallet = useAppSelector(getIsContractWallet);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasUserAgreed, setHasUserAgreed] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [checkBoxText, setCheckBoxText] = useState('');
-  const [isClusterLiquidation, setIsClusterLiquidation] = useState(false);
   const [showCheckBox, setShowCheckBox] = useState(false);
+  const [isWithdrawAll, setIsWithdrawAll] = useState(false);
+  const [hasUserAgreed, setHasUserAgreed] = useState(false);
+  const [isClusterLiquidation, setIsClusterLiquidation] = useState(false);
   const [newBalance, setNewBalance] = useState<string | number>(clusterBalance);
-  const [withdrawValue, setWithdrawValue] = useState<number | string>('');
   const [buttonDisableCondition, setButtonDisableCondition] = useState(false);
+  const [withdrawValue, setWithdrawValue] = useState<number | string>('');
   const [buttonText, setButtonText] = useState(translations.VALIDATOR.WITHDRAW.BUTTON.WITHDRAW);
 
   useEffect(() => {
@@ -103,10 +104,11 @@ const ClusterFlow = ({
       minimumLiquidationCollateral,
       liquidationCollateralPeriod,
       operation: isClusterLiquidation ? EClusterOperation.LIQUIDATE : EClusterOperation.WITHDRAW,
+      isWithdrawAll,
       dispatch
     });
     if (success && !isContractWallet) {
-      navigate((isClusterLiquidation && !cluster.validatorCount) || (!cluster.validatorCount && toWei(withdrawValue) === cluster.balance) ? -2 : -1);
+      navigate((isClusterLiquidation && !cluster.validatorCount) || (!cluster.validatorCount && isWithdrawAll) ? -2 : -1);
     }
     setIsLoading(false);
   };
@@ -114,7 +116,9 @@ const ClusterFlow = ({
   function inputHandler(e: any) {
     const value = e.target.value;
     if (value > clusterBalance) {
+      setIsWithdrawAll(true);
       setWithdrawValue(clusterBalance);
+      return;
     } else if (value < 0) {
       setWithdrawValue(0);
     } else if (value === '') {
@@ -122,9 +126,11 @@ const ClusterFlow = ({
     } else {
       setWithdrawValue(Number(value));
     }
+    setIsWithdrawAll(false);
   }
 
   function maxValue() {
+    setIsWithdrawAll(true);
     setWithdrawValue(Number(clusterBalance));
   }
 

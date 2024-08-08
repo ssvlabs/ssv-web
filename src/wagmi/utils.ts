@@ -44,7 +44,8 @@ const getSetter = () => {
           hash,
           wait: async () => {
             const recipient = await waitForTransactionReceipt(config, {
-              hash
+              hash,
+              retryCount: 7
             });
             return {
               ...recipient,

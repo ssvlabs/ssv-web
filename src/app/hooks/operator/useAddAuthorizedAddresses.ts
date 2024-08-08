@@ -58,7 +58,7 @@ export const useAddAuthorizedAddresses = () => {
   });
 
   const addresses = form.watch('addresses');
-  const hasEmptyAddresses = addresses.some((field) => !field.value);
+  const hasEmptyAddresses = addresses.some((field) => !field.value.trim());
   const validNewAddressesCount = addresses.filter((field: { value: string }) => checkAddressChecksum(field.value)).length;
 
   const hasAddresses = addresses.filter(({ value }) => value.trim() !== '').length > 0;

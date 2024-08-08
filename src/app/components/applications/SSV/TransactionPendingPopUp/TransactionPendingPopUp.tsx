@@ -8,7 +8,15 @@ import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import HeaderSubHeader from '~app/components/common/HeaderSubHeader';
 import { getEtherScanLink } from '~root/providers/networkInfo.provider';
 import AddressKeyInput from '~app/components/common/AddressKeyInput/AddressKeyInput';
-import { getIsShowTxPendingPopup, getTransactionStatus, getTxHash, setIsLoading, setIsShowTxPendingPopup, setTransactionStatus } from '~app/redux/appState.slice';
+import {
+  getIsPopUpWithIndexingStatus,
+  getIsShowTxPendingPopup,
+  getTransactionStatus,
+  getTxHash,
+  setIsLoading,
+  setIsShowTxPendingPopup,
+  setTransactionStatus
+} from '~app/redux/appState.slice';
 import { getIsContractWallet } from '~app/redux/wallet.slice';
 import { getSelectedOperator } from '~app/redux/account.slice.ts';
 import { TransactionStatus } from '~app/enums/transactionStatus.enum.ts';
@@ -94,11 +102,25 @@ const Indicator = styled.div<{ isDisabled?: boolean; isSucceed?: boolean }>`
 `;
 
 const POP_UP_DATA = {
-  false: {
-    title: 'Transaction Details',
-    subTitles: 'Your transaction is being indexed on the SSV Network - please wait while it’s processed'
+  defaultWallet: {
+    [TransactionStatus.PENDING]: {
+      title: 'Transaction Details',
+      subTitles: (
+        <div>
+          Your transaction is <span style={{ fontWeight: 800 }}>pending</span> on the blockchain - please wait while it’s being confirmed
+        </div>
+      )
+    },
+    [TransactionStatus.INDEXING]: {
+      title: 'Transaction Details',
+      subTitles: (
+        <div>
+          Your transaction is being <span style={{ fontWeight: 800 }}>indexed</span> on the SSV Network - please wait while it’s processed
+        </div>
+      )
+    }
   },
-  true: {
+  contractWallet: {
     title: 'Transaction Initiated',
     subTitles: 'Your transaction has been successfully initiated within the multi-sig wallet and is now pending approval from other participants.'
   }
@@ -109,10 +131,13 @@ const TransactionPendingPopUp = () => {
   const dispatch = useAppDispatch();
   const isContractWallet = useAppSelector(getIsContractWallet);
   const isShowTxPendingPopup = useAppSelector(getIsShowTxPendingPopup);
+  const isPopUpWithIndexing = useAppSelector(getIsPopUpWithIndexingStatus);
   const txHash = useAppSelector(getTxHash);
   const operator = useAppSelector(getSelectedOperator);
   const txStatus = useAppSelector(getTransactionStatus);
   const isPending = txStatus === TransactionStatus.PENDING;
+
+  const popUpData = isContractWallet ? POP_UP_DATA.contractWallet : POP_UP_DATA.defaultWallet[txStatus];
 
   const closeButtonAction = () => {
     let nextNavigation;
@@ -130,16 +155,11 @@ const TransactionPendingPopUp = () => {
   return (
     <DialogWrapper aria-labelledby="simple-dialog-title" open={isShowTxPendingPopup}>
       <GridWrapper container>
-        <HeaderSubHeader
-          closeButtonAction={closeButtonAction}
-          showCloseButton={isContractWallet}
-          title={POP_UP_DATA[`${isContractWallet}`].title}
-          subtitle={POP_UP_DATA[`${isContractWallet}`].subTitles}
-        />
+        <HeaderSubHeader closeButtonAction={closeButtonAction} showCloseButton={isContractWallet} title={popUpData.title} subtitle={popUpData.subTitles} />
         {isContractWallet && <AdditionText>Please return to this web app once approved.</AdditionText>}
         <Wrapper>
-          <ImageWrapper src={'/loaderIndexing.svg'} alt="loader" hasMarginBottom={!isContractWallet} />
-          {!isContractWallet && (
+          <ImageWrapper src={isPopUpWithIndexing && !isPending ? '/images/loaderIndexing.svg' : '/images/ssv-loader.svg'} alt="loader" hasMarginBottom={!isContractWallet} />
+          {!isContractWallet && isPopUpWithIndexing && (
             <IndicatorWrapper>
               <IndicatorBox isProcessing={isPending}>
                 <Indicator isSucceed={!isPending} />

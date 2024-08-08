@@ -6,10 +6,10 @@ import type { Contract } from 'ethers';
 import { WaitForTransactionReceiptReturnType, decodeEventLog } from 'viem';
 import { HoleskyV4SetterABI } from '~app/common/config/abi/holesky/v4/setter';
 import { MainnetV4SetterABI } from '~app/common/config/abi/mainnet/v4/setter';
+import { TokenABI } from '~app/common/config/abi/token';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { getContractByName as _getContractByName } from '~root/services/contracts.service';
 import { config } from '~root/wagmi/config';
-import { TokenABI } from '~app/common/config/abi/token';
 
 type MainnetSetterFnNames = ExtractAbiFunctionNames<typeof MainnetV4SetterABI>;
 type HoleskySetterFnNames = ExtractAbiFunctionNames<typeof HoleskyV4SetterABI>;
@@ -43,9 +43,7 @@ const getSetter = () => {
         return {
           hash,
           wait: async () => {
-            const recipient = await waitForTransactionReceipt(config, { hash })
-              .catch(() => waitForTransactionReceipt(config, { hash }))
-              .catch(() => waitForTransactionReceipt(config, { hash }));
+            const recipient = await waitForTransactionReceipt(config, { hash });
             return {
               ...recipient,
               events: recipient.logs.map((log) => {

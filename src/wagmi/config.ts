@@ -1,15 +1,20 @@
 import { Chain, connectorsForWallets } from '@rainbow-me/rainbowkit';
-import { walletConnectWallet, coinbaseWallet } from '@rainbow-me/rainbowkit/wallets';
+import { coinbaseWallet, walletConnectWallet } from '@rainbow-me/rainbowkit/wallets';
 import { HttpTransport, http } from 'viem';
 import { createConfig } from 'wagmi';
-import { holesky as holeskyBase, mainnet as mainnetBase, holesky } from 'wagmi/chains';
-import { config as projectConfig } from '~app/common/config/config';
+import { holesky as holeskyBase, mainnet as mainnetBase } from 'wagmi/chains';
+import { MAINNET_RPC_URL, config as projectConfig } from '~app/common/config/config';
 import { networks } from '~root/providers/networkInfo.provider';
 
 const mainnet: Chain = {
   ...mainnetBase,
   iconBackground: 'none',
-  iconUrl: '/images/networks/dark.svg'
+  iconUrl: '/images/networks/dark.svg',
+  rpcUrls: {
+    default: {
+      http: [MAINNET_RPC_URL]
+    }
+  }
 };
 
 const holesky: Chain = {

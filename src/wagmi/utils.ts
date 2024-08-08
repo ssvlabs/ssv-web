@@ -11,6 +11,19 @@ import { getContractByName as _getContractByName } from '~root/services/contract
 import { config } from '~root/wagmi/config';
 import { TokenABI } from '~app/common/config/abi/token';
 
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const retry = async () => {
+  await wait(1000);
+  return Promise.reject();
+};
+
+retry()
+  .then(() => 1)
+  .catch(() => {
+    console.log('rejected');
+    return wait(1000);
+  })
+  .then(() => 1);
 type MainnetSetterFnNames = ExtractAbiFunctionNames<typeof MainnetV4SetterABI>;
 type HoleskySetterFnNames = ExtractAbiFunctionNames<typeof HoleskyV4SetterABI>;
 
@@ -43,9 +56,7 @@ const getSetter = () => {
         return {
           hash,
           wait: async () => {
-            const recipient = await waitForTransactionReceipt(config, { hash })
-              .catch(() => waitForTransactionReceipt(config, { hash }))
-              .catch(() => waitForTransactionReceipt(config, { hash }));
+            const recipient = await waitForTransactionReceipt(config, { hash });
             return {
               ...recipient,
               events: recipient.logs.map((log) => {

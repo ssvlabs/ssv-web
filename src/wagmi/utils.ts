@@ -6,24 +6,11 @@ import type { Contract } from 'ethers';
 import { WaitForTransactionReceiptReturnType, decodeEventLog } from 'viem';
 import { HoleskyV4SetterABI } from '~app/common/config/abi/holesky/v4/setter';
 import { MainnetV4SetterABI } from '~app/common/config/abi/mainnet/v4/setter';
+import { TokenABI } from '~app/common/config/abi/token';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { getContractByName as _getContractByName } from '~root/services/contracts.service';
 import { config } from '~root/wagmi/config';
-import { TokenABI } from '~app/common/config/abi/token';
 
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const retry = async () => {
-  await wait(1000);
-  return Promise.reject();
-};
-
-retry()
-  .then(() => 1)
-  .catch(() => {
-    console.log('rejected');
-    return wait(1000);
-  })
-  .then(() => 1);
 type MainnetSetterFnNames = ExtractAbiFunctionNames<typeof MainnetV4SetterABI>;
 type HoleskySetterFnNames = ExtractAbiFunctionNames<typeof HoleskyV4SetterABI>;
 

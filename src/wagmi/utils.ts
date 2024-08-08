@@ -43,7 +43,9 @@ const getSetter = () => {
         return {
           hash,
           wait: async () => {
-            const recipient = await waitForTransactionReceipt(config, { hash }).catch(() => waitForTransactionReceipt(config, { hash }));
+            const recipient = await waitForTransactionReceipt(config, { hash })
+              .catch(() => waitForTransactionReceipt(config, { hash }))
+              .catch(() => waitForTransactionReceipt(config, { hash }));
             return {
               ...recipient,
               events: recipient.logs.map((log) => {

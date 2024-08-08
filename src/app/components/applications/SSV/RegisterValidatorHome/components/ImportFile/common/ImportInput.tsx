@@ -50,7 +50,7 @@ const ImportInput = (props: Props) => {
         <Grid container item>
           <Grid item style={{ margin: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 20 }}>
             <Spinner size={48} />
-            {!!processValidatorsCount && <ProcessingValidators>`Processing {processValidatorsCount} validators...`</ProcessingValidators>}
+            {!!processValidatorsCount && <ProcessingValidators>Processing {processValidatorsCount} validators...</ProcessingValidators>}
           </Grid>
         </Grid>
       )}

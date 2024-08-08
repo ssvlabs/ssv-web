@@ -18,10 +18,14 @@ export const useManageAuthorizedAddresses = () => {
   const deleteManager = useDeleteAuthorizedAddresses();
   const mode: Mode = addManager.hasAddresses ? 'add' : deleteManager.hasAddresses ? 'delete' : 'view';
 
-  const reset = () => {
+  const reset = (stepBack?: boolean) => {
     addManager.form.reset();
     deleteManager.reset();
-    navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.ROOT);
+    if (stepBack) {
+      navigate(-1);
+    } else {
+      navigate(config.routes.SSV.MY_ACCOUNT.OPERATOR.ACCESS_SETTINGS.ROOT);
+    }
   };
 
   const setOptimisticOperator = useSetOptimisticOperator();

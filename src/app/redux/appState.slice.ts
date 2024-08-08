@@ -21,9 +21,10 @@ export interface AppState {
   isShowWalletPopup: boolean;
   isShowConnectWallet: boolean;
   isShowTxPendingPopup: boolean;
+  isPopUpWithIndexingStatus: boolean;
   isShowSsvLoader: boolean;
   isMaintenancePage: boolean;
-  transactionStatus: TransactionStatus | null;
+  transactionStatus: TransactionStatus;
   txHash: string;
   restrictedUserGeo: string;
   modalPopUp: ModalPopUpType;
@@ -48,10 +49,11 @@ const initialState: AppState = {
   isLoading: false,
   isShowWalletPopup: false,
   isShowConnectWallet: false,
+  isPopUpWithIndexingStatus: false,
   isShowTxPendingPopup: false,
   modalPopUp: null,
   isShowSsvLoader: !isMaintenancePage,
-  transactionStatus: null,
+  transactionStatus: TransactionStatus.PENDING,
   txHash: '',
   restrictedUserGeo: ''
 };
@@ -80,7 +82,10 @@ export const slice = createSlice({
     setIsShowSsvLoader: (state, action: { payload: boolean }) => {
       state.isShowSsvLoader = !state.isMaintenancePage && action.payload;
     },
-    setTransactionStatus: (state, action: { payload: TransactionStatus | null }) => {
+    setIsPopUpWithIndexingStatus: (state, action: { payload: boolean }) => {
+      state.isPopUpWithIndexingStatus = action.payload;
+    },
+    setTransactionStatus: (state, action: { payload: TransactionStatus }) => {
       state.transactionStatus = action.payload;
     },
     setIsShowWalletPopup: (state, action: { payload: boolean }) => {
@@ -110,7 +115,8 @@ export const {
   setIsShowTxPendingPopup,
   setTxHash,
   setIsShowConnectWallet,
-  setModalPopUp
+  setModalPopUp,
+  setIsPopUpWithIndexingStatus
 } = slice.actions;
 
 export const getStrategyName = (state: RootState) => state.appState.strategyName;
@@ -125,3 +131,4 @@ export const getTxHash = (state: RootState) => state.appState.txHash;
 export const getTransactionStatus = (state: RootState) => state.appState.transactionStatus;
 export const getModalPopUp = (state: RootState) => state.appState.modalPopUp;
 export const getIsMaintenancePage = (state: RootState) => state.appState.isMaintenancePage;
+export const getIsPopUpWithIndexingStatus = (state: RootState) => state.appState.isPopUpWithIndexingStatus;

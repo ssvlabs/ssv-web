@@ -5,8 +5,7 @@ import { getContractByName } from '~root/wagmi/utils';
 import { EContractName } from '~app/model/contracts.model';
 import notifyService from '~root/services/notify.service';
 import { store } from '~app/store';
-import { setIsShowTxPendingPopup, setTransactionStatus, setTxHash } from '~app/redux/appState.slice';
-import { TransactionStatus } from '~app/enums/transactionStatus.enum.ts';
+import { setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
 
 const getAccountData = async (publicKey: string) => {
   try {
@@ -31,7 +30,6 @@ const setFeeRecipient = async ({ feeRecipientAddress, isContractWallet }: { feeR
     const tx = await contract.setFeeRecipientAddress(feeRecipientAddress);
     if (tx.hash) {
       notifyService.hash(tx.hash);
-      store.dispatch(setTransactionStatus(TransactionStatus.PENDING));
       store.dispatch(setTxHash(tx.hash));
       store.dispatch(setIsShowTxPendingPopup(true));
     }
@@ -39,13 +37,11 @@ const setFeeRecipient = async ({ feeRecipientAddress, isContractWallet }: { feeR
       return true;
     }
     await tx.wait();
-    store.dispatch(setTransactionStatus(TransactionStatus.INDEXING));
   } catch (e: any) {
     // TODO: add error handling
     console.error(`Error during setting fee recipient: ${e.message}`);
   } finally {
     if (!isContractWallet) {
-      store.dispatch(setTransactionStatus(null));
       store.dispatch(setIsShowTxPendingPopup(false));
     }
   }

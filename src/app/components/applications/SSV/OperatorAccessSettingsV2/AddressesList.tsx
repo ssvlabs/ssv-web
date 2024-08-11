@@ -13,7 +13,7 @@ import { getSelectedOperator } from '~app/redux/account.slice';
 import { ActiveBadge } from '~app/components/applications/SSV/OperatorAccessSettingsV2/ActiveBadge.tsx';
 import styled from 'styled-components';
 import { setModalPopUp } from '~app/redux/appState.slice.ts';
-import { ErrorButton } from '~app/atomicComponents';
+import { ErrorButton, PrimaryButton, SecondaryButton } from '~app/atomicComponents';
 import { ButtonSize } from '~app/enums/Button.enum.ts';
 import { Tooltip } from '~app/components/ui/tooltip';
 
@@ -58,7 +58,7 @@ const AddressesList = () => {
   const handlePaste = (index: number) => (e: React.ClipboardEvent<HTMLInputElement>) => {
     const text = e.clipboardData.getData('text');
     const matches = text.match(/0x[a-fA-F0-9]{40}/gm) || [];
-    if (whitelistedAddressesCount + matches.length > 500) {
+    if (whitelistedAddressesCount + addManager.validNewAddressesCount + matches.length > 500) {
       dispatch(
         setModalPopUp({
           title: 'Limit Exceeded',
@@ -82,6 +82,31 @@ const AddressesList = () => {
     }
   };
 
+  const showPopUp = () =>
+    dispatch(
+      setModalPopUp({
+        title: 'Unsaved Changes',
+        text: ['Are you sure that you want to cancel?', 'Any unsaved changes will be lost.'],
+        buttons: [
+          {
+            component: PrimaryButton,
+            props: {
+              text: 'Discard',
+              size: ButtonSize.MD,
+              onClick: () => {
+                reset(true);
+                dispatch(setModalPopUp(null));
+              }
+            }
+          },
+          {
+            component: SecondaryButton,
+            props: { text: 'Cancel', size: ButtonSize.MD, onClick: () => dispatch(setModalPopUp(null)) }
+          }
+        ]
+      })
+    );
+
   useEffect(() => {
     window.onbeforeunload = () => {
       return mode !== 'view' ? `Are you sure that you want to cancel? Any unsaved changes will be lost.` : undefined;
@@ -91,7 +116,14 @@ const AddressesList = () => {
   return (
     <Form {...addManager.form}>
       <form onSubmit={submit} className="flex flex-col flex-1 overflow-hidden py-8 gap-9 w-[872px] mx-auto">
-        <BackNavigation />
+        <BackNavigation
+          isDefaultBack={!addManager.hasAddresses && !deleteManager.hasAddresses}
+          onClick={() => {
+            if (addManager.hasAddresses || deleteManager.hasAddresses) {
+              showPopUp();
+            }
+          }}
+        />
         <Card className="w-full mx-auto overflow-auto">
           <div className="flex flex-col gap-2">
             <div className="flex justify-between">
@@ -173,7 +205,7 @@ const AddressesList = () => {
           </div>
           {mode !== 'view' && (
             <div className="flex gap-2 w-full">
-              <Button type="button" className="flex-1" size="xl" variant="secondary" onClick={() => reset(true)} disabled={setter.isPending}>
+              <Button type="button" className="flex-1" size="xl" variant="secondary" onClick={showPopUp} disabled={setter.isPending}>
                 Cancel
               </Button>
               <Button className="flex-1" size="xl" type="submit" isActionBtn isLoading={setter.isPending} disabled={mode === 'add' && addManager.isSubmitDisabled}>

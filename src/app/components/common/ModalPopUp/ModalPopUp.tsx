@@ -17,7 +17,6 @@ const Wrapper = styled(Grid)<{ theme: any }>`
   width: 424px;
   padding: 32px;
   border-radius: 16px;
-  align-items: center;
   flex-direction: column;
   background-color: ${({ theme }) => theme.colors.white};
   gap: 12px;
@@ -54,8 +53,14 @@ const Text = styled.p`
 const TextWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 8px;
   margin-bottom: 20px;
+`;
+const ButtonsWrapper = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
 `;
 
 const ModalPopUp = () => {
@@ -74,10 +79,12 @@ const ModalPopUp = () => {
           <CloseButton onClick={closeModal} />
         </HeaderWrapper>
         <TextWrapper>{modalPopUp?.text.map((data: string) => <Text>{data}</Text>)}</TextWrapper>
-        {modalPopUp?.buttons.map((data: { component: React.FC<ButtonPropsType>; props: ButtonPropsType }) => {
-          const Component = data.component;
-          return <Component {...data.props} />;
-        })}
+        <ButtonsWrapper>
+          {modalPopUp?.buttons.map((data: { component: React.FC<ButtonPropsType>; props: ButtonPropsType }) => {
+            const Component = data.component;
+            return <Component {...data.props} />;
+          })}
+        </ButtonsWrapper>
       </Wrapper>
     </DialogWrapper>
   );

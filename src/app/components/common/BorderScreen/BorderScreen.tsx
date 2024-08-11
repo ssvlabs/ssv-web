@@ -5,12 +5,11 @@ import { useStyles } from './BorderScreen.styles';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import styled from 'styled-components';
 
-const NavigationWrapper = styled.div<{ isColored: boolean }>`
+const NavigationWrapper = styled.div<{ isColored: boolean; marginBottom?: number }>`
   width: 100%;
-  height: 60px;
   background-color: ${({ theme, isColored }) => (isColored ? theme.colors.gray0 : 'transparent')};
-  margin-top: 0;
-  margin-bottom: 24px;
+  margin-top: 24px;
+  margin-bottom: ${({ marginBottom }) => `${marginBottom}px` || '24px'};
   display: flex;
   align-items: center;
 `;
@@ -24,6 +23,7 @@ type Props = {
   body?: any;
   bottom?: any;
   header?: string;
+  backButtonBottomMargin?: number;
   SideHeader?: any;
   gray80?: boolean;
   overFlow?: string;
@@ -65,6 +65,7 @@ const BorderScreen = (props: Props) => {
     bottomWrapper,
     withConversion,
     withoutNavigation,
+    backButtonBottomMargin,
     withoutBorderBottom = false,
     wrapperHeight,
     tooltipText,
@@ -89,7 +90,7 @@ const BorderScreen = (props: Props) => {
   return (
     <div>
       {!withoutNavigation && (
-        <NavigationWrapper isColored={!!subHeaderText}>
+        <NavigationWrapper marginBottom={backButtonBottomMargin} isColored={!!subHeaderText}>
           <TextWrapper width={width}>
             <BackNavigation onClick={props.onBackButtonClick} text={subHeaderText} />
           </TextWrapper>

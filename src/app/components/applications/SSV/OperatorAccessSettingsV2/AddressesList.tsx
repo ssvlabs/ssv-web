@@ -10,7 +10,6 @@ import { Input } from '~app/components/ui/input';
 import { useManageAuthorizedAddresses } from '~app/hooks/operator/useManageAuthorizedAddresses';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
-import { ActiveBadge } from '~app/components/applications/SSV/OperatorAccessSettingsV2/ActiveBadge.tsx';
 import styled from 'styled-components';
 import { setModalPopUp } from '~app/redux/appState.slice.ts';
 import { ErrorButton, PrimaryButton, SecondaryButton } from '~app/atomicComponents';
@@ -29,6 +28,22 @@ const SelectedIndicator = styled.div`
   cursor: default;
 `;
 
+const AddAddressButton = styled.button<{ disabled: boolean }>`
+  height: 3rem;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #c0c0c0;
+  border-radius: 0.5rem;
+  color: ${({ theme, disabled }) => (disabled ? theme.colors.gray30 : theme.colors.gray40)};
+  font-weight: 500;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  background-color: ${({ disabled, theme }) => (disabled ? theme.colors.gray0 : 'transparent')};
+`;
+
 const AddressesList = () => {
   const formRef = useRef<HTMLDivElement>(null);
   const operator = useAppSelector(getSelectedOperator)!;
@@ -40,10 +55,12 @@ const AddressesList = () => {
   const isReachedMaxAddressesCount = totalCount >= 500;
 
   const addNewAddressField = () => {
-    addManager.fieldArray.append({ value: '' });
-    setTimeout(() => {
-      formRef.current?.scrollTo({ top: formRef.current.scrollHeight, behavior: 'smooth' });
-    }, 10);
+    if (!addManager.hasEmptyAddresses && !addManager.form.formState.errors.addresses) {
+      addManager.fieldArray.append({ value: '' });
+      setTimeout(() => {
+        formRef.current?.scrollTo({ top: formRef.current.scrollHeight, behavior: 'smooth' });
+      }, 10);
+    }
   };
 
   const currentAddressesCount =
@@ -86,7 +103,7 @@ const AddressesList = () => {
     dispatch(
       setModalPopUp({
         title: 'Unsaved Changes',
-        text: ['Are you sure that you want to cancel?', 'Any unsaved changes will be lost.'],
+        text: ['Are you sure that you want to discard changes?', 'Any unsaved changes will be lost.'],
         buttons: [
           {
             component: PrimaryButton,
@@ -115,7 +132,7 @@ const AddressesList = () => {
 
   return (
     <Form {...addManager.form}>
-      <form onSubmit={submit} className="flex flex-col flex-1 overflow-hidden py-8 gap-9 w-[872px] mx-auto">
+      <form onSubmit={submit} className="flex flex-col flex-1 overflow-hidden py-6 gap-6 w-[872px] mx-auto">
         <BackNavigation
           isDefaultBack={!addManager.hasAddresses && !deleteManager.hasAddresses}
           onClick={() => {
@@ -129,7 +146,6 @@ const AddressesList = () => {
             <div className="flex justify-between">
               <div className="flex gap-2">
                 <h2 className="text-xl font-bold">Authorized Addresses</h2>
-                <ActiveBadge isActive={!!operator.whitelist_addresses?.length} />
               </div>
               {hasWhitelistedAddresses && operator.whitelist_addresses?.length && (
                 <Tooltip hasArrow content={'The maximum number of addresses for whitelist is 500'}>
@@ -191,15 +207,9 @@ const AddressesList = () => {
                 hasArrow
                 content={addManager.hasEmptyAddresses || !!addManager.form.formState.errors.addresses ? 'In order to add another address, you must enter a valid address' : null}
               >
-                <button
-                  disabled={addManager.hasEmptyAddresses || !!addManager.form.formState.errors.addresses}
-                  type="button"
-                  style={{ width: '100%' }}
-                  className="h-12 w-full text-center border border-gray-400 border-dashed rounded-lg text-gray-500 font-medium"
-                  onClick={addNewAddressField}
-                >
+                <AddAddressButton disabled={addManager.hasEmptyAddresses || !!addManager.form.formState.errors.addresses} onClick={addNewAddressField}>
                   + Add Authorized Address
-                </button>
+                </AddAddressButton>
               </Tooltip>
             )}
           </div>

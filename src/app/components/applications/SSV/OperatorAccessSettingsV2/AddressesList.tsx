@@ -147,7 +147,7 @@ const AddressesList = () => {
               <div className="flex gap-2">
                 <h2 className="text-xl font-bold">Authorized Addresses</h2>
               </div>
-              {hasWhitelistedAddresses && operator.whitelist_addresses?.length && (
+              {currentAddressesCount > 0 && (
                 <Tooltip hasArrow content={'The maximum number of addresses for whitelist is 500'}>
                   <SelectedIndicator>{currentAddressesCount} of 500 Addresses</SelectedIndicator>{' '}
                 </Tooltip>

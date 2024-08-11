@@ -5,7 +5,6 @@ import { isAddress } from 'viem';
 import { z } from 'zod';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperator } from '~app/redux/account.slice';
-import { checkAddressChecksum } from '~lib/utils/strings.ts';
 
 type FormValues = {
   addresses: { value: string }[];
@@ -59,7 +58,7 @@ export const useAddAuthorizedAddresses = () => {
 
   const addresses = form.watch('addresses');
   const hasEmptyAddresses = addresses.some((field) => !field.value.trim());
-  const validNewAddressesCount = addresses.filter((field: { value: string }) => checkAddressChecksum(field.value)).length;
+  const validNewAddressesCount = addresses.filter((field: { value: string }) => isAddress(field.value)).length;
 
   const hasAddresses = addresses.filter(({ value }) => value.trim() !== '').length > 0;
   return {

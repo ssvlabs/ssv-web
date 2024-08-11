@@ -89,7 +89,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          MIXPANEL_TOKEN_STAGE: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
 
       - name: Deploy stage webapp
         if: github.ref == 'refs/heads/stage'
@@ -119,7 +119,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          MIXPANEL_TOKEN_STAGE: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
 
       - name: Deploy ilya-dev webapp
         if: github.ref == 'refs/heads/ilya-dev'
@@ -149,7 +149,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          MIXPANEL_TOKEN_STAGE: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
 
       - name: Deploy chris-dev webapp
         if: github.ref == 'refs/heads/chris-dev'
@@ -179,7 +179,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          MIXPANEL_TOKEN_STAGE: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
 
       - name: Deploy dima-dev webapp
         if: github.ref == 'refs/heads/dima-dev'
@@ -209,7 +209,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          MIXPANEL_TOKEN_STAGE: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
 
       - name: Deploy sumbat-dev webapp
         if: github.ref == 'refs/heads/sumbat-dev'
@@ -239,7 +239,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          MIXPANEL_TOKEN_STAGE: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
 
       - name: Deploy prod-test webapp
         if: github.ref == 'refs/heads/prod-test'
@@ -269,7 +269,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          MIXPANEL_TOKEN_PROD: ${{ secrets.MIXPANEL_TOKEN_PROD }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_PROD }}
 
       - name: Deploy prod webapp
         if: github.ref == 'refs/heads/main'

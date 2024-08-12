@@ -1,12 +1,15 @@
 name: API Tests
 
 on:
+  push:
+    branches:
+      - 'ab/postman_github_actions'
   workflow_dispatch:
     inputs:
       iteration-count:
         description: 'Number of iterations'
         required: false
-        default: '5'
+        default: '1'
   # schedule:
   #   - cron: '0 2 * * *'
   #   - cron: '0 16 * * *'
@@ -27,7 +30,7 @@ jobs:
         run: npm install -g newman
 
       - name: Run Newman Load Test
-        if: github.ref == 'refs/heads/stage'
+        # if: github.ref == 'refs/heads/stage'
         run: |
           newman run postman.assertions.json -e postman.env.json --iteration-count ${{ github.event.inputs.iteration-count || '100' }} \
           --reporters cli,json --reporter-json-export newman-report.json

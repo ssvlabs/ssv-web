@@ -27,6 +27,7 @@ jobs:
         run: npm install -g newman
 
       - name: Run Newman Load Test
+        if: github.ref == 'refs/heads/stage'
         run: |
           newman run postman.assertions.json -e postman.env.json --iteration-count ${{ github.event.inputs.iteration-count || '100' }} \
           --reporters cli,json --reporter-json-export newman-report.json

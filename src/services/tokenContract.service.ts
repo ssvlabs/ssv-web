@@ -1,17 +1,18 @@
 import { getContractByName } from '~root/wagmi/utils';
 import { EContractName } from '~app/model/contracts.model';
-import config from '~app/common/config';
 import { fromWei } from '~root/services/conversions.service';
+import { getStoredNetwork } from '~root/providers/networkInfo.provider.ts';
 
 const MAX_WEI_AMOUNT = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
 
 const checkAllowance = async ({ accountAddress }: { accountAddress: string }): Promise<number> => {
   try {
+    const { setterContractAddress } = getStoredNetwork();
     const ssvContract = getContractByName(EContractName.TOKEN_GETTER);
     if (!ssvContract) {
       return 0;
     }
-    const allowance = await ssvContract.allowance(accountAddress, config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS);
+    const allowance = await ssvContract.allowance(accountAddress, setterContractAddress);
     return allowance || 0;
   } catch (e) {
     console.warn('checkAllowance error', e);
@@ -21,11 +22,12 @@ const checkAllowance = async ({ accountAddress }: { accountAddress: string }): P
 
 const requestAllowance = async (callBack?: CallableFunction): Promise<boolean> => {
   try {
+    const { setterContractAddress } = getStoredNetwork();
     const ssvContract = getContractByName(EContractName.TOKEN_SETTER);
     if (!ssvContract) {
       return false;
     }
-    const tx = await ssvContract.approve(config.CONTRACTS.SSV_NETWORK_SETTER.ADDRESS, String(MAX_WEI_AMOUNT));
+    const tx = await ssvContract.approve(setterContractAddress, String(MAX_WEI_AMOUNT));
     if (tx.hash) {
       callBack && callBack({ txHash: tx.hash });
     } else {

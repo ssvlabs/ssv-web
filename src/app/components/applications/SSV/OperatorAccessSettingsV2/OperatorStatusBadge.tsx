@@ -13,6 +13,11 @@ const EyeIcon = styled.div`
   background-image: url(/images/eyelless.svg);
 `;
 
+const Text = styled.p`
+  font-size: 16px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.gray40};
+`;
 export type OperatorStatusBadgeProps = {
   isPrivate?: boolean;
 };
@@ -24,7 +29,7 @@ export const OperatorStatusBadge: FCProps = ({ isPrivate, className, ...props })
   return (
     <Badge variant={isPrivate ? 'success' : 'info'} className={cn(className)} {...props}>
       <Icon className="size-[18px]" />
-      {isPrivate ? 'Private' : 'Public'}
+      <Text>{isPrivate ? 'Private' : 'Public'}</Text>
     </Badge>
   );
 };

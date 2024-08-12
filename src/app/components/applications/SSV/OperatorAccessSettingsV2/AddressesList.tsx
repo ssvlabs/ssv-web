@@ -29,7 +29,7 @@ const SelectedIndicator = styled.div`
 `;
 
 const AddAddressButton = styled.button<{ disabled: boolean }>`
-  height: 3rem;
+  height: 48px !important;
   width: 100%;
   text-align: center;
   display: flex;
@@ -41,7 +41,7 @@ const AddAddressButton = styled.button<{ disabled: boolean }>`
   color: ${({ theme, disabled }) => (disabled ? theme.colors.gray30 : theme.colors.gray40)};
   font-weight: 500;
   cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
-  background-color: ${({ disabled, theme }) => (disabled ? theme.colors.gray0 : 'transparent')};
+  background-color: ${({ disabled, theme }) => (disabled ? theme.colors.gray0 : theme.colors.white)};
 `;
 
 const AddressesList = () => {
@@ -141,7 +141,7 @@ const AddressesList = () => {
             }
           }}
         />
-        <Card className="w-full mx-auto overflow-auto">
+        <Card className="w-full h-416px my-2 mx-auto overflow-auto">
           <div className="flex flex-col gap-2">
             <div className="flex justify-between">
               <div className="flex gap-2">
@@ -201,7 +201,9 @@ const AddressesList = () => {
               />
             ))}
             {addManager.form.formState.errors.addresses && <FormMessage className="text-error-500">{addManager.form.formState.errors.addresses.message}</FormMessage>}
-            {mode !== 'delete' && !isReachedMaxAddressesCount && (
+          </div>
+          {mode !== 'delete' && !isReachedMaxAddressesCount && (
+            <div>
               <Tooltip
                 childrenWrapperClassName="w-full"
                 hasArrow
@@ -211,8 +213,8 @@ const AddressesList = () => {
                   + Add Authorized Address
                 </AddAddressButton>
               </Tooltip>
-            )}
-          </div>
+            </div>
+          )}
           {mode !== 'view' && (
             <div className="flex gap-2 w-full">
               <Button type="button" className="flex-1" size="xl" variant="secondary" onClick={showPopUp} disabled={setter.isPending}>

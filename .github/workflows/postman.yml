@@ -1,0 +1,52 @@
+name: Load Test with Newman
+
+on:
+  workflow_dispatch:
+    inputs:
+      iteration-count:
+        description: 'Number of iterations'
+        required: false
+        default: '5'
+  schedule:
+    - cron: '0 2 * * *'
+    - cron: '0 16 * * *'
+
+jobs:
+  load-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install Newman
+        run: npm install -g newman
+
+      - name: Run Newman Load Test
+        run: |
+          newman run postman.assertions.json -e postman.env.json --iteration-count ${{ github.event.inputs.iteration-count || '100' }} \
+          --reporters cli,json --reporter-json-export newman-report.json
+
+      - name: Check for assertion failures
+        run: |
+          jq '.run.failures' newman-report.json
+        if: failure()
+
+      - name: Check for average response time
+        run: |
+          avg_response_time=$(jq '.run.timings.responseAverage' newman-report.json)
+          echo "Average Response Time: $avg_response_time ms"
+          if [ "$avg_response_time" -ge 1000 ]; then
+            echo "Average response time exceeded 1 second. Failing the job."
+            exit 1
+          fi
+
+      - name: Upload Newman Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: newman-report
+          path: newman-report.json

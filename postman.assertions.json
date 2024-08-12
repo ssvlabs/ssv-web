@@ -1,0 +1,4593 @@
+{
+	"info": {
+		"_postman_id": "8e29f4e3-0295-4047-9e79-8b7d4654f632",
+		"name": "Full Stack",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36136101",
+		"_collection_link": "https://ssv-labs.postman.co/workspace/Team-Workspace~4d882c5d-5b28-44d7-8105-232d2d186237/collection/36136101-8e29f4e3-0295-4047-9e79-8b7d4654f632?action=share&source=collection_link&creator=36136101"
+	},
+	"item": [
+		{
+			"name": "api",
+			"item": [
+				{
+					"name": "v4",
+					"item": [
+						{
+							"name": "{network}",
+							"item": [
+								{
+									"name": "accounts",
+									"item": [
+										{
+											"name": "{ownerAddress}",
+											"item": [
+												{
+													"name": "Get fee recipient by owner address",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"exec": [
+																	"// Parse the JSON response",
+																	"const jsonData = pm.response.json();",
+																	"",
+																	"// Verify the 'type' field",
+																	"pm.test(\"Verify 'type' is 'account'\", function () {",
+																	"    pm.expect(jsonData.type).to.eql(\"account\");",
+																	"});",
+																	"",
+																	"// Verify the 'id' field in 'data' object",
+																	"pm.test(\"Verify 'id' is 1332435\", function () {",
+																	"    pm.expect(jsonData.data.id).to.eql(1332435);",
+																	"});",
+																	"",
+																	"// Verify the 'ownerAddress' field in 'data' object",
+																	"pm.test(\"Verify 'ownerAddress' is '0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF'\", function () {",
+																	"    pm.expect(jsonData.data.ownerAddress).to.eql(\"0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF\");",
+																	"});",
+																	"",
+																	"// Verify the 'recipientAddress' field in 'data' object",
+																	"pm.test(\"Verify 'recipientAddress' is '0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF'\", function () {",
+																	"    pm.expect(jsonData.data.recipientAddress).to.eql(\"0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF\");",
+																	"});",
+																	"",
+																	"// Verify the 'network' field in 'data' object",
+																	"pm.test(\"Verify 'network' is 'holesky'\", function () {",
+																	"    pm.expect(jsonData.data.network).to.eql(\"holesky\");",
+																	"});",
+																	"",
+																	"// Verify the 'version' field in 'data' object",
+																	"pm.test(\"Verify 'version' is 'v4'\", function () {",
+																	"    pm.expect(jsonData.data.version).to.eql(\"v4\");",
+																	"});",
+																	"",
+																	"// Verify the 'nonce' field in 'data' object",
+																	"pm.test(\"Verify 'nonce' is 1372\", function () {",
+																	"    pm.expect(jsonData.data.nonce).to.eql(1372);",
+																	"});",
+																	""
+																],
+																"type": "text/javascript",
+																"packages": {}
+															}
+														}
+													],
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{stg}}/api/v4/{{network}}/accounts/0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF?web-app-source=true",
+															"host": [
+																"{{stg}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																"{{network}}",
+																"accounts",
+																"0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF"
+															],
+															"query": [
+																{
+																	"key": "web-app-source",
+																	"value": "true"
+																}
+															]
+														}
+													},
+													"response": [
+														{
+															"name": "Account found and returned in response",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/accounts/:ownerAddress",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"accounts",
+																		":ownerAddress"
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		},
+																		{
+																			"key": "ownerAddress"
+																		}
+																	]
+																}
+															},
+															"status": "OK",
+															"code": 200,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														},
+														{
+															"name": "Internal server error",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/accounts/:ownerAddress",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"accounts",
+																		":ownerAddress"
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		},
+																		{
+																			"key": "ownerAddress"
+																		}
+																	]
+																}
+															},
+															"status": "Internal Server Error",
+															"code": 500,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "List accounts with pagination",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"// Parse the JSON response",
+															"const jsonData = pm.response.json();",
+															"",
+															"// Verify the 'type' field",
+															"pm.test(\"Verify 'type' is 'account'\", function () {",
+															"    pm.expect(jsonData.type).to.eql(\"account\");",
+															"});",
+															"",
+															"// Verify the 'filter.page' field",
+															"pm.test(\"Verify 'filter.page' is 1\", function () {",
+															"    pm.expect(jsonData.filter.page).to.eql(1);",
+															"});",
+															"",
+															"// Verify the 'filter.perPage' field",
+															"pm.test(\"Verify 'filter.perPage' is 10\", function () {",
+															"    pm.expect(jsonData.filter.perPage).to.eql(10);",
+															"});",
+															"",
+															"// Verify the 'data' array length",
+															"pm.test(\"Verify 'data' array contains 10 items\", function () {",
+															"    pm.expect(jsonData.data.length).to.eql(10);",
+															"});",
+															"",
+															"// Verify the first item's 'id' field",
+															"pm.test(\"Verify first item's 'id' is 887273\", function () {",
+															"    pm.expect(jsonData.data[0].id).to.eql(887273);",
+															"});",
+															"",
+															"// Verify the first item's 'ownerAddress' field",
+															"pm.test(\"Verify first item's 'ownerAddress' is '0x01f959146eDF9e2B044E3A1A82DAda5b7A3B756F'\", function () {",
+															"    pm.expect(jsonData.data[0].ownerAddress).to.eql(\"0x01f959146eDF9e2B044E3A1A82DAda5b7A3B756F\");",
+															"});",
+															"",
+															"// Verify the first item's 'recipientAddress' field is null",
+															"pm.test(\"Verify first item's 'recipientAddress' is null\", function () {",
+															"    pm.expect(jsonData.data[0].recipientAddress).to.eql(null);",
+															"});",
+															"",
+															"// Verify the first item's 'network' field",
+															"pm.test(\"Verify first item's 'network' is either 'mainnet' or 'stage'\", function () {",
+															"    pm.expect(jsonData.data[0].network).to.be.oneOf([\"mainnet\", \"stage\"]);",
+															"});",
+															"",
+															"// Verify the first item's 'version' field",
+															"pm.test(\"Verify first item's 'version' is 'v4'\", function () {",
+															"    pm.expect(jsonData.data[0].version).to.eql(\"v4\");",
+															"});",
+															"",
+															"// Iterate through each item in the 'data' array to verify the 'network' field",
+															"jsonData.data.forEach((item, index) => {",
+															"    pm.test(`Verify item ${index + 1}'s 'network' is either 'mainnet' or 'stage'`, function () {",
+															"        pm.expect(item.network).to.be.oneOf([\"mainnet\", \"stage\"]);",
+															"    });",
+															"});",
+															"",
+															"// Verify the last item's 'id' field",
+															"pm.test(\"Verify last item's 'id' is 882161\", function () {",
+															"    pm.expect(jsonData.data[9].id).to.eql(882161);",
+															"});",
+															"",
+															"// Verify the last item's 'ownerAddress' field",
+															"pm.test(\"Verify last item's 'ownerAddress' is '0x0881D24A07eF84851DCb513cbDcd2384DC9C5b7a'\", function () {",
+															"    pm.expect(jsonData.data[9].ownerAddress).to.eql(\"0x0881D24A07eF84851DCb513cbDcd2384DC9C5b7a\");",
+															"});",
+															"",
+															"// Verify the last item's 'recipientAddress' field",
+															"pm.test(\"Verify last item's 'recipientAddress' is '0x34842c43e655779a86e890e2b56D09Bc477a1CE3'\", function () {",
+															"    pm.expect(jsonData.data[9].recipientAddress).to.eql(\"0x34842c43e655779a86e890e2b56D09Bc477a1CE3\");",
+															"});",
+															"",
+															"// Verify the last item's 'network' field",
+															"pm.test(\"Verify last item's 'network' is either 'mainnet' or 'stage'\", function () {",
+															"    pm.expect(jsonData.data[9].network).to.be.oneOf([\"mainnet\", \"stage\"]);",
+															"});",
+															"",
+															"// Verify the last item's 'version' field",
+															"pm.test(\"Verify last item's 'version' is 'v4'\", function () {",
+															"    pm.expect(jsonData.data[9].version).to.eql(\"v4\");",
+															"});",
+															""
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "web-app-source",
+														"value": "true",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{prod}}/api/v4/{{mainnet}}/accounts?page=1&perPage=10",
+													"host": [
+														"{{prod}}"
+													],
+													"path": [
+														"api",
+														"v4",
+														"{{mainnet}}",
+														"accounts"
+													],
+													"query": [
+														{
+															"key": "page",
+															"value": "1"
+														},
+														{
+															"key": "perPage",
+															"value": "10",
+															"description": "Maximum allowed value: 100"
+														}
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "Accounts found and returned in response",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v4/:network/accounts?page=1&perPage=10",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																":network",
+																"accounts"
+															],
+															"query": [
+																{
+																	"key": "page",
+																	"value": "1"
+																},
+																{
+																	"key": "perPage",
+																	"value": "10",
+																	"description": "Maximum allowed value: 100"
+																}
+															],
+															"variable": [
+																{
+																	"key": "network"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Requested page number does not exists",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v4/:network/accounts?page=1&perPage=10",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																":network",
+																"accounts"
+															],
+															"query": [
+																{
+																	"key": "page",
+																	"value": "1"
+																},
+																{
+																	"key": "perPage",
+																	"value": "10",
+																	"description": "Maximum allowed value: 100"
+																}
+															],
+															"variable": [
+																{
+																	"key": "network"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Internal server error",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v4/:network/accounts?page=1&perPage=10",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																":network",
+																"accounts"
+															],
+															"query": [
+																{
+																	"key": "page",
+																	"value": "1"
+																},
+																{
+																	"key": "perPage",
+																	"value": "10",
+																	"description": "Maximum allowed value: 100"
+																}
+															],
+															"variable": [
+																{
+																	"key": "network"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "clusters",
+									"item": [
+										{
+											"name": "count",
+											"item": [
+												{
+													"name": "Count clusters in network",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"exec": [
+																	"// Parse the JSON response",
+																	"const jsonData = pm.response.json();",
+																	"",
+																	"// Verify the 'type' field",
+																	"pm.test(\"Verify 'type' is 'cluster'\", function () {",
+																	"    pm.expect(jsonData.type).to.eql(\"cluster\");",
+																	"});",
+																	"",
+																	"// Verify the 'data' field",
+																	"pm.test(\"Verify 'data' is 612\", function () {",
+																	"    pm.expect(jsonData.data).to.eql(612);",
+																	"});",
+																	""
+																],
+																"type": "text/javascript",
+																"packages": {}
+															}
+														}
+													],
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{stg}}/api/v4/{{network}}/clusters/count?web-app-source=true",
+															"host": [
+																"{{stg}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																"{{network}}",
+																"clusters",
+																"count"
+															],
+															"query": [
+																{
+																	"key": "web-app-source",
+																	"value": "true"
+																}
+															]
+														}
+													},
+													"response": [
+														{
+															"name": "Clusters counted and returned in response",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/clusters/count",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"clusters",
+																		"count"
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		}
+																	]
+																}
+															},
+															"status": "OK",
+															"code": 200,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														},
+														{
+															"name": "Internal server error",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/clusters/count",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"clusters",
+																		"count"
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		}
+																	]
+																}
+															},
+															"status": "Internal Server Error",
+															"code": 500,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "{id}",
+											"item": [
+												{
+													"name": "Get cluster by its primary ID or keccak256 hash",
+													"request": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "web-app-source",
+																"value": "true",
+																"type": "text"
+															}
+														],
+														"url": {
+															"raw": "{{stg}}/api/v4/{{network}}/clusters/5?operatorDetails=true",
+															"host": [
+																"{{stg}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																"{{network}}",
+																"clusters",
+																"5"
+															],
+															"query": [
+																{
+																	"key": "operatorDetails",
+																	"value": "true",
+																	"description": "Response with operator details"
+																}
+															]
+														}
+													},
+													"response": [
+														{
+															"name": "Cluster found and returned in response",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/clusters/:id?operatorDetails=<boolean>",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"clusters",
+																		":id"
+																	],
+																	"query": [
+																		{
+																			"key": "operatorDetails",
+																			"value": "<boolean>",
+																			"description": "Response with operator details"
+																		}
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		},
+																		{
+																			"key": "id"
+																		}
+																	]
+																}
+															},
+															"status": "OK",
+															"code": 200,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														},
+														{
+															"name": "Internal server error",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/clusters/:id?operatorDetails=<boolean>",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"clusters",
+																		":id"
+																	],
+																	"query": [
+																		{
+																			"key": "operatorDetails",
+																			"value": "<boolean>",
+																			"description": "Response with operator details"
+																		}
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		},
+																		{
+																			"key": "id"
+																		}
+																	]
+																}
+															},
+															"status": "Internal Server Error",
+															"code": 500,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "owner",
+											"item": [
+												{
+													"name": "{owner}",
+													"item": [
+														{
+															"name": "Get clusters by owner address",
+															"event": [
+																{
+																	"listen": "test",
+																	"script": {
+																		"exec": [
+																			"// Parse the JSON response",
+																			"const jsonData = pm.response.json();",
+																			"",
+																			"// Verify 'pagination' fields",
+																			"pm.test(\"Verify 'pagination.total' is 7\", function () {",
+																			"    pm.expect(jsonData.pagination.total).to.eql(7);",
+																			"});",
+																			"",
+																			"pm.test(\"Verify 'pagination.page' is 1\", function () {",
+																			"    pm.expect(jsonData.pagination.page).to.eql(1);",
+																			"});",
+																			"",
+																			"pm.test(\"Verify 'pagination.pages' is 1\", function () {",
+																			"    pm.expect(jsonData.pagination.pages).to.eql(1);",
+																			"});",
+																			"",
+																			"pm.test(\"Verify 'pagination.per_page' is 10\", function () {",
+																			"    pm.expect(jsonData.pagination.per_page).to.eql(10);",
+																			"});",
+																			"",
+																			"// Verify 'type' field",
+																			"pm.test(\"Verify 'type' is 'cluster'\", function () {",
+																			"    pm.expect(jsonData.type).to.eql(\"cluster\");",
+																			"});",
+																			"",
+																			"// Verify 'clusters' array length",
+																			"pm.test(\"Verify 'clusters' array contains 7 items\", function () {",
+																			"    pm.expect(jsonData.clusters.length).to.eql(7);",
+																			"});",
+																			"",
+																			"// Loop through each cluster to perform validations",
+																			"jsonData.clusters.forEach((cluster, index) => {",
+																			"",
+																			"    // Verify 'id' field of each cluster",
+																			"    pm.test(`Verify cluster ${index + 1} 'id' is a number`, function () {",
+																			"        pm.expect(cluster.id).to.be.a('number');",
+																			"    });",
+																			"",
+																			"    // Verify 'network' field of each cluster is 'holesky'",
+																			"    pm.test(`Verify cluster ${index + 1} 'network' is 'holesky'`, function () {",
+																			"        pm.expect(cluster.network).to.eql('holesky');",
+																			"    });",
+																			"",
+																			"    // Verify 'version' field of each cluster is 'v4'",
+																			"    pm.test(`Verify cluster ${index + 1} 'version' is 'v4'`, function () {",
+																			"        pm.expect(cluster.version).to.eql('v4');",
+																			"    });",
+																			"",
+																			"    // Verify 'ownerAddress' field of each cluster is a string",
+																			"    pm.test(`Verify cluster ${index + 1} 'ownerAddress' is a valid string`, function () {",
+																			"        pm.expect(cluster.ownerAddress).to.be.a('string');",
+																			"    });",
+																			"",
+																			"    // Verify 'active' field of each cluster is a boolean",
+																			"    pm.test(`Verify cluster ${index + 1} 'active' is a boolean`, function () {",
+																			"        pm.expect(cluster.active).to.be.a('boolean');",
+																			"    });",
+																			"",
+																			"    // Verify 'isLiquidated' field of each cluster is a boolean",
+																			"    pm.test(`Verify cluster ${index + 1} 'isLiquidated' is a boolean`, function () {",
+																			"        pm.expect(cluster.isLiquidated).to.be.a('boolean');",
+																			"    });",
+																			"",
+																			"    // Verify 'operators' array exists and contains operators",
+																			"    pm.test(`Verify cluster ${index + 1} 'operators' array exists`, function () {",
+																			"        pm.expect(cluster.operators).to.be.an('array');",
+																			"        pm.expect(cluster.operators.length).to.be.greaterThan(0);",
+																			"    });",
+																			"",
+																			"    // Loop through each operator in the current cluster",
+																			"    cluster.operators.forEach((operator, operatorIndex) => {",
+																			"        ",
+																			"        // Verify 'id' field of each operator",
+																			"        pm.test(`Verify operator ${operatorIndex + 1} of cluster ${index + 1} 'id' is a number`, function () {",
+																			"            pm.expect(operator.id).to.be.a('number');",
+																			"        });",
+																			"",
+																			"        // Verify 'fee' field of each operator is a string representing a large number",
+																			"        pm.test(`Verify operator ${operatorIndex + 1} of cluster ${index + 1} 'fee' is a string`, function () {",
+																			"            pm.expect(operator.fee).to.be.a('string');",
+																			"        });",
+																			"",
+																			"        // Verify 'is_valid' field of each operator is a boolean",
+																			"        pm.test(`Verify operator ${operatorIndex + 1} of cluster ${index + 1} 'is_valid' is a boolean`, function () {",
+																			"            pm.expect(operator.is_valid).to.be.a('boolean');",
+																			"        });",
+																			"",
+																			"        // Additional tests for each operator's fields as needed",
+																			"    });",
+																			"",
+																			"    // Additional tests for each cluster's fields as needed",
+																			"});",
+																			"",
+																			"// Verify specific fields in a specific cluster (e.g., the first cluster)",
+																			"pm.test(\"Verify first cluster's 'clusterId'\", function () {",
+																			"    pm.expect(jsonData.clusters[0].clusterId).to.eql(\"0xe8e2bb260f5b3ab5d9c7785880147509258e2df79fecd8ed047b6fa9a1e04a00\");",
+																			"});",
+																			"",
+																			"// You can continue adding specific tests for other clusters if necessary",
+																			""
+																		],
+																		"type": "text/javascript",
+																		"packages": {}
+																	}
+																}
+															],
+															"request": {
+																"method": "GET",
+																"header": [
+																	{
+																		"key": "web-app-source",
+																		"value": "true",
+																		"type": "text"
+																	}
+																],
+																"url": {
+																	"raw": "{{prod}}/api/v4/{{mainnet}}/clusters/owner/0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF?page=1&perPage=10&ordering=&operatorDetails=<boolean>",
+																	"host": [
+																		"{{prod}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		"{{mainnet}}",
+																		"clusters",
+																		"owner",
+																		"0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF"
+																	],
+																	"query": [
+																		{
+																			"key": "page",
+																			"value": "1"
+																		},
+																		{
+																			"key": "perPage",
+																			"value": "10"
+																		},
+																		{
+																			"key": "ordering",
+																			"value": ""
+																		},
+																		{
+																			"key": "operatorDetails",
+																			"value": "<boolean>"
+																		}
+																	]
+																}
+															},
+															"response": [
+																{
+																	"name": "Clusters found and returned in response",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v4/:network/clusters/owner/:owner?page=1&perPage=10&ordering=&operatorDetails=<boolean>",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				":network",
+																				"clusters",
+																				"owner",
+																				":owner"
+																			],
+																			"query": [
+																				{
+																					"key": "page",
+																					"value": "1"
+																				},
+																				{
+																					"key": "perPage",
+																					"value": "10",
+																					"description": "Maximum allowed value: 100"
+																				},
+																				{
+																					"key": "ordering",
+																					"value": "",
+																					"description": "Sort by one or few fields. <br><br>You can sort only by: &nbsp;&nbsp;<code>id</code>,&nbsp;&nbsp;<code>index</code>,&nbsp;&nbsp;<code>validator_count</code><br><br>Examples: <ol><li><code>id:asc,index:desc</code><br><br></li><li><code>validator_count:desc</code><br><br></li><li>without specifying sort order: <code>validator_count,id</code> - equals to: <code>validator_count:asc,id:asc</code><br><br></li></ol>"
+																				},
+																				{
+																					"key": "operatorDetails",
+																					"value": "<boolean>",
+																					"description": "Response with operators details"
+																				}
+																			],
+																			"variable": [
+																				{
+																					"key": "network"
+																				},
+																				{
+																					"key": "owner"
+																				}
+																			]
+																		}
+																	},
+																	"status": "OK",
+																	"code": 200,
+																	"_postman_previewlanguage": "text",
+																	"header": [],
+																	"cookie": [],
+																	"body": ""
+																},
+																{
+																	"name": "Internal server error",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v4/:network/clusters/owner/:owner?page=1&perPage=10&ordering=&operatorDetails=<boolean>",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				":network",
+																				"clusters",
+																				"owner",
+																				":owner"
+																			],
+																			"query": [
+																				{
+																					"key": "page",
+																					"value": "1"
+																				},
+																				{
+																					"key": "perPage",
+																					"value": "10",
+																					"description": "Maximum allowed value: 100"
+																				},
+																				{
+																					"key": "ordering",
+																					"value": "",
+																					"description": "Sort by one or few fields. <br><br>You can sort only by: &nbsp;&nbsp;<code>id</code>,&nbsp;&nbsp;<code>index</code>,&nbsp;&nbsp;<code>validator_count</code><br><br>Examples: <ol><li><code>id:asc,index:desc</code><br><br></li><li><code>validator_count:desc</code><br><br></li><li>without specifying sort order: <code>validator_count,id</code> - equals to: <code>validator_count:asc,id:asc</code><br><br></li></ol>"
+																				},
+																				{
+																					"key": "operatorDetails",
+																					"value": "<boolean>",
+																					"description": "Response with operators details"
+																				}
+																			],
+																			"variable": [
+																				{
+																					"key": "network"
+																				},
+																				{
+																					"key": "owner"
+																				}
+																			]
+																		}
+																	},
+																	"status": "Internal Server Error",
+																	"code": 500,
+																	"_postman_previewlanguage": "text",
+																	"header": [],
+																	"cookie": [],
+																	"body": ""
+																}
+															]
+														}
+													]
+												},
+												{
+													"name": "operators",
+													"item": [
+														{
+															"name": "{operators}",
+															"item": [
+																{
+																	"name": "Get cluster by owner address and operators list",
+																	"request": {
+																		"method": "GET",
+																		"header": [
+																			{
+																				"key": "web-app-source",
+																				"value": "true",
+																				"type": "text"
+																			}
+																		],
+																		"url": {
+																			"raw": "{{stg}}/api/v4/{{network}}/clusters/owner/0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF/operators/4?operatorDetails=true",
+																			"host": [
+																				"{{stg}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				"{{network}}",
+																				"clusters",
+																				"owner",
+																				"0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF",
+																				"operators",
+																				"4"
+																			],
+																			"query": [
+																				{
+																					"key": "operatorDetails",
+																					"value": "true"
+																				}
+																			]
+																		}
+																	},
+																	"response": [
+																		{
+																			"name": "Cluster found and returned in response",
+																			"originalRequest": {
+																				"method": "GET",
+																				"header": [],
+																				"url": {
+																					"raw": "{{baseUrl}}/api/v4/:network/clusters/owner/:owner/operators/:operators?operatorDetails=<boolean>",
+																					"host": [
+																						"{{baseUrl}}"
+																					],
+																					"path": [
+																						"api",
+																						"v4",
+																						":network",
+																						"clusters",
+																						"owner",
+																						":owner",
+																						"operators",
+																						":operators"
+																					],
+																					"query": [
+																						{
+																							"key": "operatorDetails",
+																							"value": "<boolean>",
+																							"description": "Response with operators details"
+																						}
+																					],
+																					"variable": [
+																						{
+																							"key": "network"
+																						},
+																						{
+																							"key": "owner"
+																						},
+																						{
+																							"key": "operators"
+																						}
+																					]
+																				}
+																			},
+																			"status": "OK",
+																			"code": 200,
+																			"_postman_previewlanguage": "text",
+																			"header": [],
+																			"cookie": [],
+																			"body": ""
+																		},
+																		{
+																			"name": "Internal server error",
+																			"originalRequest": {
+																				"method": "GET",
+																				"header": [],
+																				"url": {
+																					"raw": "{{baseUrl}}/api/v4/:network/clusters/owner/:owner/operators/:operators?operatorDetails=<boolean>",
+																					"host": [
+																						"{{baseUrl}}"
+																					],
+																					"path": [
+																						"api",
+																						"v4",
+																						":network",
+																						"clusters",
+																						"owner",
+																						":owner",
+																						"operators",
+																						":operators"
+																					],
+																					"query": [
+																						{
+																							"key": "operatorDetails",
+																							"value": "<boolean>",
+																							"description": "Response with operators details"
+																						}
+																					],
+																					"variable": [
+																						{
+																							"key": "network"
+																						},
+																						{
+																							"key": "owner"
+																						},
+																						{
+																							"key": "operators"
+																						}
+																					]
+																				}
+																			},
+																			"status": "Internal Server Error",
+																			"code": 500,
+																			"_postman_previewlanguage": "text",
+																			"header": [],
+																			"cookie": [],
+																			"body": ""
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "List clusters with pagination",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"// Parse the JSON response",
+															"const jsonData = pm.response.json();",
+															"",
+															"// Verify the 'type' field",
+															"pm.test(\"Verify 'type' is 'cluster'\", function () {",
+															"    pm.expect(jsonData.type).to.eql(\"cluster\");",
+															"});",
+															"",
+															"// Verify the 'filter' object",
+															"pm.test(\"Verify 'filter.from' is 1\", function () {",
+															"    pm.expect(jsonData.filter.from).to.eql(1);",
+															"});",
+															"",
+															"pm.test(\"Verify 'filter.limit' is 1\", function () {",
+															"    pm.expect(jsonData.filter.limit).to.eql(1);",
+															"});",
+															"",
+															"// Verify the 'clusters' array length",
+															"pm.test(\"Verify 'clusters' array contains 1 item\", function () {",
+															"    pm.expect(jsonData.clusters.length).to.eql(1);",
+															"});",
+															"",
+															"// Loop through each cluster to perform validations",
+															"jsonData.clusters.forEach((cluster, index) => {",
+															"",
+															"    // Verify 'id' field of the cluster",
+															"    pm.test(`Verify cluster ${index + 1} 'id' is a number`, function () {",
+															"        pm.expect(cluster.id).to.be.a('number');",
+															"    });",
+															"",
+															"    // Verify 'clusterId' field of the cluster",
+															"    pm.test(`Verify cluster ${index + 1} 'clusterId' is a valid string`, function () {",
+															"        pm.expect(cluster.clusterId).to.be.a('string');",
+															"    });",
+															"",
+															"    // Verify 'network' field of the cluster",
+															"    pm.test(`Verify cluster ${index + 1} 'network' is 'holesky'`, function () {",
+															"        pm.expect(cluster.network).to.eql('holesky');",
+															"    });",
+															"",
+															"    // Verify 'version' field of the cluster",
+															"    pm.test(`Verify cluster ${index + 1} 'version' is 'v4'`, function () {",
+															"        pm.expect(cluster.version).to.eql('v4');",
+															"    });",
+															"",
+															"    // Verify 'ownerAddress' field of the cluster",
+															"    pm.test(`Verify cluster ${index + 1} 'ownerAddress' is a valid string`, function () {",
+															"        pm.expect(cluster.ownerAddress).to.be.a('string');",
+															"    });",
+															"",
+															"    // Verify 'validatorCount' field of the cluster",
+															"    pm.test(`Verify cluster ${index + 1} 'validatorCount' is a number`, function () {",
+															"        pm.expect(cluster.validatorCount).to.be.a('number');",
+															"    });",
+															"",
+															"    // Verify 'active' field of the cluster is a boolean",
+															"    pm.test(`Verify cluster ${index + 1} 'active' is a boolean`, function () {",
+															"        pm.expect(cluster.active).to.be.a('boolean');",
+															"    });",
+															"",
+															"    // Verify 'isLiquidated' field of the cluster is a boolean",
+															"    pm.test(`Verify cluster ${index + 1} 'isLiquidated' is a boolean`, function () {",
+															"        pm.expect(cluster.isLiquidated).to.be.a('boolean');",
+															"    });",
+															"",
+															"    // Verify 'operators' array exists and contains operators",
+															"    pm.test(`Verify cluster ${index + 1} 'operators' array exists`, function () {",
+															"        pm.expect(cluster.operators).to.be.an('array');",
+															"        pm.expect(cluster.operators.length).to.be.greaterThan(0);",
+															"    });",
+															"",
+															"    // Loop through each operator in the current cluster",
+															"    cluster.operators.forEach((operator, operatorIndex) => {",
+															"        ",
+															"        // Verify 'id' field of each operator",
+															"        pm.test(`Verify operator ${operatorIndex + 1} of cluster ${index + 1} 'id' is a number`, function () {",
+															"            pm.expect(operator.id).to.be.a('number');",
+															"        });",
+															"",
+															"        // Verify 'fee' field of each operator is a string",
+															"        pm.test(`Verify operator ${operatorIndex + 1} of cluster ${index + 1} 'fee' is a string`, function () {",
+															"            pm.expect(operator.fee).to.be.a('string');",
+															"        });",
+															"",
+															"        // Verify 'is_valid' field of each operator is a boolean",
+															"        pm.test(`Verify operator ${operatorIndex + 1} of cluster ${index + 1} 'is_valid' is a boolean`, function () {",
+															"            pm.expect(operator.is_valid).to.be.a('boolean');",
+															"        });",
+															"",
+															"        // Additional tests for each operator's fields as needed",
+															"    });",
+															"",
+															"    // Additional tests for each cluster's fields as needed",
+															"});",
+															"",
+															"// Specific field validation for the first cluster (if needed)",
+															"pm.test(\"Verify first cluster's 'clusterId'\", function () {",
+															"    pm.expect(jsonData.clusters[0].clusterId).to.eql(\"0xd3ed7f7da6e8190dc045f76786ec0029f7ba1393c0dd074c540d65bd3b64ed24\");",
+															"});",
+															""
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "web-app-source",
+														"value": "true",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{stg}}/api/v4/{{network}}/clusters?from=1&limit=1&operatorDetails=<boolean>",
+													"host": [
+														"{{stg}}"
+													],
+													"path": [
+														"api",
+														"v4",
+														"{{network}}",
+														"clusters"
+													],
+													"query": [
+														{
+															"key": "from",
+															"value": "1",
+															"description": "(Required) "
+														},
+														{
+															"key": "limit",
+															"value": "1",
+															"description": "(Required) "
+														},
+														{
+															"key": "operatorDetails",
+															"value": "<boolean>",
+															"description": "Response with operators details"
+														}
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "Clusters found and returned in response",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v4/:network/clusters?from=1&limit=1&operatorDetails=<boolean>",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																":network",
+																"clusters"
+															],
+															"query": [
+																{
+																	"key": "from",
+																	"value": "1",
+																	"description": "(Required) "
+																},
+																{
+																	"key": "limit",
+																	"value": "1",
+																	"description": "(Required) "
+																},
+																{
+																	"key": "operatorDetails",
+																	"value": "<boolean>",
+																	"description": "Response with operators details"
+																}
+															],
+															"variable": [
+																{
+																	"key": "network"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Requested page number does not exists",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v4/:network/clusters?from=1&limit=1&operatorDetails=<boolean>",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																":network",
+																"clusters"
+															],
+															"query": [
+																{
+																	"key": "from",
+																	"value": "1",
+																	"description": "(Required) "
+																},
+																{
+																	"key": "limit",
+																	"value": "1",
+																	"description": "(Required) "
+																},
+																{
+																	"key": "operatorDetails",
+																	"value": "<boolean>",
+																	"description": "Response with operators details"
+																}
+															],
+															"variable": [
+																{
+																	"key": "network"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Internal server error",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v4/:network/clusters?from=1&limit=1&operatorDetails=<boolean>",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																":network",
+																"clusters"
+															],
+															"query": [
+																{
+																	"key": "from",
+																	"value": "1",
+																	"description": "(Required) "
+																},
+																{
+																	"key": "limit",
+																	"value": "1",
+																	"description": "(Required) "
+																},
+																{
+																	"key": "operatorDetails",
+																	"value": "<boolean>",
+																	"description": "Response with operators details"
+																}
+															],
+															"variable": [
+																{
+																	"key": "network"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "operators",
+									"item": [
+										{
+											"name": "graph",
+											"item": [
+												{
+													"name": "List of operators and validators for search widget",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"exec": [
+																	"pm.test(\"Check if the response has an 'operators' array\", function () {",
+																	"    pm.expect(pm.response.json()).to.have.property(\"operators\");",
+																	"});",
+																	"",
+																	"pm.test(\"Verify 'operators' array is not empty\", function () {",
+																	"    const operators = pm.response.json().operators;",
+																	"    pm.expect(operators.length).to.be.above(0);",
+																	"});",
+																	"",
+																	"pm.test(\"Ensure each operator has required properties\", function () {",
+																	"    const operators = pm.response.json().operators;",
+																	"    operators.forEach(function (operator) {",
+																	"        pm.test(\"Operator has 'id' property\", function () {",
+																	"            pm.expect(operator).to.have.property(\"id\");",
+																	"        });",
+																	"        pm.test(\"Operator has 'id_str' property\", function () {",
+																	"            pm.expect(operator).to.have.property(\"id_str\");",
+																	"        });",
+																	"        pm.test(\"Operator has 'declared_fee' property\", function () {",
+																	"            pm.expect(operator).to.have.property(\"declared_fee\");",
+																	"        });",
+																	"        pm.test(\"Operator has 'fee' property\", function () {",
+																	"            pm.expect(operator).to.have.property(\"fee\");",
+																	"        });",
+																	"        pm.test(\"Operator has 'public_key' property\", function () {",
+																	"            pm.expect(operator).to.have.property(\"public_key\");",
+																	"        });",
+																	"        pm.test(\"Operator has 'owner_address' property\", function () {",
+																	"            pm.expect(operator).to.have.property(\"owner_address\");",
+																	"        });",
+																	"        pm.test(\"Operator has 'name' property\", function () {",
+																	"            pm.expect(operator).to.have.property(\"name\");",
+																	"        });",
+																	"        pm.test(\"Operator has 'performance' property\", function () {",
+																	"            pm.expect(operator).to.have.property(\"performance\");",
+																	"        });",
+																	"        pm.test(\"Operator performance has '24h' property\", function () {",
+																	"            pm.expect(operator.performance).to.have.property(\"24h\");",
+																	"        });",
+																	"        pm.test(\"Operator performance has '30d' property\", function () {",
+																	"            pm.expect(operator.performance).to.have.property(\"30d\");",
+																	"        });",
+																	"        pm.test(\"Operator has 'is_valid' property\", function () {",
+																	"            pm.expect(operator).to.have.property(\"is_valid\");",
+																	"        });",
+																	"        pm.test(\"Operator has 'is_deleted' property\", function () {",
+																	"            pm.expect(operator).to.have.property(\"is_deleted\");",
+																	"        });",
+																	"        pm.test(\"Operator has 'status' property\", function () {",
+																	"            pm.expect(operator).to.have.property(\"status\");",
+																	"        });",
+																	"    });",
+																	"});",
+																	"",
+																	"pm.test(\"Check specific values of the first operator\", function () {",
+																	"    const operators = pm.response.json().operators;",
+																	"    const firstOperator = operators[0];",
+																	"    ",
+																	"    pm.test(\"First operator's 'id' is 287\", function () {",
+																	"        pm.expect(firstOperator.id).to.eql(287);",
+																	"    });",
+																	"    pm.test(\"First operator's 'fee' is '956600000000'\", function () {",
+																	"        pm.expect(firstOperator.fee).to.eql(\"956600000000\");",
+																	"    });",
+																	"    pm.test(\"First operator's 'status' is 'Active'\", function () {",
+																	"        pm.expect(firstOperator.status).to.eql(\"Active\");",
+																	"    });",
+																	"    pm.test(\"First operator's 'is_valid' is true\", function () {",
+																	"        pm.expect(firstOperator.is_valid).to.be.true;",
+																	"    });",
+																	"});",
+																	""
+																],
+																"type": "text/javascript",
+																"packages": {}
+															}
+														}
+													],
+													"request": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "web-app-source",
+																"value": "true",
+																"type": "text"
+															}
+														],
+														"url": {
+															"raw": "{{stg}}/api/v4/{{network}}/operators/graph?page=1&perPage=100&randomize=true",
+															"host": [
+																"{{stg}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																"{{network}}",
+																"operators",
+																"graph"
+															],
+															"query": [
+																{
+																	"key": "page",
+																	"value": "1"
+																},
+																{
+																	"key": "perPage",
+																	"value": "100",
+																	"description": "Maximum allowed value: 10000"
+																},
+																{
+																	"key": "randomize",
+																	"value": "true",
+																	"description": "To use this parameter specify \"true\" as string value"
+																}
+															]
+														}
+													},
+													"response": [
+														{
+															"name": "Operators found and returned in response",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/operators/graph?page=1&perPage=1000&randomize=",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"operators",
+																		"graph"
+																	],
+																	"query": [
+																		{
+																			"key": "page",
+																			"value": "1"
+																		},
+																		{
+																			"key": "perPage",
+																			"value": "1000",
+																			"description": "Maximum allowed value: 10000"
+																		},
+																		{
+																			"key": "randomize",
+																			"value": "",
+																			"description": "To use this parameter specify \"true\" as string value"
+																		}
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		}
+																	]
+																}
+															},
+															"status": "OK",
+															"code": 200,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														},
+														{
+															"name": "Requested page number does not exists",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/operators/graph?page=1&perPage=1000&randomize=",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"operators",
+																		"graph"
+																	],
+																	"query": [
+																		{
+																			"key": "page",
+																			"value": "1"
+																		},
+																		{
+																			"key": "perPage",
+																			"value": "1000",
+																			"description": "Maximum allowed value: 10000"
+																		},
+																		{
+																			"key": "randomize",
+																			"value": "",
+																			"description": "To use this parameter specify \"true\" as string value"
+																		}
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		}
+																	]
+																}
+															},
+															"status": "Not Found",
+															"code": 404,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														},
+														{
+															"name": "Internal server error",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/operators/graph?page=1&perPage=1000&randomize=",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"operators",
+																		"graph"
+																	],
+																	"query": [
+																		{
+																			"key": "page",
+																			"value": "1"
+																		},
+																		{
+																			"key": "perPage",
+																			"value": "1000",
+																			"description": "Maximum allowed value: 10000"
+																		},
+																		{
+																			"key": "randomize",
+																			"value": "",
+																			"description": "To use this parameter specify \"true\" as string value"
+																		}
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		}
+																	]
+																}
+															},
+															"status": "Internal Server Error",
+															"code": 500,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "owned_by",
+											"item": [
+												{
+													"name": "{ownerAddress}",
+													"item": [
+														{
+															"name": "List of operators by owner address",
+															"event": [
+																{
+																	"listen": "test",
+																	"script": {
+																		"exec": [
+																			"pm.test(\"Check if the response has an 'operators' array\", function () {",
+																			"    pm.expect(pm.response.json()).to.have.property(\"operators\");",
+																			"});",
+																			"",
+																			"pm.test(\"Verify 'operators' array is empty\", function () {",
+																			"    const operators = pm.response.json().operators;",
+																			"    pm.expect(operators.length).to.eql(0);",
+																			"});",
+																			"",
+																			"pm.test(\"Check if the response has a 'pagination' object\", function () {",
+																			"    pm.expect(pm.response.json()).to.have.property(\"pagination\");",
+																			"});",
+																			"",
+																			"pm.test(\"Verify 'pagination' object has 'total' property\", function () {",
+																			"    const pagination = pm.response.json().pagination;",
+																			"    pm.expect(pagination).to.have.property(\"total\");",
+																			"    pm.expect(pagination.total).to.eql(0);",
+																			"});",
+																			"",
+																			"pm.test(\"Verify 'pagination' object has 'page' property\", function () {",
+																			"    const pagination = pm.response.json().pagination;",
+																			"    pm.expect(pagination).to.have.property(\"page\");",
+																			"    pm.expect(pagination.page).to.eql(1);",
+																			"});",
+																			"",
+																			"pm.test(\"Verify 'pagination' object has 'pages' property\", function () {",
+																			"    const pagination = pm.response.json().pagination;",
+																			"    pm.expect(pagination).to.have.property(\"pages\");",
+																			"    pm.expect(pagination.pages).to.eql(0);",
+																			"});",
+																			"",
+																			"pm.test(\"Verify 'pagination' object has 'per_page' property\", function () {",
+																			"    const pagination = pm.response.json().pagination;",
+																			"    pm.expect(pagination).to.have.property(\"per_page\");",
+																			"    pm.expect(pagination.per_page).to.eql(10);",
+																			"});",
+																			""
+																		],
+																		"type": "text/javascript",
+																		"packages": {}
+																	}
+																}
+															],
+															"request": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{stg}}/api/v4/:network/operators/owned_by/0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF",
+																	"host": [
+																		"{{stg}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"operators",
+																		"owned_by",
+																		"0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF"
+																	],
+																	"variable": [
+																		{
+																			"key": "network",
+																			"value": "<string>",
+																			"description": "(Required) "
+																		}
+																	]
+																}
+															},
+															"response": [
+																{
+																	"name": "Operators found and returned in response",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v4/:network/operators/owned_by/:ownerAddress?page=1&perPage=10&ordering=",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				":network",
+																				"operators",
+																				"owned_by",
+																				":ownerAddress"
+																			],
+																			"query": [
+																				{
+																					"key": "page",
+																					"value": "1"
+																				},
+																				{
+																					"key": "perPage",
+																					"value": "10",
+																					"description": "Maximum allowed value: 100"
+																				},
+																				{
+																					"key": "ordering",
+																					"value": "",
+																					"description": "Sort by one or few fields. <br><br>You can sort only by: &nbsp;&nbsp;<code>id</code>,&nbsp;&nbsp;<code>fee</code>,&nbsp;&nbsp;<code>public_key</code>,&nbsp;&nbsp;<code>owner_address</code>,&nbsp;&nbsp;<code>name</code>,&nbsp;&nbsp;<code>address</code>,&nbsp;&nbsp;<code>location</code>,&nbsp;&nbsp;<code>setup_provider</code>,&nbsp;&nbsp;<code>eth1_node_client</code>,&nbsp;&nbsp;<code>eth2_node_client</code>,&nbsp;&nbsp;<code>description</code>,&nbsp;&nbsp;<code>website_url</code>,&nbsp;&nbsp;<code>twitter_url</code>,&nbsp;&nbsp;<code>linkedin_url</code>,&nbsp;&nbsp;<code>validators_count</code>,&nbsp;&nbsp;<code>status</code>,&nbsp;&nbsp;<code>performance.30d</code>,&nbsp;&nbsp;<code>performance.24h</code>,&nbsp;&nbsp;<code>type</code><br><br>Examples: <ol><li><code>name:asc,address:desc</code><br><br></li><li><code>validators_count:desc</code><br><br></li><li>without specifying sort order: <code>validators_count,name:asc</code> - equals to: <code>validators_count:asc,name:asc</code><br><br></li></ol>"
+																				}
+																			],
+																			"variable": [
+																				{
+																					"key": "network"
+																				},
+																				{
+																					"key": "ownerAddress"
+																				}
+																			]
+																		}
+																	},
+																	"status": "OK",
+																	"code": 200,
+																	"_postman_previewlanguage": "text",
+																	"header": [],
+																	"cookie": [],
+																	"body": ""
+																},
+																{
+																	"name": "Internal server error",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v4/:network/operators/owned_by/:ownerAddress?page=1&perPage=10&ordering=",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				":network",
+																				"operators",
+																				"owned_by",
+																				":ownerAddress"
+																			],
+																			"query": [
+																				{
+																					"key": "page",
+																					"value": "1"
+																				},
+																				{
+																					"key": "perPage",
+																					"value": "10",
+																					"description": "Maximum allowed value: 100"
+																				},
+																				{
+																					"key": "ordering",
+																					"value": "",
+																					"description": "Sort by one or few fields. <br><br>You can sort only by: &nbsp;&nbsp;<code>id</code>,&nbsp;&nbsp;<code>fee</code>,&nbsp;&nbsp;<code>public_key</code>,&nbsp;&nbsp;<code>owner_address</code>,&nbsp;&nbsp;<code>name</code>,&nbsp;&nbsp;<code>address</code>,&nbsp;&nbsp;<code>location</code>,&nbsp;&nbsp;<code>setup_provider</code>,&nbsp;&nbsp;<code>eth1_node_client</code>,&nbsp;&nbsp;<code>eth2_node_client</code>,&nbsp;&nbsp;<code>description</code>,&nbsp;&nbsp;<code>website_url</code>,&nbsp;&nbsp;<code>twitter_url</code>,&nbsp;&nbsp;<code>linkedin_url</code>,&nbsp;&nbsp;<code>validators_count</code>,&nbsp;&nbsp;<code>status</code>,&nbsp;&nbsp;<code>performance.30d</code>,&nbsp;&nbsp;<code>performance.24h</code>,&nbsp;&nbsp;<code>type</code><br><br>Examples: <ol><li><code>name:asc,address:desc</code><br><br></li><li><code>validators_count:desc</code><br><br></li><li>without specifying sort order: <code>validators_count,name:asc</code> - equals to: <code>validators_count:asc,name:asc</code><br><br></li></ol>"
+																				}
+																			],
+																			"variable": [
+																				{
+																					"key": "network"
+																				},
+																				{
+																					"key": "ownerAddress"
+																				}
+																			]
+																		}
+																	},
+																	"status": "Internal Server Error",
+																	"code": 500,
+																	"_postman_previewlanguage": "text",
+																	"header": [],
+																	"cookie": [],
+																	"body": ""
+																}
+															]
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "{operator}",
+											"item": [
+												{
+													"name": "Single operator data",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"exec": [
+																	"// Set variables",
+																	"const maxResponseTime = +pm.collectionVariables.get(\"maxResponseTime\");",
+																	"const expectedParamCount = 33; ",
+																	"const expectedStatusCode = +pm.collectionVariables.get(\"expectedStatuscode\");",
+																	"const operatorID = +pm.collectionVariables.get(\"operatorID\");",
+																	"const operatorpbkey= \"LS0tLS1CRUdJTiBSU0EgUFVCTElDIEtFWS0tLS0tCk1JSUJJakFOQmdrcWhraUc5dzBCQVFFRkFBT0NBUThBTUlJQkNnS0NBUUVBMGVlbkhVcS9WVTBrK2N2V1FJWVgKb1B3c3lVeTFzaDFMamZkTkhyeW1aV0p5Zk00dEdudW41TzdEaXJuTjdEbFphbjRiS1FYTEh2MitYYU1sY3AvaApJTGVjczh6NW0rNVBmcEMraWI2M3QxY2ZjK3RsQ2M0Qm53eDBPYlBsS2lPQlA0R1BHUFA4bFlWNWtXVkI4NGJxCk5QS3RGc1hKYXIvUk5NUktTREV2MWxYTDZCWmtZdWxrVlpxS3lsMmdGa3FucDZlZ04xd1BXOGo3Z09jVWpLZ1IKV0RnM1o5ZXFQZ1E3Zk51T0xUK3FNY3k4VW1zNytCb3h5a3g2T1I4L3NMblJ4RUR3NUlreWlnYlJMS0ZpZnFkeAowbzBmUjN3M0syb1F0SE92U29HV1FNdEMweU94VzhEdEdTKzJQTEtMY01ncGpOeDQwSEcvZmp5M1VlVmVVOEpQCktRSURBUUFCCi0tLS0tRU5EIFJTQSBQVUJMSUMgS0VZLS0tLS0K\"",
+																	"",
+																	"// Log variables for debugging",
+																	"console.log(maxResponseTime, expectedParamCount, expectedStatusCode, operatorID);",
+																	"",
+																	"// Define expected fields with length",
+																	"const expectedFields = [",
+																	"    { key: \"id\", type: \"number\" }, { key: \"id_str\", type: \"string\" },",
+																	"    { key: \"declared_fee\", type: \"string\" }, { key: \"previous_fee\", type: \"string\" },",
+																	"    { key: \"fee\", type: \"string\" }, { key: \"public_key\", type: \"string\" },",
+																	"    { key: \"owner_address\", type: \"string\" }, { key: \"is_private\", type: \"boolean\" },",
+																	"    { key: \"type\", type: \"string\" }, { key: \"name\", type: \"string\" },",
+																	"    { key: \"performance\", type: \"object\", length: 2 }, { key: \"is_valid\", type: \"boolean\" },",
+																	"    { key: \"is_deleted\", type: \"boolean\" }, { key: \"is_active\", type: \"number\" },",
+																	"    { key: \"status\", type: \"string\" }, { key: \"validators_count\", type: \"number\" },",
+																	"    { key: \"version\", type: \"string\" }, { key: \"network\", type: \"string\" }",
+																	"];",
+																	"",
+																	"// Get the JSON response",
+																	"const jsonData = pm.response.json();",
+																	"",
+																	"// Check for response time",
+																	"pm.test(`Response time is less than ${maxResponseTime}ms`, function () {",
+																	"    pm.expect(pm.response.responseTime).to.be.below(maxResponseTime);",
+																	"});",
+																	"",
+																	"// Check for status code",
+																	"pm.test(`Status code is ${expectedStatusCode}`, function () {",
+																	"    pm.response.to.have.status(expectedStatusCode);",
+																	"});",
+																	"",
+																	"// Check all expected fields in JSON and validate types",
+																	"pm.test(\"Response has all expected fields with correct types\", function () {",
+																	"    expectedFields.forEach(field => {",
+																	"        const actualValue = jsonData[field.key];",
+																	"        const actualType = Array.isArray(actualValue) ? 'array' : typeof actualValue;",
+																	"        console.log(`Field: ${field.key}, Expected type: ${field.type}, Actual type: ${actualType}`);",
+																	"        pm.expect(actualType).to.eql(field.type);",
+																	"    });",
+																	"});",
+																	"",
+																	"// Check the number of outputs",
+																	"pm.test(`Response has exactly ${expectedParamCount} parameters`, function () {",
+																	"    pm.expect(Object.keys(jsonData).length).to.eql(expectedParamCount);",
+																	"});",
+																	"",
+																	"// Check the exact length of each object",
+																	"expectedFields.forEach(field => {",
+																	"    if (field.type === 'object' && field.length !== undefined) {",
+																	"        pm.test(`Length of '${field.key}' object is exactly ${field.length}`, function () {",
+																	"            pm.expect(Object.keys(jsonData[field.key]).length).to.eql(field.length);",
+																	"        });",
+																	"    }",
+																	"});",
+																	"",
+																	"// Assertions - Verify the response contains exact expected values",
+																	"pm.test(\"Exact value checks for each field\", function () {",
+																	"    pm.expect(jsonData.id).to.eql(5);",
+																	"    pm.expect(jsonData.id_str).to.eql(\"5\");",
+																	"    pm.expect(jsonData.declared_fee).to.eql(\"0\");",
+																	"    pm.expect(jsonData.previous_fee).to.eql(\"0\");",
+																	"    pm.expect(jsonData.fee).to.be.eql(\"956600000000\");",
+																	"    pm.expect(jsonData.public_key).to.eql(operatorpbkey);",
+																	"    pm.expect(jsonData.is_private).to.eql(false);",
+																	"    pm.expect(jsonData.type).to.eql(\"operator\");",
+																	"    pm.expect(jsonData.name).to.eql(\"Operator 5\");",
+																	"    pm.expect(jsonData.is_valid).to.eql(true);",
+																	"    pm.expect(jsonData.is_deleted).to.eql(false);",
+																	"    pm.expect(jsonData.is_active).to.eql(0);",
+																	"    pm.expect(jsonData.status).to.eql(\"Inactive\");",
+																	"    pm.expect(jsonData.version).to.eql(\"v4\");",
+																	"    pm.expect(jsonData.network).to.eql(\"holesky\");",
+																	"    pm.expect(jsonData.performance[\"24h\"]).to.be.above(80);",
+																	"    pm.expect(jsonData.performance[\"30d\"]).to.be.above(80);",
+																	"    pm.expect(jsonData.validators_count).to.be.above(100);",
+																	"    ",
+																	"",
+																	"});",
+																	""
+																],
+																"type": "text/javascript",
+																"packages": {}
+															}
+														}
+													],
+													"request": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "web-app-source",
+																"value": "true",
+																"type": "text"
+															}
+														],
+														"url": {
+															"raw": "{{stg}}/api/v4/{{network}}/operators/5",
+															"host": [
+																"{{stg}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																"{{network}}",
+																"operators",
+																"5"
+															]
+														}
+													},
+													"response": [
+														{
+															"name": "Operator found and returned in response",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/operators/:operator",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"operators",
+																		":operator"
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		},
+																		{
+																			"key": "operator"
+																		}
+																	]
+																}
+															},
+															"status": "OK",
+															"code": 200,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														},
+														{
+															"name": "Operator id/address has wrong format",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/operators/:operator",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"operators",
+																		":operator"
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		},
+																		{
+																			"key": "operator"
+																		}
+																	]
+																}
+															},
+															"status": "Bad Request",
+															"code": 400,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														},
+														{
+															"name": "Operator not found",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/operators/:operator",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"operators",
+																		":operator"
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		},
+																		{
+																			"key": "operator"
+																		}
+																	]
+																}
+															},
+															"status": "Not Found",
+															"code": 404,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														},
+														{
+															"name": "Internal server error",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/operators/:operator",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"operators",
+																		":operator"
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		},
+																		{
+																			"key": "operator"
+																		}
+																	]
+																}
+															},
+															"status": "Internal Server Error",
+															"code": 500,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "dkg_health_check",
+											"item": [
+												{
+													"name": "Dkg address health check (needs to be fast)",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "accept",
+																"value": "*/*"
+															},
+															{
+																"key": "Content-Type",
+																"value": "application/json"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n  \"dkgAddress\": \"https://15.237.80.108:3030/\"\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://api.stage.ssv.network/api/{{version}}/{{network}}/operators/dkg_health_check",
+															"protocol": "https",
+															"host": [
+																"api",
+																"stage",
+																"ssv",
+																"network"
+															],
+															"path": [
+																"api",
+																"{{version}}",
+																"{{network}}",
+																"operators",
+																"dkg_health_check"
+															]
+														}
+													},
+													"response": [
+														{
+															"name": "true if dkg endpoint is active, false else",
+															"originalRequest": {
+																"method": "POST",
+																"header": [
+																	{
+																		"key": "Content-Type",
+																		"value": "application/json"
+																	}
+																],
+																"body": {
+																	"mode": "raw",
+																	"raw": "{\n  \"dkgAddress\": \"<string>\"\n}",
+																	"options": {
+																		"raw": {
+																			"headerFamily": "json",
+																			"language": "json"
+																		}
+																	}
+																},
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/operators/dkg_health_check",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"operators",
+																		"dkg_health_check"
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		}
+																	]
+																}
+															},
+															"status": "OK",
+															"code": 200,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														},
+														{
+															"name": "true if dkg endpoint is active, false else",
+															"originalRequest": {
+																"method": "POST",
+																"header": [
+																	{
+																		"key": "Content-Type",
+																		"value": "application/json"
+																	}
+																],
+																"body": {
+																	"mode": "raw",
+																	"raw": "{\n  \"dkgAddress\": \"<string>\"\n}",
+																	"options": {
+																		"raw": {
+																			"headerFamily": "json",
+																			"language": "json"
+																		}
+																	}
+																},
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/operators/dkg_health_check",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"operators",
+																		"dkg_health_check"
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		}
+																	]
+																}
+															},
+															"status": "Created",
+															"code": 201,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														},
+														{
+															"name": "Internal server error",
+															"originalRequest": {
+																"method": "POST",
+																"header": [
+																	{
+																		"key": "Content-Type",
+																		"value": "application/json"
+																	}
+																],
+																"body": {
+																	"mode": "raw",
+																	"raw": "{\n  \"dkgAddress\": \"<string>\"\n}",
+																	"options": {
+																		"raw": {
+																			"headerFamily": "json",
+																			"language": "json"
+																		}
+																	}
+																},
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/operators/dkg_health_check",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"operators",
+																		"dkg_health_check"
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		}
+																	]
+																}
+															},
+															"status": "Internal Server Error",
+															"code": 500,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "public_key",
+											"item": [
+												{
+													"name": "{public_key}",
+													"item": [
+														{
+															"name": "Get operator by public key",
+															"request": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{stg}}/api/v4/{{network}}/operators/public_key/LS0tLS1CRUdJTiBSU0EgUFVCTElDIEtFWS0tLS0tCk1JSUJJakFOQmdrcWhraUc5dzBCQVFFRkFBT0NBUThBTUlJQkNnS0NBUUVBM3oxNE9Ob2E2ZmdXQkJ2MENkWnMKV1F6M2FLbWF4YWVsMGx5eUhFcjNuazUyWmticzVLc1BmdlZLLzZDaHZsSlV6c29xdGdKMlJqYzlSRXFNRnkzUgpWMmhZK0FzQko4ZXRTR1dKTmRDQVVYYWIweUxLZE1UdWIvQXNSNlhHWE8zMlppMzJ5NWFxNW1DSlVDRlBqalgvCnpiQzd1bW5mTldxRWNhaWVhTGk0bVJlaklZZVFaY3lYMCtvaEdKM1piS2x6NTdSSTdJa2JuckFKYnowbUtWSkQKTGIyb2pjc3Z6WFA2Y1RFWTd0WTNLUW52TzYxUGNON1VGWDJLSE9uNUZtbTFRaU1aUDVNQUplM2IzNGNDV2xBWQoyeGhINGtHT2ZuZWFMb1dkZjF6dnFRR3ZFdGxXNFNoZFJtVGExcVBqdGF4YnZTZTlaQWFxa3VlZ0VkTEF1VGR1CjR3SURBUUFCCi0tLS0tRU5EIFJTQSBQVUJMSUMgS0VZLS0tLS0K?web-app-source=true",
+																	"host": [
+																		"{{stg}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		"{{network}}",
+																		"operators",
+																		"public_key",
+																		"LS0tLS1CRUdJTiBSU0EgUFVCTElDIEtFWS0tLS0tCk1JSUJJakFOQmdrcWhraUc5dzBCQVFFRkFBT0NBUThBTUlJQkNnS0NBUUVBM3oxNE9Ob2E2ZmdXQkJ2MENkWnMKV1F6M2FLbWF4YWVsMGx5eUhFcjNuazUyWmticzVLc1BmdlZLLzZDaHZsSlV6c29xdGdKMlJqYzlSRXFNRnkzUgpWMmhZK0FzQko4ZXRTR1dKTmRDQVVYYWIweUxLZE1UdWIvQXNSNlhHWE8zMlppMzJ5NWFxNW1DSlVDRlBqalgvCnpiQzd1bW5mTldxRWNhaWVhTGk0bVJlaklZZVFaY3lYMCtvaEdKM1piS2x6NTdSSTdJa2JuckFKYnowbUtWSkQKTGIyb2pjc3Z6WFA2Y1RFWTd0WTNLUW52TzYxUGNON1VGWDJLSE9uNUZtbTFRaU1aUDVNQUplM2IzNGNDV2xBWQoyeGhINGtHT2ZuZWFMb1dkZjF6dnFRR3ZFdGxXNFNoZFJtVGExcVBqdGF4YnZTZTlaQWFxa3VlZ0VkTEF1VGR1CjR3SURBUUFCCi0tLS0tRU5EIFJTQSBQVUJMSUMgS0VZLS0tLS0K"
+																	],
+																	"query": [
+																		{
+																			"key": "web-app-source",
+																			"value": "true"
+																		}
+																	]
+																}
+															},
+															"response": [
+																{
+																	"name": "Operator found and returned in response",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v4/:network/operators/public_key/:public_key",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				":network",
+																				"operators",
+																				"public_key",
+																				":public_key"
+																			],
+																			"variable": [
+																				{
+																					"key": "network"
+																				},
+																				{
+																					"key": "public_key"
+																				}
+																			]
+																		}
+																	},
+																	"status": "OK",
+																	"code": 200,
+																	"_postman_previewlanguage": "text",
+																	"header": [],
+																	"cookie": [],
+																	"body": ""
+																},
+																{
+																	"name": "Operator public key has wrong format",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v4/:network/operators/public_key/:public_key",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				":network",
+																				"operators",
+																				"public_key",
+																				":public_key"
+																			],
+																			"variable": [
+																				{
+																					"key": "network"
+																				},
+																				{
+																					"key": "public_key"
+																				}
+																			]
+																		}
+																	},
+																	"status": "Bad Request",
+																	"code": 400,
+																	"_postman_previewlanguage": "text",
+																	"header": [],
+																	"cookie": [],
+																	"body": ""
+																},
+																{
+																	"name": "Operator not found",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v4/:network/operators/public_key/:public_key",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				":network",
+																				"operators",
+																				"public_key",
+																				":public_key"
+																			],
+																			"variable": [
+																				{
+																					"key": "network"
+																				},
+																				{
+																					"key": "public_key"
+																				}
+																			]
+																		}
+																	},
+																	"status": "Not Found",
+																	"code": 404,
+																	"_postman_previewlanguage": "text",
+																	"header": [],
+																	"cookie": [],
+																	"body": ""
+																},
+																{
+																	"name": "Internal server error",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v4/:network/operators/public_key/:public_key",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				":network",
+																				"operators",
+																				"public_key",
+																				":public_key"
+																			],
+																			"variable": [
+																				{
+																					"key": "network"
+																				},
+																				{
+																					"key": "public_key"
+																				}
+																			]
+																		}
+																	},
+																	"status": "Internal Server Error",
+																	"code": 500,
+																	"_postman_previewlanguage": "text",
+																	"header": [],
+																	"cookie": [],
+																	"body": ""
+																}
+															]
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "List of operators",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Check if the response has an 'operators' array\", function () {",
+															"    pm.expect(pm.response.json()).to.have.property(\"operators\");",
+															"});",
+															"",
+															"pm.test(\"Verify 'operators' array is not empty\", function () {",
+															"    const operators = pm.response.json().operators;",
+															"    pm.expect(operators.length).to.be.above(0);",
+															"});",
+															"",
+															"pm.test(\"Ensure each operator has required properties\", function () {",
+															"    const operators = pm.response.json().operators;",
+															"    operators.forEach(function (operator) {",
+															"        pm.test(\"Operator has 'id' property\", function () {",
+															"            pm.expect(operator).to.have.property(\"id\");",
+															"        });",
+															"        pm.test(\"Operator has 'id_str' property\", function () {",
+															"            pm.expect(operator).to.have.property(\"id_str\");",
+															"        });",
+															"        pm.test(\"Operator has 'declared_fee' property\", function () {",
+															"            pm.expect(operator).to.have.property(\"declared_fee\");",
+															"        });",
+															"        pm.test(\"Operator has 'fee' property\", function () {",
+															"            pm.expect(operator).to.have.property(\"fee\");",
+															"        });",
+															"        pm.test(\"Operator has 'public_key' property\", function () {",
+															"            pm.expect(operator).to.have.property(\"public_key\");",
+															"        });",
+															"        pm.test(\"Operator has 'owner_address' property\", function () {",
+															"            pm.expect(operator).to.have.property(\"owner_address\");",
+															"        });",
+															"        pm.test(\"Operator has 'name' property\", function () {",
+															"            pm.expect(operator).to.have.property(\"name\");",
+															"        });",
+															"        pm.test(\"Operator has 'performance' property\", function () {",
+															"            pm.expect(operator).to.have.property(\"performance\");",
+															"        });",
+															"        pm.test(\"Operator performance has '24h' property\", function () {",
+															"            pm.expect(operator.performance).to.have.property(\"24h\");",
+															"        });",
+															"        pm.test(\"Operator performance has '30d' property\", function () {",
+															"            pm.expect(operator.performance).to.have.property(\"30d\");",
+															"        });",
+															"        pm.test(\"Operator has 'is_valid' property\", function () {",
+															"            pm.expect(operator).to.have.property(\"is_valid\");",
+															"        });",
+															"        pm.test(\"Operator has 'is_deleted' property\", function () {",
+															"            pm.expect(operator).to.have.property(\"is_deleted\");",
+															"        });",
+															"        pm.test(\"Operator has 'status' property\", function () {",
+															"            pm.expect(operator).to.have.property(\"status\");",
+															"        });",
+															"        pm.test(\"Operator has 'validators_count' property\", function () {",
+															"            pm.expect(operator).to.have.property(\"validators_count\");",
+															"        });",
+															"        pm.test(\"Operator has 'version' property\", function () {",
+															"            pm.expect(operator).to.have.property(\"version\");",
+															"        });",
+															"        pm.test(\"Operator has 'network' property\", function () {",
+															"            pm.expect(operator).to.have.property(\"network\");",
+															"        });",
+															"        pm.test(\"Operator has 'updated_at' property\", function () {",
+															"            pm.expect(operator).to.have.property(\"updated_at\");",
+															"        });",
+															"    });",
+															"});",
+															"",
+															"pm.test(\"Check specific values of the first operator\", function () {",
+															"    const operators = pm.response.json().operators;",
+															"    const firstOperator = operators[0];",
+															"    ",
+															"    pm.test(\"First operator's 'id' is 415\", function () {",
+															"        pm.expect(firstOperator.id).to.eql(415);",
+															"    });",
+															"    pm.test(\"First operator's 'fee' is '956600000000'\", function () {",
+															"        pm.expect(firstOperator.fee).to.eql(\"956600000000\");",
+															"    });",
+															"    pm.test(\"First operator's 'status' is 'Active'\", function () {",
+															"        pm.expect(firstOperator.status).to.eql(\"Active\");",
+															"    });",
+															"    pm.test(\"First operator's 'is_valid' is true\", function () {",
+															"        pm.expect(firstOperator.is_valid).to.be.true;",
+															"    });",
+															"    pm.test(\"First operator's 'performance' '24h' is 100\", function () {",
+															"        pm.expect(firstOperator.performance[\"24h\"]).to.eql(100);",
+															"    });",
+															"    pm.test(\"First operator's 'performance' '30d' is 99.96874309920456\", function () {",
+															"        pm.expect(firstOperator.performance[\"30d\"]).to.eql(99.96874309920456);",
+															"    });",
+															"});",
+															"",
+															"pm.test(\"Check specific values of the second operator\", function () {",
+															"    const operators = pm.response.json().operators;",
+															"    const secondOperator = operators[1];",
+															"    ",
+															"    pm.test(\"Second operator's 'id' is 414\", function () {",
+															"        pm.expect(secondOperator.id).to.eql(414);",
+															"    });",
+															"    pm.test(\"Second operator's 'fee' is '956600000000'\", function () {",
+															"        pm.expect(secondOperator.fee).to.eql(\"956600000000\");",
+															"    });",
+															"    pm.test(\"Second operator's 'status' is 'Active'\", function () {",
+															"        pm.expect(secondOperator.status).to.eql(\"Active\");",
+															"    });",
+															"    pm.test(\"Second operator's 'is_valid' is true\", function () {",
+															"        pm.expect(secondOperator.is_valid).to.be.true;",
+															"    });",
+															"    pm.test(\"Second operator's 'performance' '24h' is 100\", function () {",
+															"        pm.expect(secondOperator.performance[\"24h\"]).to.eql(100);",
+															"    });",
+															"    pm.test(\"Second operator's 'performance' '30d' is 99.9898168469287\", function () {",
+															"        pm.expect(secondOperator.performance[\"30d\"]).to.eql(99.9898168469287);",
+															"    });",
+															"});",
+															""
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "web-app-source",
+														"value": "true",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{stg}}/api/v4/{{network}}/operators?type=&page=1&perPage=10&ordering=&search=&has_dkg_address=<boolean>",
+													"host": [
+														"{{stg}}"
+													],
+													"path": [
+														"api",
+														"v4",
+														"{{network}}",
+														"operators"
+													],
+													"query": [
+														{
+															"key": "type",
+															"value": "",
+															"description": "Case-sensitive filter by operator \"type\" in <code>full match</code> manner, comma-separated for multiple matching. <br><br>Example:<code>verified_operator</code>, <code>verified_operator,dapp_node</code>, "
+														},
+														{
+															"key": "page",
+															"value": "1"
+														},
+														{
+															"key": "perPage",
+															"value": "10",
+															"description": "Maximum allowed value: 5000"
+														},
+														{
+															"key": "ordering",
+															"value": "",
+															"description": "Sort by one or few fields. <br><br>You can sort only by: &nbsp;&nbsp;<code>id</code>,&nbsp;&nbsp;<code>fee</code>,&nbsp;&nbsp;<code>public_key</code>,&nbsp;&nbsp;<code>owner_address</code>,&nbsp;&nbsp;<code>name</code>,&nbsp;&nbsp;<code>address</code>,&nbsp;&nbsp;<code>location</code>,&nbsp;&nbsp;<code>setup_provider</code>,&nbsp;&nbsp;<code>eth1_node_client</code>,&nbsp;&nbsp;<code>eth2_node_client</code>,&nbsp;&nbsp;<code>description</code>,&nbsp;&nbsp;<code>website_url</code>,&nbsp;&nbsp;<code>twitter_url</code>,&nbsp;&nbsp;<code>linkedin_url</code>,&nbsp;&nbsp;<code>validators_count</code>,&nbsp;&nbsp;<code>status</code>,&nbsp;&nbsp;<code>performance.30d</code>,&nbsp;&nbsp;<code>performance.24h</code>,&nbsp;&nbsp;<code>type</code><br><br>Examples: <ol><li><code>name:asc,address:desc</code><br><br></li><li><code>validators_count:desc</code><br><br></li><li>without specifying sort order: <code>validators_count,name:asc</code> - equals to: <code>validators_count:asc,name:asc</code><br><br></li></ol>"
+														},
+														{
+															"key": "search",
+															"value": "",
+															"description": "Full-text search for entries matching all fields in a case-insensitive way"
+														},
+														{
+															"key": "has_dkg_address",
+															"value": "<boolean>",
+															"description": "Filter operators by whether they have a DKG address or not."
+														}
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "Operators found and returned in response",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v4/:network/operators?type=&page=1&perPage=10&ordering=&search=&has_dkg_address=<boolean>",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																":network",
+																"operators"
+															],
+															"query": [
+																{
+																	"key": "type",
+																	"value": "",
+																	"description": "Case-sensitive filter by operator \"type\" in <code>full match</code> manner, comma-separated for multiple matching. <br><br>Example:<code>verified_operator</code>, <code>verified_operator,dapp_node</code>, "
+																},
+																{
+																	"key": "page",
+																	"value": "1"
+																},
+																{
+																	"key": "perPage",
+																	"value": "10",
+																	"description": "Maximum allowed value: 5000"
+																},
+																{
+																	"key": "ordering",
+																	"value": "",
+																	"description": "Sort by one or few fields. <br><br>You can sort only by: &nbsp;&nbsp;<code>id</code>,&nbsp;&nbsp;<code>fee</code>,&nbsp;&nbsp;<code>public_key</code>,&nbsp;&nbsp;<code>owner_address</code>,&nbsp;&nbsp;<code>name</code>,&nbsp;&nbsp;<code>address</code>,&nbsp;&nbsp;<code>location</code>,&nbsp;&nbsp;<code>setup_provider</code>,&nbsp;&nbsp;<code>eth1_node_client</code>,&nbsp;&nbsp;<code>eth2_node_client</code>,&nbsp;&nbsp;<code>description</code>,&nbsp;&nbsp;<code>website_url</code>,&nbsp;&nbsp;<code>twitter_url</code>,&nbsp;&nbsp;<code>linkedin_url</code>,&nbsp;&nbsp;<code>validators_count</code>,&nbsp;&nbsp;<code>status</code>,&nbsp;&nbsp;<code>performance.30d</code>,&nbsp;&nbsp;<code>performance.24h</code>,&nbsp;&nbsp;<code>type</code><br><br>Examples: <ol><li><code>name:asc,address:desc</code><br><br></li><li><code>validators_count:desc</code><br><br></li><li>without specifying sort order: <code>validators_count,name:asc</code> - equals to: <code>validators_count:asc,name:asc</code><br><br></li></ol>"
+																},
+																{
+																	"key": "search",
+																	"value": "",
+																	"description": "Full-text search for entries matching all fields in a case-insensitive way"
+																},
+																{
+																	"key": "has_dkg_address",
+																	"value": "<boolean>",
+																	"description": "Filter operators by whether they have a DKG address or not."
+																}
+															],
+															"variable": [
+																{
+																	"key": "network"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Requested page number does not exists",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v4/:network/operators?type=&page=1&perPage=10&ordering=&search=&has_dkg_address=<boolean>",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																":network",
+																"operators"
+															],
+															"query": [
+																{
+																	"key": "type",
+																	"value": "",
+																	"description": "Case-sensitive filter by operator \"type\" in <code>full match</code> manner, comma-separated for multiple matching. <br><br>Example:<code>verified_operator</code>, <code>verified_operator,dapp_node</code>, "
+																},
+																{
+																	"key": "page",
+																	"value": "1"
+																},
+																{
+																	"key": "perPage",
+																	"value": "10",
+																	"description": "Maximum allowed value: 5000"
+																},
+																{
+																	"key": "ordering",
+																	"value": "",
+																	"description": "Sort by one or few fields. <br><br>You can sort only by: &nbsp;&nbsp;<code>id</code>,&nbsp;&nbsp;<code>fee</code>,&nbsp;&nbsp;<code>public_key</code>,&nbsp;&nbsp;<code>owner_address</code>,&nbsp;&nbsp;<code>name</code>,&nbsp;&nbsp;<code>address</code>,&nbsp;&nbsp;<code>location</code>,&nbsp;&nbsp;<code>setup_provider</code>,&nbsp;&nbsp;<code>eth1_node_client</code>,&nbsp;&nbsp;<code>eth2_node_client</code>,&nbsp;&nbsp;<code>description</code>,&nbsp;&nbsp;<code>website_url</code>,&nbsp;&nbsp;<code>twitter_url</code>,&nbsp;&nbsp;<code>linkedin_url</code>,&nbsp;&nbsp;<code>validators_count</code>,&nbsp;&nbsp;<code>status</code>,&nbsp;&nbsp;<code>performance.30d</code>,&nbsp;&nbsp;<code>performance.24h</code>,&nbsp;&nbsp;<code>type</code><br><br>Examples: <ol><li><code>name:asc,address:desc</code><br><br></li><li><code>validators_count:desc</code><br><br></li><li>without specifying sort order: <code>validators_count,name:asc</code> - equals to: <code>validators_count:asc,name:asc</code><br><br></li></ol>"
+																},
+																{
+																	"key": "search",
+																	"value": "",
+																	"description": "Full-text search for entries matching all fields in a case-insensitive way"
+																},
+																{
+																	"key": "has_dkg_address",
+																	"value": "<boolean>",
+																	"description": "Filter operators by whether they have a DKG address or not."
+																}
+															],
+															"variable": [
+																{
+																	"key": "network"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Internal server error",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v4/:network/operators?type=&page=1&perPage=10&ordering=&search=&has_dkg_address=<boolean>",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																":network",
+																"operators"
+															],
+															"query": [
+																{
+																	"key": "type",
+																	"value": "",
+																	"description": "Case-sensitive filter by operator \"type\" in <code>full match</code> manner, comma-separated for multiple matching. <br><br>Example:<code>verified_operator</code>, <code>verified_operator,dapp_node</code>, "
+																},
+																{
+																	"key": "page",
+																	"value": "1"
+																},
+																{
+																	"key": "perPage",
+																	"value": "10",
+																	"description": "Maximum allowed value: 5000"
+																},
+																{
+																	"key": "ordering",
+																	"value": "",
+																	"description": "Sort by one or few fields. <br><br>You can sort only by: &nbsp;&nbsp;<code>id</code>,&nbsp;&nbsp;<code>fee</code>,&nbsp;&nbsp;<code>public_key</code>,&nbsp;&nbsp;<code>owner_address</code>,&nbsp;&nbsp;<code>name</code>,&nbsp;&nbsp;<code>address</code>,&nbsp;&nbsp;<code>location</code>,&nbsp;&nbsp;<code>setup_provider</code>,&nbsp;&nbsp;<code>eth1_node_client</code>,&nbsp;&nbsp;<code>eth2_node_client</code>,&nbsp;&nbsp;<code>description</code>,&nbsp;&nbsp;<code>website_url</code>,&nbsp;&nbsp;<code>twitter_url</code>,&nbsp;&nbsp;<code>linkedin_url</code>,&nbsp;&nbsp;<code>validators_count</code>,&nbsp;&nbsp;<code>status</code>,&nbsp;&nbsp;<code>performance.30d</code>,&nbsp;&nbsp;<code>performance.24h</code>,&nbsp;&nbsp;<code>type</code><br><br>Examples: <ol><li><code>name:asc,address:desc</code><br><br></li><li><code>validators_count:desc</code><br><br></li><li>without specifying sort order: <code>validators_count,name:asc</code> - equals to: <code>validators_count:asc,name:asc</code><br><br></li></ol>"
+																},
+																{
+																	"key": "search",
+																	"value": "",
+																	"description": "Full-text search for entries matching all fields in a case-insensitive way"
+																},
+																{
+																	"key": "has_dkg_address",
+																	"value": "<boolean>",
+																	"description": "Filter operators by whether they have a DKG address or not."
+																}
+															],
+															"variable": [
+																{
+																	"key": "network"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										},
+										{
+											"name": "List operators by ids",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Check if the response has 'id' property\", function () {",
+															"    pm.expect(pm.response.json()).to.have.property(\"id\");",
+															"});",
+															"",
+															"pm.test(\"Check if the response has 'id_str' property\", function () {",
+															"    pm.expect(pm.response.json()).to.have.property(\"id_str\");",
+															"});",
+															"",
+															"pm.test(\"Check if the response has 'declared_fee' property\", function () {",
+															"    pm.expect(pm.response.json()).to.have.property(\"declared_fee\");",
+															"});",
+															"",
+															"pm.test(\"Check if the response has 'previous_fee' property\", function () {",
+															"    pm.expect(pm.response.json()).to.have.property(\"previous_fee\");",
+															"});",
+															"",
+															"pm.test(\"Check if the response has 'fee' property\", function () {",
+															"    pm.expect(pm.response.json()).to.have.property(\"fee\");",
+															"});",
+															"",
+															"pm.test(\"Check if the response has 'public_key' property\", function () {",
+															"    pm.expect(pm.response.json()).to.have.property(\"public_key\");",
+															"});",
+															"",
+															"pm.test(\"Check if the response has 'owner_address' property\", function () {",
+															"    pm.expect(pm.response.json()).to.have.property(\"owner_address\");",
+															"});",
+															"",
+															"pm.test(\"Check if the response has 'is_private' property\", function () {",
+															"    pm.expect(pm.response.json()).to.have.property(\"is_private\");",
+															"});",
+															"",
+															"pm.test(\"Check if the response has 'status' property\", function () {",
+															"    pm.expect(pm.response.json()).to.have.property(\"status\");",
+															"});",
+															"",
+															"pm.test(\"Check if the response has 'validators_count' property\", function () {",
+															"    pm.expect(pm.response.json()).to.have.property(\"validators_count\");",
+															"});",
+															"",
+															"pm.test(\"Check if the response has 'version' property\", function () {",
+															"    pm.expect(pm.response.json()).to.have.property(\"version\");",
+															"});",
+															"",
+															"pm.test(\"Check if the response has 'network' property\", function () {",
+															"    pm.expect(pm.response.json()).to.have.property(\"network\");",
+															"});",
+															"",
+															"pm.test(\"Check if the response has 'performance' property\", function () {",
+															"    pm.expect(pm.response.json()).to.have.property(\"performance\");",
+															"    pm.expect(pm.response.json().performance).to.have.property(\"24h\");",
+															"    pm.expect(pm.response.json().performance).to.have.property(\"30d\");",
+															"});",
+															"",
+															"pm.test(\"Verify specific values in the response\", function () {",
+															"    const jsonData = pm.response.json();",
+															"    ",
+															"    pm.test(\"Verify 'id' is 5\", function () {",
+															"        pm.expect(jsonData.id).to.eql(5);",
+															"    });",
+															"    pm.test(\"Verify 'fee' is '956600000000'\", function () {",
+															"        pm.expect(jsonData.fee).to.eql(\"956600000000\");",
+															"    });",
+															"    pm.test(\"Verify 'status' is 'Inactive'\", function () {",
+															"        pm.expect(jsonData.status).to.eql(\"Inactive\");",
+															"    });",
+															"    pm.test(\"Verify 'is_valid' is true\", function () {",
+															"        pm.expect(jsonData.is_valid).to.be.true;",
+															"    });",
+															"    pm.test(\"Verify 'is_active' is 0\", function () {",
+															"        pm.expect(jsonData.is_active).to.eql(0);",
+															"    });",
+															"    pm.test(\"Verify 'performance' 24h is 0\", function () {",
+															"        pm.expect(jsonData.performance[\"24h\"]).to.eql(0);",
+															"    });",
+															"    pm.test(\"Verify 'performance' 30d is 99.836792411521\", function () {",
+															"        pm.expect(jsonData.performance[\"30d\"]).to.eql(99.836792411521);",
+															"    });",
+															"});",
+															""
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"ids\": [\n    \"<number>\",\n    \"<number>\"\n  ]\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{stg}}/api/v4/{{network}}/operators/5?web-app-source=true",
+													"host": [
+														"{{stg}}"
+													],
+													"path": [
+														"api",
+														"v4",
+														"{{network}}",
+														"operators",
+														"5"
+													],
+													"query": [
+														{
+															"key": "web-app-source",
+															"value": "true"
+														}
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "OK",
+													"originalRequest": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "Content-Type",
+																"value": "application/json"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n  \"ids\": [\n    \"<number>\",\n    \"<number>\"\n  ]\n}",
+															"options": {
+																"raw": {
+																	"headerFamily": "json",
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "{{baseUrl}}/api/v4/:network/operators",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																":network",
+																"operators"
+															],
+															"variable": [
+																{
+																	"key": "network"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Internal server error",
+													"originalRequest": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "Content-Type",
+																"value": "application/json"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n  \"ids\": [\n    \"<number>\",\n    \"<number>\"\n  ]\n}",
+															"options": {
+																"raw": {
+																	"headerFamily": "json",
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "{{baseUrl}}/api/v4/:network/operators",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																":network",
+																"operators"
+															],
+															"variable": [
+																{
+																	"key": "network"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "validators",
+									"item": [
+										{
+											"name": "owned_by",
+											"item": [
+												{
+													"name": "{ownerAddress}",
+													"item": [
+														{
+															"name": "cost",
+															"item": [
+																{
+																	"name": "Cost of all validators depending on in which operators they are.",
+																	"event": [
+																		{
+																			"listen": "test",
+																			"script": {
+																				"exec": [
+																					"pm.test(\"Check if the response has 'owner_address' property\", function () {",
+																					"    pm.expect(pm.response.json()).to.have.property(\"owner_address\");",
+																					"});",
+																					"",
+																					"pm.test(\"Check if the response has 'total_operators' property\", function () {",
+																					"    pm.expect(pm.response.json()).to.have.property(\"total_operators\");",
+																					"});",
+																					"",
+																					"pm.test(\"Check if the response has 'fees' property\", function () {",
+																					"    pm.expect(pm.response.json()).to.have.property(\"fees\");",
+																					"});",
+																					"",
+																					"pm.test(\"Check if 'fees' object has 'per_block' property\", function () {",
+																					"    pm.expect(pm.response.json().fees).to.have.property(\"per_block\");",
+																					"});",
+																					"",
+																					"pm.test(\"Check if 'per_block' object has 'wei' property\", function () {",
+																					"    pm.expect(pm.response.json().fees.per_block).to.have.property(\"wei\");",
+																					"});",
+																					"",
+																					"pm.test(\"Check if 'per_block' object has 'eth' property\", function () {",
+																					"    pm.expect(pm.response.json().fees.per_block).to.have.property(\"eth\");",
+																					"});",
+																					"",
+																					"pm.test(\"Verify specific values in the response\", function () {",
+																					"    const jsonData = pm.response.json();",
+																					"    ",
+																					"    pm.test(\"Verify 'owner_address' is '0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF'\", function () {",
+																					"        pm.expect(jsonData.owner_address).to.eql(\"0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF\");",
+																					"    });",
+																					"    pm.test(\"Verify 'total_operators' is 40\", function () {",
+																					"        pm.expect(jsonData.total_operators).to.eql(40);",
+																					"    });",
+																					"    pm.test(\"Verify 'per_block' 'wei' is 30228560000000\", function () {",
+																					"        pm.expect(jsonData.fees.per_block.wei).to.eql(30228560000000);",
+																					"    });",
+																					"    pm.test(\"Verify 'per_block' 'eth' is 0.000030228560000000018\", function () {",
+																					"        pm.expect(jsonData.fees.per_block.eth).to.eql(0.000030228560000000018);",
+																					"    });",
+																					"});",
+																					""
+																				],
+																				"type": "text/javascript",
+																				"packages": {}
+																			}
+																		}
+																	],
+																	"request": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{stg}}/api/v4/{{network}}/validators/owned_by/0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF/cost?web-app-source=true",
+																			"host": [
+																				"{{stg}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				"{{network}}",
+																				"validators",
+																				"owned_by",
+																				"0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF",
+																				"cost"
+																			],
+																			"query": [
+																				{
+																					"key": "web-app-source",
+																					"value": "true"
+																				}
+																			]
+																		}
+																	},
+																	"response": [
+																		{
+																			"name": "OK",
+																			"originalRequest": {
+																				"method": "GET",
+																				"header": [],
+																				"url": {
+																					"raw": "{{baseUrl}}/api/v4/:network/validators/owned_by/:ownerAddress/cost",
+																					"host": [
+																						"{{baseUrl}}"
+																					],
+																					"path": [
+																						"api",
+																						"v4",
+																						":network",
+																						"validators",
+																						"owned_by",
+																						":ownerAddress",
+																						"cost"
+																					],
+																					"variable": [
+																						{
+																							"key": "network"
+																						},
+																						{
+																							"key": "ownerAddress"
+																						}
+																					]
+																				}
+																			},
+																			"status": "OK",
+																			"code": 200,
+																			"_postman_previewlanguage": "text",
+																			"header": [],
+																			"cookie": [],
+																			"body": ""
+																		},
+																		{
+																			"name": "Account address has wrong format",
+																			"originalRequest": {
+																				"method": "GET",
+																				"header": [],
+																				"url": {
+																					"raw": "{{baseUrl}}/api/v4/:network/validators/owned_by/:ownerAddress/cost",
+																					"host": [
+																						"{{baseUrl}}"
+																					],
+																					"path": [
+																						"api",
+																						"v4",
+																						":network",
+																						"validators",
+																						"owned_by",
+																						":ownerAddress",
+																						"cost"
+																					],
+																					"variable": [
+																						{
+																							"key": "network"
+																						},
+																						{
+																							"key": "ownerAddress"
+																						}
+																					]
+																				}
+																			},
+																			"status": "Bad Request",
+																			"code": 400,
+																			"_postman_previewlanguage": "text",
+																			"header": [],
+																			"cookie": [],
+																			"body": ""
+																		},
+																		{
+																			"name": "Internal server error",
+																			"originalRequest": {
+																				"method": "GET",
+																				"header": [],
+																				"url": {
+																					"raw": "{{baseUrl}}/api/v4/:network/validators/owned_by/:ownerAddress/cost",
+																					"host": [
+																						"{{baseUrl}}"
+																					],
+																					"path": [
+																						"api",
+																						"v4",
+																						":network",
+																						"validators",
+																						"owned_by",
+																						":ownerAddress",
+																						"cost"
+																					],
+																					"variable": [
+																						{
+																							"key": "network"
+																						},
+																						{
+																							"key": "ownerAddress"
+																						}
+																					]
+																				}
+																			},
+																			"status": "Internal Server Error",
+																			"code": 500,
+																			"_postman_previewlanguage": "text",
+																			"header": [],
+																			"cookie": [],
+																			"body": ""
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "in_operator",
+											"item": [
+												{
+													"name": "{operator}",
+													"item": [
+														{
+															"name": "List of validators in operator",
+															"event": [
+																{
+																	"listen": "test",
+																	"script": {
+																		"exec": [
+																			"pm.test(\"Check if the response has 'validators' array\", function () {",
+																			"    pm.expect(pm.response.json()).to.have.property(\"validators\");",
+																			"});",
+																			"",
+																			"pm.test(\"Verify 'validators' array is not empty\", function () {",
+																			"    const validators = pm.response.json().validators;",
+																			"    pm.expect(validators.length).to.be.above(0);",
+																			"});",
+																			"",
+																			"pm.test(\"Ensure each validator has required properties\", function () {",
+																			"    const validators = pm.response.json().validators;",
+																			"    validators.forEach(function (validator) {",
+																			"        pm.test(\"Validator has 'id' property\", function () {",
+																			"            pm.expect(validator).to.have.property(\"id\");",
+																			"        });",
+																			"        pm.test(\"Validator has 'public_key' property\", function () {",
+																			"            pm.expect(validator).to.have.property(\"public_key\");",
+																			"        });",
+																			"        pm.test(\"Validator has 'cluster' property\", function () {",
+																			"            pm.expect(validator).to.have.property(\"cluster\");",
+																			"        });",
+																			"        pm.test(\"Validator has 'owner_address' property\", function () {",
+																			"            pm.expect(validator).to.have.property(\"owner_address\");",
+																			"        });",
+																			"        pm.test(\"Validator has 'status' property\", function () {",
+																			"            pm.expect(validator).to.have.property(\"status\");",
+																			"        });",
+																			"        pm.test(\"Validator has 'is_valid' property\", function () {",
+																			"            pm.expect(validator).to.have.property(\"is_valid\");",
+																			"        });",
+																			"        pm.test(\"Validator has 'is_deleted' property\", function () {",
+																			"            pm.expect(validator).to.have.property(\"is_deleted\");",
+																			"        });",
+																			"        pm.test(\"Validator has 'is_public_key_valid' property\", function () {",
+																			"            pm.expect(validator).to.have.property(\"is_public_key_valid\");",
+																			"        });",
+																			"        pm.test(\"Validator has 'is_shares_valid' property\", function () {",
+																			"            pm.expect(validator).to.have.property(\"is_shares_valid\");",
+																			"        });",
+																			"        pm.test(\"Validator has 'is_operators_valid' property\", function () {",
+																			"            pm.expect(validator).to.have.property(\"is_operators_valid\");",
+																			"        });",
+																			"        pm.test(\"Validator has 'operators' array\", function () {",
+																			"            pm.expect(validator).to.have.property(\"operators\");",
+																			"        });",
+																			"        pm.test(\"Validator has 'version' property\", function () {",
+																			"            pm.expect(validator).to.have.property(\"version\");",
+																			"        });",
+																			"        pm.test(\"Validator has 'network' property\", function () {",
+																			"            pm.expect(validator).to.have.property(\"network\");",
+																			"        });",
+																			"    });",
+																			"});",
+																			"",
+																			"pm.test(\"Check specific values of the first validator\", function () {",
+																			"    const validators = pm.response.json().validators;",
+																			"    const firstValidator = validators[0];",
+																			"    ",
+																			"    pm.test(\"First validator's 'id' is 52738\", function () {",
+																			"        pm.expect(firstValidator.id).to.eql(52738);",
+																			"    });",
+																			"    pm.test(\"First validator's 'status' is 'Inactive'\", function () {",
+																			"        pm.expect(firstValidator.status).to.eql(\"Inactive\");",
+																			"    });",
+																			"    pm.test(\"First validator's 'is_valid' is true\", function () {",
+																			"        pm.expect(firstValidator.is_valid).to.be.true;",
+																			"    });",
+																			"    pm.test(\"First validator's 'is_deleted' is false\", function () {",
+																			"        pm.expect(firstValidator.is_deleted).to.be.false;",
+																			"    });",
+																			"    pm.test(\"First validator's 'is_public_key_valid' is true\", function () {",
+																			"        pm.expect(firstValidator.is_public_key_valid).to.be.true;",
+																			"    });",
+																			"    pm.test(\"First validator's 'is_shares_valid' is true\", function () {",
+																			"        pm.expect(firstValidator.is_shares_valid).to.be.true;",
+																			"    });",
+																			"    pm.test(\"First validator's 'is_operators_valid' is true\", function () {",
+																			"        pm.expect(firstValidator.is_operators_valid).to.be.true;",
+																			"    });",
+																			"    pm.test(\"First validator's 'version' is 'v4'\", function () {",
+																			"        pm.expect(firstValidator.version).to.eql(\"v4\");",
+																			"    });",
+																			"    pm.test(\"First validator's 'network' is 'holesky'\", function () {",
+																			"        pm.expect(firstValidator.network).to.eql(\"holesky\");",
+																			"    });",
+																			"});",
+																			"",
+																			"pm.test(\"Check if the response has 'pagination' object\", function () {",
+																			"    pm.expect(pm.response.json()).to.have.property(\"pagination\");",
+																			"});",
+																			"",
+																			"pm.test(\"Verify 'pagination' object has 'total' property\", function () {",
+																			"    const pagination = pm.response.json().pagination;",
+																			"    pm.expect(pagination).to.have.property(\"total\");",
+																			"    pm.expect(pagination.total).to.eql(179);",
+																			"});",
+																			"",
+																			"pm.test(\"Verify 'pagination' object has 'pages' property\", function () {",
+																			"    const pagination = pm.response.json().pagination;",
+																			"    pm.expect(pagination).to.have.property(\"pages\");",
+																			"    pm.expect(pagination.pages).to.eql(18);",
+																			"});",
+																			"",
+																			"pm.test(\"Verify 'pagination' object has 'per_page' property\", function () {",
+																			"    const pagination = pm.response.json().pagination;",
+																			"    pm.expect(pagination).to.have.property(\"per_page\");",
+																			"    pm.expect(pagination.per_page).to.eql(10);",
+																			"});",
+																			"",
+																			"pm.test(\"Verify 'pagination' object has 'page' property\", function () {",
+																			"    const pagination = pm.response.json().pagination;",
+																			"    pm.expect(pagination).to.have.property(\"page\");",
+																			"    pm.expect(pagination.page).to.eql(1);",
+																			"});",
+																			"",
+																			"pm.test(\"Verify 'pagination' object has 'current_first' property\", function () {",
+																			"    const pagination = pm.response.json().pagination;",
+																			"    pm.expect(pagination).to.have.property(\"current_first\");",
+																			"    pm.expect(pagination.current_first).to.eql(52738);",
+																			"});",
+																			"",
+																			"pm.test(\"Verify 'pagination' object has 'current_last' property\", function () {",
+																			"    const pagination = pm.response.json().pagination;",
+																			"    pm.expect(pagination).to.have.property(\"current_last\");",
+																			"    pm.expect(pagination.current_last).to.eql(227953);",
+																			"});",
+																			""
+																		],
+																		"type": "text/javascript",
+																		"packages": {}
+																	}
+																}
+															],
+															"request": {
+																"method": "GET",
+																"header": [
+																	{
+																		"key": "web-app-source",
+																		"value": "true",
+																		"type": "text"
+																	}
+																],
+																"url": {
+																	"raw": "{{stg}}/api/v4/{{network}}/validators/in_operator/5?page=1&perPage=10",
+																	"host": [
+																		"{{stg}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		"{{network}}",
+																		"validators",
+																		"in_operator",
+																		"5"
+																	],
+																	"query": [
+																		{
+																			"key": "page",
+																			"value": "1"
+																		},
+																		{
+																			"key": "perPage",
+																			"value": "10",
+																			"description": "Maximum allowed value: 100"
+																		}
+																	]
+																}
+															},
+															"response": [
+																{
+																	"name": "Validators found and returned in response",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v4/:network/validators/in_operator/:operator?page=1&perPage=10",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				":network",
+																				"validators",
+																				"in_operator",
+																				":operator"
+																			],
+																			"query": [
+																				{
+																					"key": "page",
+																					"value": "1"
+																				},
+																				{
+																					"key": "perPage",
+																					"value": "10",
+																					"description": "Maximum allowed value: 100"
+																				}
+																			],
+																			"variable": [
+																				{
+																					"key": "network"
+																				},
+																				{
+																					"key": "operator"
+																				}
+																			]
+																		}
+																	},
+																	"status": "OK",
+																	"code": 200,
+																	"_postman_previewlanguage": "text",
+																	"header": [],
+																	"cookie": [],
+																	"body": ""
+																},
+																{
+																	"name": "No such operator or operator does not have validators",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v4/:network/validators/in_operator/:operator?page=1&perPage=10",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				":network",
+																				"validators",
+																				"in_operator",
+																				":operator"
+																			],
+																			"query": [
+																				{
+																					"key": "page",
+																					"value": "1"
+																				},
+																				{
+																					"key": "perPage",
+																					"value": "10",
+																					"description": "Maximum allowed value: 100"
+																				}
+																			],
+																			"variable": [
+																				{
+																					"key": "network"
+																				},
+																				{
+																					"key": "operator"
+																				}
+																			]
+																		}
+																	},
+																	"status": "Not Found",
+																	"code": 404,
+																	"_postman_previewlanguage": "text",
+																	"header": [],
+																	"cookie": [],
+																	"body": ""
+																},
+																{
+																	"name": "Internal server error",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v4/:network/validators/in_operator/:operator?page=1&perPage=10",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				":network",
+																				"validators",
+																				"in_operator",
+																				":operator"
+																			],
+																			"query": [
+																				{
+																					"key": "page",
+																					"value": "1"
+																				},
+																				{
+																					"key": "perPage",
+																					"value": "10",
+																					"description": "Maximum allowed value: 100"
+																				}
+																			],
+																			"variable": [
+																				{
+																					"key": "network"
+																				},
+																				{
+																					"key": "operator"
+																				}
+																			]
+																		}
+																	},
+																	"status": "Internal Server Error",
+																	"code": 500,
+																	"_postman_previewlanguage": "text",
+																	"header": [],
+																	"cookie": [],
+																	"body": ""
+																}
+															]
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "{validator}",
+											"item": [
+												{
+													"name": "Single validator data",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"exec": [
+																	"pm.test(\"Check if the response has 'id' property\", function () {",
+																	"    pm.expect(pm.response.json()).to.have.property(\"id\");",
+																	"});",
+																	"",
+																	"pm.test(\"Check if the response has 'public_key' property\", function () {",
+																	"    pm.expect(pm.response.json()).to.have.property(\"public_key\");",
+																	"});",
+																	"",
+																	"pm.test(\"Check if the response has 'cluster' property\", function () {",
+																	"    pm.expect(pm.response.json()).to.have.property(\"cluster\");",
+																	"});",
+																	"",
+																	"pm.test(\"Check if the response has 'owner_address' property\", function () {",
+																	"    pm.expect(pm.response.json()).to.have.property(\"owner_address\");",
+																	"});",
+																	"",
+																	"pm.test(\"Check if the response has 'status' property\", function () {",
+																	"    pm.expect(pm.response.json()).to.have.property(\"status\");",
+																	"});",
+																	"",
+																	"pm.test(\"Check if the response has 'is_valid' property\", function () {",
+																	"    pm.expect(pm.response.json()).to.have.property(\"is_valid\");",
+																	"});",
+																	"",
+																	"pm.test(\"Check if the response has 'is_deleted' property\", function () {",
+																	"    pm.expect(pm.response.json()).to.have.property(\"is_deleted\");",
+																	"});",
+																	"",
+																	"pm.test(\"Check if the response has 'is_public_key_valid' property\", function () {",
+																	"    pm.expect(pm.response.json()).to.have.property(\"is_public_key_valid\");",
+																	"});",
+																	"",
+																	"pm.test(\"Check if the response has 'is_shares_valid' property\", function () {",
+																	"    pm.expect(pm.response.json()).to.have.property(\"is_shares_valid\");",
+																	"});",
+																	"",
+																	"pm.test(\"Check if the response has 'is_operators_valid' property\", function () {",
+																	"    pm.expect(pm.response.json()).to.have.property(\"is_operators_valid\");",
+																	"});",
+																	"",
+																	"pm.test(\"Check if the response has 'operators' array\", function () {",
+																	"    pm.expect(pm.response.json()).to.have.property(\"operators\");",
+																	"});",
+																	"",
+																	"pm.test(\"Check if the response has 'validator_info' object\", function () {",
+																	"    pm.expect(pm.response.json()).to.have.property(\"validator_info\");",
+																	"});",
+																	"",
+																	"pm.test(\"Check if the response has 'version' property\", function () {",
+																	"    pm.expect(pm.response.json()).to.have.property(\"version\");",
+																	"});",
+																	"",
+																	"pm.test(\"Check if the response has 'network' property\", function () {",
+																	"    pm.expect(pm.response.json()).to.have.property(\"network\");",
+																	"});",
+																	"",
+																	"pm.test(\"Check specific values in the response\", function () {",
+																	"    const jsonData = pm.response.json();",
+																	"    ",
+																	"    pm.test(\"Verify 'id' is 793098\", function () {",
+																	"        pm.expect(jsonData.id).to.eql(793098);",
+																	"    });",
+																	"    pm.test(\"Verify 'status' is 'Inactive'\", function () {",
+																	"        pm.expect(jsonData.status).to.eql(\"Inactive\");",
+																	"    });",
+																	"    pm.test(\"Verify 'is_valid' is true\", function () {",
+																	"        pm.expect(jsonData.is_valid).to.be.true;",
+																	"    });",
+																	"    pm.test(\"Verify 'is_deleted' is false\", function () {",
+																	"        pm.expect(jsonData.is_deleted).to.be.false;",
+																	"    });",
+																	"    pm.test(\"Verify 'is_public_key_valid' is true\", function () {",
+																	"        pm.expect(jsonData.is_public_key_valid).to.be.true;",
+																	"    });",
+																	"    pm.test(\"Verify 'is_shares_valid' is true\", function () {",
+																	"        pm.expect(jsonData.is_shares_valid).to.be.true;",
+																	"    });",
+																	"    pm.test(\"Verify 'is_operators_valid' is true\", function () {",
+																	"        pm.expect(jsonData.is_operators_valid).to.be.true;",
+																	"    });",
+																	"    pm.test(\"Verify 'version' is 'v4'\", function () {",
+																	"        pm.expect(jsonData.version).to.eql(\"v4\");",
+																	"    });",
+																	"    pm.test(\"Verify 'network' is 'holesky'\", function () {",
+																	"        pm.expect(jsonData.network).to.eql(\"holesky\");",
+																	"    });",
+																	"});",
+																	"",
+																	"pm.test(\"Check specific values for each operator\", function () {",
+																	"    const operators = pm.response.json().operators;",
+																	"    operators.forEach(function (operator, index) {",
+																	"        pm.test(`Verify operator ${index + 1} has 'id' property`, function () {",
+																	"            pm.expect(operator).to.have.property(\"id\");",
+																	"        });",
+																	"        pm.test(`Verify operator ${index + 1} has 'public_key' property`, function () {",
+																	"            pm.expect(operator).to.have.property(\"public_key\");",
+																	"        });",
+																	"        pm.test(`Verify operator ${index + 1} has 'status' property`, function () {",
+																	"            pm.expect(operator).to.have.property(\"status\");",
+																	"        });",
+																	"        pm.test(`Verify operator ${index + 1} 'status' is 'Inactive'`, function () {",
+																	"            pm.expect(operator.status).to.eql(\"Inactive\");",
+																	"        });",
+																	"        pm.test(`Verify operator ${index + 1} 'is_valid' is true`, function () {",
+																	"            pm.expect(operator.is_valid).to.be.true;",
+																	"        });",
+																	"        pm.test(`Verify operator ${index + 1} 'is_deleted' is false`, function () {",
+																	"            pm.expect(operator.is_deleted).to.be.false;",
+																	"        });",
+																	"        pm.test(`Verify operator ${index + 1} 'is_active' is 0`, function () {",
+																	"            pm.expect(operator.is_active).to.eql(0);",
+																	"        });",
+																	"        pm.test(`Verify operator ${index + 1} 'validators_count' is a number`, function () {",
+																	"            pm.expect(operator.validators_count).to.be.a(\"number\");",
+																	"        });",
+																	"    });",
+																	"});",
+																	""
+																],
+																"type": "text/javascript",
+																"packages": {}
+															}
+														}
+													],
+													"request": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "web-app-source",
+																"value": "true",
+																"type": "text"
+															}
+														],
+														"url": {
+															"raw": "{{stg}}/api/v4/{{network}}/validators/84ba2f5525056a6cb54fd7f659280cf6b491537ddea73cabd929c7afe2df8ba26be9d94bd3d2d7b6fa0e1ef267aef968",
+															"host": [
+																"{{stg}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																"{{network}}",
+																"validators",
+																"84ba2f5525056a6cb54fd7f659280cf6b491537ddea73cabd929c7afe2df8ba26be9d94bd3d2d7b6fa0e1ef267aef968"
+															]
+														}
+													},
+													"response": [
+														{
+															"name": "Validator found and returned in response",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/validators/:validator",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"validators",
+																		":validator"
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		},
+																		{
+																			"key": "validator"
+																		}
+																	]
+																}
+															},
+															"status": "OK",
+															"code": 200,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														},
+														{
+															"name": "Validator public_key has wrong format",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/validators/:validator",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"validators",
+																		":validator"
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		},
+																		{
+																			"key": "validator"
+																		}
+																	]
+																}
+															},
+															"status": "Bad Request",
+															"code": 400,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														},
+														{
+															"name": "Validator not found",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/validators/:validator",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"validators",
+																		":validator"
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		},
+																		{
+																			"key": "validator"
+																		}
+																	]
+																}
+															},
+															"status": "Not Found",
+															"code": 404,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														},
+														{
+															"name": "Internal server error",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v4/:network/validators/:validator",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		":network",
+																		"validators",
+																		":validator"
+																	],
+																	"variable": [
+																		{
+																			"key": "network"
+																		},
+																		{
+																			"key": "validator"
+																		}
+																	]
+																}
+															},
+															"status": "Internal Server Error",
+															"code": 500,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": ""
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "isRegisteredValidator",
+											"item": [
+												{
+													"name": "{validator}",
+													"item": [
+														{
+															"name": "If validator is registered - single validator data, 404 otherwise",
+															"event": [
+																{
+																	"listen": "test",
+																	"script": {
+																		"exec": [
+																			"pm.test(\"Check if the response has 'type' property\", function () {",
+																			"    pm.expect(pm.response.json()).to.have.property(\"type\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if the response has 'data' property\", function () {",
+																			"    pm.expect(pm.response.json()).to.have.property(\"data\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'id' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"id\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'network' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"network\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'version' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"version\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'ownerAddress' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"ownerAddress\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'publicKey' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"publicKey\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'operators' array\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"operators\");",
+																			"    pm.expect(pm.response.json().data.operators).to.be.an('array').that.is.not.empty;",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'cluster' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"cluster\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'shares' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"shares\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'sharesPublicKeys' array\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"sharesPublicKeys\");",
+																			"    pm.expect(pm.response.json().data.sharesPublicKeys).to.be.an('array').that.is.not.empty;",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'encryptedKeys' array\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"encryptedKeys\");",
+																			"    pm.expect(pm.response.json().data.encryptedKeys).to.be.an('array').that.is.not.empty;",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'memo' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"memo\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'blockNumber' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"blockNumber\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'logIndex' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"logIndex\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'transactionIndex' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"transactionIndex\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'addedAtBlockNumber' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"addedAtBlockNumber\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'addedAtLogIndex' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"addedAtLogIndex\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'addedAtTransactionIndex' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"addedAtTransactionIndex\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'isValid' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"isValid\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'isDeleted' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"isDeleted\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'isLiquidated' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"isLiquidated\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'ignoreOnSync' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"ignoreOnSync\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'createdAt' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"createdAt\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'updatedAt' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"updatedAt\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'isDraft' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"isDraft\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'isPublicKeyValid' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"isPublicKeyValid\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'isSharesValid' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"isSharesValid\");",
+																			"});",
+																			"",
+																			"pm.test(\"Check if 'data' object has 'isOperatorsValid' property\", function () {",
+																			"    pm.expect(pm.response.json().data).to.have.property(\"isOperatorsValid\");",
+																			"});",
+																			"",
+																			"pm.test(\"Verify specific values in the 'data' object\", function () {",
+																			"    const data = pm.response.json().data;",
+																			"",
+																			"    pm.test(\"Verify 'id' is 895057\", function () {",
+																			"        pm.expect(data.id).to.eql(895057);",
+																			"    });",
+																			"    pm.test(\"Verify 'network' is 'holesky'\", function () {",
+																			"        pm.expect(data.network).to.eql(\"holesky\");",
+																			"    });",
+																			"    pm.test(\"Verify 'version' is 'v4'\", function () {",
+																			"        pm.expect(data.version).to.eql(\"v4\");",
+																			"    });",
+																			"    pm.test(\"Verify 'ownerAddress' is '0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF'\", function () {",
+																			"        pm.expect(data.ownerAddress).to.eql(\"0xCDB35Fe42e19860B061BA6d1D85cE12C8F491ddF\");",
+																			"    });",
+																			"    pm.test(\"Verify 'isValid' is true\", function () {",
+																			"        pm.expect(data.isValid).to.be.true;",
+																			"    });",
+																			"    pm.test(\"Verify 'isDeleted' is false\", function () {",
+																			"        pm.expect(data.isDeleted).to.be.false;",
+																			"    });",
+																			"    pm.test(\"Verify 'isLiquidated' is false\", function () {",
+																			"        pm.expect(data.isLiquidated).to.be.false;",
+																			"    });",
+																			"    pm.test(\"Verify 'ignoreOnSync' is true\", function () {",
+																			"        pm.expect(data.ignoreOnSync).to.be.true;",
+																			"    });",
+																			"    pm.test(\"Verify 'isPublicKeyValid' is true\", function () {",
+																			"        pm.expect(data.isPublicKeyValid).to.be.true;",
+																			"    });",
+																			"    pm.test(\"Verify 'isSharesValid' is true\", function () {",
+																			"        pm.expect(data.isSharesValid).to.be.true;",
+																			"    });",
+																			"    pm.test(\"Verify 'isOperatorsValid' is true\", function () {",
+																			"        pm.expect(data.isOperatorsValid).to.be.true;",
+																			"    });",
+																			"    pm.test(\"Verify 'isDraft' is false\", function () {",
+																			"        pm.expect(data.isDraft).to.be.false;",
+																			"    });",
+																			"});",
+																			""
+																		],
+																		"type": "text/javascript",
+																		"packages": {}
+																	}
+																}
+															],
+															"request": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{stg}}/api/v4/{{network}}/validators/isRegisteredValidator/0x8332ae32c283cd9ab3deb23cc702b77243d98d8516848a0f74ee5db2c34aab33bc990e940ce14fe3fa2510a120d34f94",
+																	"host": [
+																		"{{stg}}"
+																	],
+																	"path": [
+																		"api",
+																		"v4",
+																		"{{network}}",
+																		"validators",
+																		"isRegisteredValidator",
+																		"0x8332ae32c283cd9ab3deb23cc702b77243d98d8516848a0f74ee5db2c34aab33bc990e940ce14fe3fa2510a120d34f94"
+																	]
+																}
+															},
+															"response": [
+																{
+																	"name": "Validator found and returned in response",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v4/:network/validators/isRegisteredValidator/:validator",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				":network",
+																				"validators",
+																				"isRegisteredValidator",
+																				":validator"
+																			],
+																			"variable": [
+																				{
+																					"key": "network"
+																				},
+																				{
+																					"key": "validator"
+																				}
+																			]
+																		}
+																	},
+																	"status": "OK",
+																	"code": 200,
+																	"_postman_previewlanguage": "text",
+																	"header": [],
+																	"cookie": [],
+																	"body": ""
+																},
+																{
+																	"name": "Validator public_key has wrong format",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v4/:network/validators/isRegisteredValidator/:validator",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				":network",
+																				"validators",
+																				"isRegisteredValidator",
+																				":validator"
+																			],
+																			"variable": [
+																				{
+																					"key": "network"
+																				},
+																				{
+																					"key": "validator"
+																				}
+																			]
+																		}
+																	},
+																	"status": "Bad Request",
+																	"code": 400,
+																	"_postman_previewlanguage": "text",
+																	"header": [],
+																	"cookie": [],
+																	"body": ""
+																},
+																{
+																	"name": "Validator not found",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v4/:network/validators/isRegisteredValidator/:validator",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				":network",
+																				"validators",
+																				"isRegisteredValidator",
+																				":validator"
+																			],
+																			"variable": [
+																				{
+																					"key": "network"
+																				},
+																				{
+																					"key": "validator"
+																				}
+																			]
+																		}
+																	},
+																	"status": "Not Found",
+																	"code": 404,
+																	"_postman_previewlanguage": "text",
+																	"header": [],
+																	"cookie": [],
+																	"body": ""
+																},
+																{
+																	"name": "Internal server error",
+																	"originalRequest": {
+																		"method": "GET",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v4/:network/validators/isRegisteredValidator/:validator",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v4",
+																				":network",
+																				"validators",
+																				"isRegisteredValidator",
+																				":validator"
+																			],
+																			"variable": [
+																				{
+																					"key": "network"
+																				},
+																				{
+																					"key": "validator"
+																				}
+																			]
+																		}
+																	},
+																	"status": "Internal Server Error",
+																	"code": 500,
+																	"_postman_previewlanguage": "text",
+																	"header": [],
+																	"cookie": [],
+																	"body": ""
+																}
+															]
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "List of validators",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "web-app-source",
+														"value": "true",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{stg}}/api/v4/{{network}}/validators?lastId=1&pageDirection=next&perPage=10&ordering=&ownerAddress=&search=",
+													"host": [
+														"{{stg}}"
+													],
+													"path": [
+														"api",
+														"v4",
+														"{{network}}",
+														"validators"
+													],
+													"query": [
+														{
+															"key": "lastId",
+															"value": "1"
+														},
+														{
+															"key": "pageDirection",
+															"value": "next",
+															"description": "either \"next\" or \"prev\""
+														},
+														{
+															"key": "perPage",
+															"value": "10",
+															"description": "Maximum allowed value: 1000"
+														},
+														{
+															"key": "ordering",
+															"value": "",
+															"description": "Sort by one or few fields. <br><br>You can sort only by: &nbsp;&nbsp;<code>id</code>,&nbsp;&nbsp;<code>status</code>,&nbsp;&nbsp;<code>public_key</code>,&nbsp;&nbsp;<code>owner_address</code><br><br>Examples: <ol><li><code>id:asc,public_key:desc</code><br><br></li><li><code>public_key</code><br><br></li><li>without specifying sort order: <code>owner_address,public_key</code> - equals to: <code>owner_address:asc,public_key:asc</code><br><br></li></ol>"
+														},
+														{
+															"key": "ownerAddress",
+															"value": "",
+															"description": "Filter by owner"
+														},
+														{
+															"key": "search",
+															"value": "",
+															"description": "Full-text search for entries matching all fields in a case-insensitive way"
+														}
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "Validators found and returned in response",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v4/:network/validators?lastId=1&pageDirection=<string>&perPage=10&ordering=&ownerAddress=&search=",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																":network",
+																"validators"
+															],
+															"query": [
+																{
+																	"key": "lastId",
+																	"value": "1"
+																},
+																{
+																	"key": "pageDirection",
+																	"value": "<string>",
+																	"description": "either \"next\" or \"prev\""
+																},
+																{
+																	"key": "perPage",
+																	"value": "10",
+																	"description": "Maximum allowed value: 1000"
+																},
+																{
+																	"key": "ordering",
+																	"value": "",
+																	"description": "Sort by one or few fields. <br><br>You can sort only by: &nbsp;&nbsp;<code>id</code>,&nbsp;&nbsp;<code>status</code>,&nbsp;&nbsp;<code>public_key</code>,&nbsp;&nbsp;<code>owner_address</code><br><br>Examples: <ol><li><code>id:asc,public_key:desc</code><br><br></li><li><code>public_key</code><br><br></li><li>without specifying sort order: <code>owner_address,public_key</code> - equals to: <code>owner_address:asc,public_key:asc</code><br><br></li></ol>"
+																},
+																{
+																	"key": "ownerAddress",
+																	"value": "",
+																	"description": "Filter by owner"
+																},
+																{
+																	"key": "search",
+																	"value": "",
+																	"description": "Full-text search for entries matching all fields in a case-insensitive way"
+																}
+															],
+															"variable": [
+																{
+																	"key": "network"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Requested page number does not exists",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v4/:network/validators?lastId=1&pageDirection=<string>&perPage=10&ordering=&ownerAddress=&search=",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																":network",
+																"validators"
+															],
+															"query": [
+																{
+																	"key": "lastId",
+																	"value": "1"
+																},
+																{
+																	"key": "pageDirection",
+																	"value": "<string>",
+																	"description": "either \"next\" or \"prev\""
+																},
+																{
+																	"key": "perPage",
+																	"value": "10",
+																	"description": "Maximum allowed value: 1000"
+																},
+																{
+																	"key": "ordering",
+																	"value": "",
+																	"description": "Sort by one or few fields. <br><br>You can sort only by: &nbsp;&nbsp;<code>id</code>,&nbsp;&nbsp;<code>status</code>,&nbsp;&nbsp;<code>public_key</code>,&nbsp;&nbsp;<code>owner_address</code><br><br>Examples: <ol><li><code>id:asc,public_key:desc</code><br><br></li><li><code>public_key</code><br><br></li><li>without specifying sort order: <code>owner_address,public_key</code> - equals to: <code>owner_address:asc,public_key:asc</code><br><br></li></ol>"
+																},
+																{
+																	"key": "ownerAddress",
+																	"value": "",
+																	"description": "Filter by owner"
+																},
+																{
+																	"key": "search",
+																	"value": "",
+																	"description": "Full-text search for entries matching all fields in a case-insensitive way"
+																}
+															],
+															"variable": [
+																{
+																	"key": "network"
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Internal server error",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v4/:network/validators?lastId=1&pageDirection=<string>&perPage=10&ordering=&ownerAddress=&search=",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v4",
+																":network",
+																"validators"
+															],
+															"query": [
+																{
+																	"key": "lastId",
+																	"value": "1"
+																},
+																{
+																	"key": "pageDirection",
+																	"value": "<string>",
+																	"description": "either \"next\" or \"prev\""
+																},
+																{
+																	"key": "perPage",
+																	"value": "10",
+																	"description": "Maximum allowed value: 1000"
+																},
+																{
+																	"key": "ordering",
+																	"value": "",
+																	"description": "Sort by one or few fields. <br><br>You can sort only by: &nbsp;&nbsp;<code>id</code>,&nbsp;&nbsp;<code>status</code>,&nbsp;&nbsp;<code>public_key</code>,&nbsp;&nbsp;<code>owner_address</code><br><br>Examples: <ol><li><code>id:asc,public_key:desc</code><br><br></li><li><code>public_key</code><br><br></li><li>without specifying sort order: <code>owner_address,public_key</code> - equals to: <code>owner_address:asc,public_key:asc</code><br><br></li></ol>"
+																},
+																{
+																	"key": "ownerAddress",
+																	"value": "",
+																	"description": "Filter by owner"
+																},
+																{
+																	"key": "search",
+																	"value": "",
+																	"description": "Full-text search for entries matching all fields in a case-insensitive way"
+																}
+															],
+															"variable": [
+																{
+																	"key": "network"
+																}
+															]
+														}
+													},
+													"status": "Internal Server Error",
+													"code": 500,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": ""
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "version",
+			"value": "v4"
+		},
+		{
+			"key": "network",
+			"value": "holesky"
+		},
+		{
+			"key": "operatorID",
+			"value": "5"
+		},
+		{
+			"key": "maxResponseTime",
+			"value": "2000",
+			"type": "string"
+		},
+		{
+			"key": "expectedParamCount",
+			"value": "33",
+			"type": "string"
+		},
+		{
+			"key": "expectedStatuscode",
+			"value": "200",
+			"type": "string"
+		},
+		{
+			"key": "pbkey",
+			"value": "af2c32f2043cd58f1a54867081401805c7607c001b906daf9c129e7cf4d561c730d834f0bb8554f9be16c3c88369f8b9"
+		},
+		{
+			"key": "validatorID",
+			"value": "271517",
+			"type": "string"
+		},
+		{
+			"key": "expectedParamCount1",
+			"value": "14",
+			"type": "string"
+		},
+		{
+			"key": "operatorpbkey",
+			"value": "LS0tLS1CRUdJTiBSU0EgUFVCTElDIEtFWS0tLS0tCk1JSUJJakFOQmdrcWhraUc5dzBCQVFFRkFBT0NBUThBTUlJQkNnS0NBUUVBMGVlbkhVcS9WVTBrK2N2V1FJWVgKb1B3c3lVeTFzaDFMamZkTkhyeW1aV0p5Zk00dEdudW41TzdEaXJuTjdEbFphbjRiS1FYTEh2MitYYU1sY3AvaApJTGVjczh6NW0rNVBmcEMraWI2M3QxY2ZjK3RsQ2M0Qm53eDBPYlBsS2lPQlA0R1BHUFA4bFlWNWtXVkI4NGJxCk5QS3RGc1hKYXIvUk5NUktTREV2MWxYTDZCWmtZdWxrVlpxS3lsMmdGa3FucDZlZ04xd1BXOGo3Z09jVWpLZ1IKV0RnM1o5ZXFQZ1E3Zk51T0xUK3FNY3k4VW1zNytCb3h5a3g2T1I4L3NMblJ4RUR3NUlreWlnYlJMS0ZpZnFkeAowbzBmUjN3M0syb1F0SE92U29HV1FNdEMweU94VzhEdEdTKzJQTEtMY01ncGpOeDQwSEcvZmp5M1VlVmVVOEpQCktRSURBUUFCCi0tLS0tRU5EIFJTQSBQVUJMSUMgS0VZLS0tLS0K",
+			"type": "string"
+		},
+		{
+			"key": "owner_add",
+			"value": "0x97a6C1f3aaB5427B901fb135ED492749191C0f1F",
+			"type": "string"
+		},
+		{
+			"key": "country_code",
+			"value": "271517",
+			"type": "string"
+		},
+		{
+			"key": "page_indicator",
+			"value": "1?page=1&perPage=10",
+			"type": "string"
+		},
+		{
+			"key": "mainnet",
+			"value": "mainnet",
+			"type": "string"
+		}
+	]
+}

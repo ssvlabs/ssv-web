@@ -5,10 +5,11 @@ import { useStyles } from './BorderScreen.styles';
 import Tooltip from '~app/components/common/ToolTip/ToolTip';
 import styled from 'styled-components';
 
-const NavigationWrapper = styled.div<{ isColored: boolean; marginBottom?: number }>`
+const NavigationWrapper = styled.div<{ isColored: boolean; marginBottom?: number; headerMarginTop?: number | string; navigatorHeight?: number }>`
   width: 100%;
   background-color: ${({ theme, isColored }) => (isColored ? theme.colors.gray0 : 'transparent')};
-  margin-top: 24px;
+  height: ${({ navigatorHeight }) => `${navigatorHeight}px` || `auto`};
+  margin-top: ${({ headerMarginTop }) => headerMarginTop || `24px`};
   margin-bottom: ${({ marginBottom }) => `${marginBottom}px` || '24px'};
   display: flex;
   align-items: center;
@@ -16,7 +17,10 @@ const NavigationWrapper = styled.div<{ isColored: boolean; marginBottom?: number
 
 const TextWrapper = styled.div<{ width: string | number | undefined }>`
   width: ${({ width }) => (width ? `${width}px` : '648px')};
+  height: 100%;
   margin: auto;
+  display: flex;
+  align-items: center;
 `;
 
 type Props = {
@@ -29,9 +33,11 @@ type Props = {
   overFlow?: string;
   marginTop?: number;
   wrapperClass?: any;
+  navigatorHeight?: number;
   sectionClass?: any;
   tooltipText?: string | false;
   blackHeader?: boolean;
+  headerMarginTop?: number | string;
   borderRadius?: string;
   bottomWrapper?: string;
   wrapperHeight?: number;
@@ -61,6 +67,7 @@ const BorderScreen = (props: Props) => {
     blackHeader,
     wrapperClass,
     borderRadius,
+    headerMarginTop,
     sectionClass,
     bottomWrapper,
     withConversion,
@@ -72,6 +79,7 @@ const BorderScreen = (props: Props) => {
     subHeaderText = undefined,
     sideElement,
     sideElementShowCondition = true,
+    navigatorHeight,
     children
   } = props;
   const classes = useStyles({
@@ -90,7 +98,7 @@ const BorderScreen = (props: Props) => {
   return (
     <div>
       {!withoutNavigation && (
-        <NavigationWrapper marginBottom={backButtonBottomMargin} isColored={!!subHeaderText}>
+        <NavigationWrapper marginBottom={backButtonBottomMargin} navigatorHeight={navigatorHeight} headerMarginTop={headerMarginTop} isColored={!!subHeaderText}>
           <TextWrapper width={width}>
             <BackNavigation onClick={props.onBackButtonClick} text={subHeaderText} />
           </TextWrapper>

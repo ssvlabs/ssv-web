@@ -81,6 +81,7 @@ jobs:
           GAS_PRICE="${{ env.GAS_PRICE }}" 
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 
           yarn build
@@ -89,6 +90,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
 
       - name: Deploy stage webapp
         if: github.ref == 'refs/heads/stage'
@@ -110,6 +112,7 @@ jobs:
           GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           yarn build
@@ -118,6 +121,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
 
       - name: Deploy ilya-dev webapp
         if: github.ref == 'refs/heads/ilya-dev'
@@ -139,6 +143,7 @@ jobs:
           GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           yarn build
@@ -147,6 +152,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
 
       - name: Deploy chris-dev webapp
         if: github.ref == 'refs/heads/chris-dev'
@@ -168,6 +174,7 @@ jobs:
           GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           yarn build
@@ -176,6 +183,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
 
       - name: Deploy dima-dev webapp
         if: github.ref == 'refs/heads/dima-dev'
@@ -197,6 +205,7 @@ jobs:
           GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           yarn build
@@ -205,6 +214,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
 
       - name: Deploy sumbat-dev webapp
         if: github.ref == 'refs/heads/sumbat-dev'
@@ -226,6 +236,7 @@ jobs:
           GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           yarn build
@@ -234,6 +245,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
 
       - name: Deploy prod-test webapp
         if: github.ref == 'refs/heads/prod-test'
@@ -255,6 +267,7 @@ jobs:
           GAS_PRICE="${{ env.GAS_PRICE }}" 
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           yarn build
@@ -263,6 +276,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_PROD }}
 
       - name: Deploy prod webapp
         if: github.ref == 'refs/heads/main'
@@ -336,7 +350,10 @@ jobs:
         run: >
           SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
           GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
-          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
+          EXPLORER_URL="$EXPLORER_URL"
+          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
+          MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
+          yarn build
         env:
           VITE_FAUCET_PAGE: "true"
           SSV_NETWORKS: ${{ env.PROD_SSV_NETWORKS }}
@@ -344,6 +361,7 @@ jobs:
           EXPLORER_URL: "https://explorer.ssv.network/"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           VITE_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
+          MIXPANEL_TOKEN_PROD: ${{ secrets.MIXPANEL_TOKEN_PROD }}
 
       - name: Deploy prod faucet
         if: github.ref == 'refs/heads/main'

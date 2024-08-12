@@ -61,9 +61,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
   SuccessText: {
     color: theme.colors.primarySuccessDark
   },
-  ItemWrapper: {
-    marginBottom: theme.spacing(10)
-  },
   ErrorWrapper: {
     marginBottom: theme.spacing(1)
   },

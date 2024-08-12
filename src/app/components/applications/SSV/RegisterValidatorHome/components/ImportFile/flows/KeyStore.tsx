@@ -205,7 +205,7 @@ const KeyStoreFlow = () => {
                 {!isMainnet && (
                   <WarningBox
                     withLogo
-                    text={'Please never perform online key splitting on testnet with a private key that you intend to use on mainnet, as doing so may put you validators at risk.'}
+                    text={'Please never perform online key splitting on testnet with a private key that you intend to use on mainnet, as doing so may put your validators at risk.'}
                   />
                 )}
               </div>

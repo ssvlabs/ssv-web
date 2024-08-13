@@ -13,8 +13,8 @@ const DialogWrapper = styled(Dialog)<{ theme: any }>`
   }
 `;
 
-const Wrapper = styled(Grid)<{ theme: any }>`
-  width: 424px;
+const Wrapper = styled(Grid)<{ theme: any; width?: number }>`
+  width: ${({ width }) => `${width || 424}px`};
   padding: 32px;
   border-radius: 16px;
   flex-direction: column;
@@ -73,7 +73,7 @@ const ModalPopUp = () => {
 
   return (
     <DialogWrapper aria-labelledby="simple-dialog-title" open={!!modalPopUp}>
-      <Wrapper container>
+      <Wrapper width={modalPopUp?.width} container>
         <HeaderWrapper>
           <Title>{modalPopUp?.title}</Title>
           <CloseButton onClick={closeModal} />

@@ -8,6 +8,7 @@ import { ButtonPropsType } from '~app/types/ButtonPropsType.ts';
 type ModalPopUpType = null | {
   title: string;
   text: string[];
+  width?: number;
   buttons: {
     component: React.FC<ButtonPropsType>;
     props: ButtonPropsType;

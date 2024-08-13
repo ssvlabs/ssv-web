@@ -104,6 +104,7 @@ const AddressesList = () => {
       setModalPopUp({
         title: 'Unsaved Changes',
         text: ['Are you sure that you want to discard changes?', 'Any unsaved changes will be lost.'],
+        width: 480,
         buttons: [
           {
             component: PrimaryButton,

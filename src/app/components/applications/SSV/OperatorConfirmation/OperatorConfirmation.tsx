@@ -120,6 +120,8 @@ const OperatorConfirmation = () => {
     <BorderScreen
       blackHeader
       withConversion
+      headerMarginTop={'none'}
+      navigatorHeight={60}
       sectionClass={classes.Section}
       subHeaderText={'Register Operator'}
       header={translations.OPERATOR.CONFIRMATION.TITLE}

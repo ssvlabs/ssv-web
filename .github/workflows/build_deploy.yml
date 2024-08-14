@@ -81,6 +81,7 @@ jobs:
           GAS_PRICE="${{ env.GAS_PRICE }}" 
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 
           yarn build
@@ -111,6 +112,7 @@ jobs:
           GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           yarn build
@@ -141,6 +143,7 @@ jobs:
           GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           yarn build
@@ -171,6 +174,7 @@ jobs:
           GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           yarn build
@@ -201,6 +205,7 @@ jobs:
           GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           yarn build
@@ -231,6 +236,7 @@ jobs:
           GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           yarn build
@@ -261,6 +267,7 @@ jobs:
           GAS_PRICE="${{ env.GAS_PRICE }}" 
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           yarn build
@@ -343,7 +350,10 @@ jobs:
         run: >
           SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
           GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
-          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
+          EXPLORER_URL="$EXPLORER_URL"
+          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
+          MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
+          yarn build
         env:
           VITE_FAUCET_PAGE: "true"
           SSV_NETWORKS: ${{ env.PROD_SSV_NETWORKS }}
@@ -351,6 +361,7 @@ jobs:
           EXPLORER_URL: "https://explorer.ssv.network/"
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           VITE_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
+          MIXPANEL_TOKEN_PROD: ${{ secrets.MIXPANEL_TOKEN_PROD }}
 
       - name: Deploy prod faucet
         if: github.ref == 'refs/heads/main'

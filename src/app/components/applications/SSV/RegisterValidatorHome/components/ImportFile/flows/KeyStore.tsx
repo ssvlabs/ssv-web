@@ -21,6 +21,8 @@ import { ButtonSize } from '~app/enums/Button.enum';
 import { useAppSelector } from '~app/hooks/redux.hook.ts';
 import { getIsClusterSelected } from '~app/redux/account.slice.ts';
 import styled from 'styled-components';
+import { getIsMainnet } from '~app/redux/wallet.slice.ts';
+import WarningBox from '~app/components/common/WarningBox';
 
 const Container = styled.div`
   width: 100%;
@@ -28,7 +30,7 @@ const Container = styled.div`
 
 const KeyStoreFlow = () => {
   const stores = useStores();
-  const classes = useStyles();
+  const classes = useStyles({});
   const navigate = useNavigate();
   const location = useLocation();
   const { getNextNavigation } = validatorRegistrationFlow(location.pathname);
@@ -40,6 +42,7 @@ const KeyStoreFlow = () => {
   const [keyStorePassword, setKeyStorePassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const keyStoreFileIsJson = isJsonFile(validatorStore.keyStoreFile as File);
+  const isMainnet = useAppSelector(getIsMainnet);
 
   useEffect(() => {
     validatorStore.clearKeyStoreFlowData();
@@ -192,12 +195,20 @@ const KeyStoreFlow = () => {
           <Grid container item xs={12}>
             <>
               <InputLabel title="Keystore Password" />
-              <Grid item xs={12} className={classes.ItemWrapper}>
+              <Grid item xs={12}>
                 <TextInput withLock disable={inputDisableConditions} value={keyStorePassword} onChangeCallback={handlePassword} onKeyDownCallback={submitOnEnter} />
               </Grid>
               <Grid item xs={12} className={classes.ErrorWrapper}>
                 {errorMessage && <ErrorMessage text={errorMessage} />}
               </Grid>
+              <div className={'mt-6 mb-8'}>
+                {!isMainnet && (
+                  <WarningBox
+                    withLogo
+                    text={'Please never perform online key splitting on testnet with a private key that you intend to use on mainnet, as doing so may put your validators at risk.'}
+                  />
+                )}
+              </div>
             </>
             <PrimaryButton text={'Next'} onClick={submitHandler} isDisabled={buttonDisableConditions} size={ButtonSize.XL} isLoading={isLoading} />
           </Grid>

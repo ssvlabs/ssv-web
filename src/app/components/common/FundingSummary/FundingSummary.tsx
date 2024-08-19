@@ -18,13 +18,6 @@ type Props = {
   validatorsCount?: number;
 };
 
-const FundingSummeryColumns = {
-  FUNDING_SUMMARY: 'Funding Summary',
-  FEE: 'Fee (365 Days)',
-  VALIDATORS: 'Validators',
-  SUBTOTAL: 'Subtotal'
-};
-
 enum PaymentId {
   OPERATOR_FEE = 1,
   NETWORK_FEE = 2,
@@ -44,6 +37,12 @@ const FundingSummary = (props: Props) => {
     { id: PaymentId.NETWORK_FEE, name: 'Network fee' },
     { id: PaymentId.LIQUIDATION_COLLATERAL, name: 'Liquidation collateral' }
   ];
+  const FundingSummeryColumns = {
+    FUNDING_SUMMARY: 'Funding Summary',
+    FEE: `Fee (${daysPeriod} Days)`,
+    VALIDATORS: 'Validators',
+    SUBTOTAL: 'Subtotal'
+  };
   const selectedOperatorsFee = useAppSelector(getSelectedOperatorsFee);
 
   const networkCost = props.networkCost ?? propertyCostByPeriod(networkFee, daysPeriod);

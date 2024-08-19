@@ -175,12 +175,7 @@ const ReactivateCluster = () => {
                 {formatNumberToUi(totalCost.toFixed(18))} SSV
               </Typography>
             </Grid>
-            <AllowanceButton
-              text={'Reactivate'}
-              onClick={reactivateClusterHandler}
-              disable={disableCondition}
-              totalAmount={disableCondition ? '0' : formatNumberToUi(totalCost.toFixed(18))}
-            />
+            <AllowanceButton text={'Reactivate'} onClick={reactivateClusterHandler} disable={disableCondition} totalAmount={disableCondition ? '0' : totalCost.toString()} />
           </Grid>
         ]}
       />

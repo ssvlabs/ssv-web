@@ -131,7 +131,7 @@
     "sass-loader": "^10.0.5",
     "semver": "7.6.0",
     "source-map-explorer": "^2.5.3",
-    "ssv-keys": "https://github.com/ssvlabs/ssv-keys.git#1.1.0",
+    "ssv-keys": "1.2.0",
     "stream": "npm:stream-browserify",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",

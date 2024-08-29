@@ -1,7 +1,9 @@
-import { setIsLoading, setIsShowTxPendingPopup, setTxHash } from '~app/redux/appState.slice';
+import { setIsLoading, setIsPopUpWithIndexingStatus, setIsShowTxPendingPopup, setTransactionStatus, setTxHash } from '~app/redux/appState.slice';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 import { translations } from '~app/common/config';
 import { refreshOperatorsAndClusters } from '~app/redux/account.slice';
+import { TransactionStatus } from '~app/enums/transactionStatus.enum.ts';
+import { store } from '~app/store';
 
 const CHECK_UPDATES_MAX_ITERATIONS = 60;
 
@@ -65,6 +67,7 @@ export type TxProps = {
   onSuccess?: (receipt: any) => void;
   onError?: (error: any) => void;
   refreshMS?: number;
+  shouldThrowError?: boolean;
 };
 
 export const transactionExecutor = async ({
@@ -77,7 +80,8 @@ export const transactionExecutor = async ({
   refreshMS,
   onConfirmed,
   onSuccess,
-  onError
+  onError,
+  shouldThrowError
 }: TxProps) => {
   try {
     if (isContractWallet) {
@@ -90,6 +94,7 @@ export const transactionExecutor = async ({
 
     if (tx.hash) {
       dispatch(setTxHash(tx.hash));
+      dispatch(setTransactionStatus(TransactionStatus.PENDING));
       dispatch(setIsShowTxPendingPopup(true));
     }
 
@@ -98,6 +103,9 @@ export const transactionExecutor = async ({
     onSuccess?.(receipt);
 
     if (receipt.blockHash) {
+      if (store.getState().appState?.isPopUpWithIndexingStatus) {
+        dispatch(setTransactionStatus(TransactionStatus.INDEXING));
+      }
       if (onConfirmed) {
         await onConfirmed(receipt.events || []);
         return true;
@@ -130,17 +138,22 @@ export const transactionExecutor = async ({
   } catch (e: any) {
     dispatch(
       setMessageAndSeverity({
-        message: e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE,
+        message: e.shortMessage || e.message || translations.DEFAULT.DEFAULT_ERROR_MESSAGE,
         severity: 'error'
       })
     );
     dispatch(setIsLoading(false));
     onError?.(e);
+    if (shouldThrowError) {
+      throw e;
+    }
     return false;
   } finally {
     if (!isContractWallet) {
       dispatch(setIsLoading(false));
       dispatch(setIsShowTxPendingPopup(false));
+      dispatch(setTransactionStatus(TransactionStatus.PENDING));
+      dispatch(setIsPopUpWithIndexingStatus(false));
     }
   }
 };

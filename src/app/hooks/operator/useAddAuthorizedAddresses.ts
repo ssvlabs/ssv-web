@@ -29,7 +29,7 @@ export const useAddAuthorizedAddresses = () => {
           .superRefine((arr, ctx) => {
             const set = new Set<`0x${string}`>();
             for (let i = 0; i < arr.length; i++) {
-              if (set.has(arr[i].value) || addressesMap.has(arr[i].value)) {
+              if (arr[i].value.length && (set.has(arr[i].value) || addressesMap.has(arr[i].value))) {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   message: 'The address you specified is already in use',
@@ -57,12 +57,14 @@ export const useAddAuthorizedAddresses = () => {
   });
 
   const addresses = form.watch('addresses');
-  const hasEmptyAddresses = addresses.some((field) => !field.value);
-  const hasAddresses = addresses.filter(({ value }) => value.trim() !== '').length > 0;
+  const hasEmptyAddresses = addresses.some((field) => !field.value.trim());
+  const validNewAddressesCount = addresses.filter((field: { value: string }) => isAddress(field.value)).length;
 
+  const hasAddresses = addresses.filter(({ value }) => value.trim() !== '').length > 0;
   return {
     form,
     fieldArray,
+    validNewAddressesCount,
     hasAddresses,
     hasEmptyAddresses,
     isSubmitDisabled: Boolean(form.formState.errors.addresses) || !hasAddresses

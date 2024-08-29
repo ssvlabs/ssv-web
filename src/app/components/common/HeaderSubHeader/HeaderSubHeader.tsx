@@ -1,5 +1,6 @@
 import Grid from '@mui/material/Grid';
 import styled from 'styled-components';
+import { ReactElement } from 'react';
 
 const HeaderTitleWrapper = styled.div`
   width: 100%;
@@ -47,7 +48,7 @@ const SubHeader = styled.p<{
 `;
 
 type HeaderProps = {
-  title?: string;
+  title?: string | ReactElement;
   subtitle?: any;
   rewardPage?: boolean;
   marginBottom?: number;

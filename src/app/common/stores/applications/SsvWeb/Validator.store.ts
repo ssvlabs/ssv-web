@@ -13,6 +13,7 @@ import { transactionExecutor } from '~root/services/transaction.service';
 import { fetchIsRegisteredValidator, getLiquidationCollateralPerValidator } from '~root/services/validator.service';
 import { createPayload } from '~root/utils/dkg.utils';
 import { track } from '~root/mixpanel';
+import { setIsPopUpWithIndexingStatus } from '~app/redux/appState.slice.ts';
 
 const annotations = {
   keyStoreFile: observable,
@@ -169,6 +170,7 @@ class ValidatorStore {
     const publicKeys = payload.get('keyStorePublicKey') as string | string[];
     const validators_amount = Array.isArray(publicKeys) ? publicKeys.length : 1;
     const values = payload.values();
+    dispatch(setIsPopUpWithIndexingStatus(true));
     return await transactionExecutor({
       contractMethod,
       payload: values,

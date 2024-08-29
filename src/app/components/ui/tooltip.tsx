@@ -32,6 +32,7 @@ interface TooltipProps extends Omit<React.ComponentPropsWithoutRef<typeof Toolti
   content?: React.ReactNode;
   hasArrow?: boolean;
   delayDuration?: number;
+  childrenWrapperClassName?: string;
 }
 
 const Tooltip: React.FC<TooltipProps> = ({ children, asChild, delayDuration, content, hasArrow, ...props }) => {
@@ -39,7 +40,9 @@ const Tooltip: React.FC<TooltipProps> = ({ children, asChild, delayDuration, con
   return (
     <TooltipProvider>
       <TooltipRoot delayDuration={delayDuration || 0}>
-        <TooltipTrigger asChild={asChild}>{children}</TooltipTrigger>
+        <TooltipTrigger className={props.childrenWrapperClassName} asChild={asChild}>
+          {children}
+        </TooltipTrigger>
         <TooltipContent {...props}>
           {hasArrow && <TooltipArrow className="fill-gray-700" />}
           {content}

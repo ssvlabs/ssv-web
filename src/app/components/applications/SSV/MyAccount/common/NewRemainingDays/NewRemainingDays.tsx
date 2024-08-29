@@ -77,7 +77,7 @@ const NewRemainingDays = ({ cluster, withdrawState, isInputFilled = null }: Prop
         )}
         {cluster.newRunWay !== undefined && (
           <Grid item xs className={classes.NewDaysEstimation}>
-            {`(${withdrawState ? '' : '+'}${formatNumberToUi(cluster.newRunWay - cluster.runWay, true)} days)`}
+            {`(${withdrawState ? '' : '+'}${formatNumberToUi(Math.trunc(cluster.newRunWay) - Math.trunc(cluster.runWay), true)} days)`}
           </Grid>
         )}
         {showErrorCondition && (

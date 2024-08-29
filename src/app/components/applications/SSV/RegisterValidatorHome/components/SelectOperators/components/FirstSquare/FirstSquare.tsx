@@ -38,8 +38,8 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
   const [dkgEnabled, selectDkgEnabled] = useState(false);
 
   const query = useInfiniteQuery({
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 1,
+    gcTime: 1000 * 60 * 1,
     queryKey: ['choose-operators-list', sortBy, sortOrder, filterBy, searchInput, dkgEnabled],
     queryFn: ({ pageParam }) => {
       const ordering: string = `${sortBy ? `${sortBy}:${sortOrder}` : 'id:asc'}`;
@@ -62,7 +62,13 @@ const FirstSquare = ({ editPage, clusterSize, setClusterSize, clusterBox }: { ed
     }
   });
 
-  const operatorsData = useMemo(() => query.data?.pages.flatMap((page) => page.operators) ?? [], [query.data]);
+  const optimisticOperatorsMap = useAppSelector((state) => state.accountState.optimisticOperatorsMap);
+
+  const operatorsData = useMemo(() => query.data?.pages.flatMap((page) => page.operators) ?? [], [query.data]).map((operator: IOperator) => {
+    const optimisticOperator = optimisticOperatorsMap[operator.id];
+    if (optimisticOperator?.operator.updated_at === operator.updated_at) return optimisticOperator.operator;
+    return operator;
+  });
 
   const filteredOperators = useMemo(() => {
     return !dkgEnabled

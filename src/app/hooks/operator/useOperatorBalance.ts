@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useBlock } from 'wagmi';
 import { useAppSelector } from '~app/hooks/redux.hook';
 import { getSelectedOperatorId } from '~app/redux/account.slice';
@@ -17,7 +17,7 @@ export const useOperatorBalance = (operatorId?: number) => {
   return useQuery({
     queryKey: [OPERATOR_BALANCE_QUERY_KEY, id, block.data?.number.toString()],
     queryFn: () => getOperatorBalance({ id: id! }),
-    placeholderData: 0,
+    placeholderData: keepPreviousData,
     refetchOnMount: false,
     enabled: id !== undefined
   });

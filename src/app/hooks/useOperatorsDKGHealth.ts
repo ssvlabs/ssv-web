@@ -9,6 +9,8 @@ type Props = {
 
 export const useOperatorsDKGHealth = ({ operators, enabled }: Props) => {
   return useQuery({
+    gcTime: 0,
+    staleTime: 0,
     queryKey: ['checkOperatorsDKGHealth', operators.map(({ id }) => id)],
     queryFn: async () => {
       return await Promise.all(

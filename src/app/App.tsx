@@ -14,7 +14,7 @@ import { GlobalStyle } from '~app/globalStyle';
 import { useAppDispatch, useAppSelector } from '~app/hooks/redux.hook';
 import { useNavigateToRoot } from '~app/hooks/useNavigateToRoot';
 import { useWalletConnectivity } from '~app/hooks/useWalletConnectivity';
-import { getIsDarkMode, getIsShowSsvLoader, getRestrictedUserGeo, setRestrictedUserGeo } from '~app/redux/appState.slice';
+import { getIsDarkMode, getIsMaintenancePage, getIsShowSsvLoader, getRestrictedUserGeo, setRestrictedUserGeo } from '~app/redux/appState.slice';
 import { getStrategyRedirect } from '~app/redux/navigation.slice';
 import { getAccountAddress, getIsMainnet } from '~app/redux/wallet.slice.ts';
 import { checkUserCountryRestriction } from '~lib/utils/compliance';
@@ -61,10 +61,15 @@ const App = () => {
   const isShowSsvLoader = useAppSelector(getIsShowSsvLoader);
   const theme = { colors: getColors({ isDarkMode }) };
   const isRestrictedCountry = useAppSelector(getRestrictedUserGeo);
+  const isMaintenancePage = useAppSelector(getIsMaintenancePage);
   const navigate = useNavigate();
   const isMainnet = useAppSelector(getIsMainnet);
   const accountAddress = useAppSelector(getAccountAddress);
   const { navigateToRoot } = useNavigateToRoot();
+
+  if (isMaintenancePage) {
+    navigate(config.routes.SSV.MAINTENANCE);
+  }
 
   useTrackPageViews();
   useIdentify();

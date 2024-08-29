@@ -64,6 +64,8 @@ const SetOperatorFee = () => {
   return (
     <BorderScreen
       subHeaderText={'Register Operator'}
+      headerMarginTop={'none'}
+      navigatorHeight={60}
       body={[
         <Grid container style={{ position: 'relative', gap: 0 }}>
           <HeaderSubHeader title={'Set Operator Fee'} />

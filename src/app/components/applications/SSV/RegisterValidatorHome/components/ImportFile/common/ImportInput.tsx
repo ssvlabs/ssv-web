@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import { useRef } from 'react';
 import { useStyles } from '../ImportFile.styles';
 import Spinner from '~app/components/common/Spinner';
+import styled from 'styled-components';
 
 type Props = {
   fileText: any;
@@ -11,20 +12,25 @@ type Props = {
   removeButtons?: any;
   extendClass?: string;
   processingFile: boolean;
+  processValidatorsCount?: number;
 };
 
-const ImportInput = (props: Props) => {
-  const { processingFile, fileHandler, fileText, fileImage, removeButtons, extendClass } = props;
-  const classes = useStyles();
-  const inputRef = useRef(null);
+const ProcessingValidators = styled.p`
+  font-size: 16px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.gray40};
+`;
 
+const ImportInput = (props: Props) => {
+  const { processingFile, fileHandler, fileText, fileImage, removeButtons, extendClass, processValidatorsCount } = props;
+  const classes = useStyles({});
+  const inputRef = useRef(null);
   const handleClick = (e: any) => {
     if (e.target !== inputRef.current && e.target !== removeButtons?.current) {
       // @ts-ignore
       inputRef.current.click();
     }
   };
-
   const handleDrag = (e: any) => {
     e.preventDefault();
   };
@@ -42,8 +48,9 @@ const ImportInput = (props: Props) => {
       {!processingFile && fileText()}
       {processingFile && (
         <Grid container item>
-          <Grid item style={{ margin: 'auto' }}>
-            <Spinner />
+          <Grid item style={{ margin: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 20 }}>
+            <Spinner size={48} />
+            {!!processValidatorsCount && <ProcessingValidators>Processing {processValidatorsCount} validators...</ProcessingValidators>}
           </Grid>
         </Grid>
       )}

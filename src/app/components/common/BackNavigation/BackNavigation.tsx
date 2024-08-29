@@ -35,9 +35,10 @@ type BackNavigationProps = {
   onClick?: () => void | null | undefined;
   text?: string;
   backButtonRedirect?: string;
+  isDefaultBack?: boolean;
 };
 
-const BackNavigation = ({ color, onClick, backButtonRedirect, text }: BackNavigationProps) => {
+const BackNavigation = ({ color, onClick, backButtonRedirect, text, isDefaultBack = true }: BackNavigationProps) => {
   const navigate = useNavigate();
   const defaultColor = '#A1ACBE';
   const usedColor = color || defaultColor;
@@ -49,14 +50,16 @@ const BackNavigation = ({ color, onClick, backButtonRedirect, text }: BackNaviga
       clickHandler = onClick;
     }
     await clickHandler();
-    setTimeout(() => {
-      if (isLoading) return;
-      if (backButtonRedirect) {
-        navigate(backButtonRedirect);
-      } else {
-        navigate(-1);
-      }
-    }, 100);
+    if (isDefaultBack) {
+      setTimeout(() => {
+        if (isLoading) return;
+        if (backButtonRedirect) {
+          navigate(backButtonRedirect);
+        } else {
+          navigate(-1);
+        }
+      }, 100);
+    }
   };
 
   return (

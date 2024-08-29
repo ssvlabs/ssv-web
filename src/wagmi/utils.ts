@@ -8,7 +8,7 @@ import { HoleskyV4SetterABI } from '~app/common/config/abi/holesky/v4/setter';
 import { MainnetV4SetterABI } from '~app/common/config/abi/mainnet/v4/setter';
 import { getStoredNetwork } from '~root/providers/networkInfo.provider';
 import { getContractByName as _getContractByName } from '~root/services/contracts.service';
-import { config } from '~root/wagmi/config';
+import { config, mainnet_private_rpc_client } from '~root/wagmi/config';
 import { TokenABI } from '~app/common/config/abi/token';
 
 type MainnetSetterFnNames = ExtractAbiFunctionNames<typeof MainnetV4SetterABI>;
@@ -23,7 +23,8 @@ type SetterContract = Record<MainnetSetterFnNames | HoleskySetterFnNames, Contra
 
 const getSetter = () => {
   const { networkId, tokenAddress } = getStoredNetwork();
-  const abi = networkId == 1 ? MainnetV4SetterABI : HoleskyV4SetterABI;
+  const isMainnet = networkId === 1;
+  const abi = isMainnet ? MainnetV4SetterABI : HoleskyV4SetterABI;
 
   const abis = {
     [tokenAddress.toLowerCase()]: TokenABI
@@ -43,7 +44,8 @@ const getSetter = () => {
         return {
           hash,
           wait: async () => {
-            const recipient = await waitForTransactionReceipt(config, {
+            const waiter = isMainnet ? mainnet_private_rpc_client.waitForTransactionReceipt : waitForTransactionReceipt.bind(null, config);
+            const recipient = await waiter({
               hash
             });
             return {

@@ -100,17 +100,25 @@ const AllowanceButton = ({ disable, onClick, text, checkboxText, checkBoxCallBac
   const dispatch = useAppDispatch();
   const accountAddress = useAppSelector(getAccountAddress);
 
-  useEffect(() => {
-    const checkUserAllowance = async () => {
-      const approvedAllowance = await checkAllowance({ accountAddress });
-      if (approvedAllowance < Number(toWei(totalAmount))) {
-        setHasToRequestApproval(true);
-        setHasGotAllowanceApproval(false);
-      } else {
+  const checkUserAllowance = async (isDoubleCheck?: boolean) => {
+    const approvedAllowance = await checkAllowance({ accountAddress });
+    if (approvedAllowance < Number(toWei(totalAmount?.replace(',', '')))) {
+      setHasToRequestApproval(true);
+      setHasGotAllowanceApproval(false);
+      setApproveButtonText('Approve SSV');
+    } else {
+      if (!isDoubleCheck) {
         setHasToRequestApproval(false);
+      } else {
+        setApproveButtonText('Approved');
+        setHasGotAllowanceApproval(true);
+        allowanceApprovedCB && allowanceApprovedCB();
       }
-      setHasCheckedAllowance(true);
-    };
+    }
+    setHasCheckedAllowance(true);
+  };
+
+  useEffect(() => {
     checkUserAllowance();
   }, [totalAmount]);
 
@@ -124,10 +132,12 @@ const AllowanceButton = ({ disable, onClick, text, checkboxText, checkBoxCallBac
     try {
       setAllowanceButtonDisable(true);
       setApproveButtonText('Approving…');
-      await requestAllowance(handlePendingTransaction);
-      setApproveButtonText('Approved');
-      setHasGotAllowanceApproval(true);
-      allowanceApprovedCB && allowanceApprovedCB();
+      const res = await requestAllowance(handlePendingTransaction);
+      if (res) {
+        await checkUserAllowance(true);
+      } else {
+        setApproveButtonText('Approve SSV');
+      }
     } catch (e) {
       console.error('Error while approving allowance', e);
       setApproveButtonText('Approve SSV');

@@ -16,6 +16,18 @@ import { getAccountAddress } from '~app/redux/wallet.slice';
 import PrimaryButton from '~app/atomicComponents/PrimaryButton';
 import { ButtonSize } from '~app/enums/Button.enum';
 import { getSelectedOperators } from '~app/redux/operator.slice.ts';
+import styled from 'styled-components';
+
+const OperatorImage = styled.div<{ logo?: string }>`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: ${({ theme }) => `1px solid ${theme.colors.gray20}`};
+  background-image: ${({ logo }) => `url(${logo || '/images/operator_default_background/circle_light.png'})`};
+`;
 
 const ValidatorSuccessScreen = () => {
   const [hoveredGrid, setHoveredGrid] = useState<string | null>(null);
@@ -23,7 +35,7 @@ const ValidatorSuccessScreen = () => {
   const timeoutRef = useRef<any>(null);
   const classes = useStyles();
   const navigate = useNavigate();
-  const buttonText = 'Manage Validator';
+  const buttonText = 'Manage Cluster';
   const selectedOperators = useAppSelector(getSelectedOperators);
   const operators = Object.values(selectedOperators);
   const clusterHash = getClusterHash(operators, accountAddress);
@@ -85,7 +97,7 @@ const ValidatorSuccessScreen = () => {
                   <Grid container item className={classes.Operator} key={index}>
                     <Grid item container onMouseLeave={handleGridLeave} className={classes.CircleImageOperatorWrapper} onMouseEnter={() => handleGridHover(operator.id)}>
                       {hoveredGrid === operator.id && <OperatorCard classExtend={index === 0 && classes.OperatorCardMargin} operator={operator} />}
-                      <Grid item className={classes.OperatorImage} xs={12} />
+                      <OperatorImage logo={operator.logo} />
                     </Grid>
                     <Grid container className={classes.OperatorData}>
                       <Grid item className={classes.OperatorName} xs>

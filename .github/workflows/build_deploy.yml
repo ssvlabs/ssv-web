@@ -21,7 +21,7 @@ jobs:
             \"networkId\": 17000,
             \"apiVersion\": \"v4\",
             \"apiNetwork\": \"holesky\",
-            \"api\": \"https://api.stage.ssv.network/api\",
+            \"api\": \"https://api.stage.ops.ssvlabsinternal.com/api\",
             \"explorerUrl\": \"https://holesky-explorer.stage.ssv.network\",
             \"insufficientBalanceUrl\": \"https://faucet.stage.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",

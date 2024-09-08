@@ -53,6 +53,8 @@ import { getIsClusterSelected, getSelectedCluster, setExcludedCluster } from '~a
 import { WhiteWrapperDisplayType } from '~app/components/common/NewWhiteWrapper/NewWhiteWrapper.tsx';
 import styled from 'styled-components';
 import KeySharesFilter from '~app/components/applications/SSV/RegisterValidatorHome/components/ImportFile/flows/KeySharesFilter.tsx';
+import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider.ts';
+import { SKIP_VALIDATION } from '~lib/utils/developerHelper.ts';
 
 const Wrapper = styled.div`
   display: flex;
@@ -218,26 +220,28 @@ const KeyShareFlow = () => {
 
       const operatorsData = await Promise.all(
         selectedOperatorsData.map(async (operator: IOperator) => {
-          const availableValidatorsAmount = operatorValidatorsLimit - operator.validators_count;
           let hasError = false;
-          if (availableValidatorsAmount < validatorStore.validatorsCount && availableValidatorsAmount > 0) {
-            hasError = true;
-            if (availableValidatorsAmount < previousSmallCount && maxAvailableValidatorsCount > 0) {
-              previousSmallCount = availableValidatorsAmount;
-              warningTextMessage = getValidatorCountErrorMessage(availableValidatorsAmount);
-              maxValidatorsCount = availableValidatorsAmount > maxAvailableValidatorsCount ? maxAvailableValidatorsCount : availableValidatorsAmount;
+          if (!getFromLocalStorageByKey(SKIP_VALIDATION)) {
+            const availableValidatorsAmount = operatorValidatorsLimit - operator.validators_count;
+            if (availableValidatorsAmount < validatorStore.validatorsCount && availableValidatorsAmount > 0) {
+              hasError = true;
+              if (availableValidatorsAmount < previousSmallCount && maxAvailableValidatorsCount > 0) {
+                previousSmallCount = availableValidatorsAmount;
+                warningTextMessage = getValidatorCountErrorMessage(availableValidatorsAmount);
+                maxValidatorsCount = availableValidatorsAmount > maxAvailableValidatorsCount ? maxAvailableValidatorsCount : availableValidatorsAmount;
+              }
             }
-          }
-          if (availableValidatorsAmount <= 0) {
-            maxValidatorsCount = 0;
-            warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.OPERATOR_REACHED_MAX_VALIDATORS;
-            hasError = true;
-          }
-          const canUseOperator = await canAccountUseOperator(accountAddress, operator);
-          if (!canUseOperator) {
-            warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.WHITELIST_OPERATOR;
-            setHasPermissionedOperator(true);
-            hasError = true;
+            if (availableValidatorsAmount <= 0) {
+              maxValidatorsCount = 0;
+              warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.OPERATOR_REACHED_MAX_VALIDATORS;
+              hasError = true;
+            }
+            const canUseOperator = await canAccountUseOperator(accountAddress, operator);
+            if (!canUseOperator) {
+              warningTextMessage = translations.VALIDATOR.BULK_REGISTRATION.WHITELIST_OPERATOR;
+              setHasPermissionedOperator(true);
+              hasError = true;
+            }
           }
           return {
             key: operator.id,

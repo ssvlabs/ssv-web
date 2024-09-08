@@ -4,10 +4,7 @@ import { config } from '~root/wagmi/config';
 import { merge } from 'lodash';
 import _mixpanel from 'mixpanel-browser';
 
-if (import.meta.env.VITE_MIXPANEL_TOKEN)
-  _mixpanel.init(import.meta.env.VITE_MIXPANEL_TOKEN, {
-    ip: false
-  });
+if (import.meta.env.VITE_MIXPANEL_TOKEN) _mixpanel.init(import.meta.env.VITE_MIXPANEL_TOKEN);
 
 const getNetworkName = () => {
   const chainId = getChainId(config);
@@ -16,7 +13,9 @@ const getNetworkName = () => {
 };
 
 export const getSuperProperties = () => ({
-  network: getNetworkName()
+  network: getNetworkName(),
+  $region: null,
+  $city: null
 });
 
 export const track: typeof _mixpanel.track = (event, properties) => {

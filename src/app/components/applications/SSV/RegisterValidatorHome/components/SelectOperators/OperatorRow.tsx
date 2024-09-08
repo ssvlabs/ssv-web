@@ -18,6 +18,8 @@ import { formatNumberToUi, roundNumber } from '~lib/utils/numbers';
 import { canAccountUseOperator } from '~lib/utils/operatorMetadataHelper';
 import { cn } from '~lib/utils/tailwind';
 import { fromWei, getFeeForYear } from '~root/services/conversions.service';
+import { getFromLocalStorageByKey } from '~root/providers/localStorage.provider.ts';
+import { SKIP_VALIDATION } from '~lib/utils/developerHelper.ts';
 
 type Props = {
   operator: IOperator;
@@ -30,7 +32,7 @@ export const OperatorRow = forwardRef<HTMLTableRowElement, ComponentPropsWithRef
   const classes = useStyles({ loading: true });
 
   const operatorValidatorsLimit = useAppSelector(getOperatorValidatorsLimit);
-  const reachedMaxValidators = operatorValidatorsLimit <= operator.validators_count;
+  const reachedMaxValidators = operatorValidatorsLimit <= operator.validators_count && !getFromLocalStorageByKey(SKIP_VALIDATION);
   const hasValidators = operator.validators_count !== 0;
   const isInactive = operator.is_active < 1;
   const mevRelays = operator?.mev_relays || '';

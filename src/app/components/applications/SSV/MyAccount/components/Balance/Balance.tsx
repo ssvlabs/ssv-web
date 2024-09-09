@@ -18,11 +18,13 @@ const OperationRunwayWrapper = styled.div`
 const Balance = ({
   cluster,
   moveToReactivateCluster,
+  hasPrivateOperators,
   moveToDeposit,
   moveToWithdraw
 }: {
   cluster: ICluster;
   moveToReactivateCluster: Function;
+  hasPrivateOperators: boolean;
   moveToDeposit: Function;
   moveToWithdraw: Function;
 }) => {
@@ -65,7 +67,7 @@ const Balance = ({
           <Grid item className={classes.SeparationLine} xs={12} />
           {cluster.isLiquidated ? (
             <Grid container item xs={12} className={classes.ActionButtonWrapper}>
-              <PrimaryButton text={'Reactivate Cluster'} onClick={moveToReactivateCluster} size={ButtonSize.XL} />
+              <PrimaryButton text={'Reactivate Cluster'} isDisabled={hasPrivateOperators} onClick={moveToReactivateCluster} size={ButtonSize.XL} />
             </Grid>
           ) : (
             <Grid container item className={classes.ActionButtonWrapper}>

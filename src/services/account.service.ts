@@ -1,5 +1,5 @@
 import config from '~app/common/config';
-import { getRequest } from '~root/services/httpApi.service';
+import { getRequest, postRequest } from '~root/services/httpApi.service';
 import { utils } from 'ethers';
 import { getContractByName } from '~root/wagmi/utils';
 import { EContractName } from '~app/model/contracts.model';
@@ -57,4 +57,9 @@ const getFeeRecipientAddress = async ({ address }: { address: string }) => {
   }
 };
 
-export { getAccountData, getOwnerNonce, setFeeRecipient, getFeeRecipientAddress };
+const postTermsAndConditions = async (walletAddress: string) => {
+  const url = `${String(config.links.SSV_API_ENDPOINT)}/terms`;
+  return await postRequest(url, { walletAddress });
+};
+
+export { getAccountData, getOwnerNonce, setFeeRecipient, getFeeRecipientAddress, postTermsAndConditions };

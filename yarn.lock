@@ -17561,9 +17561,9 @@ prompts@^2.0.1, prompts@^2.4.2:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-"prompts@git+https://github.com/ssvlabs/prompts.git":
+"prompts@https://github.com/ssvlabs/prompts.git":
   version "2.4.2"
-  resolved "git+https://github.com/ssvlabs/prompts.git#a3328c1757a93c098ce250e3d0926f2139f7f371"
+  resolved "https://github.com/ssvlabs/prompts.git#a3328c1757a93c098ce250e3d0926f2139f7f371"
   dependencies:
     kleur "^4.0.1"
     sisteransi "^1.0.5"
@@ -19686,10 +19686,9 @@ sshpk@^1.14.1, sshpk@^1.7.0:
     safer-buffer "^2.0.2"
     tweetnacl "~0.14.0"
 
-ssv-keys@1.2.0:
+"ssv-keys@https://github.com/ssvlabs/ssv-keys.git#9ed1a36bc9a0c79ed25ff5e7cdda61a5b53d3869":
   version "1.2.0"
-  resolved "https://registry.yarnpkg.com/ssv-keys/-/ssv-keys-1.2.0.tgz#771281c810b00680b60d962d481943ed3dd8b0d6"
-  integrity sha512-MLeHAL450EzGeH8q0gpXsSOI3YyAQ6Sa+0W3JQF130cI0U/5n5vXoyTd84bYNFk0Y1yPSoMzlb7rGlwu16NV5Q==
+  resolved "https://github.com/ssvlabs/ssv-keys.git#9ed1a36bc9a0c79ed25ff5e7cdda61a5b53d3869"
   dependencies:
     "@types/figlet" "^1.5.4"
     "@types/underscore" "^1.11.4"

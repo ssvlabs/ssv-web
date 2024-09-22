@@ -5,10 +5,9 @@ import { Navigate } from "react-router";
 
 export const Redirector = () => {
   const {
-    isLoading,
     isNewAccount,
-    clusters,
-    operators,
+    isLoadingClusters,
+    isLoadingOperators,
     hasClusters,
     hasOperators,
   } = useIsNewAccount();
@@ -19,26 +18,15 @@ export const Redirector = () => {
   const clusterMatch = referral.match(/clusters/);
   const operatorMatch = referral.match(/operators/);
 
-  if (clusters.query.isLoading) return <Loading />;
+  if (isLoadingClusters) return <Loading />;
+  if (clusterMatch && hasClusters) return <Navigate to={referral} replace />;
 
-  if (clusterMatch && clusters.query.isSuccess && hasClusters)
-    return <Navigate to={referral} replace />;
+  if (isLoadingOperators) return <Loading />;
+  if (operatorMatch && hasOperators) return <Navigate to={referral} replace />;
 
-  if (
-    operatorMatch &&
-    clusters.query.isSuccess &&
-    operators.query.isSuccess &&
-    hasOperators
-  )
-    return <Navigate to={referral} replace />;
+  if (hasClusters) return <Navigate to={"/clusters"} replace />;
+  if (hasOperators) return <Navigate to={"/operators"} replace />;
 
-  if (clusters.query.isSuccess && hasClusters)
-    return <Navigate to={"/clusters"} replace />;
-
-  if (operators.query.isSuccess && hasOperators)
-    return <Navigate to={"/operators"} replace />;
-
-  if (isLoading) return <Loading />;
   if (isNewAccount) return <Navigate to="/join" replace />;
 
   return <Navigate to="/clusters" />;

@@ -14,7 +14,7 @@ module.exports = {
   ],
   plugins: [
     "@semantic-release/commit-analyzer",
-    "@semantic-release/release-notes-generator",
+    // "@semantic-release/release-notes-generator",
     [
       "@semantic-release/npm",
       {
@@ -22,7 +22,7 @@ module.exports = {
         pkgRoot: ".", // Path to package.json
       },
     ],
-    "@semantic-release/git",
-    "@semantic-release/github",
+    // "@semantic-release/git",
+    // "@semantic-release/github",
   ],
 };

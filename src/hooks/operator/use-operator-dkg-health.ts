@@ -1,11 +1,11 @@
 import { checkOperatorDKGHealth } from "@/api/operator";
 import type { Operator } from "@/types/api";
-import { useQuery } from "@tanstack/react-query";
-
-import { queryOptions } from "@tanstack/react-query";
+import { useQuery, queryOptions } from "@tanstack/react-query";
 import { ms } from "@/lib/utils/number";
-import type { QueryConfig } from "@/lib/react-query";
+import type { UseQueryOptions } from "@/lib/react-query";
+import { getDefaultChainedQueryOptions, enabled } from "@/lib/react-query";
 import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
+import { useChainId } from "wagmi";
 
 export type OperatorDKGHealthResponse = {
   id: number;
@@ -14,15 +14,15 @@ export type OperatorDKGHealthResponse = {
 
 export const getOperatorsDKGHealthQueryOptions = (
   operators: Pick<Operator, "id" | "dkg_address">[],
+  {
+    chainId = getSSVNetworkDetails().networkId,
+    options,
+  } = getDefaultChainedQueryOptions(),
 ) => {
   return queryOptions({
     gcTime: 0,
     staleTime: ms(10, "seconds"),
-    queryKey: [
-      "operators-dkg-health",
-      operators.map(({ id }) => id),
-      getSSVNetworkDetails().networkId,
-    ],
+    queryKey: ["operators-dkg-health", operators.map(({ id }) => id), chainId],
     queryFn: async (): Promise<OperatorDKGHealthResponse[]> => {
       return await Promise.all(
         operators.map(async ({ id, dkg_address }) => {
@@ -35,22 +35,19 @@ export const getOperatorsDKGHealthQueryOptions = (
         }),
       );
     },
-    enabled: operators.length > 0,
+    enabled: operators.length > 0 && enabled(options?.enabled),
   });
 };
 
-type UseOperatorsDKGHealthOptions = QueryConfig<
-  typeof getOperatorsDKGHealthQueryOptions
->;
-
 export const useOperatorsDKGHealth = (
   operators: Pick<Operator, "id" | "dkg_address">[],
-  options: UseOperatorsDKGHealthOptions = { enabled: true },
+  options: UseQueryOptions = {},
 ) => {
-  const queryOptions = getOperatorsDKGHealthQueryOptions(operators);
-  return useQuery({
-    ...queryOptions,
-    ...options,
-    enabled: queryOptions.enabled && options?.enabled,
-  });
+  const chainId = useChainId();
+  return useQuery(
+    getOperatorsDKGHealthQueryOptions(operators, {
+      chainId,
+      options,
+    }),
+  );
 };

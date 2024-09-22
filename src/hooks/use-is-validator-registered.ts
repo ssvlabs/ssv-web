@@ -1,28 +1,35 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
-
 import { getIsRegisteredValidator } from "@/api/validators";
-import type { QueryConfig } from "@/lib/react-query";
+import type { UseQueryOptions } from "@/lib/react-query";
+import { enabled, getDefaultChainedQueryOptions } from "@/lib/react-query";
+import { boolify } from "@/lib/utils/boolean";
+import { useChainId } from "wagmi";
 import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 
-export const isValidatorRegisteredQueryOptions = (publicKey: string) => {
+export const isValidatorRegisteredQueryOptions = (
+  publicKey?: string,
+  {
+    chainId = getSSVNetworkDetails().networkId,
+    options,
+  } = getDefaultChainedQueryOptions(),
+) => {
   return queryOptions({
-    queryKey: [
-      "is-validator-registered",
-      publicKey,
-      getSSVNetworkDetails().networkId,
-    ],
-    queryFn: () => getIsRegisteredValidator(publicKey),
-    enabled: Boolean(publicKey),
+    queryKey: ["is-validator-registered", publicKey?.toLowerCase(), chainId],
+    queryFn: () => getIsRegisteredValidator(publicKey!),
+    enabled: boolify(publicKey) && enabled(options?.enabled),
     retry: false,
   });
 };
 
 export const useIsValidatorRegistered = (
   publicKey: string,
-  options: QueryConfig<typeof isValidatorRegisteredQueryOptions> = {},
+  options: UseQueryOptions = {},
 ) => {
-  return useQuery({
-    ...isValidatorRegisteredQueryOptions(publicKey),
-    ...options,
-  });
+  const chainId = useChainId();
+  return useQuery(
+    isValidatorRegisteredQueryOptions(publicKey, {
+      chainId,
+      options,
+    }),
+  );
 };

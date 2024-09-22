@@ -42,12 +42,14 @@ export const useKeysharesValidatorsList = (
       const states = await Promise.all(
         sortedShares.map(async (share) => {
           return queryClient
-            .fetchQuery({
-              ...isValidatorRegisteredQueryOptions(
-                add0x(share.data.publicKey!),
-              ),
-              staleTime: ms(1, "minutes"),
-            })
+            .fetchQuery(
+              isValidatorRegisteredQueryOptions(add0x(share.data.publicKey!), {
+                chainId,
+                options: {
+                  staleTime: ms(1, "minutes"),
+                },
+              }),
+            )
             .then(() => [share, true] as [KeySharesItem, boolean])
             .catch(() => [share, false] as [KeySharesItem, boolean]);
         }),

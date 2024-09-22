@@ -6,20 +6,28 @@ import type { Address } from "abitype";
 import { unionBy } from "lodash-es";
 import { useSearchParams } from "react-router-dom";
 import { useAccount } from "@/hooks/account/use-account";
+import type { UseQueryOptions } from "@/lib/react-query";
+import { getDefaultChainedQueryOptions, enabled } from "@/lib/react-query";
+import { boolify } from "@/lib/utils/boolean";
+import { useChainId } from "wagmi";
 import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 
 export const getPaginatedAccountOperatorsQueryOptions = (
-  address: Address | undefined,
+  address?: Address,
   page: number = 1,
   perPage: number = 10,
+  {
+    chainId = getSSVNetworkDetails().networkId,
+    options,
+  } = getDefaultChainedQueryOptions(),
 ) =>
   queryOptions({
     queryKey: [
       "paginated-account-operators",
-      address,
+      address?.toLowerCase(),
       page,
       perPage,
-      getSSVNetworkDetails().networkId,
+      chainId,
     ],
     queryFn: () =>
       getPaginatedAccountOperators({
@@ -27,11 +35,15 @@ export const getPaginatedAccountOperatorsQueryOptions = (
         page: page,
         perPage,
       }),
-    enabled: Boolean(address),
+    enabled: boolify(address) && enabled(options?.enabled),
   });
 
-export const usePaginatedAccountOperators = (perPage = 10) => {
+export const usePaginatedAccountOperators = (
+  perPage = 10,
+  options: UseQueryOptions = {},
+) => {
   const { address } = useAccount();
+  const chainId = useChainId();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
@@ -39,7 +51,10 @@ export const usePaginatedAccountOperators = (perPage = 10) => {
   const { data: optimisticOperators = [] } = useCreatedOptimisticOperators();
 
   const paginatedOperators = useQuery(
-    getPaginatedAccountOperatorsQueryOptions(address, page, perPage),
+    getPaginatedAccountOperatorsQueryOptions(address, page, perPage, {
+      chainId,
+      options,
+    }),
   );
 
   const setPage = (page: number) => {

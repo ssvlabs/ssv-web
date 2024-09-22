@@ -22,7 +22,7 @@ import { SsvLogo } from "@/components/ui/ssv-logo";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { Link } from "react-router-dom";
 import { useLinks } from "@/hooks/use-links";
-import { useIsNewAccount } from "@/hooks/account/use-is-new-account";
+import { useAccountState } from "@/hooks/account/use-account-state";
 
 export type NavbarProps = {
   // TODO: Add props or remove this type
@@ -34,7 +34,7 @@ type FCProps = FC<
 
 export const Navbar: FCProps = ({ className, ...props }) => {
   const links = useLinks();
-  const { accountRoutePath } = useIsNewAccount();
+  const { accountRoutePath } = useAccountState();
   return (
     <div
       className={cn(

@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Text } from "@/components/ui/text";
+import { useAccountState } from "@/hooks/account/use-account-state";
 import { useMultisigTransactionModal } from "@/signals/modal";
 import { DialogTitle } from "@radix-ui/react-dialog";
+import { Link } from "react-router-dom";
 import type { ComponentPropsWithoutRef, FC } from "react";
 
 export type MultisigTransactionModalProps = {
@@ -16,6 +18,7 @@ type FCProps = FC<
 
 export const MultisigTransactionModal: FCProps = () => {
   const { isOpen, close } = useMultisigTransactionModal();
+  const { accountRoutePath } = useAccountState();
   return (
     <Dialog isOpen={isOpen}>
       <DialogContent className="flex bg-gray-50 flex-col gap-8 max-w-[424px] font-medium ">
@@ -34,6 +37,8 @@ export const MultisigTransactionModal: FCProps = () => {
         </div>
         <img src="/images/ssv-loader.svg" className="size-28 mx-auto" />
         <Button
+          as={Link}
+          to={accountRoutePath}
           className="w-full"
           size="xl"
           variant="secondary"

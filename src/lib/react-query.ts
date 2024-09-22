@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import { ms } from "@/lib/utils/number";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import type {
@@ -58,6 +59,24 @@ export type UseQueryOptions<
   DefaultUseQueryOptions<TQueryFnData, TError, TData, TQueryKey>,
   "queryKey" | "queryFn"
 >;
+
+export type QueryOptionsWithChainId = {
+  chainId?: number;
+  options?: UseQueryOptions;
+};
+
+export const getDefaultChainedQueryOptions = ({
+  chainId,
+  options,
+}: QueryOptionsWithChainId = {}): QueryOptionsWithChainId => {
+  return {
+    chainId: chainId ?? getSSVNetworkDetails().networkId,
+    options: {
+      ...options,
+      enabled: options?.enabled ?? true,
+    },
+  };
+};
 
 export type UseInfiniteQueryOptions<
   TQueryFnData = unknown,
@@ -122,4 +141,8 @@ export const combineQueryStatus = (
     isSuccess: queries.every((query) => query.isSuccess),
     error: queries.find((query) => query.isError)?.error ?? null,
   };
+};
+
+export const enabled = (...booleans: (unknown | undefined)[]): boolean => {
+  return Boolean(booleans.every((bool) => bool ?? true));
 };

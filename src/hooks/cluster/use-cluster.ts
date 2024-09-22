@@ -1,30 +1,35 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
 
-import type { QueryConfig } from "@/lib/react-query";
+import type { UseQueryOptions } from "@/lib/react-query";
+import { enabled, getDefaultChainedQueryOptions } from "@/lib/react-query";
 import { getCluster } from "@/api/cluster";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
+import { useChainId } from "wagmi";
+import { boolify } from "@/lib/utils/boolean";
 import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 
-export const getClusterQueryOptions = (hash?: string) => {
+export const getClusterQueryOptions = (
+  hash?: string,
+  {
+    chainId = getSSVNetworkDetails().networkId,
+    options,
+  } = getDefaultChainedQueryOptions(),
+) => {
   return queryOptions({
-    queryKey: [
-      "cluster",
-      hash?.toLowerCase(),
-      getSSVNetworkDetails().networkId,
-    ],
+    queryKey: ["cluster", hash?.toLowerCase(), chainId],
     queryFn: () => getCluster(hash!),
-    enabled: Boolean(hash),
+    enabled: boolify(hash) && enabled(options?.enabled),
   });
 };
 
-type UseClusterOptions = QueryConfig<typeof getClusterQueryOptions>;
-
-export const useCluster = (hash?: string, options?: UseClusterOptions) => {
+export const useCluster = (hash?: string, options?: UseQueryOptions) => {
   const { clusterHash } = useClusterPageParams();
-  const queryOptions = getClusterQueryOptions(hash ?? clusterHash);
-  return useQuery({
-    ...queryOptions,
-    ...options,
-    enabled: queryOptions.enabled && options?.enabled,
-  });
+  const chainId = useChainId();
+
+  return useQuery(
+    getClusterQueryOptions(hash ?? clusterHash, {
+      chainId,
+      options,
+    }),
+  );
 };

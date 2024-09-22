@@ -1,30 +1,41 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
-
-import type { QueryConfig } from "@/lib/react-query";
 import { getAccount } from "@/api/account";
 import type { Address } from "abitype";
-import { useAccount } from "@/hooks/account/use-account";
 import { ms } from "@/lib/utils/number";
 import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
+import type { UseQueryOptions } from "@/lib/react-query";
+import { getDefaultChainedQueryOptions, enabled } from "@/lib/react-query";
+import { boolify } from "@/lib/utils/boolean";
+import { useChainId } from "wagmi";
+import { useAccount } from "@/hooks/account/use-account";
 
-export const getSSVAccountQueryOptions = (account?: Address) => {
+export const getSSVAccountQueryOptions = (
+  account?: Address,
+  {
+    chainId = getSSVNetworkDetails().networkId,
+    options,
+  } = getDefaultChainedQueryOptions(),
+) => {
   return queryOptions({
     staleTime: ms(1, "minutes"),
-    queryKey: ["ssv-account", account, getSSVNetworkDetails().networkId],
+    queryKey: [
+      "ssv-account",
+      account?.toLowerCase(),
+      getSSVNetworkDetails().networkId,
+      chainId,
+    ],
     queryFn: () => getAccount(account!),
-    enabled: !!account,
+    enabled: boolify(account) && enabled(options?.enabled),
   });
 };
 
-type UseSsvAccountOptions = QueryConfig<typeof getSSVAccountQueryOptions>;
-
-export const useSSVAccount = (options: UseSsvAccountOptions = {}) => {
+export const useSSVAccount = (options: UseQueryOptions = {}) => {
+  const chainId = useChainId();
   const { address } = useAccount();
-  const queryOptions = getSSVAccountQueryOptions(address);
-
-  return useQuery({
-    ...queryOptions,
-    ...options,
-    enabled: queryOptions.enabled && options?.enabled,
-  });
+  return useQuery(
+    getSSVAccountQueryOptions(address, {
+      chainId,
+      options,
+    }),
+  );
 };

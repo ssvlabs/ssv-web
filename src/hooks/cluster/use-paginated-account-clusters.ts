@@ -3,21 +3,29 @@ import { createDefaultPagination } from "@/lib/utils/api";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { Address } from "abitype";
 import { useSearchParams } from "react-router-dom";
-import { useAccount } from "@/hooks/account/use-account";
+import type { UseQueryOptions } from "@/lib/react-query";
+import { getDefaultChainedQueryOptions, enabled } from "@/lib/react-query";
+import { boolify } from "@/lib/utils/boolean";
+import { useChainId } from "wagmi";
 import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
+import { useAccount } from "@/hooks/account/use-account";
 
 export const getPaginatedAccountClustersQueryOptions = (
-  account: Address | undefined,
+  account?: Address,
   page: number = 1,
   perPage: number = 10,
-) =>
-  queryOptions({
+  {
+    chainId = getSSVNetworkDetails().networkId,
+    options,
+  } = getDefaultChainedQueryOptions(),
+) => {
+  return queryOptions({
     queryKey: [
       "paginated-account-clusters",
-      account,
+      account?.toLowerCase(),
       page,
       perPage,
-      getSSVNetworkDetails().networkId,
+      chainId,
     ],
     queryFn: () =>
       getPaginatedAccountClusters({
@@ -25,17 +33,24 @@ export const getPaginatedAccountClustersQueryOptions = (
         page: page,
         perPage,
       }),
-    enabled: Boolean(account),
+    enabled: boolify(account) && enabled(options?.enabled),
   });
+};
 
-export const usePaginatedAccountClusters = (perPage = 10) => {
-  const { address } = useAccount();
-
+export const usePaginatedAccountClusters = (
+  perPage = 10,
+  options: UseQueryOptions = {},
+) => {
+  const account = useAccount();
+  const chainId = useChainId();
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get("page") || 1);
 
   const query = useQuery(
-    getPaginatedAccountClustersQueryOptions(address, page, perPage),
+    getPaginatedAccountClustersQueryOptions(account.address, page, perPage, {
+      chainId,
+      options,
+    }),
   );
 
   const pagination = query.data?.pagination || createDefaultPagination();

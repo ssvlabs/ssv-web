@@ -201,7 +201,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
             validatorsAmount={cluster.data?.validatorCount ?? 1}
             fundingDays={days}
           />
-          <WithAllowance amount={fundingCost.data?.total ?? 0n}>
+          <WithAllowance amount={fundingCost.data?.total ?? 0n} size="xl">
             <Button
               isActionBtn
               isLoading={reactive.isPending}

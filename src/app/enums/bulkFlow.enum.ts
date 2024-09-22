@@ -1,4 +1,0 @@
-export enum BULK_FLOWS {
-  BULK_REMOVE = 'BULK_REMOVE',
-  BULK_EXIT = 'BULK_EXIT'
-}

@@ -24,9 +24,38 @@
     "yarn.lock": true
   },
   "cSpell.words": [
+    "abitype",
+    "Aestus",
+    "AESTUS",
+    "beaconcha",
+    "bigintify",
+    "blox",
+    "BLOXROUTE",
+    "bowser",
+    "cmdk",
+    "Flashbots",
+    "FLASHBOTS",
+    "fontsource",
     "holesky",
-    "pageview",
+    "hookform",
+    "keccak",
+    "Keyshares",
+    "lucide",
+    "overscan",
+    "permissioned",
+    "RACT",
+    "Redirector",
+    "resharing",
+    "selectables",
     "ssvweb",
-    "Wagmi"
-  ]
+    "valtio",
+    "viem",
+    "Wagmi",
+    "Xroute"
+  ],
+
+  // Enable ESLint fix on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
 }

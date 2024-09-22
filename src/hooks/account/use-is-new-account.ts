@@ -1,37 +1,23 @@
 import { useAccount } from "@/hooks/account/use-account";
 import { getPaginatedAccountClustersQueryOptions } from "@/hooks/cluster/use-paginated-account-clusters";
 import { getPaginatedAccountOperatorsQueryOptions } from "@/hooks/operator/use-paginated-account-operators";
-import { queryClient } from "@/lib/react-query";
-
-import { useIsFetching } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export const useIsNewAccount = () => {
-  const { address } = useAccount();
+  const account = useAccount();
 
-  const clusters = queryClient.getQueryData(
-    getPaginatedAccountClustersQueryOptions(address).queryKey,
+  const clusters = useQuery(
+    getPaginatedAccountClustersQueryOptions(account.address),
   );
 
-  const operators = queryClient.getQueryData(
-    getPaginatedAccountOperatorsQueryOptions(address).queryKey,
+  const operators = useQuery(
+    getPaginatedAccountOperatorsQueryOptions(account.address),
   );
 
-  const isLoadingClusters =
-    useIsFetching({
-      exact: false,
-      queryKey: ["paginated-account-clusters", address],
-    }) && !clusters;
+  const isLoading = clusters.isLoading || operators.isLoading;
 
-  const isLoadingOperators =
-    useIsFetching({
-      exact: false,
-      queryKey: ["paginated-account-operators", address],
-    }) && !operators;
-
-  const isLoading = isLoadingClusters || isLoadingOperators;
-
-  const hasClusters = (clusters?.pagination.total ?? 0) > 0;
-  const hasOperators = (operators?.pagination.total ?? 0) > 0;
+  const hasClusters = (clusters.data?.pagination.total ?? 0) > 0;
+  const hasOperators = (operators.data?.pagination.total ?? 0) > 0;
 
   const isNewAccount = isLoading ? false : !hasClusters && !hasOperators;
 
@@ -45,11 +31,9 @@ export const useIsNewAccount = () => {
 
   return {
     isLoading,
-    isLoadingClusters,
-    isLoadingOperators,
+    isLoadingClusters: clusters.isLoading,
+    isLoadingOperators: operators.isLoading,
     isNewAccount,
-    clusters,
-    operators,
     hasClusters,
     hasOperators,
     accountRoutePath,

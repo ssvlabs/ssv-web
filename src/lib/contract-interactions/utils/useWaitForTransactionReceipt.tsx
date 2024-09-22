@@ -67,6 +67,7 @@ export const withTransactionModal = <
       const fn = await options?.onMined?.(receipt);
 
       useTransactionModal.state.close();
+      useMultisigTransactionModal.state.close();
       await wait(0); // skip a react lifecycle to ensure the navigation blocker is cleared so the user can navigate away
 
       isFunction(fn) && fn();
@@ -81,6 +82,7 @@ export const withTransactionModal = <
       const fn = await options?.onError?.(error);
 
       useTransactionModal.state.close();
+      useMultisigTransactionModal.state.close();
       await wait(0); // skip a react lifecycle to ensure the navigation blocker is cleared so the user can navigate away
 
       isFunction(fn) && fn();

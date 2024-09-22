@@ -1,6 +1,6 @@
 import { locationState } from "@/app/routes/router";
 import { Loading } from "@/components/ui/Loading";
-import { useIsNewAccount } from "@/hooks/account/use-is-new-account";
+import { useAccountState } from "@/hooks/account/use-account-state";
 import { Navigate } from "react-router";
 
 export const Redirector = () => {
@@ -10,7 +10,7 @@ export const Redirector = () => {
     isLoadingOperators,
     hasClusters,
     hasOperators,
-  } = useIsNewAccount();
+  } = useAccountState();
 
   const referral =
     locationState.previous.pathname + locationState.previous.search;

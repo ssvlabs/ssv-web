@@ -8,12 +8,12 @@ import { Spacer } from "@/components/ui/spacer";
 import { FiEdit3 } from "react-icons/fi";
 import { ClusterTable } from "@/components/validator/clusters-table/clusters-table";
 import { usePaginatedAccountClusters } from "@/hooks/cluster/use-paginated-account-clusters";
-import { useIsNewAccount } from "@/hooks/account/use-is-new-account";
+import { useAccountState } from "@/hooks/account/use-account-state";
 
 export const Clusters: FC<ComponentPropsWithoutRef<"div">> = () => {
   const { clusters, pagination, query } = usePaginatedAccountClusters();
   const navigate = useNavigate();
-  const { hasClusters } = useIsNewAccount();
+  const { hasClusters } = useAccountState();
 
   return (
     <>

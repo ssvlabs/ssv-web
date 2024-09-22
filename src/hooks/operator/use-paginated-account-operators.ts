@@ -6,6 +6,7 @@ import type { Address } from "abitype";
 import { unionBy } from "lodash-es";
 import { useSearchParams } from "react-router-dom";
 import { useAccount } from "@/hooks/account/use-account";
+import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 
 export const getPaginatedAccountOperatorsQueryOptions = (
   address: Address | undefined,
@@ -13,7 +14,13 @@ export const getPaginatedAccountOperatorsQueryOptions = (
   perPage: number = 10,
 ) =>
   queryOptions({
-    queryKey: ["paginated-account-operators", address, page, perPage],
+    queryKey: [
+      "paginated-account-operators",
+      address,
+      page,
+      perPage,
+      getSSVNetworkDetails().networkId,
+    ],
     queryFn: () =>
       getPaginatedAccountOperators({
         address: address!,

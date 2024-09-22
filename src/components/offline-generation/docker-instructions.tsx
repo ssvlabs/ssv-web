@@ -80,6 +80,7 @@ export const DockerInstructions: FC<DockerInstructionsProps> = ({
       validators,
       withdrawalAddress,
       dkgCeremonyState.selectedOs,
+      account.chainId,
     ]),
     queryFn: async () => {
       return generateSSVKeysDockerCMD(

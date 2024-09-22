@@ -8,6 +8,7 @@ import type { Operator } from "@/types/api";
 import type { OperatorID } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import type { Address } from "abitype";
+import { useChainId } from "wagmi";
 
 type Props = {
   account: Address;
@@ -33,11 +34,18 @@ export const useOperatorsUsability = (
 ) => {
   const { data: maxValidators = 0 } = useGetValidatorsPerOperatorLimit();
   const operators = useOperators(operatorIds);
+  const chainId = useChainId();
 
   const canUse = useQuery({
     staleTime: ms(12, "seconds"),
     gcTime: ms(12, "seconds"),
-    queryKey: ["canAccountUseOperator", operators, account, maxValidators],
+    queryKey: [
+      "canAccountUseOperator",
+      operators,
+      account,
+      maxValidators,
+      chainId,
+    ],
     queryFn: async () => {
       const result = await Promise.all(
         operators.data!.map(

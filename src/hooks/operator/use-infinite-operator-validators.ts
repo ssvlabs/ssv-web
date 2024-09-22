@@ -4,6 +4,7 @@ import { filterOutRemovedValidators } from "@/lib/utils/cluster";
 import { getNextPageParam } from "@/lib/utils/infinite-query";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRemovedOptimisticValidators } from "@/hooks/cluster/use-removed-optimistic-validators";
+import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 
 export const useInfiniteOperatorValidators = (
   _operatorId?: number,
@@ -17,7 +18,12 @@ export const useInfiniteOperatorValidators = (
   const infiniteQuery = useInfiniteQuery({
     initialPageParam: 1,
     getNextPageParam,
-    queryKey: ["paginated-operator-validators", operatorId, perPage],
+    queryKey: [
+      "paginated-operator-validators",
+      operatorId,
+      perPage,
+      getSSVNetworkDetails().networkId,
+    ],
     queryFn: ({ pageParam = 1 }) =>
       getPaginatedOperatorValidators({
         operatorId: operatorId!.toString(),

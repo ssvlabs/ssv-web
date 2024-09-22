@@ -1,5 +1,6 @@
 import type { QueryConfig } from "@/lib/react-query";
 import { useQuery } from "@tanstack/react-query";
+import { useChainId } from "wagmi";
 import { z } from "zod";
 
 export const schema = z.object({
@@ -43,8 +44,9 @@ export const useKeystoreSchemaValidation = (
   file: File | null,
   options: QueryConfig = {},
 ) => {
+  const chainId = useChainId();
   return useQuery({
-    queryKey: ["keystore-schema-validation", file],
+    queryKey: ["keystore-schema-validation", file, chainId],
     queryFn: () => validateKeyStoreFileSchema(file!),
     enabled: Boolean(file),
     retry: false,

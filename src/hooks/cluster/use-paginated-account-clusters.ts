@@ -4,6 +4,7 @@ import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { Address } from "abitype";
 import { useSearchParams } from "react-router-dom";
 import { useAccount } from "@/hooks/account/use-account";
+import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 
 export const getPaginatedAccountClustersQueryOptions = (
   account: Address | undefined,
@@ -11,7 +12,13 @@ export const getPaginatedAccountClustersQueryOptions = (
   perPage: number = 10,
 ) =>
   queryOptions({
-    queryKey: ["paginated-account-clusters", account, page, perPage],
+    queryKey: [
+      "paginated-account-clusters",
+      account,
+      page,
+      perPage,
+      getSSVNetworkDetails().networkId,
+    ],
     queryFn: () =>
       getPaginatedAccountClusters({
         account: account!,

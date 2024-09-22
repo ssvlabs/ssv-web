@@ -26,7 +26,7 @@ export const useAccount = () => {
 
   const isContractWallet = useQuery({
     staleTime: Infinity,
-    queryKey: ["is-contract", accountAddress],
+    queryKey: ["is-contract", accountAddress, account.chainId],
     queryFn: async () =>
       publicClient!
         .getCode({

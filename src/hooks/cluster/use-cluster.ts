@@ -3,10 +3,15 @@ import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { QueryConfig } from "@/lib/react-query";
 import { getCluster } from "@/api/cluster";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
+import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 
 export const getClusterQueryOptions = (hash?: string) => {
   return queryOptions({
-    queryKey: ["cluster", hash?.toLowerCase()],
+    queryKey: [
+      "cluster",
+      hash?.toLowerCase(),
+      getSSVNetworkDetails().networkId,
+    ],
     queryFn: () => getCluster(hash!),
     enabled: Boolean(hash),
   });

@@ -3,10 +3,11 @@ import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { QueryConfig } from "@/lib/react-query";
 import { getOwnerNonce } from "@/api/account";
 import type { Address } from "abitype";
+import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 
 export const ownerNonceQueryOptions = (account: Address) => {
   return queryOptions({
-    queryKey: ["owner-nonce", account],
+    queryKey: ["owner-nonce", account, getSSVNetworkDetails().networkId],
     queryFn: () => getOwnerNonce(account),
   });
 };

@@ -10,6 +10,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { uniqBy } from "lodash-es";
 import { useMemo } from "react";
 import { proxy, useSnapshot } from "valtio";
+import { useChainId } from "wagmi";
 
 export const useSearchOperators = ({
   ordering = "id:asc",
@@ -20,11 +21,19 @@ export const useSearchOperators = ({
   SearchOperatorsParams,
   "ordering" | "search" | "has_dkg_address" | "type"
 > = {}) => {
+  const chainId = useChainId();
   const query = useInfiniteQuery({
     staleTime: ms(1, "minutes"),
     gcTime: ms(1, "minutes"),
     initialPageParam: 1,
-    queryKey: ["search-operators", ordering, search, has_dkg_address, type],
+    queryKey: [
+      "search-operators",
+      ordering,
+      search,
+      has_dkg_address,
+      type,
+      chainId,
+    ],
     queryFn: ({ pageParam }) =>
       searchOperators({
         type,

@@ -4,6 +4,7 @@ import { useRemovedOptimisticValidators } from "@/hooks/cluster/use-removed-opti
 import { filterOutRemovedValidators } from "@/lib/utils/cluster";
 import { getNextPageParam } from "@/lib/utils/infinite-query";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useChainId } from "wagmi";
 
 export const useInfiniteClusterValidators = (
   clusterHash?: string,
@@ -13,11 +14,12 @@ export const useInfiniteClusterValidators = (
   const hash = clusterHash || params.clusterHash;
 
   const removedOptimisticValidators = useRemovedOptimisticValidators();
+  const chainId = useChainId();
 
   const infiniteQuery = useInfiniteQuery({
     initialPageParam: 1,
     getNextPageParam,
-    queryKey: ["paginated-cluster-validators", hash, perPage],
+    queryKey: ["paginated-cluster-validators", hash, perPage, chainId],
     queryFn: ({ pageParam = 1 }) =>
       getPaginatedClusterValidators({
         hash: hash!,

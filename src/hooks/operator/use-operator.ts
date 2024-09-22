@@ -1,5 +1,6 @@
 import { getOperator } from "@/api/operator";
 import { useOperatorPageParams } from "@/hooks/operator/use-operator-page-params";
+import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import { queryClient, type QueryConfig } from "@/lib/react-query";
 import { ms } from "@/lib/utils/number";
 import { createDefaultOperator } from "@/lib/utils/operator";
@@ -10,7 +11,7 @@ import { isAxiosError } from "axios";
 export const getOperatorQueryOptions = (id: OperatorID) => {
   return queryOptions({
     staleTime: ms(1, "minutes"),
-    queryKey: ["operator", id.toString()],
+    queryKey: ["operator", id.toString(), getSSVNetworkDetails().networkId],
     queryFn: () =>
       getOperator(id).catch((err) => {
         return isAxiosError(err) && err.response?.status === 404

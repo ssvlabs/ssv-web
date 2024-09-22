@@ -5,11 +5,12 @@ import { getAccount } from "@/api/account";
 import type { Address } from "abitype";
 import { useAccount } from "@/hooks/account/use-account";
 import { ms } from "@/lib/utils/number";
+import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 
 export const getSSVAccountQueryOptions = (account?: Address) => {
   return queryOptions({
     staleTime: ms(1, "minutes"),
-    queryKey: ["ssv-account", account],
+    queryKey: ["ssv-account", account, getSSVNetworkDetails().networkId],
     queryFn: () => getAccount(account!),
     enabled: !!account,
   });

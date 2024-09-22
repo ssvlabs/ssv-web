@@ -20,6 +20,7 @@ import type { Address } from "viem";
 import { isAddressEqual } from "viem";
 import { useAccount } from "@/hooks/account/use-account";
 import VerifiedSVG from "@/assets/images/verified.svg?react";
+import { useChainId } from "wagmi";
 
 export type OperatorPickerItemProps = {
   operator: Operator;
@@ -51,8 +52,10 @@ export const OperatorPickerItem: FCProps = ({
   const hasValidators = operator.validators_count !== 0;
   const isInactive = operator.is_active < 1;
 
+  const chainId = useChainId();
+
   const isUsable = useQuery({
-    queryKey: ["operator-usable", operator],
+    queryKey: ["operator-usable", operator, chainId],
     queryFn: () => canAccountUseOperator(address!, operator),
   });
 

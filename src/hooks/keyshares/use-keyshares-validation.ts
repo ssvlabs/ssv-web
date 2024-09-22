@@ -13,6 +13,7 @@ import { sortNumbers } from "@/lib/utils/number";
 import { useQuery } from "@tanstack/react-query";
 import { isEqual } from "lodash-es";
 import type { KeySharesItem } from "ssv-keys";
+import { useChainId } from "wagmi";
 
 export const useKeysharesValidation = (
   file: File | null,
@@ -25,9 +26,16 @@ export const useKeysharesValidation = (
 ) => {
   const operatorIds = useSelectedOperatorIds();
   const isEnabled = Boolean(file && options.enabled);
+  const chainId = useChainId();
 
   const query = useQuery({
-    queryKey: ["keyshares-validation", file, file?.lastModified, operatorIds],
+    queryKey: [
+      "keyshares-validation",
+      file,
+      file?.lastModified,
+      operatorIds,
+      chainId,
+    ],
     queryFn: async () => {
       const shares = await createKeysharesFromFile(file!);
       const ids = validateConsistentOperatorIds(shares);

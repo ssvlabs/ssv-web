@@ -7,6 +7,7 @@ import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { sortBy } from "lodash-es";
 import type { KeySharesItem } from "ssv-keys";
+import { useChainId } from "wagmi";
 
 export type KeysharesValidatorStatus = "registered" | "incorrect" | "available";
 
@@ -26,11 +27,17 @@ export const useKeysharesValidatorsList = (
 ) => {
   const ssvAccount = useSSVAccount({ staleTime: 0 });
   const sortedShares = sortBy(shares, (share) => share.data.ownerNonce);
+  const chainId = useChainId();
 
   const query = useQuery({
     staleTime: ms(1, "minutes"),
     gcTime: ms(1, "minutes"),
-    queryKey: ["validators-state", ssvAccount.data?.nonce, sortedShares],
+    queryKey: [
+      "validators-state",
+      ssvAccount.data?.nonce,
+      sortedShares,
+      chainId,
+    ],
     queryFn: async () => {
       const states = await Promise.all(
         sortedShares.map(async (share) => {

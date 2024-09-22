@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 import { ms } from "@/lib/utils/number";
 import type { QueryConfig } from "@/lib/react-query";
+import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 
 export type OperatorDKGHealthResponse = {
   id: number;
@@ -17,7 +18,11 @@ export const getOperatorsDKGHealthQueryOptions = (
   return queryOptions({
     gcTime: 0,
     staleTime: ms(10, "seconds"),
-    queryKey: ["operators-dkg-health", operators.map(({ id }) => id)],
+    queryKey: [
+      "operators-dkg-health",
+      operators.map(({ id }) => id),
+      getSSVNetworkDetails().networkId,
+    ],
     queryFn: async (): Promise<OperatorDKGHealthResponse[]> => {
       return await Promise.all(
         operators.map(async ({ id, dkg_address }) => {

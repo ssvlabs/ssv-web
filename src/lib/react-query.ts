@@ -83,7 +83,7 @@ type ExtractDataTagSymbol<T> = T extends {
   ? U
   : never;
 
-type CustomQueryKey = (string | undefined)[] & {
+type CustomQueryKey = (string | undefined | number)[] & {
   [dataTagSymbol]: unknown;
 };
 

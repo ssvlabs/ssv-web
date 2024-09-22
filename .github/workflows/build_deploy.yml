@@ -61,18 +61,32 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      
+      - uses: actions/setup-node@v3
         with:
           node-version: 20.12.2
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Install packages
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.0.6
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Run lint
-        run: yarn lint
+        run: pnpm lint
+
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
 
       # <app.stage.ssv.network>
       - name: Run stage webapp build
@@ -84,7 +98,7 @@ jobs:
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 
-          yarn build
+          pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
@@ -115,7 +129,7 @@ jobs:
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          yarn build
+          pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
@@ -146,7 +160,7 @@ jobs:
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          yarn build
+          pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
@@ -177,7 +191,7 @@ jobs:
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          yarn build
+          pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
@@ -208,7 +222,7 @@ jobs:
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          yarn build
+          pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
@@ -239,7 +253,7 @@ jobs:
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          yarn build
+          pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
@@ -270,7 +284,7 @@ jobs:
           MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          yarn build
+          pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
@@ -297,7 +311,7 @@ jobs:
         run: >
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
           GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
-          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
+          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" pnpm build
         env:
           VITE_FAUCET_PAGE: "true"
           SSV_NETWORKS: ${{ env.STAGE_SSV_NETWORKS }}
@@ -324,7 +338,7 @@ jobs:
       #        if: github.ref == 'refs/heads/stage'
       #        run: >
       #          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
-      #          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
+      #          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" pnpm build
       #        env:
       #          PROD_CLAIM_PAGE: "true"
       #          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
@@ -353,7 +367,7 @@ jobs:
           EXPLORER_URL="$EXPLORER_URL"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
-          yarn build
+          pnpm build
         env:
           VITE_FAUCET_PAGE: "true"
           SSV_NETWORKS: ${{ env.PROD_SSV_NETWORKS }}
@@ -381,7 +395,7 @@ jobs:
       #        if: github.ref == 'refs/heads/main'
       #        run: >
       #          SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
-      #          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
+      #          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" pnpm build
       #        env:
       #          PROD_CLAIM_PAGE: "true"
       #          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}

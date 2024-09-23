@@ -63,11 +63,15 @@ export const withTransactionModal = <
       isFunction(fn) && fn();
     },
     onMined: async (receipt) => {
+      useMultisigTransactionModal.state.close();
+
+      useTransactionModal.state.open();
+      useTransactionModal.state.meta.hash = receipt.transactionHash;
       useTransactionModal.state.meta.step = "indexing";
+
       const fn = await options?.onMined?.(receipt);
 
       useTransactionModal.state.close();
-      useMultisigTransactionModal.state.close();
       await wait(0); // skip a react lifecycle to ensure the navigation blocker is cleared so the user can navigate away
 
       isFunction(fn) && fn();

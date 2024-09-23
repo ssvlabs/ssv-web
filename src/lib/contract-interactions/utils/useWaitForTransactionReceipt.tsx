@@ -68,6 +68,7 @@ export const withTransactionModal = <
       useTransactionModal.state.open();
       useTransactionModal.state.meta.hash = receipt.transactionHash;
       useTransactionModal.state.meta.step = "indexing";
+      useTransactionModal.state.meta.variant = options?.variant;
 
       const fn = await options?.onMined?.(receipt);
 

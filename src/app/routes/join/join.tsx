@@ -2,14 +2,19 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Text } from "@/components/ui/text";
+import { useAccountState } from "@/hooks/account/use-account-state";
 import { cn } from "@/lib/utils/tw";
 import { type ComponentPropsWithoutRef, type FC } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 
 export const Join: FC<ComponentPropsWithoutRef<"div">> = ({
   className,
   ...props
 }) => {
+  const { isLoading, isNewAccount, accountRoutePath } = useAccountState();
+  if (!isLoading && !isNewAccount)
+    return <Navigate to={accountRoutePath ?? "/clusters"} replace />;
+
   return (
     <Container variant="vertical" className="py-6">
       <Card className={cn(className)} {...props}>

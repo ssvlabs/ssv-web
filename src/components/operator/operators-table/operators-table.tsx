@@ -44,7 +44,6 @@ export const OperatorsTable: FCProps = ({
           <TableHead>Balance</TableHead>
           <TableHead>Yearly Fee</TableHead>
           <TableHead>Validators</TableHead>
-          <TableHead />
         </TableHeader>
         <TableBody>
           {operators.map((operator) => {

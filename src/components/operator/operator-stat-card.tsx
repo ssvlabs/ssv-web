@@ -77,21 +77,27 @@ export const OperatorStatCard: OperatorStatCardFC = ({
         <div className="flex flex-col gap-1">
           <Tooltip content="Is the operator performing duties for the majority of its validators for the last 2 epochs.">
             <div className="flex items-center gap-2">
-              <Text variant="caption-medium">Status</Text>
+              <Text variant="caption-medium" className="text-gray-500">
+                Status
+              </Text>
               <FaCircleInfo className="text-gray-400 size-3" />
             </div>
           </Tooltip>
           <OperatorStatusBadge size="sm" status={operator.status} />
         </div>
         <div className="flex flex-col gap-1">
-          <Text variant="caption-medium">30D Perform.</Text>
-          <Text variant="body-2-semibold">
+          <Text variant="caption-medium" className="text-gray-500">
+            30D Perform.
+          </Text>
+          <Text variant="body-2-medium">
             {percentageFormatter.format(operator.performance["30d"])}
           </Text>
         </div>
         <div className="flex flex-col justify-end gap-1 text-end">
-          <Text variant="caption-medium">Yearly Fee</Text>
-          <Text variant="body-2-semibold">{formatSSV(fee.yearly)} SSV</Text>
+          <Text variant="caption-medium" className="text-gray-500">
+            Yearly Fee
+          </Text>
+          <Text variant="body-2-medium">{formatSSV(fee.yearly)} SSV</Text>
         </div>
       </div>
     </Card>

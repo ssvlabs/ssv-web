@@ -79,7 +79,7 @@ export const Cluster: FC = () => {
               <Skeleton className="h-10 w-24 my-1" />
             ) : (
               <Text
-                variant="headline1"
+                variant="headline2"
                 className={cn({
                   "text-error-500": runway?.isAtRisk,
                 })}

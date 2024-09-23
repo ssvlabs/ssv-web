@@ -3,7 +3,7 @@ import { CopyBtn } from "@/components/ui/copy-btn";
 import { TableRow, TableCell } from "@/components/ui/grid-table";
 import { SsvExplorerBtn } from "@/components/ui/ssv-explorer-btn";
 import { VirtualizedInfinityTable } from "@/components/ui/virtualized-infinity-table";
-import { shortenAddress } from "@/lib/utils/strings";
+import { add0x, shortenAddress } from "@/lib/utils/strings";
 import { Badge } from "@/components/ui/badge";
 import { Text } from "@/components/ui/text";
 import { IconButton } from "@/components/ui/button";
@@ -54,7 +54,9 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
       renderRow={({ index, item }) => (
         <TableRow key={index}>
           <TableCell className="flex gap-2 items-center">
-            <Text variant="body-3-bold">{shortenAddress(item.public_key)}</Text>
+            <Text variant="body-2-medium">
+              {shortenAddress(add0x(item.public_key))}
+            </Text>
             <CopyBtn variant="subtle" text={item.public_key} />
           </TableCell>
           <TableCell>

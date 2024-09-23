@@ -11,7 +11,7 @@ const Table = React.forwardRef<HTMLDivElement, TableProps>(
     <div
       ref={ref}
       className={cn(
-        "relative flex flex-col border border-gray-300 bg-gray-50 rounded-xl overflow-auto",
+        "relative flex flex-col border border-gray-300 bg-gray-50 rounded-lg overflow-auto",
         className,
       )}
       style={{

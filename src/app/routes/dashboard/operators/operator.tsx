@@ -1,6 +1,5 @@
 import { OperatorDetails } from "@/components/operator/operator-details";
 import { OperatorSettingsBtn } from "@/components/operator/operator-settings-btn";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -20,6 +19,7 @@ import { Link } from "react-router-dom";
 
 import { IncreaseOperatorFeeStatusBadge } from "@/components/operator/increase-operator-fee/increase-operator-fee-status-badge";
 import { OperatorValidatorsList } from "@/components/operator/operator-validators-list";
+import { OperatorStatusBadge } from "@/components/operator/operator-status-badge";
 
 export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
   const params = useOperatorPageParams();
@@ -61,9 +61,7 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                     <FaCircleInfo className="size-3 text-gray-500" />
                   </div>
                 </Tooltip>
-                <Badge size="sm" variant="multi-select">
-                  {operator.data.status}
-                </Badge>
+                <OperatorStatusBadge status={operator.data.status} size="sm" />
               </div>{" "}
               <div className="flex flex-col gap-2">
                 <Text variant="body-3-medium" className="text-gray-500">

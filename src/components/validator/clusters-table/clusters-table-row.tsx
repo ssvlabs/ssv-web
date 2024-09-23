@@ -7,11 +7,10 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
 import { useOptimisticOrProvidedOperator } from "@/hooks/operator/use-optimistic-operator";
-import { shortenAddress } from "@/lib/utils/strings";
+import { shortenClusterId } from "@/lib/utils/strings";
 import { cn } from "@/lib/utils/tw";
 import type { Cluster } from "@/types/api";
 import type { ComponentPropsWithoutRef, FC } from "react";
-import { HiArrowRight } from "react-icons/hi";
 
 export type ClustersTableRowProps = {
   cluster: Cluster;
@@ -37,9 +36,9 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
       })}
       {...props}
     >
-      <TableCell>{shortenAddress(cluster.clusterId, 6)}</TableCell>
+      <TableCell>{shortenClusterId(cluster.clusterId)}</TableCell>
       <TableCell>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex gap-3">
           {cluster.operators.map((o) => {
             const Cmp: FC = () => {
               const operator = useOptimisticOrProvidedOperator(o);
@@ -88,9 +87,6 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
             )}
           </>
         )}
-      </TableCell>
-      <TableCell className="">
-        <HiArrowRight className="size-4 text-gray-500" />
       </TableCell>
     </TableRow>
   );

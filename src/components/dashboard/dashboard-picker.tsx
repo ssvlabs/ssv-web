@@ -6,7 +6,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { TextProps } from "@/components/ui/text";
 import { Text } from "@/components/ui/text";
-import { cn } from "@/lib/utils/tw";
 import { ChevronDown } from "lucide-react";
 import type { FC } from "react";
 import { useMatch } from "react-router";
@@ -14,7 +13,7 @@ import { Link } from "react-router-dom";
 
 type DashboardPickerFC = FC<TextProps>;
 
-export const DashboardPicker: DashboardPickerFC = ({ className, ...props }) => {
+export const DashboardPicker: DashboardPickerFC = ({ ...props }) => {
   const isOperators = Boolean(useMatch("/operators"));
   const isValidators = Boolean(useMatch("/clusters"));
 
@@ -22,7 +21,7 @@ export const DashboardPicker: DashboardPickerFC = ({ className, ...props }) => {
     <DropdownMenu>
       <DropdownMenuTrigger>
         <div className="flex items-center gap-2">
-          <Text variant="headline3" className={cn(className, "")} {...props}>
+          <Text variant="headline3" {...props}>
             {isOperators
               ? "Operators"
               : isValidators
@@ -33,7 +32,7 @@ export const DashboardPicker: DashboardPickerFC = ({ className, ...props }) => {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem asChild defaultChecked={isValidators}>
+        <DropdownMenuItem asChild defaultChecked={isValidators} className="">
           <Link to="/clusters">Validator Clusters</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild defaultChecked={isOperators}>

@@ -44,14 +44,14 @@ export const Navbar: FCProps = ({ className, ...props }) => {
       {...props}
     >
       <SsvLogo className="h-full" />
-      <Text as={Link} to={accountRoutePath} variant="body-3-medium">
+      <Text as={Link} to={accountRoutePath} variant="body-2-medium">
         My Account
       </Text>
       <Text
         as="a"
         href={links.ssv.explorer}
         target="_blank"
-        variant="body-3-medium"
+        variant="body-2-medium"
       >
         Explorer
       </Text>
@@ -59,7 +59,7 @@ export const Navbar: FCProps = ({ className, ...props }) => {
         as="a"
         href="https://docs.ssv.network/"
         target="_blank"
-        variant="body-3-medium"
+        variant="body-2-medium"
       >
         Docs
       </Text>

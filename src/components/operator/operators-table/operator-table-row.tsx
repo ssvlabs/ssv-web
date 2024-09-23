@@ -9,7 +9,6 @@ import { getYearlyFee } from "@/lib/utils/operator";
 import { cn } from "@/lib/utils/tw";
 import type { Operator } from "@/types/api";
 import type { ComponentPropsWithoutRef, FC } from "react";
-import { HiArrowRight } from "react-icons/hi";
 
 export type OperatorTableRowProps = {
   operator: Operator;
@@ -52,9 +51,6 @@ export const OperatorTableRow: FCProps = ({
         {getYearlyFee(BigInt(fee.data ?? 0n), { format: true })}
       </TableCell>
       <TableCell>{operator.validators_count}</TableCell>
-      <TableCell className="">
-        <HiArrowRight className="size-4 text-gray-500" />
-      </TableCell>
     </TableRow>
   );
 };

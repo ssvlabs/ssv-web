@@ -9,7 +9,7 @@ import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { FaCircleInfo } from "react-icons/fa6";
 import { TableCell, TableRow } from "@/components/ui/grid-table";
-import { shortenAddress } from "@/lib/utils/strings";
+import { add0x, shortenAddress } from "@/lib/utils/strings";
 import { CopyBtn } from "@/components/ui/copy-btn";
 import { Badge } from "@/components/ui/badge";
 import { SsvExplorerBtn } from "@/components/ui/ssv-explorer-btn";
@@ -35,7 +35,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
   const canProceed = selectedPublicKeys.length > 0;
 
   return (
-    <Container variant="vertical" size="lg" className="p-6 h-full">
+    <Container variant="vertical" size="lg" className="py-6 h-full">
       <NavigateBackBtn />
       <Card className="w-full flex-1">
         <div className="flex justify-between">
@@ -100,8 +100,8 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
                 />
               </TableCell>
               <TableCell className="flex gap-2 items-center">
-                <Text variant="body-3-bold">
-                  {shortenAddress(item.public_key)}
+                <Text variant="body-2-medium">
+                  {shortenAddress(add0x(item.public_key))}
                 </Text>
                 <CopyBtn variant="subtle" text={item.public_key} />
               </TableCell>

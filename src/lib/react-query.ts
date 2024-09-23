@@ -13,6 +13,7 @@ import type {
   QueryKey,
 } from "@tanstack/react-query";
 import { QueryClient } from "@tanstack/react-query";
+import type { Address } from "abitype";
 import { deserialize, serialize } from "wagmi";
 
 const storageKey = "ssv:query-client-offline-cache";
@@ -62,15 +63,18 @@ export type UseQueryOptions<
 
 export type QueryOptionsWithChainId = {
   chainId?: number;
+  account?: Address;
   options?: UseQueryOptions;
 };
 
 export const getDefaultChainedQueryOptions = ({
   chainId,
+  account,
   options,
 }: QueryOptionsWithChainId = {}): QueryOptionsWithChainId => {
   return {
     chainId: chainId ?? getSSVNetworkDetails().networkId,
+    account,
     options: {
       ...options,
       enabled: options?.enabled ?? true,

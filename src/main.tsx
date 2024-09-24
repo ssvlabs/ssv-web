@@ -1,3 +1,5 @@
+import "@/lib/sentry";
+
 import { Buffer } from "buffer";
 globalThis.Buffer = Buffer;
 
@@ -42,6 +44,13 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             client={queryClient}
           />
         )} */}
+        <button
+          onClick={() => {
+            throw new Error("wtf?");
+          }}
+        >
+          Break the world
+        </button>
         <RouterProvider router={router} />
         <Toaster />
         <Text

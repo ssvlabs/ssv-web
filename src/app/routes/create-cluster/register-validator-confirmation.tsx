@@ -40,6 +40,7 @@ import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { ClusterAdditionalFundingSummary } from "@/components/cluster/cluster-additional-funding-summary";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { useActiveTransactionState } from "@/hooks/app/use-transaction-state";
+import { track } from "@/lib/mixpanel";
 
 export const RegisterValidatorConfirmation: FC = () => {
   const inCluster = Boolean(useClusterPageParams().clusterHash);
@@ -72,6 +73,11 @@ export const RegisterValidatorConfirmation: FC = () => {
     const options = withTransactionModal({
       variant: "2-step",
       onMined: async () => {
+        track("Validator Registered", {
+          validators_amount: shares.length,
+          status: "success",
+        });
+
         await retryPromiseUntilSuccess(() =>
           getCluster(clusterHash)
             .then(
@@ -91,6 +97,13 @@ export const RegisterValidatorConfirmation: FC = () => {
 
         return () =>
           navigate(`../success?operatorIds=${operatorIds.join(",")}`);
+      },
+      onError: (error) => {
+        track("Validator Registered", {
+          validators_amount: shares.length,
+          status: "error",
+          error_message: error?.message ?? "unknown error",
+        });
       },
     });
 

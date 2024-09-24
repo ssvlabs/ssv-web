@@ -11,16 +11,21 @@ import { useAccount } from "@/hooks/account/use-account";
 import { useMaintenance } from "@/hooks/app/use-maintenance";
 import { Navigate } from "react-router";
 import { MultisigTransactionModal } from "@/components/ui/multisig-transaction-modal";
+import { useIdentify } from "@/lib/mixpanel/useIdentify";
+import { useTrackPageViews } from "@/lib/mixpanel/useTrackPageViews";
 
 export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
   children,
   className,
 }) => {
+  useIdentify();
+  useTrackPageViews();
+  useBlockNavigationOnPendingTx();
+
   const isRestoring = useIsRestoring();
   const account = useAccount();
-  useBlockNavigationOnPendingTx();
-  const { isMaintenancePage } = useMaintenance();
 
+  const { isMaintenancePage } = useMaintenance();
   if (isMaintenancePage) {
     return <Navigate to="/maintenance" replace />;
   }

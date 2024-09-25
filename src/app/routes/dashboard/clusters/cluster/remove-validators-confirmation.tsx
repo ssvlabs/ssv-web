@@ -110,7 +110,7 @@ export const RemoveValidatorsConfirmation: FC = () => {
               to running the validator on an alternative service.
             </AlertDescription>
           </Alert>
-          <label htmlFor="agree-1" className="flex gap-3 pt-6">
+          <label htmlFor="agree-1" className="flex gap-3">
             <Checkbox
               checked={agree1}
               id="agree-1"

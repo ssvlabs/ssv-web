@@ -87,7 +87,7 @@ export const ExitValidatorsConfirmation: FC = () => {
               cannot be reversed, preventing any future reactivation.
             </AlertDescription>
           </Alert>
-          <label htmlFor="agree-1" className="flex gap-3 pt-6">
+          <label htmlFor="agree-1" className="flex gap-3">
             <Checkbox
               checked={agree1}
               id="agree-1"
@@ -99,7 +99,7 @@ export const ExitValidatorsConfirmation: FC = () => {
               validator.
             </Text>
           </label>
-          <label htmlFor="agree-2" className="flex gap-3 pt-6">
+          <label htmlFor="agree-2" className="flex gap-3">
             <Checkbox
               checked={agree2}
               id="agree-2"
@@ -112,7 +112,7 @@ export const ExitValidatorsConfirmation: FC = () => {
               from the SSV network once completed to stop incurring fees.
             </Text>
           </label>
-          <label htmlFor="agree-3" className="flex gap-3 pt-6">
+          <label htmlFor="agree-3" className="flex gap-3">
             <Checkbox
               checked={agree3}
               id="agree-3"

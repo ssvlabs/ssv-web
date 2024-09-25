@@ -106,7 +106,7 @@ export const FeeRecipientAddress: FC<ComponentPropsWithoutRef<"div">> = () => {
             description={
               <Text variant="body-2-medium">
                 Enter an Ethereum address that will receive all of your
-                validators block proposal rewards.
+                validators block proposal rewards.{" "}
                 <Button
                   as={Link}
                   variant="link"

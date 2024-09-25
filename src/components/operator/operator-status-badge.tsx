@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Operator } from "@/types/api";
 
 type OperatorStatus = Operator["status"];
+
 export type OperatorStatusBadgeProps = {
   status: OperatorStatus;
 };

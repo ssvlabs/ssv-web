@@ -15,8 +15,8 @@ import { FaCircleInfo } from "react-icons/fa6";
 import { Tooltip } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { TbLayoutGridAdd } from "react-icons/tb";
 import { Loading } from "@/components/ui/Loading";
+import LogoIcon from "@/assets/images/logo-icon.svg?react";
 
 export type ClusterTableProps = {
   clusters: Cluster[];
@@ -66,7 +66,7 @@ export const ClusterTable: FCProps = ({
               }
             >
               <div className="flex gap-2 items-center">
-                <Text>Cluster ID</Text>
+                <Text variant="body-2-medium">Cluster ID</Text>
                 <FaCircleInfo className="size-3 text-gray-500" />
               </div>
             </Tooltip>
@@ -92,10 +92,7 @@ export const ClusterTable: FCProps = ({
       <div className="bg-gray-50 w-full">{isLoading && <Loading />}</div>
       {isEmpty ? (
         <div className="flex flex-col items-center justify-center gap-4 w-full bg-gray-50 py-16 rounded-b-2xl">
-          <TbLayoutGridAdd
-            strokeWidth="1.7"
-            className="size-12 text-primary-500"
-          />
+          <LogoIcon className="size-20" />
           <div className="flex flex-col items-center gap-2">
             <Text variant="body-2-medium">
               You don't have any clusters yet.

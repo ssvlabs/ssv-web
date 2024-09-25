@@ -1,6 +1,6 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Container } from "@/components/ui/container";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
@@ -46,12 +46,10 @@ export const RemoveOperator: FC = () => {
     <Container variant="vertical" className="py-6">
       <NavigateBackBtn />
       <Card>
-        <Text variant="headline4">Remove Operator</Text>
-        <Text variant="body-2-medium">
-          Removing your operator will cease your operation of all your managed
-          validators, which will reduce their fault tolerance and put them at
-          risk.
-        </Text>
+        <CardHeader
+          title="Remove Operator"
+          description="Removing your operator will cease your operation of all your managed validators, which will reduce their fault tolerance and put them at risk."
+        />
         <Text variant="body-2-medium">
           Immediately stop receiving future earnings from managed validators
           operation.

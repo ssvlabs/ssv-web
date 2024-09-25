@@ -106,7 +106,7 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                 asChild
                 content={
                   fee.data === 0n ? (
-                    <Text>
+                    <Text variant="body-2-medium">
                       Operators with a fee of 0 cannot change their fee.{" "}
                       <Button
                         as="a"

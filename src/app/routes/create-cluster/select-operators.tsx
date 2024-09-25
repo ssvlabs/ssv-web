@@ -133,13 +133,13 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
           />
           <Divider />
           <div className="flex justify-between">
-            <Text>Operators Yearly Fee</Text>
+            <Text variant="body-2-medium">Operators Yearly Fee</Text>
             <Text variant="body-2-bold">{formatSSV(totalYearlyFee)} SSV</Text>
           </div>
           {hasUnverifiedOperators && (
             <Alert variant="warning">
               <AlertDescription className="flex flex-col gap-4">
-                <Text>
+                <p>
                   You have selected one or more operators that are{" "}
                   <Button
                     as="a"
@@ -148,15 +148,15 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
                   >
                     not verified
                   </Button>
-                </Text>
-                <Text>
+                </p>
+                <p>
                   Unverified operators that were not reviewed and their identity
                   is not confirmed, may pose a threat to your validators'
                   performance.
-                </Text>
-                <Text>
+                </p>
+                <p>
                   Please proceed only if you know and trust these operators.
-                </Text>
+                </p>
               </AlertDescription>
             </Alert>
           )}

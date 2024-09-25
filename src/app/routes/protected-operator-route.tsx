@@ -7,13 +7,16 @@ import { isAddressEqual } from "viem";
 import { useAccount } from "@/hooks/account/use-account";
 import { Loading } from "@/components/ui/Loading";
 import { AnimatePresence, motion } from "framer-motion"; // Add this import
+import { useAccountState } from "@/hooks/account/use-account-state";
 // Add this import
 // Add this import
 
 export const ProtectedOperatorRoute: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
 }) => {
+  const accountState = useAccountState();
   const { address } = useAccount();
+
   const { operatorId } = useOperatorPageParams();
   const operator = useOperator(operatorId ?? "");
 
@@ -23,8 +26,12 @@ export const ProtectedOperatorRoute: FC<ComponentPropsWithoutRef<"div">> = ({
   if (
     operator.data &&
     !isAddressEqual(operator.data.owner_address as `0x${string}`, address!)
-  )
-    return <Navigate to="../not-your-operator" />;
+  ) {
+    if (accountState.isLoading) return <Loading />;
+    if (accountState.isNewAccount) return <Navigate to="/join" />;
+    if (accountState.hasOperators) return <Navigate to="/operators" />;
+    if (accountState.hasClusters) return <Navigate to="/clusters" />;
+  }
 
   return (
     <AnimatePresence mode="wait">

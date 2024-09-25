@@ -14,6 +14,9 @@ const light: Theme = merge(
     overlayBlur: "small",
   }),
   {
+    fonts: {
+      body: "Manrope",
+    },
     colors: {
       connectButtonBackground: "red",
       closeButton: "#606565",
@@ -40,6 +43,9 @@ const dark = merge(
     overlayBlur: "small",
   }),
   {
+    fonts: {
+      body: "Manrope",
+    },
     colors: {
       connectButtonBackground: "red",
       closeButton: "#CBD3E5",

@@ -43,7 +43,9 @@ export const Navbar: FCProps = ({ className, ...props }) => {
       )}
       {...props}
     >
-      <SsvLogo className="h-full" />
+      <Link to={accountRoutePath ?? "/"}>
+        <SsvLogo className="h-full" />
+      </Link>
       <Text as={Link} to={accountRoutePath} variant="body-2-medium">
         My Account
       </Text>
@@ -119,7 +121,7 @@ export const Navbar: FCProps = ({ className, ...props }) => {
       </DropdownMenu>
 
       <Spacer />
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <NetworkSwitchBtn />
         <ConnectWalletBtn />
         <ThemeSwitcher />

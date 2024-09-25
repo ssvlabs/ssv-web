@@ -35,7 +35,7 @@ export const OperatorDetails: FCProps = ({ operator, className, ...props }) => {
       />
       <div className="flex flex-col h-full justify-between">
         <div className="flex gap-2 items-center">
-          <Text variant="body-2-medium">
+          <Text variant="body-2-medium" className="text-gray-800">
             {operator.name}{" "}
             {operator.verified_operator && !operator.is_deleted ? (
               <VerifiedSVG className="inline" />

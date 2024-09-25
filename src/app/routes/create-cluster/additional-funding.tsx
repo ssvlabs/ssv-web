@@ -1,6 +1,6 @@
 import { type FC } from "react";
 import { Container } from "@/components/ui/container";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
 import { EstimatedOperationalRunway } from "@/components/cluster/estimated-operational-runway";
 import { Divider } from "@/components/ui/divider";
@@ -64,11 +64,10 @@ export const AdditionalFunding: FC = () => {
       <NavigateBackBtn by="history" />
       <Form {...form}>
         <Card as="form" onSubmit={submit}>
-          <Text variant="headline4">Select your validator funding period</Text>
-          <Text>
-            Adding a new validator increases your operational costs and
-            decreases the cluster's operational runway.
-          </Text>
+          <CardHeader
+            title="Select your validator funding period"
+            description="Adding a new validator increases your operational costs and decreases the cluster's operational runway."
+          />
           <Text variant="headline4">
             Would you like to top - up your balance?
           </Text>

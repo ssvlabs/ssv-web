@@ -1,6 +1,6 @@
 import { useState, type FC } from "react";
 import { Container } from "@/components/ui/container";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -16,12 +16,10 @@ export const BalanceWarning: FC = () => {
     <Container variant="vertical" className="py-6">
       <NavigateBackBtn by="history" />
       <Card>
-        <Text variant="headline4">Cluster Balances and Fees</Text>
-        <Text>
-          Fees are presented as annual payments but are paid to operators
-          continuously as an on-going process. They are set by each operator and
-          could change according to their decision.
-        </Text>
+        <CardHeader
+          title="Cluster Balances and Fees"
+          description="Fees are presented as annual payments but are paid to operators continuously as an on-going process. They are set by each operator and could change according to their decision."
+        />
         <Alert variant="error">
           <AlertDescription>
             Clusters with insufficient balance are at risk of being{" "}
@@ -50,7 +48,7 @@ export const BalanceWarning: FC = () => {
             id="agree-1"
             onCheckedChange={(checked: boolean) => setAgree1(checked)}
           />
-          <Text>
+          <Text variant="body-2-medium">
             I understand that fees might change according to market dynamics
           </Text>
         </label>
@@ -60,7 +58,9 @@ export const BalanceWarning: FC = () => {
             id="agree-2"
             onCheckedChange={(checked: boolean) => setAgree2(checked)}
           />
-          <Text>I understand the risks of having my cluster liquidated</Text>
+          <Text variant="body-2-medium">
+            I understand the risks of having my cluster liquidated
+          </Text>
         </label>
         <Button
           as={Link}

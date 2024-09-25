@@ -42,7 +42,7 @@ export const ValidatorsBulkSummary: ValidatorsBulkSummaryFC = ({
         {publicKeys.map((publicKey) => (
           <TableRow key={publicKey}>
             <TableCell className="flex gap-1 items-center">
-              <Text>{shortenAddress(publicKey)}</Text>
+              <Text variant="body-2-medium">{shortenAddress(publicKey)}</Text>
               <CopyBtn text={publicKey} />
             </TableCell>
           </TableRow>

@@ -8,6 +8,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useInterval } from "react-use";
 import { cn } from "@/lib/utils/tw";
 import { Text } from "@/components/ui/text";
+import LogoIcon from "@/assets/images/logo-icon.svg?react";
 
 export type VirtualizedInfinityTableProps<
   T,
@@ -99,11 +100,8 @@ export const VirtualizedInfinityTable = <T,>({
       )}
       {query.isSuccess && !query.hasNextPage && !items.length && (
         <div className="flex flex-1 flex-col gap-4 text-sm font-medium items-center h-full justify-center p-4">
-          <img
-            src="/images/logo/no_validators.svg"
-            className="size-20"
-            alt="No validators"
-          />
+          <LogoIcon className="size-20" />
+
           {isValidElement(emptyMessage) ? (
             emptyMessage
           ) : (

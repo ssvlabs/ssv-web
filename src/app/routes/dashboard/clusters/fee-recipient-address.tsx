@@ -1,6 +1,6 @@
 import { type FC, type ComponentPropsWithoutRef, useEffect } from "react";
 import { Container } from "@/components/ui/container";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
@@ -101,20 +101,25 @@ export const FeeRecipientAddress: FC<ComponentPropsWithoutRef<"div">> = () => {
       <NavigateBackBtn by="history" />
       <Form {...form}>
         <Card as="form" onSubmit={submit}>
-          <Text variant="headline4">Fee Recipient Address</Text>
-          <Text variant="body-2-medium" className="mt-2">
-            Enter an Ethereum address that will receive all of your validators
-            block proposal rewards.
-            <Button
-              as={Link}
-              variant="link"
-              to="https://docs.ssv.network/learn/introduction"
-              target="_blank"
-              className="mt-4"
-            >
-              What are proposal rewards?
-            </Button>
-          </Text>
+          <CardHeader
+            title="Fee Recipient Address"
+            description={
+              <Text variant="body-2-medium">
+                Enter an Ethereum address that will receive all of your
+                validators block proposal rewards.
+                <Button
+                  as={Link}
+                  variant="link"
+                  to="https://docs.ssv.network/learn/introduction"
+                  target="_blank"
+                  className="mt-4"
+                >
+                  What are proposal rewards?
+                </Button>
+              </Text>
+            }
+          />
+
           <Alert variant="warning">
             <AlertDescription>
               Standard rewards from performing other duties will remain to be

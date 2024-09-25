@@ -176,7 +176,7 @@ export const AuthorizedAddresses = () => {
             </div>
 
             {mode !== "view" && (
-              <div className="flex gap-2 w-full">
+              <div className="flex gap-3 w-full">
                 <Button
                   type="button"
                   className="flex-1"

@@ -138,7 +138,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
       <Form {...form}>
         <Card as="form" onSubmit={submit} {...props}>
           <Text variant="headline4">Reactivate Cluster</Text>
-          <Text>
+          <Text variant="body-2-medium">
             Your cluster has been{" "}
             <Button
               as="a"

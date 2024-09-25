@@ -1,6 +1,6 @@
 import { type FC, type ComponentPropsWithoutRef } from "react";
 import { Container } from "@/components/ui/container";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -73,26 +73,25 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
       <NavigateBackBtn by="history" />
       <Form {...form}>
         <Card as="form" onSubmit={submit}>
-          <Text variant="headline4">Set Operator Fee</Text>
-          <Text>
-            The ssv network utilizes the SSV token to facilitate payments
-            between stakers to operators for maintaining their validators.
-          </Text>
-          <Text>
+          <CardHeader
+            title="Set Operator Fee"
+            description="The ssv network utilizes the SSV token to facilitate payments between stakers to operators for maintaining their validators."
+          />
+          <Text variant="body-2-medium">
             Operators set their own fees, denominated in SSV tokens, to be
             charged per each validator that selects them as one of their
             operators.
           </Text>
-          <Text>
+          <Text variant="body-2-medium">
             Fees are presented as annual payments, but in practice are paid to
             operators continuously as an ongoing process - per each passed
             block.
           </Text>
-          <Text>
+          <Text variant="body-2-medium">
             Your earnings are paid to your ssv operator balance, and can be
             withdrawn to your wallet at any time.
           </Text>
-          <Text>
+          <Text variant="body-2-medium">
             Please note that you could always change your fee (according to the{" "}
             <Button
               as="a"

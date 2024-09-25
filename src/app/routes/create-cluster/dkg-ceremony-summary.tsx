@@ -34,7 +34,7 @@ export const DKGCeremonySummary: FC = () => {
             Completed <FaCircleCheck />
           </Badge>
         </div>
-        <Text>
+        <Text variant="body-2-medium">
           Following the successful completion of the ceremony, several files
           have been generated and placed in the{" "}
           <div className="inline-flex items-center gap-2 px-2 py-1 bg-gray-200 border border-gray-400 rounded-md">
@@ -139,7 +139,7 @@ export const DKGCeremonySummary: FC = () => {
             <Span className="text-primary-500">Step 2:</Span> Register Validator
           </Text>
         </div>
-        <Text>
+        <Text variant="body-2-medium">
           Run your validator on the SSV Network by registering and distributing
           its key shares to your cluster operators.
         </Text>

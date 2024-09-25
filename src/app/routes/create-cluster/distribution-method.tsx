@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { Container } from "@/components/ui/container";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -27,14 +27,20 @@ export const DistributionMethod: FC<Props> = ({ variant = "create" }) => {
     <Container variant="vertical" className="py-6">
       <NavigateBackBtn to={prevPath} />
       <Card className="font-medium">
-        <Text variant="headline4">Generate Validator KeyShares</Text>
-        <Text>
-          To run a Distributed Validator you must split your validation key into{" "}
-          <b>Key Shares</b> and distribute them across your selected operators
-          to operate in your behalf
-        </Text>
+        <CardHeader
+          title="Generate Validator KeyShares"
+          description={
+            <Text variant="body-2-medium">
+              To run a Distributed Validator you must split your validation key
+              into <b>Key Shares</b> and distribute them across your selected
+              operators to operate in your behalf
+            </Text>
+          }
+        />
         <img src="/images/generateValidatorKeyShare/image.svg" />
-        <Text>Select your preferred method to split your key:</Text>
+        <Text variant="body-2-medium">
+          Select your preferred method to split your key:
+        </Text>
         <div className="space-y-3">
           <div className="flex [&>*]:flex-1 gap-3">
             <div className="flex flex-col gap-2">

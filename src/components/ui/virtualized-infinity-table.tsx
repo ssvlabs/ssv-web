@@ -49,8 +49,10 @@ export const VirtualizedInfinityTable = <T,>({
     <Table className={cn("h-full", className)} {...props}>
       <TableHeader className="sticky top-0">
         {headers.map((header, index) => (
-          <TableCell key={index} className="text-gray-500">
-            {header}
+          <TableCell key={index}>
+            <Text variant="caption-medium" className="text-gray-500">
+              {header}
+            </Text>
           </TableCell>
         ))}
       </TableHeader>

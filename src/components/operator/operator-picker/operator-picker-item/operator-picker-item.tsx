@@ -99,11 +99,11 @@ export const OperatorPickerItem: FCProps = ({
               src={operator.logo}
               isPrivate={operator.is_private}
             />
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-0.5">
               <Text
                 className="flex-1 text-ellipsis overflow-hidden"
                 title={operator.name}
-                variant="body-3-medium"
+                variant={isSelected ? "body-3-semibold" : "body-3-medium"}
               >
                 {operator.name}{" "}
                 {operator.verified_operator && (
@@ -125,18 +125,27 @@ export const OperatorPickerItem: FCProps = ({
             },
           )}
         >
-          <Text variant="body-2-medium">
+          <Text variant={isSelected ? "body-2-semibold" : "body-2-medium"}>
             {percentageFormatter.format(operator.performance["30d"] / 100)}
           </Text>
           {isInactive && (
             <OperatorStatusBadge size="xs" status={operator.status} />
           )}
         </TableCell>
-        <TableCell>
+        <TableCell
+          className={cn({
+            "font-semibold": isSelected,
+          })}
+        >
           {getYearlyFee(BigInt(operator.fee), { format: true })}
         </TableCell>
         <TableCell>
-          <MevRelays mevRelays={operator.mev_relays} />
+          <MevRelays
+            mevRelays={operator.mev_relays}
+            className={cn({
+              "font-semibold": isSelected,
+            })}
+          />
         </TableCell>
         <TableCell className="flex gap-1 justify-end">
           <SsvExplorerBtn operatorId={operator.id} />

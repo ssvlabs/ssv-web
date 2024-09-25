@@ -28,7 +28,7 @@ export const SelectedOperatorItem: SelectedOperatorItemFC = ({
   return (
     <div
       className={cn(
-        "relative px-5 py-4 rounded-lg border border-gray-300",
+        "relative px-5 flex items-center h-[80px] py-4 rounded-lg border border-gray-300",
         className,
       )}
       {...props}

@@ -139,7 +139,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
           {hasUnverifiedOperators && (
             <Alert variant="warning">
               <AlertDescription className="flex flex-col gap-4">
-                <p>
+                <p className="font-semibold">
                   You have selected one or more operators that are{" "}
                   <Button
                     as="a"

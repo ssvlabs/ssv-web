@@ -9,7 +9,7 @@ export const variants = cva("object-cover", {
   variants: {
     variant: {
       circle: "rounded-full",
-      square: "rounded-lg",
+      square: "rounded-sm",
     },
 
     size: {

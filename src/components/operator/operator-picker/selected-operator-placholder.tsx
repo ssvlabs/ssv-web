@@ -22,12 +22,14 @@ export const SelectedOperatorPlaceholder: SelectedOperatorPlaceholderFC = ({
   return (
     <div
       className={cn(
-        "px-5 mr-2 py-4 min-h-[72px] flex items-center  rounded-lg bg-gray-200 border border-gray-400 border-dashed text-gray-400",
+        "px-5 mr-2 py-4 min-h-[80px] flex items-center  rounded-lg bg-gray-200 border border-gray-400 border-dashed ",
         className,
       )}
       {...props}
     >
-      <Text variant="body-2-medium">Select operator {number}</Text>
+      <Text variant="body-2-medium" className="text-gray-400">
+        Select operator {number}
+      </Text>
     </div>
   );
 };

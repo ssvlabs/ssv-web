@@ -8,9 +8,9 @@ export const textVariants = cva("", {
   variants: {
     variant: {
       title: "text-[40px] font-extrabold text-gray-800",
-      headline1: "text-[32px] font-extrabold text-gray-800",
-      headline2: "text-[28px] font-extrabold text-gray-800",
-      headline3: "text-2xl font-extrabold text-gray-800",
+      headline1: "text-[32px] font-bold text-gray-800",
+      headline2: "text-[28px] font-bold text-gray-800",
+      headline3: "text-2xl font-bold text-gray-800",
       headline4: "text-xl font-bold text-gray-800",
       "body-1-bold": "text-lg font-bold text-gray-700",
       "body-1-semibold": "text-lg font-semibold text-gray-700",

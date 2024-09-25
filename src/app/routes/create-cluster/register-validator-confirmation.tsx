@@ -1,53 +1,51 @@
-import type { FC } from "react";
-import { Container } from "@/components/ui/container";
+import { getCluster } from "@/api/cluster";
+import { ClusterAdditionalFundingSummary } from "@/components/cluster/cluster-additional-funding-summary";
+import { ClusterFundingSummary } from "@/components/cluster/cluster-funding-summary";
+import { OperatorDetails } from "@/components/operator/operator-details";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Container } from "@/components/ui/container";
+import { Divider } from "@/components/ui/divider";
+import { Input } from "@/components/ui/input";
+import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
+import { Text } from "@/components/ui/text";
+import { WithAllowance } from "@/components/with-allowance/with-allowance";
 import {
   useRegisterValidatorContext,
   useSelectedOperatorIds,
 } from "@/guard/register-validator-guard";
-import { Text } from "@/components/ui/text";
-import { Input } from "@/components/ui/input";
-import { useOperators } from "@/hooks/operator/use-operators";
-import { OperatorDetails } from "@/components/operator/operator-details";
-import { formatSSV } from "@/lib/utils/number";
-import { computeDailyAmount } from "@/lib/utils/keystore";
-import { Divider } from "@/components/ui/divider";
-import { Button } from "@/components/ui/button";
-import { useRegisterValidator } from "@/lib/contract-interactions/write/use-register-validator";
-import { useBulkRegisterValidator } from "@/lib/contract-interactions/write/use-bulk-register-validator";
-import {
-  createClusterHash,
-  formatClusterData,
-  getDefaultClusterData,
-} from "@/lib/utils/cluster";
 import { useAccount } from "@/hooks/account/use-account";
 import {
   getClusterQueryOptions,
   useCluster,
 } from "@/hooks/cluster/use-cluster";
-import { bigintifyNumbers } from "@/lib/utils/bigint";
-import type { Address } from "abitype";
-import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { retryPromiseUntilSuccess } from "@/lib/utils/promise";
-import { getCluster } from "@/api/cluster";
-import { queryClient } from "@/lib/react-query";
-import { useNavigate } from "react-router";
-import { Badge } from "@/components/ui/badge";
-import { WithAllowance } from "@/components/with-allowance/with-allowance";
-import { usePaginatedAccountClusters } from "@/hooks/cluster/use-paginated-account-clusters";
-import { ClusterFundingSummary } from "@/components/cluster/cluster-funding-summary";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
-import { ClusterAdditionalFundingSummary } from "@/components/cluster/cluster-additional-funding-summary";
-import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
-import { useActiveTransactionState } from "@/hooks/app/use-transaction-state";
+import { usePaginatedAccountClusters } from "@/hooks/cluster/use-paginated-account-clusters";
+import { useOperators } from "@/hooks/operator/use-operators";
+import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
+import { useBulkRegisterValidator } from "@/lib/contract-interactions/write/use-bulk-register-validator";
+import { useRegisterValidator } from "@/lib/contract-interactions/write/use-register-validator";
 import { track } from "@/lib/mixpanel";
+import { queryClient } from "@/lib/react-query";
+import { bigintifyNumbers } from "@/lib/utils/bigint";
+import {
+  createClusterHash,
+  formatClusterData,
+  getDefaultClusterData,
+} from "@/lib/utils/cluster";
+import { computeDailyAmount } from "@/lib/utils/keystore";
+import { formatSSV } from "@/lib/utils/number";
+import { retryPromiseUntilSuccess } from "@/lib/utils/promise";
+import type { Address } from "abitype";
+import type { FC } from "react";
+import { useNavigate } from "react-router";
 
 export const RegisterValidatorConfirmation: FC = () => {
   const inCluster = Boolean(useClusterPageParams().clusterHash);
 
   const navigate = useNavigate();
   const accountClusters = usePaginatedAccountClusters();
-  const tx = useActiveTransactionState();
 
   const account = useAccount();
   const { shares, depositAmount, fundingDays } = useRegisterValidatorContext();
@@ -63,6 +61,9 @@ export const RegisterValidatorConfirmation: FC = () => {
 
   const registerValidator = useRegisterValidator();
   const bulkRegisterValidator = useBulkRegisterValidator();
+
+  const isPending =
+    registerValidator.isPending || bulkRegisterValidator.isPending;
 
   const handleRegisterValidator = () => {
     const clusterData = clusterQuery.data
@@ -183,7 +184,7 @@ export const RegisterValidatorConfirmation: FC = () => {
         <WithAllowance size="xl" amount={depositAmount}>
           <Button
             size="xl"
-            isLoading={tx.isPending}
+            isLoading={isPending}
             isActionBtn
             onClick={handleRegisterValidator}
           >

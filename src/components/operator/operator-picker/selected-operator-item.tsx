@@ -8,6 +8,7 @@ import { Minus } from "lucide-react";
 import { formatSSV } from "@/lib/utils/number";
 import { getYearlyFee } from "@/lib/utils/operator";
 import VerifiedSVG from "@/assets/images/verified.svg?react";
+import { MevRelaysDisplay } from "@/components/operator/operator-picker/operator-picker-item/mev-relays/mev-relays-display";
 
 export type SelectedOperatorItemProps = {
   operator: Operator;
@@ -39,7 +40,7 @@ export const SelectedOperatorItem: SelectedOperatorItemFC = ({
           src={operator.logo}
           isPrivate={operator.is_private}
         />
-        <div className="flex flex-1 flex-col gap-0.5">
+        <div className="flex flex-1 flex-col gap-1">
           <div className="flex w-full justify-between">
             <Text
               className="flex-1 text-ellipsis overflow-hidden"
@@ -53,9 +54,12 @@ export const SelectedOperatorItem: SelectedOperatorItemFC = ({
               {formatSSV(getYearlyFee(BigInt(operator.fee)))} SSV
             </Text>
           </div>
-          <Text variant="caption-medium" className="text-gray-500">
-            ID: {operator.id}
-          </Text>
+          <div className="flex justify-between">
+            <Text variant="caption-medium" className="text-gray-500">
+              ID: {operator.id}
+            </Text>
+            <MevRelaysDisplay mevRelays={operator.mev_relays} />
+          </div>
         </div>
       </div>
       <Button

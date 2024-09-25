@@ -18,7 +18,7 @@ export const MevRelaysContent: FCProps = ({
 }) => {
   return (
     <div className={cn(className, "flex flex-col gap-3")} {...props}>
-      <Text variant="body-2-semibold">Supported MEV Relays</Text>
+      <Text className="font-medium">Supported MEV Relays</Text>
       <div className="flex gap-1 flex-wrap">
         {mevRelays
           ?.split(",")

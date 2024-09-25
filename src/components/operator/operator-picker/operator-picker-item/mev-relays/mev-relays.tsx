@@ -18,7 +18,6 @@ export const MevRelays: FCProps = ({ className, mevRelays, ...props }) => {
   return (
     <Tooltip
       asChild
-      className="dark"
       content={hasMevRelays && <MevRelaysContent mevRelays={mevRelays} />}
     >
       <div

@@ -118,7 +118,7 @@ export const DockerInstructions: FC<DockerInstructionsProps> = ({
     <div className="space-y-5 font-medium">
       <div className="space-y-3">
         <Text className="text-gray-500 font-semibold">Prerequisite</Text>
-        <Text>
+        <Text variant="body-2-medium">
           <Button
             as="a"
             variant="link"

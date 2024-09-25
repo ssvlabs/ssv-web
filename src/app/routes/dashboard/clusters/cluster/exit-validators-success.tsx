@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { Container } from "@/components/ui/container";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { ValidatorsBulkSummary } from "@/components/cluster/validators-bulk-summary";
 import { useBulkActionContext } from "@/guard/bulk-action-guard";
 import { Span, Text } from "@/components/ui/text";
@@ -18,11 +18,10 @@ export const ExitValidatorsSuccess: FC = () => {
       className="p-6 font-medium w-[1096px]"
     >
       <Card className="flex-[1.7]">
-        <Text variant="headline4">Exit Validator</Text>
-        <Text variant="body-2-medium">
-          Your request to exit the validator has been successfully broadcasted
-          to the network.
-        </Text>
+        <CardHeader
+          title="Exit Validator"
+          description="Your request to exit the validator has been successfully broadcasted to the network."
+        />
         <Divider />
         <Text variant="headline4">Next Steps</Text>
         <Text variant="body-2-medium">

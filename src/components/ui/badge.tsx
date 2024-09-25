@@ -15,7 +15,7 @@ const badgeVariants = cva(
         warning:
           "bg-yellow-500/30 text-yellow-700 dark:bg-yellow-500/30 dark:text-yellow-200",
         info: "bg-gray-300 text-gray-600",
-        primary: "bg-primary-100 text-primary-500",
+        primary: "bg-primary-50 text-primary-500",
         unstyled: "text-gray-500",
         "multi-select": "bg-gray-300",
       },

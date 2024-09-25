@@ -5,7 +5,7 @@ import { cva } from "class-variance-authority";
 import { Spinner } from "./spinner";
 
 export const inputVariants = cva(
-  "flex h-12 w-full gap-2 items-center rounded-lg px-5 font-medium border border-gray-300 bg-transparent placeholder:text-gray-300 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 invalid-within:border-error-500 focus-within:border-primary-500",
+  "flex h-12 w-full gap-2 items-center rounded-lg px-4 font-medium border border-gray-300 bg-transparent placeholder:text-gray-300 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 invalid-within:border-error-500 focus-within:border-primary-500",
 );
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {

@@ -87,7 +87,7 @@ export const InitialFunding: FCProps = ({ ...props }) => {
       <Form {...form}>
         <Card as="form" onSubmit={submit} {...props}>
           <Text variant="headline4">Select your validator funding period</Text>
-          <Text>
+          <Text variant="body-2-medium">
             The SSV amount you deposit will determine your validator operational
             runway (You can always manage it later by withdrawing or depositing
             more funds).

@@ -1,7 +1,6 @@
 import type { FC, ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils/tw";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 
 export type EstimatedOperationalRunwayAlertProps = {
@@ -37,24 +36,24 @@ export const EstimatedOperationalRunwayAlert: EstimatedOperationalRunwayAlertFC 
     const renderMessage = () => {
       if (hasDeltaValidators) {
         return (
-          <Text>
+          <p>
             Your updated operational puts your cluster validators at risk. To
             avoid liquidation please top up your cluster balance with greater
             funds.
-          </Text>
+          </p>
         );
       }
       if (isLiquidated) {
         return (
-          <Text>
+          <p>
             Your cluster has been liquidated. Please reactivate your cluster in
             order to resume your validators operation.
-          </Text>
+          </p>
         );
       }
       if (isWithdrawingAll)
         return (
-          <Text>
+          <p>
             Withdrawing the requested amount will liquidate your cluster, which
             will result in inactivation (
             <Button
@@ -67,15 +66,15 @@ export const EstimatedOperationalRunwayAlert: EstimatedOperationalRunwayAlertFC 
             </Button>
             ) of your validators, as they will no longer be operated by the
             network.
-          </Text>
+          </p>
         );
 
       return (
-        <Text>
+        <p>
           {!isWithdrawing
             ? `Your balance is running low and puts your cluster at risk. To avoid liquidation please deposit more funds to your cluster.`
             : `This withdrawal amount will putting your cluster at risk of liquidation. To avoid liquidation please withdraw less funds from your cluster.`}
-        </Text>
+        </p>
       );
     };
 

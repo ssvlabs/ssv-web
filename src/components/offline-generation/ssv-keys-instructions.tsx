@@ -39,7 +39,7 @@ export const SSVKeysInstructions: FC<SSVKeysInstructionsProps> = ({
 
   return (
     <ol className="list-decimal list-inside flex flex-col gap-4 font-medium">
-      <Text>Instructions</Text>
+      <Text variant="body-2-medium">Instructions</Text>
       <li>
         Download the <b>{OSName}</b> executable from{" "}
         <Button

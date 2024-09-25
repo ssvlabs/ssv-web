@@ -4,7 +4,6 @@ import { TableRow, TableCell } from "@/components/ui/grid-table";
 import { SsvExplorerBtn } from "@/components/ui/ssv-explorer-btn";
 import { VirtualizedInfinityTable } from "@/components/ui/virtualized-infinity-table";
 import { shortenAddress } from "@/lib/utils/strings";
-import { Badge } from "@/components/ui/badge";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { LuSatelliteDish } from "react-icons/lu";
@@ -12,6 +11,7 @@ import { useLinks } from "@/hooks/use-links";
 import { FaCircleInfo } from "react-icons/fa6";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useInfiniteOperatorValidators } from "@/hooks/operator/use-infinite-operator-validators";
+import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge";
 
 export const OperatorValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
@@ -40,13 +40,13 @@ export const OperatorValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
       renderRow={({ index, item }) => (
         <TableRow key={index}>
           <TableCell className="flex gap-2 items-center">
-            <Text>{shortenAddress(item.public_key)}</Text>
+            <Text variant="body-2-medium">
+              {shortenAddress(item.public_key)}
+            </Text>
             <CopyBtn variant="subtle" text={item.public_key} />
           </TableCell>
           <TableCell>
-            <Badge variant="error" size="sm">
-              {item.status}
-            </Badge>
+            <ValidatorStatusBadge status={item.status} />
           </TableCell>
           <TableCell className="flex gap-1 justify-end">
             <SsvExplorerBtn validatorId={item.public_key} />

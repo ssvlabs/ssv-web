@@ -50,7 +50,9 @@ export const EstimatedOperationalRunway: EstimatedOperationalRunwayFC = ({
           content="Estimated amount of days the cluster balance is sufficient to run all it's validators."
         >
           <div className="flex gap-2 w-fit items-center text-gray-500">
-            <Text variant="body-2-bold">Est. Operational Runway</Text>
+            <Text variant="body-2-bold" className="text-gray-500">
+              Est. Operational Runway
+            </Text>
             <FaCircleInfo className="size-3 text-gray-500" />
           </div>
         </Tooltip>

@@ -26,13 +26,15 @@ export const useAccountState = () => {
 
   const isNewAccount = isLoading ? false : !hasClusters && !hasOperators;
 
-  const accountRoutePath = isLoading
-    ? undefined
-    : isNewAccount
-      ? "/join"
-      : hasClusters
-        ? "/clusters"
-        : "/operators";
+  const accountRoutePath = account.isDisconnected
+    ? "/connect"
+    : isLoading
+      ? undefined
+      : isNewAccount
+        ? "/join"
+        : hasClusters
+          ? "/clusters"
+          : "/operators";
 
   return {
     isLoading,

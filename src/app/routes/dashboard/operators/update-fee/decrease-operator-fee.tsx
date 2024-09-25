@@ -1,7 +1,6 @@
 import type { FC } from "react";
 import { Container } from "@/components/ui/container";
-import { Card } from "@/components/ui/card";
-import { Text } from "@/components/ui/text";
+import { Card, CardHeader } from "@/components/ui/card";
 import { FeeChange } from "@/components/ui/fee-change";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -54,8 +53,10 @@ export const DecreaseOperatorFee: FC = () => {
     <Container variant="vertical" className="py-6">
       <NavigateBackBtn />
       <Card>
-        <Text variant="headline4">Update Fee</Text>
-        <Text>Your new operator annual fee will be updated to.</Text>
+        <CardHeader
+          title="Update Fee"
+          description="Your new operator annual fee will be updated to."
+        />
         <FeeChange
           previousFee={state.previousYearlyFee}
           newFee={state.newYearlyFee}

@@ -19,7 +19,7 @@ export const MevRelayBadge: FCProps = ({ className, mevRelay, ...props }) => {
       {...props}
     >
       <img src={`/images/mevs/${MEV_RELAYS_LOGOS[mevRelay]}.svg`} />
-      <Text>{mevRelay}</Text>
+      <Text variant="body-2-medium">{mevRelay}</Text>
     </div>
   );
 };

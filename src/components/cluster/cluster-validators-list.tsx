@@ -4,7 +4,6 @@ import { TableRow, TableCell } from "@/components/ui/grid-table";
 import { SsvExplorerBtn } from "@/components/ui/ssv-explorer-btn";
 import { VirtualizedInfinityTable } from "@/components/ui/virtualized-infinity-table";
 import { add0x, shortenAddress } from "@/lib/utils/strings";
-import { Badge } from "@/components/ui/badge";
 import { Text } from "@/components/ui/text";
 import { IconButton } from "@/components/ui/button";
 import { LuLogOut, LuSatelliteDish, LuTrash2 } from "react-icons/lu";
@@ -24,6 +23,7 @@ import { useCluster } from "@/hooks/cluster/use-cluster";
 import { TbExternalLink, TbRefresh } from "react-icons/tb";
 import { useBulkActionContext } from "@/guard/bulk-action-guard";
 import { Spacer } from "@/components/ui/spacer";
+import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge";
 
 export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
@@ -60,9 +60,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
             <CopyBtn variant="subtle" text={item.public_key} />
           </TableCell>
           <TableCell>
-            <Badge variant="error" size="sm">
-              {item.status}
-            </Badge>
+            <ValidatorStatusBadge size="sm" status={item.status} />
           </TableCell>
           <TableCell className="flex gap-0.5 justify-end">
             <SsvExplorerBtn validatorId={item.public_key} />

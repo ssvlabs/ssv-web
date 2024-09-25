@@ -1,6 +1,6 @@
 import { getOwnerNonce } from "@/api/account";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { JSONFileUploader } from "@/components/ui/file-upload";
 import { Input } from "@/components/ui/input";
@@ -113,10 +113,14 @@ export const GenerateKeySharesOnline: FCProps = () => {
     <Container variant="vertical" className="py-6">
       <NavigateBackBtn by="history" />
       <Card className="flex flex-col w-full">
-        <Text variant="headline4">Enter Validator Key</Text>
-        <Text variant="body-2-medium">
-          Upload your validator <b>keystore</b> file below
-        </Text>
+        <CardHeader
+          title="Enter Validator Key"
+          description={
+            <Text variant="body-2-medium">
+              Upload your validator <b>keystore</b> file below
+            </Text>
+          }
+        />
         <JSONFileUploader
           files={files || []}
           onValueChange={(files) => {
@@ -163,14 +167,12 @@ export const GenerateKeySharesOnline: FCProps = () => {
               )}
             />
 
-            <Alert variant="warning">
-              <AlertDescription className="flex gap-4 items-center">
-                <FaCircleInfo className="size-8 text-warning-500" />
-                <Text>
-                  Please never perform online key splitting on testnet with a
-                  private key that you intend to use on mainnet, as doing so may
-                  put your validators at risk.
-                </Text>
+            <Alert variant="warning" className="flex gap-4 items-center">
+              <FaCircleInfo className="size-8 text-warning-500" />
+              <AlertDescription>
+                Please never perform online key splitting on testnet with a
+                private key that you intend to use on mainnet, as doing so may
+                put your validators at risk.
               </AlertDescription>
             </Alert>
             <Button

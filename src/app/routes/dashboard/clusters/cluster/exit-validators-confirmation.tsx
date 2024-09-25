@@ -1,7 +1,7 @@
 import { ValidatorsBulkSummary } from "@/components/cluster/validators-bulk-summary";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Container } from "@/components/ui/container";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
@@ -70,12 +70,10 @@ export const ExitValidatorsConfirmation: FC = () => {
       <NavigateBackBtn />
       <div className="flex w-full gap-6">
         <Card className="flex-[1.7]">
-          <Text variant="headline4">Exit validators</Text>
-          <Text className="text-gray-600">
-            Exiting your validator signals to the network that you wish to
-            permanently cease your validator's participation in the Beacon Chain
-            and retrieve your 32 ETH stake principal.
-          </Text>
+          <CardHeader
+            title="Exit validators"
+            description="Exiting your validator signals to the network that you wish to permanently cease your validator's participation in the Beacon Chain and retrieve your 32 ETH stake principal."
+          />
           <Text className="text-gray-600">
             Initiating an exit places your validator in the exit queue. The
             duration in the queue depends on the number of validators already
@@ -96,7 +94,7 @@ export const ExitValidatorsConfirmation: FC = () => {
               className="mt-1"
               onCheckedChange={(checked: boolean) => setAgree1(checked)}
             />
-            <Text>
+            <Text variant="body-2-medium">
               I confirm that I have access to the withdrawal credentials of this
               validator.
             </Text>
@@ -108,7 +106,7 @@ export const ExitValidatorsConfirmation: FC = () => {
               className="mt-1"
               onCheckedChange={(checked: boolean) => setAgree2(checked)}
             />
-            <Text>
+            <Text variant="body-2-medium">
               I understand that my validator must remain active to perform its
               duties while in the exit queue, and it's up to me to remove it
               from the SSV network once completed to stop incurring fees.
@@ -121,7 +119,7 @@ export const ExitValidatorsConfirmation: FC = () => {
               className="mt-1"
               onCheckedChange={(checked: boolean) => setAgree3(checked)}
             />
-            <Text>
+            <Text variant="body-2-medium">
               I understand that a full exit is an irreversible decision. Once
               completed, the validator permanently leaves the Beacon Chain, and
               this action cannot be undone.

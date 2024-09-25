@@ -1,7 +1,7 @@
 import { ValidatorsBulkSummary } from "@/components/cluster/validators-bulk-summary";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Container } from "@/components/ui/container";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
@@ -96,13 +96,11 @@ export const RemoveValidatorsConfirmation: FC = () => {
       <NavigateBackBtn by="history" />
       <div className="flex w-full gap-6">
         <Card className="flex-[1.7]">
-          <Text variant="headline4">Remove validators</Text>
-          <Text className="text-gray-600">
-            Removing your validator will cause your operators to stop managing
-            it in your behalf, which will result in its inactivation (penalties
-            on the Beacon Chain).
-          </Text>
-          <Text className="text-gray-600">
+          <CardHeader
+            title="Remove validators"
+            description="Removing your validator will cause your operators to stop managing it on your behalf, which will result in its inactivation (penalties on the Beacon Chain)."
+          />
+          <Text variant="body-2-medium">
             Please note that this action only applies to its removal from our
             network and does not exit your validator from the Beacon Chain.
           </Text>
@@ -119,7 +117,7 @@ export const RemoveValidatorsConfirmation: FC = () => {
               className="mt-1"
               onCheckedChange={(checked: boolean) => setAgree1(checked)}
             />
-            <Text>
+            <Text variant="body-2-medium">
               I understand that my validator will be removed from the network
               and it will stop attesting on the beacon chain
             </Text>

@@ -125,7 +125,7 @@ export const OperatorPickerItem: FCProps = ({
             },
           )}
         >
-          <Text>
+          <Text variant="body-2-medium">
             {percentageFormatter.format(operator.performance["30d"] / 100)}
           </Text>
           {isInactive && (

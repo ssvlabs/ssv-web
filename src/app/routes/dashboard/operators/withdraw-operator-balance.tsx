@@ -104,7 +104,7 @@ export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
                 >
                   Max
                 </Button>
-                <Text>SSV</Text>
+                <Text variant="body-2-medium">SSV</Text>
               </div>
             }
           />

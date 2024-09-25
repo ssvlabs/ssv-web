@@ -108,7 +108,7 @@ export const Cluster: FC = () => {
               Reactivate Cluster
             </Button>
           ) : (
-            <div className="flex gap-4 [&>*]:flex-1">
+            <div className="flex gap-3 [&>*]:flex-1">
               <Button as={Link} to="deposit" size="xl">
                 Deposit
               </Button>

@@ -89,7 +89,7 @@ export const WithAllowance: WithAllowanceFC = ({
 
   return (
     <div className={cn("space-y-4", className)} {...props}>
-      <div className={cn("flex gap-4 [&>*]:flex-1")}>
+      <div className={cn("flex gap-3 [&>*]:flex-1")}>
         <Button
           size={size}
           onClick={approve}

@@ -18,10 +18,12 @@ export const PastingLimitExceededModal: FC = () => {
           </Button>
         </div>
 
-        <Text>
+        <Text variant="body-2-medium">
           It appears that you tried to paste more than 500 addresses at once.
         </Text>
-        <Text>Please select up to 500 addresses and try again.</Text>
+        <Text variant="body-2-medium">
+          Please select up to 500 addresses and try again.
+        </Text>
         <Button
           variant="outline"
           colorScheme="error"

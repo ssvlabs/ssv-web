@@ -89,7 +89,7 @@ export const OperatorStatCard: OperatorStatCardFC = ({
           <Text variant="caption-medium" className="text-gray-500">
             30D Perform.
           </Text>
-          <Text variant="body-2-medium">
+          <Text variant="body-2-medium" className="text-gray-800">
             {percentageFormatter.format(operator.performance["30d"])}
           </Text>
         </div>
@@ -97,7 +97,9 @@ export const OperatorStatCard: OperatorStatCardFC = ({
           <Text variant="caption-medium" className="text-gray-500">
             Yearly Fee
           </Text>
-          <Text variant="body-2-medium">{formatSSV(fee.yearly)} SSV</Text>
+          <Text variant="body-2-medium" className="text-gray-800">
+            {formatSSV(fee.yearly)} SSV
+          </Text>
         </div>
       </div>
     </Card>

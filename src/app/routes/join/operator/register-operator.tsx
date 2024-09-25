@@ -1,7 +1,7 @@
 import type { FC, ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils/tw";
 import { Container } from "@/components/ui/container";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Span, Text } from "@/components/ui/text";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -89,11 +89,10 @@ export const RegisterOperator: FC<ComponentPropsWithoutRef<"div">> = ({
 
       <Form {...form}>
         <Card as="form" onSubmit={submit} className={cn(className)} {...props}>
-          <Text variant="headline4">Register Operator</Text>
-          <Text>
-            Register to the networks registry to enable others to discover and
-            select you as one of their validator's operators.
-          </Text>
+          <CardHeader
+            title="Register Operator"
+            description="Register to the networks registry to enable others to discover and select you as one of their validator's operators."
+          />
 
           <FormField
             control={form.control}
@@ -155,10 +154,10 @@ export const RegisterOperator: FC<ComponentPropsWithoutRef<"div">> = ({
             <Tooltip
               content={
                 <div className="space-y-6">
-                  <Span variant="body-3-bold">Public Mode</Span>- Any validator
+                  <Span className="font-bold">Public Mode</Span>- Any validator
                   can register with the operator.
                   <br />
-                  <Span variant="body-3-bold">Private Mode</Span> - Only
+                  <Span className="font-bold">Private Mode</Span> - Only
                   whitelisted addresses can register.
                   <div>
                     Please note that you can always modify the operator status

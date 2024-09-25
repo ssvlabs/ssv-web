@@ -22,7 +22,7 @@ export const SlashingWarning: FC = () => {
         <Text variant="headline4">Slashing Warning</Text>
         {shares.length === 1 && (
           <>
-            <Text>Validator Public Key</Text>
+            <Text variant="body-2-medium">Validator Public Key</Text>
             <Input
               disabled
               value={shares[0].publicKey}
@@ -35,11 +35,11 @@ export const SlashingWarning: FC = () => {
             />
           </>
         )}
-        <Text>
+        <Text variant="body-2-medium">
           Running a validator simultaneously to the SSV network will cause
           slashing to your validator.
         </Text>
-        <Text>
+        <Text variant="body-2-medium">
           To avoid slashing, shut down your existing validator setup (if you
           have one) before importing your validator to run with our network.
         </Text>
@@ -50,7 +50,7 @@ export const SlashingWarning: FC = () => {
             className="mt-1"
             onCheckedChange={(checked: boolean) => setAgree1(checked)}
           />
-          <Text>
+          <Text variant="body-2-medium">
             I understand that running my validator simultaneously in multiple
             setups will cause slashing to my validator
           </Text>

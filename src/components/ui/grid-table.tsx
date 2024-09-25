@@ -30,7 +30,7 @@ const TableHeader = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "_row grid w-full text-xs text-gray-600 font-semibold p-4 py-2 text-left align-middle border-b border-gray-300",
+      "_row grid w-full text-xs text-gray-500 font-semibold p-4 py-2 text-left align-middle border-b border-gray-300",
       className,
     )}
     style={{

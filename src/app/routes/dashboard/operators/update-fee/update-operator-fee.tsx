@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import {
   Form,
@@ -99,10 +99,10 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
       <NavigateBackBtn by="path" to="../.." />
       <Form {...form}>
         <Card as="form" className="w-full" onSubmit={submit}>
-          <Text variant="headline4">Update Fee</Text>
-          <Text variant="body-2-medium">
-            Enter your new operator annual fee.
-          </Text>
+          <CardHeader
+            title="Update Fee"
+            description="Enter your new operator annual fee."
+          />
           <FormField
             control={form.control}
             name="yearlyFee"

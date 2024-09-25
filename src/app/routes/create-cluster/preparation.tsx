@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { Text } from "@/components/ui/text";
@@ -24,11 +24,10 @@ export const Preparation: FCProps = ({ className, ...props }) => {
     <Container variant="vertical" className="py-6">
       <NavigateBackBtn to="/clusters" />
       <Card className={cn(className)} {...props}>
-        <Text variant="headline4">Run a Distributed Validator</Text>
-        <Text variant="body-2-medium" className="text-gray-700">
-          Distribute your validation duties among a set of distributed nodes to
-          improve your validator resilience, safety, liveliness, and diversity.
-        </Text>
+        <CardHeader
+          title="Run a Distributed Validator"
+          description="Distribute your validation duties among a set of distributed nodes to improve your validator resilience, safety, liveliness, and diversity."
+        />
         <Text variant="body-2-semibold" className="text-gray-500">
           Prerequisites
         </Text>
@@ -40,7 +39,7 @@ export const Preparation: FCProps = ({ className, ...props }) => {
             </Text>
             <Tooltip
               content={
-                <Text variant="body-2-medium">
+                <Text>
                   Don't have a validator?{" "}
                   <Button
                     as={Link}
@@ -63,7 +62,7 @@ export const Preparation: FCProps = ({ className, ...props }) => {
             </Text>
           </div>
         </div>
-        <div className="flex flex-col w-full gap-2">
+        <div className="flex flex-col w-full gap-3">
           <Button as={Link} to="select-operators" size="xl">
             Generate new key shares
           </Button>

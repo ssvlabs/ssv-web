@@ -53,7 +53,7 @@ export const ValidatorsSelectionTable: FC<ValidatorsSelectionTableProps> = ({
             value="available"
             disabled={taggedValidators.available.length === 0}
           >
-            <Text>Available</Text>
+            <Text variant="body-2-medium">Available</Text>
             <Badge className="rounded-lg" variant="primary" size="xs">
               {taggedValidators.available.length}
             </Badge>
@@ -63,7 +63,7 @@ export const ValidatorsSelectionTable: FC<ValidatorsSelectionTableProps> = ({
             value="registered"
             disabled={taggedValidators.registered.length === 0}
           >
-            <Text>Registered</Text>
+            <Text variant="body-2-medium">Registered</Text>
             <Badge className="rounded-lg" variant="success" size="xs">
               {taggedValidators.registered.length}
             </Badge>
@@ -73,7 +73,7 @@ export const ValidatorsSelectionTable: FC<ValidatorsSelectionTableProps> = ({
             value="incorrect"
             disabled={taggedValidators.incorrect.length === 0}
           >
-            <Text>Incorrect</Text>
+            <Text variant="body-2-medium">Incorrect</Text>
             <Badge className="rounded-lg" variant="error" size="xs">
               {taggedValidators.incorrect.length}
             </Badge>
@@ -83,7 +83,7 @@ export const ValidatorsSelectionTable: FC<ValidatorsSelectionTableProps> = ({
             value="all"
             disabled={taggedValidators.all.length === 0}
           >
-            <Text>All</Text>
+            <Text variant="body-2-medium">All</Text>
             <Badge className="rounded-lg" variant="info" size="xs">
               {taggedValidators.all.length}
             </Badge>
@@ -117,7 +117,7 @@ export const ValidatorsSelectionTable: FC<ValidatorsSelectionTableProps> = ({
                 })}
               >
                 <TableCell className="flex gap-1 items-center">
-                  <Text>
+                  <Text variant="body-2-medium">
                     {shortenAddress(validator.share.payload.publicKey)}
                   </Text>
                   <CopyBtn

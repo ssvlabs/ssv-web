@@ -19,11 +19,11 @@ export const UnsavedChangesModal: FC<UnsavedChangesModalProps> = ({
       <DialogContent className="flex bg-gray-50 flex-col gap-3 max-w-[424px] font-medium ">
         <Text variant="headline4">Unsaved Changes</Text>
 
-        <Text>
+        <Text variant="body-2-medium">
           Are you sure that you want to discard changes? Any unsaved changes
           will be lost.
         </Text>
-        <div className="flex [&>*]:flex-1 gap-2 mt-4">
+        <div className="flex [&>*]:flex-1 gap-3 mt-4">
           <Button onClick={onDiscard} size="lg">
             Discard
           </Button>

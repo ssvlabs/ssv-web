@@ -66,7 +66,7 @@ export const ClusterTable: FCProps = ({
               }
             >
               <div className="flex gap-2 items-center">
-                <Text variant="body-2-medium">Cluster ID</Text>
+                <Text>Cluster ID</Text>
                 <FaCircleInfo className="size-3 text-gray-500" />
               </div>
             </Tooltip>

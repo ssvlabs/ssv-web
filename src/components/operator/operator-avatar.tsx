@@ -4,6 +4,7 @@ import { cva } from "class-variance-authority";
 import { MdOutlineLock } from "react-icons/md";
 import type { ComponentPropsWithoutRef } from "react";
 import { forwardRef } from "react";
+import OperatorDefaultAvatar from "@/assets/images/operator-avatar.svg?react";
 
 export const variants = cva("object-cover", {
   variants: {
@@ -52,10 +53,17 @@ export const OperatorAvatar = forwardRef<HTMLDivElement, FCProps>(
             <MdOutlineLock className="size-4" />
           </div>
         )}
-        <img
-          className={cn(variants({ size, variant }), "w-full h-full")}
-          src={src || "/images/operator_default_background/light.svg"}
-        />
+
+        {src ? (
+          <img
+            className={cn(variants({ size, variant }), "w-full h-full")}
+            src={src || "/images/operator_default_background/light.svg"}
+          />
+        ) : (
+          <OperatorDefaultAvatar
+            className={cn(variants({ size, variant }), "w-full h-full")}
+          />
+        )}
       </div>
     );
   },

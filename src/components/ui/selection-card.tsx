@@ -68,7 +68,7 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
           )}
         </AnimatePresence>
       </div>
-      <Text variant="body-2-medium">{title}</Text>
+      <Text>{title}</Text>
       <Text
         variant="caption-medium"
         className={cn("text-gray-500", {

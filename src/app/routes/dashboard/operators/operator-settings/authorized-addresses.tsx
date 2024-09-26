@@ -111,7 +111,10 @@ export const AuthorizedAddresses = () => {
                   </AlertDescription>
                 </Alert>
               )}
-            <div ref={formRef} className="space-y-3 overflow-auto">
+            <div
+              ref={formRef}
+              className="space-y-3 overflow-auto scroll-smooth"
+            >
               {operator?.whitelist_addresses?.map((address) => (
                 <DeletableAddress
                   key={address}

@@ -167,7 +167,7 @@ export const AuthorizedAddresses = () => {
                   <button
                     disabled={isAddBtnDisabled}
                     type="button"
-                    className="sticky bottom-0 bg-gray-50 h-12 w-full text-center border border-gray-400 border-dashed rounded-lg text-gray-500 font-medium"
+                    className="sticky bottom-0 outline outline-[8px] outline-gray-50 bg-gray-50 h-12 w-full text-center border border-gray-400 border-dashed rounded-lg text-gray-500 font-medium"
                     onClick={addNewAddressField}
                   >
                     + Add Authorized Address

@@ -67,7 +67,7 @@ export const OperatorStatus: FC = () => {
               <ul className="list-disc pl-6">
                 <li>
                   <span className="font-bold">Public mode</span> - Any validator
-                  can register with the operator?.
+                  can register with the operator.
                 </li>
                 <li>
                   <span className="font-bold">Private mode</span> - Only

@@ -94,7 +94,7 @@ export const AuthorizedAddresses = () => {
               </div>
               <p className="text-sm font-medium text-gray-700">
                 Manage the owner addresses that are authorized to register
-                validators to your operator?.
+                validators to your operator.
                 <br />
                 Whitelisted addresses are effective only when your operator
                 status is set to Private.
@@ -158,6 +158,7 @@ export const AuthorizedAddresses = () => {
               )}
               {mode !== "delete" && !hasReachedMaxAddressesCount && (
                 <Tooltip
+                  asChild
                   content={
                     isAddBtnDisabled &&
                     "In order to add another address, you must enter a valid address"
@@ -166,7 +167,7 @@ export const AuthorizedAddresses = () => {
                   <button
                     disabled={isAddBtnDisabled}
                     type="button"
-                    className="h-12 w-full text-center border border-gray-400 border-dashed rounded-lg text-gray-500 font-medium"
+                    className="sticky bottom-0 bg-gray-50 h-12 w-full text-center border border-gray-400 border-dashed rounded-lg text-gray-500 font-medium"
                     onClick={addNewAddressField}
                   >
                     + Add Authorized Address

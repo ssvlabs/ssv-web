@@ -54,6 +54,9 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
                     isPrivate={operator.is_private}
                     size="md"
                     variant="circle"
+                    className={cn({
+                      "opacity-50": operator.is_deleted,
+                    })}
                   />
                 </Tooltip>
               );

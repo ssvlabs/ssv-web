@@ -54,7 +54,7 @@ export const Cluster: FC = () => {
   const { data: runway } = useClusterRunway(clusterHash!);
 
   return (
-    <Container variant="vertical" size="xl" className="h-full py-6">
+    <Container variant="vertical" size="xl" className="min-h-full py-6">
       <NavigateBackBtn />
 
       <div className="grid grid-cols-4 gap-6 w-full">

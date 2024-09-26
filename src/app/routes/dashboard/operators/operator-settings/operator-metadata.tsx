@@ -12,13 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input, inputVariants } from "@/components/ui/input";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Text } from "@/components/ui/text";
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -41,6 +35,7 @@ import { FaCircleInfo } from "react-icons/fa6";
 import { useNavigate } from "react-router";
 import { z } from "zod";
 import { MultipleSelector } from "@/components/ui/multi-select2";
+import { Combobox } from "@/components/ui/combobox";
 
 const sanitizedString = z.string().regex(/^[a-zA-Z0-9_!$#’|\s]*$/, {
   message: "Only letters, numbers, and special characters are allowed.",
@@ -204,26 +199,15 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
               <FormItem>
                 <FormLabel>Server Geolocation</FormLabel>
                 <FormControl>
-                  <Select
+                  <Combobox
                     value={field.value}
-                    onValueChange={(value) => field.onChange(value)}
-                  >
-                    <SelectTrigger
-                      className={inputVariants({ className: "text-base" })}
-                    >
-                      <SelectValue placeholder="Select your server geolocation" />
-                    </SelectTrigger>
-                    <SelectContent className="font">
-                      {operatorLocations.data?.map((country) => (
-                        <SelectItem
-                          key={country["iso_3166-2"]}
-                          value={country.name}
-                        >
-                          {country.name} ({country["alpha-3"]})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    onChange={field.onChange}
+                    placeholder="Select your server geolocation"
+                    options={(operatorLocations.data || []).map((country) => ({
+                      value: country.name,
+                      label: `${country.name} (${country["alpha-3"]})`,
+                    }))}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -237,23 +221,18 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
               <FormItem>
                 <FormLabel>Execution Client</FormLabel>
                 <FormControl>
-                  <Select
+                  <Combobox
                     value={field.value}
-                    onValueChange={(value) => field.onChange(value)}
-                  >
-                    <SelectTrigger
-                      className={inputVariants({ className: "text-base" })}
-                    >
-                      <SelectValue placeholder="Geth, Nethermind, Besu..." />
-                    </SelectTrigger>
-                    <SelectContent className="font">
-                      {["Erigon", "Besu", "Nethermind", "Geth"].map((node) => (
-                        <SelectItem key={node} value={node}>
-                          {node}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    onChange={(value) => field.onChange(value)}
+                    placeholder="Geth, Nethermind, Besu..."
+                    options={["Erigon", "Besu", "Nethermind", "Geth"].map(
+                      (node) => ({
+                        value: node,
+                        label: node,
+                      }),
+                    )}
+                    className={inputVariants({ className: "text-base" })}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -266,32 +245,22 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
               <FormItem>
                 <FormLabel>Consensus Client</FormLabel>
                 <FormControl>
-                  <Select
+                  <Combobox
                     value={field.value}
-                    onValueChange={(value) => field.onChange(value)}
-                  >
-                    <SelectTrigger
-                      className={inputVariants({ className: "text-base" })}
-                    >
-                      <SelectValue
-                        placeholder="Prism, Lighthouse, Teku..."
-                        className="text-gray-200"
-                      />
-                    </SelectTrigger>
-                    <SelectContent className="font">
-                      {[
-                        "Lodestar",
-                        "Nimbus",
-                        "Teku",
-                        "Lighthouse",
-                        "Prysm",
-                      ].map((node) => (
-                        <SelectItem key={node} value={node}>
-                          {node}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    onChange={(value) => field.onChange(value)}
+                    placeholder="Prism, Lighthouse, Teku..."
+                    options={[
+                      "Lodestar",
+                      "Nimbus",
+                      "Teku",
+                      "Lighthouse",
+                      "Prysm",
+                    ].map((node) => ({
+                      value: node,
+                      label: node,
+                    }))}
+                    className={inputVariants({ className: "text-base" })}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

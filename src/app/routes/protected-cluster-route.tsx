@@ -11,8 +11,8 @@ export const ProtectedClusterRoute: FC<ComponentPropsWithoutRef<"div">> = ({
   const { clusterHash } = useClusterPageParams();
   const cluster = useCluster(clusterHash ?? "");
 
-  if (isUndefined(clusterHash)) return <Navigate to="../not-found" />;
-  if (cluster.isError) return <Navigate to="../not-found" />;
+  if (isUndefined(clusterHash)) return <Navigate to="/clusters" />;
+  if (cluster.isError || !cluster.data) return <Navigate to="/clusters" />;
   if (cluster.isLoading) return <Loading />;
 
   return props.children;

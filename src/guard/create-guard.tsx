@@ -35,24 +35,25 @@ export const createGuard = <T extends object>(
   hook.resetState = resetState;
 
   const guardProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const params = useParams();
-    const location = useLocation();
-    const guards = useMemo(() => Object.entries(guard), []);
+    if (import.meta.env.PROD) {
+      const params = useParams();
+      const location = useLocation();
+      const guards = useMemo(() => Object.entries(guard), []);
 
-    resetStateOnUnmount && useUnmount(resetState);
+      resetStateOnUnmount && useUnmount(resetState);
 
-    for (const [pattern, guardFn] of guards) {
-      const match = matchPath(pattern, location.pathname);
-      if (!match) continue;
-      const path = guardFn?.(state, {
-        location,
-        params,
-        match,
-        resetState,
-      });
-      if (path) return <Navigate to={path} replace />;
+      for (const [pattern, guardFn] of guards) {
+        const match = matchPath(pattern, location.pathname);
+        if (!match) continue;
+        const path = guardFn?.(state, {
+          location,
+          params,
+          match,
+          resetState,
+        });
+        if (path) return <Navigate to={path} replace />;
+      }
     }
-
     return <>{children}</>;
   };
 

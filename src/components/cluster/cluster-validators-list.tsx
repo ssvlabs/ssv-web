@@ -1,13 +1,15 @@
 import type { FC, ComponentPropsWithoutRef } from "react";
 import { CopyBtn } from "@/components/ui/copy-btn";
 import { TableRow, TableCell } from "@/components/ui/grid-table";
-import { SsvExplorerBtn } from "@/components/ui/ssv-explorer-btn";
+import {
+  BeaconchainBtn,
+  SsvExplorerBtn,
+} from "@/components/ui/ssv-explorer-btn";
 import { VirtualizedInfinityTable } from "@/components/ui/virtualized-infinity-table";
 import { add0x, shortenAddress } from "@/lib/utils/strings";
 import { Text } from "@/components/ui/text";
 import { IconButton } from "@/components/ui/button";
-import { LuLogOut, LuSatelliteDish, LuTrash2 } from "react-icons/lu";
-import { useLinks } from "@/hooks/use-links";
+import { LuLogOut, LuTrash2 } from "react-icons/lu";
 import { FaCircleInfo } from "react-icons/fa6";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useInfiniteClusterValidators } from "@/hooks/cluster/use-infinite-cluster-validators";
@@ -30,7 +32,6 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
 }) => {
   const cluster = useCluster();
   const { validators, infiniteQuery } = useInfiniteClusterValidators();
-  const links = useLinks();
 
   return (
     <VirtualizedInfinityTable
@@ -64,13 +65,8 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
           </TableCell>
           <TableCell className="flex gap-0.5 justify-end">
             <SsvExplorerBtn validatorId={item.public_key} />
-            <IconButton
-              as="a"
-              href={`${links.beaconcha}/validator/${item.public_key}`}
-              target="_blank"
-            >
-              <LuSatelliteDish />
-            </IconButton>
+            <BeaconchainBtn validatorId={item.public_key} />
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <IconButton>
@@ -99,7 +95,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                 >
                   <DropdownMenuItem>
                     <LuTrash2 className="size-4" />
-                    <span>Remove Validators</span>
+                    <span>Remove Validator</span>
                   </DropdownMenuItem>
                 </Link>
                 <Tooltip
@@ -121,7 +117,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                   >
                     <DropdownMenuItem disabled={cluster.data?.isLiquidated}>
                       <LuLogOut className="size-4" />
-                      <span>Exit Validators</span>
+                      <span>Exit Validator</span>
                     </DropdownMenuItem>
                   </Link>
                 </Tooltip>

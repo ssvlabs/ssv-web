@@ -38,7 +38,15 @@ export const RegisterValidatorSuccess: FC = () => {
           content={
             <>
               Clusters represent a unique set of operators who operate your
-              validators. Read more on clusters
+              validators.{" "}
+              <Button
+                as={Link}
+                to="https://docs.ssv.network/learn/stakers/clusters"
+                target="_blank"
+                variant="link"
+              >
+                Read more on clusters
+              </Button>
             </>
           }
         >

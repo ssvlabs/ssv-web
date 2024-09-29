@@ -4,7 +4,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { globals } from "@/config";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { isEmpty } from "lodash-es";
 import { Collapse } from "react-collapse";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -62,8 +61,9 @@ export const InitialFunding: FCProps = ({ ...props }) => {
   });
 
   const days = form.watch("days");
-  const showLiquidationWarning =
-    !isEmpty(days) && days < globals.CLUSTER_VALIDITY_PERIOD_MINIMUM;
+  const showLiquidationWarning = Boolean(
+    days && days < globals.CLUSTER_VALIDITY_PERIOD_MINIMUM,
+  );
 
   const submit = form.handleSubmit(async ({ days }) => {
     const cost = await computeFundingCost.mutateAsync({

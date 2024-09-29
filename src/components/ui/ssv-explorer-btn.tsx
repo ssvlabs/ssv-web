@@ -1,12 +1,14 @@
 import type { FC } from "react";
 import { cn } from "@/lib/utils/tw";
 import type { ButtonProps } from "@/components/ui/button";
-import { Button } from "@/components/ui/button";
+import { Button, IconButton } from "@/components/ui/button";
 import { useSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import { Tooltip } from "@/components/ui/tooltip";
 import { MdOutlineTravelExplore } from "react-icons/md";
 import { omit } from "lodash-es";
 import urlJoin from "url-join";
+import { useLinks } from "@/hooks/use-links";
+import { LuSatelliteDish } from "react-icons/lu";
 
 export type SsvExplorerBtnProps =
   | {
@@ -16,11 +18,11 @@ export type SsvExplorerBtnProps =
       validatorId: string;
     };
 
-type FCProps = FC<
+type SsvExplorerBtnFC = FC<
   Omit<ButtonProps, keyof SsvExplorerBtnProps> & SsvExplorerBtnProps
 >;
 
-export const SsvExplorerBtn: FCProps = ({ className, ...props }) => {
+export const SsvExplorerBtn: SsvExplorerBtnFC = ({ className, ...props }) => {
   const network = useSSVNetworkDetails();
   const isOperator = "operatorId" in props;
 
@@ -57,3 +59,28 @@ export const SsvExplorerBtn: FCProps = ({ className, ...props }) => {
 };
 
 SsvExplorerBtn.displayName = "SsvExplorerBtn";
+
+export type BeaconchainBtnProps = {
+  validatorId: string;
+};
+
+type BeaconchainBtnFC = FC<
+  Omit<ButtonProps, keyof BeaconchainBtnProps> & BeaconchainBtnProps
+>;
+
+export const BeaconchainBtn: BeaconchainBtnFC = ({ validatorId, ...props }) => {
+  const links = useLinks();
+
+  return (
+    <Tooltip asChild content={"Beaconchain"}>
+      <IconButton
+        as="a"
+        href={`${links.beaconcha}/validator/${validatorId}`}
+        target="_blank"
+        {...props}
+      >
+        <LuSatelliteDish />
+      </IconButton>
+    </Tooltip>
+  );
+};

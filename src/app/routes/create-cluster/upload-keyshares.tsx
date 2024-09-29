@@ -42,11 +42,10 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
 
   const { state } = useRegisterValidatorContext;
   const context = useRegisterValidatorContext();
-  console.log("context.keysharesFile:", context.keysharesFile);
   const validatedShares = useKeysharesValidation(
     context.keysharesFile.files?.[0] ?? null,
   );
-  console.log("validatedShares:", validatedShares);
+
   const operatorIds = useSelectedOperatorIds();
 
   const { query: validators } = useKeysharesValidatorsList(
@@ -72,7 +71,10 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
   );
 
   useEffect(() => {
-    if (state.selectedValidatorsCount < 1) {
+    if (
+      state.selectedValidatorsCount < 1 ||
+      state.selectedValidatorsCount > maxAddable
+    ) {
       state.selectedValidatorsCount = maxAddable;
     }
   }, [state, validators.data?.tags.available.length, maxAddable]);

@@ -8,44 +8,82 @@ import { sortNumbers } from "@/lib/utils/number";
 import { useKeysharesSchemaValidation } from "@/hooks/keyshares/use-keyshares-schema-validation";
 import type { KeySharesPayload } from "ssv-keys/dist/tsc/src/lib/KeyShares/KeySharesData/KeySharesPayload";
 import { getOSName } from "@/lib/utils/os";
+import { isFrom } from "@/lib/utils/router";
+import { createFileSetter } from "@/lib/utils/valtio";
+
+const allowedClusterRoutes = ["distribution-method", "online", "offline"];
 
 export const [RegisterValidatorGuard, useRegisterValidatorContext] =
-  createGuard({
-    clusterSize: 4 as ClusterSize,
-    password: "",
+  createGuard(
+    {
+      flow: "" as
+        | "generate-new-keyshares"
+        | "generate-from-existing-keyshares"
+        | "",
+      clusterSize: 4 as ClusterSize,
+      password: "",
 
-    shares: [] as KeySharesPayload[],
+      shares: [] as KeySharesPayload[],
 
-    selectedValidatorsCount: 0,
-    depositAmount: 0n,
-    fundingDays: 365,
+      selectedValidatorsCount: 0,
+      depositAmount: 0n,
+      fundingDays: 365,
 
-    _files: [] as File[],
-    set files(files: File[] | null) {
-      this._files.splice(0);
-      (files || []).forEach((file) => this._files.push(ref(file)));
-    },
+      keystoresFile: createFileSetter(),
+      keysharesFile: createFileSetter(),
 
-    get files() {
-      return this._files;
-    },
-    _selectedOperatorsIds: [] as number[],
-    set selectedOperatorsIds(ids: number[]) {
-      this._selectedOperatorsIds = ids;
-    },
-    get selectedOperatorsIds() {
-      return sortNumbers(this._selectedOperatorsIds.slice(0, this.clusterSize));
-    },
-    get hasSelectedOperators() {
-      return this.selectedOperatorsIds.length > 0;
-    },
+      _files: [] as File[],
+      set files(files: File[] | null) {
+        this._files.splice(0);
+        (files || []).forEach((file) => this._files.push(ref(file)));
+      },
 
-    dkgCeremonyState: {
-      validatorsAmount: 1,
-      withdrawalAddress: "",
-      selectedOs: getOSName(),
+      get files() {
+        return this._files;
+      },
+
+      _selectedOperatorsIds: [] as number[],
+      set selectedOperatorsIds(ids: number[]) {
+        this._selectedOperatorsIds = ids;
+      },
+      get selectedOperatorsIds() {
+        return sortNumbers(
+          this._selectedOperatorsIds.slice(0, this.clusterSize),
+        );
+      },
+      get hasSelectedOperators() {
+        return this.selectedOperatorsIds.length > 0;
+      },
+
+      dkgCeremonyState: {
+        validatorsAmount: 1,
+        withdrawalAddress: "",
+        selectedOs: getOSName(),
+      },
     },
-  });
+    {
+      "/join/validator/:nested/*": (state, { match }) => {
+        if (state.flow) return;
+        if (!match.params.nested) return;
+
+        const inCluster = match.params.nested?.startsWith("0x");
+        if (inCluster) {
+          if (allowedClusterRoutes.includes(match.params["*"] ?? "")) {
+            state.flow = "generate-from-existing-keyshares";
+            return;
+          }
+          return `/join/validator/${match.params.nested}/distribution-method`;
+        }
+
+        return "/join/validator";
+      },
+      "*": () => {
+        if (isFrom("/join/validator/success")) {
+          return "/join/validator";
+        }
+      },
+    },
+  );
 
 export const useSelectedOperatorIds = () => {
   const inCluster = Boolean(useClusterPageParams().clusterHash);

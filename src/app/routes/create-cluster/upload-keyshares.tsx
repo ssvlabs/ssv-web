@@ -42,8 +42,11 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
 
   const { state } = useRegisterValidatorContext;
   const context = useRegisterValidatorContext();
-
-  const validatedShares = useKeysharesValidation(context.files?.at(0) || null);
+  console.log("context.keysharesFile:", context.keysharesFile);
+  const validatedShares = useKeysharesValidation(
+    context.keysharesFile.files?.[0] ?? null,
+  );
+  console.log("validatedShares:", validatedShares);
   const operatorIds = useSelectedOperatorIds();
 
   const { query: validators } = useKeysharesValidatorsList(
@@ -103,9 +106,9 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
         <Card className="flex-1 h-fit" {...props}>
           <Text variant="headline4">Enter KeyShares File</Text>
           <JSONFileUploader
-            files={context.files || []}
+            files={context.keysharesFile.files ?? []}
             onValueChange={(files) => {
-              state.files = files ? ref(files) : null;
+              state.keysharesFile.files = files ? ref(files) : [];
             }}
             isError={validatedShares.isError}
             error={<KeysharesErrorAlert error={validatedShares.error} />}

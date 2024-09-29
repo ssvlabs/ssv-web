@@ -46,12 +46,14 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
     useSearchParamsState<"verified_operator" | "">({
       key: "type",
       initialValue: "",
+      debounce: 0,
     });
 
   const [isDKGChecked, setIsDKGChecked, isDKGCheckedDebounced] =
-    useSearchParamsState<"true" | "false">({
+    useSearchParamsState<"true" | "">({
       key: "has_dkg_address",
-      initialValue: "false",
+      initialValue: "",
+      debounce: 0,
     });
 
   const { operators, infiniteQuery, fetched } = useSearchOperators({
@@ -105,7 +107,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
                 setIsVerifiedChecked(
                   isVerifiedChecked ? "verified_operator" : "",
                 );
-                setIsDKGChecked(isDKGChecked ? "true" : "false");
+                setIsDKGChecked(isDKGChecked ? "true" : "");
               }}
               isVerifiedChecked={isVerifiedChecked === "verified_operator"}
               isDKGChecked={isDKGChecked === "true"}

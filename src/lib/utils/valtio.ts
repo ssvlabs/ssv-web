@@ -1,6 +1,6 @@
 import { tryCatch } from "@/lib/utils/tryCatch";
 import { cloneDeep } from "lodash-es";
-import { proxy, subscribe, useSnapshot } from "valtio";
+import { proxy, ref, subscribe, useSnapshot } from "valtio";
 
 export const reset = <T extends object>(state: T, defaultState: T) => {
   const resetObj = cloneDeep(defaultState);
@@ -35,3 +35,15 @@ export const createPersistedProxyHook = <T extends object>(
   hook.state = state;
   return hook;
 };
+
+export const createFileSetter = () => ({
+  _files: [] as File[],
+  set files(files: File[] | null) {
+    this._files.splice(0);
+    (files || []).forEach((file) => this._files.push(ref(file)));
+  },
+
+  get files(): File[] | null {
+    return this._files || null;
+  },
+});

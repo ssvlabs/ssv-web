@@ -41,13 +41,15 @@ export const useKeysharesValidation = (
       const ids = validateConsistentOperatorIds(shares);
       ensureValidatorsUniqueness(shares);
 
-      if (!isEqual(sortNumbers(ids), sortNumbers(operatorIds))) {
+      const selectedOperatorIds = operatorIds.length ? operatorIds : ids;
+
+      if (!isEqual(sortNumbers(ids), sortNumbers(selectedOperatorIds))) {
         throw new KeysharesValidationError(
           KeysharesValidationErrors.DifferentCluster,
         );
       }
 
-      const operators = await queryFetchOperators(operatorIds)
+      const operators = await queryFetchOperators(selectedOperatorIds)
         .then((operators) => {
           if (operators.some((operator) => operator.is_deleted)) {
             throw new KeysharesValidationError(
@@ -61,7 +63,6 @@ export const useKeysharesValidation = (
             KeysharesValidationErrors.OPERATOR_NOT_EXIST_ID,
           );
         });
-      console.log("operators:", operators);
 
       validateConsistentOperatorPublicKeys(shares, operators);
 

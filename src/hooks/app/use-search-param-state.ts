@@ -15,9 +15,9 @@ export const useSearchParamsState = <T extends string>({
   debounce = 500,
 }: UseSearchParamsStateOptions<T>) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const param = searchParams.get(key);
+  const searchParam = searchParams.get(key);
 
-  const [value, _setValue] = useState(() => param || initialValue);
+  const [value, _setValue] = useState(() => searchParam || initialValue);
 
   const [, cancel] = useDebounce(
     () => {
@@ -48,10 +48,10 @@ export const useSearchParamsState = <T extends string>({
 
   useEffect(() => {
     _setValue((prev) => {
-      if (prev !== param) return param ?? initialValue;
+      if (prev !== searchParam) return searchParam ?? initialValue;
       return prev;
     });
-  }, [initialValue, param]);
+  }, [initialValue, searchParam]);
 
   return [
     value,

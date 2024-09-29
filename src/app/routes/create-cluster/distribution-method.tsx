@@ -7,12 +7,14 @@ import { Link } from "react-router-dom";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { useMatchHistory } from "@/hooks/use-match-history";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
+import { useAccount } from "@/hooks/account/use-account";
 
 type Props = {
   variant?: "create" | "add";
 };
 
 export const DistributionMethod: FC<Props> = ({ variant = "create" }) => {
+  const { chain } = useAccount();
   const { clusterHash } = useClusterPageParams();
 
   const operatorsRoute = useMatchHistory("/join/validator/select-operators");
@@ -38,24 +40,28 @@ export const DistributionMethod: FC<Props> = ({ variant = "create" }) => {
           }
         />
         <img src="/images/generateValidatorKeyShare/image.svg" />
-        <Text variant="body-2-medium">
-          Select your preferred method to split your key:
-        </Text>
+        {chain?.testnet && (
+          <Text variant="body-2-medium">
+            Select your preferred method to split your key:
+          </Text>
+        )}
         <div className="space-y-3">
           <div className="flex [&>*]:flex-1 gap-3">
-            <div className="flex flex-col gap-2">
-              <Button as={Link} to="../online" variant="secondary" size="xl">
-                Online
-              </Button>
-              {variant === "create" && (
-                <Text
-                  variant="body-3-medium"
-                  className="text-center text-gray-500"
-                >
-                  Split key via the webapp
-                </Text>
-              )}
-            </div>
+            {chain?.testnet && (
+              <div className="flex flex-col gap-2">
+                <Button as={Link} to="../online" variant="secondary" size="xl">
+                  Online
+                </Button>
+                {variant === "create" && (
+                  <Text
+                    variant="body-3-medium"
+                    className="text-center text-gray-500"
+                  >
+                    Split key via the webapp
+                  </Text>
+                )}
+              </div>
+            )}
             <div className="flex flex-col gap-2">
               <Button as={Link} to="../offline" variant="secondary" size="xl">
                 Offline

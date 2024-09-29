@@ -53,7 +53,7 @@ export const GenerateKeySharesOnline: FCProps = () => {
 
   const { address } = useAccount();
   const { state } = useRegisterValidatorContext;
-  const { files, password } = useRegisterValidatorContext();
+  const { keystoresFile, password } = useRegisterValidatorContext();
 
   const form = useForm({
     defaultValues: { password },
@@ -61,7 +61,7 @@ export const GenerateKeySharesOnline: FCProps = () => {
   });
 
   const { status, isError, isLoading } = useKeystoreValidation(
-    files?.[0] as File,
+    keystoresFile.files?.[0] ?? null,
   );
 
   const errors = useMemo(
@@ -98,7 +98,7 @@ export const GenerateKeySharesOnline: FCProps = () => {
     state.password = data.password;
     await extractKeystoreData
       .mutateAsync({
-        file: files![0],
+        file: keystoresFile.files?.[0] as File,
         password: data.password,
       })
       .catch((error) => {
@@ -122,9 +122,9 @@ export const GenerateKeySharesOnline: FCProps = () => {
           }
         />
         <JSONFileUploader
-          files={files || []}
+          files={keystoresFile.files || []}
           onValueChange={(files) => {
-            state.files = files ? ref(files) : null;
+            state.keystoresFile.files = files ? ref(files) : null;
           }}
           onFileRemoved={form.reset}
           isError={isError}

@@ -24,10 +24,15 @@ export const createGuard = <T extends object>(
   resetStateOnUnmount = true,
 ) => {
   const state = proxy<T>(defaultState);
-  const resetState = reset.bind(null, state, defaultState);
+  const resetState = (options: Partial<T> = {}) =>
+    reset(state, {
+      ...defaultState,
+      ...options,
+    });
 
   const hook = () => useSnapshot(state) as T;
   hook.state = state;
+  hook.resetState = resetState;
 
   const guardProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const params = useParams();

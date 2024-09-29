@@ -106,7 +106,7 @@ export const OperatorPickerItem: FCProps = ({
                 variant={isSelected ? "body-3-semibold" : "body-3-medium"}
               >
                 {operator.name}{" "}
-                {operator.verified_operator && (
+                {operator.type === "verified_operator" && (
                   <VerifiedSVG className="inline" />
                 )}
               </Text>

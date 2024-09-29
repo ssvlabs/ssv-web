@@ -110,7 +110,7 @@ export const FeeRecipientAddress: FC<ComponentPropsWithoutRef<"div">> = () => {
                 <Button
                   as={Link}
                   variant="link"
-                  to="https://docs.ssv.network/learn/introduction"
+                  to="https://docs.ssv.network/learn/stakers/validators/validator-rewards"
                   target="_blank"
                   className="mt-4"
                 >

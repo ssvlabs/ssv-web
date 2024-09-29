@@ -53,10 +53,10 @@ export const GenerateKeySharesOnline: FCProps = () => {
 
   const { address } = useAccount();
   const { state } = useRegisterValidatorContext;
-  const { keystoresFile, password } = useRegisterValidatorContext();
+  const { keystoresFile } = useRegisterValidatorContext();
 
   const form = useForm({
-    defaultValues: { password },
+    defaultValues: { password: "" },
     resolver: zodResolver(schema),
   });
 
@@ -95,7 +95,6 @@ export const GenerateKeySharesOnline: FCProps = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
-    state.password = data.password;
     await extractKeystoreData
       .mutateAsync({
         file: keystoresFile.files?.[0] as File,

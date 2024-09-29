@@ -21,8 +21,6 @@ export const [RegisterValidatorGuard, useRegisterValidatorContext] =
         | "generate-from-existing-keyshares"
         | "",
       clusterSize: 4 as ClusterSize,
-      password: "",
-
       shares: [] as KeySharesPayload[],
 
       selectedValidatorsCount: 0,

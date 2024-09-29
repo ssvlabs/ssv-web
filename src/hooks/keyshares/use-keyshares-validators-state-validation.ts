@@ -61,7 +61,8 @@ export const useKeysharesValidatorsList = (
         if (isRegistered) return { share, status: "registered" };
 
         const validNonce = share.data.ownerNonce === ssvAccount.data!.nonce + i;
-        i++;
+        if (validNonce) i++;
+
         return {
           share,
           status: validNonce ? "available" : "incorrect",

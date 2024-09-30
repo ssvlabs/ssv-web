@@ -12,7 +12,7 @@ import { useAccount } from "@/hooks/account/use-account";
 export const getCreatedOptimisticOperatorsQueryOptions = (
   {
     chainId = getSSVNetworkDetails().networkId,
-    account = getAccount(config),
+    account = getAccount(config).address,
     options,
   } = getDefaultChainedQueryOptions(),
 ) => {

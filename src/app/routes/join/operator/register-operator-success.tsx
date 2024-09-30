@@ -57,8 +57,8 @@ export const RegisterOperatorSuccess: FC<
           </Button>{" "}
           to propose MEV blocks for the validators you manage.
         </div>
-        <Button as={Link} size="xl" to="/operators">
-          Manage operators
+        <Button as={Link} size="xl" to={`/operators/${operatorId}`}>
+          Manage operator
         </Button>
       </Card>
     </Container>

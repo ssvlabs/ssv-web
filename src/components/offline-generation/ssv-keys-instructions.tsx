@@ -11,6 +11,7 @@ import { useAccount } from "@/hooks/account/use-account";
 import type { Operator } from "@/types/api";
 import { useCopyToClipboard } from "react-use";
 import { LuCheck, LuCopy } from "react-icons/lu";
+import { useRegisterValidatorContext } from "@/guard/register-validator-guard";
 
 interface SSVKeysInstructionsProps {
   operators: Operator[];
@@ -77,6 +78,9 @@ export const SSVKeysInstructions: FC<SSVKeysInstructionsProps> = ({
       >
         <Button
           as={Link}
+          onClick={() =>
+            (useRegisterValidatorContext.state.keysharesFile.files = null)
+          }
           to="../keyshares"
           size="xl"
           className="w-full"

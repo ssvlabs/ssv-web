@@ -18,7 +18,7 @@ type Props = {
 };
 export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
   className,
-  isLiquidated,
+  isLiquidated = true,
   ...props
 }) => {
   return (
@@ -44,7 +44,7 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
               : undefined
           }
         >
-          <Link to="exit">
+          <Link to={isLiquidated ? "#" : "exit"}>
             <DropdownMenuItem disabled={isLiquidated}>
               <LuLogOut className="size-4" />
               <span>Exit Validators</span>

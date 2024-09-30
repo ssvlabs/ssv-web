@@ -108,7 +108,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                   }
                 >
                   <Link
-                    to="exit/confirmation"
+                    to={cluster.data?.isLiquidated ? "#" : "exit/confirmation"}
                     onClick={() =>
                       (useBulkActionContext.state.selectedPublicKeys = [
                         item.public_key,

@@ -59,7 +59,12 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
             key="content"
           >
             <Navbar />
-            <main className={cn(className, "flex-1 overflow-auto")}>
+            <main
+              className={cn(className, "flex-1 overflow-auto")}
+              style={{
+                scrollbarGutter: "stable",
+              }}
+            >
               {children}
             </main>
           </motion.div>

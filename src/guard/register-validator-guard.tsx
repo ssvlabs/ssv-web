@@ -25,7 +25,8 @@ export const [RegisterValidatorGuard, useRegisterValidatorContext] =
 
       selectedValidatorsCount: 0,
       depositAmount: 0n,
-      fundingDays: 365,
+      fundingDays: 730,
+      selectedInitialFundingPeriod: "year" as "year" | "half-year" | "custom",
 
       keystoresFile: createFileSetter(),
       keysharesFile: createFileSetter(),

@@ -172,7 +172,10 @@ export const InitialFunding: FCProps = ({ ...props }) => {
                         <Text variant="body-2-semibold">Custom</Text>
                         <Spacer />
                         <Text variant="body-1-bold">
-                          {formatSSV(customFundingCost.data?.total ?? 0n)} SSV
+                          {values.selected === "custom"
+                            ? formatSSV(customFundingCost.data?.total ?? 0n) +
+                              " SSV"
+                            : "-"}
                         </Text>
                       </div>
                       <div

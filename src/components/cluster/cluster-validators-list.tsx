@@ -101,6 +101,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                 <Tooltip
                   side="bottom"
                   delayDuration={350}
+                  asChild
                   content={
                     cluster.data?.isLiquidated
                       ? "You cannot perform this operation when your cluster is liquidated. Please reactivate to proceed."

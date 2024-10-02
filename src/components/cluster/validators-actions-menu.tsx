@@ -38,6 +38,7 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
         <Tooltip
           side="bottom"
           delayDuration={350}
+          asChild
           content={
             isLiquidated
               ? "You cannot perform this operation when your cluster is liquidated. Please reactivate to proceed."

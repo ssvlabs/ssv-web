@@ -5,6 +5,7 @@ import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard";
+import { useAccountState } from "@/hooks/account/use-account-state";
 import { cn } from "@/lib/utils/tw";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { BiCheck } from "react-icons/bi";
@@ -21,9 +22,10 @@ type FCProps = FC<
 >;
 
 export const Preparation: FCProps = ({ className, ...props }) => {
+  const { isNewAccount, accountRoutePath } = useAccountState();
   return (
     <Container variant="vertical" className="py-6">
-      <NavigateBackBtn to="/clusters" />
+      <NavigateBackBtn to={(isNewAccount && accountRoutePath) || "/clusters"} />
       <Card className={cn(className)} {...props}>
         <CardHeader
           title="Run a Distributed Validator"

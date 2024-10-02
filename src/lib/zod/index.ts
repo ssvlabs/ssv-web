@@ -2,7 +2,6 @@ import { tryCatch } from "@/lib/utils/tryCatch";
 import { z } from "zod";
 
 const protocolRegex = /^(http|https?:\/\/)/;
-const domainRegex = /^(?:(?:https?:\/\/)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})$/;
 
 export const httpsURLSchema = z
   .string()
@@ -10,7 +9,16 @@ export const httpsURLSchema = z
   .transform<string>((url) =>
     !protocolRegex.test(url) ? `https://${url}` : url,
   )
-  .refine((url) => domainRegex.test(url), "Invalid URL");
+  .refine((url) => {
+    try {
+      const parsedUrl = new URL(url);
+      const domain = parsedUrl.hostname;
+      const parts = domain.split(".");
+      return parts.length >= 2 && parts[parts.length - 1].length >= 2;
+    } catch {
+      return false;
+    }
+  }, "Invalid URL");
 
 export const dgkURLSchema = z
   .string()

@@ -8,6 +8,7 @@ import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { useMatchHistory } from "@/hooks/use-match-history";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { useAccount } from "@/hooks/account/use-account";
+import { useRegisterValidatorContext } from "@/guard/register-validator-guard";
 
 type Props = {
   variant?: "create" | "add";
@@ -83,6 +84,9 @@ export const DistributionMethod: FC<Props> = ({ variant = "create" }) => {
               variant="secondary"
               size="xl"
               className="w-full"
+              onClick={() => {
+                useRegisterValidatorContext.state.keysharesFile.files = null;
+              }}
             >
               I already have key shares
             </Button>

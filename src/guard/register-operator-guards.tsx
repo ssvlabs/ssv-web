@@ -7,6 +7,9 @@ export const [RegisterOperatorGuard, useRegisterOperatorContext] = createGuard(
     isPrivate: false,
   },
   {
+    "/join/operator": (_, { resetState }) => {
+      resetState();
+    },
     "/join/operator/fee": (state) => {
       if (!state.publicKey) return "/join/operator/register";
     },

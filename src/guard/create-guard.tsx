@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import React, { useMemo } from "react";
 import type { Location, Params, PathMatch } from "react-router";
 import { useLocation, matchPath, Navigate, useParams } from "react-router";
-import { useUnmount } from "react-use";
+import { useLocalStorage, useUnmount } from "react-use";
 import { proxy, useSnapshot } from "valtio";
 
 type GuardFn<T extends object> = (
@@ -13,7 +13,7 @@ type GuardFn<T extends object> = (
   options: {
     location: Location;
     params: Readonly<Params<string>>;
-    resetState: () => void;
+    resetState: (options?: Partial<T>) => void;
     match: PathMatch<string>;
   },
 ) => string | void;
@@ -35,7 +35,8 @@ export const createGuard = <T extends object>(
   hook.resetState = resetState;
 
   const guardProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    if (import.meta.env.PROD) {
+    const [disableGuard] = useLocalStorage("disableGuard", false);
+    if (!disableGuard) {
       const params = useParams();
       const location = useLocation();
       const guards = useMemo(() => Object.entries(guard), []);

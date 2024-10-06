@@ -30,6 +30,7 @@ import { useNavigate } from "react-router";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { useFocus } from "@/hooks/use-focus";
 import { useRegisterOperatorContext } from "@/guard/register-operator-guards";
+import { isEmpty } from "lodash-es";
 
 export const RegisterOperator: FC<ComponentPropsWithoutRef<"div">> = ({
   className,
@@ -52,8 +53,9 @@ export const RegisterOperator: FC<ComponentPropsWithoutRef<"div">> = ({
       .superRefine(async (v, ctx) => {
         if (!/^[A-Za-z0-9]{612}$/.test(v))
           return ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Invalid public key",
+            code: z.ZodIssueCode.invalid_literal,
+            expected: "",
+            received: "",
           });
 
         const { data } = await fetchOperatorByPublicKey.mutateAsync(v);
@@ -67,6 +69,7 @@ export const RegisterOperator: FC<ComponentPropsWithoutRef<"div">> = ({
   });
 
   const form = useForm<z.infer<typeof schema>>({
+    mode: "all",
     defaultValues: {
       owner: address,
       publicKey: useRegisterOperatorContext.state.publicKey,
@@ -145,7 +148,23 @@ export const RegisterOperator: FC<ComponentPropsWithoutRef<"div">> = ({
                     isLoading={fetchOperatorByPublicKey.isPending}
                   />
                 </FormControl>
-                <FormMessage />
+                {form.formState.errors.publicKey?.type ===
+                z.ZodIssueCode.invalid_literal ? (
+                  <Text className="text-sm font-medium text-error-500">
+                    Invalid operator key - see our{" "}
+                    <Button
+                      variant="link"
+                      as="a"
+                      href="https://docs.ssv.network/run-a-node/operator-node/installation#generate-operator-keys"
+                      target="_blank"
+                    >
+                      documentation
+                    </Button>{" "}
+                    to generate your key.
+                  </Text>
+                ) : (
+                  <FormMessage />
+                )}
               </FormItem>
             )}
           />
@@ -201,7 +220,11 @@ export const RegisterOperator: FC<ComponentPropsWithoutRef<"div">> = ({
               )}
             />
           </div>
-          <Button size="xl" type="submit">
+          <Button
+            size="xl"
+            type="submit"
+            disabled={!isEmpty(form.formState.errors)}
+          >
             Register Operator
           </Button>
         </Card>

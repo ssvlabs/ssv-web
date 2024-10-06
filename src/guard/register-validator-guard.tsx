@@ -1,6 +1,5 @@
 import type { ClusterSize } from "@/components/operator/operator-picker/operator-cluster-size-picker";
 import { createGuard } from "@/guard/create-guard";
-import { ref } from "valtio";
 import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useMemo } from "react";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
@@ -11,15 +10,13 @@ import { getOSName } from "@/lib/utils/os";
 import { isFrom } from "@/lib/utils/router";
 import { createFileSetter } from "@/lib/utils/valtio";
 
-const allowedClusterRoutes = ["distribution-method", "online", "offline"];
+const startingRoutes = ["online", "offline", "keyshares", "select-operators"];
 
 export const [RegisterValidatorGuard, useRegisterValidatorContext] =
   createGuard(
     {
-      flow: "" as
-        | "generate-new-keyshares"
-        | "generate-from-existing-keyshares"
-        | "",
+      started: false,
+
       clusterSize: 4 as ClusterSize,
       shares: [] as KeySharesPayload[],
 
@@ -30,16 +27,6 @@ export const [RegisterValidatorGuard, useRegisterValidatorContext] =
 
       keystoresFile: createFileSetter(),
       keysharesFile: createFileSetter(),
-
-      _files: [] as File[],
-      set files(files: File[] | null) {
-        this._files.splice(0);
-        (files || []).forEach((file) => this._files.push(ref(file)));
-      },
-
-      get files() {
-        return this._files;
-      },
 
       _selectedOperatorsIds: [] as number[],
       set selectedOperatorsIds(ids: number[]) {
@@ -61,20 +48,31 @@ export const [RegisterValidatorGuard, useRegisterValidatorContext] =
       },
     },
     {
+      "/join/validator": (_, { resetState }) => {
+        resetState();
+      },
+      "/join/validator/:clusterHash/distribution-method": (
+        _,
+        { resetState },
+      ) => {
+        resetState();
+      },
       "/join/validator/:nested/*": (state, { match }) => {
-        if (state.flow) return;
-        if (!match.params.nested) return;
+        if (state.started) return;
 
         const inCluster = match.params.nested?.startsWith("0x");
-        if (inCluster) {
-          if (allowedClusterRoutes.includes(match.params["*"] ?? "")) {
-            state.flow = "generate-from-existing-keyshares";
-            return;
-          }
-          return `/join/validator/${match.params.nested}/distribution-method`;
+        const activeRoute = inCluster ? match.params["*"] : match.params.nested;
+
+        if (inCluster && activeRoute === "distribution-method") return;
+
+        if (!state.started && startingRoutes.includes(activeRoute ?? "")) {
+          state.started = true;
+          return;
         }
 
-        return "/join/validator";
+        return inCluster
+          ? `/join/validator/${match.params.nested}/distribution-method`
+          : `/join/validator`;
       },
       "*": () => {
         if (isFrom("/join/validator/success")) {
@@ -88,10 +86,15 @@ export const useSelectedOperatorIds = () => {
   const inCluster = Boolean(useClusterPageParams().clusterHash);
   const cluster = useCluster();
 
-  const { hasSelectedOperators, selectedOperatorsIds, files } =
+  const { hasSelectedOperators, selectedOperatorsIds, keysharesFile } =
     useRegisterValidatorContext();
+  console.log("selectedOperatorsIds:", selectedOperatorsIds);
+  console.log("hasSelectedOperators:", hasSelectedOperators);
 
-  const { data: shares } = useKeysharesSchemaValidation(files?.at(0) || null);
+  const { data: shares } = useKeysharesSchemaValidation(
+    keysharesFile.files?.at(0) || null,
+  );
+  console.log("shares:", shares);
 
   return useMemo(() => {
     return sortNumbers(

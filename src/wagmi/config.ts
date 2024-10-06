@@ -1,10 +1,13 @@
-import type { Chain } from "@rainbow-me/rainbowkit";
+import { connectorsForWallets, type Chain } from "@rainbow-me/rainbowkit";
+import {
+  walletConnectWallet,
+  coinbaseWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 
 import type { HttpTransport } from "viem";
 import { createPublicClient, http } from "viem";
 import { createConfig } from "wagmi";
 import { holesky as holeskyBase, mainnet as mainnetBase } from "wagmi/chains";
-import { walletConnect } from "wagmi/connectors";
 
 const mainnet: Chain = {
   ...mainnetBase,
@@ -34,18 +37,18 @@ const transports = chains.reduce(
   {} as Record<string, HttpTransport>,
 );
 
-// const connectors = connectorsForWallets(
-//   [
-//     {
-//       groupName: "Popular",
-//       wallets: [walletConnectWallet, coinbaseWallet],
-//     },
-//   ],
-//   {
-//     appName: "SSV Web App",
-//     projectId: "c93804911b583e5cacf856eee58655e6",
-//   },
-// );
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: "Popular",
+      wallets: [walletConnectWallet, coinbaseWallet],
+    },
+  ],
+  {
+    appName: "SSV Web App",
+    projectId: "c93804911b583e5cacf856eee58655e6",
+  },
+);
 
 export const mainnet_private_rpc_client = createPublicClient({
   chain: mainnet,
@@ -54,8 +57,6 @@ export const mainnet_private_rpc_client = createPublicClient({
 
 export const config = createConfig({
   chains,
-  connectors: [
-    walletConnect({ projectId: "c93804911b583e5cacf856eee58655e6" }),
-  ],
+  connectors: connectors,
   transports,
 });

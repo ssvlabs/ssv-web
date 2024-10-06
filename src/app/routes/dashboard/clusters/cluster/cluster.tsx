@@ -22,7 +22,6 @@ import { PlusIcon } from "lucide-react";
 import type { FC } from "react";
 import { Link } from "react-router-dom";
 import { useAccount } from "@/hooks/account/use-account";
-import { useRegisterValidatorContext } from "@/guard/register-validator-guard";
 
 export const Cluster: FC = () => {
   const account = useAccount();
@@ -143,11 +142,6 @@ export const Cluster: FC = () => {
                 }
                 as={Link}
                 to={`/join/validator/${clusterHash}/distribution-method`}
-                onClick={() => {
-                  useRegisterValidatorContext.resetState({
-                    flow: "generate-from-existing-keyshares",
-                  });
-                }}
               >
                 <Text>Add Validator</Text>
                 <PlusIcon className="size-4" />

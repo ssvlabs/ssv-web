@@ -4,7 +4,6 @@ import { Container } from "@/components/ui/container";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
-import { useRegisterValidatorContext } from "@/guard/register-validator-guard";
 import { useAccountState } from "@/hooks/account/use-account-state";
 import { cn } from "@/lib/utils/tw";
 import type { ComponentPropsWithoutRef, FC } from "react";
@@ -66,29 +65,10 @@ export const Preparation: FCProps = ({ className, ...props }) => {
           </div>
         </div>
         <div className="flex flex-col w-full gap-3">
-          <Button
-            as={Link}
-            to="select-operators"
-            onClick={() => {
-              useRegisterValidatorContext.resetState({
-                flow: "generate-new-keyshares",
-              });
-            }}
-            size="xl"
-          >
+          <Button as={Link} to="select-operators" size="xl">
             Generate new key shares
           </Button>
-          <Button
-            as={Link}
-            to="keyshares"
-            size="xl"
-            variant="secondary"
-            onClick={() => {
-              useRegisterValidatorContext.resetState({
-                flow: "generate-from-existing-keyshares",
-              });
-            }}
-          >
+          <Button as={Link} to="keyshares" size="xl" variant="secondary">
             I already have key shares
           </Button>
         </div>

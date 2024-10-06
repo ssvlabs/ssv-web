@@ -13,6 +13,7 @@ export const JoinOperatorPreparation: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
 }) => {
   const { isNewAccount, accountRoutePath } = useAccountState();
+
   return (
     <Container variant="vertical" className="py-6">
       <NavigateBackBtn

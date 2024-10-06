@@ -20,7 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useCluster } from "@/hooks/cluster/use-cluster";
 import { TbExternalLink, TbRefresh } from "react-icons/tb";
 import { useBulkActionContext } from "@/guard/bulk-action-guard";
@@ -30,6 +30,7 @@ import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badg
 export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
 }) => {
+  const navigate = useNavigate();
   const cluster = useCluster();
   const { validators, infiniteQuery } = useInfiniteClusterValidators();
 
@@ -85,19 +86,17 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                     <TbExternalLink className="size-3" />
                   </DropdownMenuItem>
                 </a>
-                <Link
-                  to="remove/confirmation"
-                  onClick={() =>
-                    (useBulkActionContext.state.selectedPublicKeys = [
+                <DropdownMenuItem
+                  onClick={() => {
+                    useBulkActionContext.state.selectedPublicKeys = [
                       item.public_key,
-                    ])
-                  }
+                    ];
+                    navigate("remove/confirmation");
+                  }}
                 >
-                  <DropdownMenuItem>
-                    <LuTrash2 className="size-4" />
-                    <span>Remove Validator</span>
-                  </DropdownMenuItem>
-                </Link>
+                  <LuTrash2 className="size-4" />
+                  <span>Remove Validator</span>
+                </DropdownMenuItem>
                 <Tooltip
                   side="bottom"
                   delayDuration={350}
@@ -108,19 +107,18 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                       : undefined
                   }
                 >
-                  <Link
-                    to={cluster.data?.isLiquidated ? "#" : "exit/confirmation"}
-                    onClick={() =>
-                      (useBulkActionContext.state.selectedPublicKeys = [
+                  <DropdownMenuItem
+                    disabled={cluster.data?.isLiquidated}
+                    onClick={() => {
+                      useBulkActionContext.state.selectedPublicKeys = [
                         item.public_key,
-                      ])
-                    }
+                      ];
+                      navigate("exit/confirmation");
+                    }}
                   >
-                    <DropdownMenuItem disabled={cluster.data?.isLiquidated}>
-                      <LuLogOut className="size-4" />
-                      <span>Exit Validator</span>
-                    </DropdownMenuItem>
-                  </Link>
+                    <LuLogOut className="size-4" />
+                    <span>Exit Validator</span>
+                  </DropdownMenuItem>
                 </Tooltip>
               </DropdownMenuContent>
             </DropdownMenu>

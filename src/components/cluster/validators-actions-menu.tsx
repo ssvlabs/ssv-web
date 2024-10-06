@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { ButtonProps } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Text } from "@/components/ui/text";
 import { ChevronDown } from "lucide-react";
 import { LuTrash2, LuLogOut } from "react-icons/lu";
@@ -21,6 +21,7 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
   isLiquidated = true,
   ...props
 }) => {
+  const navigate = useNavigate();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -29,12 +30,11 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <Link to="remove">
-          <DropdownMenuItem>
-            <LuTrash2 className="size-4" />
-            <span>Remove Validators</span>
-          </DropdownMenuItem>
-        </Link>
+        <DropdownMenuItem onClick={() => navigate("remove")}>
+          <LuTrash2 className="size-4" />
+          <span>Remove Validators</span>
+        </DropdownMenuItem>
+
         <Tooltip
           side="bottom"
           delayDuration={350}
@@ -45,12 +45,13 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
               : undefined
           }
         >
-          <Link to={isLiquidated ? "#" : "exit"}>
-            <DropdownMenuItem disabled={isLiquidated}>
-              <LuLogOut className="size-4" />
-              <span>Exit Validators</span>
-            </DropdownMenuItem>
-          </Link>
+          <DropdownMenuItem
+            disabled={isLiquidated}
+            onClick={() => navigate("exit")}
+          >
+            <LuLogOut className="size-4" />
+            <span>Exit Validators</span>
+          </DropdownMenuItem>
         </Tooltip>
       </DropdownMenuContent>
     </DropdownMenu>

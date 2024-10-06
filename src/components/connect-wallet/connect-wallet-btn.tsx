@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import type { FC } from "react";
 import { useAccount } from "@/hooks/account/use-account";
 import { shortenAddress } from "@/lib/utils/strings";
+import { useConnect, useDisconnect } from "wagmi";
 
 type WalletType = "ledger" | "trezor" | "walletconnect" | "metamask";
 
@@ -23,6 +24,21 @@ const getWalletIconSrc = (connectorName?: string) => {
 };
 export const ConnectWalletBtn: FC<ButtonProps> = (props) => {
   const account = useAccount();
+  const { connectors, connect } = useConnect();
+  const { disconnect } = useDisconnect();
+
+  if (account.isConnected)
+    return (
+      <Button onClick={() => disconnect()}>
+        {shortenAddress(account.address ?? "")}Disconnect
+      </Button>
+    );
+
+  return connectors.map((connector) => (
+    <Button key={connector.uid} onClick={() => connect({ connector })}>
+      {connector.name}
+    </Button>
+  ));
 
   return (
     <ConnectButton.Custom>

@@ -199,6 +199,7 @@ export const InitialFunding: FCProps = ({ ...props }) => {
                                     }
                                     decimals={0}
                                     max={BigInt(365 * 9999)}
+                                    displayDecimals={0}
                                     rightSlot={<>Days</>}
                                   />
                                 </FormControl>

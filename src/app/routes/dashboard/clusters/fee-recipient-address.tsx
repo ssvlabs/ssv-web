@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import type { Address } from "viem";
-import { isAddress, isAddressEqual } from "viem";
+import { isAddress, isAddressEqual, zeroAddress } from "viem";
 import {
   Form,
   FormControl,
@@ -63,7 +63,7 @@ export const FeeRecipientAddress: FC<ComponentPropsWithoutRef<"div">> = () => {
   const isChanged = tryCatch(
     () =>
       !isAddressEqual(
-        (ssvAccount.data?.recipientAddress ?? "") as Address, // TODO: when there is not clusters, the recipientAddress is undefined, please check with the backend team, we might not need to show this feature if clusters < 1
+        (ssvAccount.data?.recipientAddress || zeroAddress) as Address,
         form.watch("feeRecipientAddress"),
       ),
     false,

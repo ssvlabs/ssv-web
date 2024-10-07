@@ -1,4 +1,4 @@
-import { getSuperProperties, mixpanel } from "@/mixpanel";
+import { getSuperProperties, mixpanel } from "@/lib/analytics/mixpanel";
 import { useLocation } from "react-router-dom";
 import { useDebounce } from "react-use";
 

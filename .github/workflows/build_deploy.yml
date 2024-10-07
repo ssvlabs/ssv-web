@@ -123,6 +123,38 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
       # </app.stage.ssv.network>
 
+      # <app.stage.ssv.network> pre-stage 
+      - name: Run stage webapp build
+        if: github.ref == 'refs/heads/pre-stage'
+        run: >
+          GAS_PRICE="${{ env.GAS_PRICE }}"
+          GAS_LIMIT="${{ env.GAS_LIMIT }}"
+          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
+          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
+          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
+          pnpm build
+        env:
+          GAS_PRICE: ${{ secrets.GAS_PRICE }}
+          GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
+          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
+          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
+
+      - name: Deploy stage webapp
+        if: github.ref == 'refs/heads/pre-stage'
+        uses: jakejarvis/s3-sync-action@v0.5.0
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          SOURCE_DIR: "build/"
+          AWS_REGION: "us-west-2"
+          AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET_V4 }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
+      # </app.stage.ssv.network>
+
+
       # <ilya-app.stage.ssv.network>
       - name: Run ilya-dev webapp build
         if: github.ref == 'refs/heads/ilya-dev'

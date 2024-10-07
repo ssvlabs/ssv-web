@@ -1,17 +1,21 @@
 module.exports = {
   root: true,
   env: { browser: true, es2020: true },
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:react-hooks/recommended'],
-  ignorePatterns: ['build', '.eslintrc.cjs', 'scripts', 'config', '**/*.css', '**/*.scss'],
-  parser: '@typescript-eslint/parser',
-  plugins: ['react-refresh'],
+  extends: [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react-hooks/recommended",
+  ],
+  ignorePatterns: ["dist", ".eslintrc.cjs"],
+  parser: "@typescript-eslint/parser",
+  plugins: ["react-refresh", "unused-imports"],
   rules: {
-    '@typescript-eslint/no-loss-of-precision': 'off',
-    'no-prototype-builtins': 'off',
-    'no-extra-boolean-cast': 'off',
-    '@typescript-eslint/ban-types': 'off',
-    '@typescript-eslint/ban-ts-comment': 'off',
-    '@typescript-eslint/no-explicit-any': 'warn',
-    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }]
-  }
+    "unused-imports/no-unused-imports": "warn",
+    "react-refresh/only-export-components": [
+      "warn",
+      { allowConstantExport: true },
+    ],
+    "react-refresh/only-export-components": "off",
+    "@typescript-eslint/consistent-type-imports": "error",
+  },
 };

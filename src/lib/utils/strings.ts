@@ -1,56 +1,15 @@
-import { utils } from 'ethers';
+import type { Address } from "abitype";
 
-export const longStringShorten = (value: string, firstFriction: number = 10, secondFriction: number = firstFriction, replacements: Record<string, any> | null = null) => {
-  if (!value) return '';
-  if (replacements) {
-    for (const key in replacements) {
-      value = value.replace(replacements[key], key);
-    }
-  }
-  const str = `${value.slice(0, firstFriction)}...${value.slice(value.length - secondFriction, value.length)}`;
+export const add0x = (publicKey: string): Address =>
+  (publicKey.startsWith("0x") ? publicKey : `0x${publicKey}`) as Address;
 
-  return str;
+export const remove0x = (address: string): Address =>
+  address.replace(/^0x/, "") as Address;
+
+export const shortenClusterId = (clusterId: string) => {
+  const clusterIdWithout0x = remove0x(clusterId);
+  return `${clusterIdWithout0x.slice(0, 4)}...${clusterIdWithout0x.slice(-4)}`;
 };
 
-export const formatAddress = (address: string): string => {
-  return longStringShorten(address, 6, 4);
-};
-
-export const truncateText = (text: string, maxCharacters: number): string => {
-  if (text.length <= maxCharacters) {
-    return text;
-  } else {
-    return `${text.slice(0, maxCharacters - 3)}...`;
-  }
-};
-
-export const normalizeNumber = (number: number, friction: number = 2) => {
-  return number.toFixed(friction);
-};
-
-export const checkSpecialCharacters = (value: string) => {
-  const linkRegex = /^[A-Za-z0-9 _!$#’'|-]+$/;
-  return linkRegex.test(value);
-};
-
-export const isEqualsAddresses = (a: string, b: string): boolean => {
-  try {
-    return utils.getAddress(a) === utils.getAddress(b);
-  } catch (e: any) {
-    return false;
-  }
-};
-
-export const add0x = (publicKey: string) => (publicKey.startsWith('0x') ? publicKey : `0x${publicKey}`);
-
-const checkAddressChecksum = (address: string) => {
-  try {
-    return utils.getAddress(address) === address;
-  } catch (e) {
-    return false;
-  }
-};
-
-const toHexString = (val: any) => (typeof val === 'number' ? `0x${val.toString(16)}` : val);
-
-export { checkAddressChecksum, toHexString };
+export const shortenAddress = (address: string, length = 6) =>
+  `${address.slice(0, length)}...${address.slice(-(length - 2))}`;

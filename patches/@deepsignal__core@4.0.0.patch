@@ -1,0 +1,64 @@
+diff --git a/dist/core.d.ts b/dist/core.d.ts
+index c785ad07cd7c4fddb7718a1cd01c99279952b147..c45aeb7a55d707e180ea91ffdefeecd8aa4960f7 100644
+--- a/dist/core.d.ts
++++ b/dist/core.d.ts
+@@ -1,22 +1,45 @@
+ import { Signal } from "@preact/signals-core";
+-export declare type AtomicState = Array<unknown> | ((...args: unknown[]) => unknown) | string | boolean | number | bigint | symbol | undefined | null | Map<unknown, unknown> | Set<unknown> | Date;
++export declare type AtomicState =
++  | Array<unknown>
++  | ((...args: unknown[]) => unknown)
++  | string
++  | boolean
++  | number
++  | bigint
++  | symbol
++  | undefined
++  | null
++  | Map<unknown, unknown>
++  | Record<unknown, unknown>
++  | File
++  | Set<unknown>
++  | Date;
+ export declare type DeepState = {
+-    [key: string]: (() => unknown) | AtomicState | DeepState;
++  [key: string]: (() => unknown) | AtomicState | DeepState;
+ };
+ export declare type ReadOnlyDeep<T> = {
+-    readonly [P in keyof T]: ReadOnlyDeep<T[P]>;
++  readonly [P in keyof T]: ReadOnlyDeep<T[P]>;
+ };
+ export interface DeepSignalAccessors<T extends DeepState> {
+-    value: ReadOnlyDeep<T>;
+-    readonly peek: () => ReadOnlyDeep<T>;
++  value: ReadOnlyDeep<T>;
++  readonly peek: () => ReadOnlyDeep<T>;
+ }
+-export declare type DeepSignalType<T extends DeepState> = DeepSignalAccessors<T> & {
+-    [K in keyof T]: T[K] extends AtomicState ? Signal<T[K]> : T[K] extends DeepState ? DeepSignalType<T[K]> : Signal<T[K]>;
+-};
+-export declare class DeepSignal<T extends DeepState> implements DeepSignalAccessors<T> {
+-    constructor(initialValue?: unknown);
+-    value: ReadOnlyDeep<T>;
+-    readonly peek: () => ReadOnlyDeep<T>;
+-    readonly __INTERNAL_latestUpdatedStructurePayload: Signal<T>;
++export declare type DeepSignalType<T extends DeepState> =
++  DeepSignalAccessors<T> & {
++    [K in keyof T]: T[K] extends AtomicState
++      ? Signal<T[K]>
++      : T[K] extends DeepState
++      ? DeepSignalType<T[K]>
++      : Signal<T[K]>;
++  };
++export declare class DeepSignal<T extends DeepState>
++  implements DeepSignalAccessors<T>
++{
++  constructor(initialValue?: unknown);
++  value: ReadOnlyDeep<T>;
++  readonly peek: () => ReadOnlyDeep<T>;
++  readonly __INTERNAL_latestUpdatedStructurePayload: Signal<T>;
+ }
+-export declare const deepSignal: <T extends DeepState>(initialValue: T) => DeepSignalType<T>;
++export declare const deepSignal: <T extends DeepState>(
++  initialValue: T
++) => DeepSignalType<T>;

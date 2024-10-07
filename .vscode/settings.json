@@ -24,9 +24,42 @@
     "yarn.lock": true
   },
   "cSpell.words": [
+    "abitype",
+    "Aestus",
+    "AESTUS",
+    "beaconcha",
+    "Beaconchain",
+    "bigintify",
+    "blox",
+    "BLOXROUTE",
+    "boolify",
+    "bowser",
+    "cmdk",
+    "Flashbots",
+    "FLASHBOTS",
+    "fontsource",
     "holesky",
+    "hookform",
+    "keccak",
+    "Keyshares",
+    "lucide",
+    "overscan",
     "pageview",
+    "permissioned",
+    "RACT",
+    "Redirector",
+    "resharing",
+    "selectables",
+    "shadcn",
     "ssvweb",
-    "Wagmi"
-  ]
+    "valtio",
+    "viem",
+    "Wagmi",
+    "Xroute"
+  ],
+
+  // Enable ESLint fix on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
 }

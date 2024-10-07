@@ -3,15 +3,19 @@ name: Build & deploy
 on:
   push:
     branches:
-      - '**'
+      - "**"
   pull_request:
     branches:
-      - '**'
+      - "**"
 
   workflow_dispatch:
 
 jobs:
   lint:
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     runs-on: ubuntu-latest
 
     env:
@@ -61,18 +65,32 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+
+      - uses: actions/setup-node@v3
         with:
           node-version: 20.12.2
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Install packages
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.0.6
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Run lint
-        run: yarn lint
+        run: pnpm lint
+
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
 
       # <app.stage.ssv.network>
       - name: Run stage webapp build
@@ -84,7 +102,7 @@ jobs:
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 
-          yarn build
+          pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
@@ -98,8 +116,8 @@ jobs:
         with:
           args: --acl public-read --follow-symlinks --delete
         env:
-          SOURCE_DIR: 'build/'
-          AWS_REGION: 'us-west-2'
+          SOURCE_DIR: "build/"
+          AWS_REGION: "us-west-2"
           AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET_V4 }}
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
@@ -115,7 +133,7 @@ jobs:
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          yarn build
+          pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
@@ -129,8 +147,8 @@ jobs:
         with:
           args: --acl public-read --follow-symlinks --delete
         env:
-          SOURCE_DIR: 'build/'
-          AWS_REGION: 'us-west-2'
+          SOURCE_DIR: "build/"
+          AWS_REGION: "us-west-2"
           AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET_ILYA }}
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
@@ -146,7 +164,7 @@ jobs:
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          yarn build
+          pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
@@ -160,8 +178,8 @@ jobs:
         with:
           args: --acl public-read --follow-symlinks --delete
         env:
-          SOURCE_DIR: 'build/'
-          AWS_REGION: 'us-west-2'
+          SOURCE_DIR: "build/"
+          AWS_REGION: "us-west-2"
           AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET_CHRIS }}
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
@@ -177,7 +195,7 @@ jobs:
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          yarn build
+          pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
@@ -191,8 +209,8 @@ jobs:
         with:
           args: --acl public-read --follow-symlinks --delete
         env:
-          SOURCE_DIR: 'build/'
-          AWS_REGION: 'us-west-2'
+          SOURCE_DIR: "build/"
+          AWS_REGION: "us-west-2"
           AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET_DIMA }}
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
@@ -204,11 +222,11 @@ jobs:
         run: >
           GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
-          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          yarn build
+          pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
@@ -222,8 +240,8 @@ jobs:
         with:
           args: --acl public-read --follow-symlinks --delete
         env:
-          SOURCE_DIR: 'build/'
-          AWS_REGION: 'us-west-2'
+          SOURCE_DIR: "build/"
+          AWS_REGION: "us-west-2"
           AWS_S3_BUCKET: ${{ secrets.STAGE_AWS_S3_BUCKET_SUMBAT }}
           AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
@@ -239,7 +257,7 @@ jobs:
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          yarn build
+          pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
@@ -253,8 +271,8 @@ jobs:
         with:
           args: --acl public-read --follow-symlinks --delete
         env:
-          SOURCE_DIR: 'build/'
-          AWS_REGION: 'us-west-2'
+          SOURCE_DIR: "build/"
+          AWS_REGION: "us-west-2"
           AWS_S3_BUCKET: ${{ secrets.PROD_AWS_S3_BUCKET_TEST }}
           AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
@@ -270,53 +288,55 @@ jobs:
           MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          yarn build
+          SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"
+          pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_PROD }}
-
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          
       - name: Deploy prod webapp
         if: github.ref == 'refs/heads/main'
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
           args: --acl public-read --follow-symlinks --delete
         env:
-          SOURCE_DIR: 'build/'
-          AWS_REGION: 'us-west-2'
+          SOURCE_DIR: "build/"
+          AWS_REGION: "us-west-2"
           AWS_S3_BUCKET: ${{ secrets.PROD_AWS_S3_BUCKET_V4 }}
           AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
       # </beta.app.ssv.network>
 
       # <faucet.stage.ssv.network>
-      - name: Run stage faucet build
-        if: github.ref == 'refs/heads/stage'
-        run: >
-          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
-          GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
-          EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" yarn build
-        env:
-          VITE_FAUCET_PAGE: "true"
-          SSV_NETWORKS: ${{ env.STAGE_SSV_NETWORKS }}
-          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
-          EXPLORER_URL: "https://explorer.ssv.network/"
-          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          VITE_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
+      # - name: Run stage faucet build
+      #   if: github.ref == 'refs/heads/stage'
+      #   run: >
+      #     SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+      #     GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
+      #     EXPLORER_URL="$EXPLORER_URL" BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" pnpm build
+      #   env:
+      #     VITE_FAUCET_PAGE: "true"
+      #     SSV_NETWORKS: ${{ env.STAGE_SSV_NETWORKS }}
+      #     BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
+      #     EXPLORER_URL: "https://explorer.ssv.network/"
+      #     LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+      #     VITE_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
 
-      - name: Deploy stage faucet
-        if: github.ref == 'refs/heads/stage'
-        uses: jakejarvis/s3-sync-action@v0.5.0
-        with:
-          args: --acl public-read --follow-symlinks --delete
-        env:
-          SOURCE_DIR: 'build/'
-          AWS_REGION: 'us-west-2'
-          AWS_S3_BUCKET: ${{ secrets.STAGE_FAUCET_AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
+      # - name: Deploy stage faucet
+      # if: github.ref == 'refs/heads/stage'
+      # uses: jakejarvis/s3-sync-action@v0.5.0
+      # with:
+      #   args: --acl public-read --follow-symlinks --delete
+      # env:
+      #   SOURCE_DIR: 'build/'
+      #   AWS_REGION: 'us-west-2'
+      #   AWS_S3_BUCKET: ${{ secrets.STAGE_FAUCET_AWS_S3_BUCKET }}
+      #   AWS_ACCESS_KEY_ID: ${{ secrets.STAGE_AWS_SECRET_KEY_ID }}
+      #   AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
       # </faucet.stage.ssv.network>
 
       # <claim.stage.ssv.network>
@@ -324,7 +344,7 @@ jobs:
       #        if: github.ref == 'refs/heads/stage'
       #        run: >
       #          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
-      #          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
+      #          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" pnpm build
       #        env:
       #          PROD_CLAIM_PAGE: "true"
       #          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
@@ -345,35 +365,35 @@ jobs:
       # </claim.stage.ssv.network>
 
       # <faucet.ssv.network>
-      - name: Run prod faucet build
-        if: github.ref == 'refs/heads/main'
-        run: >
-          SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
-          GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
-          EXPLORER_URL="$EXPLORER_URL"
-          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
-          MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
-          yarn build
-        env:
-          VITE_FAUCET_PAGE: "true"
-          SSV_NETWORKS: ${{ env.PROD_SSV_NETWORKS }}
-          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
-          EXPLORER_URL: "https://explorer.ssv.network/"
-          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          VITE_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
-          MIXPANEL_TOKEN_PROD: ${{ secrets.MIXPANEL_TOKEN_PROD }}
+      # - name: Run prod faucet build
+      #   if: github.ref == 'refs/heads/main'
+      #   run: >
+      #     SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
+      #     GOOGLE_TAG_SECRET="$GOOGLE_TAG_SECRET"
+      #     EXPLORER_URL="$EXPLORER_URL"
+      #     BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
+      #     MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
+      #     pnpm build
+      #   env:
+      #     VITE_FAUCET_PAGE: "true"
+      #     SSV_NETWORKS: ${{ env.PROD_SSV_NETWORKS }}
+      #     BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
+      #     EXPLORER_URL: "https://explorer.ssv.network/"
+      #     LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+      #     VITE_CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY_STAGE }}
+      #     MIXPANEL_TOKEN_PROD: ${{ secrets.MIXPANEL_TOKEN_PROD }}
 
-      - name: Deploy prod faucet
-        if: github.ref == 'refs/heads/main'
-        uses: jakejarvis/s3-sync-action@v0.5.0
-        with:
-          args: --acl public-read --follow-symlinks --delete
-        env:
-          SOURCE_DIR: 'build/'
-          AWS_REGION: 'us-west-2'
-          AWS_S3_BUCKET: ${{ secrets.PROD_FAUCET_AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+      # - name: Deploy prod faucet
+      #   if: github.ref == 'refs/heads/main'
+      #   uses: jakejarvis/s3-sync-action@v0.5.0
+      #   with:
+      #     args: --acl public-read --follow-symlinks --delete
+      #   env:
+      #     SOURCE_DIR: 'build/'
+      #     AWS_REGION: 'us-west-2'
+      #     AWS_S3_BUCKET: ${{ secrets.PROD_FAUCET_AWS_S3_BUCKET }}
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
       # </faucet.ssv.network>
 
       # <claim.ssv.network>
@@ -381,7 +401,7 @@ jobs:
       #        if: github.ref == 'refs/heads/main'
       #        run: >
       #          SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
-      #          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" yarn build
+      #          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" PROD_CLAIM_PAGE="$PROD_CLAIM_PAGE" pnpm build
       #        env:
       #          PROD_CLAIM_PAGE: "true"
       #          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}

@@ -253,7 +253,7 @@ jobs:
         run: >
           GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
-          SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
+          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
@@ -284,7 +284,7 @@ jobs:
         run: >
           GAS_PRICE="${{ env.GAS_PRICE }}" 
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
-          SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
+          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
           MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
           BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"

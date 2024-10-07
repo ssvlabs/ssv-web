@@ -1,4 +1,4 @@
-import "@/lib/sentry";
+import "@/lib/analytics/sentry";
 
 import { Buffer } from "buffer";
 globalThis.Buffer = Buffer;
@@ -20,16 +20,10 @@ import { Toaster } from "@/components/ui/toaster";
 import "@/global.css";
 import "@fontsource/manrope/400.css";
 import "@fontsource/manrope/500.css";
-// import "@fontsource/manrope/600.css";
 import "@fontsource/manrope/700.css";
 import "@fontsource/manrope/800.css";
+import { GTMFrame } from "@/lib/analytics/gtm";
 
-// if (import.meta.env.DEV) {
-//   // @ts-expect-error BigInt is not supported in JSON
-//   BigInt.prototype["toJSON"] = function () {
-//     return this.toString();
-//   };
-// }
 console.log(import.meta.env.DEV);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -39,14 +33,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       persistOptions={{ persister }}
     >
       <RainbowKitProvider>
-        {/* {import.meta.env.DEV && (
-          <ReactQueryDevtools
-            buttonPosition="bottom-right"
-            client={queryClient}
-          />
-        )} */}
-
         <RouterProvider router={router} />
+        <GTMFrame />
         <Toaster />
         <Text
           variant="caption-medium"

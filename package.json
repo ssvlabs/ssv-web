@@ -1,7 +1,7 @@
 {
   "name": "ssv-web-next",
   "private": true,
-  "version": "1.0.0-sumbat-dev.1",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

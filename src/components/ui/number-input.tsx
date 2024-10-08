@@ -4,7 +4,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { formatBigintInput } from "@/lib/utils/number";
 import { cn } from "@/lib/utils/tw";
 import { isUndefined } from "lodash-es";
-import { type FC, forwardRef, useState } from "react";
+import { type FC, forwardRef, useMemo, useState } from "react";
 import { useDebounce, useKey } from "react-use";
 import { parseUnits } from "viem";
 
@@ -41,9 +41,11 @@ export const NumberInput: NumberInputFC = forwardRef<HTMLInputElement, Props>(
     },
     ref,
   ) => {
-    const capture = new RegExp(
-      `^(-)?(0)?(\\d+)?(\\.\\d{0,${displayDecimals}})?`,
-    );
+    const capture = useMemo(() => {
+      const left = "^(-)?(0)?(\\d+)";
+      const right = `(\\.\\d{0,${displayDecimals}})`;
+      return new RegExp(displayDecimals > 0 ? `${left}${right}` : left);
+    }, [displayDecimals]);
 
     const [displayValue, setDisplayValue] = useState(format(value, decimals));
     const [showMaxSet, setShowMaxSet] = useState(false);

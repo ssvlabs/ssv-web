@@ -1,0 +1,193 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary-50: #e8f6fe;
+    --primary-100: #d1edfe;
+    --primary-200: #bbe4fd;
+    --primary-300: #76c8fb;
+    --primary-400: #49b6f9;
+    --primary-500: #1ba5f8;
+    --primary-600: #0792e8;
+    --primary-700: #067bc4;
+    --primary-800: #045588;
+    --primary-900: #034872;
+    --primary-1000: #033a5d;
+
+    --gray-50: #fdfefe;
+    --gray-100: #f9fbfc;
+    --gray-200: #f4f7fa;
+    --gray-300: #e6eaf7;
+    --gray-400: #cbd3e5;
+    --gray-500: #97a5ba;
+    --gray-600: #63768b;
+    --gray-700: #34455a;
+    --gray-800: #0b2a3c;
+    --gray-900: #062031;
+    --gray-1000: 207 95% 8%;
+    --black: 207 95% 8%;
+
+    --success-100: rgba(8, 200, 88, 0.16);
+    --success-300: rgba(8, 200, 88, 0.32);
+    --success-500: rgba(8, 200, 88, 1);
+    --success-700: rgba(6, 182, 79, 1);
+
+    --error-50: rgba(236, 28, 38, 0.04);
+    --error-100: rgba(236, 28, 38, 0.12);
+    --error-150: rgba(236, 28, 38, 0.2);
+    --error-200: rgba(236, 28, 38, 0.32);
+    --error-500: rgba(236, 28, 38, 1);
+
+    --warning-200: rgba(255, 210, 10, 0.2);
+    --warning-500: rgba(255, 210, 10, 1);
+
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 357 85% 52%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --primary-50: #033a5d;
+    --primary-100: #034872;
+    --primary-200: #045588;
+    --primary-300: #067bc4;
+    --primary-400: #0792e8;
+    --primary-500: #1ba5f8;
+    --primary-600: #49b6f9;
+    --primary-700: #76c8fb;
+    --primary-800: #bbe4fd;
+    --primary-900: #d1edfe;
+    --primary-1000: #e8f6fe;
+
+    --gray-50: #0b2a3c;
+    --gray-100: #062031;
+    --gray-200: #011627;
+    --gray-300: #34455a;
+    --gray-400: #63768b;
+    --gray-500: #97a5ba;
+    --gray-600: #cbd3e5;
+    --gray-700: #e6eaf7;
+    --gray-800: #f4f7fa;
+    --gray-900: #f9fbfc;
+    --gray-1000: #fdfefe;
+
+    /* --black: var(--gray-800); */
+
+    --success-100: rgba(8, 200, 88, 0.32);
+    --success-300: rgba(8, 200, 88, 0.16);
+    --success-500: rgba(6, 182, 79, 1);
+    --success-700: rgba(8, 200, 88, 1);
+
+    --error-50: rgba(236, 28, 38, 0.12);
+    --error-100: rgba(236, 28, 38, 0.2);
+    --error-150: rgba(236, 28, 38, 0.32);
+    --error-200: rgba(236, 28, 38, 0.48);
+    --error-500: rgba(236, 28, 38, 1);
+
+    --warning-200: rgba(255, 210, 10, 0.2);
+    --warning-500: rgba(255, 210, 10, 1);
+
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 202.04deg 68.53% 19.1% / 41%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+body {
+  background: var(--gray-200);
+}
+#root {
+  font-family: "Manrope", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  height: 100vh;
+}
+
+#root > [data-rk] {
+  @apply flex flex-col h-full;
+}
+
+.ReactCollapse--collapse {
+  transition: height 250ms;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: var(--gray-300);
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--gray-400);
+  border-radius: 100px;
+}

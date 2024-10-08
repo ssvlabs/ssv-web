@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+    </script>
+    <meta http-equiv="Cache-Control" content="max-age=0" />
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <meta charset="utf-8" />
+    <title>SSV Network</title>
+    <meta
+      content="minimum-scale=1, initial-scale=1, width=device-width"
+      name="viewport"
+    />
+
+    <!--  <link rel="preconnect" href="https://fonts.googleapis.com">-->
+    <!--  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>-->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link href="/favicon.ico" rel="icon" />
+    <meta content="#000000" name="theme-color" />
+    <meta
+      content="Explore the Secret Shared Validators network: statistics, operators and validators."
+      name="description"
+    />
+
+    <meta
+      content="connect-src 'self' data: https://www.gasnow.org
+                        ws://127.0.0.1:53034/
+                        https://ethereum-holesky.publicnode.com
+                        https://enhanced-provider.rainbow.me/v1/resolve-ens
+                        https://late-thrilling-arm.ethereum-holesky.quiknode.pro/b64c32d5e1b1664b4ed2de4faef610d2cf08ed26
+                        https://misty-purple-sailboat.quiknode.pro/7fea68f21d77d9b54fc35c3f6d68199a880f5cf0
+                        *.publicnode.com
+                        *.gstatic.com
+                        https://cloudflare-eth.com/
+                        https://rsms.me
+                        https://www.googletagmanager.com
+                        wss://relay.walletconnect.com
+                        wss://relay.walletconnect.org
+                        *.walletconnect.com
+                        *.walletconnect.org
+                        https://registry.walletconnect.org/
+                        wss://*.bridge.walletconnect.org/
+                        https://region1.google-analytics.com/
+                        https://api.bloxstaking.com/
+                        http://localhost:5173
+                        https://api.ipregistry.co
+                        https://api.bigdatacloud.net
+                        https://ipapi.co
+                        https://geolocation-db.com
+                        https://api.ipgeolocation.io/
+                        https://newassets.hcaptcha.com/
+                        https://api.ssv.network/
+                        https://api.stage.ssv.network/
+                        https://explorer.stage.ssv.network/
+                        https://rest.coinapi.io
+                        https://www.google-analytics.com
+                        https://registry.walletconnect.org/data/wallets.json
+                        https://verify.walletconnect.com
+                        wss://www.walletlink.org/rpc
+                        wss://bridge.walletconnect.org
+                        https://beaconcha.in/
+                        https://ssv-api.stage.ssv.network/
+                        https://ssv-api.ssv.network/
+                        https://ssv-api-v2.ssv.network/
+                        wss://api.blocknative.com;
+                     img-src 'self' data: https://registry.walletconnect.org/
+                         *.walletconnect.com/
+                         https://media.stage.ssv.network/
+                         https://media.ssv.network/
+                         https://media-v2.ssv.network/
+                         https://www.google-analytics.com/
+                         http://www.google-analytics.com/collect
+                         https://s2.coinmarketcap.com/;
+                     manifest-src 'self';
+                     script-src-elem 'self' 'unsafe-inline' http://www.googletagmanager.com/ https://js.hcaptcha.com/1/api.js http://www.google-analytics.com/analytics.js;
+                     script-src 'self' 'unsafe-eval' 'unsafe-inline' data: https://ssl.google-analytics.com/ https://ssv-web-next.vercel.app/ https://www.google-analytics.com/ https://enhanced-provider.rainbow.me;
+                      font-src *.gstatic.com http://localhost:3000;
+                     style-src-elem 'unsafe-inline' https://fonts.googleapis.com/ https://*.ssv.network/assets/  https://ssv-web-next.vercel.app/;"
+      http-equiv="Content-Security-Policy"
+    />
+
+    <link href="/logo192.png" rel="apple-touch-icon" />
+  </head>
+  <body class="dark2" style="padding: 0; margin: 0">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module">
+      import { Buffer } from "buffer";
+      globalThis.Buffer = Buffer;
+      window.Buffer = Buffer;
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+    <iframe
+      id="self-frame"
+      style="border: 0; height: 100vh; width: 100%; display: none"
+    ></iframe>
+  </body>
+</html>

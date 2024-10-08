@@ -5,10 +5,17 @@ export const numberFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
 });
 
-export const percentageFormatter = new Intl.NumberFormat("en-US", {
+export const _percentageFormatter = new Intl.NumberFormat("en-US", {
   style: "percent",
   maximumFractionDigits: 2,
 });
+
+export const percentageFormatter = {
+  format: (value?: number) => {
+    if (!value) return "0%";
+    return _percentageFormatter.format(value / 100);
+  },
+};
 
 export const bigintFormatter = new Intl.NumberFormat("en-US", {
   useGrouping: false,

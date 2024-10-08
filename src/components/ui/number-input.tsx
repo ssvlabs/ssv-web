@@ -42,8 +42,8 @@ export const NumberInput: NumberInputFC = forwardRef<HTMLInputElement, Props>(
     ref,
   ) => {
     const capture = useMemo(() => {
-      const left = "^(-)?(0)?(\\d+)";
-      const right = `(\\.\\d{0,${displayDecimals}})`;
+      const left = "^(-)?(0)?(\\d+)?";
+      const right = `(\\.\\d{0,${displayDecimals}})?`;
       return new RegExp(displayDecimals > 0 ? `${left}${right}` : left);
     }, [displayDecimals]);
 

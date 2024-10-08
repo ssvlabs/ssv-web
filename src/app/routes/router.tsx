@@ -12,6 +12,7 @@ import { clustersRoutes } from "./router/route-definitions/clusters-routes";
 import { operatorsRoutes } from "./router/route-definitions/operators-routes";
 import type { RoutePaths, WritableRoutePaths } from "./router/route-types";
 import { Maintenance } from "@/app/routes/maintenance";
+import { Compliance } from "@/app/routes/compliance";
 
 const routes = [
   {
@@ -42,6 +43,14 @@ const routes = [
     element: (
       <DashboardLayout className="p-6">
         <ConnectWallet />
+      </DashboardLayout>
+    ),
+  },
+  {
+    path: "/compliance",
+    element: (
+      <DashboardLayout>
+        <Compliance />
       </DashboardLayout>
     ),
   },

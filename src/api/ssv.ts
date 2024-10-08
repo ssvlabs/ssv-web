@@ -98,3 +98,26 @@ export const getCurrentLocation = async (): Promise<string[]> => {
 
   return [];
 };
+
+export const checkUserCountryRestriction = async (
+  userLocation: string[],
+  restrictedLocations: string[],
+): Promise<any> => {
+  console.debug("🚫 Restricted locations:", restrictedLocations);
+  console.debug("🌐 User location:", userLocation);
+  if (!userLocation.length) {
+    return "Unknown";
+  }
+  for (const location of userLocation) {
+    for (const restrictedLocation of restrictedLocations) {
+      if (
+        String(restrictedLocation)
+          .toLowerCase()
+          .indexOf(String(location).toLowerCase()) !== -1
+      ) {
+        return userLocation[0] || "Unknown";
+      }
+    }
+  }
+  return "";
+};

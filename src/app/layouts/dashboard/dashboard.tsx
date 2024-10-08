@@ -26,6 +26,7 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
   const account = useAccount();
 
   const { isMaintenancePage } = useMaintenance();
+
   if (isMaintenancePage) {
     return <Navigate to="/maintenance" replace />;
   }

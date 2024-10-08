@@ -126,7 +126,7 @@ export const OperatorPickerItem: FCProps = ({
           )}
         >
           <Text variant={isSelected ? "body-2-semibold" : "body-2-medium"}>
-            {percentageFormatter.format(operator.performance["30d"] / 100)}
+            {percentageFormatter.format(operator.performance["30d"])}
           </Text>
           {isInactive && (
             <OperatorStatusBadge size="xs" status={operator.status} />

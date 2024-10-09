@@ -37,6 +37,7 @@ export const useUpgradeToAndCall = () => {
     value?: bigint,
     options: MutationOptions<MainnetEvent> = {},
   ) => {
+    options.onInitiated?.();
     return mutation
       .writeContractAsync(
         {

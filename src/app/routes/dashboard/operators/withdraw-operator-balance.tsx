@@ -95,7 +95,7 @@ export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
                 <div className="flex h-14 items-center gap-5">
                   <input
                     disabled={withdraw.isPending || !hasBalance}
-                    placeholder="0.00"
+                    placeholder="0"
                     className="w-full h-full border outline-none flex-1 text-[28px] font-medium border-none bg-transparent"
                     {...props}
                     ref={ref}

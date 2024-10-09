@@ -3,12 +3,12 @@ import type { TableProps } from "@/components/ui/grid-table";
 import { Table, TableCell, TableHeader } from "@/components/ui/grid-table";
 
 import type { UseInfiniteQueryResult } from "@tanstack/react-query";
-import { VList } from "virtua";
 import { Spinner } from "@/components/ui/spinner";
 import { useInterval } from "react-use";
 import { cn } from "@/lib/utils/tw";
 import { Text } from "@/components/ui/text";
 import LogoIcon from "@/assets/images/logo-icon.svg?react";
+import { VList } from "virtua";
 
 export type VirtualizedInfinityTableProps<
   T,
@@ -56,7 +56,7 @@ export const VirtualizedInfinityTable = <T,>({
           </TableCell>
         ))}
       </TableHeader>
-      {Boolean(items.length) && (
+      {Boolean(items.length || query.hasNextPage) && (
         <VList
           overscan={10}
           style={{
@@ -96,7 +96,7 @@ export const VirtualizedInfinityTable = <T,>({
         </VList>
       )}
       {query.isLoading && (
-        <div className="flex flex-col items-center h-full justify-center p-4">
+        <div className="flex flex-1 flex-col items-center h-full justify-center p-4">
           <Spinner />
         </div>
       )}

@@ -49,7 +49,6 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
         });
       }
 
-      console.log("min:", min);
       if (value < min) {
         return ctx.addIssue({
           code: z.ZodIssueCode.too_small,

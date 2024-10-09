@@ -4,6 +4,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { formatBigintInput } from "@/lib/utils/number";
 import { cn } from "@/lib/utils/tw";
 import { isUndefined } from "lodash-es";
+import type { ReactNode, Ref } from "react";
 import { type FC, forwardRef, useMemo, useState } from "react";
 import { useDebounce, useKey } from "react-use";
 import { parseUnits } from "viem";
@@ -15,6 +16,16 @@ export type NumberInputProps = {
   onChange: (value: bigint) => void;
   decimals?: number;
   displayDecimals?: number;
+  render?: (
+    props: {
+      onInput: (ev: React.FormEvent<HTMLInputElement>) => void;
+      onKeyDown: (ev: React.KeyboardEvent<HTMLInputElement>) => void;
+      value: string;
+      inputMode: InputProps["inputMode"];
+      type: InputProps["type"];
+    },
+    ref: Ref<HTMLInputElement>,
+  ) => ReactNode;
 };
 
 type Props = Omit<InputProps, keyof NumberInputProps> & NumberInputProps;
@@ -37,6 +48,7 @@ export const NumberInput: NumberInputFC = forwardRef<HTMLInputElement, Props>(
       allowNegative = false,
       onChange,
       displayDecimals = 7,
+      render,
       ...props
     },
     ref,
@@ -88,6 +100,21 @@ export const NumberInput: NumberInputFC = forwardRef<HTMLInputElement, Props>(
 
     useKey("ArrowUp", handleArrowKey("up"), undefined, [value, decimals]);
     useKey("ArrowDown", handleArrowKey("down"), undefined, [value, decimals]);
+
+    const onInput = (ev: React.FormEvent<HTMLInputElement>) => {
+      const input = ev.currentTarget.value;
+      const [, op = "", zero, d, dec = ""] = input.match(capture) || [];
+      if (!allowNegative && op === "-") return;
+
+      const nextDisplayValue = op + (d ?? zero ?? "") + dec;
+
+      const parsed = parseUnits(nextDisplayValue, decimals);
+      setValue(parsed, nextDisplayValue);
+    };
+
+    const onKeyDown = (ev: React.KeyboardEvent<HTMLInputElement>) =>
+      ignoreKeys.includes(ev.key) && ev.preventDefault();
+
     return (
       <Tooltip
         asChild
@@ -96,25 +123,29 @@ export const NumberInput: NumberInputFC = forwardRef<HTMLInputElement, Props>(
         hasArrow
         side="left"
       >
-        <Input
-          {...props}
-          ref={ref}
-          value={displayValue}
-          onKeyDown={(ev) => ignoreKeys.includes(ev.key) && ev.preventDefault()}
-          onInput={(ev) => {
-            const input = ev.currentTarget.value;
-            const [, op = "", zero, d, dec = ""] = input.match(capture) || [];
-            if (!allowNegative && op === "-") return;
-
-            const nextDisplayValue = op + (d ?? zero ?? "") + dec;
-
-            const parsed = parseUnits(nextDisplayValue, decimals);
-            setValue(parsed, nextDisplayValue);
-          }}
-          className={cn(className)}
-          inputMode="numeric"
-          type="text"
-        />
+        {render ? (
+          render(
+            {
+              onInput,
+              onKeyDown,
+              value: displayValue,
+              inputMode: "numeric",
+              type: "text",
+            },
+            ref,
+          )
+        ) : (
+          <Input
+            {...props}
+            ref={ref}
+            value={displayValue}
+            onKeyDown={onKeyDown}
+            onInput={onInput}
+            className={cn(className)}
+            inputMode="numeric"
+            type="text"
+          />
+        )}
       </Tooltip>
     );
   },

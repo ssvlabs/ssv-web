@@ -24,13 +24,13 @@ import { setOptimisticData } from "@/lib/react-query";
 import { useDepositClusterBalance } from "@/hooks/cluster/use-deposit-cluster-balance";
 import { useNavigate } from "react-router-dom";
 import { useSSVBalance } from "@/hooks/use-ssv-balance";
-import { formatSSV } from "@/lib/utils/number";
 import {
   getClusterQueryOptions,
   useCluster,
 } from "@/hooks/cluster/use-cluster";
 import { WithAllowance } from "@/components/with-allowance/with-allowance";
 import { merge } from "lodash-es";
+import { formatSSV } from "@/lib/utils/number";
 
 const schema = z.object({
   value: z.bigint().positive(),
@@ -94,27 +94,62 @@ export const DepositClusterBalance: FC = () => {
                     onChange={field.onChange}
                     max={ssvBalance?.value}
                     className="h-20"
-                    rightSlot={
-                      <div className="flex flex-col items-end gap-1 px-2">
-                        <div className="flex items-center gap-2 ">
+                    // rightSlot={
+                    //   <div className="flex flex-col items-end gap-1 px-2">
+                    //     <div className="flex items-center gap-2 ">
+                    //       <Button
+                    //         variant="secondary"
+                    //         className="px-2 py-0 h-6"
+                    //         onClick={() =>
+                    //           form.setValue("value", ssvBalance?.value ?? 0n, {
+                    //             shouldValidate: true,
+                    //           })
+                    //         }
+                    //       >
+                    //         Max
+                    //       </Button>
+                    //       <Text variant="body-1-bold">SSV</Text>
+                    //     </div>
+                    //     <Text variant="body-3-medium" className="text-gray-500">
+                    //       Balance: {formatSSV(ssvBalance?.value ?? 0n)} SSV
+                    //     </Text>
+                    //   </div>
+                    // }
+                    render={(props, ref) => (
+                      <div className="flex flex-col pl-6 pr-5 py-4 gap-3 rounded-xl border border-gray-300 bg-gray-200">
+                        <div className="flex h-14 items-center gap-5">
+                          <input
+                            placeholder="0.00"
+                            className="w-full h-full border outline-none flex-1 text-[28px] font-medium border-none bg-transparent"
+                            {...props}
+                            ref={ref}
+                          />
                           <Button
+                            size="lg"
                             variant="secondary"
-                            className="px-2 py-0 h-6"
+                            className="font-semibold px-4"
                             onClick={() =>
                               form.setValue("value", ssvBalance?.value ?? 0n, {
                                 shouldValidate: true,
                               })
                             }
                           >
-                            Max
+                            MAX
                           </Button>
-                          <Text variant="body-1-bold">SSV</Text>
+                          <span className="text-[28px] font-medium">SSV</span>
                         </div>
-                        <Text variant="body-3-medium" className="text-gray-500">
-                          Balance: {formatSSV(ssvBalance?.value ?? 0n)} SSV
-                        </Text>
+                        <Divider />
+                        <div className="flex justify-end">
+                          <Text
+                            variant="body-2-medium"
+                            className="text-gray-500"
+                          >
+                            Wallet Balance: {formatSSV(ssvBalance?.value ?? 0n)}{" "}
+                            SSV
+                          </Text>
+                        </div>
                       </div>
-                    }
+                    )}
                   />
                 </FormControl>
                 <FormMessage />

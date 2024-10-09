@@ -124,7 +124,8 @@ export const generateSSVKeysDockerCMD = ({
   validatorsCount = 1,
   os = getOSName(),
 }: GenerateSSVKeysDockerCMDParams) => {
-  const chainName = chainId === 1 ? "mainnet" : getChainName(chainId);
+  const chainName =
+    chainId === 1 ? "mainnet" : getChainName(chainId)?.toLowerCase();
   const sortedOperators = sortOperators(operators);
   const operatorIds = sortedOperators.map((op) => op.id).join(",");
   const dynamicFullPath = os === "windows" ? "%cd%" : "$(pwd)";

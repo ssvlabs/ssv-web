@@ -52,7 +52,9 @@ const connectors = connectorsForWallets(
 
 export const mainnet_private_rpc_client = createPublicClient({
   chain: mainnet,
-  transport: http(import.meta.env.VITE_PRIVATE_RPC_URL),
+  transport: http(
+    "https://misty-purple-sailboat.quiknode.pro/7fea68f21d77d9b54fc35c3f6d68199a880f5cf0",
+  ),
 });
 
 export const config = createConfig({

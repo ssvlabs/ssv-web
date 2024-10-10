@@ -58,6 +58,10 @@ const routes = [
     path: "/maintenance",
     element: <Maintenance />,
   },
+  {
+    path: "*",
+    element: <Redirector />,
+  },
 ] as const satisfies RouteObject[];
 
 export type AppRoutePaths = RoutePaths<typeof routes>;

@@ -42,6 +42,7 @@ export const useSetFeeRecipientAddress = () => {
     params: AbiInputsToParams<Fn["inputs"]>,
     options: MutationOptions<MainnetEvent> = {},
   ) => {
+    options.onInitiated?.();
     return mutation
       .writeContractAsync(
         {

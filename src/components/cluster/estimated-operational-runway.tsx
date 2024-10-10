@@ -61,7 +61,7 @@ export const EstimatedOperationalRunway: EstimatedOperationalRunwayFC = ({
             "text-error-500": clusterRunway?.isAtRisk,
           })}
         >
-          <Text variant="headline4" className="font-semibold">
+          <Text className="font-medium text-2xl first-letter:capitalize">
             {clusterRunway?.runway === 0n
               ? "0"
               : humanizeFundingDuration(

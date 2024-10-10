@@ -14,7 +14,6 @@ import { BeaconchainBtn } from "@/components/ui/ssv-explorer-btn";
 export const SlashingWarning: FC = () => {
   const [agree1, setAgree1] = useState(false);
   const { shares } = useRegisterValidatorContext();
-  console.log("shares:", shares);
 
   return (
     <Container variant="vertical" className="py-6">

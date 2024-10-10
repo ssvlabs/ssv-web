@@ -36,6 +36,7 @@ export const useExitValidator = () => {
     params: AbiInputsToParams<Fn["inputs"]>,
     options: MutationOptions<MainnetEvent> = {},
   ) => {
+    options.onInitiated?.();
     return mutation
       .writeContractAsync(
         {

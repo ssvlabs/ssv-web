@@ -30,6 +30,7 @@ export type MainnetEvent = DecodeEventLogReturnType<typeof MainnetV4SetterABI>;
 export type TestnetEvent = DecodeEventLogReturnType<typeof HoleskyV4SetterABI>;
 
 export type MutationOptions<T extends MainnetEvent | TestnetEvent> = {
+  onInitiated?: () => MaybePromise<unknown | (() => unknown)>;
   onConfirmed?: (hash: Address) => MaybePromise<unknown | (() => unknown)>;
   onMined?: (
     receipt: TransactionReceipt & { events: T[] },
@@ -49,6 +50,12 @@ export const withTransactionModal = <
 ) => {
   const isContract = isContractWallet();
   return {
+    onInitiated: () => {
+      options?.onInitiated?.();
+      if (isContract) {
+        useMultisigTransactionModal.state.open();
+      }
+    },
     onConfirmed: async (hash) => {
       if (isContract) {
         useMultisigTransactionModal.state.open();

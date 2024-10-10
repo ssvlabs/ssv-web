@@ -88,13 +88,10 @@ export const useSelectedOperatorIds = () => {
 
   const { hasSelectedOperators, selectedOperatorsIds, keysharesFile } =
     useRegisterValidatorContext();
-  console.log("selectedOperatorsIds:", selectedOperatorsIds);
-  console.log("hasSelectedOperators:", hasSelectedOperators);
 
   const { data: shares } = useKeysharesSchemaValidation(
     keysharesFile.files?.at(0) || null,
   );
-  console.log("shares:", shares);
 
   return useMemo(() => {
     return sortNumbers(

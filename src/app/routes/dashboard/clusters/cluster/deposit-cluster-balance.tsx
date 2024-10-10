@@ -119,7 +119,7 @@ export const DepositClusterBalance: FC = () => {
                       <div className="flex flex-col pl-6 pr-5 py-4 gap-3 rounded-xl border border-gray-300 bg-gray-200">
                         <div className="flex h-14 items-center gap-5">
                           <input
-                            placeholder="0.00"
+                            placeholder="0"
                             className="w-full h-full border outline-none flex-1 text-[28px] font-medium border-none bg-transparent"
                             {...props}
                             ref={ref}

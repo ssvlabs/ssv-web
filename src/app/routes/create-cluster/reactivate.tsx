@@ -263,6 +263,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
                                       field.onChange(Number(value))
                                     }
                                     decimals={0}
+                                    displayDecimals={0}
                                     max={BigInt(365 * 9999)}
                                     rightSlot={<>Days</>}
                                   />

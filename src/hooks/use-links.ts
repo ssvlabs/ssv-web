@@ -1,11 +1,13 @@
 import { useMemo } from "react";
 import { useAccount } from "@/hooks/account/use-account";
 
+const isProduction = location.hostname === "app.ssv.network"; // TODO: determine production through build.yaml
+
 export const useLinks = () => {
   const { chain } = useAccount();
   return useMemo(() => {
     const prefix = chain?.testnet ? `${chain.name.toLowerCase()}.` : "";
-    const ssvPrefix = chain?.testnet ? `.stage` : "";
+    const ssvPrefix = isProduction ? "" : `.stage`;
     return {
       beaconcha: `https://${prefix}beaconcha.in`,
       launchpad: `https://${prefix}launchpad.ethereum.org`,

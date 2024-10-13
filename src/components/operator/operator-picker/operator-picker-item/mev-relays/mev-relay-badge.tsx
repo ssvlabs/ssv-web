@@ -18,7 +18,6 @@ export const MevRelayBadge: FCProps = ({ className, mevRelay, ...props }) => {
   const { dark } = useTheme();
   const { ref, isInsideTooltip } = useIsInsideTooltip();
   const isDark = isInsideTooltip || dark;
-  console.log("isDark:", isDark);
   const logo = MEV_RELAYS_LOGOS[mevRelay.trim()];
 
   return (

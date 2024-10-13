@@ -25,6 +25,7 @@ export const useAcceptOwnership = () => {
   const mutation = useWriteContract();
 
   const write = (options: MutationOptions<MainnetEvent> = {}) => {
+    options.onInitiated?.();
     return mutation
       .writeContractAsync(
         {

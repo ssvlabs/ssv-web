@@ -52,7 +52,11 @@ export const useSearchOperators = ({
 
   const fetched = useFetchedSearchOperators();
   return {
-    operators,
+    operators: has_dkg_address
+      ? operators.filter((operator) =>
+          operator.dkg_address?.startsWith("https://"),
+        )
+      : operators,
     infiniteQuery: query,
     fetched,
   };

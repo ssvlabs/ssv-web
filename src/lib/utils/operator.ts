@@ -205,17 +205,18 @@ export const canAccountUseOperator = async (
 ): Promise<boolean> => {
   if (!operator.is_private) return true;
 
+  const isWhitelisted = (operator.whitelist_addresses || []).some((addr) =>
+    isAddressEqual(addr as Address, account),
+  );
+
+  if (isWhitelisted) return true;
+
   const hasExternalContract = Boolean(
     operator.whitelisting_contract &&
       operator.whitelisting_contract !== globals.DEFAULT_ADDRESS_WHITELIST,
   );
 
-  if (!hasExternalContract)
-    return (
-      operator.whitelist_addresses?.some((addr) =>
-        isAddressEqual(addr as Address, account),
-      ) ?? true
-    );
+  if (!hasExternalContract) return false;
 
   return fetchIsAddressWhitelistedInWhitelistingContract({
     addressToCheck: account,

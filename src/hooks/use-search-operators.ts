@@ -54,7 +54,7 @@ export const useSearchOperators = ({
   return {
     operators: has_dkg_address
       ? operators.filter((operator) =>
-          operator.dkg_address?.startsWith("http://"),
+          operator.dkg_address?.startsWith("https://"),
         )
       : operators,
     infiniteQuery: query,

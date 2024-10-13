@@ -13,6 +13,7 @@ import { operatorsRoutes } from "./router/route-definitions/operators-routes";
 import type { RoutePaths, WritableRoutePaths } from "./router/route-types";
 import { Maintenance } from "@/app/routes/maintenance";
 import { Compliance } from "@/app/routes/compliance";
+import { NotFound } from "./not-found";
 
 const routes = [
   {
@@ -60,7 +61,11 @@ const routes = [
   },
   {
     path: "*",
-    element: <Redirector />,
+    element: (
+      <DashboardLayout>
+        <NotFound />
+      </DashboardLayout>
+    ),
   },
 ] as const satisfies RouteObject[];
 

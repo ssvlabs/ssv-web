@@ -170,8 +170,8 @@ importers:
         specifier: ^1.5.0
         version: 1.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       ssv-keys:
-        specifier: 1.2.0
-        version: 1.2.0
+        specifier: https://github.com/ssvlabs/ssv-keys.git#9ed1a36bc9a0c79ed25ff5e7cdda61a5b53d3869
+        version: https://codeload.github.com/ssvlabs/ssv-keys/tar.gz/9ed1a36bc9a0c79ed25ff5e7cdda61a5b53d3869
       tailwind-merge:
         specifier: ^2.3.0
         version: 2.3.0
@@ -6906,8 +6906,9 @@ packages:
   sprintf-js@1.0.3:
     resolution: {integrity: sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==}
 
-  ssv-keys@1.2.0:
-    resolution: {integrity: sha512-MLeHAL450EzGeH8q0gpXsSOI3YyAQ6Sa+0W3JQF130cI0U/5n5vXoyTd84bYNFk0Y1yPSoMzlb7rGlwu16NV5Q==}
+  ssv-keys@https://codeload.github.com/ssvlabs/ssv-keys/tar.gz/9ed1a36bc9a0c79ed25ff5e7cdda61a5b53d3869:
+    resolution: {tarball: https://codeload.github.com/ssvlabs/ssv-keys/tar.gz/9ed1a36bc9a0c79ed25ff5e7cdda61a5b53d3869}
+    version: 1.2.0
     engines: {node: '>=16'}
     hasBin: true
 
@@ -15563,7 +15564,7 @@ snapshots:
 
   sprintf-js@1.0.3: {}
 
-  ssv-keys@1.2.0:
+  ssv-keys@https://codeload.github.com/ssvlabs/ssv-keys/tar.gz/9ed1a36bc9a0c79ed25ff5e7cdda61a5b53d3869:
     dependencies:
       '@types/figlet': 1.5.8
       '@types/underscore': 1.11.15

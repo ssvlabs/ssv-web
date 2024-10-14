@@ -84,6 +84,7 @@ export const ${hookName} = () => {
   const mutation = useWriteContract();
 
   const write = (${hasInputs ? 'params: AbiInputsToParams<Fn["inputs"]>,' : ""}${isPayable ? "value?: bigint," : ""}options: MutationOptions<${eventTypeName}> = {}) => {
+    options.onInitiated?.();
     return mutation.writeContractAsync({
     ${isPayable ? "value," : ""}
       abi: ${abiName},

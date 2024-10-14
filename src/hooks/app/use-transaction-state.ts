@@ -9,11 +9,12 @@ import { useIsMutating } from "@tanstack/react-query";
 export const useActiveTransactionState = () => {
   const account = useAccount();
 
-  const isWriting = Boolean(
-    useIsMutating({
-      mutationKey: ["writeContract"],
-    }),
-  );
+  const isWriting =
+    Boolean(
+      useIsMutating({
+        mutationKey: ["writeContract"],
+      }),
+    ) && !account.isContract;
 
   const isWaiting =
     Boolean(

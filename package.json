@@ -1,6 +1,5 @@
 {
   "name": "ssv-web-next",
-  "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {

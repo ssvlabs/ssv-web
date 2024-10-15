@@ -43,10 +43,11 @@ const sanitizedString = z.string().regex(/^[a-zA-Z0-9_!$#’|\s]*$/, {
 
 export const metadataScheme = z.object({
   logo: operatorLogoSchema.default(""),
-  name: sanitizedString
+  name: z
+    .string()
     .min(3, "Operator name must be at least 3 characters")
     .max(30, "Operator name must be at most 30 characters"),
-  description: sanitizedString.optional().default(""),
+  description: z.string().optional().default(""),
   eth1_node_client: sanitizedString.optional().default(""),
   eth2_node_client: sanitizedString.optional().default(""),
   location: z.string().optional().default(""),

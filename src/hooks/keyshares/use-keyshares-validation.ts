@@ -49,6 +49,16 @@ export const useKeysharesValidation = (
         );
       }
 
+      await Promise.all(
+        shares.map((share) =>
+          share.validateSingleShares(share.payload.sharesData, {
+            ownerAddress: share.data.ownerAddress || "",
+            ownerNonce: share.data.ownerNonce || 0,
+            publicKey: share.data.publicKey || "",
+          }),
+        ),
+      );
+
       const operators = await queryFetchOperators(selectedOperatorIds)
         .then((operators) => {
           if (operators.some((operator) => operator.is_deleted)) {

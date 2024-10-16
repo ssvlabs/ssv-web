@@ -44,6 +44,7 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
   const context = useRegisterValidatorContext();
   const validatedShares = useKeysharesValidation(
     context.keysharesFile.files?.[0] ?? null,
+    account.address,
   );
 
   const operatorIds = useSelectedOperatorIds();

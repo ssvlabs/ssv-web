@@ -14,9 +14,11 @@ import { useQuery } from "@tanstack/react-query";
 import { isEqual } from "lodash-es";
 import type { KeySharesItem } from "ssv-keys";
 import { useChainId } from "wagmi";
+import { getAddress } from "viem";
 
 export const useKeysharesValidation = (
   file: File | null,
+  accountAddress?: string,
   options: UseQueryOptions<
     KeySharesItem[],
     Error | KeysharesValidationError
@@ -52,7 +54,7 @@ export const useKeysharesValidation = (
       await Promise.all(
         shares.map((share) =>
           share.validateSingleShares(share.payload.sharesData, {
-            ownerAddress: share.data.ownerAddress || "",
+            ownerAddress: getAddress(accountAddress || ""),
             ownerNonce: share.data.ownerNonce || 0,
             publicKey: share.data.publicKey || "",
           }),

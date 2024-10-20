@@ -37,6 +37,7 @@ export const useKeysharesValidation = (
       file?.lastModified,
       operatorIds,
       chainId,
+      address,
     ],
     queryFn: async () => {
       const shares = await createKeysharesFromFile(file!);

@@ -26,6 +26,8 @@ import { useEffect, type ComponentPropsWithoutRef, type FC } from "react";
 import { useNavigate } from "react-router";
 import { ref } from "valtio";
 import { Tooltip } from "@/components/ui/tooltip";
+import { globals } from "@/config";
+import type { ClusterSize } from "@/components/operator/operator-picker/operator-cluster-size-picker.tsx";
 
 export type GenerateKeySharesOfflineProps = {
   // TODO: Add props or remove this type
@@ -35,6 +37,17 @@ type FCProps = FC<
   Omit<ComponentPropsWithoutRef<"div">, keyof GenerateKeySharesOfflineProps> &
     GenerateKeySharesOfflineProps
 >;
+
+const clusterSizesMap = {
+  [globals.CLUSTER_SIZES.QUAD_CLUSTER]:
+    globals.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.QUAD_CLUSTER,
+  [globals.CLUSTER_SIZES.SEPT_CLUSTER]:
+    globals.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.SEPT_CLUSTER,
+  [globals.CLUSTER_SIZES.DECA_CLUSTER]:
+    globals.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.DECA_CLUSTER,
+  [globals.CLUSTER_SIZES.TRISKAIDEKA_CLUSTER]:
+    globals.FIXED_VALIDATORS_COUNT_PER_CLUSTER_SIZE.TRISKAIDEKA_CLUSTER,
+};
 
 export const UploadKeyshares: FCProps = ({ ...props }) => {
   const account = useAccount();
@@ -66,18 +79,25 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
   );
 
   const maxAddable = Math.min(
-    operatorsUsability.data?.maxAddableValidators ?? 0,
-    validators.data?.tags.available.length ?? 0,
+    operatorsUsability.data?.maxAddableValidators ||
+      validators.data?.tags.available.length ||
+      0,
+    clusterSizesMap[state.clusterSize],
   );
 
   useEffect(() => {
     if (
       state.selectedValidatorsCount < 1 ||
-      state.selectedValidatorsCount > maxAddable
+      state.selectedValidatorsCount > maxAddable ||
+      isNaN(state.selectedValidatorsCount)
     ) {
       state.selectedValidatorsCount = maxAddable;
     }
   }, [state, validators.data?.tags.available.length, maxAddable]);
+
+  useEffect(() => {
+    state.clusterSize = operatorIds.length as ClusterSize;
+  }, [operatorIds.length]);
 
   const submit = () => {
     state.shares =
@@ -177,7 +197,8 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
                 select an alternative operator.
               </AlertDescription>
             </Alert>
-          ) : maxAddable < (validators.data?.tags.available.length ?? 0) ? (
+          ) : (operatorsUsability?.data?.maxAddableValidators ?? 0) <
+            (validators.data?.tags.available.length ?? 0) ? (
             <Alert variant="warning">
               <AlertDescription>
                 The number of validators you wish to onboard would exceed the

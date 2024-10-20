@@ -92,7 +92,7 @@ export const OperatorPickerItem: FCProps = ({
           ></Checkbox>
         </TableCell>
         <TableCell>
-          <div className="flex items-center gap-2">
+          <div className="size-10 flex flex-nowrap text-nowrap items-center gap-2">
             <OperatorAvatar
               size="md"
               className="ml-2"
@@ -116,28 +116,31 @@ export const OperatorPickerItem: FCProps = ({
             </div>
           </div>
         </TableCell>
-        <TableCell>{operator.validators_count}</TableCell>
+        <TableCell>
+          <div className="size-10">{operator.validators_count}</div>
+        </TableCell>
         <TableCell
-          className={cn(
-            "flex h-full justify-center flex-col gap-1 items-start",
-            {
-              "text-error-500": hasValidators && isInactive,
-            },
-          )}
+          className={cn("flex h-full justify-center flex-col  items-start", {
+            "text-error-500": hasValidators && isInactive,
+          })}
         >
-          <Text variant={isSelected ? "body-2-semibold" : "body-2-medium"}>
-            {percentageFormatter.format(operator.performance["30d"])}
-          </Text>
-          {isInactive && (
-            <OperatorStatusBadge size="xs" status={operator.status} />
-          )}
+          <div className="h-10">
+            <Text variant={isSelected ? "body-2-semibold" : "body-2-medium"}>
+              {percentageFormatter.format(operator.performance["30d"])}
+            </Text>
+            {isInactive && (
+              <OperatorStatusBadge size="xs" status={operator.status} />
+            )}
+          </div>
         </TableCell>
         <TableCell
           className={cn({
             "font-semibold": isSelected,
           })}
         >
-          {getYearlyFee(BigInt(operator.fee), { format: true })}
+          <div className="h-10">
+            {getYearlyFee(BigInt(operator.fee), { format: true })}
+          </div>
         </TableCell>
         <TableCell>
           <MevRelays
@@ -148,17 +151,19 @@ export const OperatorPickerItem: FCProps = ({
           />
         </TableCell>
         <TableCell className="flex gap-1 justify-end">
-          <SsvExplorerBtn operatorId={operator.id} />
-          {isAddressEqual(operator.owner_address as Address, address!) && (
-            <Button
-              as={Link}
-              to={`/operators/${operator.id}`}
-              variant="subtle"
-              size="icon"
-            >
-              <LuLogIn />
-            </Button>
-          )}
+          <div className="size-10">
+            <SsvExplorerBtn operatorId={operator.id} />
+            {isAddressEqual(operator.owner_address as Address, address!) && (
+              <Button
+                as={Link}
+                to={`/operators/${operator.id}`}
+                variant="subtle"
+                size="icon"
+              >
+                <LuLogIn />
+              </Button>
+            )}
+          </div>
         </TableCell>
       </TableRow>
     </Tooltip>

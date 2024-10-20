@@ -15,10 +15,10 @@ import { isEqual } from "lodash-es";
 import type { KeySharesItem } from "ssv-keys";
 import { useChainId } from "wagmi";
 import { getAddress } from "viem";
+import { useAccount } from "@/hooks/account/use-account.ts";
 
 export const useKeysharesValidation = (
   file: File | null,
-  accountAddress?: string,
   options: UseQueryOptions<
     KeySharesItem[],
     Error | KeysharesValidationError
@@ -29,7 +29,7 @@ export const useKeysharesValidation = (
   const operatorIds = useSelectedOperatorIds();
   const isEnabled = Boolean(file && options.enabled);
   const chainId = useChainId();
-
+  const { address } = useAccount();
   const query = useQuery({
     queryKey: [
       "keyshares-validation",
@@ -54,7 +54,7 @@ export const useKeysharesValidation = (
       await Promise.all(
         shares.map((share) =>
           share.validateSingleShares(share.payload.sharesData, {
-            ownerAddress: getAddress(accountAddress || ""),
+            ownerAddress: getAddress(address || ""),
             ownerNonce: share.data.ownerNonce || 0,
             publicKey: share.data.publicKey || "",
           }),

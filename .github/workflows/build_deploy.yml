@@ -88,6 +88,7 @@ jobs:
         run: pnpm lint
 
       - name: Run semantic-release
+        if: github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/pre-stage' || github.ref == 'refs/heads/prod-test' || github.ref == 'refs/heads/main'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
@@ -123,7 +124,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
       # </app.stage.ssv.network>
 
-      # <app-pre.stage.ssv.network> pre-stage 
+      # <app-pre.stage.ssv.network> pre-stage
       - name: Run stage webapp build
         if: github.ref == 'refs/heads/pre-stage'
         run: >
@@ -328,7 +329,7 @@ jobs:
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_PROD }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          
+
       - name: Deploy prod webapp
         if: github.ref == 'refs/heads/main'
         uses: jakejarvis/s3-sync-action@v0.5.0

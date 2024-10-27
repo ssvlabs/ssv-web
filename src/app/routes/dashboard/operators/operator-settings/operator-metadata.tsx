@@ -26,23 +26,46 @@ import {
 } from "@/lib/utils/operator";
 import { cn } from "@/lib/utils/tw";
 import { dgkURLSchema, httpsURLSchema } from "@/lib/zod";
-import { operatorLogoSchema } from "@/lib/zod/operator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { camelCase, isEqual, mapKeys } from "lodash-es";
 import type { ComponentPropsWithoutRef, FC } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaCircleInfo } from "react-icons/fa6";
 import { useNavigate } from "react-router";
 import { z } from "zod";
 import { MultipleSelector } from "@/components/ui/multi-select2";
 import { Combobox } from "@/components/ui/combobox";
+import type { GetProp, UploadFile, UploadProps } from "antd";
+import { Upload } from "antd";
+import ImgCrop from "antd-img-crop";
+import { sha256 } from "js-sha256";
 
 const sanitizedString = z.string().regex(/^[a-zA-Z0-9_!$#’|\s]*$/, {
   message: "Only letters, numbers, and special characters are allowed.",
 });
 
 export const metadataScheme = z.object({
-  logo: operatorLogoSchema.default(""),
+  logo: z
+    .union([z.instanceof(File), z.string()])
+    .transform(async (file: File | string) => {
+      if (file instanceof File) {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = function (e) {
+            if (e?.target?.readyState === FileReader.DONE) {
+              const base64String = e.target.result as string;
+              resolve(base64String);
+            }
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      } else {
+        return "";
+      }
+    })
+    .default(""),
   name: z
     .string()
     .min(3, "Operator name must be at least 3 characters")
@@ -92,14 +115,16 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
   const submit = (values: z.infer<typeof metadataScheme>) => {
     const message = SORTED_OPERATOR_METADATA_FIELDS.reduce((acc, key) => {
       if (!values[key]) return acc;
-      return [...acc, values[key]];
+      let res = [...acc, values[key]];
+      if (key === "logo") {
+        res = [...acc, `logo:sha256:${sha256(values[key])}`];
+      }
+      return res;
     }, [] as string[]).join(",");
-
     const metadata = mapKeys(values, (_, key) => {
       if (key === "name") return "operatorName";
       return camelCase(key);
     }) as Omit<IOperatorMetadata, "signature">;
-
     sign
       .submit(operator!.id.toString(), {
         message,
@@ -109,6 +134,25 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
         navigate("..");
       });
   };
+
+  type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+
+  const onPreview = async (file: UploadFile) => {
+    let src = file.url as string;
+    if (!src) {
+      src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj as FileType);
+        reader.onload = () => resolve(reader.result as string);
+      });
+    }
+    const image = new Image();
+    image.src = src;
+    const imgWindow = window.open(src);
+    imgWindow?.document.write(image.outerHTML);
+  };
+
+  const [uploadFile, setUploadFile] = useState<string | UploadFile>("");
 
   return (
     <Container variant="vertical" className={cn(className, "py-6")} {...props}>
@@ -128,26 +172,67 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
               </FormItem>
             )}
           />
-          {/* <FormField
+          <FormField
             control={form.control}
             name="logo"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Operator Image</FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    placeholder="shadcn"
-                    {...logoRef}
-                    onChange={(event) => {
-                      field.onChange(event.target?.files ?? undefined);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
+            render={({ field }) => {
+              const fileList: UploadFile[] =
+                typeof field.value === "string" &&
+                operator?.logo === field.value
+                  ? [
+                      {
+                        uid: "-1",
+                        name: "image.png",
+                        status: "done",
+                        url: operator?.logo,
+                      },
+                    ]
+                  : field.value
+                    ? [field.value as unknown as UploadFile]
+                    : [];
+
+              return (
+                <FormItem>
+                  <FormLabel>Operator Image</FormLabel>
+                  <div className="flex items-center gap-6">
+                    <ImgCrop rotationSlider>
+                      <Upload
+                        className={
+                          fileList.length === 0
+                            ? `bg-[url('/images/operator_default_background/light.svg')] rounded-[8px] bg-cover bg-center`
+                            : ""
+                        }
+                        beforeUpload={() => false}
+                        listType="picture-card"
+                        fileList={
+                          uploadFile ? [uploadFile as UploadFile] : fileList
+                        }
+                        onChange={async (file) => {
+                          if (file.file.status === "removed") {
+                            field.onChange("");
+                            setUploadFile("");
+                          } else {
+                            field.onChange(file.file);
+                            setUploadFile(file.fileList[0]);
+                          }
+                        }}
+                        onPreview={onPreview}
+                      >
+                        {fileList.length === 0 && "+ Upload"}
+                      </Upload>
+                    </ImgCrop>
+                    <div className="font-medium text-[14px] text-gray-500">
+                      <div>Image should be:</div>
+                      <div>
+                        Square and at least 400 x 400 px | Max size: 200 kb |
+                        Format: JPG, PNG
+                      </div>
+                    </div>
+                  </div>
+                </FormItem>
+              );
+            }}
+          />
 
           <FormField
             control={form.control}

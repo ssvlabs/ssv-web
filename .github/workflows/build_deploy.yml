@@ -311,7 +311,7 @@ jobs:
 
       # <beta.app.ssv.network>
       - name: Run prod webapp build
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/add-operator-logo'
         run: >
           GAS_PRICE="${{ env.GAS_PRICE }}" 
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
@@ -330,7 +330,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           
       - name: Deploy prod webapp
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/add-operator-logo'
         uses: jakejarvis/s3-sync-action@v0.5.0
         with:
           args: --acl public-read --follow-symlinks --delete

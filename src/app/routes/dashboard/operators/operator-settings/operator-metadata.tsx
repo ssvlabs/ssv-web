@@ -178,6 +178,7 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
             render={({ field }) => {
               const fileList: UploadFile[] =
                 typeof field.value === "string" &&
+                operator?.logo &&
                 operator?.logo === field.value
                   ? [
                       {
@@ -190,7 +191,6 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
                   : field.value
                     ? [field.value as unknown as UploadFile]
                     : [];
-
               return (
                 <FormItem>
                   <FormLabel>Operator Image</FormLabel>
@@ -218,7 +218,11 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
                         }}
                         onPreview={onPreview}
                       >
-                        {fileList.length === 0 && "+ Upload"}
+                        {fileList.length === 0 && (
+                          <p className="text-primary-500 font-semibold text-xs">
+                            Add Image
+                          </p>
+                        )}
                       </Upload>
                     </ImgCrop>
                     <div className="font-medium text-[14px] text-gray-500">

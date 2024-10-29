@@ -29,43 +29,22 @@ import { dgkURLSchema, httpsURLSchema } from "@/lib/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { camelCase, isEqual, mapKeys } from "lodash-es";
 import type { ComponentPropsWithoutRef, FC } from "react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaCircleInfo } from "react-icons/fa6";
 import { useNavigate } from "react-router";
 import { z } from "zod";
 import { MultipleSelector } from "@/components/ui/multi-select2";
 import { Combobox } from "@/components/ui/combobox";
-import type { GetProp, UploadFile, UploadProps } from "antd";
-import { Upload } from "antd";
-import ImgCrop from "antd-img-crop";
 import { sha256 } from "js-sha256";
+import { operatorLogoSchema } from "@/lib/zod/operator.ts";
+import ImgCropUpload from "@/components/ui/ImgCropUpload.tsx";
 
 const sanitizedString = z.string().regex(/^[a-zA-Z0-9_!$#’|\s]*$/, {
   message: "Only letters, numbers, and special characters are allowed.",
 });
 
 export const metadataScheme = z.object({
-  logo: z
-    .union([z.instanceof(File), z.string()])
-    .transform(async (file: File | string) => {
-      if (file instanceof File) {
-        return new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = function (e) {
-            if (e?.target?.readyState === FileReader.DONE) {
-              const base64String = e.target.result as string;
-              resolve(base64String);
-            }
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-      } else {
-        return "";
-      }
-    })
-    .default(""),
+  logo: operatorLogoSchema,
   name: z
     .string()
     .min(3, "Operator name must be at least 3 characters")
@@ -135,25 +114,6 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
       });
   };
 
-  type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
-
-  const onPreview = async (file: UploadFile) => {
-    let src = file.url as string;
-    if (!src) {
-      src = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj as FileType);
-        reader.onload = () => resolve(reader.result as string);
-      });
-    }
-    const image = new Image();
-    image.src = src;
-    const imgWindow = window.open(src);
-    imgWindow?.document.write(image.outerHTML);
-  };
-
-  const [uploadFile, setUploadFile] = useState<string | UploadFile>("");
-
   return (
     <Container variant="vertical" className={cn(className, "py-6")} {...props}>
       <NavigateBackBtn />
@@ -176,55 +136,15 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
             control={form.control}
             name="logo"
             render={({ field }) => {
-              const fileList: UploadFile[] =
-                typeof field.value === "string" &&
-                operator?.logo &&
-                operator?.logo === field.value
-                  ? [
-                      {
-                        uid: "-1",
-                        name: "image.png",
-                        status: "done",
-                        url: operator?.logo,
-                      },
-                    ]
-                  : field.value
-                    ? [field.value as unknown as UploadFile]
-                    : [];
               return (
                 <FormItem>
                   <FormLabel>Operator Image</FormLabel>
                   <div className="flex items-center gap-6">
-                    <ImgCrop rotationSlider>
-                      <Upload
-                        className={
-                          fileList.length === 0
-                            ? `bg-[url('/images/operator_default_background/light.svg')] rounded-[8px] bg-cover bg-center`
-                            : ""
-                        }
-                        beforeUpload={() => false}
-                        listType="picture-card"
-                        fileList={
-                          uploadFile ? [uploadFile as UploadFile] : fileList
-                        }
-                        onChange={async (file) => {
-                          if (file.file.status === "removed") {
-                            field.onChange("");
-                            setUploadFile("");
-                          } else {
-                            field.onChange(file.file);
-                            setUploadFile(file.fileList[0]);
-                          }
-                        }}
-                        onPreview={onPreview}
-                      >
-                        {fileList.length === 0 && (
-                          <p className="text-primary-500 font-semibold text-xs">
-                            Add Image
-                          </p>
-                        )}
-                      </Upload>
-                    </ImgCrop>
+                    <ImgCropUpload
+                      value={field.value}
+                      setValue={field.onChange}
+                      defaultValue={defaults.logo}
+                    />
                     <div className="font-medium text-[14px] text-gray-500">
                       <div>Image should be:</div>
                       <div>
@@ -233,6 +153,7 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
                       </div>
                     </div>
                   </div>
+                  <FormMessage />
                 </FormItem>
               );
             }}
@@ -372,15 +293,17 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
           <FormField
             control={form.control}
             name="twitter_url"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Twitter</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your Twitter Link" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Twitter</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your Twitter Link" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
 
           <FormField

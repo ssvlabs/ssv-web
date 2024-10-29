@@ -20,7 +20,7 @@ export const operatorLogoSchema = z
     async (file: File | string) => {
       if (file instanceof File) {
         const { sizeKB } = await getImageInfo(file);
-        return sizeKB <= 200; // Проверяем размер в KB
+        return sizeKB <= 200;
       }
       return true;
     },
@@ -30,7 +30,7 @@ export const operatorLogoSchema = z
     async (file: File | string) => {
       if (file instanceof File) {
         const { width, height } = await getImageInfo(file);
-        return width > 400 && height > 400; // Проверяем разрешение
+        return width > 400 && height > 400;
       }
       return true;
     },

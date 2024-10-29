@@ -1,40 +1,56 @@
 import { z } from "zod";
 
-export const ALLOWED_IMAGE_TYPES = ["image/jpg", "image/jpeg", "image/png"];
-
-const fileSchema = z
-  .instanceof(File)
-  .refine((file) => {
-    return Boolean(file.type) && ALLOWED_IMAGE_TYPES.includes(file.type);
-  }, "Invalid file type. Allowed types are: PNG and JPEG.")
-  .refine(
-    (file) => file.size <= 1024 * 200,
-    "File size must be less than 200KB.",
-  )
-  .transform(async (file) => {
-    const base64 = await new Promise<string>((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.readAsDataURL(file);
-    });
-    return base64;
-  })
-  .refine(async (base64) => {
+async function getImageInfo(
+  file: File,
+): Promise<{ width: number; height: number; sizeKB: number }> {
+  return new Promise((resolve, reject) => {
     const img = new Image();
-    img.src = base64;
-    await new Promise((resolve) => {
-      img.onload = resolve;
-    });
-    return img.width >= 400 && img.height >= 400;
-  }, "Image must be at least 400x400px.");
+    img.onload = () => {
+      const sizeKB = file.size / 1024;
+      resolve({ width: img.width, height: img.height, sizeKB });
+    };
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+}
 
-// Combine with a schema that allows undefined
 export const operatorLogoSchema = z
-  .preprocess(
-    (val) => {
-      if (val instanceof FileList) return val[0];
-      return "";
+  .union([z.instanceof(File), z.string()])
+  .refine(
+    async (file: File | string) => {
+      if (file instanceof File) {
+        const { sizeKB } = await getImageInfo(file);
+        return sizeKB <= 200; // Проверяем размер в KB
+      }
+      return true;
     },
-    z.union([z.string().default(""), fileSchema]),
+    { message: "File must be up to 200KB" },
   )
-  .optional();
+  .refine(
+    async (file: File | string) => {
+      if (file instanceof File) {
+        const { width, height } = await getImageInfo(file);
+        return width > 400 && height > 400; // Проверяем разрешение
+      }
+      return true;
+    },
+    { message: "Image dimensions must be at least 400x400px." },
+  )
+  .transform(async (file: File | string) => {
+    if (file instanceof File) {
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = function (e) {
+          if (e?.target?.readyState === FileReader.DONE) {
+            const base64String = e.target.result as string;
+            resolve(base64String);
+          }
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    } else {
+      return "";
+    }
+  })
+  .default("");

@@ -138,12 +138,11 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
             render={({ field }) => {
               return (
                 <FormItem>
-                  <FormLabel>Operator Image</FormLabel>
+                  <FormLabel>Operator Logo</FormLabel>
                   <div className="flex items-center gap-6">
                     <ImgCropUpload
                       value={field.value}
                       setValue={field.onChange}
-                      defaultValue={defaults.logo}
                     />
                     <div className="font-medium text-[14px] text-gray-500">
                       <div>Image should be:</div>

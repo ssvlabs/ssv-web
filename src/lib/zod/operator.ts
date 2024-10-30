@@ -30,7 +30,7 @@ export const operatorLogoSchema = z
     async (file: File | string) => {
       if (file instanceof File) {
         const { width, height } = await getImageInfo(file);
-        return width > 400 && height > 400;
+        return width >= 400 && height >= 400;
       }
       return true;
     },

@@ -20,9 +20,9 @@ import { useOperatorLocations } from "@/hooks/operator/use-operator-locations";
 import { useSignOperatorMetadata } from "@/hooks/operator/use-sign-operator-metadata";
 import { useOperator } from "@/hooks/operator/use-operator";
 import {
-  MEV_RELAY_OPTIONS,
   SORTED_OPERATOR_METADATA_FIELDS,
   type OperatorMetadataFields,
+  getMevRelaysOptions,
 } from "@/lib/utils/operator";
 import { cn } from "@/lib/utils/tw";
 import { dgkURLSchema, httpsURLSchema } from "@/lib/zod";
@@ -275,7 +275,7 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
                 <FormControl>
                   <MultipleSelector
                     placeholder="MEV Relays"
-                    items={MEV_RELAY_OPTIONS}
+                    items={getMevRelaysOptions(field.value)}
                     selected={field.value}
                     onChange={field.onChange}
                   />

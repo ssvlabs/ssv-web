@@ -1,6 +1,5 @@
 import type { ChangeEvent } from "react";
 import { FaArrowsRotate } from "react-icons/fa6";
-import { Tooltip } from "@/components/ui/tooltip.tsx";
 
 const ImgCropUpload = ({
   value,

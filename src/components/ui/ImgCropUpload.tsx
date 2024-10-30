@@ -34,13 +34,10 @@ const ImgCropUpload = ({
       {value ? (
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center gap-2 opacity-0 hover:opacity-60 transition-opacity duration-300">
           <label>
-            <Tooltip
-              content="Change Logo"
-              children={
-                <FaArrowsRotate className="text-[24px] size-5 text-white text-xl cursor-pointer opacity-100" />
-              }
+            <FaArrowsRotate
+              title="Change Logo"
+              className="text-[24px] size-5 text-white text-xl cursor-pointer opacity-100"
             />
-
             <input
               type="file"
               onChange={handleChange}
@@ -57,7 +54,7 @@ const ImgCropUpload = ({
           <input
             type="file"
             onChange={handleChange}
-            accept="image/*"
+            accept=".png, .jpg"
             style={{
               opacity: 0,
               position: "absolute",

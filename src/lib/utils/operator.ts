@@ -36,6 +36,7 @@ export const MEV_RELAYS = {
   EDEN: "Eden Network",
   FLASHBOTS: "Flashbots",
   MANIFOLD: "Manifold",
+  TITAN: "Titan Relay",
   ULTRA_SOUND: "Ultra Sound",
 };
 
@@ -45,14 +46,19 @@ export const MEV_RELAYS_LOGOS = {
   [MEV_RELAYS.BLOXROUTE_MAX_PROFIT]: "blox-route",
   [MEV_RELAYS.BLOXROUTE_REGULATED]: "blox-route",
   [MEV_RELAYS.EDEN]: "eden",
+  [MEV_RELAYS.TITAN]: "titan",
   [MEV_RELAYS.FLASHBOTS]: "Flashbots",
   [MEV_RELAYS.MANIFOLD]: "manifold",
   [MEV_RELAYS.ULTRA_SOUND]: "ultraSound",
 };
 
-export const MEV_RELAY_OPTIONS: Option[] = Object.values(MEV_RELAYS).map(
-  (value) => ({ value: value, label: value }),
-);
+export const getMevRelaysOptions = (mevRelays: string[]) => {
+  return mevRelays.includes(MEV_RELAYS.EDEN)
+    ? Object.values(MEV_RELAYS).map((value) => ({ value: value, label: value }))
+    : Object.values(MEV_RELAYS)
+        .filter((mevRelay: string) => mevRelay !== MEV_RELAYS.EDEN)
+        .map((value) => ({ value: value, label: value }));
+};
 
 export type OperatorMetadataKeys = Extract<
   keyof Operator,

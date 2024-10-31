@@ -26,7 +26,6 @@ import {
 } from "@/lib/utils/operator";
 import { cn } from "@/lib/utils/tw";
 import { dgkURLSchema, httpsURLSchema } from "@/lib/zod";
-import { operatorLogoSchema } from "@/lib/zod/operator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { camelCase, isEqual, mapKeys } from "lodash-es";
 import type { ComponentPropsWithoutRef, FC } from "react";
@@ -36,17 +35,21 @@ import { useNavigate } from "react-router";
 import { z } from "zod";
 import { MultipleSelector } from "@/components/ui/multi-select2";
 import { Combobox } from "@/components/ui/combobox";
+import { sha256 } from "js-sha256";
+import { operatorLogoSchema } from "@/lib/zod/operator.ts";
+import ImgCropUpload from "@/components/ui/ImgCropUpload.tsx";
 
 const sanitizedString = z.string().regex(/^[a-zA-Z0-9_!$#’|\s]*$/, {
   message: "Only letters, numbers, and special characters are allowed.",
 });
 
 export const metadataScheme = z.object({
-  logo: operatorLogoSchema.default(""),
-  name: sanitizedString
+  logo: operatorLogoSchema,
+  name: z
+    .string()
     .min(3, "Operator name must be at least 3 characters")
     .max(30, "Operator name must be at most 30 characters"),
-  description: sanitizedString.optional().default(""),
+  description: z.string().optional().default(""),
   eth1_node_client: sanitizedString.optional().default(""),
   eth2_node_client: sanitizedString.optional().default(""),
   location: z.string().optional().default(""),
@@ -91,14 +94,16 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
   const submit = (values: z.infer<typeof metadataScheme>) => {
     const message = SORTED_OPERATOR_METADATA_FIELDS.reduce((acc, key) => {
       if (!values[key]) return acc;
-      return [...acc, values[key]];
+      let res = [...acc, values[key]];
+      if (key === "logo") {
+        res = [...acc, `logo:sha256:${sha256(values[key])}`];
+      }
+      return res;
     }, [] as string[]).join(",");
-
     const metadata = mapKeys(values, (_, key) => {
       if (key === "name") return "operatorName";
       return camelCase(key);
     }) as Omit<IOperatorMetadata, "signature">;
-
     sign
       .submit(operator!.id.toString(), {
         message,
@@ -127,26 +132,31 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
               </FormItem>
             )}
           />
-          {/* <FormField
+          <FormField
             control={form.control}
             name="logo"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Operator Image</FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    placeholder="shadcn"
-                    {...logoRef}
-                    onChange={(event) => {
-                      field.onChange(event.target?.files ?? undefined);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Operator Logo</FormLabel>
+                  <div className="flex items-center gap-6">
+                    <ImgCropUpload
+                      value={field.value}
+                      setValue={field.onChange}
+                    />
+                    <div className="font-medium text-[14px] text-gray-500">
+                      <div>Image should be:</div>
+                      <div>
+                        Square and at least 400 x 400 px | Max size: 200 kb |
+                        Format: JPG, PNG
+                      </div>
+                    </div>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
 
           <FormField
             control={form.control}
@@ -282,15 +292,17 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
           <FormField
             control={form.control}
             name="twitter_url"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Twitter</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your Twitter Link" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Twitter</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your Twitter Link" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
 
           <FormField

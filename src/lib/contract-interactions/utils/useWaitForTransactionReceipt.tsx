@@ -50,15 +50,13 @@ export const withTransactionModal = <
 ) => {
   return {
     onInitiated: () => {
-      const isContract = isContractWallet();
       options?.onInitiated?.();
-      if (isContract) {
+      if (isContractWallet()) {
         useMultisigTransactionModal.state.open();
       }
     },
     onConfirmed: async (hash) => {
-      const isContract = isContractWallet();
-      if (isContract) {
+      if (isContractWallet()) {
         useMultisigTransactionModal.state.open();
       } else {
         useTransactionModal.state.open({

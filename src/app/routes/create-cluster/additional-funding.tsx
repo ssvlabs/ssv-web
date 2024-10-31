@@ -178,7 +178,11 @@ export const AdditionalFunding: FC = () => {
               runway={clusterRunway?.runway || 0n}
             />
           </UnmountClosed>
-          <Button type="submit" size="xl" disabled={clusterRunway?.isAtRisk}>
+          <Button
+            type="submit"
+            size="xl"
+            disabled={clusterRunway?.isAtRisk && clusterRunway?.runway < 1n}
+          >
             Next
           </Button>
         </Card>

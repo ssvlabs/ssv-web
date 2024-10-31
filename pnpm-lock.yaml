@@ -127,6 +127,9 @@ importers:
       framer-motion:
         specifier: ^11.3.4
         version: 11.3.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      js-sha256:
+        specifier: ^0.11.0
+        version: 0.11.0
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -1036,6 +1039,10 @@ packages:
 
   '@babel/runtime@7.24.7':
     resolution: {integrity: sha512-UwgBRMjJP+xv857DCngvqXI3Iq6J4v0wXmwc6sapg+zyhbwmQX67LUEFrkK5tbyJ30jGuG3ZvWpBiB9LCy1kWw==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/runtime@7.25.7':
+    resolution: {integrity: sha512-FjoyLe754PMiYsFaN5C94ttGiOmBNYTf6pLr4xXHAT5uctHb092PBszndLDR5XA/jghQvn4n7JMHl7dmTgbm9w==}
     engines: {node: '>=6.9.0'}
 
   '@babel/template@7.24.7':
@@ -5143,6 +5150,9 @@ packages:
   js-cookie@2.2.1:
     resolution: {integrity: sha512-HvdH2LzI/EAZcUwA8+0nKNtWHqS+ZmijLA30RwZA0bo7ToCckjK5MkGhjED9KoRcXO6BaGI3I9UIzSA1FKFPOQ==}
 
+  js-sha256@0.11.0:
+    resolution: {integrity: sha512-6xNlKayMZvds9h1Y1VWc0fQHQ82BxTXizWPEtEeGvmOUYpBRy4gbWroHLpzowe6xiQhHpelCQiE7HEdznyBL9Q==}
+
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -8673,6 +8683,10 @@ snapshots:
   '@babel/regjsgen@0.8.0': {}
 
   '@babel/runtime@7.24.7':
+    dependencies:
+      regenerator-runtime: 0.14.1
+
+  '@babel/runtime@7.25.7':
     dependencies:
       regenerator-runtime: 0.14.1
 
@@ -13664,6 +13678,8 @@ snapshots:
 
   js-cookie@2.2.1: {}
 
+  js-sha256@0.11.0: {}
+
   js-tokens@4.0.0: {}
 
   js-yaml@3.14.1:
@@ -14069,7 +14085,7 @@ snapshots:
 
   metro-runtime@0.80.9:
     dependencies:
-      '@babel/runtime': 7.24.7
+      '@babel/runtime': 7.25.7
 
   metro-source-map@0.80.9:
     dependencies:
@@ -15162,7 +15178,7 @@ snapshots:
 
   regenerator-transform@0.15.2:
     dependencies:
-      '@babel/runtime': 7.24.7
+      '@babel/runtime': 7.25.7
 
   regexpu-core@5.3.2:
     dependencies:

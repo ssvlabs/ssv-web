@@ -13,8 +13,14 @@ export const getOperator = (id: number | string | bigint) => {
   return api.get<Operator>(endpoint("operators", id.toString()));
 };
 
-type OrderBy = "id" | "validators_count" | "performance.30d" | "fee" | "mev";
-type Sort = "asc" | "desc";
+export type OrderBy =
+  | "name"
+  | "id"
+  | "validators_count"
+  | "performance.30d"
+  | "fee"
+  | "mev";
+export type Sort = "asc" | "desc";
 
 export type SearchOperatorsParams = {
   search?: string;

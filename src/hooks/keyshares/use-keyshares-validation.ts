@@ -14,6 +14,8 @@ import { useQuery } from "@tanstack/react-query";
 import { isEqual } from "lodash-es";
 import type { KeySharesItem } from "ssv-keys";
 import { useChainId } from "wagmi";
+import { getAddress } from "viem";
+import { useAccount } from "@/hooks/account/use-account.ts";
 
 export const useKeysharesValidation = (
   file: File | null,
@@ -27,7 +29,7 @@ export const useKeysharesValidation = (
   const operatorIds = useSelectedOperatorIds();
   const isEnabled = Boolean(file && options.enabled);
   const chainId = useChainId();
-
+  const { address } = useAccount();
   const query = useQuery({
     queryKey: [
       "keyshares-validation",
@@ -35,6 +37,7 @@ export const useKeysharesValidation = (
       file?.lastModified,
       operatorIds,
       chainId,
+      address,
     ],
     queryFn: async () => {
       const shares = await createKeysharesFromFile(file!);
@@ -48,6 +51,16 @@ export const useKeysharesValidation = (
           KeysharesValidationErrors.DifferentCluster,
         );
       }
+
+      await Promise.all(
+        shares.map((share) =>
+          share.validateSingleShares(share.payload.sharesData, {
+            ownerAddress: getAddress(address || ""),
+            ownerNonce: share.data.ownerNonce || 0,
+            publicKey: share.data.publicKey || "",
+          }),
+        ),
+      );
 
       const operators = await queryFetchOperators(selectedOperatorIds)
         .then((operators) => {

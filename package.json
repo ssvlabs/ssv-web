@@ -75,6 +75,7 @@
     "copy-to-clipboard": "^3.3.3",
     "date-fns": "^3.6.0",
     "framer-motion": "^11.3.4",
+    "js-sha256": "^0.11.0",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.400.0",
     "mixpanel-browser": "^2.55.1",

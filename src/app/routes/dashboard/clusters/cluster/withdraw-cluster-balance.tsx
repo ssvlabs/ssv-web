@@ -1,9 +1,9 @@
-import { useState, type FC } from "react";
-import { Container } from "@/components/ui/container";
+import { EstimatedOperationalRunway } from "@/components/cluster/estimated-operational-runway";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Container } from "@/components/ui/container";
+import { Divider } from "@/components/ui/divider";
 import {
   Form,
   FormControl,
@@ -11,32 +11,30 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { NumberInput } from "@/components/ui/number-input";
-import { EstimatedOperationalRunway } from "@/components/cluster/estimated-operational-runway";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
-import { Button } from "@/components/ui/button";
+import { NumberInput } from "@/components/ui/number-input";
 import { Text } from "@/components/ui/text";
-import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
+import { getClusterQueryOptions } from "@/hooks/cluster/use-cluster";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
-import { Divider } from "@/components/ui/divider";
-import { isBigIntChanged, stringifyBigints } from "@/lib/utils/bigint";
-import { formatSSV } from "@/lib/utils/number";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
+import { useClusterState } from "@/hooks/cluster/use-cluster-state";
+import { useLiquidateCluster } from "@/hooks/cluster/use-liquidate-cluster";
 import { useWithdrawClusterBalance } from "@/hooks/cluster/use-withdraw-cluster-balance";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useNavigate } from "react-router-dom";
-import { useLiquidateCluster } from "@/hooks/cluster/use-liquidate-cluster";
 import { setOptimisticData } from "@/lib/react-query";
-import { getClusterQueryOptions } from "@/hooks/cluster/use-cluster";
-import { useActiveTransactionState } from "@/hooks/app/use-transaction-state";
-import { useClusterState } from "@/hooks/cluster/use-cluster-state";
+import { isBigIntChanged, stringifyBigints } from "@/lib/utils/bigint";
+import { formatSSV } from "@/lib/utils/number";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, type FC } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
 
 const schema = z.object({
   amount: z.bigint().positive(),
 });
 
 export const WithdrawClusterBalance: FC = () => {
-  const transaction = useActiveTransactionState();
   const navigate = useNavigate();
   const params = useClusterPageParams();
 
@@ -193,7 +191,7 @@ export const WithdrawClusterBalance: FC = () => {
             type="submit"
             size="xl"
             disabled={!isChanged || disabled}
-            isLoading={transaction.isPending}
+            isLoading={liquidate.isPending || withdraw.isPending}
             variant={isLiquidating ? "destructive" : "default"}
           >
             {isLiquidating ? "Liquidate" : "Withdraw"}

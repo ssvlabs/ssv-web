@@ -22,6 +22,7 @@ import { Divider } from "@/components/ui/divider";
 import { SearchInput } from "@/components/ui/search-input";
 import { useSearchParamsState } from "@/hooks/app/use-search-param-state";
 import { OperatorPickerFilter } from "@/components/operator/operator-picker/operator-picker-filter/operator-picker-filter";
+import { useOrdering } from "@/hooks/use-ordering.ts";
 
 export type SelectOperatorsProps = {
   // TODO: Add props or remove this type
@@ -36,6 +37,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
   const { address } = useAccount();
   const { state } = useRegisterValidatorContext;
   const { clusterSize, selectedOperatorsIds } = useRegisterValidatorContext();
+  const { orderBy, sort, ordering, handleOrdering } = useOrdering();
 
   const [search, setSearch, searchDebounced] = useSearchParamsState<string>({
     key: "search",
@@ -58,6 +60,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
 
   const { operators, infiniteQuery, fetched } = useSearchOperators({
     search: searchDebounced,
+    ordering,
     has_dkg_address: isDKGCheckedDebounced === "true",
     type: isVerifiedCheckedDebounced || undefined,
   });
@@ -117,6 +120,9 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
             className="flex-1 h-[600px] min-h-[600px]"
             operators={operators}
             query={infiniteQuery}
+            orderBy={orderBy}
+            sort={sort}
+            handleOrdering={handleOrdering}
             maxSelection={clusterSize}
             selectedOperatorIds={selectedOperatorsIds}
             onOperatorCheckedChange={(id) => {

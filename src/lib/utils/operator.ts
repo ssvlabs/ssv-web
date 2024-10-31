@@ -1,4 +1,3 @@
-import type { Option } from "@/components/ui/multi-select";
 import { globals } from "@/config";
 import type { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
 import { fetchIsAddressWhitelistedInWhitelistingContract } from "@/lib/contract-interactions/read/use-is-address-whitelisted-in-whitelisting-contract";

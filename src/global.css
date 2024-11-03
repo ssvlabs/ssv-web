@@ -160,6 +160,7 @@
   }
 }
 body {
+  -webkit-font-smoothing: antialiased;
   background: var(--gray-200);
 }
 #root {

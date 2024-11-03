@@ -22,35 +22,33 @@ export const SelectedOperators: SelectedOperatorsFC = ({
   selectedOperators,
   clusterSize,
   ...props
-}) => {
-  return (
-    <div className={cn(className, "space-y-6")} {...props}>
-      <div className="flex justify-between items-center">
-        <Text variant="headline4">Selected Operators</Text>
-        <Text variant="headline4" className="text-primary-500">
-          {selectedOperators.length}/{clusterSize}
-        </Text>
-      </div>
-      <div className="flex flex-col gap-3 max-h-[400px] pt-2 overflow-auto">
-        {selectedOperators.map((operator) => (
-          <SelectedOperatorItem
-            className="mr-2"
-            key={operator.public_key}
-            operator={operator}
-            onRemoveOperator={onRemoveOperator}
+}) => (
+  <div className={cn(className, "space-y-6")} {...props}>
+    <div className="flex justify-between items-center">
+      <Text variant="headline4">Selected Operators</Text>
+      <Text variant="headline4" className="text-primary-500">
+        {selectedOperators.length}/{clusterSize}
+      </Text>
+    </div>
+    <div className="flex flex-col gap-3 max-h-[400px] pt-2 overflow-auto">
+      {selectedOperators.map((operator) => (
+        <SelectedOperatorItem
+          className="mr-2"
+          key={operator.public_key}
+          operator={operator}
+          onRemoveOperator={onRemoveOperator}
+        />
+      ))}
+      {new Array(clusterSize - selectedOperators.length)
+        .fill(0)
+        .map((_, index) => (
+          <SelectedOperatorPlaceholder
+            key={index}
+            number={selectedOperators.length + index + 1}
           />
         ))}
-        {new Array(clusterSize - selectedOperators.length)
-          .fill(0)
-          .map((_, index) => (
-            <SelectedOperatorPlaceholder
-              key={index}
-              number={selectedOperators.length + index + 1}
-            />
-          ))}
-      </div>
     </div>
-  );
-};
+  </div>
+);
 
 SelectedOperators.displayName = "SelectedOperators";

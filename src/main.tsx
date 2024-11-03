@@ -15,7 +15,6 @@ import { config } from "./wagmi/config";
 
 import { RouterProvider } from "react-router-dom";
 
-import { Text } from "@/components/ui/text";
 import { Toaster } from "@/components/ui/toaster";
 import "@/global.css";
 import "@fontsource/manrope/400.css";
@@ -34,12 +33,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <RouterProvider router={router} />
         <GTMFrame />
         <Toaster />
-        <Text
-          variant="caption-medium"
-          className="fixed bottom-0 left-0 m-2 text-gray-500 pointer-events-none"
-        >
-          {APP_VERSION}
-        </Text>
       </RainbowKitProvider>
     </PersistQueryClientProvider>
   </WagmiProvider>,

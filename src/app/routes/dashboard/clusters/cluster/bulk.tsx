@@ -21,6 +21,7 @@ import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { useBulkActionContext } from "@/guard/bulk-action-guard";
 import { Link } from "react-router-dom";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
+import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge.tsx";
 
 export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
   const links = useLinks();
@@ -106,9 +107,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
                 <CopyBtn variant="subtle" text={item.public_key} />
               </TableCell>
               <TableCell>
-                <Badge variant="error" size="sm">
-                  {item.status}
-                </Badge>
+                <ValidatorStatusBadge size="sm" status={item.status} />
               </TableCell>
               <TableCell className="flex gap-1 justify-end">
                 <SsvExplorerBtn validatorId={item.public_key} />

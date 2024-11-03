@@ -42,26 +42,28 @@ export const BalanceWarning: FC = () => {
             network.
           </AlertDescription>
         </Alert>
-        <label htmlFor="agree-1" className="flex gap-2 items-center">
-          <Checkbox
-            checked={agree1}
-            id="agree-1"
-            onCheckedChange={(checked: boolean) => setAgree1(checked)}
-          />
-          <Text variant="body-2-medium">
-            I understand that fees might change according to market dynamics
-          </Text>
-        </label>
-        <label htmlFor="agree-2" className="flex gap-2 items-center">
-          <Checkbox
-            checked={agree2}
-            id="agree-2"
-            onCheckedChange={(checked: boolean) => setAgree2(checked)}
-          />
-          <Text variant="body-2-medium">
-            I understand the risks of having my cluster liquidated
-          </Text>
-        </label>
+        <div className="flex flex-col gap-3">
+          <label htmlFor="agree-1" className="flex gap-2 items-center">
+            <Checkbox
+              checked={agree1}
+              id="agree-1"
+              onCheckedChange={(checked: boolean) => setAgree1(checked)}
+            />
+            <Text variant="body-2-medium">
+              I understand that fees might change according to market dynamics
+            </Text>
+          </label>
+          <label htmlFor="agree-2" className="flex gap-2 items-center">
+            <Checkbox
+              checked={agree2}
+              id="agree-2"
+              onCheckedChange={(checked: boolean) => setAgree2(checked)}
+            />
+            <Text variant="body-2-medium">
+              I understand the risks of having my cluster liquidated
+            </Text>
+          </label>
+        </div>
         <Button
           as={Link}
           to="../slashing-warning"

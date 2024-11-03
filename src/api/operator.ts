@@ -114,12 +114,12 @@ export const getOperatorNodes = (layer: number) => {
 };
 
 export const checkOperatorDKGHealth = (
-  dkgAddress: { id: string; address: string }[],
+  dkgAddresses: { id: string; address: string }[],
 ) => {
   return api.post<{ [key: string]: boolean }>(
     endpoint("operators/dkg_health_check"),
     {
-      dkgAddress,
+      dkgAddresses,
     },
   );
 };

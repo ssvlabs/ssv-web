@@ -1,6 +1,4 @@
 import { Navbar } from "@/app/layouts/dashboard/navbar";
-import { SsvLogo } from "@/components/ui/ssv-logo";
-import { Text } from "@/components/ui/text";
 import { TransactionModal } from "@/components/ui/transaction-modal";
 import { useBlockNavigationOnPendingTx } from "@/hooks/use-block-navigation-on-pending-tx";
 import { cn } from "@/lib/utils/tw";
@@ -13,6 +11,7 @@ import { Navigate } from "react-router";
 import { MultisigTransactionModal } from "@/components/ui/multisig-transaction-modal";
 import { useIdentify } from "@/lib/mixpanel/useIdentify";
 import { useTrackPageViews } from "@/lib/mixpanel/useTrackPageViews";
+import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 
 export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
   children,
@@ -44,10 +43,7 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <SsvLogo />
-            <Text variant="caption-semibold" className="ml-4">
-              Reconnecting...
-            </Text>
+            <SsvLoader className={"size-[160px]"} />
           </motion.div>
         ) : (
           <motion.div

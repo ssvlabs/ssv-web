@@ -46,7 +46,11 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
                 <Tooltip
                   asChild
                   content={
-                    <OperatorDetails className="dark" operator={operator} />
+                    <OperatorDetails
+                      className="dark"
+                      isShowExplorerLink={false}
+                      operator={operator}
+                    />
                   }
                 >
                   <OperatorAvatar

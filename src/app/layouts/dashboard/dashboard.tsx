@@ -12,6 +12,7 @@ import { MultisigTransactionModal } from "@/components/ui/multisig-transaction-m
 import { useIdentify } from "@/lib/mixpanel/useIdentify";
 import { useTrackPageViews } from "@/lib/mixpanel/useTrackPageViews";
 import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
+import { useAccountState } from "@/hooks/account/use-account-state.ts";
 
 export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
   children,
@@ -25,15 +26,17 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
   const account = useAccount();
 
   const { isMaintenancePage } = useMaintenance();
-
+  const { isLoadingClusters, isLoadingOperators } = useAccountState();
   if (isMaintenancePage) {
     return <Navigate to="/maintenance" replace />;
   }
-
   return (
     <>
       <AnimatePresence>
-        {isRestoring || account.isReconnecting ? (
+        {isRestoring ||
+        account.isReconnecting ||
+        isLoadingClusters ||
+        isLoadingOperators ? (
           <motion.div
             className={cn(
               "fixed flex-col gap-1 bg-gray-50 inset-0 flex h-screen items-center justify-center",

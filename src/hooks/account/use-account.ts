@@ -6,11 +6,11 @@ import { useLocalStorage } from "react-use";
 import { isAddress } from "viem";
 import type { Config, UseAccountReturnType } from "wagmi";
 import { usePublicClient, useAccount as useWagmiAccount } from "wagmi";
+import { acceptTermsAndConditions } from "@/api/terms.ts";
 
 export const useAccount = () => {
   const account = useWagmiAccount();
   const publicClient = usePublicClient();
-
   const [testWalletAddress] = useLocalStorage<Address>(
     "testWalletAddress",
     undefined,
@@ -36,13 +36,25 @@ export const useAccount = () => {
     enabled: !!accountAddress && !!publicClient,
   });
 
+  const acceptedTerms = useQuery({
+    queryKey: [accountAddress, account.chainId],
+    queryFn: () =>
+      accountAddress &&
+      account.chainId === 1 &&
+      acceptTermsAndConditions(accountAddress),
+  });
+
   return useMemo(
     () =>
       ({
         ...account,
         address: accountAddress,
+        acceptedTerms: acceptedTerms.isSuccess ?? false,
         isContract: isContractWallet.data ?? false,
-      }) as UseAccountReturnType<Config> & { isContract: boolean },
+      }) as UseAccountReturnType<Config> & {
+        isContract: boolean;
+        acceptedTerms: boolean;
+      },
     [account, accountAddress, isContractWallet.data],
   );
 };

@@ -18,6 +18,7 @@ export type OperatorDetailsProps = {
         "logo" | "is_private" | "id_str" | "is_deleted" | "verified_operator"
       >
     >;
+  isShowExplorerLink?: boolean;
 };
 
 type FCProps = FC<
@@ -25,7 +26,12 @@ type FCProps = FC<
     OperatorDetailsProps
 >;
 
-export const OperatorDetails: FCProps = ({ operator, className, ...props }) => {
+export const OperatorDetails: FCProps = ({
+  operator,
+  className,
+  isShowExplorerLink = true,
+  ...props
+}) => {
   const { ref, isInsideTooltip } = useIsInsideTooltip();
 
   return (
@@ -63,7 +69,7 @@ export const OperatorDetails: FCProps = ({ operator, className, ...props }) => {
               )}
             </div>
           ) : (
-            <SsvExplorerBtn operatorId={operator.id} />
+            isShowExplorerLink && <SsvExplorerBtn operatorId={operator.id} />
           )}
         </div>
         <div className="flex gap-2 items-center">

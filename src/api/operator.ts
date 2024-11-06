@@ -8,7 +8,7 @@ import type {
   OperatorsSearchResponse,
 } from "@/types/api";
 import { isUndefined, omitBy } from "lodash-es";
-import { OperatorDKGHealthResponse } from "@/hooks/operator/use-operator-dkg-health.ts";
+import type { OperatorDKGHealthResponse } from "@/hooks/operator/use-operator-dkg-health.ts";
 
 export const getOperator = (id: number | string | bigint) => {
   return api.get<Operator>(endpoint("operators", id.toString()));

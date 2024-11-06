@@ -8,6 +8,7 @@ import type {
   OperatorsSearchResponse,
 } from "@/types/api";
 import { isUndefined, omitBy } from "lodash-es";
+import { OperatorDKGHealthResponse } from "@/hooks/operator/use-operator-dkg-health.ts";
 
 export const getOperator = (id: number | string | bigint) => {
   return api.get<Operator>(endpoint("operators", id.toString()));
@@ -116,7 +117,7 @@ export const getOperatorNodes = (layer: number) => {
 export const checkOperatorDKGHealth = (
   dkgAddresses: { id: string; address: string }[],
 ) => {
-  return api.post<{ [key: string]: boolean }>(
+  return api.post<OperatorDKGHealthResponse[]>(
     endpoint("operators/dkg_health_check"),
     {
       dkgAddresses,

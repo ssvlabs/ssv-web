@@ -24,16 +24,13 @@ export const getOperatorsDKGHealthQueryOptions = (
     staleTime: ms(10, "seconds"),
     queryKey: ["operators-dkg-health", operators.map(({ id }) => id), chainId],
     queryFn: async (): Promise<OperatorDKGHealthResponse[]> => {
-      return await Promise.all(
-        operators.map(async ({ id, dkg_address }) => {
-          return {
-            id,
-            isHealthy: await checkOperatorDKGHealth(dkg_address)
-              .then(Boolean)
-              .catch(() => false),
-          };
-        }),
-      );
+      const payload = operators.map(({ id, dkg_address }) => {
+        return {
+          id: id.toString(),
+          address: dkg_address,
+        };
+      });
+      return checkOperatorDKGHealth(payload);
     },
     enabled: operators.length > 0 && enabled(options?.enabled),
   });

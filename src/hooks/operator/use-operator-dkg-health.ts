@@ -30,11 +30,7 @@ export const getOperatorsDKGHealthQueryOptions = (
           address: dkg_address,
         };
       });
-      const result = await checkOperatorDKGHealth(payload);
-      return Object.keys(result).map((key) => ({
-        id: Number(key),
-        isHealthy: result[key],
-      }));
+      return checkOperatorDKGHealth(payload);
     },
     enabled: operators.length > 0 && enabled(options?.enabled),
   });

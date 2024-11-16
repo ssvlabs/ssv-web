@@ -10,6 +10,9 @@ import { Bulk } from "@/app/routes/dashboard/clusters/cluster/bulk";
 import { RemoveValidatorsConfirmation } from "@/app/routes/dashboard/clusters/cluster/remove-validators-confirmation";
 import { ExitValidatorsConfirmation } from "@/app/routes/dashboard/clusters/cluster/exit-validators-confirmation";
 import { ExitValidatorsSuccess } from "@/app/routes/dashboard/clusters/cluster/exit-validators-success";
+import UploadProofs from "@/app/routes/create-cluster/upload-proofs.tsx";
+import { SelectOperators } from "@/app/routes/create-cluster/select-operators.tsx";
+import ReshareDkg from "@/app/routes/create-cluster/reshare-dkg.tsx";
 
 export const clustersRoutes = {
   path: "clusters",
@@ -42,6 +45,10 @@ export const clustersRoutes = {
         {
           path: "reactivate",
           element: <ReactivateCluster />,
+        },
+        {
+          path: "reshare",
+          element: <UploadProofs />,
         },
         {
           path: "remove",
@@ -80,6 +87,24 @@ export const clustersRoutes = {
             {
               path: "success",
               element: <ExitValidatorsSuccess />,
+            },
+          ],
+        },
+        {
+          path: "reshare",
+          element: (
+            <BulkActionGuard>
+              <Outlet />
+            </BulkActionGuard>
+          ),
+          children: [
+            {
+              path: "select-operators",
+              element: <SelectOperators />,
+            },
+            {
+              path: "summary",
+              element: <ReshareDkg />,
             },
           ],
         },

@@ -13,6 +13,9 @@ importers:
 
   .:
     dependencies:
+      '@chainsafe/ssz':
+        specifier: ^0.18.0
+        version: 0.18.0
       '@deepsignal/core':
         specifier: ^4.0.0
         version: 4.0.0(patch_hash=u5mjnqzmrr5f7dli65berlktte)(@preact/signals-core@1.7.0)
@@ -1056,6 +1059,37 @@ packages:
   '@babel/types@7.24.7':
     resolution: {integrity: sha512-XEFXSlxiG5td2EJRe8vOmRbaXVgfcBlszKujvVmWIK/UpywWljQCfzAv3RQCGujWQ1RD4YYWEAqDXfuJiy8f5Q==}
     engines: {node: '>=6.9.0'}
+
+  '@chainsafe/as-sha256@0.5.0':
+    resolution: {integrity: sha512-dTIY6oUZNdC5yDTVP5Qc9hAlKAsn0QTQ2DnQvvsbTnKSTbYs3p5RPN0aIUqN0liXei/9h24c7V0dkV44cnWIQA==}
+
+  '@chainsafe/hashtree-darwin-arm64@1.0.1':
+    resolution: {integrity: sha512-+KmEgQMpO7FDL3klAcpXbQ4DPZvfCe0qSaBBrtT4vLF8V1JGm3sp+j7oibtxtOsLKz7nJMiK1pZExi7vjXu8og==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@chainsafe/hashtree-linux-arm64-gnu@1.0.1':
+    resolution: {integrity: sha512-p1hnhGq2aFY+Zhdn1Q6L/6yLYNKjqXfn/Pc8jiM0e3+Lf/hB+yCdqYVu1pto26BrZjugCFZfupHaL4DjUTDttw==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@chainsafe/hashtree-linux-x64-gnu@1.0.1':
+    resolution: {integrity: sha512-uCIGuUWuWV0LiB4KLMy6JFa7Jp6NmPl3hKF5BYWu8TzUBe7vSXMZfqTzGxXPggFYN2/0KymfRdG9iDCOJfGRqg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@chainsafe/hashtree@1.0.1':
+    resolution: {integrity: sha512-bleu9FjqBeR/l6W1u2Lz+HsS0b0LLJX2eUt3hOPBN7VqOhidx8wzkVh2S7YurS+iTQtfdK4K5QU9tcTGNrGwDg==}
+    engines: {node: '>= 18'}
+
+  '@chainsafe/persistent-merkle-tree@0.8.0':
+    resolution: {integrity: sha512-hh6C1JO6SKlr0QGNTNtTLqgGVMA/Bc20wD6CeMHp+wqbFKCULRJuBUxhF4WDx/7mX8QlqF3nFriF/Eo8oYJ4/A==}
+
+  '@chainsafe/ssz@0.18.0':
+    resolution: {integrity: sha512-1ikTjk3JK6+fsGWiT5IvQU0AP6gF3fDzGmPfkKthbcbgTUR8fjB83Ywp9ko/ZoiDGfrSFkATgT4hvRzclu0IAA==}
 
   '@coinbase/wallet-sdk@3.9.3':
     resolution: {integrity: sha512-N/A2DRIf0Y3PHc1XAMvbBUu4zisna6qAdqABMZwBMNEfWrXpAwx16pZGkYCLGE+Rvv1edbcB2LYDRnACNcmCiw==}
@@ -8716,6 +8750,34 @@ snapshots:
       '@babel/helper-string-parser': 7.24.7
       '@babel/helper-validator-identifier': 7.24.7
       to-fast-properties: 2.0.0
+
+  '@chainsafe/as-sha256@0.5.0': {}
+
+  '@chainsafe/hashtree-darwin-arm64@1.0.1':
+    optional: true
+
+  '@chainsafe/hashtree-linux-arm64-gnu@1.0.1':
+    optional: true
+
+  '@chainsafe/hashtree-linux-x64-gnu@1.0.1':
+    optional: true
+
+  '@chainsafe/hashtree@1.0.1':
+    optionalDependencies:
+      '@chainsafe/hashtree-darwin-arm64': 1.0.1
+      '@chainsafe/hashtree-linux-arm64-gnu': 1.0.1
+      '@chainsafe/hashtree-linux-x64-gnu': 1.0.1
+
+  '@chainsafe/persistent-merkle-tree@0.8.0':
+    dependencies:
+      '@chainsafe/as-sha256': 0.5.0
+      '@chainsafe/hashtree': 1.0.1
+      '@noble/hashes': 1.4.0
+
+  '@chainsafe/ssz@0.18.0':
+    dependencies:
+      '@chainsafe/as-sha256': 0.5.0
+      '@chainsafe/persistent-merkle-tree': 0.8.0
 
   '@coinbase/wallet-sdk@3.9.3':
     dependencies:

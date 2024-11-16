@@ -37,6 +37,7 @@
     }
   },
   "dependencies": {
+    "@chainsafe/ssz": "^0.18.0",
     "@deepsignal/core": "^4.0.0",
     "@deepsignal/react": "^4.0.0",
     "@fontsource/manrope": "^5.0.20",

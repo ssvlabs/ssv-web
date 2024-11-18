@@ -21,6 +21,7 @@ import { useNavigate } from "react-router";
 import { encodeAbiParameters, parseAbiParameters } from "viem";
 import { useAccount } from "@/hooks/account/use-account";
 import { useRegisterOperatorContext } from "@/guard/register-operator-guards";
+import { track } from "@/lib/analytics/mixpanel";
 
 export const RegisterOperatorConfirmation: FC = () => {
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ export const RegisterOperatorConfirmation: FC = () => {
       },
       withTransactionModal({
         onMined: async (receipt) => {
+          track("Register Operator");
           const event = receipt.events?.find(
             (event) => event.eventName === "OperatorAdded",
           );

@@ -9,8 +9,8 @@ import { useAccount } from "@/hooks/account/use-account";
 import { useMaintenance } from "@/hooks/app/use-maintenance";
 import { Navigate } from "react-router";
 import { MultisigTransactionModal } from "@/components/ui/multisig-transaction-modal";
-import { useIdentify } from "@/lib/mixpanel/useIdentify";
-import { useTrackPageViews } from "@/lib/mixpanel/useTrackPageViews";
+import { useIdentify } from "@/lib/analytics/mixpanel/useIdentify";
+import { useTrackPageViews } from "@/lib/analytics/mixpanel/useTrackPageViews";
 import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 import { useAccountState } from "@/hooks/account/use-account-state.ts";
 

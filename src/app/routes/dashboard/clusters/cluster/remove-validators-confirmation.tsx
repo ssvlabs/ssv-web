@@ -16,6 +16,7 @@ import { getRemovedOptimisticValidatorsQueryOptions } from "@/hooks/cluster/use-
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useBulkRemoveValidator } from "@/lib/contract-interactions/write/use-bulk-remove-validator";
 import { useRemoveValidator } from "@/lib/contract-interactions/write/use-remove-validator";
+import { track } from "@/lib/analytics/mixpanel";
 import { setOptimisticData } from "@/lib/react-query";
 import { bigintifyNumbers, stringifyBigints } from "@/lib/utils/bigint";
 import { formatClusterData } from "@/lib/utils/cluster";
@@ -47,6 +48,10 @@ export const RemoveValidatorsConfirmation: FC = () => {
 
     const options = withTransactionModal({
       onMined: ({ events }) => {
+        track("Remove Validator", {
+          validators_amount: selectedPublicKeys.length,
+        });
+
         const event = events.find((e) => e.eventName === "ValidatorRemoved");
 
         setOptimisticData(

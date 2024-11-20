@@ -55,7 +55,7 @@ export const useAccount = () => {
         isContract: boolean;
         acceptedTerms: boolean;
       },
-    [account, accountAddress, isContractWallet.data],
+    [account, accountAddress, isContractWallet.data, acceptedTerms.isSuccess],
   );
 };
 

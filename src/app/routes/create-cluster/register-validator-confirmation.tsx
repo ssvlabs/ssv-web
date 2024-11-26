@@ -26,7 +26,7 @@ import { useOperators } from "@/hooks/operator/use-operators";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useBulkRegisterValidator } from "@/lib/contract-interactions/write/use-bulk-register-validator";
 import { useRegisterValidator } from "@/lib/contract-interactions/write/use-register-validator";
-import { track } from "@/lib/mixpanel";
+import { track } from "@/lib/analytics/mixpanel";
 import { queryClient } from "@/lib/react-query";
 import { bigintifyNumbers } from "@/lib/utils/bigint";
 import {

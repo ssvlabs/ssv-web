@@ -7,6 +7,8 @@ import { isAddress } from "viem";
 import type { Config, UseAccountReturnType } from "wagmi";
 import { usePublicClient, useAccount as useWagmiAccount } from "wagmi";
 import { acceptTermsAndConditions } from "@/api/terms.ts";
+import { getAccount } from "@wagmi/core";
+import { config } from "@/wagmi/config";
 
 export const useAccount = () => {
   const account = useWagmiAccount();
@@ -26,7 +28,7 @@ export const useAccount = () => {
 
   const isContractWallet = useQuery({
     staleTime: Infinity,
-    queryKey: ["is-contract", accountAddress, account.chainId],
+    queryKey: ["is-contract", accountAddress?.toLowerCase(), account.chainId],
     queryFn: async () =>
       publicClient!
         .getCode({
@@ -55,16 +57,21 @@ export const useAccount = () => {
         isContract: boolean;
         acceptedTerms: boolean;
       },
-    [account, accountAddress, isContractWallet.data],
+    [account, accountAddress, isContractWallet.data, acceptedTerms.isSuccess],
   );
 };
 
 export const isContractWallet = () => {
+  const account = getAccount(config);
   return Boolean(
     queryClient
       .getQueriesData({
         exact: false,
-        queryKey: ["is-contract"],
+        queryKey: [
+          "is-contract",
+          account.address?.toLowerCase(),
+          account.chainId,
+        ],
       })
       .at(0)?.[1],
   );

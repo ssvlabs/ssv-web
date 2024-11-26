@@ -12,6 +12,7 @@ import { useRemoveOperator } from "@/lib/contract-interactions/write/use-remove-
 import { setOptimisticData } from "@/lib/react-query";
 import { useState, type FC } from "react";
 import { useNavigate } from "react-router";
+import { track } from "@/lib/analytics/mixpanel";
 
 export const RemoveOperator: FC = () => {
   const { operatorId } = useOperatorPageParams();
@@ -25,6 +26,7 @@ export const RemoveOperator: FC = () => {
       },
       withTransactionModal({
         onMined: () => {
+          track("Remove Operator");
           setOptimisticData(
             getOperatorQueryOptions(operatorId!).queryKey,
             (prev) => {

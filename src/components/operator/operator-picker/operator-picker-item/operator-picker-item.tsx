@@ -21,6 +21,7 @@ import { isAddressEqual } from "viem";
 import { useAccount } from "@/hooks/account/use-account";
 import VerifiedSVG from "@/assets/images/verified.svg?react";
 import { useChainId } from "wagmi";
+import { useLocalStorage } from "react-use";
 
 export type OperatorPickerItemProps = {
   operator: Operator;
@@ -45,8 +46,10 @@ export const OperatorPickerItem: FCProps = ({
   const { address } = useAccount();
   const { data: maxValidatorsPerOperator = 0 } =
     useGetValidatorsPerOperatorLimit();
+  const [skipValidation] = useLocalStorage("skipValidatorsMaxCount", false);
 
   const reachedMaxValidators =
+    !skipValidation &&
     operator.validators_count + 1 >= maxValidatorsPerOperator;
 
   const hasValidators = operator.validators_count !== 0;

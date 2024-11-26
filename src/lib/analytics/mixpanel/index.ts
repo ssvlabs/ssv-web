@@ -31,4 +31,7 @@ export const mixpanel = import.meta.env.VITE_MIXPANEL_TOKEN
       track_pageview: () => {},
       identify: () => {},
       reset: () => {},
+      people: {
+        set_once: () => {},
+      },
     };

@@ -14,7 +14,7 @@ import { useRegisterOperator } from "@/lib/contract-interactions/write/use-regis
 import { queryClient } from "@/lib/react-query";
 import { roundOperatorFee } from "@/lib/utils/bigint";
 import { formatBigintInput } from "@/lib/utils/number";
-import { createOperatorFromEvent } from "@/lib/utils/operator";
+import { createDefaultOperator } from "@/lib/utils/operator";
 import { shortenAddress } from "@/lib/utils/strings";
 import { type FC } from "react";
 import { useNavigate } from "react-router";
@@ -32,14 +32,14 @@ export const RegisterOperatorConfirmation: FC = () => {
   const register = useRegisterOperator();
 
   const submit = () => {
+    const createOperatorArgs = {
+      setPrivate: isPrivate,
+      fee: roundOperatorFee(yearlyFee / globals.BLOCKS_PER_YEAR),
+      publicKey: encodeAbiParameters(parseAbiParameters("string"), [publicKey]),
+    };
+
     register.write(
-      {
-        setPrivate: isPrivate,
-        fee: roundOperatorFee(yearlyFee / globals.BLOCKS_PER_YEAR),
-        publicKey: encodeAbiParameters(parseAbiParameters("string"), [
-          publicKey,
-        ]),
-      },
+      createOperatorArgs,
       withTransactionModal({
         onMined: async (receipt) => {
           track("Register Operator");
@@ -56,7 +56,13 @@ export const RegisterOperatorConfirmation: FC = () => {
             return () => navigate("/operators");
           }
 
-          const operator = createOperatorFromEvent(event);
+          const operator = createDefaultOperator({
+            id: Number(event?.args.operatorId),
+            owner_address: event?.args.owner,
+            public_key: event?.args.publicKey,
+            fee: event?.args.fee.toString(),
+            is_private: isPrivate,
+          });
 
           queryClient.setQueryData(
             getOperatorQueryOptions(operator.id).queryKey,

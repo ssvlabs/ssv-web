@@ -1,5 +1,4 @@
 import { useMutation } from '@tanstack/react-query';
-import config from '~app/common/config';
 import { useAppDispatch } from '~app/hooks/redux.hook';
 import { setMessageAndSeverity } from '~app/redux/notifications.slice';
 
@@ -13,7 +12,7 @@ export const useAddSSVTokenToMetamask = () => {
         params: {
           type: 'ERC20',
           options: {
-            address: config.CONTRACTS.SSV_TOKEN.ADDRESS,
+            address: '0xad45A78180961079BFaeEe349704F411dfF947C6',
             symbol: 'SSV',
             decimals: 18
           }

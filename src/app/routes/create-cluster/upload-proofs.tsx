@@ -31,7 +31,7 @@ const UploadProofs = () => {
       size="lg"
       className="p-6 font-medium w-[1096px]"
     >
-      <NavigateBackBtn by="history" />
+      <NavigateBackBtn to={".."} />
       <div className="flex w-full gap-6">
         <Card className="w-[648px]">
           <CardHeader

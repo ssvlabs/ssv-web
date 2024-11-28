@@ -1,6 +1,6 @@
-import { ms } from "@/lib/utils/number";
+import { ms, numberFormatter } from "@/lib/utils/number";
 import type { FormatDurationOptions } from "date-fns";
-import { formatDistance, formatDuration, intervalToDuration } from "date-fns";
+import { formatDuration, intervalToDuration } from "date-fns";
 
 const daysFormat = ["days", "hours"] satisfies FormatDurationOptions["format"];
 const hoursFormat = [
@@ -28,9 +28,6 @@ export const humanizeDuration = (duration: number) =>
     },
   );
 
-export const humanizeFundingDuration = (duration: number) => {
-  return formatDistance(0, duration, {
-    includeSeconds: false,
-    addSuffix: false,
-  });
+export const humanizeFundingDuration = (days: number) => {
+  return `${numberFormatter.format(days)} day${days > 1 || days === 0 ? "s" : ""}`;
 };

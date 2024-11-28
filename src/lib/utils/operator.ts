@@ -176,7 +176,7 @@ export const createDefaultOperator = (
   is_valid: true,
   is_deleted: false,
   is_active: 0,
-  status: "Inactive",
+  status: "No validators",
   validators_count: 0,
   version: "v4",
   network: "holesky",

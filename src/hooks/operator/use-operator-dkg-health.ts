@@ -8,7 +8,7 @@ import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import { useChainId } from "wagmi";
 
 export type OperatorDKGHealthResponse = {
-  id: number;
+  id: string;
   isHealthy: boolean;
 };
 

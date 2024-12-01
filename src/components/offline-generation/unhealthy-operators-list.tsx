@@ -26,7 +26,9 @@ export const UnhealthyOperatorsList: FC<
       </Alert>
       <div className="grid grid-cols-2 gap-2 ">
         {operators.map((operator) => {
-          const isHealthy = health.find((h) => h.id === operator.id)?.isHealthy;
+          const isHealthy = health.find(
+            (h) => h.id === operator.id.toString(),
+          )?.isHealthy;
           return (
             <div
               className="flex justify-between items-center p-4 py-3 rounded-xl border border-gray-300"

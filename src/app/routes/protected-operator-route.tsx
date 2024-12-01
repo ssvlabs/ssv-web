@@ -6,10 +6,10 @@ import { Navigate } from "react-router-dom";
 import { isAddressEqual } from "viem";
 import { useAccount } from "@/hooks/account/use-account";
 import { Loading } from "@/components/ui/Loading";
-import { AnimatePresence, motion } from "framer-motion"; // Add this import
+import { AnimatePresence, motion } from "framer-motion";
 import { useAccountState } from "@/hooks/account/use-account-state";
-// Add this import
-// Add this import
+import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
+import { cn } from "@/lib/utils/tw.ts";
 
 export const ProtectedOperatorRoute: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
@@ -36,7 +36,17 @@ export const ProtectedOperatorRoute: FC<ComponentPropsWithoutRef<"div">> = ({
   return (
     <AnimatePresence mode="wait">
       {operator.isLoading ? (
-        <Loading />
+        <motion.div
+          className={cn(
+            "fixed flex-col gap-1 bg-gray-50 inset-0 flex h-screen items-center justify-center",
+          )}
+          key="loading"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <SsvLoader className={"size-[160px]"} />
+        </motion.div>
       ) : (
         <motion.div
           key="content"

@@ -20,7 +20,7 @@ export const Compliance: FC = () => {
       className="max-w-screen-2xl w-full p-6 items-center h-full"
     >
       <div className="flex flex-1 justify-center items-center flex-col">
-        <img src="/images/robot.svg" alt="Maintenance" className="w-40" />
+        <img src="/images/complianceRobot.svg" alt="Maintenance" className="w-40" />
         <Text variant="headline2" className="text-gray-700 mt-16">
           Website not available
         </Text>

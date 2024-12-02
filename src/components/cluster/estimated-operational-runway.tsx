@@ -9,7 +9,6 @@ import { EstimatedOperationalRunwayAlert } from "@/components/cluster/estimated-
 import { bigintAbs } from "@/lib/utils/bigint";
 import { useClusterState } from "@/hooks/cluster/use-cluster-state";
 import { humanizeFundingDuration } from "@/lib/utils/date";
-import { ms } from "@/lib/utils/number";
 
 export type EstimatedOperationalRunwayProps = {
   clusterHash?: string;
@@ -64,9 +63,7 @@ export const EstimatedOperationalRunway: EstimatedOperationalRunwayFC = ({
           <Text className="font-medium text-2xl first-letter:capitalize">
             {clusterRunway?.runway === 0n
               ? "0"
-              : humanizeFundingDuration(
-                  ms(Number(clusterRunway?.runway ?? 0), "days"),
-                )}
+              : humanizeFundingDuration(Number(clusterRunway?.runway ?? 0))}
           </Text>
           {clusterRunway?.hasDelta && (
             <Span

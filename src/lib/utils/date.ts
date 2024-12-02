@@ -29,5 +29,5 @@ export const humanizeDuration = (duration: number) =>
   );
 
 export const humanizeFundingDuration = (days: number) => {
-  return `${numberFormatter.format(days)} day${days > 1 || days === 0 ? "s" : ""}`;
+  return `${numberFormatter.format(days)} Day${days > 1 || days === 0 ? "s" : ""}`;
 };

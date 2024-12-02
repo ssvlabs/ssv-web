@@ -71,7 +71,7 @@ export const useRunway = ({
 
       return {
         runway: runwayWithDelta,
-        runwayDisplay: `${numberFormatter.format(runwayWithDelta)} days`,
+        runwayDisplay: `${numberFormatter.format(runwayWithDelta)} Days`,
         isAtRisk: runwayWithDelta < 30n,
         deltaDays: deltaDays,
         isIncreasing: deltaDays > 0n,

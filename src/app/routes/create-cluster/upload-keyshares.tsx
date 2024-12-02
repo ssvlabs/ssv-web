@@ -79,9 +79,8 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
   );
 
   const maxAddable = Math.min(
-    operatorsUsability.data?.maxAddableValidators ||
-      validators.data?.tags.available.length ||
-      0,
+    operatorsUsability.data?.maxAddableValidators || 0,
+    validators.data?.tags.available.length || 0,
     clusterSizesMap[state.clusterSize],
   );
 

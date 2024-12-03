@@ -9,6 +9,7 @@ import type { OperatorID } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
 import type { Address } from "abitype";
 import { useChainId } from "wagmi";
+import { useLocalStorage } from "react-use";
 
 type Props = {
   account: Address;
@@ -35,6 +36,7 @@ export const useOperatorsUsability = (
   const { data: maxValidators = 0 } = useGetValidatorsPerOperatorLimit();
   const operators = useOperators(operatorIds);
   const chainId = useChainId();
+  const [skipValidation] = useLocalStorage("skipValidatorsMaxCount", false);
 
   const canUse = useQuery({
     staleTime: ms(12, "seconds"),
@@ -74,10 +76,11 @@ export const useOperatorsUsability = (
       ? operators.data?.reduce(
           (acc, operator) => {
             const hasExceededValidatorsLimit =
-              operator?.validators_count >= maxValidators;
+              !skipValidation && operator?.validators_count >= maxValidators;
             const isUsable = canUse.data?.[operator.id] ?? false;
 
             const willExceedValidatorsLimit =
+              !skipValidation &&
               operator.validators_count + additionalValidators >= maxValidators;
 
             acc.operators.push({

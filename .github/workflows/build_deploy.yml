@@ -64,7 +64,9 @@ jobs:
         ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v3
         with:
@@ -88,7 +90,7 @@ jobs:
         run: pnpm lint
 
       - name: Run semantic-release
-        if: github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/pre-stage' || github.ref == 'refs/heads/prod-test' || github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/pre-stage' || github.ref == 'refs/heads/prod-test' || github.ref == 'refs/heads/main')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release

@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils/tw";
 import type { UseFundingCostArgs } from "@/hooks/use-compute-funding-cost";
 import { useFundingCost } from "@/hooks/use-compute-funding-cost";
 import { Text } from "@/components/ui/text";
-import { formatSSV, ms } from "@/lib/utils/number";
+import { formatSSV } from "@/lib/utils/number";
 import { Divider } from "@/components/ui/divider";
 import { Spinner } from "@/components/ui/spinner";
 import { humanizeFundingDuration } from "@/lib/utils/date";
@@ -41,9 +41,7 @@ export const ClusterFundingSummary: ClusterFundingSummaryFC = ({
     <div className={cn("space-y-2")}>
       <Text variant="body-3-semibold" className="text-gray-500">
         Funding Summary{" "}
-        {fundingDays > 1
-          ? `(${humanizeFundingDuration(ms(fundingDays, "days"))})`
-          : ""}
+        {fundingDays > 1 ? `(${humanizeFundingDuration(fundingDays)})` : ""}
       </Text>
       <div className="flex justify-between">
         <Text variant="body-2-medium">Operators Fee</Text>
@@ -75,10 +73,7 @@ export const ClusterFundingSummary: ClusterFundingSummaryFC = ({
         Funding Summary
       </Text>
       <Text variant="body-3-semibold" className="text-gray-500 text-end">
-        Fee{" "}
-        {fundingDays > 1
-          ? `(${humanizeFundingDuration(ms(fundingDays, "days"))})`
-          : ""}
+        Fee {fundingDays > 1 ? `(${humanizeFundingDuration(fundingDays)})` : ""}
       </Text>
       <Text variant="body-3-semibold" className="text-gray-500 text-end">
         Validator

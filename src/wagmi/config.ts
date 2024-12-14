@@ -4,7 +4,6 @@ import {
   coinbaseWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
-import type { HttpTransport } from "viem";
 import { createPublicClient, http } from "viem";
 import { createConfig } from "wagmi";
 import { holesky as holeskyBase, mainnet as mainnetBase } from "wagmi/chains";
@@ -29,14 +28,6 @@ export const isChainSupported = (chainId: number) => {
   return chains.some((chain) => chain.id === chainId);
 };
 
-const transports = chains.reduce(
-  (acc, chain) => {
-    acc[chain.id] = http();
-    return acc;
-  },
-  {} as Record<string, HttpTransport>,
-);
-
 const connectors = connectorsForWallets(
   [
     {
@@ -60,5 +51,10 @@ export const mainnet_private_rpc_client = createPublicClient({
 export const config = createConfig({
   chains,
   connectors: connectors,
-  transports,
+  transports: {
+    [mainnet.id]: http(
+      "https://misty-purple-sailboat.quiknode.pro/7fea68f21d77d9b54fc35c3f6d68199a880f5cf0",
+    ),
+    [holesky.id]: http(),
+  },
 });

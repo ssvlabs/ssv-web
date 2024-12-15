@@ -10,9 +10,9 @@ import { Bulk } from "@/app/routes/dashboard/clusters/cluster/bulk";
 import { RemoveValidatorsConfirmation } from "@/app/routes/dashboard/clusters/cluster/remove-validators-confirmation";
 import { ExitValidatorsConfirmation } from "@/app/routes/dashboard/clusters/cluster/exit-validators-confirmation";
 import { ExitValidatorsSuccess } from "@/app/routes/dashboard/clusters/cluster/exit-validators-success";
-import UploadProofs from "@/app/routes/create-cluster/upload-proofs.tsx";
+import UploadProofs from "@/app/routes/reshare-dkg/upload-proofs.tsx";
 import { SelectOperators } from "@/app/routes/create-cluster/select-operators.tsx";
-import ReshareDkg from "@/app/routes/create-cluster/reshare-dkg.tsx";
+import ReshareDkg from "@/app/routes/reshare-dkg/reshare-dkg.tsx";
 
 export const clustersRoutes = {
   path: "clusters",

@@ -23,26 +23,25 @@ import { Link } from "react-router-dom";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge.tsx";
 import { useParams } from "react-router";
+import type { Validator } from "@/types/api.ts";
 
 export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
   const links = useLinks();
   const { clusterHash } = useClusterPageParams();
   const { _selectedPublicKeys: selectedPublicKeys } = useBulkActionContext();
+  const params = useParams();
+  const externalValidators = params.publicKeys
+    ? params.publicKeys.split(",")
+    : undefined;
   const { infiniteQuery, validators, total } = useInfiniteClusterValidators(
     clusterHash,
     100,
   );
-  const params = useParams();
-  const externalValidators = params.publicKeys
-    ? params.publicKeys
-        .split(",")
-        .map((publicKey: string) => ({ public_key: publicKey }))
-    : undefined;
+
   const isAllChecked = Boolean(total) && selectedPublicKeys.length === total;
   const canProceed = selectedPublicKeys.length > 0;
 
   // TODO: fetch validators to get status
-  console.log(externalValidators);
   return (
     <Container variant="vertical" size="lg" className="py-6 h-full">
       <NavigateBackBtn />
@@ -87,7 +86,13 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
             </Tooltip>,
             null,
           ]}
-          items={validators}
+          items={
+            externalValidators
+              ? validators.filter((validator: Validator) =>
+                  externalValidators?.includes(`0x${validator.public_key}`),
+                )
+              : validators
+          }
           renderRow={({ index, item }) => (
             <TableRow
               as="label"

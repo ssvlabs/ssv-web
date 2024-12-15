@@ -4,6 +4,8 @@ import { getOwnerNonce } from "@/api/account.ts";
 import { getChainId } from "@wagmi/core";
 import { config } from "@/wagmi/config.ts";
 import type { MessageData } from "@/lib/utils/dkg.ts";
+import { FORKS } from "@/lib/utils/dkg.ts";
+import { DEFAULT_AMOUNT } from "@/lib/utils/dkg.ts";
 import { getSignaturePayload } from "@/lib/utils/dkg.ts";
 import { useSignMessage } from "wagmi";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
@@ -21,7 +23,7 @@ export const useReshareSignaturePayload = ({
 
   const getSignature = async () => {
     const nonce = await getOwnerNonce(ownerAddress);
-    const chainId = getChainId(config) === 1 ? "0x00000000" : "0x01017000";
+    const chainId = FORKS[getChainId(config)];
     const payload = (proofsQuery.data?.validators || []).map(
       ({ publicKey, proofs }) => ({
         messageData: {
@@ -31,7 +33,7 @@ export const useReshareSignaturePayload = ({
           withdrawalCredentials: withdrawAddress,
           ownerAddress,
           nonce,
-          amount: 32000000000,
+          amount: DEFAULT_AMOUNT,
         } as MessageData,
         proofs: proofs,
       }),

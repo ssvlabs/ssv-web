@@ -1,7 +1,15 @@
 import type { Operator as OperatorApiType } from "@/types/api.ts";
 import type { Address } from "abitype";
 import type { Proof as ProofType } from "@/hooks/use-validate-proofs.ts";
-
+export const DEFAULT_AMOUNT = 32000000000;
+const NETWORKS = {
+  MAINNET: 1,
+  HOLESKY: 17000,
+};
+export const FORKS = {
+  [NETWORKS.MAINNET]: "0x00000000",
+  [NETWORKS.HOLESKY]: "0x01017000",
+};
 export type MessageData = {
   publicKey: string;
   oldOperators: OperatorApiType[];

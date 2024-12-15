@@ -60,7 +60,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
       initialValue: reshareFlow.operators.length ? "true" : "",
       debounce: 0,
     });
-  console.log(reshareFlow);
+
   const { operators, infiniteQuery, fetched } = useSearchOperators({
     search: searchDebounced,
     ordering,
@@ -103,7 +103,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
             .includes(id),
       )
     ) {
-      state.dkgReshareState.newOperators = selectedOperators;
+      reshareFlow.setNewDkgOperators(selectedOperators);
     }
     const nextRoute = reshareFlow.operators.length
       ? "../summary"

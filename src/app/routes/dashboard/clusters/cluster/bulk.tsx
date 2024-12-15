@@ -1,11 +1,11 @@
 import { type FC } from "react";
+import { cn } from "@/lib/utils/tw";
 import { Container } from "@/components/ui/container";
+import { Text } from "@/components/ui/text";
 import { Card } from "@/components/ui/card";
 import { useInfiniteClusterValidators } from "@/hooks/cluster/use-infinite-cluster-validators";
 import { VirtualizedInfinityTable } from "@/components/ui/virtualized-infinity-table";
-import { cn } from "@/lib/utils/tw";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { FaCircleInfo } from "react-icons/fa6";
 import { TableCell, TableRow } from "@/components/ui/grid-table";
@@ -22,6 +22,7 @@ import { useBulkActionContext } from "@/guard/bulk-action-guard";
 import { Link } from "react-router-dom";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge.tsx";
+import { useParams } from "react-router";
 
 export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
   const links = useLinks();
@@ -31,10 +32,17 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
     clusterHash,
     100,
   );
-
+  const params = useParams();
+  const externalValidators = params.publicKeys
+    ? params.publicKeys
+        .split(",")
+        .map((publicKey: string) => ({ public_key: publicKey }))
+    : undefined;
   const isAllChecked = Boolean(total) && selectedPublicKeys.length === total;
   const canProceed = selectedPublicKeys.length > 0;
 
+  // TODO: fetch validators to get status
+  console.log(externalValidators);
   return (
     <Container variant="vertical" size="lg" className="py-6 h-full">
       <NavigateBackBtn />

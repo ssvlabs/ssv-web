@@ -9,7 +9,6 @@ import type { KeySharesPayload } from "ssv-keys/dist/tsc/src/lib/KeyShares/KeySh
 import { getOSName } from "@/lib/utils/os";
 import { isFrom } from "@/lib/utils/router";
 import { createFileSetter } from "@/lib/utils/valtio";
-import type { Operator } from "@/types/api.ts";
 
 const startingRoutes = ["online", "offline", "keyshares", "select-operators"];
 
@@ -40,12 +39,6 @@ export const [RegisterValidatorGuard, useRegisterValidatorContext] =
       },
       get hasSelectedOperators() {
         return this.selectedOperatorsIds.length > 0;
-      },
-
-      dkgReshareState: {
-        operators: [] as Operator[],
-        newOperators: [] as Operator[],
-        proofFiles: createFileSetter(),
       },
 
       dkgCeremonyState: {

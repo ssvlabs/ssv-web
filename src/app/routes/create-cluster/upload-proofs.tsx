@@ -10,20 +10,18 @@ import { OperatorAvatar } from "@/components/operator/operator-avatar.tsx";
 import { cn } from "@/lib/utils/tw.ts";
 import { Text } from "@/components/ui/text.tsx";
 import { useReshareDkg } from "@/hooks/use-reshare-dkg.ts";
-import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
 import { ref } from "valtio";
 import { KeysharesErrorAlert } from "@/components/keyshares/keyshares-error-alert.tsx";
 import { useNavigate } from "react-router-dom";
+import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
+import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
 
 const UploadProofs = () => {
   const navigate = useNavigate();
-  const { state } = useRegisterValidatorContext;
-  const context = useRegisterValidatorContext();
+  const { state } = useBulkActionContext;
+  const registerValidatorContext = useRegisterValidatorContext;
+  const context = useBulkActionContext();
   const { operators, proofsQuery } = useReshareDkg();
-
-  // if (operators) {
-  //   state.dkgReshareState.operators = operators.map(({ operator }) => operator);
-  // }
 
   return (
     <Container
@@ -79,7 +77,7 @@ const UploadProofs = () => {
             isLoading={proofsQuery.isLoading}
             loadingText="Processing proof file..."
           />
-          {proofsQuery.isSuccess && (
+          {!proofsQuery.isLoading && proofsQuery.isSuccess && (
             <div className="flex flex-col gap-4">
               <div className="flex flex-row justify-between">
                 <div>Validators</div>
@@ -118,13 +116,14 @@ const UploadProofs = () => {
                 onClick={() => {
                   state.dkgReshareState.operators = operators.map(
                     ({ operator }) => {
-                      state.selectedOperatorsIds = [
-                        ...state.selectedOperatorsIds,
+                      registerValidatorContext.state.selectedOperatorsIds = [
+                        ...registerValidatorContext.state.selectedOperatorsIds,
                         operator.id,
                       ];
                       return operator;
                     },
                   );
+
                   navigate("select-operators");
                 }}
               >

@@ -115,6 +115,7 @@ type GenerateSSVKeysDockerCMDParams = {
   os?: ReturnType<typeof getOSName>;
   newOperators?: Pick<Operator, "id" | "public_key" | "dkg_address">[];
   signatures?: string;
+  proofsString?: string;
 };
 
 export const generateSSVKeysDockerCMD = ({
@@ -127,6 +128,7 @@ export const generateSSVKeysDockerCMD = ({
   os = getOSName(),
   newOperators,
   signatures,
+  proofsString,
 }: GenerateSSVKeysDockerCMDParams) => {
   const chainName =
     chainId === 1 ? "mainnet" : getChainName(chainId)?.toLowerCase();
@@ -152,12 +154,12 @@ export const generateSSVKeysDockerCMD = ({
 
   if (signatures) {
     return `docker pull bloxstaking/ssv-dkg:v2.1.0 && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v2.1.0" init --operatorIDs ${operatorIds} ${
-      newOperators
+      newOperators?.length
         ? `--newOperatorsIDs ${sortOperators(newOperators)
             .map((op) => op.id)
             .join(",")}`
         : ""
-    } --withdrawAddress ${withdrawalAddress} --owner ${account} --nonce ${nonce} --network ${chainName} --proofsFilePath /data/proofs.json --operatorsInfo ${newOperators ? getOperatorsData([...operators, ...newOperators]) : getOperatorsData(operators)} --signatures ${signatures} --outputPath /data --logLevel info --logFormat json --logLevelFormat capitalColor --logFilePath /data/debug.log --clientCACertPath /data/rootCA.crt`;
+    } --withdrawAddress ${withdrawalAddress} --owner ${account} --nonce ${nonce} --network ${chainName} ${proofsString ? `--proofsString ${proofsString}` : "--proofsFilePath /data/proofs.json"} --operatorsInfo ${newOperators ? getOperatorsData([...operators, ...newOperators]) : getOperatorsData(operators)} --signatures ${signatures} --outputPath /output --logLevel info --logFormat json --logLevelFormat capitalColor --logFilePath /data/debug.log --tlsInsecure`;
   }
   return `docker pull bloxstaking/ssv-dkg:v2.1.0 && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v2.1.0" init --owner ${account} --nonce ${nonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorIds} --operatorsInfo ${getOperatorsData(sortedOperators)} --network ${chainName} --validators ${validatorsCount} --logFilePath /data/debug.log --outputPath /data`;
 };

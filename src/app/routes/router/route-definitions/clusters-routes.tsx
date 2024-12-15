@@ -66,6 +66,10 @@ export const clustersRoutes = {
               path: "confirmation",
               element: <RemoveValidatorsConfirmation />,
             },
+            {
+              path: ":publicKeys",
+              element: <Bulk type="remove" />,
+            },
           ],
         },
         {

@@ -5,16 +5,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/grid-table";
-import { Text } from "@/components/ui/text";
-import { CopyBtn } from "@/components/ui/copy-btn";
-import { Badge } from "@/components/ui/badge";
-import { shortenAddress } from "@/lib/utils/strings";
 import { cn } from "@/lib/utils/tw";
+import { Text } from "@/components/ui/text";
+import { Badge } from "@/components/ui/badge";
+import { CopyBtn } from "@/components/ui/copy-btn";
+import { shortenAddress } from "@/lib/utils/strings";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type {
   TaggedValidators,
   ValidatorShareWithStatus,
 } from "@/hooks/keyshares/use-keyshares-validators-state-validation";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export type ValidatorsSelectionTableProps = {
   taggedValidators: TaggedValidators;

@@ -105,7 +105,9 @@ const ReshareDkg = () => {
 
   return (
     <Container variant="vertical" size="lg" className="py-5">
-      <NavigateBackBtn by="history" />
+      <NavigateBackBtn
+        to={`/clusters/${clusterHash}/reshare/select-operators`}
+      />
       <Form {...form}>
         <Card
           as="form"

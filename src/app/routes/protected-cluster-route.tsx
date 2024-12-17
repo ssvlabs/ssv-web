@@ -6,6 +6,8 @@ import type { ComponentPropsWithoutRef, FC } from "react";
 import { Navigate } from "react-router-dom";
 import { isFrom } from "@/lib/utils/router.ts";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
+import { useLocation } from "react-router";
+import { useLocalStorage } from "react-use";
 
 export const ProtectedClusterRoute: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
@@ -13,11 +15,17 @@ export const ProtectedClusterRoute: FC<ComponentPropsWithoutRef<"div">> = ({
   const { clusterHash } = useClusterPageParams();
   const cluster = useCluster(clusterHash ?? "");
   const { resetState } = useBulkActionContext;
+  const location = useLocation();
+  const currentPath = location.pathname;
+  const [enabled] = useLocalStorage("reshareFlowEnabled", false);
 
   if (isUndefined(clusterHash)) return <Navigate to="/clusters" />;
   if (cluster.isLoading) return <Loading />;
   if (cluster.isError || !cluster.data) return <Navigate to="/clusters" />;
   if (isFrom("/clusters/:clusterHash")) resetState();
+  if (!enabled && currentPath.includes("reshare")) {
+    return <Navigate to={`/clusters/${clusterHash}`} />;
+  }
 
   return props.children;
 };

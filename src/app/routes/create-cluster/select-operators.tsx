@@ -68,10 +68,9 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
     type: isVerifiedCheckedDebounced || undefined,
   });
 
-  const selectedOperators =
-    selectedOperatorsIds
-      .map((id) => fetched.operatorsMap[id])
-      .filter(Boolean) || reshareFlow.operators.map(({ operator }) => operator);
+  const selectedOperators = selectedOperatorsIds
+    .map((id) => fetched.operatorsMap[id])
+    .filter(Boolean);
 
   const totalYearlyFee = selectedOperators.reduce(
     (acc, operator) => acc + getYearlyFee(BigInt(operator.fee)),

@@ -15,6 +15,7 @@ import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 import { useReshareDkg } from "@/hooks/use-reshare-dkg.ts";
 import { useCopyToClipboard } from "react-use";
 import { CompletedBadge } from "@/components/ui/completed-badge.tsx";
+import { useOperatorsDKGHealth } from "@/hooks/operator/use-operator-dkg-health.ts";
 
 const CeremonySection = ({
   isEnabled,
@@ -40,6 +41,16 @@ const CeremonySection = ({
   const context = useBulkActionContext();
   const reshareContext = useReshareDkg();
   const [copyState, copy] = useCopyToClipboard();
+  const health = useOperatorsDKGHealth(
+    context.dkgReshareState.newOperators.length
+      ? context.dkgReshareState.newOperators
+      : context.dkgReshareState.operators,
+  );
+  const version = health.data?.every(
+    ({ isHealthy, isOutdated }) => isHealthy && isOutdated,
+  )
+    ? "2.1.0"
+    : "3.0.0";
 
   const cmd = useQuery({
     queryKey: stringifyBigints([
@@ -69,6 +80,7 @@ const CeremonySection = ({
           signatures,
           os: context.dkgReshareState.selectedOs,
           proofsString,
+          version,
         }),
       );
     },

@@ -10,6 +10,9 @@ import { useChainId } from "wagmi";
 export type OperatorDKGHealthResponse = {
   id: string;
   isHealthy: boolean;
+  isMultiSig: boolean;
+  isOutdated: boolean;
+  isEthClientConnected: boolean;
 };
 
 export const getOperatorsDKGHealthQueryOptions = (

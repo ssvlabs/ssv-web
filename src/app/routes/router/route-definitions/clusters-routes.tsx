@@ -12,7 +12,7 @@ import { ExitValidatorsConfirmation } from "@/app/routes/dashboard/clusters/clus
 import { ExitValidatorsSuccess } from "@/app/routes/dashboard/clusters/cluster/exit-validators-success";
 import UploadProofs from "@/app/routes/reshare-dkg/upload-proofs.tsx";
 import { SelectOperators } from "@/app/routes/create-cluster/select-operators.tsx";
-import ReshareDkg from "@/app/routes/reshare-dkg/reshare-dkg.tsx";
+import Reshare from "@/app/routes/reshare-dkg/reshare.tsx";
 
 export const clustersRoutes = {
   path: "clusters",
@@ -108,7 +108,7 @@ export const clustersRoutes = {
             },
             {
               path: "summary",
-              element: <ReshareDkg />,
+              element: <Reshare />,
             },
           ],
         },

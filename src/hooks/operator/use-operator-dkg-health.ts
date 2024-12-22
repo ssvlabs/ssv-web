@@ -13,6 +13,7 @@ export type OperatorDKGHealthResponse = {
   isMultiSig: boolean;
   isOutdated: boolean;
   isEthClientConnected: boolean;
+  isMismatchId: boolean;
 };
 
 export const getOperatorsDKGHealthQueryOptions = (

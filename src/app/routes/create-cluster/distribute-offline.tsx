@@ -44,7 +44,10 @@ export const DistributeOffline: FC = () => {
   });
 
   const hasUnhealthyOperators =
-    isNew && health.data?.some(({ isHealthy }) => !isHealthy);
+    isNew &&
+    health.data?.some(
+      ({ isHealthy, isMismatchId }) => !isHealthy || isMismatchId,
+    );
 
   return (
     <Container size="lg" variant="vertical" className="py-6">

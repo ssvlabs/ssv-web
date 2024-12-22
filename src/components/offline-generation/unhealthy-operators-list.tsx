@@ -19,6 +19,12 @@ const getBadgeInfo = (
   healthData: OperatorDKGHealthResponse,
   isReshareFlow?: boolean,
 ): { variant: BadgeVariants["variant"]; text: string } => {
+  if (healthData.isMismatchId) {
+    return {
+      variant: "error" as BadgeVariants["variant"],
+      text: "ID/IP Mismatch",
+    };
+  }
   if (isReshareFlow) {
     if (healthData.isOutdated) {
       return {

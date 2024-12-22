@@ -7,7 +7,10 @@ import { LuCheck, LuCopy } from "react-icons/lu";
 import CeremonySummary from "@/app/routes/create-cluster/ceremony-summary.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { stringifyBigints } from "@/lib/utils/bigint.ts";
-import { generateSSVKeysDockerCMD } from "@/lib/utils/keyshares.ts";
+import {
+  DKG_VERSIONS,
+  generateSSVKeysDockerCMD,
+} from "@/lib/utils/keyshares.ts";
 import type { Address } from "viem";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { useSSVAccount } from "@/hooks/use-ssv-account.ts";
@@ -49,8 +52,8 @@ const CeremonySection = ({
   const version = health.data?.every(
     ({ isHealthy, isOutdated }) => isHealthy && isOutdated,
   )
-    ? "2.1.0"
-    : "3.0.0";
+    ? DKG_VERSIONS.OLD
+    : DKG_VERSIONS.NEW;
 
   const cmd = useQuery({
     queryKey: stringifyBigints([

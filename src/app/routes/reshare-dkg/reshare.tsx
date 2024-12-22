@@ -21,11 +21,16 @@ const Reshare = () => {
   const health = useOperatorsDKGHealth(operators);
   const reshareAccepted = isContractWallet()
     ? health.data?.every(
-        ({ isHealthy, isEthClientConnected, isOutdated }) =>
-          isHealthy && isEthClientConnected && !isOutdated,
+        ({ isHealthy, isEthClientConnected, isOutdated, isMismatchId }) =>
+          isHealthy && isEthClientConnected && !isOutdated && !isMismatchId,
       ) ||
-      health.data?.every(({ isHealthy, isOutdated }) => isHealthy && isOutdated)
-    : health.data?.every(({ isHealthy }) => isHealthy);
+      health.data?.every(
+        ({ isHealthy, isOutdated, isMismatchId }) =>
+          isHealthy && isOutdated && !isMismatchId,
+      )
+    : health.data?.every(
+        ({ isHealthy, isMismatchId }) => isHealthy && !isMismatchId,
+      );
 
   if (health.isLoading) {
     return (

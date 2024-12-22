@@ -19,6 +19,11 @@ export enum KeysharesValidationErrors {
   InconsistentOperators,
 }
 
+export const DKG_VERSIONS = {
+  OLD: "2.1.0",
+  NEW: "3.0.0",
+};
+
 export class KeysharesValidationError extends Error {
   constructor(public code: KeysharesValidationErrors) {
     super();
@@ -127,7 +132,7 @@ export const generateSSVKeysDockerCMD = ({
   chainId = getChainId(config),
   validatorsCount = 1,
   os = getOSName(),
-  version = "2.1.0",
+  version = DKG_VERSIONS.OLD,
   newOperators,
   signatures,
   proofsString,

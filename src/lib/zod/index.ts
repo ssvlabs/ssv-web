@@ -3,6 +3,14 @@ import { z } from "zod";
 
 const protocolRegex = /^(http|https?:\/\/)/;
 
+const getExplicitPort = (urlString: string): string => {
+  const portMatch = urlString.match(/:(\d+)/);
+  if (portMatch) {
+    return portMatch[1];
+  }
+  return "";
+};
+
 export const httpsURLSchema = z
   .string()
   .trim()
@@ -28,7 +36,9 @@ export const dgkURLSchema = z
     (str) =>
       tryCatch(() => {
         const url = new URL(str);
-        return Boolean(url.protocol === "https:" && url.port);
+        return Boolean(
+          url.protocol === "https:" && (url.port || getExplicitPort(str)),
+        );
       }, false),
     "Enter a valid IP address and port number",
   );

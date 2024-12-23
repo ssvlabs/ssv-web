@@ -8,7 +8,7 @@ import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils/tw";
 import { xor } from "lodash-es";
 import { type ComponentPropsWithoutRef, type FC } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCluster } from "@/hooks/cluster/use-cluster";
 import { createClusterHash } from "@/lib/utils/cluster";
 import { useAccount } from "@/hooks/account/use-account";
@@ -23,6 +23,7 @@ import { SearchInput } from "@/components/ui/search-input";
 import { useSearchParamsState } from "@/hooks/app/use-search-param-state";
 import { OperatorPickerFilter } from "@/components/operator/operator-picker/operator-picker-filter/operator-picker-filter";
 import { useOrdering } from "@/hooks/use-ordering.ts";
+import { useReshareDkg } from "@/hooks/use-reshare-dkg.ts";
 
 export type SelectOperatorsProps = {
   // TODO: Add props or remove this type
@@ -35,9 +36,11 @@ type FCProps = FC<
 
 export const SelectOperators: FCProps = ({ className, ...props }) => {
   const { address } = useAccount();
+  const navigate = useNavigate();
   const { state } = useRegisterValidatorContext;
   const { clusterSize, selectedOperatorsIds } = useRegisterValidatorContext();
   const { orderBy, sort, ordering, handleOrdering } = useOrdering();
+  const reshareFlow = useReshareDkg();
 
   const [search, setSearch, searchDebounced] = useSearchParamsState<string>({
     key: "search",
@@ -54,7 +57,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
   const [isDKGChecked, setIsDKGChecked, isDKGCheckedDebounced] =
     useSearchParamsState<"true" | "">({
       key: "has_dkg_address",
-      initialValue: "",
+      initialValue: reshareFlow.operators.length ? "true" : "",
       debounce: 0,
     });
 
@@ -79,15 +82,33 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
   );
 
   const isClusterSizeMet = selectedOperatorsIds.length === clusterSize;
-
   const hash = createClusterHash(address!, selectedOperatorsIds);
   const cluster = useCluster(hash, {
     enabled: isClusterSizeMet,
   });
 
   const isClusterExists =
-    isClusterSizeMet && cluster.isSuccess && cluster.data !== null;
+    reshareFlow.operators.length === 0 &&
+    isClusterSizeMet &&
+    cluster.isSuccess &&
+    cluster.data !== null;
 
+  const nextStep = () => {
+    if (
+      selectedOperatorsIds.some(
+        (id: number) =>
+          !reshareFlow.operators
+            .map(({ operator }) => operator.id)
+            .includes(id),
+      )
+    ) {
+      reshareFlow.setNewDkgOperators(selectedOperators);
+    }
+    const nextRoute = reshareFlow.operators.length
+      ? "../summary"
+      : "../distribution-method";
+    navigate(nextRoute);
+  };
   return (
     <Container variant="vertical" className="py-6 " size="xl">
       <NavigateBackBtn />
@@ -190,7 +211,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
             as={Link}
             isLoading={cluster.isLoading}
             disabled={!isClusterSizeMet || isClusterExists}
-            to="../distribution-method"
+            onClick={nextStep}
           >
             Next
           </Button>

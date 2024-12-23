@@ -113,6 +113,9 @@ type GenerateSSVKeysDockerCMDParams = {
   chainId?: number;
   validatorsCount?: number;
   os?: ReturnType<typeof getOSName>;
+  newOperators?: Pick<Operator, "id" | "public_key" | "dkg_address">[];
+  signatures?: string;
+  proofsString?: string;
 };
 
 export const generateSSVKeysDockerCMD = ({
@@ -123,6 +126,9 @@ export const generateSSVKeysDockerCMD = ({
   chainId = getChainId(config),
   validatorsCount = 1,
   os = getOSName(),
+  newOperators,
+  signatures,
+  proofsString,
 }: GenerateSSVKeysDockerCMDParams) => {
   const chainName =
     chainId === 1 ? "mainnet" : getChainName(chainId)?.toLowerCase();
@@ -130,9 +136,11 @@ export const generateSSVKeysDockerCMD = ({
   const operatorIds = sortedOperators.map((op) => op.id).join(",");
   const dynamicFullPath = os === "windows" ? "%cd%" : "$(pwd)";
 
-  const getOperatorsData = () => {
+  const getOperatorsData = (
+    operators: Pick<Operator, "id" | "public_key" | "dkg_address">[],
+  ) => {
     const jsonOperatorInfo = JSON.stringify(
-      sortedOperators.map(({ id, public_key, dkg_address }) => ({
+      sortOperators(operators).map(({ id, public_key, dkg_address }) => ({
         id,
         public_key,
         ip: dkg_address,
@@ -143,5 +151,15 @@ export const generateSSVKeysDockerCMD = ({
       ? `"${jsonOperatorInfo.replace(/"/g, '\\"')}"`
       : `'${jsonOperatorInfo}'`;
   };
-  return `docker pull bloxstaking/ssv-dkg:v2.1.0 && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v2.1.0" init --owner ${account} --nonce ${nonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorIds} --operatorsInfo ${getOperatorsData()} --network ${chainName} --validators ${validatorsCount} --logFilePath /data/debug.log --outputPath /data`;
+
+  if (signatures) {
+    return `docker pull bloxstaking/ssv-dkg:v2.1.0 && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v2.1.0" init --operatorIDs ${operatorIds} ${
+      newOperators?.length
+        ? `--newOperatorsIDs ${sortOperators(newOperators)
+            .map((op) => op.id)
+            .join(",")}`
+        : ""
+    } --withdrawAddress ${withdrawalAddress} --owner ${account} --nonce ${nonce} --network ${chainName} ${proofsString ? `--proofsString ${proofsString}` : "--proofsFilePath /data/proofs.json"} --operatorsInfo ${newOperators ? getOperatorsData([...operators, ...newOperators]) : getOperatorsData(operators)} --signatures ${signatures} --outputPath /output --logLevel info --logFormat json --logLevelFormat capitalColor --logFilePath /data/debug.log --tlsInsecure`;
+  }
+  return `docker pull bloxstaking/ssv-dkg:v2.1.0 && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v2.1.0" init --owner ${account} --nonce ${nonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorIds} --operatorsInfo ${getOperatorsData(sortedOperators)} --network ${chainName} --validators ${validatorsCount} --logFilePath /data/debug.log --outputPath /data`;
 };

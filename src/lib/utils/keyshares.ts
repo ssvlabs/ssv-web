@@ -19,6 +19,11 @@ export enum KeysharesValidationErrors {
   InconsistentOperators,
 }
 
+export const DKG_VERSIONS = {
+  OLD: "2.1.0",
+  NEW: "3.0.0",
+};
+
 export class KeysharesValidationError extends Error {
   constructor(public code: KeysharesValidationErrors) {
     super();
@@ -116,6 +121,7 @@ type GenerateSSVKeysDockerCMDParams = {
   newOperators?: Pick<Operator, "id" | "public_key" | "dkg_address">[];
   signatures?: string;
   proofsString?: string;
+  version?: string;
 };
 
 export const generateSSVKeysDockerCMD = ({
@@ -126,6 +132,7 @@ export const generateSSVKeysDockerCMD = ({
   chainId = getChainId(config),
   validatorsCount = 1,
   os = getOSName(),
+  version = DKG_VERSIONS.OLD,
   newOperators,
   signatures,
   proofsString,
@@ -153,7 +160,7 @@ export const generateSSVKeysDockerCMD = ({
   };
 
   if (signatures) {
-    return `docker pull bloxstaking/ssv-dkg:v2.1.0 && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v2.1.0" init --operatorIDs ${operatorIds} ${
+    return `docker pull bloxstaking/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v2.1.0" init --operatorIDs ${operatorIds} ${
       newOperators?.length
         ? `--newOperatorsIDs ${sortOperators(newOperators)
             .map((op) => op.id)

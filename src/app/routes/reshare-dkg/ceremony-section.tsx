@@ -7,7 +7,10 @@ import { LuCheck, LuCopy } from "react-icons/lu";
 import CeremonySummary from "@/app/routes/create-cluster/ceremony-summary.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { stringifyBigints } from "@/lib/utils/bigint.ts";
-import { generateSSVKeysDockerCMD } from "@/lib/utils/keyshares.ts";
+import {
+  DKG_VERSIONS,
+  generateSSVKeysDockerCMD,
+} from "@/lib/utils/keyshares.ts";
 import type { Address } from "viem";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { useSSVAccount } from "@/hooks/use-ssv-account.ts";
@@ -15,6 +18,7 @@ import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 import { useReshareDkg } from "@/hooks/use-reshare-dkg.ts";
 import { useCopyToClipboard } from "react-use";
 import { CompletedBadge } from "@/components/ui/completed-badge.tsx";
+import { useOperatorsDKGHealth } from "@/hooks/operator/use-operator-dkg-health.ts";
 
 const CeremonySection = ({
   isEnabled,
@@ -40,6 +44,16 @@ const CeremonySection = ({
   const context = useBulkActionContext();
   const reshareContext = useReshareDkg();
   const [copyState, copy] = useCopyToClipboard();
+  const health = useOperatorsDKGHealth(
+    context.dkgReshareState.newOperators.length
+      ? context.dkgReshareState.newOperators
+      : context.dkgReshareState.operators,
+  );
+  const version = health.data?.every(
+    ({ isHealthy, isOutdated }) => isHealthy && isOutdated,
+  )
+    ? DKG_VERSIONS.OLD
+    : DKG_VERSIONS.NEW;
 
   const cmd = useQuery({
     queryKey: stringifyBigints([
@@ -69,6 +83,7 @@ const CeremonySection = ({
           signatures,
           os: context.dkgReshareState.selectedOs,
           proofsString,
+          version,
         }),
       );
     },

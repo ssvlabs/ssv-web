@@ -76,7 +76,6 @@ export const useValidateProofs = (files: File[]) => {
         const fileContent = await readFileAsText(file);
         const json = JSON.parse(fileContent);
         const isValid = validateProofs(json, account.address);
-
         if (!isValid) {
           throw new Error("Wrong proofs file.");
         }
@@ -103,7 +102,12 @@ export const useValidateProofs = (files: File[]) => {
                     proofs: proof,
                   });
                 } else {
-                  acc[0].proofs = [...acc[0].proofs, proof];
+                  if (!acc[0]) {
+                    acc[0] = {
+                      publicKey: validatorPublicKey,
+                    } as ProofsValidatorsType;
+                  }
+                  acc[0].proofs = [...(acc[0].proofs || []), proof];
                 }
                 return acc;
               },

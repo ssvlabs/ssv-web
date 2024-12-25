@@ -22,10 +22,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { useCluster } from "@/hooks/cluster/use-cluster";
-import { TbExternalLink, TbRefresh } from "react-icons/tb";
+import { TbExternalLink, TbRefresh, TbRefreshDot } from "react-icons/tb";
 import { useBulkActionContext } from "@/guard/bulk-action-guard";
 import { Spacer } from "@/components/ui/spacer";
 import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge";
+import { useLocalStorage } from "react-use";
 
 export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
@@ -33,6 +34,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   const navigate = useNavigate();
   const cluster = useCluster();
   const { validators, infiniteQuery } = useInfiniteClusterValidators();
+  const [enabled] = useLocalStorage("reshareFlowEnabled", false);
 
   return (
     <VirtualizedInfinityTable
@@ -119,6 +121,17 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                     <LuLogOut className="size-4" />
                     <span>Exit Validator</span>
                   </DropdownMenuItem>
+                  {enabled && (
+                    <>
+                      <div className="h-9 flex items-center text-gray-500 text-xs	font-semibold pl-[16px]">
+                        DKG
+                      </div>
+                      <DropdownMenuItem onClick={() => navigate("reshare")}>
+                        <TbRefreshDot className="size-4" />
+                        <span>Reshare</span>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                 </Tooltip>
               </DropdownMenuContent>
             </DropdownMenu>

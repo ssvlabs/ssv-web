@@ -48,7 +48,7 @@ const ethereumSignatureRegex = /^(0x([0-9a-fA-F]{130}))+$/;
 const addressValidationSchema = z
   .string()
   .refine((value: string) => isAddress(value), {
-    message: "Wrong address format",
+    message: "Invalid Ethereum address",
   });
 
 const schema = z.object({

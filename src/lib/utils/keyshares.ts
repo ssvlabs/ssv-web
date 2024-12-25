@@ -160,7 +160,7 @@ export const generateSSVKeysDockerCMD = ({
   };
 
   if (signatures) {
-    return `docker pull bloxstaking/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v2.1.0" init --operatorIDs ${operatorIds} ${
+    return `docker pull bloxstaking/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v${version}" init --operatorIDs ${operatorIds} ${
       newOperators?.length
         ? `--newOperatorsIDs ${sortOperators(newOperators)
             .map((op) => op.id)
@@ -168,5 +168,5 @@ export const generateSSVKeysDockerCMD = ({
         : ""
     } --withdrawAddress ${withdrawalAddress} --owner ${account} --nonce ${nonce} --network ${chainName} ${proofsString ? `--proofsString ${proofsString}` : "--proofsFilePath /data/proofs.json"} --operatorsInfo ${newOperators ? getOperatorsData([...operators, ...newOperators]) : getOperatorsData(operators)} --signatures ${signatures} --outputPath /output --logLevel info --logFormat json --logLevelFormat capitalColor --logFilePath /data/debug.log --tlsInsecure`;
   }
-  return `docker pull bloxstaking/ssv-dkg:v2.1.0 && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v2.1.0" init --owner ${account} --nonce ${nonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorIds} --operatorsInfo ${getOperatorsData(sortedOperators)} --network ${chainName} --validators ${validatorsCount} --logFilePath /data/debug.log --outputPath /data`;
+  return `docker pull bloxstaking/ssv-dkg:v2.1.0 && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v${version}" init --owner ${account} --nonce ${nonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorIds} --operatorsInfo ${getOperatorsData(sortedOperators)} --network ${chainName} --validators ${validatorsCount} --logFilePath /data/debug.log --outputPath /data`;
 };

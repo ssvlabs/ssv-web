@@ -2,7 +2,6 @@ import { Card, CardHeader } from "@/components/ui/card.tsx";
 import { Text } from "@/components/ui/text.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Alert, AlertDescription } from "@/components/ui/alert.tsx";
-import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
 import { LuCheck, LuCopy } from "react-icons/lu";
 import CeremonySummary from "@/app/routes/create-cluster/ceremony-summary.tsx";
 import { useQuery } from "@tanstack/react-query";
@@ -126,23 +125,26 @@ const CeremonySection = ({
                       </Button>{" "}
                       on the machine hosting the DKG client
                     </Text>
-                    <Alert variant="warning">
-                      <AlertDescription>
-                        Please ensure you run the provided command from the
-                        directory containing the proofs.json file you wish to
-                        reshare. For additional details, refer to our{" "}
-                        <Button
-                          as="a"
-                          href="https://github.com/ssvlabs/ssv-keys/releases"
-                          variant="link"
-                          size="xl"
-                          target="_blank"
-                        >
-                          documentation
-                        </Button>{" "}
-                        .
-                      </AlertDescription>
-                    </Alert>
+                    {(reshareContext.proofsQuery.data?.validators || [])
+                      .length > 20 && (
+                      <Alert variant="warning">
+                        <AlertDescription>
+                          Please ensure you run the provided command from the
+                          directory containing the proofs.json file you wish to
+                          reshare. For additional details, refer to our{" "}
+                          <Button
+                            as="a"
+                            href="https://github.com/ssvlabs/ssv-keys/releases"
+                            variant="link"
+                            size="xl"
+                            target="_blank"
+                          >
+                            documentation
+                          </Button>{" "}
+                          .
+                        </AlertDescription>
+                      </Alert>
+                    )}
                   </div>
                 )}
                 <div>
@@ -154,7 +156,7 @@ const CeremonySection = ({
                       <Button
                         size="sm"
                         onClick={() =>
-                          (useRegisterValidatorContext.state.dkgCeremonyState.selectedOs =
+                          (useBulkActionContext.state.dkgReshareState.selectedOs =
                             "windows")
                         }
                         className="font-bold text-xs h-auto py-1 px-4"
@@ -168,7 +170,7 @@ const CeremonySection = ({
                         size="sm"
                         className="font-bold text-xs h-auto py-1 px-4"
                         onClick={() =>
-                          (useRegisterValidatorContext.state.dkgCeremonyState.selectedOs =
+                          (useBulkActionContext.state.dkgReshareState.selectedOs =
                             "mac")
                         }
                         variant={selectedOs === "mac" ? "secondary" : "outline"}
@@ -179,7 +181,7 @@ const CeremonySection = ({
                         size="sm"
                         className="font-bold text-xs h-auto py-1 px-4"
                         onClick={() =>
-                          (useRegisterValidatorContext.state.dkgCeremonyState.selectedOs =
+                          (useBulkActionContext.state.dkgReshareState.selectedOs =
                             "linux")
                         }
                         variant={

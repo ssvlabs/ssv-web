@@ -23,17 +23,24 @@ type ValidateProofsResult = {
   validators: ProofsValidatorsType[];
 };
 
-const validateProofs = (proofs: Proof[] | Proof[][], address: Address) =>
-  proofs.every((proof: Proof | Proof[]) =>
-    Array.isArray(proof)
-      ? proof.every(
-          (p: Proof) =>
-            toChecksumAddress(`0x${p.proof.owner}`) === address &&
-            p.proof.validator === proof[0].proof.validator,
-        )
-      : toChecksumAddress(`0x${proof.proof.owner}`) === address &&
-        proof.proof.validator === (proofs as Proof[])[0].proof.validator,
-  );
+const validateProofs = (proofs: Proof[] | Proof[][], address: Address) => {
+  try {
+    return proofs.every((proof: Proof | Proof[]) =>
+      Array.isArray(proof)
+        ? proof.every(
+            (p: Proof) =>
+              toChecksumAddress(`0x${p.proof.owner}`) === address &&
+              p.proof.validator === proof[0].proof.validator,
+          )
+        : toChecksumAddress(`0x${proof.proof.owner}`) === address &&
+          proof.proof.validator === (proofs as Proof[])[0].proof.validator,
+    );
+  } catch (e) {
+    throw new Error(
+      "The file you uploaded is incorrect, please upload proofs.json.",
+    );
+  }
+};
 
 export const useValidateProofs = (files: File[]) => {
   const account = useAccount();
@@ -58,14 +65,12 @@ export const useValidateProofs = (files: File[]) => {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     queryFn: async () => {
-      if (files.length === 0) {
-        throw new Error("No file uploaded.");
-      }
-
       const file = files[0];
 
       if (!file || file.type !== "application/json") {
-        throw new Error("Please upload a valid JSON file.");
+        throw new Error(
+          "The file you uploaded is incorrect, please upload proofs.json.",
+        );
       }
 
       if (!account.address) {
@@ -77,7 +82,9 @@ export const useValidateProofs = (files: File[]) => {
         const json = JSON.parse(fileContent);
         const isValid = validateProofs(json, account.address);
         if (!isValid) {
-          throw new Error("Wrong proofs file.");
+          throw new Error(
+            "The file you uploaded is incorrect, please upload proofs.json.",
+          );
         }
         const allRegisteredValidators = await getAllValidators(
           clusterHash || "",
@@ -91,9 +98,6 @@ export const useValidateProofs = (files: File[]) => {
                 if (
                   !allRegisteredValidators.data.includes(validatorPublicKey)
                 ) {
-                  if (!Array.isArray(proof)) {
-                    throw new Error("No registered public keys found.");
-                  }
                   return acc;
                 }
                 if (Array.isArray(proof)) {
@@ -115,6 +119,10 @@ export const useValidateProofs = (files: File[]) => {
             ),
           ),
         );
+
+        if (!validators.length) {
+          throw new Error("No registered validators found.");
+        }
         state.dkgReshareState.selectedValidatorsCount = validators.length;
 
         return {

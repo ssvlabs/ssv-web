@@ -19,6 +19,8 @@ import { useCopyToClipboard } from "react-use";
 import { CompletedBadge } from "@/components/ui/completed-badge.tsx";
 import { useOperatorsDKGHealth } from "@/hooks/operator/use-operator-dkg-health.ts";
 
+const VALIDATOR_COUNT_THRESHOLD = 20;
+
 const CeremonySection = ({
   isEnabled,
   isCompletedStep,
@@ -64,7 +66,8 @@ const CeremonySection = ({
     ]),
     queryFn: async () => {
       const proofsString =
-        (reshareContext.proofsQuery.data?.validators || []).length > 20
+        (reshareContext.proofsQuery.data?.validators || []).length >
+        VALIDATOR_COUNT_THRESHOLD
           ? undefined
           : JSON.stringify(
               (reshareContext.proofsQuery?.data?.validators || []).map(
@@ -126,7 +129,7 @@ const CeremonySection = ({
                       on the machine hosting the DKG client
                     </Text>
                     {(reshareContext.proofsQuery.data?.validators || [])
-                      .length > 20 && (
+                      .length > VALIDATOR_COUNT_THRESHOLD && (
                       <Alert variant="warning">
                         <AlertDescription>
                           Please ensure you run the provided command from the

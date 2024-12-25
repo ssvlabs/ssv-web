@@ -15,6 +15,7 @@ import { KeysharesErrorAlert } from "@/components/keyshares/keyshares-error-aler
 import { useNavigate } from "react-router-dom";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
+import { useEffect } from "react";
 
 const UploadProofs = () => {
   const navigate = useNavigate();
@@ -22,6 +23,28 @@ const UploadProofs = () => {
   const registerValidatorContext = useRegisterValidatorContext;
   const context = useBulkActionContext();
   const { operators, proofsQuery } = useReshareDkg();
+
+  const nextStep = () => {
+    state.dkgReshareState.operators = operators.map(({ operator }) => {
+      registerValidatorContext.state.selectedOperatorsIds = [
+        ...registerValidatorContext.state.selectedOperatorsIds,
+        operator.id,
+      ];
+      return operator;
+    });
+
+    navigate("select-operators");
+  };
+
+  useEffect(() => {
+    if (
+      !proofsQuery.isLoading &&
+      proofsQuery.isSuccess &&
+      proofsQuery.data?.validators.length === 1
+    ) {
+      nextStep();
+    }
+  }, [proofsQuery.isLoading, proofsQuery.isSuccess]);
 
   return (
     <Container
@@ -112,27 +135,11 @@ const UploadProofs = () => {
                   ))}
                 </div>
               </div>
-              <Button
-                onClick={() => {
-                  state.dkgReshareState.operators = operators.map(
-                    ({ operator }) => {
-                      registerValidatorContext.state.selectedOperatorsIds = [
-                        ...registerValidatorContext.state.selectedOperatorsIds,
-                        operator.id,
-                      ];
-                      return operator;
-                    },
-                  );
-
-                  navigate("select-operators");
-                }}
-              >
-                Next
-              </Button>
+              <Button onClick={nextStep}>Next</Button>
             </div>
           )}
         </Card>
-        {proofsQuery.isSuccess && proofsQuery.data?.validators && (
+        {proofsQuery.isSuccess && proofsQuery.data?.validators.length > 1 && (
           <Card className="flex-[1] h-full">
             <ValidatorsBulkSummary
               publicKeys={

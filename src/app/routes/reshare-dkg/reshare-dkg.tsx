@@ -28,6 +28,8 @@ import { Link } from "react-router-dom";
 import { CompletedBadge } from "@/components/ui/completed-badge.tsx";
 import CeremonySection from "@/app/routes/reshare-dkg/ceremony-section.tsx";
 import RemoveValidatorsSection from "@/app/routes/reshare-dkg/remove-validators-section.tsx";
+import { FaCircleInfo } from "react-icons/fa6";
+import { Tooltip } from "@/components/ui/tooltip.tsx";
 
 enum ReshareSteps {
   Signature = 1,
@@ -148,7 +150,26 @@ const ReshareDkg = () => {
                   name="ownerAddress"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Owner Address</FormLabel>
+                      <FormLabel className="flex gap-2 items-center">
+                        Owner Address{" "}
+                        <Tooltip
+                          asChild
+                          content={
+                            <Button
+                              as="a"
+                              href="https://docs.ssv.network/~/changes/jp5KZr2yy7T6b0RmeOmN/developers/tools/ssv-dkg-client/update-owner-nonce-in-key-shares"
+                              variant="link"
+                              target="_blank"
+                            >
+                              Resign: Update owner address
+                            </Button>
+                          }
+                        >
+                          <div>
+                            <FaCircleInfo className="size-3 text-gray-500" />
+                          </div>
+                        </Tooltip>
+                      </FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>

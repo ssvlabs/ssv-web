@@ -119,12 +119,12 @@ const CeremonySection = ({
                       Make sure{" "}
                       <Button
                         as="a"
-                        href="https://github.com/ssvlabs/ssv-keys/releases"
+                        href="https://docs.docker.com/engine/install"
                         variant="link"
                         size="xl"
                         target="_blank"
                       >
-                        Docker installed
+                        Docker is installed
                       </Button>{" "}
                       on the machine hosting the DKG client
                     </Text>
@@ -137,7 +137,7 @@ const CeremonySection = ({
                           reshare. For additional details, refer to our{" "}
                           <Button
                             as="a"
-                            href="https://github.com/ssvlabs/ssv-keys/releases"
+                            href="https://docs.ssv.network/~/changes/jp5KZr2yy7T6b0RmeOmN/developers/tools/ssv-dkg-client/dkg-tool-commands-and-configuration#additional-flag-for-generate-resign-msg-option"
                             variant="link"
                             size="xl"
                             target="_blank"
@@ -227,7 +227,7 @@ const CeremonySection = ({
                       solutions in the{" "}
                       <Button
                         as="a"
-                        href="https://github.com/ssvlabs/ssv-keys/releases"
+                        href="https://docs.ssv.network/~/changes/jp5KZr2yy7T6b0RmeOmN/developers/tools/ssv-dkg-client/troubleshooting"
                         variant="link"
                         target="_blank"
                       >

@@ -45,14 +45,16 @@ const UploadProofs = () => {
       nextStep();
     }
   }, [proofsQuery.isLoading, proofsQuery.isSuccess]);
-
   return (
     <Container
       variant="vertical"
       size="lg"
       className="p-6 font-medium w-[1096px]"
     >
-      <NavigateBackBtn to={".."} />
+      <NavigateBackBtn
+        to={".."}
+        onClick={() => (state.dkgReshareState.proofFiles.files = [])}
+      />
       <div className="flex w-full gap-6">
         <Card className="w-[648px]">
           <CardHeader
@@ -64,7 +66,7 @@ const UploadProofs = () => {
                 file generated during your validator ceremony to proceed.{" "}
                 <Button
                   as="a"
-                  href="https://github.com/ssvlabs/ssv-keys/releases"
+                  href="https://docs.ssv.network/~/changes/jp5KZr2yy7T6b0RmeOmN/developers/tools/ssv-dkg-client/ceremony-output-summary#files"
                   variant="link"
                   target="_blank"
                 >
@@ -79,7 +81,7 @@ const UploadProofs = () => {
               a DKG ceremony.{" "}
               <Button
                 as="a"
-                href="https://github.com/ssvlabs/ssv-keys/releases"
+                href="https://docs.ssv.network/~/changes/jp5KZr2yy7T6b0RmeOmN/developers/tools/ssv-dkg-client/change-operator-set-and-reshare-validator-key-shares"
                 variant="link"
                 target="_blank"
               >
@@ -95,7 +97,7 @@ const UploadProofs = () => {
             onFileRemoved={() => {
               state.dkgReshareState.proofFiles.files = [];
             }}
-            isError={proofsQuery.isError}
+            isError={proofsQuery.isError && !!proofsQuery.error.message}
             error={<KeysharesErrorAlert error={proofsQuery.error} />}
             isLoading={proofsQuery.isLoading}
             loadingText="Processing proof file..."

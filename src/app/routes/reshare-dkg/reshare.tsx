@@ -23,10 +23,6 @@ const Reshare = () => {
     ? health.data?.every(
         ({ isHealthy, isEthClientConnected, isOutdated, isMismatchId }) =>
           isHealthy && isEthClientConnected && !isOutdated && !isMismatchId,
-      ) ||
-      health.data?.every(
-        ({ isHealthy, isOutdated, isMismatchId }) =>
-          isHealthy && isOutdated && !isMismatchId,
       )
     : health.data?.every(
         ({ isHealthy, isMismatchId }) => isHealthy && !isMismatchId,

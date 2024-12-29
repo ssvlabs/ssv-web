@@ -122,7 +122,14 @@ export const useValidateProofs = (files: File[]) => {
           );
         }
         state.dkgReshareState.selectedValidatorsCount = validators.length;
-
+        if (
+          json.every((proof: Proof | Proof[]) => Array.isArray(proof)) &&
+          json.length > validators.length
+        ) {
+          throw new Error(
+            "proofs.json must only contain validators that are registered.",
+          );
+        }
         return {
           proofs: json,
           validators,

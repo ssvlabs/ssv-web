@@ -28,6 +28,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             "pr-4": rightSlot,
           },
           className,
+          `${props.disabled ? "bg-gray-200" : "bg-transparent"}`,
         )}
       >
         <Slot>{isLoading ? <Spinner /> : leftSlot}</Slot>
@@ -37,7 +38,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...inputProps}
           className={cn(
             inputProps?.className,
-            "w-full h-full flex-1 bg-transparent outline-none",
+            `w-full h-full flex-1 bg-transparent outline-none ${props.disabled ? "text-gray-500" : "text-gray-800"}`,
           )}
           ref={ref}
         />

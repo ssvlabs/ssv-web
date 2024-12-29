@@ -30,6 +30,7 @@ import CeremonySection from "@/app/routes/reshare-dkg/ceremony-section.tsx";
 import RemoveValidatorsSection from "@/app/routes/reshare-dkg/remove-validators-section.tsx";
 import { FaCircleInfo } from "react-icons/fa6";
 import { Tooltip } from "@/components/ui/tooltip.tsx";
+import { shortenAddress } from "@/lib/utils/strings.ts";
 
 enum ReshareSteps {
   Signature = 1,
@@ -66,6 +67,7 @@ const schema = z.object({
 
 const ReshareDkg = () => {
   const [currentStep, setCurrentStep] = useState(ReshareSteps.Signature);
+  const [isOwnerInputDisabled, setIsOwnerInputDisabled] = useState(true);
   const context = useBulkActionContext();
   const isReshare = context.dkgReshareState.newOperators.length > 0;
   const account = useAccount();
@@ -171,7 +173,34 @@ const ReshareDkg = () => {
                         </Tooltip>
                       </FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input
+                          {...field}
+                          disabled={isOwnerInputDisabled || isLoading}
+                          value={
+                            isOwnerInputDisabled
+                              ? shortenAddress(field.value)
+                              : field.value
+                          }
+                          rightSlot={
+                            <Button
+                              className="border-none text-primary-500 hover:bg-transparent hover:text-primary-500"
+                              variant={
+                                isOwnerInputDisabled ? "outline" : "secondary"
+                              }
+                              onClick={() => {
+                                if (
+                                  form.formState.errors.ownerAddress ||
+                                  isLoading
+                                ) {
+                                  return;
+                                }
+                                setIsOwnerInputDisabled(!isOwnerInputDisabled);
+                              }}
+                            >
+                              {isOwnerInputDisabled ? "Add" : "Save"}
+                            </Button>
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -186,7 +215,10 @@ const ReshareDkg = () => {
                     <FormItem>
                       <FormLabel>Set Withdrawal Address</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input
+                          {...field}
+                          disabled={field.disabled || isLoading}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

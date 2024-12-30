@@ -74,20 +74,26 @@ const ReshareDkg = () => {
   const withdrawAddress = useGetWithdrawCredentials();
   const reshareContext = useReshareDkg();
   const form = useForm<{
-    ownerAddress: Address;
-    withdrawAddress: Address;
+    ownerAddress: Address | string;
+    withdrawAddress: Address | string;
     signature: string;
   }>({
     mode: "all",
     defaultValues: {
       ownerAddress: account.address,
-      withdrawAddress: withdrawAddress.data?.withdraw_credentials || "0x",
+      withdrawAddress: withdrawAddress.data?.withdraw_credentials || "",
       signature: "",
     },
     resolver: zodResolver(schema),
   });
   const { clusterHash } = useClusterPageParams();
-  const { getSignature, isLoading } = useReshareSignaturePayload(form.watch());
+  const { getSignature, isLoading } = useReshareSignaturePayload(
+    form.watch() as {
+      ownerAddress: Address;
+      withdrawAddress: Address;
+      signature: string;
+    },
+  );
   const isMultiSign = isContractWallet();
 
   const nextStep = () => {
@@ -257,8 +263,8 @@ const ReshareDkg = () => {
         isCompletedStep={currentStep > ReshareSteps.Resign}
         isReshare={isReshare}
         selectedOs={context.dkgReshareState.selectedOs}
-        ownerAddress={form.watch().ownerAddress}
-        withdrawalAddress={form.watch().withdrawAddress}
+        ownerAddress={form.watch().ownerAddress as Address}
+        withdrawalAddress={form.watch().withdrawAddress as Address}
         signatures={form.watch().signature}
         nextStep={nextStep}
       />

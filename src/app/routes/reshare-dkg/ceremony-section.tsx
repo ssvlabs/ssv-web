@@ -69,6 +69,7 @@ const CeremonySection = ({
           account: ownerAddress,
           withdrawalAddress,
           signatures,
+          isReshare,
           os: context.dkgReshareState.selectedOs,
           proofsString,
         }),

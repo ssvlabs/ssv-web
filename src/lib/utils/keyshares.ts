@@ -120,6 +120,7 @@ type GenerateSSVKeysDockerCMDParams = {
   os?: ReturnType<typeof getOSName>;
   newOperators?: Pick<Operator, "id" | "public_key" | "dkg_address">[];
   signatures?: string;
+  isReshare?: boolean;
   proofsString?: string;
   version?: string;
 };
@@ -134,6 +135,7 @@ export const generateSSVKeysDockerCMD = ({
   os = getOSName(),
   version = DKG_VERSIONS.NEW,
   newOperators,
+  isReshare,
   signatures,
   proofsString,
 }: GenerateSSVKeysDockerCMDParams) => {
@@ -160,7 +162,7 @@ export const generateSSVKeysDockerCMD = ({
   };
 
   if (signatures) {
-    return `docker pull bloxstaking/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v${version}" reshare --operatorIDs ${operatorIds} ${
+    return `docker pull bloxstaking/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v${version}" ${isReshare ? "reshare" : "resign"} --operatorIDs ${operatorIds} ${
       newOperators?.length
         ? `--newOperatorIDs ${sortOperators(newOperators)
             .map((op) => op.id)

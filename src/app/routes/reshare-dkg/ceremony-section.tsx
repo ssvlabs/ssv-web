@@ -49,6 +49,8 @@ const CeremonySection = ({
       account.address,
       account.chainId,
       context.dkgReshareState.selectedOs,
+      signatures,
+      isReshare,
     ]),
     queryFn: async () => {
       const proofsString =
@@ -69,6 +71,7 @@ const CeremonySection = ({
           account: ownerAddress,
           withdrawalAddress,
           signatures,
+          isReshare,
           os: context.dkgReshareState.selectedOs,
           proofsString,
         }),

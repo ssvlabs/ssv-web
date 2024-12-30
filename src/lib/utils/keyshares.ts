@@ -21,7 +21,7 @@ export enum KeysharesValidationErrors {
 
 export const DKG_VERSIONS = {
   OLD: "2.1.0",
-  NEW: "3.0.0",
+  NEW: "3.0.9",
 };
 
 export class KeysharesValidationError extends Error {
@@ -120,6 +120,7 @@ type GenerateSSVKeysDockerCMDParams = {
   os?: ReturnType<typeof getOSName>;
   newOperators?: Pick<Operator, "id" | "public_key" | "dkg_address">[];
   signatures?: string;
+  isReshare?: boolean;
   proofsString?: string;
   version?: string;
 };
@@ -134,6 +135,7 @@ export const generateSSVKeysDockerCMD = ({
   os = getOSName(),
   version = DKG_VERSIONS.NEW,
   newOperators,
+  isReshare,
   signatures,
   proofsString,
 }: GenerateSSVKeysDockerCMDParams) => {
@@ -160,13 +162,13 @@ export const generateSSVKeysDockerCMD = ({
   };
 
   if (signatures) {
-    return `docker pull bloxstaking/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v${version}" init --operatorIDs ${operatorIds} ${
+    return `docker pull bloxstaking/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/ssv-dkg/data -it "bloxstaking/ssv-dkg:v${version}" ${isReshare ? "reshare" : "resign"} --operatorIDs ${operatorIds} ${
       newOperators?.length
-        ? `--newOperatorsIDs ${sortOperators(newOperators)
+        ? `--newOperatorIDs ${sortOperators(newOperators)
             .map((op) => op.id)
             .join(",")}`
         : ""
-    } --withdrawAddress ${withdrawalAddress} --owner ${account} --nonce ${nonce} --network ${chainName} ${proofsString ? `--proofsString '${proofsString}'` : "--proofsFilePath ./data/proofs.json"} --operatorsInfo ${newOperators ? getOperatorsData([...operators, ...newOperators]) : getOperatorsData(operators)} --signatures ${signatures} --outputPath ./output --logLevel info --logFormat json --logLevelFormat capitalColor --logFilePath ./data/debug.log --tlsInsecure`;
+    } --withdrawAddress ${withdrawalAddress} --owner ${account} --nonce ${nonce} --network ${chainName} ${proofsString ? `--proofsString '${proofsString}'` : "--proofsFilePath ./data/proofs.json"} --operatorsInfo ${newOperators ? getOperatorsData([...operators, ...newOperators]) : getOperatorsData(operators)} --signatures ${signatures.slice(2)} --outputPath ./output --logLevel info --logFormat json --logLevelFormat capitalColor --logFilePath ./data/debug.log --tlsInsecure`;
   }
-  return `docker pull bloxstaking/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v${version}" init --owner ${account} --nonce ${nonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorIds} --operatorsInfo ${getOperatorsData(sortedOperators)} --network ${chainName} --validators ${validatorsCount} ${version === DKG_VERSIONS.OLD ? "--logFilePath /data/debug.log --outputPath /data" : "--logFilePath ./data/debug.log --outputPath ./data --tlsInsecure"}}`;
+  return `docker pull bloxstaking/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/${version === DKG_VERSIONS.NEW ? "ssv-dkg/data" : "data"} -it "bloxstaking/ssv-dkg:v${version}" init --owner ${account} --nonce ${nonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorIds} --operatorsInfo ${getOperatorsData(sortedOperators)} --network ${chainName} --validators ${validatorsCount} ${version === DKG_VERSIONS.OLD ? "--logFilePath /data/debug.log --outputPath /data" : "--logFilePath ./data/debug.log --outputPath ./data --tlsInsecure"}}`;
 };

@@ -42,12 +42,15 @@ export const DistributeOffline: FC = () => {
   const health = useOperatorsDKGHealth(operators.data ?? [], {
     enabled: isNew,
   });
-
-  const hasUnhealthyOperators =
-    isNew &&
-    health.data?.some(
-      ({ isHealthy, isMismatchId }) => !isHealthy || isMismatchId,
-    );
+  const hasOutdatedOperator = health.data?.some(({ isOutdated }) => isOutdated);
+  const isAllOperatorsAreOutdated =
+    health.data?.every(({ isOutdated }) => isOutdated) || false;
+  const hasUnhealthyOperators = health.data?.some(
+    ({ isHealthy, isMismatchId }) => !isHealthy || isMismatchId,
+  );
+  const hasIssuedOperator = hasOutdatedOperator
+    ? hasUnhealthyOperators || !isAllOperatorsAreOutdated
+    : hasUnhealthyOperators;
 
   return (
     <Container size="lg" variant="vertical" className="py-6">
@@ -73,7 +76,7 @@ export const DistributeOffline: FC = () => {
             isLoading={health.isLoading}
           />
         </div>
-        {selectedOption === "new" && hasUnhealthyOperators && (
+        {isNew && hasIssuedOperator && (
           <>
             <UnhealthyOperatorsList
               operators={operators.data ?? []}
@@ -91,11 +94,12 @@ export const DistributeOffline: FC = () => {
             )}
           </>
         )}
-        {selectedOption === "new" &&
-          !hasUnhealthyOperators &&
-          health.isSuccess && (
-            <DockerInstructions operators={operators.data ?? []} />
-          )}
+        {selectedOption === "new" && !hasIssuedOperator && health.isSuccess && (
+          <DockerInstructions
+            isOutdatedOperators={isAllOperatorsAreOutdated}
+            operators={operators.data ?? []}
+          />
+        )}
         {selectedOption === "existing" && (
           <SSVKeysInstructions operators={operators.data ?? []} />
         )}

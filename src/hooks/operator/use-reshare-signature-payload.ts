@@ -25,20 +25,25 @@ export const useReshareSignaturePayload = ({
     const nonce = await getOwnerNonce(ownerAddress);
     const chainId = FORKS[getChainId(config)];
     const payload = (proofsQuery.data?.validators || []).map(
-      ({ publicKey, proofs }) => ({
-        messageData: {
+      ({ publicKey, proofs }, index: number) => {
+        const messageData: MessageData = {
           publicKey,
           oldOperators: context.dkgReshareState.operators,
           chainId,
           withdrawalCredentials: withdrawAddress,
           ownerAddress,
-          nonce,
+          nonce: nonce + index,
           amount: DEFAULT_AMOUNT,
-        } as MessageData,
-        proofs: proofs,
-      }),
+        };
+        if (context.dkgReshareState.newOperators.length) {
+          messageData.newOperators = context.dkgReshareState.newOperators;
+        }
+        return {
+          messageData,
+          proofs,
+        };
+      },
     );
-
     return sign.signMessageAsync({
       message: getSignaturePayload(payload),
     });

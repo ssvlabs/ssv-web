@@ -134,8 +134,14 @@ const serializedReshareMessage = (message: {
           PubKey: Buffer.from(op.public_key),
         }),
       ),
-      OldT: Number(message.messageData.oldOperators.length % 3),
-      NewT: Number((message.messageData.newOperators || []).length % 3),
+      OldT: Number(
+        message.messageData.oldOperators.length -
+          (message.messageData.oldOperators.length - 1) / 3,
+      ),
+      NewT: Number(
+        (message.messageData.newOperators || []).length -
+          ((message.messageData.newOperators || []).length - 1) / 3,
+      ),
       Fork: parseHexToBuffer(message.messageData.chainId).slice(0, 4),
       WithdrawalCredentials: parseHexToBuffer(
         message.messageData.withdrawalCredentials,

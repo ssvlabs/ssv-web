@@ -162,7 +162,7 @@ export const generateSSVKeysDockerCMD = ({
   if (signatures) {
     return `docker pull bloxstaking/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v${version}" init --operatorIDs ${operatorIds} ${
       newOperators?.length
-        ? `--newOperatorsIDs ${sortOperators(newOperators)
+        ? `--newOperatorIDs ${sortOperators(newOperators)
             .map((op) => op.id)
             .join(",")}`
         : ""

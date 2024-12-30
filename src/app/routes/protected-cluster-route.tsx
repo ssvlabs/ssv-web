@@ -18,11 +18,11 @@ export const ProtectedClusterRoute: FC<ComponentPropsWithoutRef<"div">> = ({
   const location = useLocation();
   const currentPath = location.pathname;
   const [enabled] = useLocalStorage("reshareFlowEnabled", false);
-
   if (isUndefined(clusterHash)) return <Navigate to="/clusters" />;
   if (cluster.isLoading) return <Loading />;
   if (cluster.isError || !cluster.data) return <Navigate to="/clusters" />;
-  if (isFrom("/clusters/:clusterHash")) resetState();
+  if (isFrom("/clusters/:clusterHash") && currentPath.includes("reshare"))
+    resetState();
   if (!enabled && currentPath.includes("reshare")) {
     return <Navigate to={`/clusters/${clusterHash}`} />;
   }

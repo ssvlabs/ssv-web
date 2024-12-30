@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge.tsx";
 import { Text } from "@/components/ui/text.tsx";
 import { Divider } from "@/components/ui/divider.tsx";
-import { FaRegFolderClosed } from "react-icons/fa6";
+import { FaRegFolderClosed, FaAngleUp, FaAngleDown } from "react-icons/fa6";
 import { useState } from "react";
 
 const CeremonySummary = ({
@@ -18,9 +18,10 @@ const CeremonySummary = ({
           <Text className="text-[16px] font-bold">Generated Files Summary</Text>
           <Text
             onClick={setShowAllHandler}
-            className="text-sm text-primary-500 cursor-pointer"
+            className="text-sm text-primary-500 cursor-pointer flex items-center gap-1"
           >
-            Show more
+            {`Show ${isShowAll ? "Less" : "More"}`}
+            {isShowAll ? <FaAngleUp /> : <FaAngleDown />}
           </Text>
         </div>
       )}

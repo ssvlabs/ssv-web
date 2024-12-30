@@ -132,7 +132,7 @@ export const generateSSVKeysDockerCMD = ({
   chainId = getChainId(config),
   validatorsCount = 1,
   os = getOSName(),
-  version = DKG_VERSIONS.OLD,
+  version = DKG_VERSIONS.NEW,
   newOperators,
   signatures,
   proofsString,
@@ -166,7 +166,7 @@ export const generateSSVKeysDockerCMD = ({
             .map((op) => op.id)
             .join(",")}`
         : ""
-    } --withdrawAddress ${withdrawalAddress} --owner ${account} --nonce ${nonce} --network ${chainName} ${proofsString ? `--proofsString ${proofsString}` : "--proofsFilePath /data/proofs.json"} --operatorsInfo ${newOperators ? getOperatorsData([...operators, ...newOperators]) : getOperatorsData(operators)} --signatures ${signatures} --outputPath /output --logLevel info --logFormat json --logLevelFormat capitalColor --logFilePath /data/debug.log --tlsInsecure`;
+    } --withdrawAddress ${withdrawalAddress} --owner ${account} --nonce ${nonce} --network ${chainName} ${proofsString ? `--proofsString '${proofsString}'` : "--proofsFilePath ./data/proofs.json"} --operatorsInfo ${newOperators ? getOperatorsData([...operators, ...newOperators]) : getOperatorsData(operators)} --signatures ${signatures} --outputPath ./output --logLevel info --logFormat json --logLevelFormat capitalColor --logFilePath ./data/debug.log --tlsInsecure`;
   }
-  return `docker pull bloxstaking/ssv-dkg:v2.1.0 && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v${version}" init --owner ${account} --nonce ${nonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorIds} --operatorsInfo ${getOperatorsData(sortedOperators)} --network ${chainName} --validators ${validatorsCount} --logFilePath /data/debug.log --outputPath /data`;
+  return `docker pull bloxstaking/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v${version}" init --owner ${account} --nonce ${nonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorIds} --operatorsInfo ${getOperatorsData(sortedOperators)} --network ${chainName} --validators ${validatorsCount} ${version === DKG_VERSIONS.OLD ? "--logFilePath /data/debug.log --outputPath /data" : "--logFilePath ./data/debug.log --outputPath ./data --tlsInsecure"}}`;
 };

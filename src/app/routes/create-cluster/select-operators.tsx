@@ -24,6 +24,7 @@ import { useSearchParamsState } from "@/hooks/app/use-search-param-state";
 import { OperatorPickerFilter } from "@/components/operator/operator-picker/operator-picker-filter/operator-picker-filter";
 import { useOrdering } from "@/hooks/use-ordering.ts";
 import { useReshareDkg } from "@/hooks/use-reshare-dkg.ts";
+import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 
 export type SelectOperatorsProps = {
   // TODO: Add props or remove this type
@@ -109,9 +110,14 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
       : "../distribution-method";
     navigate(nextRoute);
   };
+
   return (
     <Container variant="vertical" className="py-6 " size="xl">
-      <NavigateBackBtn />
+      <NavigateBackBtn
+        onClick={() =>
+          (useBulkActionContext.state.dkgReshareState.proofFiles.files = [])
+        }
+      />
       <div className="flex items-stretch flex-1 gap-6 w-full">
         <Card className={cn(className, "flex flex-col flex-[2.2]")} {...props}>
           <Text variant="headline4">

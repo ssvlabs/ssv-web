@@ -118,8 +118,8 @@ const serializedResignMessage = (message: {
 const serializedReshareMessage = (message: {
   messageData: MessageData;
   proofs: ProofType[];
-}) =>
-  ReshareMessageType.serialize({
+}) => {
+  return ReshareMessageType.serialize({
     Reshare: {
       ValidatorPubKey: parseHexToBuffer(message.messageData.publicKey),
       OldOperators: message.messageData.oldOperators.map(
@@ -134,8 +134,8 @@ const serializedReshareMessage = (message: {
           PubKey: Buffer.from(op.public_key),
         }),
       ),
-      OldT: message.messageData.oldOperators.length % 3,
-      NewT: (message.messageData.newOperators || []).length % 3,
+      OldT: Number(message.messageData.oldOperators.length % 3),
+      NewT: Number((message.messageData.newOperators || []).length % 3),
       Fork: parseHexToBuffer(message.messageData.chainId).slice(0, 4),
       WithdrawalCredentials: parseHexToBuffer(
         message.messageData.withdrawalCredentials,
@@ -154,6 +154,7 @@ const serializedReshareMessage = (message: {
       Signature: parseHexToBuffer(proof.signature),
     })),
   });
+};
 
 export const getSignaturePayload = (
   data: {

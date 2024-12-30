@@ -37,7 +37,7 @@ const validateProofs = (proofs: Proof[] | Proof[][], address: Address) => {
     );
   } catch (e) {
     throw new Error(
-      "The file you uploaded is incorrect, please upload proofs.json.",
+      "Invalid file content. Please upload a valid proofs.json file.",
     );
   }
 };
@@ -59,18 +59,14 @@ export const useValidateProofs = (files: File[]) => {
   return useQuery<ValidateProofsResult, Error>({
     queryKey: [files.length, files.map((file) => file.name).join("-")],
     retry: false,
-    enabled: files.length > 0,
     staleTime: 0,
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     queryFn: async () => {
       const file = files[0];
-
-      if (!file || file.type !== "application/json") {
-        throw new Error(
-          "The file you uploaded is incorrect, please upload proofs.json.",
-        );
+      if (!file) {
+        throw new Error();
       }
 
       if (!account.address) {
@@ -83,7 +79,7 @@ export const useValidateProofs = (files: File[]) => {
         const isValid = validateProofs(json, account.address);
         if (!isValid) {
           throw new Error(
-            "The file you uploaded is incorrect, please upload proofs.json.",
+            "proofs.json is invalid or does not match the expected owner address",
           );
         }
         const allRegisteredValidators = await getAllValidators(
@@ -121,10 +117,19 @@ export const useValidateProofs = (files: File[]) => {
         );
 
         if (!validators.length) {
-          throw new Error("No registered validators found.");
+          throw new Error(
+            "The proofs.json file does not match the cluster you have selected.",
+          );
         }
         state.dkgReshareState.selectedValidatorsCount = validators.length;
-
+        if (
+          json.every((proof: Proof | Proof[]) => Array.isArray(proof)) &&
+          json.length > validators.length
+        ) {
+          throw new Error(
+            "proofs.json must only contain validators that are registered.",
+          );
+        }
         return {
           proofs: json,
           validators,

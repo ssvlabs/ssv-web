@@ -25,7 +25,8 @@ const Reshare = () => {
           isHealthy && isEthClientConnected && !isOutdated && !isMismatchId,
       )
     : health.data?.every(
-        ({ isHealthy, isMismatchId }) => isHealthy && !isMismatchId,
+        ({ isHealthy, isMismatchId, isOutdated }) =>
+          isHealthy && !isMismatchId && !isOutdated,
       );
 
   if (health.isLoading) {

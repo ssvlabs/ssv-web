@@ -25,13 +25,13 @@ const getBadgeInfo = (
       text: "ID/IP Mismatch",
     };
   }
+  if (healthData.isOutdated) {
+    return {
+      variant: "warning" as BadgeVariants["variant"],
+      text: "Dkg Outdated",
+    };
+  }
   if (isReshareFlow) {
-    if (healthData.isOutdated) {
-      return {
-        variant: "warning" as BadgeVariants["variant"],
-        text: "Dkg Outdated",
-      };
-    }
     if (!healthData.isEthClientConnected) {
       return {
         variant: "error" as BadgeVariants["variant"],

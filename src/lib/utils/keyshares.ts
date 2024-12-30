@@ -21,7 +21,7 @@ export enum KeysharesValidationErrors {
 
 export const DKG_VERSIONS = {
   OLD: "2.1.0",
-  NEW: "3.0.0",
+  NEW: "3.0.9",
 };
 
 export class KeysharesValidationError extends Error {
@@ -160,7 +160,7 @@ export const generateSSVKeysDockerCMD = ({
   };
 
   if (signatures) {
-    return `docker pull bloxstaking/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v${version}" init --operatorIDs ${operatorIds} ${
+    return `docker pull bloxstaking/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/data -it "bloxstaking/ssv-dkg:v${version}" reshare --operatorIDs ${operatorIds} ${
       newOperators?.length
         ? `--newOperatorIDs ${sortOperators(newOperators)
             .map((op) => op.id)

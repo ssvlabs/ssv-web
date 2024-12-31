@@ -138,7 +138,12 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
             </TableRow>
           )}
         />
-        <Button as={Link} to="confirmation" size="xl" disabled={!canProceed}>
+        <Button
+          as={Link}
+          to={`/clusters/${clusterHash}/remove/confirmation`}
+          size="xl"
+          disabled={!canProceed}
+        >
           Next
         </Button>
       </Card>

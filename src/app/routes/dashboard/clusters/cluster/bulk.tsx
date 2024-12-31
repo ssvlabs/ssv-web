@@ -37,8 +37,16 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
     clusterHash,
     100,
   );
-
-  const isAllChecked = Boolean(total) && selectedPublicKeys.length === total;
+  const validatorsToUse = externalValidators
+    ? validators.filter((validator: Validator) =>
+        externalValidators?.includes(`0x${validator.public_key}`),
+      )
+    : validators;
+  const totalValidators = externalValidators
+    ? externalValidators.length
+    : total;
+  const isAllChecked =
+    Boolean(totalValidators) && selectedPublicKeys.length === totalValidators;
   const canProceed = selectedPublicKeys.length > 0;
 
   // TODO: fetch validators to get status
@@ -53,7 +61,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
               : "Select validators to Exit"}
           </Text>
           <Badge variant="primary">
-            {selectedPublicKeys.length} of {total} selected
+            {selectedPublicKeys.length} of {totalValidators} selected
           </Badge>
         </div>
         <VirtualizedInfinityTable
@@ -67,7 +75,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
                 onClick={() => {
                   if (!isAllChecked) {
                     useBulkActionContext.state._selectedPublicKeys =
-                      validators.map((v) => v.public_key);
+                      validatorsToUse.map((v) => v.public_key);
                   } else {
                     useBulkActionContext.state._selectedPublicKeys = [];
                   }
@@ -86,13 +94,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
             </Tooltip>,
             null,
           ]}
-          items={
-            externalValidators
-              ? validators.filter((validator: Validator) =>
-                  externalValidators?.includes(`0x${validator.public_key}`),
-                )
-              : validators
-          }
+          items={validatorsToUse}
           renderRow={({ index, item }) => (
             <TableRow
               as="label"

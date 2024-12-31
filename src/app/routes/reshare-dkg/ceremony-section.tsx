@@ -14,6 +14,7 @@ import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 import { useReshareDkg } from "@/hooks/use-reshare-dkg.ts";
 import { useCopyToClipboard } from "react-use";
 import { CompletedBadge } from "@/components/ui/completed-badge.tsx";
+import { getOwnerNonce } from "@/api/account.ts";
 
 const VALIDATOR_COUNT_THRESHOLD = 20;
 
@@ -62,12 +63,12 @@ const CeremonySection = ({
                 ({ proofs }) => proofs,
               ),
             );
-
+      const nonce = await getOwnerNonce(ownerAddress);
       return generateSSVKeysDockerCMD(
         stringifyBigints({
           operators: context.dkgReshareState.operators,
           newOperators: context.dkgReshareState.newOperators,
-          nonce: ssvAccount.data!.nonce,
+          nonce,
           account: ownerAddress,
           withdrawalAddress,
           signatures,

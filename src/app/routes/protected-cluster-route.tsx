@@ -8,6 +8,7 @@ import { isFrom } from "@/lib/utils/router.ts";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 import { useLocation } from "react-router";
 import { useLocalStorage } from "react-use";
+import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
 
 export const ProtectedClusterRoute: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
@@ -21,8 +22,10 @@ export const ProtectedClusterRoute: FC<ComponentPropsWithoutRef<"div">> = ({
   if (isUndefined(clusterHash)) return <Navigate to="/clusters" />;
   if (cluster.isLoading) return <Loading />;
   if (cluster.isError || !cluster.data) return <Navigate to="/clusters" />;
-  if (isFrom("/clusters/:clusterHash") && currentPath.includes("reshare"))
+  if (isFrom("/clusters/:clusterHash") && currentPath.includes("reshare")) {
+    useRegisterValidatorContext.resetState();
     resetState();
+  }
   if (!enabled && currentPath.includes("reshare")) {
     return <Navigate to={`/clusters/${clusterHash}`} />;
   }

@@ -193,6 +193,7 @@ const ReshareDkg = () => {
                               variant={
                                 isOwnerInputDisabled ? "outline" : "secondary"
                               }
+                              disabled={!!form.formState.errors.ownerAddress}
                               onClick={() => {
                                 if (
                                   form.formState.errors.ownerAddress ||
@@ -236,7 +237,7 @@ const ReshareDkg = () => {
                   type="submit"
                   size="xl"
                   className={"w-full"}
-                  disabled={!form.formState.isValid}
+                  disabled={!form.formState.isValid || !isOwnerInputDisabled}
                   isLoading={withdrawAddress.isLoading || isLoading}
                 >
                   Sign

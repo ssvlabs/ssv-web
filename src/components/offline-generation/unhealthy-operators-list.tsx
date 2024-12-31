@@ -28,7 +28,7 @@ const getBadgeInfo = (
   if (healthData.isOutdated) {
     return {
       variant: "warning" as BadgeVariants["variant"],
-      text: "Dkg Outdated",
+      text: "DKG Outdated",
     };
   }
   if (isReshareFlow) {

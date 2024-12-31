@@ -104,6 +104,8 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
       )
     ) {
       reshareFlow.setNewDkgOperators(selectedOperators);
+    } else {
+      reshareFlow.setNewDkgOperators([]);
     }
     const nextRoute = reshareFlow.operators.length
       ? "../summary"
@@ -114,9 +116,10 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
   return (
     <Container variant="vertical" className="py-6 " size="xl">
       <NavigateBackBtn
-        onClick={() =>
-          (useBulkActionContext.state.dkgReshareState.proofFiles.files = [])
-        }
+        onClick={() => {
+          useRegisterValidatorContext.resetState();
+          useBulkActionContext.state.dkgReshareState.proofFiles.files = [];
+        }}
       />
       <div className="flex items-stretch flex-1 gap-6 w-full">
         <Card className={cn(className, "flex flex-col flex-[2.2]")} {...props}>

@@ -291,7 +291,11 @@ const ReshareDkg = () => {
           <Button
             size="xl"
             as={Link}
-            to={`/join/validator/${clusterHash}/keyshares`}
+            to={
+              isReshare
+                ? `/join/validator/keyshares`
+                : `/join/validator/${clusterHash}/keyshares`
+            }
           >
             Register Validator
           </Button>

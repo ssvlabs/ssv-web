@@ -39,7 +39,11 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
   );
   const validatorsToUse = externalValidators
     ? validators.filter((validator: Validator) =>
-        externalValidators?.includes(`0x${validator.public_key}`),
+        externalValidators?.includes(
+          validator.public_key.startsWith("0x")
+            ? validator.public_key
+            : `0x${validator.public_key}`,
+        ),
       )
     : validators;
   const totalValidators = externalValidators

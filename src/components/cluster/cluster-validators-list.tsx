@@ -121,18 +121,19 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                     <LuLogOut className="size-4" />
                     <span>Exit Validator</span>
                   </DropdownMenuItem>
-                  {enabled && (
-                    <>
-                      <div className="h-9 flex items-center text-gray-500 text-xs	font-semibold pl-[16px]">
-                        DKG
-                      </div>
-                      <DropdownMenuItem onClick={() => navigate("reshare")}>
-                        <TbRefreshDot className="size-4" />
-                        <span>Reshare</span>
-                      </DropdownMenuItem>
-                    </>
-                  )}
                 </Tooltip>
+                {enabled && (
+                  <>
+                    <div className="w-full h-[1px] bg-gray-300" />
+                    <div className="h-9 flex items-center text-gray-500 text-xs	font-semibold pl-[16px]">
+                      DKG
+                    </div>
+                    <DropdownMenuItem onClick={() => navigate("reshare")}>
+                      <TbRefreshDot className="size-4" />
+                      <span>Reshare</span>
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </TableCell>

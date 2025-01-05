@@ -56,19 +56,19 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
             <LuLogOut className="size-4" />
             <span>Exit Validators</span>
           </DropdownMenuItem>
-          <div className="w-full h-[1px] bg-gray-300" />
-          {enabled && (
-            <>
-              <div className="h-9 flex items-center text-gray-500 text-xs	font-semibold pl-[16px]">
-                DKG
-              </div>
-              <DropdownMenuItem onClick={() => navigate("reshare")}>
-                <TbRefreshDot className="size-4" />
-                <span>Reshare</span>
-              </DropdownMenuItem>
-            </>
-          )}
         </Tooltip>
+        {enabled && (
+          <>
+            <div className="w-full h-[1px] bg-gray-300" />
+            <div className="h-9 flex items-center text-gray-500 text-xs	font-semibold pl-[16px]">
+              DKG
+            </div>
+            <DropdownMenuItem onClick={() => navigate("reshare")}>
+              <TbRefreshDot className="size-4" />
+              <span>Reshare</span>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

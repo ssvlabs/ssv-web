@@ -47,7 +47,7 @@ const nextStepToMapping: Record<ReshareSteps, ReshareSteps> = {
   [ReshareSteps.Register]: ReshareSteps.Signature,
 };
 
-const ethereumSignatureRegex = /^(0x([0-9a-fA-F]{130}))+$/;
+const ethereumSignatureRegex = /^(0x([0-9a-fA-F]{130,}))+$/;
 
 const addressValidationSchema = z
   .string()
@@ -119,7 +119,7 @@ const ReshareDkg = () => {
   const isSubmitButtonDisabled =
     !form.formState.isValid ||
     !isOwnerInputDisabled ||
-    (isMultiSign && !isWithdrawalInputDisabled);
+    !isWithdrawalInputDisabled;
 
   return (
     <Container variant="vertical" size="lg" className="py-5">
@@ -229,12 +229,10 @@ const ReshareDkg = () => {
                           isInputDisabled={
                             field.disabled ||
                             isLoading ||
-                            (isMultiSign && isWithdrawalInputDisabled)
+                            isWithdrawalInputDisabled
                           }
                           acceptedButtonLabel={
-                            isMultiSign && isWithdrawalInputDisabled
-                              ? "Change"
-                              : "Confirm"
+                            isWithdrawalInputDisabled ? "Change" : "Confirm"
                           }
                           setIsInputDisabled={setIsWithdrawalInputDisabled}
                           value={field.value}

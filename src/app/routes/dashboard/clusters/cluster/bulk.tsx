@@ -56,7 +56,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
   // TODO: fetch validators to get status
   return (
     <Container variant="vertical" size="lg" className="py-6 h-full">
-      <NavigateBackBtn />
+      <NavigateBackBtn to={`/clusters/${clusterHash}`} />
       <Card className="w-full flex-1">
         <div className="flex justify-between">
           <Text variant="headline4">

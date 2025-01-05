@@ -31,6 +31,7 @@ import RemoveValidatorsSection from "@/app/routes/reshare-dkg/remove-validators-
 import { FaCircleInfo } from "react-icons/fa6";
 import { Tooltip } from "@/components/ui/tooltip.tsx";
 import { shortenAddress } from "@/lib/utils/strings.ts";
+import { DkgAddressInput } from "@/app/routes/reshare-dkg/dkg-address-input.tsx";
 
 enum ReshareSteps {
   Signature = 1,
@@ -60,8 +61,7 @@ const schema = z.object({
   signature: z
     .string()
     .refine((value) => value === "" || ethereumSignatureRegex.test(value), {
-      message:
-        "Invalid Ethereum signature format. Each signature must start with '0x' and contain 130 hexadecimal characters.",
+      message: "Invalid format. Please enter a valid signature hash.",
     }),
 });
 
@@ -72,6 +72,9 @@ const ReshareDkg = () => {
   const isReshare = context.dkgReshareState.newOperators.length > 0;
   const account = useAccount();
   const withdrawAddress = useGetWithdrawCredentials();
+  const [isWithdrawalInputDisabled, setIsWithdrawalInputDisabled] = useState(
+    !!withdrawAddress.data?.withdraw_credentials,
+  );
   const reshareContext = useReshareDkg();
   const form = useForm<{
     ownerAddress: Address | string;
@@ -112,6 +115,11 @@ const ReshareDkg = () => {
     form.setValue("signature", signature);
     nextStep();
   });
+
+  const isSubmitButtonDisabled =
+    !form.formState.isValid ||
+    !isOwnerInputDisabled ||
+    (isMultiSign && !isWithdrawalInputDisabled);
 
   return (
     <Container variant="vertical" size="lg" className="py-5">
@@ -179,33 +187,22 @@ const ReshareDkg = () => {
                         </Tooltip>
                       </FormLabel>
                       <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isOwnerInputDisabled || isLoading}
+                        <DkgAddressInput
+                          field={field}
+                          isAcceptedButtonDisabled={
+                            !!form.formState.errors.ownerAddress ||
+                            isLoading ||
+                            !field.value
+                          }
+                          isInputDisabled={isOwnerInputDisabled || isLoading}
+                          acceptedButtonLabel={
+                            isOwnerInputDisabled ? "Change" : "Save"
+                          }
+                          setIsInputDisabled={setIsOwnerInputDisabled}
                           value={
                             isOwnerInputDisabled
                               ? shortenAddress(field.value)
                               : field.value
-                          }
-                          rightSlot={
-                            <Button
-                              className="border-none text-primary-500 hover:bg-transparent hover:text-primary-500"
-                              variant={
-                                isOwnerInputDisabled ? "outline" : "secondary"
-                              }
-                              disabled={!!form.formState.errors.ownerAddress}
-                              onClick={() => {
-                                if (
-                                  form.formState.errors.ownerAddress ||
-                                  isLoading
-                                ) {
-                                  return;
-                                }
-                                setIsOwnerInputDisabled(!isOwnerInputDisabled);
-                              }}
-                            >
-                              {isOwnerInputDisabled ? "Add" : "Save"}
-                            </Button>
                           }
                         />
                       </FormControl>
@@ -222,9 +219,25 @@ const ReshareDkg = () => {
                     <FormItem>
                       <FormLabel>Set Withdrawal Address</FormLabel>
                       <FormControl>
-                        <Input
-                          {...field}
-                          disabled={field.disabled || isLoading}
+                        <DkgAddressInput
+                          field={field}
+                          isAcceptedButtonDisabled={
+                            !!form.formState.errors.withdrawAddress ||
+                            isLoading ||
+                            !field.value
+                          }
+                          isInputDisabled={
+                            field.disabled ||
+                            isLoading ||
+                            (isMultiSign && isWithdrawalInputDisabled)
+                          }
+                          acceptedButtonLabel={
+                            isMultiSign && isWithdrawalInputDisabled
+                              ? "Change"
+                              : "Confirm"
+                          }
+                          setIsInputDisabled={setIsWithdrawalInputDisabled}
+                          value={field.value}
                         />
                       </FormControl>
                       <FormMessage />
@@ -237,7 +250,7 @@ const ReshareDkg = () => {
                   type="submit"
                   size="xl"
                   className={"w-full"}
-                  disabled={!form.formState.isValid || !isOwnerInputDisabled}
+                  disabled={isSubmitButtonDisabled}
                   isLoading={withdrawAddress.isLoading || isLoading}
                 >
                   Sign
@@ -248,7 +261,7 @@ const ReshareDkg = () => {
                     className={"w-full"}
                     size="xl"
                     variant="secondary"
-                    disabled={!form.formState.isValid}
+                    disabled={isSubmitButtonDisabled}
                     isLoading={withdrawAddress.isLoading || isLoading}
                   >
                     I Already Have Signatures
@@ -307,7 +320,7 @@ const ReshareDkg = () => {
           style={{ backgroundColor: "rgba(11, 42, 60, 0.16)" }}
           className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
         >
-          <div className="relative bg-white rounded-lg shadow-lg w-96">
+          <div className="relative rounded-lg shadow-lg w-96">
             <Form {...form}>
               <Card as="form" onSubmit={submit}>
                 <div className="flex flex-col gap-6">
@@ -317,7 +330,10 @@ const ReshareDkg = () => {
                         Submit Signatures
                       </Text>
                       <button
-                        onClick={() => setIsOpenModal(false)}
+                        onClick={() => {
+                          setIsOpenModal(false);
+                          form.resetField("signature");
+                        }}
                         className="text-gray-600 hover:text-gray-800"
                       >
                         &#10005;

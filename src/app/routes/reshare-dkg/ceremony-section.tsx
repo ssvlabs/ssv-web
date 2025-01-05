@@ -15,6 +15,7 @@ import { useReshareDkg } from "@/hooks/use-reshare-dkg.ts";
 import { useCopyToClipboard } from "react-use";
 import { CompletedBadge } from "@/components/ui/completed-badge.tsx";
 import { getOwnerNonce } from "@/api/account.ts";
+import { Spinner } from "@/components/ui/spinner.tsx";
 
 const VALIDATOR_COUNT_THRESHOLD = 20;
 
@@ -186,7 +187,7 @@ const CeremonySection = ({
                   </div>
                   <div className="flex bg-gray-700 text-gray-50 text-sm p-4 py-2 pr-2 rounded-lg items-center gap-4 w-full overflow-hidden">
                     <Text className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap max-w-full">
-                      {cmd.data}
+                      {cmd.isLoading ? <Spinner /> : cmd.data}
                     </Text>
                     <Button
                       size="sm"

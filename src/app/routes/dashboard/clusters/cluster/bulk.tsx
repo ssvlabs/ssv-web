@@ -31,7 +31,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
   const { _selectedPublicKeys: selectedPublicKeys } = useBulkActionContext();
   const params = useParams();
   const externalValidators = params.publicKeys
-    ? params.publicKeys.split(",")
+    ? atob(params.publicKeys).split(",")
     : undefined;
   const { infiniteQuery, validators, total } = useInfiniteClusterValidators(
     clusterHash,

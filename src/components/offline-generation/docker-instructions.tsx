@@ -170,6 +170,12 @@ export const DockerInstructions: FC<DockerInstructionsProps> = ({
                   <FormControl>
                     <Input
                       {...field}
+                      onChange={(e) => {
+                        form.setValue("hasConfirmed", false, {
+                          shouldValidate: true,
+                        });
+                        field.onChange(e);
+                      }}
                       className="pr-1.5"
                       rightSlot={
                         <Button

@@ -12,12 +12,12 @@ import type { OperatorDKGHealthResponse } from "@/hooks/operator/use-operator-dk
 type Props = {
   operators: OperatorDetailsProps["operator"][];
   health: OperatorDKGHealthResponse[];
-  isReshareMultiSigFlow?: boolean;
+  isMultiSigFlow?: boolean;
 };
 
 const getBadgeInfo = (
   healthData: OperatorDKGHealthResponse,
-  isReshareFlow?: boolean,
+  isMultiSigFlow?: boolean,
 ): { variant: BadgeVariants["variant"]; text: string } => {
   if (healthData.isMismatchId) {
     return {
@@ -31,7 +31,7 @@ const getBadgeInfo = (
       text: "DKG Outdated",
     };
   }
-  if (isReshareFlow) {
+  if (isMultiSigFlow) {
     if (!healthData.isEthClientConnected) {
       return {
         variant: "error" as BadgeVariants["variant"],
@@ -57,14 +57,13 @@ const getBadgeInfo = (
 
 export const UnhealthyOperatorsList: FC<
   ComponentPropsWithRef<"div"> & Props
-> = ({ className, operators, health, isReshareMultiSigFlow, ...props }) => {
+> = ({ className, operators, health, isMultiSigFlow, ...props }) => {
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
       <Alert variant="error">
         <AlertDescription>
-          {isReshareMultiSigFlow
-            ? "DKG method is unavailable because some of your selected operators do not have an active execution client connected."
-            : "DKG method is unavailable because some of your selected operators have not provided a DKG endpoint."}
+          DKG method is unavailable because one or more selected operators have
+          an issue that prevents DKG operations.
         </AlertDescription>
       </Alert>
       <div className="grid grid-cols-2 gap-2 ">
@@ -75,7 +74,7 @@ export const UnhealthyOperatorsList: FC<
 
           const { variant: badgeVariant, text: badgeText } = getBadgeInfo(
             healthData || ({} as OperatorDKGHealthResponse),
-            isReshareMultiSigFlow,
+            isMultiSigFlow,
           );
 
           return (

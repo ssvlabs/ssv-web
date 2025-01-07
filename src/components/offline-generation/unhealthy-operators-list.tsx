@@ -79,7 +79,7 @@ export const UnhealthyOperatorsList: FC<
 
           return (
             <div
-              className="flex justify-between items-center p-4 py-3 rounded-xl border border-gray-300"
+              className="flex justify-between items-start p-4 py-3 rounded-xl border border-gray-300"
               key={operator.id}
             >
               <OperatorDetails operator={operator} />

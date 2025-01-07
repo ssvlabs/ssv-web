@@ -17,7 +17,7 @@ import { CompletedBadge } from "@/components/ui/completed-badge.tsx";
 import { getOwnerNonce } from "@/api/account.ts";
 import { Spinner } from "@/components/ui/spinner.tsx";
 
-const VALIDATOR_COUNT_THRESHOLD = 20;
+const VALIDATOR_COUNT_THRESHOLD = 0;
 
 const CeremonySection = ({
   isEnabled,

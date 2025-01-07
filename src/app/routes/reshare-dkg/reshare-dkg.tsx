@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form.tsx";
 import { useForm } from "react-hook-form";
 import type { Address } from "viem";
+import { getAddress } from "viem";
 import { isAddress } from "viem";
 import { Input } from "@/components/ui/input.tsx";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn.tsx";
@@ -86,7 +87,9 @@ const ReshareDkg = () => {
     mode: "all",
     defaultValues: {
       ownerAddress: account.address,
-      withdrawAddress: withdrawAddress.data?.withdraw_credentials || "",
+      withdrawAddress: withdrawAddress.data?.withdraw_credentials
+        ? `0x${withdrawAddress.data.withdraw_credentials.slice(26)}`
+        : "",
       signature: "",
     },
     resolver: zodResolver(schema),
@@ -125,7 +128,9 @@ const ReshareDkg = () => {
     !form.formState.isValid ||
     !isOwnerInputDisabled ||
     !isWithdrawalInputDisabled;
-
+  const isResignedOwnerAddress =
+    currentStep > ReshareSteps.Signature &&
+    account.address !== getAddress(form.watch().ownerAddress || "0x");
   return (
     <Container variant="vertical" size="lg" className="py-5">
       <NavigateBackBtn
@@ -316,12 +321,14 @@ const ReshareDkg = () => {
             size="xl"
             as={Link}
             to={
-              isReshare
-                ? `/join/validator/keyshares`
-                : `/join/validator/${clusterHash}/keyshares`
+              isResignedOwnerAddress
+                ? "/clusters"
+                : isReshare
+                  ? `/join/validator/keyshares`
+                  : `/join/validator/${clusterHash}/keyshares`
             }
           >
-            Register Validator
+            {isResignedOwnerAddress ? "Go to My Account" : "Register Validator"}
           </Button>
         )}
       </Card>

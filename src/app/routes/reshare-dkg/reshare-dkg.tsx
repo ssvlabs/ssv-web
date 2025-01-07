@@ -32,6 +32,7 @@ import { FaCircleInfo } from "react-icons/fa6";
 import { Tooltip } from "@/components/ui/tooltip.tsx";
 import { shortenAddress } from "@/lib/utils/strings.ts";
 import { DkgAddressInput } from "@/app/routes/reshare-dkg/dkg-address-input.tsx";
+import { toChecksumAddress } from "ssv-keys/dist/tsc/src/lib/helpers/web3.helper";
 
 enum ReshareSteps {
   Signature = 1,
@@ -84,7 +85,9 @@ const ReshareDkg = () => {
     mode: "all",
     defaultValues: {
       ownerAddress: account.address,
-      withdrawAddress: withdrawAddress.data?.withdraw_credentials || "",
+      withdrawAddress: withdrawAddress.data?.withdraw_credentials
+        ? `0x${withdrawAddress.data.withdraw_credentials.slice(26)}`
+        : "",
       signature: "",
     },
     resolver: zodResolver(schema),
@@ -120,7 +123,8 @@ const ReshareDkg = () => {
     !form.formState.isValid ||
     !isOwnerInputDisabled ||
     !isWithdrawalInputDisabled;
-
+  const isResignedOwnerAddress =
+    account.address !== toChecksumAddress(form.watch().ownerAddress || "0x");
   return (
     <Container variant="vertical" size="lg" className="py-5">
       <NavigateBackBtn
@@ -304,12 +308,14 @@ const ReshareDkg = () => {
             size="xl"
             as={Link}
             to={
-              isReshare
-                ? `/join/validator/keyshares`
-                : `/join/validator/${clusterHash}/keyshares`
+              isResignedOwnerAddress
+                ? "/clusters"
+                : isReshare
+                  ? `/join/validator/keyshares`
+                  : `/join/validator/${clusterHash}/keyshares`
             }
           >
-            Register Validator
+            {isResignedOwnerAddress ? "Go to My Account" : "Register Validator"}
           </Button>
         )}
       </Card>

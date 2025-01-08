@@ -73,10 +73,11 @@ const ReshareDkg = () => {
   const context = useBulkActionContext();
   const isReshare = context.dkgReshareState.newOperators.length > 0;
   const account = useAccount();
-  const withdrawAddress = useGetWithdrawCredentials();
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isWithdrawalInputDisabled, setIsWithdrawalInputDisabled] = useState(
-    !!withdrawAddress.data?.withdraw_credentials,
+  const [isWithdrawalInputDisabled, setIsWithdrawalInputDisabled] =
+    useState(false);
+  const withdrawAddress = useGetWithdrawCredentials(
+    setIsWithdrawalInputDisabled,
   );
   const reshareContext = useReshareDkg();
   const form = useForm<{
@@ -125,12 +126,11 @@ const ReshareDkg = () => {
   });
 
   const isSubmitButtonDisabled =
-    !form.formState.isValid ||
-    !isOwnerInputDisabled ||
-    !isWithdrawalInputDisabled;
+    !isOwnerInputDisabled || !isWithdrawalInputDisabled;
   const isResignedOwnerAddress =
     currentStep > ReshareSteps.Signature &&
     account.address !== getAddress(form.watch().ownerAddress || "0x");
+
   return (
     <Container variant="vertical" size="lg" className="py-5">
       <NavigateBackBtn
@@ -223,38 +223,39 @@ const ReshareDkg = () => {
                   )}
                 />
               )}
-              {!withdrawAddress.data?.withdraw_credentials && (
-                <FormField
-                  control={form.control}
-                  name="withdrawAddress"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Set Withdrawal Address</FormLabel>
-                      <FormControl>
-                        <DkgAddressInput
-                          field={field}
-                          isAcceptedButtonDisabled={
-                            !!form.formState.errors.withdrawAddress ||
-                            (!isMultiSign && isLoading) ||
-                            !field.value
-                          }
-                          isInputDisabled={
-                            field.disabled ||
-                            (!isMultiSign && isLoading) ||
-                            isWithdrawalInputDisabled
-                          }
-                          acceptedButtonLabel={
-                            isWithdrawalInputDisabled ? "Change" : "Confirm"
-                          }
-                          setIsInputDisabled={setIsWithdrawalInputDisabled}
-                          value={field.value}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+              {!withdrawAddress.isLoading &&
+                !withdrawAddress.data?.withdraw_credentials && (
+                  <FormField
+                    control={form.control}
+                    name="withdrawAddress"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Set Withdrawal Address</FormLabel>
+                        <FormControl>
+                          <DkgAddressInput
+                            field={field}
+                            isAcceptedButtonDisabled={
+                              !!form.formState.errors.withdrawAddress ||
+                              (!isMultiSign && isLoading) ||
+                              !field.value
+                            }
+                            isInputDisabled={
+                              field.disabled ||
+                              (!isMultiSign && isLoading) ||
+                              isWithdrawalInputDisabled
+                            }
+                            acceptedButtonLabel={
+                              isWithdrawalInputDisabled ? "Change" : "Confirm"
+                            }
+                            setIsInputDisabled={setIsWithdrawalInputDisabled}
+                            value={field.value}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               <div className="flex flex-row justify-between gap-1.5 w-full">
                 <Button
                   type="submit"
@@ -266,7 +267,9 @@ const ReshareDkg = () => {
                     withdrawAddress.isLoading || (!isMultiSign && isLoading)
                   }
                 >
-                  Sign
+                  {!isMultiSign && isLoading
+                    ? "Waiting for Confirmation..."
+                    : "Sign"}
                 </Button>
                 {isMultiSign && (
                   <Button

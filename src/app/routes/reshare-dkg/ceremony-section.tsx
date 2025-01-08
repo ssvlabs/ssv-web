@@ -51,6 +51,8 @@ const CeremonySection = ({
       account.address,
       account.chainId,
       context.dkgReshareState.selectedOs,
+      context.dkgReshareState.operators,
+      context.dkgReshareState.newOperators,
       signatures,
       isReshare,
     ]),

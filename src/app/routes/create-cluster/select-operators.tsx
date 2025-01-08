@@ -96,11 +96,8 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
 
   const nextStep = () => {
     if (
-      selectedOperatorsIds.some(
-        (id: number) =>
-          !reshareFlow.operators
-            .map(({ operator }) => operator.id)
-            .includes(id),
+      reshareFlow.operators.some(
+        ({ operator }) => !selectedOperatorsIds.includes(operator.id),
       )
     ) {
       reshareFlow.setNewDkgOperators(selectedOperators);

@@ -1,3 +1,4 @@
+import type { ButtonProps } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Text } from "@/components/ui/text";
@@ -6,6 +7,7 @@ import { useMultisigTransactionModal } from "@/signals/modal";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Link } from "react-router-dom";
 import type { ComponentPropsWithoutRef, FC } from "react";
+import { useLocation } from "react-router";
 
 export type MultisigTransactionModalProps = {
   // TODO: Add props or remove this type
@@ -15,10 +17,23 @@ type FCProps = FC<
   Omit<ComponentPropsWithoutRef<"div">, keyof MultisigTransactionModalProps> &
     MultisigTransactionModalProps
 >;
-
+const mandatoryBtnProps = {
+  className: "w-full",
+  size: "xl",
+  variant: "secondary",
+};
 export const MultisigTransactionModal: FCProps = () => {
   const { isOpen, close } = useMultisigTransactionModal();
   const { accountRoutePath } = useAccountState();
+  const location = useLocation();
+  const buttonProps = location.pathname.includes("reshare")
+    ? { ...mandatoryBtnProps, onClick: () => close() }
+    : {
+        ...mandatoryBtnProps,
+        as: Link,
+        to: accountRoutePath,
+        onClick: () => close(),
+      };
   return (
     <Dialog isOpen={isOpen}>
       <DialogContent className="flex bg-gray-50 flex-col gap-8 max-w-[424px] font-medium ">
@@ -36,16 +51,7 @@ export const MultisigTransactionModal: FCProps = () => {
           </Text>
         </div>
         <img src="/images/ssv-loader.svg" className="size-28 mx-auto" />
-        <Button
-          as={Link}
-          to={accountRoutePath}
-          className="w-full"
-          size="xl"
-          variant="secondary"
-          onClick={() => close()}
-        >
-          Close
-        </Button>
+        <Button {...(buttonProps as ButtonProps)}>Close</Button>
       </DialogContent>
     </Dialog>
   );

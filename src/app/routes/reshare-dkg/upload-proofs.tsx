@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
 import { useEffect } from "react";
+import type { ClusterSize } from "@/components/operator/operator-picker/operator-cluster-size-picker.tsx";
 
 const UploadProofs = () => {
   const navigate = useNavigate();
@@ -25,6 +26,8 @@ const UploadProofs = () => {
   const { operators, proofsQuery } = useReshareDkg();
 
   const nextStep = () => {
+    registerValidatorContext.state.clusterSize =
+      operators.length as ClusterSize;
     state.dkgReshareState.operators = operators.map(({ operator }) => {
       registerValidatorContext.state.selectedOperatorsIds = [
         ...registerValidatorContext.state.selectedOperatorsIds,
@@ -32,7 +35,6 @@ const UploadProofs = () => {
       ];
       return operator;
     });
-
     navigate("select-operators");
   };
 

@@ -55,7 +55,7 @@ const Reshare = () => {
           Pick the cluster of network operators to run your validator
         </Text>
         <UnhealthyOperatorsList
-          isReshareMultiSigFlow={isContractWallet()}
+          isMultiSigFlow={isContractWallet()}
           operators={operators ?? []}
           health={health.data ?? []}
         />

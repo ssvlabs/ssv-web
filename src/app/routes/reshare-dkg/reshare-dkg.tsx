@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form.tsx";
 import { useForm } from "react-hook-form";
 import type { Address } from "viem";
+import { getAddress } from "viem";
 import { isAddress } from "viem";
 import { Input } from "@/components/ui/input.tsx";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn.tsx";
@@ -32,6 +33,7 @@ import { FaCircleInfo } from "react-icons/fa6";
 import { Tooltip } from "@/components/ui/tooltip.tsx";
 import { shortenAddress } from "@/lib/utils/strings.ts";
 import { DkgAddressInput } from "@/app/routes/reshare-dkg/dkg-address-input.tsx";
+import { useMultisigTransactionModal } from "@/signals/modal.ts";
 
 enum ReshareSteps {
   Signature = 1,
@@ -72,6 +74,7 @@ const ReshareDkg = () => {
   const isReshare = context.dkgReshareState.newOperators.length > 0;
   const account = useAccount();
   const withdrawAddress = useGetWithdrawCredentials();
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [isWithdrawalInputDisabled, setIsWithdrawalInputDisabled] = useState(
     !!withdrawAddress.data?.withdraw_credentials,
   );
@@ -84,7 +87,9 @@ const ReshareDkg = () => {
     mode: "all",
     defaultValues: {
       ownerAddress: account.address,
-      withdrawAddress: withdrawAddress.data?.withdraw_credentials || "",
+      withdrawAddress: withdrawAddress.data?.withdraw_credentials
+        ? `0x${withdrawAddress.data.withdraw_credentials.slice(26)}`
+        : "",
       signature: "",
     },
     resolver: zodResolver(schema),
@@ -106,6 +111,8 @@ const ReshareDkg = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   const submit = form.handleSubmit(async () => {
+    isMultiSign && useMultisigTransactionModal.state.open();
+    setIsSubmitted(true);
     if (form.watch().signature) {
       nextStep();
       setIsOpenModal(false);
@@ -113,6 +120,7 @@ const ReshareDkg = () => {
     }
     const signature = await getSignature();
     form.setValue("signature", signature);
+    isMultiSign && useMultisigTransactionModal.state.close();
     nextStep();
   });
 
@@ -120,7 +128,9 @@ const ReshareDkg = () => {
     !form.formState.isValid ||
     !isOwnerInputDisabled ||
     !isWithdrawalInputDisabled;
-
+  const isResignedOwnerAddress =
+    currentStep > ReshareSteps.Signature &&
+    account.address !== getAddress(form.watch().ownerAddress || "0x");
   return (
     <Container variant="vertical" size="lg" className="py-5">
       <NavigateBackBtn
@@ -191,10 +201,12 @@ const ReshareDkg = () => {
                           field={field}
                           isAcceptedButtonDisabled={
                             !!form.formState.errors.ownerAddress ||
-                            isLoading ||
+                            (!isMultiSign && isLoading) ||
                             !field.value
                           }
-                          isInputDisabled={isOwnerInputDisabled || isLoading}
+                          isInputDisabled={
+                            isOwnerInputDisabled || (!isMultiSign && isLoading)
+                          }
                           acceptedButtonLabel={
                             isOwnerInputDisabled ? "Change" : "Save"
                           }
@@ -223,12 +235,12 @@ const ReshareDkg = () => {
                           field={field}
                           isAcceptedButtonDisabled={
                             !!form.formState.errors.withdrawAddress ||
-                            isLoading ||
+                            (!isMultiSign && isLoading) ||
                             !field.value
                           }
                           isInputDisabled={
                             field.disabled ||
-                            isLoading ||
+                            (!isMultiSign && isLoading) ||
                             isWithdrawalInputDisabled
                           }
                           acceptedButtonLabel={
@@ -247,9 +259,12 @@ const ReshareDkg = () => {
                 <Button
                   type="submit"
                   size="xl"
+                  variant={isSubmitted && isMultiSign ? "secondary" : "default"}
                   className={"w-full"}
                   disabled={isSubmitButtonDisabled}
-                  isLoading={withdrawAddress.isLoading || isLoading}
+                  isLoading={
+                    withdrawAddress.isLoading || (!isMultiSign && isLoading)
+                  }
                 >
                   Sign
                 </Button>
@@ -258,9 +273,11 @@ const ReshareDkg = () => {
                     onClick={() => setIsOpenModal(true)}
                     className={"w-full"}
                     size="xl"
-                    variant="secondary"
+                    variant={isSubmitted ? "default" : "secondary"}
                     disabled={isSubmitButtonDisabled}
-                    isLoading={withdrawAddress.isLoading || isLoading}
+                    isLoading={
+                      withdrawAddress.isLoading || (!isMultiSign && isLoading)
+                    }
                   >
                     I Already Have Signatures
                   </Button>
@@ -304,12 +321,14 @@ const ReshareDkg = () => {
             size="xl"
             as={Link}
             to={
-              isReshare
-                ? `/join/validator/keyshares`
-                : `/join/validator/${clusterHash}/keyshares`
+              isResignedOwnerAddress
+                ? "/clusters"
+                : isReshare
+                  ? `/join/validator/keyshares`
+                  : `/join/validator/${clusterHash}/keyshares`
             }
           >
-            Register Validator
+            {isResignedOwnerAddress ? "Go to My Account" : "Register Validator"}
           </Button>
         )}
       </Card>
@@ -358,7 +377,9 @@ const ReshareDkg = () => {
                     disabled={
                       !form.formState.isValid || !form.watch().signature
                     }
-                    isLoading={withdrawAddress.isLoading || isLoading}
+                    isLoading={
+                      withdrawAddress.isLoading || (!isMultiSign && isLoading)
+                    }
                   >
                     Submit
                   </Button>

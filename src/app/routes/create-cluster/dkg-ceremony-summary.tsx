@@ -101,7 +101,7 @@ export const DKGCeremonySummary: FC = () => {
         >
           <div className="flex justify-between">
             <Text variant="headline4">
-              <Span className="text-primary-500">Step 2:</Span> Register
+              <Span className="text-primary-500">Step 3:</Span> Register
               Validator
             </Text>
           </div>

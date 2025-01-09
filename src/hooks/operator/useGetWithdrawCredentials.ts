@@ -16,19 +16,17 @@ export const useGetWithdrawCredentials = ({
     retry: false,
     staleTime: 0,
     gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     enabled: !!proofsQuery?.data?.validators,
     queryFn: async (): Promise<WithdrawCredentialResponse> => {
       const res = await getValidatorsWithdrawCredentials(
         (proofsQuery?.data?.validators || []).map(({ publicKey }) => publicKey),
       );
-      if (setWithdrawCredentials) {
-        setWithdrawCredentials(
-          res.withdraw_credentials?.slice(26)
-            ? `0x${res.withdraw_credentials?.slice(26)}`
-            : "",
-        );
+      if (setWithdrawCredentials && res.withdraw_credentials) {
+        setWithdrawCredentials(`0x${res.withdraw_credentials?.slice(26)}`);
       }
-      if (setIsWithdrawalInputDisabled) {
+      if (setIsWithdrawalInputDisabled && res.withdraw_credentials) {
         setIsWithdrawalInputDisabled(!!res.withdraw_credentials);
       }
       return {

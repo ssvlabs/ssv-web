@@ -80,6 +80,7 @@ export const DockerInstructions: FC<DockerInstructionsProps> = ({
       ssvAccount.data,
       account.address,
       validators,
+      operators,
       withdrawalAddress,
       cliVersion,
       dkgCeremonyState.selectedOs,

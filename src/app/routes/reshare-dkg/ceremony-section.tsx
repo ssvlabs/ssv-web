@@ -12,10 +12,11 @@ import { useAccount } from "@/hooks/account/use-account.ts";
 import { useSSVAccount } from "@/hooks/use-ssv-account.ts";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 import { useReshareDkg } from "@/hooks/use-reshare-dkg.ts";
-import { useCopyToClipboard } from "react-use";
 import { CompletedBadge } from "@/components/ui/completed-badge.tsx";
 import { getOwnerNonce } from "@/api/account.ts";
 import { Spinner } from "@/components/ui/spinner.tsx";
+import { ReshareSteps } from "@/lib/utils/dkg.ts";
+import type { CopyToClipboardState } from "react-use/lib/useCopyToClipboard";
 
 const VALIDATOR_COUNT_THRESHOLD = 0;
 
@@ -28,6 +29,9 @@ const CeremonySection = ({
   withdrawalAddress,
   signatures,
   nextStep,
+  activateStep,
+  copyState,
+  copy,
 }: {
   isEnabled: boolean;
   isCompletedStep: boolean;
@@ -37,12 +41,14 @@ const CeremonySection = ({
   withdrawalAddress: Address;
   signatures: string;
   nextStep: () => void;
+  activateStep: (step: ReshareSteps, callback?: () => void) => void;
+  copyState: CopyToClipboardState;
+  copy: (value: string) => void;
 }) => {
   const account = useAccount();
   const ssvAccount = useSSVAccount();
   const context = useBulkActionContext();
   const reshareContext = useReshareDkg();
-  const [copyState, copy] = useCopyToClipboard();
 
   const cmd = useQuery({
     queryKey: stringifyBigints([
@@ -51,6 +57,8 @@ const CeremonySection = ({
       account.address,
       account.chainId,
       context.dkgReshareState.selectedOs,
+      context.dkgReshareState.operators,
+      context.dkgReshareState.newOperators,
       signatures,
       isReshare,
     ]),
@@ -83,7 +91,10 @@ const CeremonySection = ({
   });
 
   return (
-    <Card className={`border ${isEnabled ? "border-primary-500" : ""} w-full`}>
+    <Card
+      onClick={() => activateStep(ReshareSteps.Resign, () => copy(""))}
+      className={`border ${isEnabled ? "border-primary-500" : ""} w-full`}
+    >
       <CardHeader
         title={
           <div className="flex w-full">

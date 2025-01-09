@@ -98,7 +98,8 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
     if (
       reshareFlow.operators.some(
         ({ operator }) => !selectedOperatorsIds.includes(operator.id),
-      )
+      ) ||
+      reshareFlow.operators.length !== selectedOperatorsIds.length
     ) {
       reshareFlow.setNewDkgOperators(selectedOperators);
     } else {

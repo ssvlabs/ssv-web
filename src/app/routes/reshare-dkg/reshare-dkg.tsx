@@ -7,40 +7,28 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form.tsx";
 import { useForm } from "react-hook-form";
 import type { Address } from "viem";
-import { getAddress } from "viem";
-import { isAddress } from "viem";
+import { getAddress, isAddress } from "viem";
 import { Input } from "@/components/ui/input.tsx";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn.tsx";
 import { useState } from "react";
 import { useReshareSignaturePayload } from "@/hooks/operator/use-reshare-signature-payload.ts";
 import { isContractWallet, useAccount } from "@/hooks/account/use-account.ts";
-import { useGetWithdrawCredentials } from "@/hooks/operator/useGetWithdrawCredentials.ts";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params.ts";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useReshareDkg } from "@/hooks/use-reshare-dkg.ts";
 import { Link } from "react-router-dom";
-import { CompletedBadge } from "@/components/ui/completed-badge.tsx";
 import CeremonySection from "@/app/routes/reshare-dkg/ceremony-section.tsx";
 import RemoveValidatorsSection from "@/app/routes/reshare-dkg/remove-validators-section.tsx";
-import { FaCircleInfo } from "react-icons/fa6";
-import { Tooltip } from "@/components/ui/tooltip.tsx";
-import { shortenAddress } from "@/lib/utils/strings.ts";
-import { DkgAddressInput } from "@/app/routes/reshare-dkg/dkg-address-input.tsx";
 import { useMultisigTransactionModal } from "@/signals/modal.ts";
-
-enum ReshareSteps {
-  Signature = 1,
-  Resign = 2,
-  Remove = 3,
-  Register = 4,
-}
+import SignatureStep from "@/app/routes/reshare-dkg/SignatureStep.tsx";
+import { ReshareSteps } from "@/lib/utils/dkg.ts";
+import { useCopyToClipboard } from "react-use";
 
 const nextStepToMapping: Record<ReshareSteps, ReshareSteps> = {
   [ReshareSteps.Signature]: ReshareSteps.Resign,
@@ -69,17 +57,12 @@ const schema = z.object({
 
 const ReshareDkg = () => {
   const [currentStep, setCurrentStep] = useState(ReshareSteps.Signature);
-  const [isOwnerInputDisabled, setIsOwnerInputDisabled] = useState(true);
   const context = useBulkActionContext();
   const isReshare = context.dkgReshareState.newOperators.length > 0;
   const account = useAccount();
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isWithdrawalInputDisabled, setIsWithdrawalInputDisabled] =
-    useState(false);
-  const withdrawAddress = useGetWithdrawCredentials(
-    setIsWithdrawalInputDisabled,
-  );
   const reshareContext = useReshareDkg();
+  const [copyState, copy] = useCopyToClipboard();
+
   const form = useForm<{
     ownerAddress: Address | string;
     withdrawAddress: Address | string;
@@ -88,13 +71,12 @@ const ReshareDkg = () => {
     mode: "all",
     defaultValues: {
       ownerAddress: account.address,
-      withdrawAddress: withdrawAddress.data?.withdraw_credentials
-        ? `0x${withdrawAddress.data.withdraw_credentials.slice(26)}`
-        : "",
+      withdrawAddress: "",
       signature: "",
     },
     resolver: zodResolver(schema),
   });
+
   const { clusterHash } = useClusterPageParams();
   const { getSignature, isLoading } = useReshareSignaturePayload(
     form.watch() as {
@@ -112,21 +94,24 @@ const ReshareDkg = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   const submit = form.handleSubmit(async () => {
-    isMultiSign && useMultisigTransactionModal.state.open();
-    setIsSubmitted(true);
     if (form.watch().signature) {
       nextStep();
       setIsOpenModal(false);
       return;
     }
+    isMultiSign && useMultisigTransactionModal.state.open();
     const signature = await getSignature();
     form.setValue("signature", signature);
     isMultiSign && useMultisigTransactionModal.state.close();
+    copy("");
     nextStep();
   });
 
-  const isSubmitButtonDisabled =
-    !isOwnerInputDisabled || !isWithdrawalInputDisabled;
+  const activateStep = (step: ReshareSteps, callBack?: () => void) => {
+    currentStep > step && callBack && callBack();
+    currentStep > step && setCurrentStep(step);
+  };
+
   const isResignedOwnerAddress =
     currentStep > ReshareSteps.Signature &&
     account.address !== getAddress(form.watch().ownerAddress || "0x");
@@ -136,161 +121,20 @@ const ReshareDkg = () => {
       <NavigateBackBtn
         to={`/clusters/${clusterHash}/reshare/select-operators`}
       />
-      <Form {...form}>
-        <Card
-          as="form"
-          onSubmit={submit}
-          className={`border ${currentStep === ReshareSteps.Signature ? "border-primary-500" : ""} w-full`}
-        >
-          <CardHeader
-            title={
-              <div className="flex w-full">
-                <div className="flex w-full">
-                  <Text className="text-primary-500">Step 1:</Text>&nbsp;
-                  <Text>Signature</Text>
-                </div>
-                {currentStep > ReshareSteps.Signature && <CompletedBadge />}
-              </div>
-            }
-          />
-          {currentStep === ReshareSteps.Signature && (
-            <div className="flex flex-col gap-4">
-              <Text>
-                To proceed with the {isReshare ? "reshare" : "resign"} ceremony,
-                you must verify ownership by signing the requested changes using
-                the wallet identified as your validator's owner address.
-              </Text>
-              {isMultiSign && (
-                <Text>
-                  You will receive a request in your wallet to approve the
-                  changes for the DKG resign ceremony. Once all required
-                  signatories have signed the request, you will need to return
-                  to this process and provide the final prepared signature from
-                  your wallet to generate the command that will initiate the
-                  resign ceremony.
-                </Text>
-              )}
-              {!isReshare && (
-                <FormField
-                  control={form.control}
-                  name="ownerAddress"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex gap-2 items-center">
-                        Owner Address{" "}
-                        <Tooltip
-                          asChild
-                          content={
-                            <Button
-                              as="a"
-                              href="https://docs.ssv.network/~/changes/jp5KZr2yy7T6b0RmeOmN/developers/tools/ssv-dkg-client/update-owner-nonce-in-key-shares"
-                              variant="link"
-                              target="_blank"
-                            >
-                              Resign: Update owner address
-                            </Button>
-                          }
-                        >
-                          <div>
-                            <FaCircleInfo className="size-3 text-gray-500" />
-                          </div>
-                        </Tooltip>
-                      </FormLabel>
-                      <FormControl>
-                        <DkgAddressInput
-                          field={field}
-                          isAcceptedButtonDisabled={
-                            !!form.formState.errors.ownerAddress ||
-                            (!isMultiSign && isLoading) ||
-                            !field.value
-                          }
-                          isInputDisabled={
-                            isOwnerInputDisabled || (!isMultiSign && isLoading)
-                          }
-                          acceptedButtonLabel={
-                            isOwnerInputDisabled ? "Change" : "Save"
-                          }
-                          setIsInputDisabled={setIsOwnerInputDisabled}
-                          value={
-                            isOwnerInputDisabled
-                              ? shortenAddress(field.value)
-                              : field.value
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-              {!withdrawAddress.isLoading &&
-                !withdrawAddress.data?.withdraw_credentials && (
-                  <FormField
-                    control={form.control}
-                    name="withdrawAddress"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Set Withdrawal Address</FormLabel>
-                        <FormControl>
-                          <DkgAddressInput
-                            field={field}
-                            isAcceptedButtonDisabled={
-                              !!form.formState.errors.withdrawAddress ||
-                              (!isMultiSign && isLoading) ||
-                              !field.value
-                            }
-                            isInputDisabled={
-                              field.disabled ||
-                              (!isMultiSign && isLoading) ||
-                              isWithdrawalInputDisabled
-                            }
-                            acceptedButtonLabel={
-                              isWithdrawalInputDisabled ? "Change" : "Confirm"
-                            }
-                            setIsInputDisabled={setIsWithdrawalInputDisabled}
-                            value={field.value}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
-              <div className="flex flex-row justify-between gap-1.5 w-full">
-                <Button
-                  type="submit"
-                  size="xl"
-                  variant={isSubmitted && isMultiSign ? "secondary" : "default"}
-                  className={"w-full"}
-                  disabled={isSubmitButtonDisabled}
-                  isLoading={
-                    withdrawAddress.isLoading || (!isMultiSign && isLoading)
-                  }
-                >
-                  {!isMultiSign && isLoading
-                    ? "Waiting for Confirmation..."
-                    : "Sign"}
-                </Button>
-                {isMultiSign && (
-                  <Button
-                    onClick={() => setIsOpenModal(true)}
-                    className={"w-full"}
-                    size="xl"
-                    variant={isSubmitted ? "default" : "secondary"}
-                    disabled={isSubmitButtonDisabled}
-                    isLoading={
-                      withdrawAddress.isLoading || (!isMultiSign && isLoading)
-                    }
-                  >
-                    I Already Have Signatures
-                  </Button>
-                )}
-              </div>
-            </div>
-          )}
-        </Card>
-      </Form>
+      <SignatureStep
+        activateStep={activateStep}
+        currentStep={currentStep}
+        form={form}
+        isLoading={isLoading}
+        isMultiSign={isMultiSign}
+        isReshare={isReshare}
+        setIsOpenModal={setIsOpenModal}
+        submit={submit}
+      />
       <CeremonySection
+        copyState={copyState}
+        copy={copy}
+        activateStep={activateStep}
         isEnabled={currentStep === ReshareSteps.Resign}
         isCompletedStep={currentStep > ReshareSteps.Resign}
         isReshare={isReshare}
@@ -301,6 +145,9 @@ const ReshareDkg = () => {
         nextStep={nextStep}
       />
       <RemoveValidatorsSection
+        activateStep={() => {
+          activateStep(ReshareSteps.Remove);
+        }}
         clusterHash={clusterHash || ""}
         isCompletedStep={currentStep > ReshareSteps.Remove}
         isEnabled={currentStep === ReshareSteps.Remove}
@@ -379,9 +226,6 @@ const ReshareDkg = () => {
                     className={"w-full"}
                     disabled={
                       !form.formState.isValid || !form.watch().signature
-                    }
-                    isLoading={
-                      withdrawAddress.isLoading || (!isMultiSign && isLoading)
                     }
                   >
                     Submit

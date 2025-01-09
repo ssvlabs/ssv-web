@@ -1,6 +1,13 @@
 import type { Operator as OperatorApiType } from "@/types/api.ts";
 import type { Address } from "abitype";
 import type { Proof as ProofType } from "@/hooks/use-validate-proofs.ts";
+import {
+  ContainerType,
+  ListCompositeType,
+  ByteVectorType,
+  UintNumberType,
+  ByteListType,
+} from "@chainsafe/ssz";
 export const DEFAULT_AMOUNT = 32000000000;
 const NETWORKS = {
   MAINNET: 1,
@@ -10,6 +17,14 @@ export const FORKS = {
   [NETWORKS.MAINNET]: "0x00000000",
   [NETWORKS.HOLESKY]: "0x01017000",
 };
+
+export enum ReshareSteps {
+  Signature = 1,
+  Resign = 2,
+  Remove = 3,
+  Register = 4,
+}
+
 export type MessageData = {
   publicKey: string;
   oldOperators: OperatorApiType[];
@@ -20,14 +35,6 @@ export type MessageData = {
   nonce: number;
   amount: number;
 };
-
-import {
-  ContainerType,
-  ListCompositeType,
-  ByteVectorType,
-  UintNumberType,
-  ByteListType,
-} from "@chainsafe/ssz";
 
 import { keccak256 } from "ethereum-cryptography/keccak";
 import { toHex } from "ethereum-cryptography/utils";

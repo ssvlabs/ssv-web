@@ -11,15 +11,20 @@ const RemoveValidatorsSection = ({
   nextStep,
   clusterHash,
   validators,
+  activateStep,
 }: {
   isEnabled: boolean;
   isCompletedStep: boolean;
   clusterHash: string;
   validators: { publicKey: string; proofs: Proof[] }[];
   nextStep: () => void;
+  activateStep: () => void;
 }) => {
   return (
-    <Card className={`border ${isEnabled ? "border-primary-500" : ""} w-full`}>
+    <Card
+      onClick={activateStep}
+      className={`border ${isEnabled ? "border-primary-500" : ""} w-full`}
+    >
       <CardHeader
         title={
           <div className="flex">

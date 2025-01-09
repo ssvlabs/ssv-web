@@ -46,8 +46,9 @@ const SignatureStep = ({
   setIsOpenModal,
 }: Props) => {
   const [isOwnerInputDisabled, setIsOwnerInputDisabled] = useState(true);
-  const [isWithdrawalInputDisabled, setIsWithdrawalInputDisabled] =
-    useState(false);
+  const [isWithdrawalInputDisabled, setIsWithdrawalInputDisabled] = useState(
+    !!form.watch().withdrawAddress,
+  );
   const withdrawAddress = useGetWithdrawCredentials({
     setIsWithdrawalInputDisabled,
     setWithdrawCredentials: (address: string) => {
@@ -68,7 +69,9 @@ const SignatureStep = ({
               "withdrawAddress",
               withdrawAddress.data?.withdraw_credentials || "",
             );
-            setIsWithdrawalInputDisabled(!!form.watch().withdrawAddress);
+            setIsWithdrawalInputDisabled(
+              !!withdrawAddress.data?.withdraw_credentials,
+            );
           });
         }}
         as="form"

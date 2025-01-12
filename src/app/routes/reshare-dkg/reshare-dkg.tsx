@@ -29,6 +29,8 @@ import { useMultisigTransactionModal } from "@/signals/modal.ts";
 import SignatureStep from "@/app/routes/reshare-dkg/SignatureStep.tsx";
 import { ReshareSteps } from "@/lib/utils/dkg.ts";
 import { useCopyToClipboard } from "react-use";
+import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
+import type { ClusterSize } from "@/components/operator/operator-picker/operator-cluster-size-picker.tsx";
 
 const nextStepToMapping: Record<ReshareSteps, ReshareSteps> = {
   [ReshareSteps.Signature]: ReshareSteps.Resign,
@@ -97,6 +99,7 @@ const ReshareDkg = () => {
     if (form.watch().signature) {
       nextStep();
       setIsOpenModal(false);
+      copy("");
       return;
     }
     isMultiSign && useMultisigTransactionModal.state.open();
@@ -119,6 +122,23 @@ const ReshareDkg = () => {
   return (
     <Container variant="vertical" size="lg" className="py-5">
       <NavigateBackBtn
+        onClick={() => {
+          if (
+            useRegisterValidatorContext.state.selectedOperatorsIds.length === 0
+          ) {
+            const operators = context.dkgReshareState.newOperators.length
+              ? context.dkgReshareState.newOperators
+              : context.dkgReshareState.operators;
+            useRegisterValidatorContext.state.clusterSize =
+              operators.length as ClusterSize;
+            operators.forEach(({ id }) => {
+              useRegisterValidatorContext.state.selectedOperatorsIds = [
+                ...useRegisterValidatorContext.state.selectedOperatorsIds,
+                id,
+              ];
+            });
+          }
+        }}
         to={`/clusters/${clusterHash}/reshare/select-operators`}
       />
       <SignatureStep

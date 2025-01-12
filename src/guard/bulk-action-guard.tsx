@@ -50,4 +50,5 @@ export const [BulkActionGuard, useBulkActionContext] = createGuard(
       {},
     ),
   },
+  false,
 );

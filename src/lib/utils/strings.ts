@@ -11,5 +11,8 @@ export const shortenClusterId = (clusterId: string) => {
   return `${clusterIdWithout0x.slice(0, 4)}...${clusterIdWithout0x.slice(-4)}`;
 };
 
-export const shortenAddress = (address: string, length = 6) =>
-  `${address.slice(0, length)}...${address.slice(-(length - 2))}`;
+export const shortenAddress = (
+  address: string,
+  length = 6,
+  afterSlice: number = length - 2,
+) => `${address.slice(0, length)}...${address.slice(-afterSlice)}`;

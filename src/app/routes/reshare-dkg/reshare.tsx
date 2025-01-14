@@ -3,7 +3,6 @@ import { UnhealthyOperatorsList } from "@/components/offline-generation/unhealth
 import { Button } from "@/components/ui/button.tsx";
 import { Link } from "react-router-dom";
 import { useOperatorsDKGHealth } from "@/hooks/operator/use-operator-dkg-health.ts";
-import { NavigateBackBtn } from "@/components/ui/navigate-back-btn.tsx";
 import { Container } from "@/components/ui/container";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text.tsx";
@@ -12,6 +11,7 @@ import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils/tw.ts";
 import { isContractWallet } from "@/hooks/account/use-account.ts";
+import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params.ts";
 
 const Reshare = () => {
   const context = useBulkActionContext();
@@ -28,6 +28,7 @@ const Reshare = () => {
         ({ isHealthy, isMismatchId, isOutdated }) =>
           isHealthy && !isMismatchId && !isOutdated,
       );
+  const { clusterHash } = useClusterPageParams();
 
   if (health.isLoading) {
     return (
@@ -48,8 +49,13 @@ const Reshare = () => {
   return reshareAccepted ? (
     <ReshareDkg />
   ) : (
-    <Container size="lg" variant="vertical" className="py-6">
-      <NavigateBackBtn by="path" to="../select-operators" />
+    <Container
+      size="lg"
+      variant="vertical"
+      className="py-6"
+      backButtonLabel={"Pick Cluster"}
+      navigateRoutePath={`/clusters/${clusterHash}/reshare/select-operators`}
+    >
       <Card className="w-full">
         <Text variant="headline4">
           Pick the cluster of network operators to run your validator

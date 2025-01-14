@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Divider } from "@/components/ui/divider";
-import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spacer } from "@/components/ui/spacer";
 import { Text } from "@/components/ui/text";
@@ -25,7 +24,6 @@ import { useAccount } from "@/hooks/account/use-account";
 
 export const Cluster: FC = () => {
   const account = useAccount();
-
   const { clusterHash } = useClusterPageParams();
 
   const { cluster, isLiquidated, balance } = useClusterState(clusterHash!, {
@@ -54,9 +52,13 @@ export const Cluster: FC = () => {
   const { data: runway } = useClusterRunway(clusterHash!);
 
   return (
-    <Container variant="vertical" size="xl" className="min-h-full py-6">
-      <NavigateBackBtn />
-
+    <Container
+      variant="vertical"
+      size="xl"
+      className="min-h-full py-6"
+      navigateRoutePath={"/clusters"}
+      backButtonLabel={"Clusters"}
+    >
       <div className="grid grid-cols-4 gap-6 w-full">
         {cluster.data?.operators.map((operatorId) => (
           <OperatorStatCard

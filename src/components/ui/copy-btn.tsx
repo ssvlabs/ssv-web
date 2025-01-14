@@ -8,11 +8,17 @@ import { LuCheck, LuCopy } from "react-icons/lu";
 
 export type CopyBtnProps = {
   text: string | undefined;
+  isFullSizeIcon?: boolean;
 };
 
 type FCProps = FC<Omit<ButtonProps, keyof CopyBtnProps> & CopyBtnProps>;
 
-export const CopyBtn: FCProps = ({ className, text, ...props }) => {
+export const CopyBtn: FCProps = ({
+  className,
+  text,
+  isFullSizeIcon,
+  ...props
+}) => {
   const { copy, hasCopied } = useClipboard();
   return (
     <IconButton
@@ -30,7 +36,7 @@ export const CopyBtn: FCProps = ({ className, text, ...props }) => {
         {!hasCopied ? (
           <motion.div
             key="copy"
-            className="size-[55%]"
+            className={isFullSizeIcon ? "size-full" : "size-[55%]"}
             style={{
               color: "inherit",
               position: "absolute",
@@ -48,7 +54,7 @@ export const CopyBtn: FCProps = ({ className, text, ...props }) => {
         ) : (
           <motion.div
             key="copied"
-            className="size-[55%]"
+            className={isFullSizeIcon ? "size-full" : "size-[55%]"}
             style={{
               position: "absolute",
               top: "50%",

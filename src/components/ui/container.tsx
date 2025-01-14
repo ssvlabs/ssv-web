@@ -1,7 +1,9 @@
 import { cn } from "@/lib/utils/tw";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
-import type { ComponentPropsWithoutRef, FC } from "react";
+import type { ComponentPropsWithoutRef, FC, ReactElement } from "react";
+import { FaArrowLeft } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
 
 export const variants = cva("mx-auto max-w-full", {
   variants: {
@@ -21,21 +23,50 @@ export const variants = cva("mx-auto max-w-full", {
 });
 type FCProps = FC<
   Omit<ComponentPropsWithoutRef<"div">, keyof VariantProps<typeof variants>> &
-    VariantProps<typeof variants>
+    VariantProps<typeof variants> & {
+      backButtonLabel?: string | ReactElement;
+      navigateRoutePath?: string;
+      onBackButtonClick?: () => void;
+    }
 >;
 
-export const Container: FCProps = ({ className, size, variant, ...props }) => {
+export const Container: FCProps = ({
+  className,
+  size,
+  variant,
+  onBackButtonClick,
+  backButtonLabel,
+  navigateRoutePath,
+  ...props
+}) => {
+  const navigate = useNavigate();
   return (
-    <div
-      className={cn(
-        variants({
-          className,
-          size,
-          variant,
-        }),
+    <div>
+      {backButtonLabel && (
+        <div
+          onClick={() => {
+            onBackButtonClick && onBackButtonClick();
+            navigateRoutePath ? navigate(navigateRoutePath) : navigate(-1);
+          }}
+          className="w-full h-[60px] bg-gray-100 px-[300px] py-3.5"
+        >
+          <div className="flex items-center gap-3 cursor-pointer text-lg font-bold">
+            <FaArrowLeft className="size-[24px] text-primary-500" />
+            {backButtonLabel}
+          </div>
+        </div>
       )}
-      {...props}
-    />
+      <div
+        className={cn(
+          variants({
+            className,
+            size,
+            variant,
+          }),
+        )}
+        {...props}
+      />
+    </div>
   );
 };
 

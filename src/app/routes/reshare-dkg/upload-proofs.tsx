@@ -1,5 +1,4 @@
 import { Container } from "@/components/ui/container.tsx";
-import { NavigateBackBtn } from "@/components/ui/navigate-back-btn.tsx";
 import { Card, CardHeader } from "@/components/ui/card.tsx";
 import { Alert, AlertDescription } from "@/components/ui/alert.tsx";
 import { Button } from "@/components/ui/button.tsx";
@@ -17,6 +16,8 @@ import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
 import { useEffect } from "react";
 import type { ClusterSize } from "@/components/operator/operator-picker/operator-cluster-size-picker.tsx";
+import { ClusterBackBtnHeader } from "@/components/ui/cluster-back-btn-header.tsx";
+import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params.ts";
 
 const UploadProofs = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const UploadProofs = () => {
   const registerValidatorContext = useRegisterValidatorContext;
   const context = useBulkActionContext();
   const { operators, proofsQuery } = useReshareDkg();
+  const { clusterHash } = useClusterPageParams();
 
   const nextStep = () => {
     registerValidatorContext.state.clusterSize =
@@ -52,11 +54,12 @@ const UploadProofs = () => {
       variant="vertical"
       size="lg"
       className="p-6 font-medium w-[1096px]"
+      backButtonLabel={<ClusterBackBtnHeader />}
+      navigateRoutePath={`/clusters/${clusterHash}`}
+      onBackButtonClick={() => {
+        state.dkgReshareState.proofFiles.files = [];
+      }}
     >
-      <NavigateBackBtn
-        to={".."}
-        onClick={() => (state.dkgReshareState.proofFiles.files = [])}
-      />
       <div className="flex w-full gap-6">
         <Card className="w-[648px]">
           <CardHeader

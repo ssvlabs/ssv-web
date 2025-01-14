@@ -25,6 +25,7 @@ import { OperatorPickerFilter } from "@/components/operator/operator-picker/oper
 import { useOrdering } from "@/hooks/use-ordering.ts";
 import { useReshareDkg } from "@/hooks/use-reshare-dkg.ts";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
+import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params.ts";
 
 export type SelectOperatorsProps = {
   // TODO: Add props or remove this type
@@ -87,6 +88,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
   const cluster = useCluster(hash, {
     enabled: isClusterSizeMet,
   });
+  const { clusterHash } = useClusterPageParams();
 
   const isClusterExists =
     reshareFlow.operators.length === 0 &&
@@ -111,14 +113,21 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
     navigate(nextRoute);
   };
 
+  const stepBack = () => {
+    useRegisterValidatorContext.resetState();
+    useBulkActionContext.state.dkgReshareState.proofFiles.files = [];
+  };
+
   return (
-    <Container variant="vertical" className="py-6 " size="xl">
-      <NavigateBackBtn
-        onClick={() => {
-          useRegisterValidatorContext.resetState();
-          useBulkActionContext.state.dkgReshareState.proofFiles.files = [];
-        }}
-      />
+    <Container
+      variant="vertical"
+      className="py-6 "
+      size="xl"
+      backButtonLabel={reshareFlow.operators.length ? "Proofs" : ""}
+      navigateRoutePath={`/clusters/${clusterHash}/reshare`}
+      onBackButtonClick={stepBack}
+    >
+      {!reshareFlow.operators.length && <NavigateBackBtn />}
       <div className="flex items-stretch flex-1 gap-6 w-full">
         <Card className={cn(className, "flex flex-col flex-[2.2]")} {...props}>
           <Text variant="headline4">

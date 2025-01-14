@@ -13,7 +13,6 @@ import { useForm } from "react-hook-form";
 import type { Address } from "viem";
 import { getAddress, isAddress } from "viem";
 import { Input } from "@/components/ui/input.tsx";
-import { NavigateBackBtn } from "@/components/ui/navigate-back-btn.tsx";
 import { useState } from "react";
 import { useReshareSignaturePayload } from "@/hooks/operator/use-reshare-signature-payload.ts";
 import { isContractWallet, useAccount } from "@/hooks/account/use-account.ts";
@@ -64,7 +63,6 @@ const ReshareDkg = () => {
   const account = useAccount();
   const reshareContext = useReshareDkg();
   const [copyState, copy] = useCopyToClipboard();
-
   const form = useForm<{
     ownerAddress: Address | string;
     withdrawAddress: Address | string;
@@ -120,27 +118,30 @@ const ReshareDkg = () => {
     account.address !== getAddress(form.watch().ownerAddress || "0x");
 
   return (
-    <Container variant="vertical" size="lg" className="py-5">
-      <NavigateBackBtn
-        onClick={() => {
-          if (
-            useRegisterValidatorContext.state.selectedOperatorsIds.length === 0
-          ) {
-            const operators = context.dkgReshareState.newOperators.length
-              ? context.dkgReshareState.newOperators
-              : context.dkgReshareState.operators;
-            useRegisterValidatorContext.state.clusterSize =
-              operators.length as ClusterSize;
-            operators.forEach(({ id }) => {
-              useRegisterValidatorContext.state.selectedOperatorsIds = [
-                ...useRegisterValidatorContext.state.selectedOperatorsIds,
-                id,
-              ];
-            });
-          }
-        }}
-        to={`/clusters/${clusterHash}/reshare/select-operators`}
-      />
+    <Container
+      variant="vertical"
+      size="lg"
+      className="py-5"
+      backButtonLabel={"Pick Cluster"}
+      navigateRoutePath={`/clusters/${clusterHash}/reshare/select-operators`}
+      onBackButtonClick={() => {
+        if (
+          useRegisterValidatorContext.state.selectedOperatorsIds.length === 0
+        ) {
+          const operators = context.dkgReshareState.newOperators.length
+            ? context.dkgReshareState.newOperators
+            : context.dkgReshareState.operators;
+          useRegisterValidatorContext.state.clusterSize =
+            operators.length as ClusterSize;
+          operators.forEach(({ id }) => {
+            useRegisterValidatorContext.state.selectedOperatorsIds = [
+              ...useRegisterValidatorContext.state.selectedOperatorsIds,
+              id,
+            ];
+          });
+        }
+      }}
+    >
       <SignatureStep
         activateStep={activateStep}
         currentStep={currentStep}

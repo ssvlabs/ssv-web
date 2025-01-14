@@ -71,7 +71,12 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
   });
 
   const selectedOperators = selectedOperatorsIds
-    .map((id) => fetched.operatorsMap[id])
+    .map(
+      (id) =>
+        fetched.operatorsMap[id] ||
+        reshareFlow.operators.find(({ operator }) => operator.id === id)
+          ?.operator,
+    )
     .filter(Boolean);
 
   const totalYearlyFee = selectedOperators.reduce(

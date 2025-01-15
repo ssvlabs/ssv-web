@@ -14,18 +14,30 @@ import { LuTrash2, LuLogOut } from "react-icons/lu";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TbRefreshDot } from "react-icons/tb";
 import { useLocalStorage } from "react-use";
+import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 
 type Props = {
   isLiquidated: boolean;
 };
+
+enum ActionType {
+  Remove = "remove",
+  Exit = "exit",
+  Reshare = "reshare",
+}
 export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
   className,
   isLiquidated = true,
   ...props
 }) => {
   const [enabled] = useLocalStorage("reshareFlowEnabled", false);
-
   const navigate = useNavigate();
+
+  const onActionClickHandler = (action: ActionType) => {
+    useBulkActionContext.resetState();
+    navigate(action);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -34,7 +46,9 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem onClick={() => navigate("remove")}>
+        <DropdownMenuItem
+          onClick={() => onActionClickHandler(ActionType.Remove)}
+        >
           <LuTrash2 className="size-4" />
           <span>Remove Validators</span>
         </DropdownMenuItem>
@@ -51,7 +65,7 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
         >
           <DropdownMenuItem
             disabled={isLiquidated}
-            onClick={() => navigate("exit")}
+            onClick={() => onActionClickHandler(ActionType.Exit)}
           >
             <LuLogOut className="size-4" />
             <span>Exit Validators</span>
@@ -63,7 +77,9 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
             <div className="h-9 flex items-center text-gray-500 text-xs	font-semibold pl-[16px]">
               DKG
             </div>
-            <DropdownMenuItem onClick={() => navigate("reshare")}>
+            <DropdownMenuItem
+              onClick={() => onActionClickHandler(ActionType.Reshare)}
+            >
               <TbRefreshDot className="size-4" />
               <span>Reshare</span>
             </DropdownMenuItem>

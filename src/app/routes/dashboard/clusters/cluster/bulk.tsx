@@ -146,7 +146,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
         />
         <Button
           as={Link}
-          to={`/clusters/${clusterHash}/remove/confirmation`}
+          to={`/clusters/${clusterHash}/${type}/confirmation`}
           size="xl"
           disabled={!canProceed}
         >

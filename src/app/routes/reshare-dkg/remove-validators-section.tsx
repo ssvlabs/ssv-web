@@ -54,9 +54,9 @@ const RemoveValidatorsSection = ({
       {isEnabled && (
         <div className="flex flex-col gap-4">
           <a
-            href={`${window.location.origin}/clusters/${clusterHash}/remove/${btoa(
-              validators.map(({ publicKey }) => publicKey).join(","),
-            )}`}
+            href={`${window.location.origin}/clusters/${clusterHash}/remove/${validators
+              .map(({ publicKey }) => publicKey.slice(2, 22))
+              .join(",")}`}
             className={"w-full"}
             target="_blank"
           >

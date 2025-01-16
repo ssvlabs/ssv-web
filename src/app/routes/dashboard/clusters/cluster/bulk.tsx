@@ -30,22 +30,21 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
   const { clusterHash } = useClusterPageParams();
   const { _selectedPublicKeys: selectedPublicKeys } = useBulkActionContext();
   const params = useParams();
-  const externalValidators = params.publicKeys
-    ? atob(params.publicKeys).split(",")
-    : undefined;
+  const externalValidators = params.publicKeys?.split(",");
   const { infiniteQuery, validators, total } = useInfiniteClusterValidators(
     clusterHash,
     100,
+    externalValidators,
   );
+
   const validatorsToUse = externalValidators
     ? validators.filter((validator: Validator) =>
-        externalValidators?.includes(
-          validator.public_key.startsWith("0x")
-            ? validator.public_key
-            : `0x${validator.public_key}`,
+        externalValidators.some((truncatedPublicKey: string) =>
+          validator.public_key.includes(truncatedPublicKey),
         ),
       )
     : validators;
+
   const totalValidators = externalValidators
     ? externalValidators.length
     : total;

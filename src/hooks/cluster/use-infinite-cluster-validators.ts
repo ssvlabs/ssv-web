@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { getPaginatedClusterValidators } from "@/api/cluster";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { useRemovedOptimisticValidators } from "@/hooks/cluster/use-removed-optimistic-validators";
@@ -15,7 +16,7 @@ export const useInfiniteClusterValidators = (
 ) => {
   const params = useClusterPageParams();
   const hash = clusterHash || params.clusterHash;
-
+  const [selectedAll, setSelectedAll] = useState(false);
   const removedOptimisticValidators = useRemovedOptimisticValidators();
   const chainId = useChainId();
 
@@ -44,6 +45,7 @@ export const useInfiniteClusterValidators = (
   if (
     activeValidators.length &&
     externalValidators &&
+    !selectedAll &&
     !useBulkActionContext.state._selectedPublicKeys.length
   ) {
     const validatorsToUse = activeValidators.filter((validator: Validator) =>
@@ -51,10 +53,10 @@ export const useInfiniteClusterValidators = (
         validator.public_key.includes(truncatedPublicKey),
       ),
     );
-
     useBulkActionContext.state._selectedPublicKeys = validatorsToUse.map(
       ({ public_key }) => public_key,
     );
+    setSelectedAll(true);
   }
 
   const total = Math.max(

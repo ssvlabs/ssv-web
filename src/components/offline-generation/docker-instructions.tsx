@@ -2,7 +2,7 @@ import { type FC } from "react";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { Spinner } from "@/components/ui/spinner";
-import { generateSSVKeysDockerCMD } from "@/lib/utils/keyshares";
+import { DKG_VERSIONS, generateSSVKeysDockerCMD } from "@/lib/utils/keyshares";
 import type { Operator } from "@/types/api";
 import { LuCheck, LuCopy } from "react-icons/lu";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard";
@@ -29,6 +29,7 @@ import { useNavigate } from "react-router";
 
 interface DockerInstructionsProps {
   operators: Operator[];
+  isOutdatedOperators: boolean;
 }
 
 const schema = z.object({
@@ -45,6 +46,7 @@ const schema = z.object({
 
 export const DockerInstructions: FC<DockerInstructionsProps> = ({
   operators,
+  isOutdatedOperators,
 }) => {
   const navigate = useNavigate();
 
@@ -71,14 +73,16 @@ export const DockerInstructions: FC<DockerInstructionsProps> = ({
     isAddress(withdrawalAddress) &&
     validators > 0 &&
     hasConfirmed;
-
+  const cliVersion = isOutdatedOperators ? DKG_VERSIONS.OLD : DKG_VERSIONS.NEW;
   const cmd = useQuery({
     queryKey: stringifyBigints([
       "docker-cmd",
       ssvAccount.data,
       account.address,
       validators,
+      operators,
       withdrawalAddress,
+      cliVersion,
       dkgCeremonyState.selectedOs,
       account.chainId,
     ]),
@@ -90,6 +94,7 @@ export const DockerInstructions: FC<DockerInstructionsProps> = ({
           account: account.address!,
           withdrawalAddress: withdrawalAddress as Address,
           chainId: account.chainId,
+          version: cliVersion,
           validatorsCount: validators,
           os: dkgCeremonyState.selectedOs,
         }),
@@ -166,6 +171,12 @@ export const DockerInstructions: FC<DockerInstructionsProps> = ({
                   <FormControl>
                     <Input
                       {...field}
+                      onChange={(e) => {
+                        form.setValue("hasConfirmed", false, {
+                          shouldValidate: true,
+                        });
+                        field.onChange(e);
+                      }}
                       className="pr-1.5"
                       rightSlot={
                         <Button

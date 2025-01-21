@@ -37,6 +37,7 @@
     }
   },
   "dependencies": {
+    "@chainsafe/ssz": "^0.18.0",
     "@deepsignal/core": "^4.0.0",
     "@deepsignal/react": "^4.0.0",
     "@fontsource/manrope": "^5.0.20",
@@ -74,6 +75,7 @@
     "cmdk": "^1.0.0",
     "copy-to-clipboard": "^3.3.3",
     "date-fns": "^3.6.0",
+    "ethereum-cryptography": "^3.0.0",
     "framer-motion": "^11.3.4",
     "js-sha256": "^0.11.0",
     "lodash-es": "^4.17.21",

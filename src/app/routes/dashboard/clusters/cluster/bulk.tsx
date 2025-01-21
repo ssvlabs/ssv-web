@@ -1,11 +1,11 @@
 import { type FC } from "react";
+import { cn } from "@/lib/utils/tw";
 import { Container } from "@/components/ui/container";
+import { Text } from "@/components/ui/text";
 import { Card } from "@/components/ui/card";
 import { useInfiniteClusterValidators } from "@/hooks/cluster/use-infinite-cluster-validators";
 import { VirtualizedInfinityTable } from "@/components/ui/virtualized-infinity-table";
-import { cn } from "@/lib/utils/tw";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { FaCircleInfo } from "react-icons/fa6";
 import { TableCell, TableRow } from "@/components/ui/grid-table";
@@ -22,22 +22,40 @@ import { useBulkActionContext } from "@/guard/bulk-action-guard";
 import { Link } from "react-router-dom";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge.tsx";
+import { useParams } from "react-router";
+import type { Validator } from "@/types/api.ts";
 
 export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
   const links = useLinks();
   const { clusterHash } = useClusterPageParams();
   const { _selectedPublicKeys: selectedPublicKeys } = useBulkActionContext();
+  const params = useParams();
+  const externalValidators = params.publicKeys?.split(",");
   const { infiniteQuery, validators, total } = useInfiniteClusterValidators(
     clusterHash,
     100,
+    externalValidators,
   );
 
-  const isAllChecked = Boolean(total) && selectedPublicKeys.length === total;
+  const validatorsToUse = externalValidators
+    ? validators.filter((validator: Validator) =>
+        externalValidators.some((truncatedPublicKey: string) =>
+          validator.public_key.includes(truncatedPublicKey),
+        ),
+      )
+    : validators;
+
+  const totalValidators = externalValidators
+    ? externalValidators.length
+    : total;
+  const isAllChecked =
+    Boolean(totalValidators) && selectedPublicKeys.length === totalValidators;
   const canProceed = selectedPublicKeys.length > 0;
 
+  // TODO: fetch validators to get status
   return (
     <Container variant="vertical" size="lg" className="py-6 h-full">
-      <NavigateBackBtn />
+      <NavigateBackBtn to={`/clusters/${clusterHash}`} />
       <Card className="w-full flex-1">
         <div className="flex justify-between">
           <Text variant="headline4">
@@ -46,7 +64,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
               : "Select validators to Exit"}
           </Text>
           <Badge variant="primary">
-            {selectedPublicKeys.length} of {total} selected
+            {selectedPublicKeys.length} of {totalValidators} selected
           </Badge>
         </div>
         <VirtualizedInfinityTable
@@ -60,7 +78,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
                 onClick={() => {
                   if (!isAllChecked) {
                     useBulkActionContext.state._selectedPublicKeys =
-                      validators.map((v) => v.public_key);
+                      validatorsToUse.map((v) => v.public_key);
                   } else {
                     useBulkActionContext.state._selectedPublicKeys = [];
                   }
@@ -79,7 +97,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
             </Tooltip>,
             null,
           ]}
-          items={validators}
+          items={validatorsToUse}
           renderRow={({ index, item }) => (
             <TableRow
               as="label"
@@ -125,7 +143,12 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
             </TableRow>
           )}
         />
-        <Button as={Link} to="confirmation" size="xl" disabled={!canProceed}>
+        <Button
+          as={Link}
+          to={`/clusters/${clusterHash}/${type}/confirmation`}
+          size="xl"
+          disabled={!canProceed}
+        >
           Next
         </Button>
       </Card>

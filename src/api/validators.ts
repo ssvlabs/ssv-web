@@ -36,6 +36,15 @@ export interface IsRegisteredValidatorResponse {
   };
 }
 
+export interface WithdrawCredentialResponse {
+  withdraw_credentials?: Address;
+}
+
+export interface RegisteredByPublicKeys {
+  type: string;
+  data: { registered: string[]; notRegistered: string[] };
+}
+
 export const getIsRegisteredValidator = async (publicKey: string) => {
   return await api.get<IsRegisteredValidatorResponse>(
     endpoint("validators/isRegisteredValidator", add0x(publicKey)),
@@ -43,7 +52,27 @@ export const getIsRegisteredValidator = async (publicKey: string) => {
 };
 
 export const getAllValidators = async (clusterHash: string | Address) => {
-  return await api.get<IsRegisteredValidatorResponse>(
+  return await api.get<{ type: string; data: string[] }>(
     endpoint("validators/validatorsByClusterHash", add0x(clusterHash)),
+  );
+};
+
+export const getRegisteredByPublicKeys = async (publicKeys: string[]) => {
+  return await api.post<RegisteredByPublicKeys>(
+    endpoint("validators/registeredByPublicKeys"),
+    {
+      publicKeys,
+    },
+  );
+};
+
+export const getValidatorsWithdrawCredentials = async (
+  publicKeys: string[],
+) => {
+  return await api.post<WithdrawCredentialResponse>(
+    endpoint("validators/validatorsWithdrawCredentials"),
+    {
+      publicKeys,
+    },
   );
 };

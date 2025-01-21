@@ -7,8 +7,8 @@ import { sortNumbers } from "@/lib/utils/number";
 import { useKeysharesSchemaValidation } from "@/hooks/keyshares/use-keyshares-schema-validation";
 import type { KeySharesPayload } from "ssv-keys/dist/tsc/src/lib/KeyShares/KeySharesData/KeySharesPayload";
 import { getOSName } from "@/lib/utils/os";
-import { isFrom } from "@/lib/utils/router";
 import { createFileSetter } from "@/lib/utils/valtio";
+import { isFrom } from "@/lib/utils/router.ts";
 
 const startingRoutes = ["online", "offline", "keyshares", "select-operators"];
 
@@ -56,6 +56,12 @@ export const [RegisterValidatorGuard, useRegisterValidatorContext] =
         { resetState },
       ) => {
         resetState();
+      },
+      "/join/validator/:clusterHash/keyshares": (state) => {
+        state.keysharesFile = createFileSetter();
+      },
+      "/join/validator/keyshares": (state) => {
+        state.keysharesFile = createFileSetter();
       },
       "/join/validator/:nested/*": (state, { match }) => {
         if (state.started) return;

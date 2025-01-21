@@ -1,6 +1,9 @@
 import { createGuard } from "@/guard/create-guard";
 import { isFrom } from "@/lib/utils/router";
 import { add0x } from "@/lib/utils/strings";
+import type { Operator } from "@/types/api.ts";
+import { createFileSetter } from "@/lib/utils/valtio.ts";
+import { getOSName } from "@/lib/utils/os.ts";
 
 export const [BulkActionGuard, useBulkActionContext] = createGuard(
   {
@@ -11,6 +14,13 @@ export const [BulkActionGuard, useBulkActionContext] = createGuard(
     set selectedPublicKeys(keys: string[]) {
       this._selectedPublicKeys = keys;
     },
+    dkgReshareState: {
+      operators: [] as Operator[],
+      newOperators: [] as Operator[],
+      proofFiles: createFileSetter(),
+      selectedValidatorsCount: 0,
+      selectedOs: getOSName(),
+    },
   },
   {
     "/clusters/:clusterHash/:action/:status": (state, { match }) => {
@@ -20,5 +30,25 @@ export const [BulkActionGuard, useBulkActionContext] = createGuard(
         return;
       if (!state.selectedPublicKeys.length) return `..`;
     },
+    ...[
+      "/clusters/:clusterHash/reshare/select-operators",
+      "/clusters/:clusterHash/reshare/summary",
+    ].reduce(
+      (guards, path) => ({
+        ...guards,
+        [path]: (
+          state: { dkgReshareState: { operators: Operator[] } },
+          { match }: { match: { params: { clusterHash: string } } },
+        ) => {
+          if (state.dkgReshareState.operators.length === 0) {
+            return match.params.clusterHash
+              ? `/clusters/${match.params.clusterHash}`
+              : "clusters";
+          }
+        },
+      }),
+      {},
+    ),
   },
+  false,
 );

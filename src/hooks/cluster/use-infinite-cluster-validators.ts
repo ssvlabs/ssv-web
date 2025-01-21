@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { getPaginatedClusterValidators } from "@/api/cluster";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { useRemovedOptimisticValidators } from "@/hooks/cluster/use-removed-optimistic-validators";
@@ -5,14 +6,17 @@ import { filterOutRemovedValidators } from "@/lib/utils/cluster";
 import { getNextPageParam } from "@/lib/utils/infinite-query";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useChainId } from "wagmi";
+import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
+import type { Validator } from "@/types/api.ts";
 
 export const useInfiniteClusterValidators = (
   clusterHash?: string,
   perPage = 10,
+  externalValidators?: string[],
 ) => {
   const params = useClusterPageParams();
   const hash = clusterHash || params.clusterHash;
-
+  const [selectedAll, setSelectedAll] = useState(false);
   const removedOptimisticValidators = useRemovedOptimisticValidators();
   const chainId = useChainId();
 
@@ -37,6 +41,23 @@ export const useInfiniteClusterValidators = (
     fetchedValidators,
     removedOptimisticValidators.data || [],
   );
+
+  if (
+    activeValidators.length &&
+    externalValidators &&
+    !selectedAll &&
+    !useBulkActionContext.state._selectedPublicKeys.length
+  ) {
+    const validatorsToUse = activeValidators.filter((validator: Validator) =>
+      externalValidators.some((truncatedPublicKey: string) =>
+        validator.public_key.includes(truncatedPublicKey),
+      ),
+    );
+    useBulkActionContext.state._selectedPublicKeys = validatorsToUse.map(
+      ({ public_key }) => public_key,
+    );
+    setSelectedAll(true);
+  }
 
   const total = Math.max(
     (infiniteQuery.data?.pages[0]?.pagination.total || 0) -

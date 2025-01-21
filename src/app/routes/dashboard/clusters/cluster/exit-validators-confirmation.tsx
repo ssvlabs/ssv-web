@@ -71,7 +71,7 @@ export const ExitValidatorsConfirmation: FC = () => {
       size="xl"
       className="p-6 font-medium w-[1096px]"
     >
-      <NavigateBackBtn />
+      <NavigateBackBtn by="history" />
       <div className="flex w-full gap-6">
         <Card className="flex-[1.7]">
           <CardHeader

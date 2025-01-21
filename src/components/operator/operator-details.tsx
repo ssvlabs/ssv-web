@@ -5,6 +5,7 @@ import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils/tw";
 import type { Operator } from "@/types/api";
 import type { ComponentPropsWithoutRef, FC, LegacyRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaCircleInfo } from "react-icons/fa6";
 import { Tooltip, useIsInsideTooltip } from "@/components/ui/tooltip.tsx";
 import { FaPowerOff } from "react-icons/fa";
@@ -33,6 +34,16 @@ export const OperatorDetails: FCProps = ({
   ...props
 }) => {
   const { ref, isInsideTooltip } = useIsInsideTooltip();
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const textRef = useRef<HTMLParagraphElement | null>(null);
+
+  useEffect(() => {
+    if (textRef.current) {
+      const isOverflow =
+        textRef.current.scrollWidth > textRef.current.offsetWidth;
+      setIsOverflowing(isOverflow);
+    }
+  }, []);
 
   return (
     <div
@@ -47,13 +58,18 @@ export const OperatorDetails: FCProps = ({
       />
       <div className="flex flex-col h-full justify-between">
         <div className="flex gap-2 items-center">
-          <Text variant="body-2-medium" className="text-gray-800">
-            {operator.name}{" "}
-            {operator.verified_operator && !operator.is_deleted ? (
-              <VerifiedSVG className="inline" />
-            ) : null}
-          </Text>
-
+          <Tooltip asChild content={isOverflowing ? operator.name : ""}>
+            <Text
+              ref={textRef}
+              variant="body-2-medium"
+              className="text-gray-800 w-[179px] whitespace-nowrap overflow-hidden text-ellipsis"
+            >
+              {operator.name}
+              {operator.verified_operator && !operator.is_deleted ? (
+                <VerifiedSVG className="inline" />
+              ) : null}
+            </Text>
+          </Tooltip>
           {operator.is_deleted ? (
             <div className="flex gap-2">
               <div className="size-5 rounded bg-error-100 flex items-center justify-center">

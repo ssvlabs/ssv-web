@@ -26,7 +26,6 @@ import { TbExternalLink, TbRefresh, TbRefreshDot } from "react-icons/tb";
 import { useBulkActionContext } from "@/guard/bulk-action-guard";
 import { Spacer } from "@/components/ui/spacer";
 import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge";
-import { useLocalStorage } from "react-use";
 
 export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
@@ -34,7 +33,6 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   const navigate = useNavigate();
   const cluster = useCluster();
   const { validators, infiniteQuery } = useInfiniteClusterValidators();
-  const [enabled] = useLocalStorage("reshareFlowEnabled", false);
 
   return (
     <VirtualizedInfinityTable
@@ -122,18 +120,16 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                     <span>Exit Validator</span>
                   </DropdownMenuItem>
                 </Tooltip>
-                {enabled && (
-                  <>
-                    <div className="w-full h-[1px] bg-gray-300" />
-                    <div className="h-9 flex items-center text-gray-500 text-xs	font-semibold pl-[16px]">
-                      DKG
-                    </div>
-                    <DropdownMenuItem onClick={() => navigate("reshare")}>
-                      <TbRefreshDot className="size-4" />
-                      <span>Reshare</span>
-                    </DropdownMenuItem>
-                  </>
-                )}
+                <>
+                  <div className="w-full h-[1px] bg-gray-300" />
+                  <div className="h-9 flex items-center text-gray-500 text-xs	font-semibold pl-[16px]">
+                    DKG
+                  </div>
+                  <DropdownMenuItem onClick={() => navigate("reshare")}>
+                    <TbRefreshDot className="size-4" />
+                    <span>Reshare</span>
+                  </DropdownMenuItem>
+                </>
               </DropdownMenuContent>
             </DropdownMenu>
           </TableCell>

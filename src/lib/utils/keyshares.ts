@@ -162,7 +162,7 @@ export const generateSSVKeysDockerCMD = ({
   };
 
   if (signatures) {
-    return `docker pull ssvlabs/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/ssv-dkg/data -it "bloxstaking/ssv-dkg:v${version}" ${isReshare ? "reshare" : "resign"} --operatorIDs ${operatorIds} ${
+    return `docker pull ssvlabs/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/ssv-dkg/data -it "ssvlabs/ssv-dkg:v${version}" ${isReshare ? "reshare" : "resign"} --operatorIDs ${operatorIds} ${
       newOperators?.length
         ? `--newOperatorIDs ${sortOperators(newOperators)
             .map((op) => op.id)
@@ -170,5 +170,5 @@ export const generateSSVKeysDockerCMD = ({
         : ""
     } --withdrawAddress ${withdrawalAddress} --owner ${account} --nonce ${nonce} --network ${chainName} ${proofsString ? `--proofsString '${proofsString}'` : "--proofsFilePath ./data/proofs.json"} --operatorsInfo ${newOperators ? getOperatorsData([...operators, ...newOperators]) : getOperatorsData(operators)} --signatures ${signatures.slice(2)} --outputPath ./data --logLevel info --logFormat json --logLevelFormat capitalColor --logFilePath ./data/debug.log --tlsInsecure`;
   }
-  return `docker pull ssvlabs/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/${version === DKG_VERSIONS.NEW ? "ssv-dkg/data" : "data"} -it "bloxstaking/ssv-dkg:v${version}" init --owner ${account} --nonce ${nonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorIds} --operatorsInfo ${getOperatorsData(sortedOperators)} --network ${chainName} --validators ${validatorsCount} ${version === DKG_VERSIONS.OLD ? "--logFilePath /data/debug.log --outputPath /data" : "--logFilePath ./data/debug.log --outputPath ./data --tlsInsecure"}`;
+  return `docker pull ssvlabs/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/${version === DKG_VERSIONS.NEW ? "ssv-dkg/data" : "data"} -it "ssvlabs/ssv-dkg:v${version}" init --owner ${account} --nonce ${nonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorIds} --operatorsInfo ${getOperatorsData(sortedOperators)} --network ${chainName} --validators ${validatorsCount} ${version === DKG_VERSIONS.OLD ? "--logFilePath /data/debug.log --outputPath /data" : "--logFilePath ./data/debug.log --outputPath ./data --tlsInsecure"}`;
 };

@@ -26,16 +26,23 @@ export const useAccountState = () => {
 
   const isNewAccount = isLoading ? false : !hasClusters && !hasOperators;
 
+  const dvtRoutePath = isNewAccount
+    ? "/join"
+    : hasClusters
+      ? "/clusters"
+      : "/operators";
+
   const accountRoutePath = account.isDisconnected
     ? "/connect"
     : isLoading
       ? undefined
-      : isNewAccount
-        ? "/join"
-        : hasClusters
-          ? "/clusters"
-          : "/operators";
-
+      : "/account";
+  // console.log(accountRoutePath);
+  // const dvtRoutePath = isNewAccount
+  //   ? "/join"
+  //   : hasClusters
+  //     ? "/clusters"
+  //     : "/operators";
   return {
     isLoading,
     isLoadingClusters: clusters.isLoading,
@@ -44,5 +51,6 @@ export const useAccountState = () => {
     hasClusters,
     hasOperators,
     accountRoutePath,
+    dvtRoutePath,
   };
 };

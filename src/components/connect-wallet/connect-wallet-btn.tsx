@@ -24,10 +24,10 @@ const getWalletIconSrc = (connectorName?: string) => {
 export const ConnectWalletBtn: FC<ButtonProps> = (props) => {
   const account = useAccount();
 
-  // if (account.isConnected)
+  // if (my-account.isConnected)
   //   return (
   //     <Button onClick={() => disconnect()}>
-  //       {shortenAddress(account.address ?? "")}Disconnect
+  //       {shortenAddress(my-account.address ?? "")}Disconnect
   //     </Button>
   //   );
 
@@ -96,7 +96,7 @@ export const ConnectWalletBtn: FC<ButtonProps> = (props) => {
               />
             </div>
             {shortenAddress(account.address ?? "")}
-            {/* {account.isContract && (
+            {/* {my-account.isContract && (
               <Tooltip content="Onchain wallet">
                 <img
                   src="https://pbs.twimg.com/profile_images/1643941027898613760/gyhYEOCE_400x400.jpg"

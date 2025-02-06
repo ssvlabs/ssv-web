@@ -11,9 +11,9 @@ export const Join: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
 }) => {
   const { isLoading, isNewAccount, accountRoutePath } = useAccountState();
-  if (!isLoading && !isNewAccount)
-    return <Navigate to={accountRoutePath ?? "/clusters"} replace />;
-
+  if (!isLoading && !isNewAccount) {
+    return <Navigate to={accountRoutePath ?? "/my-account"} replace />;
+  }
   return (
     <Container variant="vertical" className="py-6">
       <Card className={cn(className)} {...props}>

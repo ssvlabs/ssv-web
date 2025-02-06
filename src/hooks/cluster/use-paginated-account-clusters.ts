@@ -21,7 +21,7 @@ export const getPaginatedAccountClustersQueryOptions = (
 ) => {
   return queryOptions({
     queryKey: [
-      "paginated-account-clusters",
+      "paginated-my-account-clusters",
       account?.toLowerCase(),
       page,
       perPage,

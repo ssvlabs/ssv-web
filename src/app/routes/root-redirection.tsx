@@ -7,18 +7,17 @@ import { motion } from "framer-motion";
 
 export const Redirector = () => {
   const {
-    isNewAccount,
+    // isNewAccount,
     isLoadingClusters,
     isLoadingOperators,
     hasClusters,
-    hasOperators,
+    // hasOperators,
   } = useAccountState();
 
   const referral =
     locationState.previous.pathname + locationState.previous.search;
-
   const clusterMatch = referral.match(/clusters/);
-  const operatorMatch = referral.match(/operators/);
+  // const operatorMatch = referral.match(/operators/);
 
   if (isLoadingClusters)
     return (
@@ -50,12 +49,12 @@ export const Redirector = () => {
         <SsvLoader className={"size-[160px]"} />
       </motion.div>
     );
-  if (operatorMatch && hasOperators) return <Navigate to={referral} replace />;
+  // if (operatorMatch && hasOperators) return <Navigate to={referral} replace />;
+  //
+  // if (hasClusters) return <Navigate to={"/clusters"} replace />;
+  // if (hasOperators) return <Navigate to={"/operators"} replace />;
+  //
+  // if (isNewAccount) return <Navigate to="/join" replace />;
 
-  if (hasClusters) return <Navigate to={"/clusters"} replace />;
-  if (hasOperators) return <Navigate to={"/operators"} replace />;
-
-  if (isNewAccount) return <Navigate to="/join" replace />;
-
-  return <Navigate to="/clusters" />;
+  return <Navigate to="/account" />;
 };

@@ -14,6 +14,7 @@ import type { RoutePaths, WritableRoutePaths } from "./router/route-types";
 import { Maintenance } from "@/app/routes/maintenance";
 import { Compliance } from "@/app/routes/compliance";
 import { NotFound } from "./not-found";
+import { accountRoutes } from "@/app/routes/router/route-definitions/account-routes.tsx";
 
 const routes = [
   {
@@ -35,6 +36,7 @@ const routes = [
         element: <FeeRecipientAddress />,
       },
       joinRoutes,
+      accountRoutes,
       clustersRoutes,
       operatorsRoutes,
     ],

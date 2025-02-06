@@ -20,7 +20,7 @@ export const Wizard = ({
       <div className="w-full h-20 bg-gray-50 pl-[180px] flex items-center">
         <Text variant="body-1-bold">{title}</Text>
       </div>
-      {children}
+      <div className="flex-1 w-full overflow-auto">{children}</div>
       <div className="w-full h-20 bg-gray-50 pl-[180px] flex items-center">
         <div className="w-[160px] h-48px">
           <Button onClick={onClose} className="size-full" variant="secondary">

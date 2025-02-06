@@ -24,6 +24,9 @@ export const percentageFormatter = {
   },
 };
 
+export const convertToPercentage = (value: string) =>
+  Number((parseInt(value, 10) / 100).toFixed(2));
+
 export const bigintFormatter = new Intl.NumberFormat("en-US", {
   useGrouping: false,
   maximumFractionDigits: 7,

@@ -2,9 +2,9 @@ import { Helmet } from "react-helmet";
 import { Container } from "@/components/ui/container.tsx";
 // import Switcher from "@/components/ui/switcher.tsx";
 import { useState } from "react";
-import Delegations from "@/app/routes/dashboard/my-account/delegations.tsx";
-import Strategy from "@/app/routes/dashboard/my-account/strategy.tsx";
-import Services from "@/app/routes/dashboard/my-account/services.tsx";
+import Delegations from "@/app/routes/dashboard/b-app/my-account/delegations.tsx";
+import Strategy from "@/app/routes/dashboard/b-app/strategies/strategy.tsx";
+import Services from "@/app/routes/dashboard/b-app/my-account/services.tsx";
 
 enum AccountSelect {
   Delegations = "Delegations",

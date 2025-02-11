@@ -1,12 +1,15 @@
 import type { FC } from "react";
-import { Container } from "@/components/ui/container";
-import { StrategiesTable } from "@/components/based-apps/strategies-table/strategies-table";
-import { MOCK_DATA_STRATEGIES } from "@/lib/mock/strategies";
-import { Text } from "@/components/ui/text";
-import { Button } from "@/components/ui/button";
-import { SearchInput } from "@/components/ui/search-input";
+import { Container } from "@/components/ui/container.tsx";
+import { StrategiesTable } from "@/components/based-apps/strategies-table/strategies-table.tsx";
+import { Text } from "@/components/ui/text.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { SearchInput } from "@/components/ui/search-input.tsx";
+import { Link } from "react-router-dom";
+import { useStrategies } from "@/hooks/b-app/use-strategies.tsx";
 
 export const Strategies: FC = () => {
+  const { pagination, strategies } = useStrategies();
+  console.log(strategies);
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <div className="flex justify-between w-full items-center">
@@ -21,20 +24,12 @@ export const Strategies: FC = () => {
               placeholder: "Search Strategy...",
             }}
           />
-          <Button size="sm" className="px-5 h-10">
+          <Button as={Link} to={"create"} size="sm" className="px-5 h-10">
             Create Strategy
           </Button>
         </div>
       </div>
-      <StrategiesTable
-        strategies={MOCK_DATA_STRATEGIES}
-        pagination={{
-          page: 1,
-          pages: 1,
-          per_page: MOCK_DATA_STRATEGIES.length,
-          total: MOCK_DATA_STRATEGIES.length,
-        }}
-      />
+      <StrategiesTable strategies={strategies} pagination={pagination} />
     </Container>
   );
 };

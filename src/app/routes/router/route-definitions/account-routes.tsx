@@ -1,7 +1,8 @@
 import { Outlet } from "react-router-dom";
-import MyAccount from "@/app/routes/dashboard/my-account/my-account.tsx";
-import Accounts from "@/app/routes/dashboard/my-account/accounts.tsx";
-import { Strategies } from "@/app/routes/dashboard/my-account/strategies";
+import MyAccount from "@/app/routes/dashboard/b-app/my-account/my-account.tsx";
+import Accounts from "@/app/routes/dashboard/b-app/my-account/accounts.tsx";
+import { Strategies } from "@/app/routes/dashboard/b-app/strategies/strategies.tsx";
+import Create from "@/app/routes/dashboard/b-app/strategies/create.tsx";
 
 export const accountRoutes = {
   path: "account",
@@ -18,6 +19,10 @@ export const accountRoutes = {
     {
       path: "strategies",
       element: <Strategies />,
+    },
+    {
+      path: "strategies/create",
+      element: <Create />,
     },
   ],
 };

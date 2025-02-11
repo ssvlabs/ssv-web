@@ -7,13 +7,20 @@ import {
   Table,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils/tw";
-import { Pagination } from "@/components/ui/pagination";
+import { Pagination } from "@/components/ui/pagination-v2";
 import { Divider } from "@/components/ui/divider";
 import { StrategyTableRow } from "@/components/based-apps/strategies-table/strategy-table-row";
-import type { MOCK_DATA_STRATEGIES } from "../../../lib/mock/strategies";
 
 export type OperatorsTableProps = {
-  strategies: typeof MOCK_DATA_STRATEGIES;
+  strategies: {
+    id: string;
+    name: string;
+    bApps: number;
+    delegators: number;
+    assets: string[];
+    fee: string;
+    totalDelegatedValue: number | bigint;
+  }[];
   pagination: IPagination;
 };
 

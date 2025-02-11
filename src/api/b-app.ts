@@ -55,3 +55,28 @@ export const getAccounts = ({
       ),
     )
     .then((res) => res);
+
+export const getStrategies = ({
+  page = 1,
+  perPage = 10,
+}: {
+  page: number;
+  perPage: number;
+}) =>
+  api
+    .get<{
+      data: {
+        id: string;
+        name: string;
+        bApps: number;
+        delegators: number;
+        assets: string[];
+        fee: string;
+        totalDelegatedValue: number | bigint;
+      }[];
+      pagination: Pagination;
+    }>(endpoint("basedApp", `getStrategies?perPage=${perPage}&page=${page}`))
+    .then((res) => {
+      console.log(res);
+      return res;
+    });

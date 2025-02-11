@@ -1,9 +1,9 @@
 import { Wizard } from "@/components/ui/wizard.tsx";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Container } from "@/components/ui/container.tsx";
-import AccountsTable from "@/app/routes/dashboard/my-account/accounts-table.tsx";
+import AccountsTable from "@/app/routes/dashboard/b-app/my-account/accounts-table.tsx";
 import { useState } from "react";
-import Delegate from "@/app/routes/dashboard/my-account/delegate.tsx";
+import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
 import { Text } from "@/components/ui/text.tsx";
 import { SearchInput } from "@/components/ui/search-input.tsx";
 
@@ -45,7 +45,6 @@ const Accounts = () => {
           )}
         </Container>
       }
-      isOpen={true}
       onClose={() => navigate("/account")}
     />
   );

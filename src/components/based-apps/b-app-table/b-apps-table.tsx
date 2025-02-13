@@ -5,8 +5,20 @@ import {
   Table,
 } from "@/components/ui/table";
 import BAppsTableRow from "@/components/based-apps/b-app-table/b-apps-table-row.tsx";
+import type { BApp } from "@/api/b-app.ts";
+import { Divider } from "@/components/ui/divider.tsx";
+import { Pagination } from "@/components/ui/pagination-v2.tsx";
+import type { Pagination as IPagination } from "@/types/api";
 
-export const BAppsTable = () => {
+export const BAppsTable = ({
+  bApps,
+  isCreateFlow,
+  pagination,
+}: {
+  bApps?: BApp[];
+  isCreateFlow?: boolean;
+  pagination?: IPagination;
+}) => {
   return (
     <div className="flex flex-col w-full">
       <Table className={"w-full rounded-t-xl overflow-hidden"}>
@@ -20,16 +32,21 @@ export const BAppsTable = () => {
           <TableHead></TableHead>
         </TableHeader>
         <TableBody>
-          {/*<BAppsTableRow bApp={{ id: "123", name: "123" }} />*/}
-          {/*<BAppsTableRow bApp={{ id: "123", name: "123" }} />*/}
-          {/*<BAppsTableRow*/}
-          {/*  bApp={{ id: "123", name: "serviceHowLongHowLongLongName 378" }}*/}
-          {/*/>*/}
-          <BAppsTableRow
-            bApp={{ id: "123", name: "serviceHowLongHowLongLongName 378" }}
-          />
+          {(bApps || []).map((bApp: BApp) => (
+            <BAppsTableRow isCreateFlow={isCreateFlow} bApp={bApp} />
+          ))}
         </TableBody>
       </Table>
+      {pagination && pagination?.pages > 1 ? (
+        <>
+          <Divider />
+          <div className="flex w-full bg-gray-50 py-4 rounded-b-2xl">
+            <Pagination pagination={pagination} />
+          </div>
+        </>
+      ) : (
+        <div className="flex w-full bg-gray-50 py-4 rounded-b-2xl"></div>
+      )}
     </div>
   );
 };

@@ -22,6 +22,7 @@ const Delegate = ({
   const delegateBalance = useDelegateBalance();
   const isPending = delegateBalance.isPending;
   const navigate = useNavigate();
+
   const delegate = async () => {
     const options = withTransactionModal({
       onMined: () => {

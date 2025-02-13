@@ -25,6 +25,28 @@ export type BAppAccount = {
   totalDelegatedValue: string;
 };
 
+export type Strategy = {
+  id: string;
+  name: string;
+  bApps: number;
+  delegators: number;
+  assets: `0x${string}`[];
+  fee: string;
+  ownerAddress: string;
+  totalDelegatedValue: number | bigint;
+};
+
+export type BApp = {
+  id: `0x${string}`;
+  beta: string[];
+  delegators: number;
+  strategies: number;
+  metadataURI: string;
+  ownerAddress: `0x${string}`;
+  supportedAssets: `0x${string}`[];
+  totalDelegatedValue: string;
+};
+
 export const getMyAccount = (ownerAddress: string) =>
   api
     .get<MyBAppAccount>(
@@ -65,18 +87,33 @@ export const getStrategies = ({
 }) =>
   api
     .get<{
-      data: {
-        id: string;
-        name: string;
-        bApps: number;
-        delegators: number;
-        assets: string[];
-        fee: string;
-        totalDelegatedValue: number | bigint;
-      }[];
+      data: Strategy[];
       pagination: Pagination;
     }>(endpoint("basedApp", `getStrategies?perPage=${perPage}&page=${page}`))
     .then((res) => {
-      console.log(res);
+      // console.log(res);
       return res;
     });
+
+export const getBApps = ({
+  page = 1,
+  perPage = 10,
+}: {
+  page: number;
+  perPage: number;
+}) =>
+  api
+    .get<{
+      data: BApp[];
+      pagination: Pagination;
+    }>(endpoint("basedApp", `getBApps?perPage=${perPage}&page=${page}`))
+    .then((res) => {
+      return res;
+    });
+
+export const getBAppMetadata = (url: string) =>
+  api.get(url).then((res) => {
+    console.log(url);
+    console.log(res);
+    return res;
+  });

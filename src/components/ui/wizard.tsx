@@ -1,12 +1,14 @@
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { Text } from "@/components/ui/text.tsx";
+import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 
 export const Wizard = ({
   title,
   onClose,
   children,
   steps,
+  skipToStep,
   currentStepNumber = 0,
   onNext,
 }: {
@@ -14,9 +16,19 @@ export const Wizard = ({
   onClose: () => void;
   onNext?: () => void;
   children: string | ReactNode;
+  skipToStep?: () => void;
   currentStepNumber?: number;
   steps?: string[];
 }) => {
+  const bApp = useCreateStrategyContext();
+  if (
+    onNext &&
+    Object.keys(bApp.bApp).length !== 0 &&
+    currentStepNumber === 0
+  ) {
+    onNext();
+  }
+
   return (
     <div className="h-full flex flex-col items-center justify-between">
       <div className="w-full h-20 bg-gray-50 flex items-center justify-center">
@@ -55,10 +67,21 @@ export const Wizard = ({
               {currentStepNumber === 0 ? "Cancel" : "Back"}
             </Button>
           </div>
-          <div className="w-[160px] h-48px">
-            <Button onClick={onNext} className="size-full">
-              Continue
-            </Button>
+          <div className="w-[160px] h-48px flex gap-1">
+            {skipToStep && (
+              <Button
+                onClick={skipToStep}
+                variant="secondary"
+                className="size-full"
+              >
+                I'll do it later
+              </Button>
+            )}
+            {currentStepNumber !== 0 && (
+              <Button onClick={onNext} className="size-full">
+                Continue
+              </Button>
+            )}
           </div>
         </div>
       </div>

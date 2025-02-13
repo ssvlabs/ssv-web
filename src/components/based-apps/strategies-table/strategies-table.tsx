@@ -10,17 +10,10 @@ import { cn } from "@/lib/utils/tw";
 import { Pagination } from "@/components/ui/pagination-v2";
 import { Divider } from "@/components/ui/divider";
 import { StrategyTableRow } from "@/components/based-apps/strategies-table/strategy-table-row";
+import type { Strategy } from "@/api/b-app.ts";
 
 export type OperatorsTableProps = {
-  strategies: {
-    id: string;
-    name: string;
-    bApps: number;
-    delegators: number;
-    assets: string[];
-    fee: string;
-    totalDelegatedValue: number | bigint;
-  }[];
+  strategies: Strategy[];
   pagination: IPagination;
 };
 

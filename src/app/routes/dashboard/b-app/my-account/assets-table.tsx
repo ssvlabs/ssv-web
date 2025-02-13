@@ -28,7 +28,7 @@ const AssetsTable = ({
   isLoading,
   pagination,
 }: {
-  onRowClick: () => void;
+  onRowClick?: () => void;
   showDelegateBtn?: boolean;
   onDelegateClick?: (address: string) => void;
   tableHeads: {
@@ -45,6 +45,7 @@ const AssetsTable = ({
   isLoading?: boolean;
   pagination?: PaginationType;
 }) => {
+  console.log(data);
   const [openedTableIndex, setOpenedTableIndex] = useState(-1);
   const [focusedRowIndex, setFocusedRowIndex] = useState(-1);
   return (

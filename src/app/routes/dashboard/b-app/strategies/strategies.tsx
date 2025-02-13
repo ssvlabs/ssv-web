@@ -9,7 +9,7 @@ import { useStrategies } from "@/hooks/b-app/use-strategies.tsx";
 
 export const Strategies: FC = () => {
   const { pagination, strategies } = useStrategies();
-  console.log(strategies);
+
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <div className="flex justify-between w-full items-center">
@@ -24,7 +24,7 @@ export const Strategies: FC = () => {
               placeholder: "Search Strategy...",
             }}
           />
-          <Button as={Link} to={"create"} size="sm" className="px-5 h-10">
+          <Button as={Link} to={"create/bApps"} size="sm" className="px-5 h-10">
             Create Strategy
           </Button>
         </div>

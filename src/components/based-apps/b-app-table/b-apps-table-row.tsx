@@ -30,7 +30,7 @@ const BAppsTableRow = ({
           }
           onError={(e) => {
             e.currentTarget.src =
-              "/images/operator_default_background/light.svg"; // Путь к изображению по умолчанию
+              "/images/operator_default_background/light.svg";
           }}
         />
         {bApp.bAppsMetaData.name || shortenAddress(bApp.id)}

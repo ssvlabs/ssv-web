@@ -4,10 +4,12 @@ import { isFrom } from "@/lib/utils/router.ts";
 
 export const [CreateStrategyGuard, useCreateStrategyContext] = createGuard(
   {
+    skippedBApp: false,
     bApp: {} as BApp,
     strategyData: {} as Strategy,
     selectedObligations: {} as Record<`0x${string}`, number>,
     selectedFee: 0,
+    registerData: "" as `0x${string}`,
   },
   {
     "/account/strategies/create/bApps": (_, { resetState }) => {

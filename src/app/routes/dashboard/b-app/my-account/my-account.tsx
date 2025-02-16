@@ -22,7 +22,6 @@ const MyAccount = () => {
     [AccountSelect.Strategy]: MyStrategies,
     [AccountSelect.Services]: Services,
   };
-
   const { strategies } = useMyBAppAccount();
   const SWITCH_BUTTONS = [
     {

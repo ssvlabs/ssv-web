@@ -5,29 +5,32 @@ import { Textarea } from "@/components/ui/textarea.tsx";
 import ImgCropUpload from "@/components/ui/ImgCropUpload.tsx";
 import { useNavigate } from "react-router-dom";
 import { Wizard } from "@/components/ui/wizard.tsx";
-import {
-  CreateSteps,
-  STEPS_LABELS,
-} from "@/app/routes/dashboard/b-app/strategies/create.tsx";
-import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt.tsx";
+import { CreateSteps, STEPS_LABELS } from "@/types/b-app.ts";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 import { useCreateStrategy } from "@/lib/contract-interactions/b-app/write/use-create-strategy.ts";
 import { useOptInToBApp } from "@/lib/contract-interactions/b-app/write/use-opt-in-to-b-app.ts";
+import { useState } from "react";
+import DoubleTx from "@/components/ui/double-tx.tsx";
 
 const Metadata = () => {
   const navigate = useNavigate();
   const createStrategy = useCreateStrategy();
   const optInToBApp = useOptInToBApp();
-  const { bApp, selectedObligations } = useCreateStrategyContext();
+  const { bApp, selectedObligations, skippedBApp } = useCreateStrategyContext();
+  const [isTxStarted, setIsTxStarted] = useState<boolean>(false);
+  const [txStatus, setTxStatus] = useState<
+    { label: string; status: "waiting" | "pending" | "success" }[]
+  >(
+    !skippedBApp
+      ? [
+          { label: "Register Strategy", status: "waiting" },
+          { label: "Opt-in to bApp", status: "waiting" },
+        ]
+      : [{ label: "Register Strategy", status: "waiting" }],
+  );
 
   const createStrategyHandler = async () => {
     let createdId = 0;
-
-    const options = withTransactionModal({
-      onMined: (receipt) => {
-        createdId = parseInt(`${receipt.logs[0].topics[1]}`);
-      },
-    });
 
     const cleanedNumber = Math.round(
       useCreateStrategyContext.state.selectedFee * 100,
@@ -37,21 +40,43 @@ const Metadata = () => {
       {
         fee: cleanedNumber,
       },
-      options,
+      {
+        onError: () => setIsTxStarted(false),
+        onInitiated: () => {
+          setTxStatus(
+            !skippedBApp
+              ? [
+                  { label: "Register Strategy", status: "pending" },
+                  { label: "Opt-in to bApp", status: "waiting" },
+                ]
+              : [{ label: "Register Strategy", status: "pending" }],
+          );
+          setIsTxStarted(true);
+        },
+        onMined: (receipt) => {
+          createdId = parseInt(`${receipt.logs[0].topics[1]}`);
+          setTxStatus(
+            !skippedBApp
+              ? [
+                  { label: "Register Strategy", status: "success" },
+                  { label: "Opt-in to bApp", status: "waiting" },
+                ]
+              : [{ label: "Register Strategy", status: "success" }],
+          );
+        },
+      },
     );
-
-    if (createdId && bApp && selectedObligations) {
+    if (skippedBApp) {
+      setIsTxStarted(false);
+      navigate("/strategies");
+    }
+    if (!skippedBApp) {
       const tokens = Object.keys(selectedObligations) as `0x${string}`[];
       const obligationPercentages = [] as number[];
       tokens.forEach((token) => {
         obligationPercentages.push(
           Math.round(selectedObligations[token] * 100),
         );
-      });
-      const options = withTransactionModal({
-        onMined: () => {
-          return navigate("/strategies");
-        },
       });
 
       await optInToBApp.write(
@@ -60,11 +85,36 @@ const Metadata = () => {
           bApp: bApp.id,
           tokens,
           obligationPercentages,
-          data: "0x00",
+          data: useCreateStrategyContext.state.registerData || "0x00",
         },
-        options,
+        {
+          onInitiated: () => {
+            setTxStatus(
+              !skippedBApp
+                ? [
+                    { label: "Register Strategy", status: "success" },
+                    { label: "Opt-in to bApp", status: "pending" },
+                  ]
+                : [{ label: "Register Strategy", status: "success" }],
+            );
+          },
+          onError: () => {
+            setIsTxStarted(false);
+          },
+          onMined: () => {
+            setTxStatus(
+              !skippedBApp
+                ? [
+                    { label: "Register Strategy", status: "success" },
+                    { label: "Opt-in to bApp", status: "success" },
+                  ]
+                : [{ label: "Register Strategy", status: "success" }],
+            );
+          },
+        },
       );
     }
+    setIsTxStarted(false);
     navigate("/strategies");
   };
 
@@ -109,6 +159,9 @@ const Metadata = () => {
               setValue={() => console.log(1)}
             ></ImgCropUpload>
           </div>
+          {isTxStarted && (
+            <DoubleTx stats={txStatus} onClose={() => setIsTxStarted(false)} />
+          )}
         </Container>
       }
       currentStepNumber={CreateSteps.AddMetadata}

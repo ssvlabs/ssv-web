@@ -6,10 +6,7 @@ import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 import type { BApp } from "@/api/b-app.ts";
 import { useNavigate } from "react-router-dom";
 import { Wizard } from "@/components/ui/wizard.tsx";
-import {
-  CreateSteps,
-  STEPS_LABELS,
-} from "@/app/routes/dashboard/b-app/strategies/create.tsx";
+import { CreateSteps, STEPS_LABELS } from "@/types/b-app.ts";
 
 const Obligations = () => {
   const navigate = useNavigate();
@@ -22,7 +19,15 @@ const Obligations = () => {
         <Container variant="vertical" size="xl" className="py-6">
           <BAppsTable bApps={[useCreateStrategyContext().bApp as BApp]} />
           <div className="size-full px-6 py-4 rounded-[16px] bg-white">
-            <Input className="h-10" />
+            <Input
+              value={useCreateStrategyContext().registerData}
+              onChange={(e) =>
+                (useCreateStrategyContext.state.registerData = e.target
+                  .value as `0x${string}`)
+              }
+              withDisableButton
+              className="h-10"
+            />
           </div>
           <ObligationsTable
             obligations={useCreateStrategyContext().bApp.supportedAssets}

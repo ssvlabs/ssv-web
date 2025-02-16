@@ -7,12 +7,7 @@ import BApps from "@/app/routes/dashboard/b-app/strategies/b-apps.tsx";
 import Obligations from "@/app/routes/dashboard/b-app/strategies/obligations.tsx";
 import Fee from "@/app/routes/dashboard/b-app/strategies/fee.tsx";
 import Metadata from "@/app/routes/dashboard/b-app/strategies/metadata.tsx";
-// import { RegisterOperatorGuard } from "@/guard/register-operator-guards.tsx";
-// import { JoinOperatorPreparation } from "@/app/routes/join/operator/join-operator-preparation.tsx";
-// import { RegisterOperator } from "@/app/routes/join/operator/register-operator.tsx";
-// import { SetOperatorFee } from "@/app/routes/join/operator/set-operator-fee.tsx";
-// import { RegisterOperatorConfirmation } from "@/app/routes/join/operator/register-operator-confirmation.tsx";
-// import { RegisterOperatorSuccess } from "@/app/routes/join/operator/register-operator-success.tsx";
+import { CreateStrategyGuard } from "@/guard/create-strategy-context.ts";
 
 export const accountRoutes = {
   path: "account",
@@ -28,7 +23,11 @@ export const accountRoutes = {
     },
     {
       path: "strategies",
-      element: <Outlet />, // Позволяет вложенные маршруты для "strategies"
+      element: (
+        <CreateStrategyGuard>
+          <Outlet />
+        </CreateStrategyGuard>
+      ),
       children: [
         {
           index: true,
@@ -40,7 +39,7 @@ export const accountRoutes = {
         },
         {
           path: "create",
-          element: <Outlet />, // Для вложенных маршрутов "create"
+          element: <Outlet />,
           children: [
             {
               path: "bApps",

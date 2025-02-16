@@ -51,7 +51,7 @@ const Fee = () => {
           </div>
         </Container>
       }
-      currentStepNumber={CreateSteps.AddMetadata}
+      currentStepNumber={CreateSteps.SetFee}
       onClose={() => {
         navigate(-1);
       }}

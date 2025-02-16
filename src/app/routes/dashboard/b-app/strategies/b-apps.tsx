@@ -57,7 +57,7 @@ const BApps = () => {
       currentStepNumber={CreateSteps.SelectBApp}
       skipToStep={() => navigate("../fee")}
       onClose={() => {
-        navigate(-1);
+        navigate("/account/strategies");
       }}
     />
   );

@@ -17,7 +17,6 @@ const BAppsTableRow = ({
 }) => {
   const { assetsData } = useBApps();
 
-  console.log(bApp.bAppsMetaData.logo);
   return (
     <TableRow key={bApp.id} className={"cursor-pointer max-h-7"}>
       <TableCell

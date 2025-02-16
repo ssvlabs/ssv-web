@@ -4,11 +4,20 @@ import { StrategiesTable } from "@/components/based-apps/strategies-table/strate
 import { Text } from "@/components/ui/text.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { SearchInput } from "@/components/ui/search-input.tsx";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useStrategies } from "@/hooks/b-app/use-strategies.tsx";
 
 export const Strategies: FC = () => {
-  const { pagination, strategies } = useStrategies();
+  const { pagination, strategies, isStrategiesIsLoading } = useStrategies();
+  const [, setSearchParams] = useSearchParams();
+
+  const searchById = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.set("id", e.target.value);
+      return params;
+    });
+  };
 
   return (
     <Container variant="vertical" size="xl" className="py-6">
@@ -16,6 +25,7 @@ export const Strategies: FC = () => {
         <Text variant="body-1-semibold">Strategies</Text>
         <div className="flex items-center gap-2">
           <SearchInput
+            onChange={searchById}
             placeholder="Search"
             iconPlacement="left"
             className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
@@ -29,7 +39,11 @@ export const Strategies: FC = () => {
           </Button>
         </div>
       </div>
-      <StrategiesTable strategies={strategies} pagination={pagination} />
+      <StrategiesTable
+        strategies={strategies}
+        pagination={pagination}
+        isLoading={isStrategiesIsLoading}
+      />
     </Container>
   );
 };

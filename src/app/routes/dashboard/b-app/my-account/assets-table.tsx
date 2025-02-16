@@ -45,7 +45,6 @@ const AssetsTable = ({
   isLoading?: boolean;
   pagination?: PaginationType;
 }) => {
-  console.log(data);
   const [openedTableIndex, setOpenedTableIndex] = useState(-1);
   const [focusedRowIndex, setFocusedRowIndex] = useState(-1);
   return (

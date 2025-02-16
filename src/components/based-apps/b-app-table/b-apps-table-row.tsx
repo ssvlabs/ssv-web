@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 import type { BApp } from "@/api/b-app.ts";
 import { useBApps } from "@/hooks/b-app/use-b-apps.ts";
+import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 
 const BAppsTableRow = ({
   bApp,
@@ -16,7 +17,7 @@ const BAppsTableRow = ({
 }) => {
   const { assetsData } = useBApps();
 
-  // console.log(bApp);
+  console.log(bApp.bAppsMetaData.logo);
   return (
     <TableRow key={bApp.id} className={"cursor-pointer max-h-7"}>
       <TableCell
@@ -24,12 +25,22 @@ const BAppsTableRow = ({
       >
         <img
           className="rounded-[8px] size-7 border-gray-400 border"
-          src={"/images/operator_default_background/light.svg"}
+          src={
+            bApp.bAppsMetaData.logo ||
+            "/images/operator_default_background/light.svg"
+          }
+          onError={(e) => {
+            e.currentTarget.src =
+              "/images/operator_default_background/light.svg"; // Путь к изображению по умолчанию
+          }}
         />
-        metadata
+        {bApp.bAppsMetaData.name || shortenAddress(bApp.id)}
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        {shortenAddress(bApp.ownerAddress)}
+        <div className=" flex items-center gap-2">
+          {shortenAddress(bApp.ownerAddress)}
+          <CopyBtn variant="subtle" text={bApp.ownerAddress} />
+        </div>
       </TableCell>
       <TableCell>
         <AssetsDisplay

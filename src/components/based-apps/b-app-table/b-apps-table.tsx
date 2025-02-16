@@ -9,14 +9,17 @@ import type { BApp } from "@/api/b-app.ts";
 import { Divider } from "@/components/ui/divider.tsx";
 import { Pagination } from "@/components/ui/pagination-v2.tsx";
 import type { Pagination as IPagination } from "@/types/api";
+import { Loading } from "@/components/ui/Loading.tsx";
 
 export const BAppsTable = ({
   bApps,
   isCreateFlow,
   pagination,
+  isLoading,
 }: {
   bApps?: BApp[];
   isCreateFlow?: boolean;
+  isLoading?: boolean;
   pagination?: IPagination;
 }) => {
   return (
@@ -37,6 +40,7 @@ export const BAppsTable = ({
           ))}
         </TableBody>
       </Table>
+      <div className="bg-gray-50 w-full">{isLoading && <Loading />}</div>
       {pagination && pagination?.pages > 1 ? (
         <>
           <Divider />

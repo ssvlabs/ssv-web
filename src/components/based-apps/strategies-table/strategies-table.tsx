@@ -7,14 +7,16 @@ import {
   Table,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils/tw";
-import { Pagination } from "@/components/ui/pagination";
+import { Pagination } from "@/components/ui/pagination-v2";
 import { Divider } from "@/components/ui/divider";
 import { StrategyTableRow } from "@/components/based-apps/strategies-table/strategy-table-row";
-import type { MOCK_DATA_STRATEGIES } from "../../../lib/mock/strategies";
+import type { Strategy } from "@/api/b-app.ts";
+import { Loading } from "@/components/ui/Loading.tsx";
 
 export type OperatorsTableProps = {
-  strategies: typeof MOCK_DATA_STRATEGIES;
+  strategies: Strategy[];
   pagination: IPagination;
+  isLoading?: boolean;
 };
 
 type FCProps = FC<
@@ -26,6 +28,7 @@ export const StrategiesTable: FCProps = ({
   strategies,
   pagination,
   className,
+  isLoading,
   ...props
 }) => {
   return (
@@ -50,6 +53,7 @@ export const StrategiesTable: FCProps = ({
           })}
         </TableBody>
       </Table>
+      <div className="bg-gray-50 w-full">{isLoading && <Loading />}</div>
       {pagination.pages > 1 ? (
         <>
           <Divider />

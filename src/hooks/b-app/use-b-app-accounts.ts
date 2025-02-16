@@ -7,14 +7,15 @@ export const useBAppAccounts = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get("page") || 1);
   const perPage = Number(searchParams.get("perPage") || 10);
+  const searchInput = searchParams.get("address") || "";
 
   const query = useQuery({
-    queryKey: [page, perPage],
+    queryKey: ["get_accounts", page, perPage, searchInput],
     staleTime: 0,
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    queryFn: () => getAccounts({ page, perPage }),
+    queryFn: () => getAccounts({ page, perPage, searchInput }),
   });
 
   const pagination = query.data?.pagination || createDefaultPagination();

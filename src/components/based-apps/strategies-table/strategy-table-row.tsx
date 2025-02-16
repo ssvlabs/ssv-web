@@ -1,18 +1,23 @@
-import { AssetLogo } from "@/components/ui/asset-logo";
 import { AssetsDisplay } from "@/components/ui/assets-display";
 import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Text, textVariants } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
-import type { MOCK_DATA_STRATEGIES } from "@/lib/mock/strategies";
-import { currencyFormatter, percentageFormatter } from "@/lib/utils/number";
+import {
+  convertToPercentage,
+  currencyFormatter,
+  percentageFormatter,
+} from "@/lib/utils/number";
 import { cn } from "@/lib/utils/tw";
 import type { Address } from "abitype";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { Link } from "react-router-dom";
+import type { Strategy } from "@/api/b-app.ts";
+import { useStrategies } from "@/hooks/b-app/use-strategies.tsx";
+import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 
 export type StrategyTableRowProps = {
-  strategy: (typeof MOCK_DATA_STRATEGIES)[number];
+  strategy: Strategy;
 };
 
 type FCProps = FC<
@@ -25,6 +30,8 @@ export const StrategyTableRow: FCProps = ({
   className,
   ...props
 }) => {
+  const { assetsData } = useStrategies();
+
   return (
     <TableRow
       key={strategy.id}
@@ -35,7 +42,14 @@ export const StrategyTableRow: FCProps = ({
         {strategy.id}
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-semibold" })}>
-        <Button variant="link" as={Link} to={`/strategy/${strategy.id}`}>
+        <Button
+          variant="link"
+          as={Link}
+          to={`${strategy.id}`}
+          onClick={() => {
+            useCreateStrategyContext.state.strategyData = strategy;
+          }}
+        >
           {strategy.name}
         </Button>
       </TableCell>
@@ -43,39 +57,37 @@ export const StrategyTableRow: FCProps = ({
         <Tooltip
           content={
             <div className="flex gap-2 items-center">
-              <AssetLogo
-                address="0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54"
-                className="size-6"
-              />
-              <Text>Name</Text>
+              <Text>{strategy.ownerAddress}</Text>
             </div>
           }
         >
-          <AssetLogo
-            className="size-6"
-            address="0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54"
+          <img
+            className={cn("size-7 flex flex-wrap gap-1 rounded-md", className)}
+            src={"/images/operator_default_background/light.svg"}
+            alt={strategy.ownerAddress}
           />
         </Tooltip>
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        {strategy.bApps}
+        <div className="w-7 h-6 rounded-[4px] bg-primary-100 border border-primary-500 text-primary-500 flex items-center justify-center text-[10px]">
+          {strategy.bApps}
+        </div>
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         <AssetsDisplay
           max={3}
-          addresses={
-            strategy.supportedAssets.map((s) => s.tokenAddress) as Address[]
-          }
+          addresses={strategy.assets.map((s) => s) as Address[]}
+          assetsData={assetsData}
         />
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        {percentageFormatter.format(strategy.fee)}
+        {percentageFormatter.format(convertToPercentage(strategy.fee))}
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         {strategy.delegators}
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        {currencyFormatter.format(strategy.valueDelegated)}
+        {currencyFormatter.format(strategy.totalDelegatedValue)}
       </TableCell>
     </TableRow>
   );

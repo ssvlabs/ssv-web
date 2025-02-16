@@ -1,4 +1,4 @@
-import AssetsTable from "@/app/routes/dashboard/my-account/assets-table.tsx";
+import AssetsTable from "@/app/routes/dashboard/b-app/my-account/assets-table.tsx";
 import { Text } from "@/components/ui/text.tsx";
 import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 import { currencyFormatter, ethFormatter } from "@/lib/utils/number.ts";

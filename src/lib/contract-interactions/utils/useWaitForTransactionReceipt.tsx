@@ -33,7 +33,7 @@ export type MutationOptions<T extends MainnetEvent | TestnetEvent> = {
   onInitiated?: () => MaybePromise<unknown | (() => unknown)>;
   onConfirmed?: (hash: Address) => MaybePromise<unknown | (() => unknown)>;
   onMined?: (
-    receipt: TransactionReceipt & { events: T[] },
+    receipt: TransactionReceipt & { events: T[]; topics?: T[] },
   ) => MaybePromise<unknown | (() => unknown)>;
   onError?: (
     error: WriteContractErrorType | WaitForTransactionReceiptErrorType,

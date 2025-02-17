@@ -45,7 +45,7 @@ export const useGetVersion = (
     functionName: "getVersion",
 
     blockNumber: options.watch ? blockNumber.data : undefined,
-    query: options,
+    query: { ...options },
   });
 };
 

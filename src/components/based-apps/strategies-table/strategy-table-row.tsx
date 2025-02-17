@@ -13,7 +13,6 @@ import type { Address } from "abitype";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { Link } from "react-router-dom";
 import type { Strategy } from "@/api/b-app.ts";
-import { useStrategies } from "@/hooks/b-app/use-strategies.tsx";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 
 export type StrategyTableRowProps = {
@@ -30,8 +29,6 @@ export const StrategyTableRow: FCProps = ({
   className,
   ...props
 }) => {
-  const { assetsData } = useStrategies();
-
   return (
     <TableRow
       key={strategy.id}
@@ -77,7 +74,6 @@ export const StrategyTableRow: FCProps = ({
         <AssetsDisplay
           max={3}
           addresses={strategy.assets.map((s) => s) as Address[]}
-          assetsData={assetsData}
         />
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>

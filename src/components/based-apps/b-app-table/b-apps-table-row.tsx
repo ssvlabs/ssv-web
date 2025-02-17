@@ -5,7 +5,6 @@ import { AssetsDisplay } from "@/components/ui/assets-display.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 import type { BApp } from "@/api/b-app.ts";
-import { useBApps } from "@/hooks/b-app/use-b-apps.ts";
 import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 
 const BAppsTableRow = ({
@@ -15,8 +14,6 @@ const BAppsTableRow = ({
   bApp: BApp;
   isCreateFlow?: boolean;
 }) => {
-  const { assetsData } = useBApps();
-
   return (
     <TableRow key={bApp.id} className={"cursor-pointer max-h-7"}>
       <TableCell
@@ -42,11 +39,7 @@ const BAppsTableRow = ({
         </div>
       </TableCell>
       <TableCell>
-        <AssetsDisplay
-          max={3}
-          assetsData={assetsData}
-          addresses={bApp.supportedAssets}
-        />
+        <AssetsDisplay max={3} addresses={bApp.supportedAssets} />
       </TableCell>
       <TableCell>
         <div className="w-7 h-6 rounded-[4px] bg-primary-100 border border-primary-500 text-primary-500 flex items-center justify-center text-[10px]">

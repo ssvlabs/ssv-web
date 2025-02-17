@@ -17,11 +17,7 @@ const ObligationTableRow = ({ obligation }: { obligation: `0x${string}` }) => {
     <TableRow key={obligation} className={"cursor-pointer max-h-7"}>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         <div className="flex gap-2">
-          <AssetLogo
-            assetsData={assetsData}
-            address={obligation}
-            className="size-6"
-          />
+          <AssetLogo address={obligation} className="size-6" />
           {assetsData[obligation]?.name || "unknown asset"}
         </div>
       </TableCell>

@@ -26,7 +26,10 @@ const abiFunction = extractAbiFunction(TokenABI, "mint");
 export const useMint = () => {
   const { tokenAddress } = useSSVNetworkDetails();
 
-  const wait = useWaitForTransactionReceipt(["useMint", tokenAddress]);
+  const wait = useWaitForTransactionReceipt<MainnetEvent>([
+    "useMint",
+    tokenAddress,
+  ]);
   const mutation = useWriteContract();
 
   const write = (

@@ -26,7 +26,7 @@ const abiFunction = extractAbiFunction(TokenABI, "increaseAllowance");
 export const useIncreaseAllowance = () => {
   const { tokenAddress } = useSSVNetworkDetails();
 
-  const wait = useWaitForTransactionReceipt([
+  const wait = useWaitForTransactionReceipt<MainnetEvent>([
     "useIncreaseAllowance",
     tokenAddress,
   ]);

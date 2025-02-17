@@ -8,7 +8,6 @@ import { Tooltip } from "@/components/ui/tooltip";
 export type AssetsDisplayProps = {
   addresses: Address[];
   max?: number;
-  assetsData: Record<string, { symbol: string; name: string }>;
 };
 
 type AssetsDisplayFC = FC<
@@ -20,7 +19,6 @@ export const AssetsDisplay: AssetsDisplayFC = ({
   addresses,
   max = addresses.length,
   className,
-  assetsData,
   ...props
 }) => {
   const visible = addresses.slice(0, max);
@@ -28,16 +26,10 @@ export const AssetsDisplay: AssetsDisplayFC = ({
   return (
     <div className={cn("flex flex-wrap gap-1", className)} {...props}>
       {visible.map((address) => (
-        <AssetLogo
-          className="size-6"
-          address={address}
-          assetsData={assetsData}
-        />
+        <AssetLogo className="size-6" address={address} />
       ))}
       {hidden.length > 0 && (
-        <Tooltip
-          content={<AssetsDisplay addresses={hidden} assetsData={assetsData} />}
-        >
+        <Tooltip content={<AssetsDisplay addresses={hidden} />}>
           <div className="flex items-center justify-center min-w-6 h-6 px-1 rounded-sm bg-primary-50 border border-primary-200">
             <Text
               variant="body-2-medium"

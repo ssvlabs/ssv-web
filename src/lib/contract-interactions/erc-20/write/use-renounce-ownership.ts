@@ -18,7 +18,7 @@ import type { WaitForTransactionReceiptErrorType } from "viem";
 export const useRenounceOwnership = () => {
   const { tokenAddress } = useSSVNetworkDetails();
 
-  const wait = useWaitForTransactionReceipt([
+  const wait = useWaitForTransactionReceipt<MainnetEvent>([
     "useRenounceOwnership",
     tokenAddress,
   ]);

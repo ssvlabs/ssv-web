@@ -26,7 +26,10 @@ const abiFunction = extractAbiFunction(TokenABI, "transferFrom");
 export const useTransferFrom = () => {
   const { tokenAddress } = useSSVNetworkDetails();
 
-  const wait = useWaitForTransactionReceipt(["useTransferFrom", tokenAddress]);
+  const wait = useWaitForTransactionReceipt<MainnetEvent>([
+    "useTransferFrom",
+    tokenAddress,
+  ]);
   const mutation = useWriteContract();
 
   const write = (

@@ -7,6 +7,12 @@ export const currencyFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0,
   compactDisplay: "short",
 });
+
+export const compactFormatter = new Intl.NumberFormat("en-US", {
+  notation: "compact",
+  maximumFractionDigits: 0,
+  compactDisplay: "short",
+});
 export const numberFormatter = new Intl.NumberFormat("en-US", {
   useGrouping: true,
   maximumFractionDigits: 2,

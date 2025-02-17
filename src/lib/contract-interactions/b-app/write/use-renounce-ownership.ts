@@ -5,7 +5,7 @@
 import { useWriteContract } from "wagmi";
 import { useSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import type {
-  MainnetEvent,
+  BAppEvent,
   MutationOptions,
 } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useWaitForTransactionReceipt } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
@@ -18,13 +18,13 @@ import type { WaitForTransactionReceiptErrorType } from "viem";
 export const useRenounceOwnership = () => {
   const { bAppContractAddress } = useSSVNetworkDetails();
 
-  const wait = useWaitForTransactionReceipt([
+  const wait = useWaitForTransactionReceipt<BAppEvent>([
     "useRenounceOwnership",
     bAppContractAddress,
   ]);
   const mutation = useWriteContract();
 
-  const write = (options: MutationOptions<MainnetEvent> = {}) => {
+  const write = (options: MutationOptions<BAppEvent> = {}) => {
     options.onInitiated?.();
     return mutation
       .writeContractAsync(

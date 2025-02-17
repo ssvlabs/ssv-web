@@ -1,5 +1,7 @@
 import { HoleskyV4SetterABI } from "@/lib/abi/holesky/v4/setter";
 import { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
+import { BAppABI } from "@/lib/abi/b-app/b-app";
+
 import type { MutationKey } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 import type {
@@ -25,11 +27,15 @@ import { getErrorMessage } from "@/lib/utils/wagmi";
 import { Span } from "@/components/ui/text";
 import { mainnet_private_rpc_client } from "@/wagmi/config";
 import { isContractWallet } from "@/hooks/account/use-account";
+import { tryCatch } from "@/lib/utils/tryCatch";
 
 export type MainnetEvent = DecodeEventLogReturnType<typeof MainnetV4SetterABI>;
+export type BAppEvent = DecodeEventLogReturnType<typeof BAppABI>;
 export type TestnetEvent = DecodeEventLogReturnType<typeof HoleskyV4SetterABI>;
 
-export type MutationOptions<T extends MainnetEvent | TestnetEvent> = {
+export type AllEvents = MainnetEvent | TestnetEvent | BAppEvent;
+
+export type MutationOptions<T extends AllEvents> = {
   onInitiated?: () => MaybePromise<unknown | (() => unknown)>;
   onConfirmed?: (hash: Address) => MaybePromise<unknown | (() => unknown)>;
   onMined?: (
@@ -41,7 +47,7 @@ export type MutationOptions<T extends MainnetEvent | TestnetEvent> = {
 };
 
 export const withTransactionModal = <
-  T extends MutationOptions<MainnetEvent | TestnetEvent> & {
+  T extends MutationOptions<AllEvents> & {
     successToast?: Toast;
     variant?: "default" | "2-step";
   },
@@ -106,7 +112,7 @@ export const withTransactionModal = <
         variant: "destructive",
       });
     },
-  } satisfies MutationOptions<MainnetEvent | TestnetEvent>;
+  } satisfies MutationOptions<AllEvents>;
 };
 
 const useClient = () => {
@@ -115,7 +121,9 @@ const useClient = () => {
   return chain === 1 ? mainnet_private_rpc_client : publicClient;
 };
 
-export const useWaitForTransactionReceipt = (key: MutationKey = []) => {
+export const useWaitForTransactionReceipt = <T extends AllEvents>(
+  key: MutationKey = [],
+) => {
   const client = useClient();
 
   return useMutation({
@@ -128,18 +136,21 @@ export const useWaitForTransactionReceipt = (key: MutationKey = []) => {
         ...receipt,
         events: receipt.logs.reduce((acc, log) => {
           try {
-            acc.push(
-              decodeEventLog({
-                abi: MainnetV4SetterABI,
-                data: log.data,
-                topics: log.topics,
-              }),
-            );
+            for (const eventAbi of [MainnetV4SetterABI, BAppABI]) {
+              tryCatch(() => {
+                const event = decodeEventLog({
+                  abi: eventAbi,
+                  data: log.data,
+                  topics: log.topics,
+                });
+                acc.push(event as T);
+              }, undefined);
+            }
           } catch (e) {
             console.error(e);
           }
           return acc;
-        }, [] as MainnetEvent[]),
+        }, [] as T[]),
       }));
     },
   });

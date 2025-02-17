@@ -11,6 +11,7 @@ import { useCreateStrategy } from "@/lib/contract-interactions/b-app/write/use-c
 import { useOptInToBApp } from "@/lib/contract-interactions/b-app/write/use-opt-in-to-b-app.ts";
 import { useState } from "react";
 import DoubleTx from "@/components/ui/double-tx.tsx";
+import { wait } from "@/lib/utils/promise.ts";
 
 const Metadata = () => {
   const navigate = useNavigate();
@@ -18,8 +19,13 @@ const Metadata = () => {
   const optInToBApp = useOptInToBApp();
   const { bApp, selectedObligations, skippedBApp } = useCreateStrategyContext();
   const [isTxStarted, setIsTxStarted] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [txStatus, setTxStatus] = useState<
-    { label: string; status: "waiting" | "pending" | "success" }[]
+    {
+      label: string;
+      status: "waiting" | "pending" | "success";
+      txHash?: `0x${string}`;
+    }[]
   >(
     !skippedBApp
       ? [
@@ -29,8 +35,16 @@ const Metadata = () => {
       : [{ label: "Register Strategy", status: "waiting" }],
   );
 
+  const finishTx = () => {
+    navigate("/account/strategies");
+    setIsLoading(false);
+    setIsTxStarted(false);
+  };
+
   const createStrategyHandler = async () => {
+    setIsLoading(true);
     let createdId = 0;
+    let registerHash: `0x${string}` = "0x";
 
     const cleanedNumber = Math.round(
       useCreateStrategyContext.state.selectedFee * 100,
@@ -41,15 +55,29 @@ const Metadata = () => {
         fee: cleanedNumber,
       },
       {
-        onError: () => setIsTxStarted(false),
-        onInitiated: () => {
+        onError: () => {
+          setIsLoading(false);
+          setIsTxStarted(false);
+        },
+        onConfirmed: (hash) => {
+          registerHash = hash;
           setTxStatus(
             !skippedBApp
               ? [
-                  { label: "Register Strategy", status: "pending" },
+                  {
+                    label: "Register Strategy",
+                    status: "pending",
+                    txHash: hash,
+                  },
                   { label: "Opt-in to bApp", status: "waiting" },
                 ]
-              : [{ label: "Register Strategy", status: "pending" }],
+              : [
+                  {
+                    label: "Register Strategy",
+                    status: "pending",
+                    txHash: hash,
+                  },
+                ],
           );
           setIsTxStarted(true);
         },
@@ -58,18 +86,24 @@ const Metadata = () => {
           setTxStatus(
             !skippedBApp
               ? [
-                  { label: "Register Strategy", status: "success" },
+                  {
+                    label: "Register Strategy",
+                    status: "success",
+                    txHash: registerHash,
+                  },
                   { label: "Opt-in to bApp", status: "waiting" },
                 ]
-              : [{ label: "Register Strategy", status: "success" }],
+              : [
+                  {
+                    label: "Register Strategy",
+                    status: "success",
+                    txHash: registerHash,
+                  },
+                ],
           );
         },
       },
     );
-    if (skippedBApp) {
-      setIsTxStarted(false);
-      navigate("/strategies");
-    }
     if (!skippedBApp) {
       const tokens = Object.keys(selectedObligations) as `0x${string}`[];
       const obligationPercentages = [] as number[];
@@ -88,34 +122,40 @@ const Metadata = () => {
           data: useCreateStrategyContext.state.registerData || "0x00",
         },
         {
-          onInitiated: () => {
-            setTxStatus(
-              !skippedBApp
-                ? [
-                    { label: "Register Strategy", status: "success" },
-                    { label: "Opt-in to bApp", status: "pending" },
-                  ]
-                : [{ label: "Register Strategy", status: "success" }],
-            );
-          },
           onError: () => {
+            setIsLoading(false);
             setIsTxStarted(false);
           },
-          onMined: () => {
-            setTxStatus(
-              !skippedBApp
-                ? [
-                    { label: "Register Strategy", status: "success" },
-                    { label: "Opt-in to bApp", status: "success" },
-                  ]
-                : [{ label: "Register Strategy", status: "success" }],
-            );
+          onConfirmed: (hash) => {
+            setTxStatus([
+              {
+                label: "Register Strategy",
+                status: "success",
+                txHash: registerHash,
+              },
+              { label: "Opt-in to bApp", status: "pending", txHash: hash },
+            ]);
+          },
+          onMined: (receipt) => {
+            setTxStatus([
+              {
+                label: "Register Strategy",
+                status: "success",
+                txHash: registerHash,
+              },
+              {
+                label: "Opt-in to bApp",
+                status: "success",
+                txHash: receipt.transactionHash,
+              },
+            ]);
+            return finishTx;
           },
         },
       );
     }
-    setIsTxStarted(false);
-    navigate("/strategies");
+    await wait(0);
+    finishTx();
   };
 
   return (
@@ -123,6 +163,7 @@ const Metadata = () => {
       onNext={createStrategyHandler}
       title={"Create Strategy"}
       steps={Object.values(STEPS_LABELS)}
+      isLoading={isLoading}
       children={
         <Container variant="horizontal" size="xl" className="py-6">
           <div className="w-[648px] bg-white flex flex-col p-6 rounded-[16px] gap-6">
@@ -160,7 +201,13 @@ const Metadata = () => {
             ></ImgCropUpload>
           </div>
           {isTxStarted && (
-            <DoubleTx stats={txStatus} onClose={() => setIsTxStarted(false)} />
+            <DoubleTx
+              stats={txStatus}
+              onClose={() => {
+                setIsLoading(false);
+                setIsTxStarted(false);
+              }}
+            />
           )}
         </Container>
       }

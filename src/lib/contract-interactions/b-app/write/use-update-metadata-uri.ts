@@ -5,7 +5,7 @@
 import { useWriteContract } from "wagmi";
 import { useSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import type {
-  MainnetEvent,
+  BAppEvent,
   MutationOptions,
 } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useWaitForTransactionReceipt } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
@@ -26,7 +26,7 @@ const abiFunction = extractAbiFunction(BAppABI, "updateMetadataURI");
 export const useUpdateMetadataURI = () => {
   const { bAppContractAddress } = useSSVNetworkDetails();
 
-  const wait = useWaitForTransactionReceipt([
+  const wait = useWaitForTransactionReceipt<BAppEvent>([
     "useUpdateMetadataURI",
     bAppContractAddress,
   ]);
@@ -34,7 +34,7 @@ export const useUpdateMetadataURI = () => {
 
   const write = (
     params: AbiInputsToParams<Fn["inputs"]>,
-    options: MutationOptions<MainnetEvent> = {},
+    options: MutationOptions<BAppEvent> = {},
   ) => {
     options.onInitiated?.();
     return mutation

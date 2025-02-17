@@ -35,8 +35,12 @@ export const BAppsTable = ({
           <TableHead></TableHead>
         </TableHeader>
         <TableBody>
-          {(bApps || []).map((bApp: BApp) => (
-            <BAppsTableRow isCreateFlow={isCreateFlow} bApp={bApp} />
+          {(bApps || []).map((bApp: BApp, index) => (
+            <BAppsTableRow
+              key={index}
+              isCreateFlow={isCreateFlow}
+              bApp={bApp}
+            />
           ))}
         </TableBody>
       </Table>

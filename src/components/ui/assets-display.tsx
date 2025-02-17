@@ -29,6 +29,7 @@ export const AssetsDisplay: AssetsDisplayFC = ({
     <div className={cn("flex flex-wrap gap-1", className)} {...props}>
       {visible.map((address) => (
         <AssetLogo
+          key={address}
           className="size-6"
           address={address}
           assetsData={assetsData}

@@ -1,5 +1,8 @@
 import { Text } from "@/components/ui/text.tsx";
 import { Spinner } from "@/components/ui/spinner.tsx";
+import { TbExternalLink } from "react-icons/tb";
+import { useLinks } from "@/hooks/use-links.ts";
+import { shortenAddress } from "@/lib/utils/strings.ts";
 
 const statusIcons = {
   ["waiting"]: (
@@ -19,8 +22,10 @@ const DoubleTx = ({
   stats: {
     label: string;
     status: "waiting" | "pending" | "success";
+    txHash?: `0x${string}`;
   }[];
 }) => {
+  const { etherscan } = useLinks();
   return (
     <div
       style={{ backgroundColor: "rgba(11, 42, 60, 0.16)" }}
@@ -37,12 +42,28 @@ const DoubleTx = ({
               &#10005;
             </button>
           </div>
-          <div className="flex flex-col gap-2">
-            {stats.map((state) => (
-              <div className="flex items-center gap-3">
-                {statusIcons[state.status]}
-
-                {state.label}
+          <div className="flex flex-col gap-1">
+            {stats.map((state, index) => (
+              <div key={index} className="flex flex-col gap-1">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {statusIcons[state.status]}
+                    {state.label}
+                  </div>
+                  {state.txHash && (
+                    <a
+                      target="_blank"
+                      href={`${etherscan}/tx/${state.txHash}`}
+                      className="flex items-center gap-1 text-[12px] text-primary-500 rounded-[4px] bg-primary-50 px-2 py-1 cursor-pointer"
+                    >
+                      {shortenAddress(state.txHash)}
+                      <TbExternalLink className="size-3" />
+                    </a>
+                  )}
+                </div>
+                {index < stats.length - 1 && (
+                  <div className="w-0 h-[18.5px] border-[0.5px] border-gray-400 ml-[18px]" />
+                )}
               </div>
             ))}
           </div>

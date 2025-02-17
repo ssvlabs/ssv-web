@@ -11,6 +11,7 @@ export const Wizard = ({
   skipToStep,
   currentStepNumber = 0,
   onNext,
+  isLoading,
 }: {
   title: string;
   onClose: () => void;
@@ -19,6 +20,7 @@ export const Wizard = ({
   skipToStep?: () => void;
   currentStepNumber?: number;
   steps?: string[];
+  isLoading?: boolean;
 }) => {
   const bApp = useCreateStrategyContext();
   if (
@@ -37,7 +39,7 @@ export const Wizard = ({
           {steps && (
             <div className={"flex items-center gap-3"}>
               {steps.map((step, i) => (
-                <div className={"flex items-center gap-3"}>
+                <div key={`${step}_${i}`} className={"flex items-center gap-3"}>
                   <div className={"flex items-center gap-2"}>
                     <div
                       className={`size-6 bg-${currentStepNumber === i ? "primary-500" : currentStepNumber > i ? "primary-400" : "gray-400"} rounded-full flex items-center text-white font-bold text-[12px] justify-center`}
@@ -78,7 +80,11 @@ export const Wizard = ({
               </Button>
             )}
             {currentStepNumber !== 0 && (
-              <Button onClick={onNext} className="size-full">
+              <Button
+                isLoading={isLoading}
+                onClick={onNext}
+                className="size-full"
+              >
                 Continue
               </Button>
             )}

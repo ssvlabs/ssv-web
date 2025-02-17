@@ -80,7 +80,7 @@ ${hasInputs ? `const abiFunction = extractAbiFunction(${abiName},"${functionName
 export const ${hookName} = () => {
   const { tokenAddress } = useSSVNetworkDetails()
 
-  const wait = ${useWaitForTxHookName}(["${hookName}", tokenAddress]);
+  const wait = ${useWaitForTxHookName}<${eventTypeName}>(["${hookName}", tokenAddress]);
   const mutation = useWriteContract();
 
   const write = (${hasInputs ? 'params: AbiInputsToParams<Fn["inputs"]>,' : ""}${isPayable ? "value?: bigint," : ""}options: MutationOptions<${eventTypeName}> = {}) => {

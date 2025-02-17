@@ -98,7 +98,7 @@ ${hasInputs ? `const abiFunction = extractAbiFunction(${abiName},"${functionName
 export const ${hookName} = () => {
   const { setterContractAddress } = useSSVNetworkDetails()
 
-  const wait = ${useWaitForTxHookName}(["${hookName}", setterContractAddress]);
+  const wait = ${useWaitForTxHookName}<${eventTypeName}>(["${hookName}", setterContractAddress]);
   const mutation = useWriteContract();
 
   const write = (${hasInputs ? 'params: AbiInputsToParams<Fn["inputs"]>,' : ""}${isPayable ? "value?: bigint," : ""}options: MutationOptions<${eventTypeName}> = {}) => {

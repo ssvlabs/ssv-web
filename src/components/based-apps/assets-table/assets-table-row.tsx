@@ -11,7 +11,7 @@ import { useBalance } from "wagmi";
 import { formatEther } from "viem";
 import { formatSSV } from "@/lib/utils/number";
 import { compactFormatter } from "../../../lib/utils/number";
-import { isEthereumAddress } from "@/lib/utils/token";
+import { isEthereumTokenAddress } from "@/lib/utils/token";
 export type AssetsTableRowProps = {
   asset: BAppAsset;
 };
@@ -22,7 +22,7 @@ type FCProps = FC<
 >;
 
 export const AssetsTableRow: FCProps = ({ asset, className, ...props }) => {
-  const isEthereum = isEthereumAddress(asset.token);
+  const isEthereum = isEthereumTokenAddress(asset.token);
 
   const { address } = useAccount();
   const ethBalance = useBalance({ address: address! });

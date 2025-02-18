@@ -2,6 +2,10 @@ import { api } from "@/lib/api-client.ts";
 import { endpoint } from "@/api/index.ts";
 import type { Pagination } from "@/types/api.ts";
 import type { Address } from "abitype";
+import {
+  serializerStrategiesSearch,
+  type StrategiesSearchParams,
+} from "@/lib/search-parsers/strategy-search-parsers";
 
 export type MyBAppAccount = {
   effectiveBalance: bigint;
@@ -111,27 +115,11 @@ export const getAccounts = ({
     )
     .then((res) => res);
 
-export const getStrategies = ({
-  id,
-  page = 1,
-  perPage = 10,
-  ordering,
-}: {
-  id?: string | number;
-  ordering?: string | number;
-  page: number;
-  perPage: number;
-}) =>
-  api
-    .get<StrategiesResponse>(
-      endpoint(
-        "basedApp",
-        `getStrategies?ordering=${ordering}&${id ? `id=${id}&perPage=${perPage}&page=${page}` : `perPage=${perPage}&page=${page}`}`,
-      ),
-    )
-    .then((res) => {
-      return res;
-    });
+export const getStrategies = (params: StrategiesSearchParams) => {
+  return api.get<StrategiesResponse>(
+    endpoint("basedApp/getStrategies", serializerStrategiesSearch(params)),
+  );
+};
 
 export const getStrategiesByOwnerAddress = ({
   page = 1,
@@ -184,10 +172,32 @@ export const getBAppMetadata = (url: string) =>
     return res;
   });
 
-export interface BAppAsset {
+export type BAppAsset = {
   token: Address;
   totalObligatedBalance: string;
   obligationsCount: number;
+};
+
+export interface BAppAssetResponse {
+  data: Array<BAppAsset>;
+  pagination: {
+    page: number;
+    perPage: number;
+    total: number;
+    pages: number;
+  };
 }
-export const getBAppsAssets = () =>
-  api.get<BAppAsset[]>(endpoint("basedApp/getASsets"));
+
+interface GetBAppsAssetsParams {
+  page?: number;
+  perPage?: number;
+}
+
+export const getBAppsAssets = async ({
+  page = 1,
+  perPage = 10,
+}: GetBAppsAssetsParams = {}) => {
+  return api.get<BAppAssetResponse>(
+    endpoint("basedApp", `getAssets?page=${page}&perPage=${perPage}`),
+  );
+};

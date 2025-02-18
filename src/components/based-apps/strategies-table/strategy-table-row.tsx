@@ -73,7 +73,7 @@ export const StrategyTableRow: FCProps = ({
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         <AssetsDisplay
           max={3}
-          addresses={strategy.assets.map((s) => s) as Address[]}
+          addresses={strategy.delegatedAssets.map((s) => s) as Address[]}
         />
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>

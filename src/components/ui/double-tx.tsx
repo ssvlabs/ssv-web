@@ -3,6 +3,7 @@ import { Spinner } from "@/components/ui/spinner.tsx";
 import { TbExternalLink } from "react-icons/tb";
 import { useLinks } from "@/hooks/use-links.ts";
 import { shortenAddress } from "@/lib/utils/strings.ts";
+import { Button } from "@/components/ui/button.tsx";
 
 const statusIcons = {
   ["waiting"]: (
@@ -12,16 +13,25 @@ const statusIcons = {
   ["success"]: (
     <img className="size-9" src={"/images/step-done.svg"} alt="Step Done" />
   ),
+  ["failed"]: (
+    <img className="size-9" src={"/images/step-failed.svg"} alt="Step Done" />
+  ),
 };
 
 const DoubleTx = ({
   stats,
   onClose,
+  action,
+  actionLabel,
+  isLoading,
 }: {
-  onClose: () => void;
+  onClose?: () => void;
+  action?: () => void;
+  isLoading?: boolean;
+  actionLabel?: string;
   stats: {
     label: string;
-    status: "waiting" | "pending" | "success";
+    status: "waiting" | "pending" | "success" | "failed";
     txHash?: `0x${string}`;
   }[];
 }) => {
@@ -35,12 +45,14 @@ const DoubleTx = ({
         <div className="flex flex-col gap-8">
           <div className="flex flex-row justify-between items-center">
             <Text variant="body-1-bold">Create Strategy</Text>
-            <button
-              onClick={onClose}
-              className="text-gray-600 hover:text-gray-800"
-            >
-              &#10005;
-            </button>
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="text-gray-600 hover:text-gray-800"
+              >
+                &#10005;
+              </button>
+            )}
           </div>
           <div className="flex flex-col gap-1">
             {stats.map((state, index) => (
@@ -67,6 +79,11 @@ const DoubleTx = ({
               </div>
             ))}
           </div>
+          {actionLabel && action && (
+            <Button isLoading={isLoading} onClick={action}>
+              {actionLabel}
+            </Button>
+          )}
         </div>
       </div>
     </div>

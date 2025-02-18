@@ -7,13 +7,13 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button.tsx";
 
 const MyStrategies = () => {
-  const { strategies, effectiveBalance } = useMyBAppAccount();
+  const { myStrategies, effectiveBalance } = useMyBAppAccount();
 
   const MOCK_TIER_DATA = [
     {
       label: "Delegating Accounts",
-      value: strategies.data.reduce(
-        (acc, currentValue) => acc + currentValue.delegators,
+      value: myStrategies.strategies.reduce(
+        (acc, currentValue) => acc + (currentValue.totalDelegators || 0),
         0,
       ),
       tooltipText: "Delegators",
@@ -83,10 +83,7 @@ const MyStrategies = () => {
           Create Strategy
         </Button>
       </div>
-      <StrategiesTable
-        strategies={strategies.data}
-        pagination={strategies.pagination}
-      />
+      <StrategiesTable strategies={myStrategies.strategies} />
     </Container>
   );
 };

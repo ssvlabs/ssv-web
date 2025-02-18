@@ -1,5 +1,5 @@
 import { Container } from "@/components/ui/container.tsx";
-import { Text } from "@/components/ui/text.tsx";
+import { Span, Text } from "@/components/ui/text.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { Textarea } from "@/components/ui/textarea.tsx";
 import ImgCropUpload from "@/components/ui/ImgCropUpload.tsx";
@@ -12,18 +12,26 @@ import { useOptInToBApp } from "@/lib/contract-interactions/b-app/write/use-opt-
 import { useState } from "react";
 import DoubleTx from "@/components/ui/double-tx.tsx";
 import { wait } from "@/lib/utils/promise.ts";
+import { toast } from "@/components/ui/use-toast.ts";
+import { getErrorMessage } from "@/lib/utils/wagmi.ts";
 
 const Metadata = () => {
   const navigate = useNavigate();
   const createStrategy = useCreateStrategy();
   const optInToBApp = useOptInToBApp();
-  const { bApp, selectedObligations, skippedBApp } = useCreateStrategyContext();
+  const {
+    bApp,
+    selectedObligations,
+    skippedBApp,
+    createdStrategyId,
+    createdStrategyRegisteredHash,
+  } = useCreateStrategyContext();
   const [isTxStarted, setIsTxStarted] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [txStatus, setTxStatus] = useState<
     {
       label: string;
-      status: "waiting" | "pending" | "success";
+      status: "waiting" | "pending" | "success" | "failed";
       txHash?: `0x${string}`;
     }[]
   >(
@@ -43,67 +51,120 @@ const Metadata = () => {
 
   const createStrategyHandler = async () => {
     setIsLoading(true);
-    let createdId = 0;
-    let registerHash: `0x${string}` = "0x";
+    let createdId = createdStrategyId;
+    let registerHash: `0x${string}` = createdStrategyRegisteredHash;
 
     const cleanedNumber = Math.round(
       useCreateStrategyContext.state.selectedFee * 100,
     );
 
-    await createStrategy.write(
-      {
-        fee: cleanedNumber,
-      },
-      {
-        onError: () => {
-          setIsLoading(false);
-          setIsTxStarted(false);
+    if (createdStrategyId < 0) {
+      await createStrategy.write(
+        {
+          fee: cleanedNumber,
         },
-        onConfirmed: (hash) => {
-          registerHash = hash;
-          setTxStatus(
-            !skippedBApp
-              ? [
-                  {
-                    label: "Register Strategy",
-                    status: "pending",
-                    txHash: hash,
-                  },
-                  { label: "Opt-in to bApp", status: "waiting" },
-                ]
-              : [
-                  {
-                    label: "Register Strategy",
-                    status: "pending",
-                    txHash: hash,
-                  },
-                ],
-          );
-          setIsTxStarted(true);
+        {
+          onError: (e) => {
+            setIsLoading(false);
+            toast({
+              title: "Transaction failed",
+              description: (
+                <Span className="whitespace-pre-wrap">
+                  {getErrorMessage(e)}
+                </Span>
+              ),
+              variant: "destructive",
+            });
+            setTxStatus(
+              !skippedBApp
+                ? [
+                    {
+                      label: "Register Strategy",
+                      status: "failed",
+                    },
+                    { label: "Opt-in to bApp", status: "waiting" },
+                  ]
+                : [
+                    {
+                      label: "Register Strategy",
+                      status: "failed",
+                    },
+                  ],
+            );
+            setIsLoading(false);
+          },
+          onConfirmed: (hash) => {
+            registerHash = hash;
+            useCreateStrategyContext.state.createdStrategyRegistaryHash = hash;
+            setTxStatus(
+              !skippedBApp
+                ? [
+                    {
+                      label: "Register Strategy",
+                      status: "pending",
+                      txHash: hash,
+                    },
+                    { label: "Opt-in to bApp", status: "waiting" },
+                  ]
+                : [
+                    {
+                      label: "Register Strategy",
+                      status: "pending",
+                      txHash: hash,
+                    },
+                  ],
+            );
+            setIsTxStarted(true);
+          },
+          onInitiated: () => {
+            setTxStatus(
+              !skippedBApp
+                ? [
+                    {
+                      label: "Register Strategy",
+                      status: "pending",
+                    },
+                    { label: "Opt-in to bApp", status: "waiting" },
+                  ]
+                : [
+                    {
+                      label: "Register Strategy",
+                      status: "pending",
+                    },
+                  ],
+            );
+            setIsTxStarted(true);
+          },
+          onMined: (receipt) => {
+            toast({
+              title: "Transaction confirmed",
+              description: new Date().toLocaleString(),
+            });
+            createdId = parseInt(`${receipt.logs[0].topics[1]}`);
+            useCreateStrategyContext.state.createdStrategyId = createdId;
+            setTxStatus(
+              !skippedBApp
+                ? [
+                    {
+                      label: "Register Strategy",
+                      status: "success",
+                      txHash: registerHash,
+                    },
+                    { label: "Opt-in to bApp", status: "waiting" },
+                  ]
+                : [
+                    {
+                      label: "Register Strategy",
+                      status: "success",
+                      txHash: registerHash,
+                    },
+                  ],
+            );
+          },
         },
-        onMined: (receipt) => {
-          createdId = parseInt(`${receipt.logs[0].topics[1]}`);
-          setTxStatus(
-            !skippedBApp
-              ? [
-                  {
-                    label: "Register Strategy",
-                    status: "success",
-                    txHash: registerHash,
-                  },
-                  { label: "Opt-in to bApp", status: "waiting" },
-                ]
-              : [
-                  {
-                    label: "Register Strategy",
-                    status: "success",
-                    txHash: registerHash,
-                  },
-                ],
-          );
-        },
-      },
-    );
+      );
+    }
+
     if (!skippedBApp) {
       const tokens = Object.keys(selectedObligations) as `0x${string}`[];
       const obligationPercentages = [] as number[];
@@ -122,21 +183,53 @@ const Metadata = () => {
           data: useCreateStrategyContext.state.registerData || "0x00",
         },
         {
-          onError: () => {
+          onError: (e) => {
             setIsLoading(false);
-            setIsTxStarted(false);
-          },
-          onConfirmed: (hash) => {
+            toast({
+              title: "Transaction failed",
+              description: (
+                <Span className="whitespace-pre-wrap">
+                  {getErrorMessage(e)}
+                </Span>
+              ),
+              variant: "destructive",
+            });
             setTxStatus([
               {
                 label: "Register Strategy",
                 status: "success",
                 txHash: registerHash,
               },
+              { label: "Opt-in to bApp", status: "failed" },
+            ]);
+          },
+          onConfirmed: (hash) => {
+            setIsTxStarted(true);
+            setTxStatus([
+              {
+                label: "Register Strategy",
+                status: "success",
+                txHash: registerHash || "",
+              },
               { label: "Opt-in to bApp", status: "pending", txHash: hash },
             ]);
           },
+          onInitiated: () => {
+            setIsTxStarted(true);
+            setTxStatus([
+              {
+                label: "Register Strategy",
+                status: "success",
+                txHash: registerHash || "",
+              },
+              { label: "Opt-in to bApp", status: "pending" },
+            ]);
+          },
           onMined: (receipt) => {
+            toast({
+              title: "Transaction confirmed",
+              description: new Date().toLocaleString(),
+            });
             setTxStatus([
               {
                 label: "Register Strategy",
@@ -202,11 +295,22 @@ const Metadata = () => {
           </div>
           {isTxStarted && (
             <DoubleTx
+              isLoading={isLoading}
+              action={!isLoading ? createStrategyHandler : undefined}
+              actionLabel={
+                createdStrategyId && createdStrategyRegisteredHash
+                  ? "Opt-in to bApp"
+                  : "Register"
+              }
               stats={txStatus}
-              onClose={() => {
-                setIsLoading(false);
-                setIsTxStarted(false);
-              }}
+              onClose={
+                !isLoading
+                  ? () => {
+                      setIsLoading(false);
+                      setIsTxStarted(false);
+                    }
+                  : undefined
+              }
             />
           )}
         </Container>

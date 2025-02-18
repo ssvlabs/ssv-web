@@ -1,12 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { formatUnits, isAddress } from "viem";
-import type { Strategy } from "@/api/b-app.ts";
+import type { StrategiesByOwnerResponse } from "@/api/b-app.ts";
 import { getMyAccount, getStrategiesByOwnerAddress } from "@/api/b-app.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { convertToPercentage } from "@/lib/utils/number.ts";
 import { useSearchParams } from "react-router-dom";
 import { useOrdering } from "@/hooks/use-ordering.ts";
-import type { Pagination } from "@/types/api.ts";
 
 export const useMyBAppAccount = () => {
   const { address } = useAccount();
@@ -59,12 +58,7 @@ export const useMyBAppAccount = () => {
 
   return {
     data: reactQueryData.data,
-    strategies:
-      myStrategies.data ||
-      ({} as {
-        data: Strategy[];
-        pagination: Pagination;
-      }),
+    myStrategies: myStrategies.data || ({} as StrategiesByOwnerResponse),
     isLoading: reactQueryData.isLoading || myStrategies.isLoading,
     totalPercentage,
     restBalancePercentage,

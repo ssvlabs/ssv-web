@@ -136,6 +136,7 @@ const Delegations = () => {
   const navigate = useNavigate();
   const { data, totalDelegatedValue, effectiveBalance, isLoading } =
     useMyBAppAccount();
+
   const validatorBalanceRow = createValidatorBalanceRow(
     ({
       delegationsCount: data?.delegations.length,

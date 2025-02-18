@@ -12,7 +12,7 @@ const ObligationTableRow = ({ obligation }: { obligation: `0x${string}` }) => {
   const { assetsData } = useBApps();
   const { state } = useCreateStrategyContext;
   const { selectedObligations } = useCreateStrategyContext();
-  console.log(state.selectedObligations);
+
   return (
     <TableRow key={obligation} className={"cursor-pointer max-h-7"}>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
@@ -35,6 +35,7 @@ const ObligationTableRow = ({ obligation }: { obligation: `0x${string}` }) => {
           {Object.keys(selectedObligations).includes(obligation) ? (
             <div className="flex gap-1">
               <Input
+                type={"number"}
                 onChange={(e) => {
                   let value = Number(e.target.value.replace("%", ""));
                   if (!value) {
@@ -45,7 +46,7 @@ const ObligationTableRow = ({ obligation }: { obligation: `0x${string}` }) => {
                   }
                   state.selectedObligations[obligation] = value;
                 }}
-                value={selectedObligations[obligation]}
+                value={`${selectedObligations[obligation]}`}
                 className="w-14 h-8"
               />
               %

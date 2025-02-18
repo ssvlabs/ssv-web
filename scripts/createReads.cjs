@@ -63,7 +63,7 @@ import type { UseReadContractParameters } from "wagmi";
 import { useReadContract, useBlockNumber } from "wagmi";
 
 
-import { isUndefined } from "lodash-es";
+${hasInputs ? `import { isUndefined } from "lodash-es";` : ""}
 
 import { getSSVNetworkDetails, useSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import { ${abiName} } from "@/lib/abi/${networkName}/v4/getter";${
@@ -123,7 +123,7 @@ export const ${hookName} = (${hasInputs ? 'params: AbiInputsToParams<Fn["inputs"
            ...options,
         enabled:options?.enabled && args.every((arg) => !isUndefined(arg)),
       },`
-           : "query:options"
+           : "query: {...options},"
        }
     });
 };

@@ -1,6 +1,7 @@
 import { api } from "@/lib/api-client.ts";
 import { endpoint } from "@/api/index.ts";
 import type { Pagination } from "@/types/api.ts";
+import type { Address } from "abitype";
 
 export type MyBAppAccount = {
   effectiveBalance: bigint;
@@ -182,3 +183,11 @@ export const getBAppMetadata = (url: string) =>
     console.log(res);
     return res;
   });
+
+export interface BAppAsset {
+  token: Address;
+  totalObligatedBalance: string;
+  obligationsCount: number;
+}
+export const getBAppsAssets = () =>
+  api.get<BAppAsset[]>(endpoint("basedApp/getASsets"));

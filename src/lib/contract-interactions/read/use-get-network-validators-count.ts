@@ -45,7 +45,7 @@ export const useGetNetworkValidatorsCount = (
     functionName: "getNetworkValidatorsCount",
 
     blockNumber: options.watch ? blockNumber.data : undefined,
-    query: options,
+    query: { ...options },
   });
 };
 

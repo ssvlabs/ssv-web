@@ -18,7 +18,10 @@ import type { WaitForTransactionReceiptErrorType } from "viem";
 export const useInitialize = () => {
   const { tokenAddress } = useSSVNetworkDetails();
 
-  const wait = useWaitForTransactionReceipt(["useInitialize", tokenAddress]);
+  const wait = useWaitForTransactionReceipt<MainnetEvent>([
+    "useInitialize",
+    tokenAddress,
+  ]);
   const mutation = useWriteContract();
 
   const write = (options: MutationOptions<MainnetEvent> = {}) => {

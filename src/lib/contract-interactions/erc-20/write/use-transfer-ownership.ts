@@ -26,7 +26,7 @@ const abiFunction = extractAbiFunction(TokenABI, "transferOwnership");
 export const useTransferOwnership = () => {
   const { tokenAddress } = useSSVNetworkDetails();
 
-  const wait = useWaitForTransactionReceipt([
+  const wait = useWaitForTransactionReceipt<MainnetEvent>([
     "useTransferOwnership",
     tokenAddress,
   ]);

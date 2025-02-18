@@ -2,10 +2,14 @@ import type { FC, ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils/tw";
 import type { Address } from "abitype";
 import { onlyTokens } from "@/lib/utils/tokens.ts";
+import { useReadContract } from "wagmi";
+import { TokenABI } from "@/lib/abi/token";
+import { isEthereumAddress } from "@/lib/utils/token";
+import { useTheme } from "@/hooks/app/use-theme";
 
 export type AssetLogoProps = {
   address: Address;
-  assetsData: Record<string, { symbol: string; name: string }>;
+  fallbackAssetSrc?: string;
 };
 
 type AssetLogoFC = FC<
@@ -14,21 +18,33 @@ type AssetLogoFC = FC<
 
 export const AssetLogo: AssetLogoFC = ({
   address,
+  fallbackAssetSrc = "/images/networks/light.svg",
   className,
-  assetsData,
   ...props
 }) => {
-  const tokenSymbol =
-    (assetsData as Record<string, { symbol: string; name: string }>)[address]
-      ?.symbol || "";
-  const logoSrc =
-    onlyTokens[tokenSymbol.toUpperCase()] ||
-    "/images/operator_default_background/light.svg";
+  const { dark } = useTheme();
+  const isEthereum = isEthereumAddress(address);
+
+  const { data: tokenSymbol = "ETH" } = useReadContract({
+    abi: TokenABI,
+    functionName: "symbol",
+    address,
+    query: {
+      staleTime: Infinity,
+      enabled: !isEthereum,
+    },
+  });
+
+  const logoSrc = isEthereum
+    ? dark
+      ? "/images/networks/light.svg"
+      : "/images/networks/dark.svg"
+    : onlyTokens[tokenSymbol?.toUpperCase() || ""] || fallbackAssetSrc;
 
   return (
     <img
       {...props}
-      className={cn("flex flex-wrap gap-1 rounded-md", className)}
+      className={cn("flex flex-wrap size-6 gap-1 rounded-md", className)}
       src={logoSrc}
     />
   );

@@ -4,10 +4,7 @@ import Slider from "@/components/ui/slider.tsx";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 import { useNavigate } from "react-router-dom";
 import { Wizard } from "@/components/ui/wizard.tsx";
-import {
-  CreateSteps,
-  STEPS_LABELS,
-} from "@/app/routes/dashboard/b-app/strategies/create.tsx";
+import { CreateSteps, STEPS_LABELS } from "@/types/b-app.ts";
 
 const Fee = () => {
   const navigate = useNavigate();

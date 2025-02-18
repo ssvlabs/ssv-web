@@ -80,6 +80,7 @@ const AssetsTable = ({
                     if (rowIndex === rows.length - 1) {
                       return (
                         <TableCell
+                          key={index}
                           onClick={onRowClick}
                           className={`py-0 h-[52px] ${tableHeads[rowIndex].textAlign} ${textVariants({ variant: "body-3-medium" })}`}
                         >
@@ -102,6 +103,7 @@ const AssetsTable = ({
                     }
                     return (
                       <TableCell
+                        key={index}
                         className={`py-0 h-[52px] ${tableHeads[rowIndex].textAlign} ${textVariants({ variant: "body-3-medium" })}`}
                         onClick={onRowClick}
                       >
@@ -127,8 +129,9 @@ const AssetsTable = ({
                 </TableRow>
                 {openedTableIndex === index &&
                   innerData &&
-                  innerData.map((innerRow: (string | ReactNode)[]) => (
+                  innerData.map((innerRow: (string | ReactNode)[], index) => (
                     <InnerRow
+                      key={index}
                       data={{
                         innerRow,
                         sizes: tableHeads.map(({ size }) => size),

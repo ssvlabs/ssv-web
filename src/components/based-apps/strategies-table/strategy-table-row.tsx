@@ -80,10 +80,10 @@ export const StrategyTableRow: FCProps = ({
         {percentageFormatter.format(convertToPercentage(strategy.fee))}
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        {strategy.delegators}
+        {strategy.totalDelegators || 0}
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        {currencyFormatter.format(strategy.totalDelegatedValue)}
+        {currencyFormatter.format(Number(strategy.totalDelegatedFiat) || 0)}
       </TableCell>
     </TableRow>
   );

@@ -22,8 +22,7 @@ const MyAccount = () => {
     [AccountSelect.Strategy]: MyStrategies,
     [AccountSelect.Services]: Services,
   };
-
-  const { strategies } = useMyBAppAccount();
+  const { myStrategies } = useMyBAppAccount();
   const SWITCH_BUTTONS = [
     {
       label: AccountSelect.Delegations,
@@ -31,15 +30,9 @@ const MyAccount = () => {
     },
     {
       label: AccountSelect.Strategy,
-      count: strategies.pagination.total || 0,
-    },
-    {
-      label: AccountSelect.Services,
-      count: 0,
+      count: myStrategies.strategies.length,
     },
   ];
-
-  setCurrentFilter;
   const Component = components[currentFilter];
 
   return (

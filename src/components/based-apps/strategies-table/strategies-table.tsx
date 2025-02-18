@@ -15,7 +15,7 @@ import { Loading } from "@/components/ui/Loading.tsx";
 
 export type OperatorsTableProps = {
   strategies: Strategy[];
-  pagination: IPagination;
+  pagination?: IPagination;
   isLoading?: boolean;
 };
 
@@ -54,7 +54,7 @@ export const StrategiesTable: FCProps = ({
         </TableBody>
       </Table>
       <div className="bg-gray-50 w-full">{isLoading && <Loading />}</div>
-      {pagination.pages > 1 ? (
+      {pagination && pagination.pages > 1 ? (
         <>
           <Divider />
           <div className="flex w-full bg-gray-50 py-4 rounded-b-2xl">

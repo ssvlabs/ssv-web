@@ -5,10 +5,8 @@ import { BAppsTable } from "@/components/based-apps/b-app-table/b-apps-table.tsx
 import { useBApps } from "@/hooks/b-app/use-b-apps.ts";
 import { Wizard } from "@/components/ui/wizard.tsx";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import {
-  CreateSteps,
-  STEPS_LABELS,
-} from "@/app/routes/dashboard/b-app/strategies/create.tsx";
+import { CreateSteps, STEPS_LABELS } from "@/types/b-app.ts";
+import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 
 const BApps = () => {
   const { bApps, pagination, isBAppsLoading } = useBApps();
@@ -55,7 +53,10 @@ const BApps = () => {
         </Container>
       }
       currentStepNumber={CreateSteps.SelectBApp}
-      skipToStep={() => navigate("../fee")}
+      skipToStep={() => {
+        useCreateStrategyContext.state.skippedBApp = true;
+        navigate("../fee");
+      }}
       onClose={() => {
         navigate("/account/strategies");
       }}

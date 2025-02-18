@@ -25,16 +25,40 @@ export type BAppAccount = {
   totalDelegatedValue: string;
 };
 
-export type Strategy = {
+export interface Strategy {
   id: string;
   name: string;
-  bApps: number;
-  delegators: number;
-  assets: `0x${string}`[];
-  fee: string;
   ownerAddress: string;
-  totalDelegatedValue: number | bigint;
-};
+  bApps: number;
+  delegatedAssets: `0x${string}`[];
+  fee: string;
+  totalDelegators?: number;
+  totalDelegatedFiat?: string;
+  delegators?: [
+    {
+      id: string;
+      token: string[];
+      depositFiatAmount: string;
+    },
+  ];
+  totalNonSlashableTokens?: string;
+  totalNonSlashableFiat?: string;
+}
+
+export interface StrategiesResponse {
+  data: Strategy[];
+  pagination: Pagination;
+}
+
+export interface StrategiesByOwnerResponse {
+  totalDelegators: number;
+  totalNonSlashableTokens: string;
+  totalNonSlashableFiat: string;
+  totalSlashableFiat: string;
+  ownerName: string;
+  ownerIcon: string;
+  strategies: Strategy[];
+}
 
 type BAppsMetaData = {
   name: string;
@@ -98,10 +122,7 @@ export const getStrategies = ({
   perPage: number;
 }) =>
   api
-    .get<{
-      data: Strategy[];
-      pagination: Pagination;
-    }>(
+    .get<StrategiesResponse>(
       endpoint(
         "basedApp",
         `getStrategies?ordering=${ordering}&${id ? `id=${id}&perPage=${perPage}&page=${page}` : `perPage=${perPage}&page=${page}`}`,
@@ -122,10 +143,7 @@ export const getStrategiesByOwnerAddress = ({
   perPage: number;
 }) =>
   api
-    .get<{
-      data: Strategy[];
-      pagination: Pagination;
-    }>(
+    .get<StrategiesByOwnerResponse>(
       endpoint(
         "basedApp",
         `getStrategiesByOwner/${ownerAddress}?perPage=${perPage}&page=${page}`,

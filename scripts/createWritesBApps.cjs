@@ -42,7 +42,7 @@
 
     const abiName = "BAppABI";
 
-    const eventTypeName = isTestnet ? "TestnetEvent" : "MainnetEvent";
+    const eventTypeName = isTestnet ? "BAppEvent" : "BAppEvent";
 
     const useWaitForTxHookName = `useWaitForTransactionReceipt${isTestnet ? "_Testnet" : ""}`;
 
@@ -80,7 +80,7 @@ ${hasInputs ? `const abiFunction = extractAbiFunction(${abiName},"${functionName
 export const ${hookName} = () => {
   const { bAppContractAddress } = useSSVNetworkDetails()
 
-  const wait = ${useWaitForTxHookName}(["${hookName}", bAppContractAddress]);
+  const wait = ${useWaitForTxHookName}<${eventTypeName}>(["${hookName}", bAppContractAddress]);
   const mutation = useWriteContract();
 
   const write = (${hasInputs ? 'params: AbiInputsToParams<Fn["inputs"]>,' : ""}${isPayable ? "value?: bigint," : ""}options: MutationOptions<${eventTypeName}> = {}) => {

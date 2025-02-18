@@ -9,13 +9,13 @@ import {
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import type { ReactNode } from "react";
 import { useState } from "react";
-import InnerRow from "@/app/routes/dashboard/my-account/inner-row.tsx";
+import InnerRow from "@/app/routes/dashboard/b-app/my-account/inner-row.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { cn } from "@/lib/utils/tw.ts";
 import { textVariants } from "@/components/ui/text.tsx";
 import type { Pagination as PaginationType } from "@/types/api.ts";
 import { Divider } from "@/components/ui/divider.tsx";
-import { Pagination } from "@/components/ui/pagination-v2";
+import { Pagination } from "@/components/ui/pagination-v2.tsx";
 import { Loading } from "@/components/ui/Loading.tsx";
 import { Text } from "@/components/ui/text.tsx";
 
@@ -28,7 +28,7 @@ const AssetsTable = ({
   isLoading,
   pagination,
 }: {
-  onRowClick: () => void;
+  onRowClick?: () => void;
   showDelegateBtn?: boolean;
   onDelegateClick?: (address: string) => void;
   tableHeads: {
@@ -80,6 +80,7 @@ const AssetsTable = ({
                     if (rowIndex === rows.length - 1) {
                       return (
                         <TableCell
+                          key={index}
                           onClick={onRowClick}
                           className={`py-0 h-[52px] ${tableHeads[rowIndex].textAlign} ${textVariants({ variant: "body-3-medium" })}`}
                         >
@@ -102,6 +103,7 @@ const AssetsTable = ({
                     }
                     return (
                       <TableCell
+                        key={index}
                         className={`py-0 h-[52px] ${tableHeads[rowIndex].textAlign} ${textVariants({ variant: "body-3-medium" })}`}
                         onClick={onRowClick}
                       >
@@ -127,8 +129,9 @@ const AssetsTable = ({
                 </TableRow>
                 {openedTableIndex === index &&
                   innerData &&
-                  innerData.map((innerRow: (string | ReactNode)[]) => (
+                  innerData.map((innerRow: (string | ReactNode)[], index) => (
                     <InnerRow
+                      key={index}
                       data={{
                         innerRow,
                         sizes: tableHeads.map(({ size }) => size),

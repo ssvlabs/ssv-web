@@ -1,5 +1,5 @@
 import { Text } from "@/components/ui/text.tsx";
-import AssetsTable from "@/app/routes/dashboard/my-account/assets-table.tsx";
+import AssetsTable from "@/app/routes/dashboard/b-app/my-account/assets-table.tsx";
 import { Container } from "@/components/ui/container.tsx";
 import { useNavigate } from "react-router-dom";
 import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
@@ -136,6 +136,7 @@ const Delegations = () => {
   const navigate = useNavigate();
   const { data, totalDelegatedValue, effectiveBalance, isLoading } =
     useMyBAppAccount();
+
   const validatorBalanceRow = createValidatorBalanceRow(
     ({
       delegationsCount: data?.delegations.length,

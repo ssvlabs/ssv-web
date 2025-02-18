@@ -1,11 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { formatUnits, isAddress } from "viem";
-import { getMyAccount } from "@/api/b-app.ts";
+import type { StrategiesByOwnerResponse } from "@/api/b-app.ts";
+import { getMyAccount, getStrategiesByOwnerAddress } from "@/api/b-app.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { convertToPercentage } from "@/lib/utils/number.ts";
+import { useSearchParams } from "react-router-dom";
+import { useOrdering } from "@/hooks/use-ordering.ts";
 
 export const useMyBAppAccount = () => {
   const { address } = useAccount();
+  const [searchParams, setSearchParams] = useSearchParams();
+  setSearchParams;
+  const page = Number(searchParams.get("page") || 1);
+  const idToSearch = Number(searchParams.get("id") || "");
+  const perPage = Number(searchParams.get("perPage") || 10);
+  const { orderBy, sort } = useOrdering();
 
   const reactQueryData = useQuery({
     queryKey: [address],
@@ -15,6 +24,18 @@ export const useMyBAppAccount = () => {
     refetchOnReconnect: false,
     queryFn: () => address && getMyAccount(address),
     enabled: address && isAddress(address),
+  });
+
+  const myStrategies = useQuery({
+    queryKey: ["get_my-strategies", page, perPage, idToSearch, orderBy, sort],
+    queryFn: () =>
+      address &&
+      getStrategiesByOwnerAddress({
+        page: page,
+        perPage: perPage,
+        ownerAddress: address,
+      }),
+    enabled: true,
   });
 
   const totalPercentage = reactQueryData?.data?.delegations.reduce(
@@ -37,7 +58,8 @@ export const useMyBAppAccount = () => {
 
   return {
     data: reactQueryData.data,
-    isLoading: reactQueryData.isLoading,
+    myStrategies: myStrategies.data || ({} as StrategiesByOwnerResponse),
+    isLoading: reactQueryData.isLoading || myStrategies.isLoading,
     totalPercentage,
     restBalancePercentage,
     effectiveBalance: reactQueryData.data?.effectiveBalance,

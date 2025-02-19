@@ -23,13 +23,6 @@ const ObligationsTable = ({
           {obligations?.map((obligation: `0x${string}`) => (
             <ObligationTableRow obligation={obligation} />
           ))}
-          {/*<ObligationTableRow*/}
-          {/*  obligation={{*/}
-          {/*    id: "1",*/}
-          {/*    address: "0xF90c557362C7f0AB7f32F725664a98fEccE9d384",*/}
-          {/*    name: "SSV Network",*/}
-          {/*  }}*/}
-          {/*/>*/}
         </TableBody>
       </Table>
     </div>

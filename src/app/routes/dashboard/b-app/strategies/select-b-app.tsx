@@ -8,7 +8,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { CreateSteps, STEPS_LABELS } from "@/types/b-app.ts";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 
-const BApps = () => {
+const SelectBApp = () => {
   const { bApps, pagination, isBAppsLoading } = useBApps();
   const navigate = useNavigate();
 
@@ -64,4 +64,4 @@ const BApps = () => {
   );
 };
 
-export default BApps;
+export default SelectBApp;

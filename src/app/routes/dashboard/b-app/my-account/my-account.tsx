@@ -30,7 +30,7 @@ const MyAccount = () => {
     },
     {
       label: AccountSelect.Strategy,
-      count: myStrategies.strategies.length,
+      count: myStrategies?.strategies?.length || 0,
     },
   ];
   const Component = components[currentFilter];

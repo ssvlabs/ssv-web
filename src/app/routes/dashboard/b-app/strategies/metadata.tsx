@@ -95,7 +95,7 @@ const Metadata = () => {
           },
           onConfirmed: (hash) => {
             registerHash = hash;
-            useCreateStrategyContext.state.createdStrategyRegistaryHash = hash;
+            useCreateStrategyContext.state.createdStrategyRegisteredHash = hash;
             setTxStatus(
               !skippedBApp
                 ? [

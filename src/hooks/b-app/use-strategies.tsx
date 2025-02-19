@@ -1,27 +1,32 @@
-import { useQuery } from "@tanstack/react-query";
 import { getStrategies } from "@/api/b-app.ts";
-import { useSearchParams } from "react-router-dom";
+import { useStrategiesFilters } from "@/hooks/b-app/filters/use-strategies-filters";
+import { useOrdering } from "@/hooks/use-ordering.ts";
 import { createDefaultPagination } from "@/lib/utils/api.ts";
 import { getTokenMetadata } from "@/lib/utils/tokens-helper.ts";
+import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router";
-import { useOrdering } from "@/hooks/use-ordering.ts";
 
 export const useStrategies = () => {
   const { strategyId } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams();
-  setSearchParams;
-  const page = Number(searchParams.get("page") || 1);
-  const idToSearch = Number(searchParams.get("id") || "");
-  const perPage = Number(searchParams.get("perPage") || 10);
+  const filters = useStrategiesFilters();
   const { orderBy, sort, ordering } = useOrdering();
 
   const query = useQuery({
-    queryKey: ["get_strategies", page, perPage, idToSearch, orderBy, sort],
+    queryKey: [
+      "get_strategies",
+      filters.paginationQuery.page,
+      filters.paginationQuery.perPage,
+      filters.tokensFilter.value,
+      filters.idFilter.value,
+      orderBy,
+      sort,
+    ],
     queryFn: () => {
       return getStrategies({
-        id: idToSearch,
-        page: page,
-        perPage: perPage,
+        id: filters.idFilter.value,
+        page: filters.paginationQuery.page,
+        perPage: filters.paginationQuery.perPage,
+        token: filters.tokensFilter.value,
         ordering,
       });
     },

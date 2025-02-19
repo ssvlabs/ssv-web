@@ -10,9 +10,9 @@ import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import { useStrategy } from "@/hooks/b-app/use-strategy.ts";
 import type { StrategyBApp } from "@/api/b-app.ts";
 import { shortenAddress } from "@/lib/utils/strings.ts";
-import { isEthereumAddress } from "@/lib/utils/token.ts";
 import { useReadContract } from "wagmi";
 import { TokenABI } from "@/lib/abi/token.ts";
+import { isEthereumTokenAddress } from "@/lib/utils/token";
 
 export type AssetsTableRowProps = {
   searchValue?: string;
@@ -39,7 +39,7 @@ export const StrategyAssetsTableRow: FCProps = ({
   const [isInnerOpen, setIsInnerOpen] = useState(false);
   const { strategy } = useStrategy();
   const AngleComponent = isInnerOpen ? FaAngleUp : FaAngleDown;
-  const isEthereum = isEthereumAddress(asset.token);
+  const isEthereum = isEthereumTokenAddress(asset.token);
 
   const { data: tokenName = "Ethereum" } = useReadContract({
     abi: TokenABI,

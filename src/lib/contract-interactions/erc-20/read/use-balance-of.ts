@@ -41,8 +41,10 @@ export const fetchBalanceOf = (
 ) => queryClient.fetchQuery(getBalanceOfQueryOptions(tokenAddress, params));
 
 export const useBalanceOf = (
-  tokenAddress: `0x${string}`,
-  params: AbiInputsToParams<Fn["inputs"]>,
+  {
+    tokenAddress,
+    ...params
+  }: AbiInputsToParams<Fn["inputs"]> & { tokenAddress?: `0x${string}` },
   options: QueryOptions = { enabled: true },
 ) => {
   const args = paramsToArray({ params, abiFunction });
@@ -54,7 +56,10 @@ export const useBalanceOf = (
     args,
     query: {
       ...options,
-      enabled: options?.enabled && args.every((arg) => !isUndefined(arg)),
+      enabled:
+        tokenAddress &&
+        options?.enabled &&
+        args.every((arg) => !isUndefined(arg)),
     },
   });
 };

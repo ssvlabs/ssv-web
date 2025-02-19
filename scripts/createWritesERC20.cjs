@@ -53,7 +53,6 @@
 
   
 import { useWriteContract } from "wagmi";
-import {useSSVNetworkDetails} from '@/hooks/use-ssv-network-details';
 import type {
   ${eventTypeName},
   MutationOptions,
@@ -78,12 +77,11 @@ ${hasInputs ? `const abiFunction = extractAbiFunction(${abiName},"${functionName
 // type State = "idle" | "confirming" | "mining" | "mined" | "error";
 
 export const ${hookName} = () => {
-  const { tokenAddress } = useSSVNetworkDetails()
-
-  const wait = ${useWaitForTxHookName}<${eventTypeName}>(["${hookName}", tokenAddress]);
+  const wait = ${useWaitForTxHookName}<${eventTypeName}>(["${hookName}"]);
   const mutation = useWriteContract();
 
-  const write = (${hasInputs ? 'params: AbiInputsToParams<Fn["inputs"]>,' : ""}${isPayable ? "value?: bigint," : ""}options: MutationOptions<${eventTypeName}> = {}) => {
+  const write = (${hasInputs ? '{tokenAddress, ...params}: AbiInputsToParams<Fn["inputs"]> & {tokenAddress: `0x${string}`},' : "{tokenAddress}: {tokenAddress: `0x${string}`},"}
+  options: MutationOptions<${eventTypeName}> = {}) => {
     options.onInitiated?.();
     return mutation.writeContractAsync({
     ${isPayable ? "value," : ""}

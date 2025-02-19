@@ -17,6 +17,8 @@ export type OperatorsTableProps = {
   strategies: Strategy[];
   pagination?: IPagination;
   isLoading?: boolean;
+  showDepositButtonOnHover?: boolean;
+  onDepositClick?: (strategy: Strategy) => void;
 };
 
 type FCProps = FC<
@@ -29,6 +31,8 @@ export const StrategiesTable: FCProps = ({
   pagination,
   className,
   isLoading,
+  showDepositButtonOnHover,
+  onDepositClick,
   ...props
 }) => {
   return (
@@ -49,7 +53,19 @@ export const StrategiesTable: FCProps = ({
         </TableHeader>
         <TableBody>
           {strategies.map((strategy) => {
-            return <StrategyTableRow key={strategy.id} strategy={strategy} />;
+            return (
+              <StrategyTableRow
+                onDepositClick={() => {
+                  onDepositClick?.(strategy);
+                }}
+                onRowClick={() => {
+                  console.log("row clicked");
+                }}
+                showDepositButtonOnHover={showDepositButtonOnHover}
+                key={strategy.id}
+                strategy={strategy}
+              />
+            );
           })}
         </TableBody>
       </Table>

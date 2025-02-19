@@ -6,10 +6,19 @@ import { Button } from "@/components/ui/button.tsx";
 import { SearchInput } from "@/components/ui/search-input.tsx";
 import { Link, useSearchParams } from "react-router-dom";
 import { useStrategies } from "@/hooks/b-app/use-strategies.tsx";
+import { TableMenuButton } from "@/components/ui/table";
+import { useTokensFilter } from "@/hooks/b-app/filters/use-tokens-filter";
+import { AssetLogo } from "@/components/ui/asset-logo";
+import { X } from "lucide-react";
+import type { Strategy } from "@/api/b-app";
+import { useAssetsDelegationModal } from "@/signals/modal";
+import type { Address } from "abitype";
 
 export const Strategies: FC = () => {
   const { pagination, strategies, isStrategiesIsLoading } = useStrategies();
   const [, setSearchParams] = useSearchParams();
+
+  const tokensFilter = useTokensFilter();
 
   const searchById = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchParams((prev) => {
@@ -19,6 +28,12 @@ export const Strategies: FC = () => {
     });
   };
 
+  const onDepositClick = (strategy: Strategy) => {
+    useAssetsDelegationModal.state.open({
+      strategy,
+      asset: tokensFilter.value?.[0] as Address,
+    });
+  };
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <div className="flex justify-between w-full items-center">
@@ -34,6 +49,23 @@ export const Strategies: FC = () => {
               placeholder: "Search Strategy...",
             }}
           />
+          {tokensFilter.value && (
+            <TableMenuButton isActive={true} className="pr-2">
+              <AssetLogo className="size-4" address={tokensFilter.value[0]} />
+              <div className="flex">Filters</div>
+              <div
+                onClick={(event) => {
+                  event.stopPropagation();
+                  tokensFilter.set(null, {
+                    history: "push",
+                  });
+                }}
+                className="flex size-6 items-center justify-center rounded-md text-gray-500 hover:bg-primary-50 hover:text-primary-500"
+              >
+                <X className="size-4" />
+              </div>
+            </TableMenuButton>
+          )}
           <Button as={Link} to={"create/bApps"} size="sm" className="px-5 h-10">
             Create Strategy
           </Button>
@@ -43,6 +75,8 @@ export const Strategies: FC = () => {
         strategies={strategies}
         pagination={pagination}
         isLoading={isStrategiesIsLoading}
+        showDepositButtonOnHover={(tokensFilter.value?.length || 0) > 0}
+        onDepositClick={onDepositClick}
       />
     </Container>
   );

@@ -5,6 +5,8 @@ import { Divider } from "@/components/ui/divider";
 import { NumberInput } from "@/components/ui/number-input";
 import { Text, textVariants } from "@/components/ui/text";
 import { WithAllowance } from "@/components/with-allowance/with-allowance";
+import { useAccount } from "@/hooks/account/use-account";
+import { useDelegatedAsset } from "@/hooks/b-app/use-delegated-asset";
 import { useAsset } from "@/hooks/use-asset";
 import { useSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import { useDepositERC20 } from "@/lib/contract-interactions/b-app/write/use-deposit-erc-20";
@@ -18,9 +20,15 @@ import { useEffect, useState } from "react";
 
 export const AssetsDelegationModal = () => {
   const { meta, isOpen, onOpenChange } = useAssetsDelegationModal();
-
   const { bAppContractAddress } = useSSVNetworkDetails();
+  const { address } = useAccount();
+
   const asset = useAsset(meta.asset);
+  const delegated = useDelegatedAsset({
+    token: meta.asset,
+    contributor: address,
+    strategyId: Number(meta.strategy?.id) || -1,
+  });
 
   const [amount, setAmount] = useState<bigint>(BigInt(0));
   useEffect(() => {
@@ -29,7 +37,6 @@ export const AssetsDelegationModal = () => {
 
   const depositERC20 = useDepositERC20();
   const depositETH = useDepositETH();
-
   const isPending = depositETH.isPending || depositERC20.isPending;
 
   const deposit = () => {
@@ -40,6 +47,7 @@ export const AssetsDelegationModal = () => {
       },
       onMined: () => {
         asset.refreshBalance();
+        delegated.refresh();
       },
     });
 
@@ -86,7 +94,8 @@ export const AssetsDelegationModal = () => {
           </Text>
           <div className="flex items-center h-[52px] w-full bg-gray-100 rounded-xl px-6">
             <Text variant="body-3-medium">
-              {0} {asset.symbol}
+              {formatSSV(BigInt(delegated.data?.amount || 0), asset.decimals)}{" "}
+              {asset.symbol}
             </Text>
           </div>
         </div>
@@ -94,6 +103,7 @@ export const AssetsDelegationModal = () => {
         <NumberInput
           max={asset.balance}
           value={amount}
+          decimals={asset.decimals}
           onChange={(value) => setAmount(value)}
           placeholder=""
           render={(props, ref) => (

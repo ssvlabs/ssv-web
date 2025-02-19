@@ -222,3 +222,24 @@ export const getBAppsAssets = async ({
     endpoint("basedApp", `getAssets?page=${page}&perPage=${perPage}`),
   );
 };
+
+export type GetDelegatedAssetParams = {
+  token: `0x${string}`;
+  contributor: `0x${string}`;
+  strategyId: number;
+};
+export const getDelegatedAsset = ({
+  token: tokenAddress,
+  contributor,
+  strategyId,
+}: GetDelegatedAssetParams) => {
+  return api.get<{
+    amount: string;
+    contributor: string;
+    token: string;
+  }>(
+    endpoint(
+      `basedApp/getDepositTokensBy?tokenAddress=${tokenAddress}&contributor=${contributor}&strategyId=${strategyId}`,
+    ),
+  );
+};

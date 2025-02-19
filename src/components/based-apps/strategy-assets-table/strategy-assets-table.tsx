@@ -8,6 +8,8 @@ export type AssetsTableProps = {
     token: `0x${string}`;
     totalDelegation: string;
     delegations: { bAppId: `0x${string}`; percentage: string }[];
+    totalFiat: string;
+    totalTokens: bigint;
   }[];
   searchValue?: string;
 };

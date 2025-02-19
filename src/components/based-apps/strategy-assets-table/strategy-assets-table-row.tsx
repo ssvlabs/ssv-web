@@ -4,7 +4,7 @@ import { textVariants } from "@/components/ui/text";
 import { cn } from "@/lib/utils/tw";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useState } from "react";
-import { convertToPercentage } from "@/lib/utils/number.ts";
+import { convertToPercentage, formatSSV } from "@/lib/utils/number.ts";
 import AssetName from "@/components/ui/asset-name.tsx";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import { useStrategy } from "@/hooks/b-app/use-strategy.ts";
@@ -19,6 +19,8 @@ export type AssetsTableRowProps = {
   asset: {
     token: `0x${string}`;
     totalDelegation: string;
+    totalFiat: string;
+    totalTokens: bigint;
     delegations: { bAppId: `0x${string}`; percentage: string }[];
   };
 };
@@ -37,12 +39,20 @@ export const StrategyAssetsTableRow: FCProps = ({
   const [isInnerOpen, setIsInnerOpen] = useState(false);
   const { strategy } = useStrategy();
   const AngleComponent = isInnerOpen ? FaAngleUp : FaAngleDown;
-
   const isEthereum = isEthereumAddress(asset.token);
 
   const { data: tokenName = "Ethereum" } = useReadContract({
     abi: TokenABI,
     functionName: "name",
+    address: asset.token,
+    query: {
+      staleTime: Infinity,
+      enabled: !isEthereum,
+    },
+  });
+  const { data: tokenSymbol = "ETH" } = useReadContract({
+    abi: TokenABI,
+    functionName: "symbol",
     address: asset.token,
     query: {
       staleTime: Infinity,
@@ -64,8 +74,10 @@ export const StrategyAssetsTableRow: FCProps = ({
             <AssetName address={asset.token} />
           </div>
         </TableCell>
-        <TableCell>dummy</TableCell>
-        <TableCell>dummy</TableCell>
+        <TableCell>
+          {formatSSV(asset.totalTokens, 18)} {tokenSymbol}
+        </TableCell>
+        <TableCell>{asset.totalFiat}</TableCell>
         <TableCell
           className={`${Number(convertToPercentage(asset.totalDelegation)) > 100 && "text-error-500"} flex items-center justify-between`}
         >

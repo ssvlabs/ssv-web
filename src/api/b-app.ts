@@ -46,6 +46,9 @@ export interface Strategy {
   delegationsPerToken?: {
     token: `0x${string}`;
     totalDelegation: string;
+    totalTokens: bigint;
+    totalFiat: string;
+
     delegations: { bAppId: `0x${string}`; percentage: string }[];
   }[];
   delegators?: [

@@ -1,6 +1,7 @@
 import { api } from "@/lib/api-client.ts";
 import { endpoint } from "@/api/index.ts";
 import type { Pagination } from "@/types/api.ts";
+import type { Address } from "abitype";
 
 export type MyBAppAccount = {
   effectiveBalance: bigint;
@@ -25,6 +26,13 @@ export type BAppAccount = {
   totalDelegatedValue: string;
 };
 
+export type StrategyBApp = {
+  assets: { token: `0x${string}`; beta: string }[];
+  bAppId: `0x${string}`;
+  bAppsMetadata: BAppsMetaData;
+  tokens: `0x${string}`[];
+};
+
 export interface Strategy {
   id: string;
   name: string;
@@ -32,8 +40,17 @@ export interface Strategy {
   bApps: number;
   delegatedAssets: `0x${string}`[];
   fee: string;
+  bAppsList?: StrategyBApp[];
   totalDelegators?: number;
   totalDelegatedFiat?: string;
+  delegationsPerToken?: {
+    token: `0x${string}`;
+    totalDelegation: string;
+    totalTokens: bigint;
+    totalFiat: string;
+
+    delegations: { bAppId: `0x${string}`; percentage: string }[];
+  }[];
   delegators?: [
     {
       id: string;
@@ -153,6 +170,11 @@ export const getStrategiesByOwnerAddress = ({
       return res;
     });
 
+export const getStrategyById = (id: number | string) =>
+  api.get<Strategy>(endpoint("basedApp", `getStrategyById`, id)).then((res) => {
+    return res;
+  });
+
 export const getBApps = ({
   id,
   page = 1,
@@ -182,3 +204,11 @@ export const getBAppMetadata = (url: string) =>
     console.log(res);
     return res;
   });
+
+export interface BAppAsset {
+  token: Address;
+  totalObligatedBalance: string;
+  obligationsCount: number;
+}
+export const getBAppsAssets = () =>
+  api.get<BAppAsset[]>(endpoint("basedApp/getASsets"));

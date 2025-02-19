@@ -47,14 +47,14 @@ export const Navbar: FCProps = ({ className, ...props }) => {
         <Text as={Link} to={accountRoutePath} variant="body-2-medium">
           My Account
         </Text>
-        <Text as={Link} to={accountRoutePath} variant="body-2-medium">
+        <Text as={Link} to="/account/assets" variant="body-2-medium">
           Assets
         </Text>
         <Text as={Link} to="/account/strategies" variant="body-2-medium">
           Strategies
         </Text>
         <Text as={Link} to={accountRoutePath} variant="body-2-medium">
-          Services
+          BApps
         </Text>
         <Text as={Link} to={dvtRoutePath} variant="body-2-medium">
           DVT

@@ -12,6 +12,7 @@
     "preinstall": "git config --global url.\"https://\".insteadOf git+ssh://git@ && only-allow pnpm",
     "type-check": "tsc -b",
     "lint-staged": "pnpm run type-check && lint-staged",
+    "generate-all": "node scripts/runAllScripts.cjs",
     "commit": "cz"
   },
   "config": {

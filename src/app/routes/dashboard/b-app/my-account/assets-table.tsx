@@ -47,6 +47,7 @@ const AssetsTable = ({
 }) => {
   const [openedTableIndex, setOpenedTableIndex] = useState(-1);
   const [focusedRowIndex, setFocusedRowIndex] = useState(-1);
+
   return (
     <div className="flex flex-col w-full overflow-y-hidden max-h-[700px]">
       <Table className={cn("w-full rounded-t-xl")}>

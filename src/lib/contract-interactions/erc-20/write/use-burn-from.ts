@@ -26,7 +26,10 @@ const abiFunction = extractAbiFunction(TokenABI, "burnFrom");
 export const useBurnFrom = () => {
   const { tokenAddress } = useSSVNetworkDetails();
 
-  const wait = useWaitForTransactionReceipt(["useBurnFrom", tokenAddress]);
+  const wait = useWaitForTransactionReceipt<MainnetEvent>([
+    "useBurnFrom",
+    tokenAddress,
+  ]);
   const mutation = useWriteContract();
 
   const write = (

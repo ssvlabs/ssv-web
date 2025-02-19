@@ -10,6 +10,9 @@ import { TableMenuButton } from "@/components/ui/table";
 import { useTokensFilter } from "@/hooks/b-app/filters/use-tokens-filter";
 import { AssetLogo } from "@/components/ui/asset-logo";
 import { X } from "lucide-react";
+import type { Strategy } from "@/api/b-app";
+import { useAssetsDelegationModal } from "@/signals/modal";
+import type { Address } from "abitype";
 
 export const Strategies: FC = () => {
   const { pagination, strategies, isStrategiesIsLoading } = useStrategies();
@@ -25,6 +28,12 @@ export const Strategies: FC = () => {
     });
   };
 
+  const onDepositClick = (strategy: Strategy) => {
+    useAssetsDelegationModal.state.open({
+      strategy,
+      asset: tokensFilter.value?.[0] as Address,
+    });
+  };
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <div className="flex justify-between w-full items-center">
@@ -66,6 +75,8 @@ export const Strategies: FC = () => {
         strategies={strategies}
         pagination={pagination}
         isLoading={isStrategiesIsLoading}
+        showDepositButtonOnHover={(tokensFilter.value?.length || 0) > 0}
+        onDepositClick={onDepositClick}
       />
     </Container>
   );

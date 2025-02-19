@@ -1,3 +1,5 @@
+import type { Strategy } from "@/api/b-app";
+import type { Address } from "abitype";
 import { proxy, useSnapshot } from "valtio";
 
 interface ModalProxy<
@@ -47,3 +49,7 @@ export const useTransactionModal = createModalSignal<{
 
 export const usePastingLimitExceededModal = createModalSignal();
 export const useMultisigTransactionModal = createModalSignal();
+export const useAssetsDelegationModal = createModalSignal<{
+  strategy: Strategy;
+  asset: Address;
+}>();

@@ -27,8 +27,7 @@ export const fetchOwner = (tokenAddress: `0x${string}`) =>
   queryClient.fetchQuery(getOwnerQueryOptions(tokenAddress));
 
 export const useOwner = (
-  tokenAddress: `0x${string}`,
-
+  { tokenAddress }: { tokenAddress?: `0x${string}` },
   options: QueryOptions = { enabled: true },
 ) => {
   return useReadContract({
@@ -36,7 +35,7 @@ export const useOwner = (
     address: tokenAddress,
     functionName: "owner",
 
-    query: { ...options },
+    query: { ...options, enabled: tokenAddress && options?.enabled },
   });
 };
 

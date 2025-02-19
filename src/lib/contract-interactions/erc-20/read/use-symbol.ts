@@ -27,8 +27,7 @@ export const fetchSymbol = (tokenAddress: `0x${string}`) =>
   queryClient.fetchQuery(getSymbolQueryOptions(tokenAddress));
 
 export const useSymbol = (
-  tokenAddress: `0x${string}`,
-
+  { tokenAddress }: { tokenAddress?: `0x${string}` },
   options: QueryOptions = { enabled: true },
 ) => {
   return useReadContract({
@@ -36,7 +35,7 @@ export const useSymbol = (
     address: tokenAddress,
     functionName: "symbol",
 
-    query: { ...options },
+    query: { ...options, enabled: tokenAddress && options?.enabled },
   });
 };
 

@@ -24,8 +24,7 @@ export const fetchName = (tokenAddress: `0x${string}`) =>
   queryClient.fetchQuery(getNameQueryOptions(tokenAddress));
 
 export const useName = (
-  tokenAddress: `0x${string}`,
-
+  { tokenAddress }: { tokenAddress?: `0x${string}` },
   options: QueryOptions = { enabled: true },
 ) => {
   return useReadContract({
@@ -33,7 +32,7 @@ export const useName = (
     address: tokenAddress,
     functionName: "name",
 
-    query: { ...options },
+    query: { ...options, enabled: tokenAddress && options?.enabled },
   });
 };
 

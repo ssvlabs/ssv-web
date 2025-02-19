@@ -1,35 +1,12 @@
-import { useReadContract } from "wagmi";
-import { TokenABI } from "@/lib/abi/token.ts";
 import { Text } from "@/components/ui/text.tsx";
-import { isEthereumTokenAddress } from "@/lib/utils/token";
+import { useAsset } from "@/hooks/use-asset";
 
 const AssetName = ({ address }: { address: `0x${string}` }) => {
-  const isEthereum = isEthereumTokenAddress(address);
-
-  const { data: tokenName = "Ethereum" } = useReadContract({
-    abi: TokenABI,
-    functionName: "name",
-    address,
-    query: {
-      staleTime: Infinity,
-      enabled: !isEthereum,
-    },
-  });
-
-  const { data: tokenSymbol = "ETH" } = useReadContract({
-    abi: TokenABI,
-    functionName: "symbol",
-    address,
-    query: {
-      staleTime: Infinity,
-      enabled: !isEthereum,
-    },
-  });
-  console.log(tokenName);
+  const asset = useAsset(address);
   return (
     <div className="flex items-center gap-2">
-      {tokenName}
-      <Text className="text-gray-500 font-medium">{tokenSymbol}</Text>
+      {asset.name}
+      <Text className="text-gray-500 font-medium">{asset.symbol}</Text>
     </div>
   );
 };

@@ -3,7 +3,6 @@
 // ------------------------------------------------
 
 import { useWriteContract } from "wagmi";
-import { useSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import type {
   MainnetEvent,
   MutationOptions,
@@ -16,15 +15,13 @@ import type { WaitForTransactionReceiptErrorType } from "viem";
 // type State = "idle" | "confirming" | "mining" | "mined" | "error";
 
 export const useInitialize = () => {
-  const { tokenAddress } = useSSVNetworkDetails();
-
-  const wait = useWaitForTransactionReceipt<MainnetEvent>([
-    "useInitialize",
-    tokenAddress,
-  ]);
+  const wait = useWaitForTransactionReceipt<MainnetEvent>(["useInitialize"]);
   const mutation = useWriteContract();
 
-  const write = (options: MutationOptions<MainnetEvent> = {}) => {
+  const write = (
+    { tokenAddress }: { tokenAddress: `0x${string}` },
+    options: MutationOptions<MainnetEvent> = {},
+  ) => {
     options.onInitiated?.();
     return mutation
       .writeContractAsync(

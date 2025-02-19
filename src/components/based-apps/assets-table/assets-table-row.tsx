@@ -27,8 +27,11 @@ export const AssetsTableRow: FCProps = ({ asset, className, ...props }) => {
   const { address } = useAccount();
   const ethBalance = useBalance({ address: address! });
 
-  const decimals = useDecimals(asset.token);
-  const tokenBalance = useBalanceOf(asset.token, { account: address! });
+  const decimals = useDecimals({ tokenAddress: asset.token });
+  const tokenBalance = useBalanceOf({
+    tokenAddress: asset.token,
+    account: address!,
+  });
 
   return (
     <TableRow className={cn("cursor-pointer max-h-7", className)} {...props}>

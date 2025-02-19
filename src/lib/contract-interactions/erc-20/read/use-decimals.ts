@@ -27,8 +27,7 @@ export const fetchDecimals = (tokenAddress: `0x${string}`) =>
   queryClient.fetchQuery(getDecimalsQueryOptions(tokenAddress));
 
 export const useDecimals = (
-  tokenAddress: `0x${string}`,
-
+  { tokenAddress }: { tokenAddress?: `0x${string}` },
   options: QueryOptions = { enabled: true },
 ) => {
   return useReadContract({
@@ -36,7 +35,7 @@ export const useDecimals = (
     address: tokenAddress,
     functionName: "decimals",
 
-    query: { ...options },
+    query: { ...options, enabled: tokenAddress && options?.enabled },
   });
 };
 

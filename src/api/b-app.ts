@@ -35,6 +35,11 @@ export interface Strategy {
   fee: string;
   totalDelegators?: number;
   totalDelegatedFiat?: string;
+  delegationsPerToken?: {
+    token: `0x${string}`;
+    totalDelegation: string;
+    delegations: any[];
+  }[];
   delegators?: [
     {
       id: string;
@@ -153,6 +158,11 @@ export const getStrategiesByOwnerAddress = ({
     .then((res) => {
       return res;
     });
+
+export const getStrategyById = (id: number | string) =>
+  api.get<Strategy>(endpoint("basedApp", `getStrategyById`, id)).then((res) => {
+    return res;
+  });
 
 export const getBApps = ({
   id,

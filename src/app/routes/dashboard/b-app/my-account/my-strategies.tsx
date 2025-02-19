@@ -60,6 +60,7 @@ const MyStrategies = () => {
       tooltipText: "Delegators",
     },
   ];
+
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <div className="h-[100px] w-full flex items-center gap-10 rounded-[16px] bg-white p-6">

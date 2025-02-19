@@ -23,6 +23,10 @@ export const accountRoutes = {
       element: <Accounts />,
     },
     {
+      path: ":strategyId",
+      element: <Strategy />,
+    },
+    {
       path: "assets",
       element: <Assets />,
     },

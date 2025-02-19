@@ -54,7 +54,7 @@ export const Navbar: FCProps = ({ className, ...props }) => {
           Strategies
         </Text>
         <Text as={Link} to={accountRoutePath} variant="body-2-medium">
-          Services
+          BApps
         </Text>
         <Text as={Link} to={dvtRoutePath} variant="body-2-medium">
           DVT

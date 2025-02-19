@@ -44,7 +44,7 @@ export const StrategyTableRow: FCProps = ({
           <Button
             variant="link"
             as={Link}
-            to={`strategies/${strategy.id}`}
+            to={`${strategy.id}`}
             onClick={() => {
               useCreateStrategyContext.state.strategyData = strategy;
             }}

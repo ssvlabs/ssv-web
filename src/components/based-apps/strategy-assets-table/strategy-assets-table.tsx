@@ -1,10 +1,5 @@
 import type { FC, ComponentPropsWithoutRef } from "react";
-import {
-  TableHeader,
-  TableHead,
-  TableBody,
-  Table,
-} from "@/components/ui/table";
+import { TableHeader, TableHead, Table } from "@/components/ui/table";
 import { cn } from "@/lib/utils/tw";
 import { StrategyAssetsTableRow } from "@/components/based-apps/strategy-assets-table/strategy-assets-table-row.tsx";
 
@@ -12,8 +7,9 @@ export type AssetsTableProps = {
   assets: {
     token: `0x${string}`;
     totalDelegation: string;
-    delegations: any[];
+    delegations: { bAppId: `0x${string}`; percentage: string }[];
   }[];
+  searchValue?: string;
 };
 
 type FCProps = FC<
@@ -23,6 +19,7 @@ type FCProps = FC<
 
 export const StrategyAssetsTable: FCProps = ({
   assets,
+  searchValue,
   className,
   ...props
 }) => {
@@ -37,11 +34,15 @@ export const StrategyAssetsTable: FCProps = ({
         <TableHead>Total Delegated Value</TableHead>
         <TableHead>Total Obligation</TableHead>
       </TableHeader>
-      <TableBody>
-        {assets.map((asset) => {
-          return <StrategyAssetsTableRow key={asset.token} asset={asset} />;
-        })}
-      </TableBody>
+      {assets.map((asset) => {
+        return (
+          <StrategyAssetsTableRow
+            key={asset.token}
+            searchValue={searchValue}
+            asset={asset}
+          />
+        );
+      })}
     </Table>
   );
 };

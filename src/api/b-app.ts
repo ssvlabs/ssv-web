@@ -26,6 +26,13 @@ export type BAppAccount = {
   totalDelegatedValue: string;
 };
 
+export type StrategyBApp = {
+  assets: { token: `0x${string}`; beta: string }[];
+  bAppId: `0x${string}`;
+  bAppsMetadata: BAppsMetaData;
+  tokens: `0x${string}`[];
+};
+
 export interface Strategy {
   id: string;
   name: string;
@@ -33,12 +40,13 @@ export interface Strategy {
   bApps: number;
   delegatedAssets: `0x${string}`[];
   fee: string;
+  bAppsList?: StrategyBApp[];
   totalDelegators?: number;
   totalDelegatedFiat?: string;
   delegationsPerToken?: {
     token: `0x${string}`;
     totalDelegation: string;
-    delegations: any[];
+    delegations: { bAppId: `0x${string}`; percentage: string }[];
   }[];
   delegators?: [
     {

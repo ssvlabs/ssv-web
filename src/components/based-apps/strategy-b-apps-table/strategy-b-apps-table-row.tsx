@@ -113,7 +113,7 @@ export const StrategyBAppsTableRow: FCProps = ({
             <TableCell
               className={`${textVariants({ variant: "body-3-medium" })} flex items-center justify-end`}
             >
-              {convertToPercentage(beta)}%
+              {convertToPercentage(beta)}
             </TableCell>
           </TableRow>
         ))}

@@ -13,6 +13,8 @@ import { shortenAddress } from "@/lib/utils/strings.ts";
 import { useReadContract } from "wagmi";
 import { TokenABI } from "@/lib/abi/token.ts";
 import { isEthereumTokenAddress } from "@/lib/utils/token";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 
 export type AssetsTableRowProps = {
   searchValue?: string;
@@ -23,6 +25,8 @@ export type AssetsTableRowProps = {
     totalTokens: bigint;
     delegations: { bAppId: `0x${string}`; percentage: string }[];
   };
+  showDepositButtonOnHover?: boolean;
+  onDepositClick?: () => void;
 };
 
 type FCProps = FC<
@@ -34,6 +38,8 @@ export const StrategyAssetsTableRow: FCProps = ({
   asset,
   className,
   searchValue,
+  showDepositButtonOnHover,
+  onDepositClick,
   ...props
 }) => {
   const [isInnerOpen, setIsInnerOpen] = useState(false);
@@ -67,7 +73,10 @@ export const StrategyAssetsTableRow: FCProps = ({
   }
   return (
     <TableBody>
-      <TableRow className={cn("cursor-pointer max-h-7", className)} {...props}>
+      <TableRow
+        className={cn("cursor-pointer max-h-7 group", className)}
+        {...props}
+      >
         <TableCell className={textVariants({ variant: "body-3-medium" })}>
           <div className="flex items-center gap-2">
             <AssetLogo address={asset.token} />
@@ -79,9 +88,31 @@ export const StrategyAssetsTableRow: FCProps = ({
         </TableCell>
         <TableCell>{asset.totalFiat}</TableCell>
         <TableCell
-          className={`${Number(convertToPercentage(asset.totalDelegation)) > 100 && "text-error-500"} flex items-center justify-between`}
+          className={`${Number(convertToPercentage(asset.totalDelegation)) > 100 && "text-error-500"} flex items-center justify-between relative`}
         >
-          {convertToPercentage(asset.totalDelegation)}%
+          <Text
+            className={cn({
+              "group-hover:opacity-0": showDepositButtonOnHover,
+            })}
+          >
+            {convertToPercentage(asset.totalDelegation)}%
+          </Text>
+          {showDepositButtonOnHover && (
+            <Button
+              className={cn(
+                "absolute hidden top-1/2 ml-7 left-0 -translate-y-1/2",
+                {
+                  "group-hover:block": showDepositButtonOnHover,
+                },
+              )}
+              onClick={(ev) => {
+                ev.stopPropagation();
+                onDepositClick?.();
+              }}
+            >
+              Deposit
+            </Button>
+          )}
           {Boolean(asset.delegations.length) && (
             <AngleComponent onClick={() => setIsInnerOpen(!isInnerOpen)} />
           )}
@@ -118,6 +149,7 @@ export const StrategyAssetsTableRow: FCProps = ({
             ) || ({} as StrategyBApp);
           return (
             <TableRow
+              key={bAppId}
               className={cn(
                 "cursor-pointer max-h-7 w-full bg-gray-100 hover:bg-gray-100",
                 className,

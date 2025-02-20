@@ -12,6 +12,8 @@ export type AssetsTableProps = {
     totalTokens: bigint;
   }[];
   searchValue?: string;
+  showDepositButtonOnHover?: boolean;
+  onDepositClick?: (asset: AssetsTableProps["assets"][0]) => void;
 };
 
 type FCProps = FC<
@@ -23,6 +25,8 @@ export const StrategyAssetsTable: FCProps = ({
   assets,
   searchValue,
   className,
+  showDepositButtonOnHover,
+  onDepositClick,
   ...props
 }) => {
   return (
@@ -42,6 +46,8 @@ export const StrategyAssetsTable: FCProps = ({
             key={asset.token}
             searchValue={searchValue}
             asset={asset}
+            showDepositButtonOnHover={showDepositButtonOnHover}
+            onDepositClick={() => onDepositClick?.(asset)}
           />
         );
       })}

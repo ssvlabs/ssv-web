@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils/tw.ts";
 import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
+import { useAssetsDelegationModal } from "@/signals/modal";
 
 const Strategy = () => {
   const { strategy, isLoading } = useStrategy();
@@ -158,7 +159,14 @@ const Strategy = () => {
             />
           </div>
           <StrategyAssetsTable
+            onDepositClick={(asset) => {
+              useAssetsDelegationModal.state.open({
+                asset: asset.token,
+                strategy,
+              });
+            }}
             searchValue={assetSearchValue}
+            showDepositButtonOnHover
             assets={strategy.delegationsPerToken || []}
           />
         </div>

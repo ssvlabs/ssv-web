@@ -14,9 +14,17 @@ import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitF
 import { keepPreviousData } from "@tanstack/react-query";
 import { isUndefined } from "lodash-es";
 import { useAccount } from "@/hooks/account/use-account";
+import type { Address } from "abitype";
 
 export type WithAllowanceProps = {
   size?: ButtonProps["size"];
+  options?: {
+    token: {
+      address: Address;
+      symbol: string;
+    };
+    spender: Address;
+  };
   amount: bigint;
 };
 
@@ -29,6 +37,7 @@ export const WithAllowance: WithAllowanceFC = ({
   className,
   amount,
   size,
+  options,
   ...props
 }) => {
   const account = useAccount();
@@ -37,9 +46,12 @@ export const WithAllowance: WithAllowanceFC = ({
 
   const allowance = useReadContract({
     abi: TokenABI,
-    address: ssvNetworkDetails?.tokenAddress,
+    address: options?.token.address ?? ssvNetworkDetails?.tokenAddress,
     functionName: "allowance",
-    args: [account.address!, ssvNetworkDetails?.setterContractAddress],
+    args: [
+      account.address!,
+      options?.spender ?? ssvNetworkDetails?.setterContractAddress,
+    ],
     blockNumber: block.data,
     query: {
       placeholderData: keepPreviousData,
@@ -57,7 +69,8 @@ export const WithAllowance: WithAllowanceFC = ({
 
     approver.write(
       {
-        spender: ssvNetworkDetails!.setterContractAddress,
+        tokenAddress: options?.token.address ?? ssvNetworkDetails?.tokenAddress,
+        spender: options?.spender ?? ssvNetworkDetails?.setterContractAddress,
         amount: globals.MAX_WEI_AMOUNT,
       },
       withTransactionModal(),
@@ -98,7 +111,7 @@ export const WithAllowance: WithAllowanceFC = ({
           isActionBtn
           loadingText="Approving..."
         >
-          Approve SSV
+          Approve {options?.token.symbol ?? "SSV"}
         </Button>
         {childrenWithProps}
       </div>

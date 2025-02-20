@@ -1,6 +1,8 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils/tw";
+import { Text } from "@/components/ui/text";
+import { Slot } from "@radix-ui/react-slot";
 
 const Table = React.forwardRef<
   HTMLTableElement,
@@ -114,6 +116,56 @@ const TableCaption = React.forwardRef<
 ));
 TableCaption.displayName = "TableCaption";
 
+const TableMenuButton = React.forwardRef<
+  HTMLButtonElement,
+  React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    icon?: React.ReactNode;
+    activeCount?: number;
+    isActive?: boolean;
+  }
+>(({ className, icon, activeCount, isActive, children, ...props }, ref) => (
+  <button
+    ref={ref}
+    className={cn(
+      "group flex h-10 select-none items-center gap-2 whitespace-nowrap rounded-xl border border-transparent bg-gray-50 px-4 text-sm font-medium transition-colors hover:bg-gray-100",
+      {
+        "border border-primary-500": isActive,
+        "pr-2": activeCount && activeCount > 0,
+      },
+      className,
+    )}
+    {...props}
+  >
+    {icon && (
+      <Slot
+        className={cn(
+          "size-4 text-gray-500 transition-colors group-hover:text-gray-800",
+          {
+            "text-gray-800": isActive,
+          },
+        )}
+      >
+        {icon}
+      </Slot>
+    )}
+    {children}
+    {Boolean(activeCount) && (
+      <div className="rounded-md bg-primary-50 px-2 py-[2px]">
+        <Text
+          variant="body-3-semibold"
+          className={cn("text-primary-500")}
+          style={{
+            width: `${(activeCount?.toString().length ?? 1) * 0.9}ch`,
+          }}
+        >
+          {activeCount}
+        </Text>
+      </div>
+    )}
+  </button>
+));
+TableMenuButton.displayName = "TableMenuButton";
+
 export {
   Table,
   TableHeader,
@@ -123,4 +175,5 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  TableMenuButton,
 };

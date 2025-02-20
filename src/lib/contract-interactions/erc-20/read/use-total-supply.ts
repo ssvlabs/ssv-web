@@ -27,8 +27,7 @@ export const fetchTotalSupply = (tokenAddress: `0x${string}`) =>
   queryClient.fetchQuery(getTotalSupplyQueryOptions(tokenAddress));
 
 export const useTotalSupply = (
-  tokenAddress: `0x${string}`,
-
+  { tokenAddress }: { tokenAddress?: `0x${string}` },
   options: QueryOptions = { enabled: true },
 ) => {
   return useReadContract({
@@ -36,7 +35,7 @@ export const useTotalSupply = (
     address: tokenAddress,
     functionName: "totalSupply",
 
-    query: { ...options },
+    query: { ...options, enabled: tokenAddress && options?.enabled },
   });
 };
 

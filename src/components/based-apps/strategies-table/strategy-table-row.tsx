@@ -17,6 +17,9 @@ import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 
 export type StrategyTableRowProps = {
   strategy: Strategy;
+  showDepositButtonOnHover?: boolean;
+  onDepositClick?: (strategy: Strategy) => void;
+  onRowClick?: (strategy: Strategy) => void;
 };
 
 type FCProps = FC<
@@ -27,78 +30,96 @@ type FCProps = FC<
 export const StrategyTableRow: FCProps = ({
   strategy,
   className,
+  showDepositButtonOnHover = false,
+  onDepositClick,
+  onRowClick,
   ...props
 }) => {
   return (
-    // <Table>
-    <>
-      <TableRow
-        key={strategy.id}
-        className={cn("cursor-pointer max-h-7", className)}
-        {...props}
-      >
-        <TableCell className={textVariants({ variant: "body-3-medium" })}>
-          {strategy.id}
-        </TableCell>
-        <TableCell className={textVariants({ variant: "body-3-semibold" })}>
-          <Button
-            variant="link"
-            as={Link}
-            to={`${strategy.id}`}
-            onClick={() => {
-              useCreateStrategyContext.state.strategyData = strategy;
-            }}
-          >
-            {strategy.name}
-          </Button>
-        </TableCell>
-        <TableCell className={textVariants({ variant: "body-3-medium" })}>
-          <Tooltip
-            content={
-              <div className="flex gap-2 items-center">
-                <Text>{strategy.ownerAddress}</Text>
-              </div>
-            }
-          >
-            <img
-              className={cn(
-                "size-7 flex flex-wrap gap-1 rounded-md",
-                className,
-              )}
-              src={"/images/operator_default_background/light.svg"}
-              alt={strategy.ownerAddress}
-            />
-          </Tooltip>
-        </TableCell>
-        <TableCell className={textVariants({ variant: "body-3-medium" })}>
-          <div className="w-7 h-6 rounded-[4px] bg-primary-100 border border-primary-500 text-primary-500 flex items-center justify-center text-[10px]">
-            {strategy.bApps}
-          </div>
-        </TableCell>
-        <TableCell className={textVariants({ variant: "body-3-medium" })}>
-          <AssetsDisplay
-            max={3}
-            addresses={strategy.delegatedAssets.map((s) => s) as Address[]}
+    <TableRow
+      key={strategy.id}
+      className={cn("cursor-pointer max-h-7 group", className)}
+      {...props}
+      onClick={() => {
+        onRowClick?.(strategy);
+      }}
+    >
+      <TableCell className={textVariants({ variant: "body-3-medium" })}>
+        {strategy.id}
+      </TableCell>
+      <TableCell className={textVariants({ variant: "body-3-semibold" })}>
+        <Button
+          variant="link"
+          as={Link}
+          to={`${strategy.id}`}
+          onClick={() => {
+            useCreateStrategyContext.state.strategyData = strategy;
+          }}
+        >
+          {strategy.name}
+        </Button>
+      </TableCell>
+      <TableCell className={textVariants({ variant: "body-3-medium" })}>
+        <Tooltip
+          content={
+            <div className="flex gap-2 items-center">
+              <Text>{strategy.ownerAddress}</Text>
+            </div>
+          }
+        >
+          <img
+            className={cn("size-7 flex flex-wrap gap-1 rounded-md", className)}
+            src={"/images/operator_default_background/light.svg"}
+            alt={strategy.ownerAddress}
           />
-        </TableCell>
-        <TableCell className={textVariants({ variant: "body-3-medium" })}>
-          {percentageFormatter.format(convertToPercentage(strategy.fee))}
-        </TableCell>
-        <TableCell className={textVariants({ variant: "body-3-medium" })}>
-          {strategy.totalDelegators || 0}
-        </TableCell>
-        <TableCell className={textVariants({ variant: "body-3-medium" })}>
+        </Tooltip>
+      </TableCell>
+      <TableCell className={textVariants({ variant: "body-3-medium" })}>
+        <div className="w-7 h-6 rounded-[4px] bg-primary-100 border border-primary-500 text-primary-500 flex items-center justify-center text-[10px]">
+          {strategy.bApps}
+        </div>
+      </TableCell>
+      <TableCell className={textVariants({ variant: "body-3-medium" })}>
+        <AssetsDisplay
+          max={3}
+          addresses={strategy.delegatedAssets.map((s) => s) as Address[]}
+        />
+      </TableCell>
+      <TableCell className={textVariants({ variant: "body-3-medium" })}>
+        {percentageFormatter.format(convertToPercentage(strategy.fee))}
+      </TableCell>
+      <TableCell className={textVariants({ variant: "body-3-medium" })}>
+        {strategy.totalDelegators || 0}
+      </TableCell>
+      <TableCell
+        className={textVariants({
+          variant: "body-3-medium",
+          className: "relative",
+        })}
+      >
+        <Text
+          className={cn({
+            "group-hover:opacity-0": showDepositButtonOnHover,
+          })}
+        >
           {currencyFormatter.format(Number(strategy.totalDelegatedFiat) || 0)}
-        </TableCell>
-      </TableRow>
-      {/*{strategy.totalDelegators && (*/}
-      {/*  <TableRow>*/}
-      {/*    <TableCell>1</TableCell>*/}
-      {/*    <TableCell>2</TableCell>*/}
-      {/*    <TableCell>3</TableCell>*/}
-      {/*  </TableRow>*/}
-      {/*)}*/}
-    </>
+        </Text>
+        <Button
+          className={cn(
+            "absolute hidden top-1/2 ml-7 left-0 -translate-y-1/2",
+            {
+              "group-hover:block": showDepositButtonOnHover,
+            },
+          )}
+          onClick={(ev) => {
+            ev.stopPropagation();
+            onDepositClick?.(strategy);
+          }}
+        >
+          Deposit
+        </Button>
+      </TableCell>
+    </TableRow>
   );
 };
 

@@ -11,7 +11,7 @@ import { useBalance } from "wagmi";
 import { formatEther } from "viem";
 import { formatSSV } from "@/lib/utils/number";
 import { compactFormatter } from "../../../lib/utils/number";
-import { isEthereumAddress } from "@/lib/utils/token";
+import { isEthereumTokenAddress } from "@/lib/utils/token";
 export type AssetsTableRowProps = {
   asset: BAppAsset;
 };
@@ -22,13 +22,16 @@ type FCProps = FC<
 >;
 
 export const AssetsTableRow: FCProps = ({ asset, className, ...props }) => {
-  const isEthereum = isEthereumAddress(asset.token);
+  const isEthereum = isEthereumTokenAddress(asset.token);
 
   const { address } = useAccount();
   const ethBalance = useBalance({ address: address! });
 
-  const decimals = useDecimals(asset.token);
-  const tokenBalance = useBalanceOf(asset.token, { account: address! });
+  const decimals = useDecimals({ tokenAddress: asset.token });
+  const tokenBalance = useBalanceOf({
+    tokenAddress: asset.token,
+    account: address!,
+  });
 
   return (
     <TableRow className={cn("cursor-pointer max-h-7", className)} {...props}>

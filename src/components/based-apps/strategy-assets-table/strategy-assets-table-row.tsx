@@ -1,20 +1,17 @@
+import type { StrategyBApp } from "@/api/b-app.ts";
 import { AssetLogo } from "@/components/ui/asset-logo";
+import AssetName from "@/components/ui/asset-name.tsx";
+import { Button } from "@/components/ui/button";
 import { TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { textVariants } from "@/components/ui/text";
+import { Text, textVariants } from "@/components/ui/text";
+import { useStrategy } from "@/hooks/b-app/use-strategy.ts";
+import { useAsset } from "@/hooks/use-asset.ts";
+import { convertToPercentage, formatSSV } from "@/lib/utils/number.ts";
+import { shortenAddress } from "@/lib/utils/strings.ts";
 import { cn } from "@/lib/utils/tw";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useState } from "react";
-import { convertToPercentage, formatSSV } from "@/lib/utils/number.ts";
-import AssetName from "@/components/ui/asset-name.tsx";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
-import { useStrategy } from "@/hooks/b-app/use-strategy.ts";
-import type { StrategyBApp } from "@/api/b-app.ts";
-import { shortenAddress } from "@/lib/utils/strings.ts";
-import { useReadContract } from "wagmi";
-import { TokenABI } from "@/lib/abi/token.ts";
-import { isEthereumTokenAddress } from "@/lib/utils/token";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
 
 export type AssetsTableRowProps = {
   searchValue?: string;
@@ -45,30 +42,9 @@ export const StrategyAssetsTableRow: FCProps = ({
   const [isInnerOpen, setIsInnerOpen] = useState(false);
   const { strategy } = useStrategy();
   const AngleComponent = isInnerOpen ? FaAngleUp : FaAngleDown;
-  const isEthereum = isEthereumTokenAddress(asset.token);
+  const { name, symbol } = useAsset(asset.token);
 
-  const { data: tokenName = "Ethereum" } = useReadContract({
-    abi: TokenABI,
-    functionName: "name",
-    address: asset.token,
-    query: {
-      staleTime: Infinity,
-      enabled: !isEthereum,
-    },
-  });
-  const { data: tokenSymbol = "ETH" } = useReadContract({
-    abi: TokenABI,
-    functionName: "symbol",
-    address: asset.token,
-    query: {
-      staleTime: Infinity,
-      enabled: !isEthereum,
-    },
-  });
-  if (
-    searchValue &&
-    !tokenName.toLowerCase().includes(searchValue?.toLowerCase())
-  ) {
+  if (searchValue && !name.toLowerCase().includes(searchValue?.toLowerCase())) {
     return;
   }
   return (
@@ -84,7 +60,7 @@ export const StrategyAssetsTableRow: FCProps = ({
           </div>
         </TableCell>
         <TableCell>
-          {formatSSV(asset.totalTokens, 18)} {tokenSymbol}
+          {formatSSV(asset.totalTokens, 18)} {symbol}
         </TableCell>
         <TableCell>{asset.totalFiat}</TableCell>
         <TableCell

@@ -1,20 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { formatUnits, isAddress } from "viem";
 import type { StrategiesByOwnerResponse } from "@/api/b-app.ts";
+import { getBAppsByOwnerAddress } from "@/api/b-app.ts";
 import { getMyAccount, getStrategiesByOwnerAddress } from "@/api/b-app.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { convertToPercentage } from "@/lib/utils/number.ts";
 import { useSearchParams } from "react-router-dom";
 import { useOrdering } from "@/hooks/use-ordering.ts";
+import { usePaginationQuery } from "@/lib/query-states/use-pagination.ts";
 
 export const useMyBAppAccount = () => {
   const { address } = useAccount();
-  const [searchParams, setSearchParams] = useSearchParams();
-  setSearchParams;
-  const page = Number(searchParams.get("page") || 1);
+  const [searchParams] = useSearchParams();
   const idToSearch = Number(searchParams.get("id") || "");
-  const perPage = Number(searchParams.get("perPage") || 10);
   const { orderBy, sort } = useOrdering();
+
+  const { page, perPage } = usePaginationQuery();
 
   const reactQueryData = useQuery({
     queryKey: [address],
@@ -27,7 +28,7 @@ export const useMyBAppAccount = () => {
   });
 
   const myStrategies = useQuery({
-    queryKey: ["get_my-strategies", page, perPage, idToSearch, orderBy, sort],
+    queryKey: ["get_my_strategies", page, perPage, idToSearch, orderBy, sort],
     queryFn: () =>
       address &&
       getStrategiesByOwnerAddress({
@@ -35,7 +36,14 @@ export const useMyBAppAccount = () => {
         perPage: perPage,
         ownerAddress: address,
       }),
-    enabled: true,
+    enabled: address && isAddress(address),
+  });
+
+  const myBApps = useQuery({
+    queryKey: ["get_my_b_apps", page, perPage],
+    queryFn: () =>
+      address && getBAppsByOwnerAddress({ address, page, perPage }),
+    enabled: address && isAddress(address),
   });
 
   const totalPercentage = reactQueryData?.data?.delegations.reduce(
@@ -59,7 +67,9 @@ export const useMyBAppAccount = () => {
   return {
     data: reactQueryData.data,
     myStrategies: myStrategies.data || ({} as StrategiesByOwnerResponse),
-    isLoading: reactQueryData.isLoading || myStrategies.isLoading,
+    myBApps: myBApps.data,
+    isLoading:
+      reactQueryData.isLoading || myStrategies.isLoading || myBApps.isLoading,
     totalPercentage,
     restBalancePercentage,
     effectiveBalance: reactQueryData.data?.effectiveBalance,

@@ -14,6 +14,11 @@ export const [CreateStrategyGuard, useCreateStrategyContext] = createGuard(
     registerData: "" as `0x${string}`,
   },
   {
+    "/account/strategies/:strategyId": (_, { params }) => {
+      if (!Number(params.strategyId)) {
+        return "/account/strategies/";
+      }
+    },
     "/account/strategies/create/bApps": (_, { resetState }) => {
       resetState();
     },

@@ -108,7 +108,7 @@ export function TokensFilter() {
                     checked={tokensFilter.value?.includes(asset.token)}
                     className="mr-2"
                   />
-                  <AssetLogo address={asset.token} className="size-5"/>
+                  <AssetLogo address={asset.token} className="size-5" />
                   <span
                     className={cn(
                       "flex-1 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",

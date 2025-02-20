@@ -4,14 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { createDefaultPagination } from "@/lib/utils/api.ts";
 import { getTokenMetadata } from "@/lib/utils/tokens-helper.ts";
+import { usePaginationQuery } from "@/lib/query-states/use-pagination.ts";
 
 export const useBApps = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
+  const { page, perPage } = usePaginationQuery();
 
-  setSearchParams;
-  const page = Number(searchParams.get("page") || 1);
   const id = searchParams.get("id") || "";
-  const perPage = Number(searchParams.get("perPage") || 10);
 
   const query = useQuery({
     queryKey: ["get_bApps", page, perPage, id],

@@ -186,6 +186,29 @@ export const getBApps = ({
       return res;
     });
 
+export const getBAppsByOwnerAddress = ({
+  address,
+  page = 1,
+  perPage = 10,
+}: {
+  address: string;
+  page: number;
+  perPage: number;
+}) =>
+  api
+    .get<{
+      data: BApp[];
+      pagination: Pagination;
+    }>(
+      endpoint(
+        "basedApp",
+        `getBApps?ownerAddress=${address}&perPage=${perPage}&page=${page}`,
+      ),
+    )
+    .then((res) => {
+      return res;
+    });
+
 export const getBAppMetadata = (url: string) =>
   api.get(url).then((res) => {
     console.log(url);

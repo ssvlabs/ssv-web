@@ -2,11 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { getAccounts } from "@/api/b-app.ts";
 import { useSearchParams } from "react-router-dom";
 import { createDefaultPagination } from "@/lib/utils/api.ts";
+import { usePaginationQuery } from "@/lib/query-states/use-pagination.ts";
 
 export const useBAppAccounts = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const page = Number(searchParams.get("page") || 1);
-  const perPage = Number(searchParams.get("perPage") || 10);
+  const { page, perPage } = usePaginationQuery();
+
+  // const page = Number(searchParams.get("page") || 1);
+  // const perPage = Number(searchParams.get("perPage") || 10);
   const searchInput = searchParams.get("address") || "";
 
   const query = useQuery({

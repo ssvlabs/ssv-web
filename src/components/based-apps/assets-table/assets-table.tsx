@@ -17,6 +17,7 @@ export type AssetsTableProps = {
   assets: BAppAsset[];
   pagination: IPagination;
   isLoading?: boolean;
+  onRowClick?: (asset: BAppAsset) => void;
 };
 
 type FCProps = FC<
@@ -29,6 +30,7 @@ export const AssetsTable: FCProps = ({
   pagination,
   className,
   isLoading,
+  onRowClick,
   ...props
 }) => {
   return (
@@ -46,7 +48,15 @@ export const AssetsTable: FCProps = ({
         </TableHeader>
         <TableBody>
           {assets.map((asset) => {
-            return <AssetsTableRow key={asset.token} asset={asset} />;
+            return (
+              <AssetsTableRow
+                key={asset.token}
+                asset={asset}
+                onClick={() => {
+                  onRowClick?.(asset);
+                }}
+              />
+            );
           })}
         </TableBody>
       </Table>

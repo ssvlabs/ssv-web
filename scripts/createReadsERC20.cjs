@@ -80,8 +80,7 @@ export const fetch${capitalizeFirstLetter(functionName)} = (tokenAddress: \`0x\$
   queryClient.fetchQuery(get${capitalizeFirstLetter(functionName)}QueryOptions(tokenAddress${hasInputs ? ", params" : ""}));
 
 export const ${hookName} = (
-  tokenAddress: \`0x\${string}\`,
-  ${hasInputs ? 'params: AbiInputsToParams<Fn["inputs"]>,' : ""}
+  ${hasInputs ? '{tokenAddress, ...params}: AbiInputsToParams<Fn["inputs"]> & {tokenAddress?: `0x${string}`},' : "{tokenAddress}: {tokenAddress?: `0x${string}`},"}
   options: QueryOptions = {enabled: true}
 ) => {
   ${hasInputs ? "const args = paramsToArray({ params, abiFunction })" : ""}
@@ -95,9 +94,9 @@ export const ${hookName} = (
       hasInputs
         ? `query: {
       ...options,
-      enabled: options?.enabled && args.every((arg) => !isUndefined(arg)),
+      enabled: tokenAddress && options?.enabled && args.every((arg) => !isUndefined(arg)),
     },`
-        : "query: {...options},"
+        : "query: {...options, enabled: tokenAddress && options?.enabled},"
     }
   });
 };

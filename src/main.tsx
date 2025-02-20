@@ -6,6 +6,7 @@ globalThis.Buffer = Buffer;
 import ReactDOM from "react-dom/client";
 
 import { router } from "@/app/routes/router";
+import { NuqsAdapter } from "nuqs/adapters/react-router/v6";
 
 import { RainbowKitProvider } from "@/lib/providers/rainbow-kit";
 import { persister, queryClient } from "@/lib/react-query";
@@ -30,7 +31,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       persistOptions={{ persister }}
     >
       <RainbowKitProvider>
-        <RouterProvider router={router} />
+        <NuqsAdapter>
+          <RouterProvider router={router} />
+        </NuqsAdapter>
         <GTMFrame />
         <Toaster />
       </RainbowKitProvider>

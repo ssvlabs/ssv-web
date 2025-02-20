@@ -4,7 +4,7 @@ import type { Address } from "abitype";
 import { onlyTokens } from "@/lib/utils/tokens.ts";
 import { useReadContract } from "wagmi";
 import { TokenABI } from "@/lib/abi/token";
-import { isEthereumAddress } from "@/lib/utils/token";
+import { isEthereumTokenAddress } from "@/lib/utils/token";
 import { useTheme } from "@/hooks/app/use-theme";
 
 export type AssetLogoProps = {
@@ -23,7 +23,7 @@ export const AssetLogo: AssetLogoFC = ({
   ...props
 }) => {
   const { dark } = useTheme();
-  const isEthereum = isEthereumAddress(address);
+  const isEthereum = isEthereumTokenAddress(address);
 
   const { data: tokenSymbol = "ETH" } = useReadContract({
     abi: TokenABI,

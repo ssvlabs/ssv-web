@@ -8,9 +8,9 @@ import Obligations from "@/app/routes/dashboard/b-app/strategies/obligations.tsx
 import Fee from "@/app/routes/dashboard/b-app/strategies/fee.tsx";
 import Metadata from "@/app/routes/dashboard/b-app/strategies/metadata.tsx";
 import { CreateStrategyGuard } from "@/guard/create-strategy-context.ts";
-import { Assets } from "@/app/routes/dashboard/b-app/strategies/assets";
 import BApps from "@/app/routes/dashboard/b-app/b-apps/b-apps.tsx";
 import CreateBApp from "@/app/routes/dashboard/b-app/b-apps/create-b-app.tsx";
+import { Assets } from "@/app/routes/dashboard/b-app/assets/assets";
 
 export const accountRoutes = {
   path: "account",

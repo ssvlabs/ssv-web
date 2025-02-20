@@ -13,6 +13,7 @@ import { useIdentify } from "@/lib/analytics/mixpanel/useIdentify";
 import { useTrackPageViews } from "@/lib/analytics/mixpanel/useTrackPageViews";
 import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 import { useAccountState } from "@/hooks/account/use-account-state.ts";
+import { AssetsDelegationModal } from "@/components/modals/bapp/assets-delegation-modal";
 
 export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
   children,
@@ -71,6 +72,7 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
         )}
       </AnimatePresence>
       <TransactionModal />
+      <AssetsDelegationModal />
       <MultisigTransactionModal />
     </>
   );

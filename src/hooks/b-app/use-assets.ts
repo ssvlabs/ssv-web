@@ -1,9 +1,52 @@
 import { getBAppsAssets } from "@/api/b-app";
-import { useQuery } from "@tanstack/react-query";
+import { createDefaultPagination } from "@/lib/utils/api";
+import { queryOptions, useQuery } from "@tanstack/react-query";
+import type { UseQueryOptions } from "@/lib/react-query";
+import { getDefaultChainedQueryOptions, enabled } from "@/lib/react-query";
+import { usePaginationQuery } from "@/lib/query-states/use-pagination";
 
-export const useBAppsAssets = () => {
-  return useQuery({
-    queryKey: ["assets"],
-    queryFn: getBAppsAssets,
+export const getBAppsAssetsQueryOptions = (
+  page: number = 1,
+  perPage: number = 10,
+  { options } = getDefaultChainedQueryOptions(),
+) => {
+  return queryOptions({
+    queryKey: ["bapp-assets", page, perPage],
+    queryFn: () =>
+      getBAppsAssets({
+        page,
+        perPage,
+      }),
+    enabled: enabled(options?.enabled),
   });
+};
+
+export const useBAppsAssets = (perPage = 10, options: UseQueryOptions = {}) => {
+  const paginationQuery = usePaginationQuery({
+    page: 1,
+    perPage: perPage,
+  });
+
+  const query = useQuery(
+    getBAppsAssetsQueryOptions(paginationQuery.page, paginationQuery.perPage, {
+      options,
+    }),
+  );
+
+  const pagination = query.data?.pagination || createDefaultPagination();
+  const hasNext = paginationQuery.page < pagination.pages;
+  const hasPrev = paginationQuery.page > 1;
+
+  const assets = query.data?.data || [];
+
+  return {
+    query,
+    assets,
+    pagination,
+    hasNext,
+    hasPrev,
+    next: paginationQuery.next,
+    prev: paginationQuery.prev,
+    page: paginationQuery.page,
+  };
 };

@@ -57,12 +57,8 @@ export const StrategiesTable: FCProps = ({
           {strategies.map((strategy) => {
             return (
               <StrategyTableRow
-                onDepositClick={() => {
-                  onDepositClick?.(strategy);
-                }}
-                onRowClick={() => {
-                  onRowClick?.(strategy);
-                }}
+                onDepositClick={onDepositClick}
+                onRowClick={onRowClick}
                 showDepositButtonOnHover={showDepositButtonOnHover}
                 key={strategy.id}
                 strategy={strategy}

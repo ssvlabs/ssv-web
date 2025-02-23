@@ -1,10 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { formatUnits, isAddress } from "viem";
-import type {
-  StrategiesByOwnerResponse} from "@/api/b-app.ts";
-import {
-  getBAppsByOwnerAddress
-} from "@/api/b-app.ts";
+import type { StrategiesByOwnerResponse } from "@/api/b-app.ts";
+import { getBAppsByOwnerAddress } from "@/api/b-app.ts";
 import { getMyAccount, getStrategiesByOwnerAddress } from "@/api/b-app.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { convertToPercentage } from "@/lib/utils/number.ts";

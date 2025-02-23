@@ -209,12 +209,12 @@ export const getBAppsByOwnerAddress = ({
       return res;
     });
 
-export const getBAppMetadata = (url: string) =>
-  api.get(url).then((res) => {
-    console.log(url);
-    console.log(res);
-    return res;
-  });
+export const validateMetadata = (url: string) =>
+  api
+    .get(endpoint("basedApp", `validateMetadataUrl?url=${url}`))
+    .then((res) => {
+      return res;
+    });
 
 export type BAppAsset = {
   token: Address;

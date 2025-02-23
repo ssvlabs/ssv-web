@@ -15,13 +15,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { SsvLogo } from "@/components/ui/ssv-logo";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
-import { Link } from "react-router-dom";
+import { matchPath, NavLink, useLocation } from "react-router-dom";
 import { useLinks } from "@/hooks/use-links";
 import { useAccountState } from "@/hooks/account/use-account-state";
+import { textVariants } from "@/components/ui/text";
 
 export type NavbarProps = {
   // TODO: Add props or remove this type
@@ -34,39 +34,87 @@ type FCProps = FC<
 export const Navbar: FCProps = ({ className, ...props }) => {
   const links = useLinks();
   const { accountRoutePath, dvtRoutePath } = useAccountState();
+  const pathname = useLocation().pathname;
+
   return (
     <div
       className={cn(className, "flex justify-center w-full bg-gray-50")}
       {...props}
     >
       <div className="w-[1320px] flex items-center gap-6 h-20 whitespace-nowrap">
-        <Link to={accountRoutePath ?? "/"}>
+        <NavLink to={accountRoutePath ?? "/"}>
           <SsvLogo className="h-full mr-[253px]" />
-        </Link>
+        </NavLink>
         {/*<Spacer className="w-[253px]" />*/}
-        <Text as={Link} to={accountRoutePath} variant="body-2-medium">
+        <NavLink
+          to={accountRoutePath ?? "/"}
+          className={textVariants({
+            variant: "body-2-medium",
+            className: cn({
+              "text-primary-500":
+                matchPath("/account", pathname) ||
+                matchPath("/account/accounts", pathname),
+            }),
+          })}
+        >
           My Account
-        </Text>
-        <Text as={Link} to="/account/assets" variant="body-2-medium">
+        </NavLink>
+        <NavLink
+          to="/account/assets"
+          className={textVariants({
+            variant: "body-2-medium",
+            className: cn({
+              "text-primary-500": matchPath("/account/assets/*", pathname),
+            }),
+          })}
+        >
           Assets
-        </Text>
-        <Text as={Link} to="/account/strategies" variant="body-2-medium">
+        </NavLink>
+        <NavLink
+          to="/account/strategies"
+          className={textVariants({
+            variant: "body-2-medium",
+            className: cn({
+              "text-primary-500": matchPath("/account/strategies/*", pathname),
+            }),
+          })}
+        >
           Strategies
-        </Text>
-        <Text as={Link} to="/account/bApps" variant="body-2-medium">
+        </NavLink>
+        <NavLink
+          to="/account/bApps"
+          className={textVariants({
+            variant: "body-2-medium",
+            className: cn({
+              "text-primary-500": matchPath("/account/bApps/*", pathname),
+            }),
+          })}
+        >
           BApps
-        </Text>
-        <Text as={Link} to={dvtRoutePath} variant="body-2-medium">
+        </NavLink>
+        <NavLink
+          to={dvtRoutePath}
+          className={textVariants({
+            variant: "body-2-medium",
+            className: cn({
+              "text-primary-500":
+                matchPath("/clusters/*", pathname) ||
+                matchPath("/operators/*", pathname) ||
+                matchPath("/join/*", pathname),
+            }),
+          })}
+        >
           DVT
-        </Text>
-        <Text
-          as="a"
-          href={links.ssv.explorer}
+        </NavLink>
+        <NavLink
+          to={links.ssv.explorer}
           target="_blank"
-          variant="body-2-medium"
+          className={textVariants({
+            variant: "body-2-medium",
+          })}
         >
           Explorer
-        </Text>
+        </NavLink>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">

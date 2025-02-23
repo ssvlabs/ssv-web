@@ -19,6 +19,7 @@ export type OperatorsTableProps = {
   isLoading?: boolean;
   showDepositButtonOnHover?: boolean;
   onDepositClick?: (strategy: Strategy) => void;
+  onRowClick?: (strategy: Strategy) => void;
 };
 
 type FCProps = FC<
@@ -33,6 +34,7 @@ export const StrategiesTable: FCProps = ({
   isLoading,
   showDepositButtonOnHover,
   onDepositClick,
+  onRowClick,
   ...props
 }) => {
   return (
@@ -59,7 +61,7 @@ export const StrategiesTable: FCProps = ({
                   onDepositClick?.(strategy);
                 }}
                 onRowClick={() => {
-                  console.log("row clicked");
+                  onRowClick?.(strategy);
                 }}
                 showDepositButtonOnHover={showDepositButtonOnHover}
                 key={strategy.id}

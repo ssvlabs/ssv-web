@@ -62,6 +62,7 @@ const Metadata = () => {
       await createStrategy.write(
         {
           fee: cleanedNumber,
+          metadataURI: "0x00", // TODO: handle metadataURI
         },
         {
           onError: (e) => {
@@ -176,7 +177,7 @@ const Metadata = () => {
 
       await optInToBApp.write(
         {
-          strategyId: BigInt(createdId),
+          strategyId: createdId,
           bApp: bApp.id,
           tokens,
           obligationPercentages,

@@ -300,6 +300,25 @@ export const BAppABI = [
       {
         indexed: true,
         internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "metadataURI",
+        type: "string",
+      },
+    ],
+    name: "AccountMetadataURIUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
         name: "bAppAddress",
         type: "address",
       },
@@ -318,9 +337,9 @@ export const BAppABI = [
     inputs: [
       {
         indexed: true,
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         indexed: true,
@@ -537,9 +556,9 @@ export const BAppABI = [
     inputs: [
       {
         indexed: true,
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         indexed: true,
@@ -555,9 +574,9 @@ export const BAppABI = [
       },
       {
         indexed: false,
-        internalType: "uint256",
+        internalType: "uint32",
         name: "percentage",
-        type: "uint256",
+        type: "uint32",
       },
     ],
     name: "ObligationCreated",
@@ -568,9 +587,9 @@ export const BAppABI = [
     inputs: [
       {
         indexed: true,
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         indexed: true,
@@ -599,9 +618,9 @@ export const BAppABI = [
     inputs: [
       {
         indexed: true,
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         indexed: true,
@@ -617,9 +636,9 @@ export const BAppABI = [
       },
       {
         indexed: false,
-        internalType: "uint256",
+        internalType: "uint32",
         name: "percentage",
-        type: "uint256",
+        type: "uint32",
       },
       {
         indexed: false,
@@ -655,9 +674,9 @@ export const BAppABI = [
     inputs: [
       {
         indexed: true,
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         indexed: true,
@@ -671,6 +690,12 @@ export const BAppABI = [
         name: "fee",
         type: "uint32",
       },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "metadataURI",
+        type: "string",
+      },
     ],
     name: "StrategyCreated",
     type: "event",
@@ -680,9 +705,9 @@ export const BAppABI = [
     inputs: [
       {
         indexed: true,
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         indexed: true,
@@ -711,9 +736,9 @@ export const BAppABI = [
     inputs: [
       {
         indexed: true,
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         indexed: false,
@@ -742,9 +767,9 @@ export const BAppABI = [
     inputs: [
       {
         indexed: true,
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         indexed: false,
@@ -773,9 +798,28 @@ export const BAppABI = [
     inputs: [
       {
         indexed: true,
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "metadataURI",
+        type: "string",
+      },
+    ],
+    name: "StrategyMetadataURIUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint32",
+        name: "strategyId",
+        type: "uint32",
       },
       {
         indexed: true,
@@ -810,9 +854,9 @@ export const BAppABI = [
     inputs: [
       {
         indexed: true,
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         indexed: true,
@@ -867,9 +911,9 @@ export const BAppABI = [
     name: "FEE_EXPIRE_TIME",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "",
-        type: "uint256",
+        type: "uint32",
       },
     ],
     stateMutability: "view",
@@ -880,9 +924,9 @@ export const BAppABI = [
     name: "FEE_TIMELOCK_PERIOD",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "",
-        type: "uint256",
+        type: "uint32",
       },
     ],
     stateMutability: "view",
@@ -906,9 +950,9 @@ export const BAppABI = [
     name: "OBLIGATION_EXPIRE_TIME",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "",
-        type: "uint256",
+        type: "uint32",
       },
     ],
     stateMutability: "view",
@@ -919,9 +963,9 @@ export const BAppABI = [
     name: "OBLIGATION_TIMELOCK_PERIOD",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "",
-        type: "uint256",
+        type: "uint32",
       },
     ],
     stateMutability: "view",
@@ -945,9 +989,9 @@ export const BAppABI = [
     name: "WITHDRAWAL_EXPIRE_TIME",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "",
-        type: "uint256",
+        type: "uint32",
       },
     ],
     stateMutability: "view",
@@ -958,9 +1002,9 @@ export const BAppABI = [
     name: "WITHDRAWAL_TIMELOCK_PERIOD",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "",
-        type: "uint256",
+        type: "uint32",
       },
     ],
     stateMutability: "view",
@@ -982,9 +1026,9 @@ export const BAppABI = [
     name: "accountBAppStrategy",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
     ],
     stateMutability: "view",
@@ -1064,9 +1108,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "address",
@@ -1096,13 +1140,18 @@ export const BAppABI = [
         name: "fee",
         type: "uint32",
       },
+      {
+        internalType: "string",
+        name: "metadataURI",
+        type: "string",
+      },
     ],
     name: "createStrategy",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
     ],
     stateMutability: "nonpayable",
@@ -1153,9 +1202,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "contract IERC20",
@@ -1176,9 +1225,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
     ],
     name: "depositETH",
@@ -1189,9 +1238,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "address",
@@ -1217,9 +1266,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "contract IERC20",
@@ -1240,9 +1289,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "uint256",
@@ -1258,9 +1307,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
     ],
     name: "finalizeFeeUpdate",
@@ -1271,9 +1320,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "address",
@@ -1294,9 +1343,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "contract IERC20",
@@ -1312,9 +1361,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
     ],
     name: "finalizeWithdrawalETH",
@@ -1356,9 +1405,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "address",
@@ -1379,9 +1428,9 @@ export const BAppABI = [
         type: "uint32",
       },
       {
-        internalType: "uint64",
+        internalType: "uint32",
         name: "requestTime",
-        type: "uint64",
+        type: "uint32",
       },
     ],
     stateMutability: "view",
@@ -1390,9 +1439,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "address",
@@ -1424,9 +1473,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "address",
@@ -1470,9 +1519,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "uint32",
@@ -1488,9 +1537,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "address",
@@ -1516,9 +1565,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "address",
@@ -1539,9 +1588,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "uint256",
@@ -1618,9 +1667,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
     ],
     name: "strategies",
@@ -1641,9 +1690,9 @@ export const BAppABI = [
         type: "uint32",
       },
       {
-        internalType: "uint64",
+        internalType: "uint32",
         name: "feeRequestTime",
-        type: "uint64",
+        type: "uint32",
       },
     ],
     stateMutability: "view",
@@ -1652,9 +1701,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "address",
@@ -1713,6 +1762,37 @@ export const BAppABI = [
   {
     inputs: [
       {
+        internalType: "string",
+        name: "metadataURI",
+        type: "string",
+      },
+    ],
+    name: "updateAccountMetadataURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "bApp",
+        type: "address",
+      },
+      {
+        internalType: "string",
+        name: "metadataURI",
+        type: "string",
+      },
+    ],
+    name: "updateBAppMetadataURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "bApp",
         type: "address",
@@ -1754,9 +1834,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "bApp",
-        type: "address",
+        internalType: "uint32",
+        name: "strategyId",
+        type: "uint32",
       },
       {
         internalType: "string",
@@ -1764,7 +1844,7 @@ export const BAppABI = [
         type: "string",
       },
     ],
-    name: "updateMetadataURI",
+    name: "updateStrategyMetadataURI",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -1790,9 +1870,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "address",
@@ -1814,9 +1894,9 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "strategyId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "address",
@@ -1837,9 +1917,9 @@ export const BAppABI = [
         type: "uint256",
       },
       {
-        internalType: "uint64",
+        internalType: "uint32",
         name: "requestTime",
-        type: "uint64",
+        type: "uint32",
       },
     ],
     stateMutability: "view",

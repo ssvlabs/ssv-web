@@ -54,7 +54,7 @@ export const AssetsDelegationModal = () => {
     if (asset.isEthereum) {
       depositETH.write(
         {
-          strategyId: BigInt(meta.strategy!.id),
+          strategyId: Number(meta.strategy!.id),
         },
         amount,
         options,
@@ -62,7 +62,7 @@ export const AssetsDelegationModal = () => {
     } else {
       depositERC20.write(
         {
-          strategyId: BigInt(meta.strategy!.id),
+          strategyId: Number(meta.strategy!.id),
           amount,
           token: meta.asset!,
         },

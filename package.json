@@ -11,8 +11,9 @@
     "preview": "vite preview",
     "preinstall": "git config --global url.\"https://\".insteadOf git+ssh://git@ && only-allow pnpm",
     "type-check": "tsc -b",
-    "lint-staged": "pnpm run type-check && lint-staged",
+    "lint-staged": "pnpm run type-check && lint-staged && pnpm run log-todos",
     "generate-all": "node scripts/runAllScripts.cjs",
+    "log-todos": "node scripts/log-todos.js",
     "commit": "cz"
   },
   "config": {

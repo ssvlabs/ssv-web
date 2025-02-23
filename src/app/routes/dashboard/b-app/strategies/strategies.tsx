@@ -4,7 +4,7 @@ import { StrategiesTable } from "@/components/based-apps/strategies-table/strate
 import { Text } from "@/components/ui/text.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { SearchInput } from "@/components/ui/search-input.tsx";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useStrategies } from "@/hooks/b-app/use-strategies.tsx";
 import { TableMenuButton } from "@/components/ui/table";
 import { useTokensFilter } from "@/hooks/b-app/filters/use-tokens-filter";
@@ -35,7 +35,6 @@ export const Strategies: FC = () => {
     });
   };
 
-  const navigate = useNavigate();
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <div className="flex justify-between w-full items-center">
@@ -79,9 +78,6 @@ export const Strategies: FC = () => {
         isLoading={isStrategiesIsLoading}
         showDepositButtonOnHover={(tokensFilter.value?.length || 0) > 0}
         onDepositClick={onDepositClick}
-        onRowClick={(strategy) => {
-          navigate(`${strategy.id}`);
-        }}
       />
     </Container>
   );

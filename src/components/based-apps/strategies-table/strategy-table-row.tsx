@@ -11,7 +11,7 @@ import {
 import { cn } from "@/lib/utils/tw";
 import type { Address } from "abitype";
 import type { ComponentPropsWithoutRef, FC } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import type { Strategy } from "@/api/b-app.ts";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 
@@ -35,29 +35,28 @@ export const StrategyTableRow: FCProps = ({
   onRowClick,
   ...props
 }) => {
+  const navigate = useNavigate();
+
+  const navigateToStrategy = (strategy: Strategy) => {
+    navigate(`${strategy.id}`);
+    useCreateStrategyContext.state.strategyData = strategy;
+  };
+
   return (
     <TableRow
       key={strategy.id}
       className={cn("cursor-pointer max-h-7 group", className)}
       {...props}
       onClick={() => {
-        onRowClick?.(strategy);
+        if (onRowClick) return onRowClick(strategy);
+        navigateToStrategy(strategy);
       }}
     >
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         {strategy.id}
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-semibold" })}>
-        <Button
-          variant="link"
-          as={Link}
-          to={`${strategy.id}`}
-          onClick={() => {
-            useCreateStrategyContext.state.strategyData = strategy;
-          }}
-        >
-          {strategy.name}
-        </Button>
+        <Button variant="link">{strategy.name}</Button>
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         <Tooltip

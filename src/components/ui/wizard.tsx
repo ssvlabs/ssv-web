@@ -12,6 +12,7 @@ export const Wizard = ({
   currentStepNumber = 0,
   onNext,
   isLoading,
+  isNextDisabled,
 }: {
   title: string;
   onClose: () => void;
@@ -20,6 +21,7 @@ export const Wizard = ({
   skipToStep?: () => void;
   currentStepNumber?: number;
   steps?: string[];
+  isNextDisabled?: boolean;
   isLoading?: boolean;
 }) => {
   const bApp = useCreateStrategyContext();
@@ -81,6 +83,7 @@ export const Wizard = ({
             )}
             {currentStepNumber !== 0 && (
               <Button
+                disabled={isNextDisabled}
                 isLoading={isLoading}
                 onClick={onNext}
                 className="size-full"

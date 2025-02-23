@@ -1,8 +1,6 @@
 import { Container } from "@/components/ui/container.tsx";
 import { Span, Text } from "@/components/ui/text.tsx";
 import { Input } from "@/components/ui/input.tsx";
-import { Textarea } from "@/components/ui/textarea.tsx";
-import ImgCropUpload from "@/components/ui/ImgCropUpload.tsx";
 import { useNavigate } from "react-router-dom";
 import { Wizard } from "@/components/ui/wizard.tsx";
 import { CreateSteps, STEPS_LABELS } from "@/types/b-app.ts";
@@ -14,6 +12,18 @@ import DoubleTx from "@/components/ui/double-tx.tsx";
 import { wait } from "@/lib/utils/promise.ts";
 import { toast } from "@/components/ui/use-toast.ts";
 import { getErrorMessage } from "@/lib/utils/wagmi.ts";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form.tsx";
+import { useRequestMetadataByURI } from "@/hooks/b-app/use-request-metadata-by-uri.ts";
+import { useUpdateAccountMetadataURI } from "@/lib/contract-interactions/b-app/write/use-update-account-metadata-uri.ts";
 
 const Metadata = () => {
   const navigate = useNavigate();
@@ -42,6 +52,50 @@ const Metadata = () => {
         ]
       : [{ label: "Register Strategy", status: "waiting" }],
   );
+  const [accountMetadataTxState, setAccountMetadataTxState] = useState<{
+    label: string;
+    status: "waiting" | "pending" | "success" | "failed";
+    txHash?: `0x${string}`;
+  }>({
+    label: "Register Account Metadata",
+    status: "waiting",
+  });
+  const protocolRegex = /^(https?:\/\/)/;
+
+  const httpsURLSchema = z
+    .string()
+    .trim()
+    .transform<string>((url) =>
+      !protocolRegex.test(url) ? `https://${url}` : url,
+    )
+    .refine((url) => {
+      try {
+        const parsedUrl = new URL(url);
+        const domain = parsedUrl.hostname;
+        const parts = domain.split(".");
+        return parts.length >= 2 && parts[parts.length - 1].length >= 2;
+      } catch {
+        return false;
+      }
+    }, "Invalid URL")
+    .refine((url) => url.endsWith(".json"), "URL must end with .json");
+
+  const schema = z.object({
+    strategyMetadataURI: z.union([z.literal(""), httpsURLSchema]),
+    accountMetadataURI: z.union([z.literal(""), httpsURLSchema]),
+  });
+
+  const form = useForm({
+    mode: "all",
+    defaultValues: { strategyMetadataURI: "", accountMetadataURI: "" },
+    resolver: zodResolver(schema),
+  });
+  const { strategyMetadataURI, accountMetadataURI } = form.watch();
+  const { strategyMetadata, accountMetadata } = useRequestMetadataByURI({
+    strategyMetadataURI,
+    accountMetadataURI,
+  });
+  const updateAccountMetadata = useUpdateAccountMetadataURI();
 
   const finishTx = () => {
     navigate("/account/strategies");
@@ -62,7 +116,7 @@ const Metadata = () => {
       await createStrategy.write(
         {
           fee: cleanedNumber,
-          metadataURI: "0x00", // TODO: handle metadataURI
+          metadataURI: strategyMetadataURI,
         },
         {
           onError: (e) => {
@@ -248,72 +302,261 @@ const Metadata = () => {
         },
       );
     }
+
+    if (accountMetadataURI) {
+      await updateAccountMetadata.write(
+        { metadataURI: accountMetadataURI },
+        {
+          onError: (e) => {
+            setIsLoading(false);
+            toast({
+              title: "Transaction failed",
+              description: (
+                <Span className="whitespace-pre-wrap">
+                  {getErrorMessage(e)}
+                </Span>
+              ),
+              variant: "destructive",
+            });
+            setAccountMetadataTxState({
+              label: "Register Account Metadata",
+              status: "failed",
+            });
+          },
+          onConfirmed: (hash) => {
+            setIsTxStarted(true);
+            setAccountMetadataTxState({
+              label: "Register Account Metadata",
+              status: "pending",
+              txHash: hash,
+            });
+          },
+          onInitiated: () => {
+            setIsTxStarted(true);
+            setAccountMetadataTxState({
+              label: "Register Account Metadata",
+              status: "pending",
+            });
+          },
+          onMined: (receipt) => {
+            toast({
+              title: "Transaction confirmed",
+              description: new Date().toLocaleString(),
+            });
+            setAccountMetadataTxState({
+              label: "Register Account Metadata",
+              status: "success",
+              txHash: receipt.transactionHash,
+            });
+            return finishTx;
+          },
+        },
+      );
+    }
     await wait(0);
     finishTx();
   };
-
   return (
     <Wizard
       onNext={createStrategyHandler}
+      isNextDisabled={!strategyMetadata.isSuccess || !form.formState.isValid}
       title={"Create Strategy"}
       steps={Object.values(STEPS_LABELS)}
       isLoading={isLoading}
       children={
-        <Container variant="horizontal" size="xl" className="py-6">
-          <div className="w-[648px] bg-white flex flex-col p-6 rounded-[16px] gap-6">
-            <div className="flex flex-col gap-3">
-              <Text variant="body-1-bold">Strategy</Text>
-              <Text variant="body-2-medium">
-                Provide a name and include a short description for your
-                strategy.
-              </Text>
-            </div>
-            <Text variant="body-3-semibold">Strategy Name</Text>
-            <Input />
-            <Text variant="body-3-semibold">Description</Text>
-            <Textarea className="h-[169px] resize-none" />
-          </div>
-          <div className="w-[648px] bg-white flex flex-col p-6 rounded-[16px] gap-6">
-            <div className="flex flex-col gap-3">
-              <Text variant="body-1-bold">Account</Text>
-              <Text variant="body-2-medium">
-                Provide an account name and a profile picture.
-              </Text>
-              <Text variant="body-2-medium">
-                These details will show up next to each strategy created by this
-                account. You can change your account information at any time in
-                My Account.
-              </Text>
-            </div>
-            <Text variant="body-3-semibold">Account Name</Text>
-            <Input />
-            <Text variant="body-3-semibold">Image</Text>
-            <ImgCropUpload
-              className="!w-full !h-[166px] !bg-none bg-white"
-              value={""}
-              setValue={() => console.log(1)}
-            ></ImgCropUpload>
-          </div>
-          {isTxStarted && (
-            <DoubleTx
-              isLoading={isLoading}
-              action={!isLoading ? createStrategyHandler : undefined}
-              actionLabel={
-                createdStrategyId && createdStrategyRegisteredHash
-                  ? "Opt-in to bApp"
-                  : "Register"
-              }
-              stats={txStatus}
-              onClose={
-                !isLoading
-                  ? () => {
-                      setIsLoading(false);
-                      setIsTxStarted(false);
-                    }
-                  : undefined
-              }
+        <Container size="xl">
+          <Form {...form}>
+            <FormField
+              control={form.control}
+              name="strategyMetadataURI"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormControl>
+                    <div className="flex flex-col bg-white gap-6 w-full rounded-[16px] p-6 mt-5">
+                      <div className="flex flex-col gap-3">
+                        <Text variant="body-1-bold">Strategy</Text>
+                        <Text variant="body-3-medium">
+                          Provide the metadata URI for your strategy.
+                        </Text>
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        <Input {...field} placeholder="Enter URI String..." />
+                        <FormMessage />
+                        <div className="px-6 py-4 rounded-[12px] bg-gray-100 flex items-center gap-3">
+                          <Text
+                            className="text-gray-500"
+                            variant="body-3-medium"
+                          >
+                            {strategyMetadata.isSuccess &&
+                            strategyMetadata.data &&
+                            (
+                              strategyMetadata.data as {
+                                data: {
+                                  name: string;
+                                  description: string;
+                                };
+                              }
+                            ).data
+                              ? (
+                                  strategyMetadata.data as {
+                                    data: {
+                                      name: string;
+                                      description: string;
+                                    };
+                                  }
+                                ).data.name || "Missing name..."
+                              : "Strategy name"}
+                          </Text>
+                        </div>
+                        <div className="px-6 py-4 rounded-[12px] bg-gray-100 flex items-center gap-3">
+                          <Text
+                            className="text-gray-500"
+                            variant="body-3-medium"
+                          >
+                            {strategyMetadata.isSuccess &&
+                            strategyMetadata.data &&
+                            (
+                              strategyMetadata.data as {
+                                data: {
+                                  name: string;
+                                  description: string;
+                                };
+                              }
+                            ).data
+                              ? (
+                                  strategyMetadata.data as {
+                                    data: {
+                                      name: string;
+                                      description: string;
+                                    };
+                                  }
+                                ).data.description || "Missing description"
+                              : "Description"}
+                          </Text>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-3"></div>
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          )}
+
+            <FormField
+              control={form.control}
+              name="accountMetadataURI"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormControl>
+                    <div className="flex flex-col bg-white gap-6 w-full rounded-[16px] p-6 mt-5">
+                      <div className="flex flex-col gap-3">
+                        <Text
+                          className="flex items-center gap-1"
+                          variant="body-1-bold"
+                        >
+                          Account{" "}
+                          <Text
+                            className="text-gray-500"
+                            variant="body-3-medium"
+                          >
+                            (optional)
+                          </Text>
+                        </Text>
+                        <Text variant="body-3-medium">
+                          Provide the metadata URI for your account.
+                        </Text>
+                        <Text variant="body-3-medium">
+                          These details will show up next to each strategy
+                          created by this account.
+                        </Text>
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        <Input {...field} placeholder="Enter URI String..." />
+                        <FormMessage />
+                        <div className="px-6 py-4 rounded-[12px] bg-gray-100 flex items-center gap-3">
+                          <img
+                            className="rounded-[8px] size-7 border-gray-400 border"
+                            src={
+                              accountMetadata.isSuccess &&
+                              accountMetadata.data &&
+                              (
+                                accountMetadata.data as {
+                                  data: {
+                                    name: string;
+                                    logo: string;
+                                  };
+                                }
+                              ).data
+                                ? (
+                                    accountMetadata.data as {
+                                      data: {
+                                        name: string;
+                                        logo: string;
+                                      };
+                                    }
+                                  ).data.logo ||
+                                  "/images/operator_default_background/light.svg"
+                                : "/images/operator_default_background/light.svg"
+                            }
+                          />
+                          <Text
+                            className="text-gray-500"
+                            variant="body-3-medium"
+                          >
+                            {accountMetadata.isSuccess &&
+                            accountMetadata.data &&
+                            (
+                              accountMetadata.data as {
+                                data: {
+                                  name: string;
+                                  logo: string;
+                                };
+                              }
+                            ).data
+                              ? (
+                                  accountMetadata.data as {
+                                    data: {
+                                      name: string;
+                                      logo: string;
+                                    };
+                                  }
+                                ).data.name || "Missing name"
+                              : "Account Name"}
+                          </Text>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-3"></div>
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            {isTxStarted && (
+              <DoubleTx
+                isLoading={isLoading}
+                action={!isLoading ? createStrategyHandler : undefined}
+                actionLabel={
+                  createdStrategyId && createdStrategyRegisteredHash
+                    ? "Opt-in to bApp"
+                    : "Register"
+                }
+                stats={
+                  accountMetadataURI
+                    ? [...txStatus, accountMetadataTxState]
+                    : txStatus
+                }
+                onClose={
+                  !isLoading
+                    ? () => {
+                        setIsLoading(false);
+                        setIsTxStarted(false);
+                      }
+                    : undefined
+                }
+              />
+            )}
+          </Form>
         </Container>
       }
       currentStepNumber={CreateSteps.AddMetadata}

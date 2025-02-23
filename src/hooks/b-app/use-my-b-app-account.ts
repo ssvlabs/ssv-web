@@ -29,6 +29,10 @@ export const useMyBAppAccount = () => {
 
   const myStrategies = useQuery({
     queryKey: ["get_my_strategies", page, perPage, idToSearch, orderBy, sort],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     queryFn: () =>
       address &&
       getStrategiesByOwnerAddress({

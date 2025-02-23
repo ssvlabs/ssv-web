@@ -34,6 +34,7 @@ export const Strategies: FC = () => {
       asset: tokensFilter.value?.[0] as Address,
     });
   };
+
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <div className="flex justify-between w-full items-center">

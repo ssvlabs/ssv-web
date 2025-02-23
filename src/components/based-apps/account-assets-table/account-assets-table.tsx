@@ -9,31 +9,27 @@ import {
 import { cn } from "@/lib/utils/tw";
 import { Pagination } from "@/components/ui/pagination-v2";
 import { Divider } from "@/components/ui/divider";
-import { StrategyTableRow } from "@/components/based-apps/strategies-table/strategy-table-row";
-import type { Strategy } from "@/api/b-app.ts";
 import { Loading } from "@/components/ui/Loading.tsx";
+import { AccountAssetsTableRow } from "@/components/based-apps/account-assets-table/account-assets-table-row";
+import type { AccountAsset } from "@/hooks/b-app/use-account-assets";
 
-export type OperatorsTableProps = {
-  strategies: Strategy[];
-  pagination?: IPagination;
+export type AccountAssetsTableProps = {
+  assets: AccountAsset[];
+  pagination: IPagination;
   isLoading?: boolean;
-  showDepositButtonOnHover?: boolean;
-  onDepositClick?: (strategy: Strategy) => void;
-  onRowClick?: (strategy: Strategy) => void;
+  onRowClick?: (asset: AccountAsset) => void;
 };
 
 type FCProps = FC<
-  Omit<ComponentPropsWithoutRef<typeof Table>, keyof OperatorsTableProps> &
-    OperatorsTableProps
+  Omit<ComponentPropsWithoutRef<typeof Table>, keyof AccountAssetsTableProps> &
+    AccountAssetsTableProps
 >;
 
-export const StrategiesTable: FCProps = ({
-  strategies,
+export const AccountAssetsTable: FCProps = ({
+  assets,
   pagination,
   className,
   isLoading,
-  showDepositButtonOnHover,
-  onDepositClick,
   onRowClick,
   ...props
 }) => {
@@ -44,31 +40,29 @@ export const StrategiesTable: FCProps = ({
         {...props}
       >
         <TableHeader>
-          <TableHead>ID</TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>Owner</TableHead>
-          <TableHead>BApps</TableHead>
-          <TableHead>Supported Assets</TableHead>
-          <TableHead>Fee</TableHead>
-          <TableHead>Delegators</TableHead>
+          <TableHead>Assets</TableHead>
+          <TableHead>Wallet Balance</TableHead>
+          <TableHead>Delegated Strategies</TableHead>
           <TableHead>Delegated</TableHead>
+          <TableHead className="text-right">Total Delegated Value</TableHead>
+          <TableHead></TableHead>
         </TableHeader>
         <TableBody>
-          {strategies.map((strategy) => {
+          {assets.map((asset) => {
             return (
-              <StrategyTableRow
-                onDepositClick={onDepositClick}
-                onRowClick={onRowClick}
-                showDepositButtonOnHover={showDepositButtonOnHover}
-                key={strategy.id}
-                strategy={strategy}
+              <AccountAssetsTableRow
+                key={asset.token}
+                asset={asset}
+                onClick={() => {
+                  onRowClick?.(asset);
+                }}
               />
             );
           })}
         </TableBody>
       </Table>
       <div className="bg-gray-50 w-full">{isLoading && <Loading />}</div>
-      {pagination && pagination.pages > 1 ? (
+      {pagination.pages > 1 ? (
         <>
           <Divider />
           <div className="flex w-full bg-gray-50 py-4 rounded-b-2xl">
@@ -82,4 +76,4 @@ export const StrategiesTable: FCProps = ({
   );
 };
 
-StrategiesTable.displayName = "StrategiesTable";
+AccountAssetsTable.displayName = "AccountAssetsTable";

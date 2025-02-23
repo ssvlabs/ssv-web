@@ -11,6 +11,8 @@ import {
 } from "@/lib/utils/number.ts";
 import { shortenAddress } from "@/lib/utils/strings.ts";
 import { formatUnits } from "viem";
+import { AccountAssetsTable } from "@/components/based-apps/account-assets-table/account-assets-table";
+import { useAccountAssets } from "@/hooks/b-app/use-account-assets";
 
 const createValidatorBalanceRow = ({
   delegationsCount = 0,
@@ -156,6 +158,9 @@ const Delegations = () => {
     data?.delegations || [],
     effectiveBalance || 0n,
   );
+
+  const { assets } = useAccountAssets();
+
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <Text variant="body-1-semibold">My Assets</Text>
@@ -165,10 +170,19 @@ const Delegations = () => {
         isLoading={isLoading}
         tableHeads={nonSlashableAssetsHeads(Asset.NonSlashable)}
       />
-      <AssetsTable
+      {/* <AssetsTable
         onRowClick={() => navigate("accounts")}
         data={[]}
         tableHeads={nonSlashableAssetsHeads(Asset.Slashable)}
+      /> */}
+      <AccountAssetsTable
+        assets={assets}
+        pagination={{
+          page: 1,
+          pages: 1,
+          total: 1,
+          per_page: 1,
+        }}
       />
     </Container>
   );

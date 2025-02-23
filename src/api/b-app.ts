@@ -246,6 +246,26 @@ export const getBAppsAssets = async ({
   );
 };
 
+export type SlashableAsset = {
+  token: string;
+  deposits: {
+    strategyId: string;
+    depositAmount: string;
+    fiatDepositAmount: string;
+  }[];
+  totalDepositAmount: string;
+  totalFiatDepositAmount: string;
+};
+export type GetSlashableAssetsResponse = {
+  data: SlashableAsset[];
+  pagination: Pagination;
+};
+export const getSlashableAssets = async (ownerAddress: string) => {
+  return api.get<GetSlashableAssetsResponse>(
+    endpoint(`basedApp/getSlashableAssets?ownerAddress=${ownerAddress}`),
+  );
+};
+
 export type GetDelegatedAssetParams = {
   token: `0x${string}`;
   contributor: `0x${string}`;

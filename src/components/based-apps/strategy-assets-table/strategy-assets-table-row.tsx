@@ -6,7 +6,11 @@ import { TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Text, textVariants } from "@/components/ui/text";
 import { useStrategy } from "@/hooks/b-app/use-strategy.ts";
 import { useAsset } from "@/hooks/use-asset.ts";
-import { convertToPercentage, formatSSV } from "@/lib/utils/number.ts";
+import {
+  convertToPercentage,
+  currencyFormatter,
+  formatSSV,
+} from "@/lib/utils/number.ts";
 import { shortenAddress } from "@/lib/utils/strings.ts";
 import { cn } from "@/lib/utils/tw";
 import type { ComponentPropsWithoutRef, FC } from "react";
@@ -62,7 +66,9 @@ export const StrategyAssetsTableRow: FCProps = ({
         <TableCell>
           {formatSSV(asset.totalTokens, 18)} {symbol}
         </TableCell>
-        <TableCell>{asset.totalFiat}</TableCell>
+        <TableCell>
+          {currencyFormatter.format(Number(asset.totalFiat) || 0)}
+        </TableCell>
         <TableCell
           className={`${Number(convertToPercentage(asset.totalDelegation)) > 100 && "text-error-500"} flex items-center justify-between relative`}
         >

@@ -209,9 +209,9 @@ export const getBAppsByOwnerAddress = ({
       return res;
     });
 
-export const validateMetadata = (url: string) =>
+export const validateMetadata = <T>(url: string) =>
   api
-    .get(endpoint("basedApp", `validateMetadataUrl?url=${url}`))
+    .get<T>(endpoint("basedApp", `validateMetadataUrl?url=${url}`))
     .then((res) => {
       return res;
     });

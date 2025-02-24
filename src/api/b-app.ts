@@ -247,7 +247,7 @@ export const getBAppsAssets = async ({
 };
 
 export type SlashableAsset = {
-  token: string;
+  token: Address;
   deposits: {
     strategyId: string;
     depositAmount: string;

@@ -3,10 +3,14 @@ import { TableHeader, TableHead, Table } from "@/components/ui/table";
 import { cn } from "@/lib/utils/tw";
 import { StrategyBAppsTableRow } from "@/components/based-apps/strategy-b-apps-table/strategy-b-apps-table-row.tsx";
 import type { StrategyBApp } from "@/api/b-app.ts";
+import { Text } from "@/components/ui/text.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { Link } from "react-router-dom";
 
 export type BAppsTableProps = {
   bApps: StrategyBApp[];
   searchValue?: string;
+  isLoading?: boolean;
 };
 
 type FCProps = FC<
@@ -17,22 +21,37 @@ type FCProps = FC<
 export const StrategyBAppsTable: FCProps = ({
   bApps,
   searchValue,
+  isLoading,
   className,
   ...props
 }) => {
   return (
-    <Table
-      className={cn(className, "w-full rounded-t-xl overflow-hidden")}
-      {...props}
-    >
-      <TableHeader>
-        <TableHead>BApps</TableHead>
-        <TableHead>Asset</TableHead>
-      </TableHeader>
-      {bApps.map((bApp) => {
-        return <StrategyBAppsTableRow searchValue={searchValue} bApp={bApp} />;
-      })}
-    </Table>
+    <div>
+      <Table
+        className={cn(className, "w-full rounded-t-xl overflow-hidden")}
+        {...props}
+      >
+        <TableHeader>
+          <TableHead>BApps</TableHead>
+          <TableHead>Asset</TableHead>
+        </TableHeader>
+        {bApps.map((bApp) => {
+          return (
+            <StrategyBAppsTableRow searchValue={searchValue} bApp={bApp} />
+          );
+        })}
+      </Table>
+      {!bApps.length && !isLoading && (
+        <div className="bg-gray-50 w-full h-[200px] flex flex-col items-center gap-4 justify-center">
+          <Text variant="body-3-medium">
+            This strategy has not yet opted-in to a bApp
+          </Text>
+          <Button as={Link} to={"/account/bApps"}>
+            Explore bApps
+          </Button>
+        </div>
+      )}
+    </div>
   );
 };
 

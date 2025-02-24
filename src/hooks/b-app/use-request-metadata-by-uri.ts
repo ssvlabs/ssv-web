@@ -1,24 +1,46 @@
+import type { UseQueryResult } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { validateMetadata } from "@/api/b-app.ts";
 
+interface StrategyMetadata {
+  data: {
+    name: string;
+    description: string;
+  };
+}
+
+interface AccountMetadata {
+  data: {
+    name: string;
+    logo: string;
+  };
+}
+
 export const useRequestMetadataByURI = ({
-  strategyMetadataURI,
-  accountMetadataURI,
+  strategyMetadata,
+  accountMetadata,
 }: {
-  strategyMetadataURI?: string;
-  accountMetadataURI?: string;
+  strategyMetadata?: { uri: string; isValid: boolean };
+  accountMetadata?: { uri: string; isValid: boolean };
 }) => {
-  const strategyMetadata = useQuery({
-    queryKey: ["strategy_metadata", strategyMetadataURI],
-    queryFn: () => strategyMetadataURI && validateMetadata(strategyMetadataURI),
-    enabled: Boolean(strategyMetadataURI),
-  });
+  const strategyMetadataQuery: UseQueryResult<StrategyMetadata | undefined> =
+    useQuery({
+      queryKey: ["strategy_metadata", strategyMetadata?.uri],
+      queryFn: () =>
+        strategyMetadata?.uri && validateMetadata(strategyMetadata.uri),
+      enabled: strategyMetadata?.isValid,
+    });
 
-  const accountMetadata = useQuery({
-    queryKey: ["strategy_metadata", accountMetadataURI],
-    queryFn: () => accountMetadataURI && validateMetadata(accountMetadataURI),
-    enabled: Boolean(accountMetadataURI),
-  });
+  const accountMetadataQuery: UseQueryResult<AccountMetadata | undefined> =
+    useQuery({
+      queryKey: ["account_metadata", accountMetadata?.uri],
+      queryFn: () =>
+        accountMetadata?.uri && validateMetadata(accountMetadata.uri),
+      enabled: accountMetadata?.isValid,
+    });
 
-  return { strategyMetadata, accountMetadata };
+  return {
+    strategyMetadata: strategyMetadataQuery,
+    accountMetadata: accountMetadataQuery,
+  };
 };

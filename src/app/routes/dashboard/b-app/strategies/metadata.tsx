@@ -20,7 +20,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormMessage,
 } from "@/components/ui/form.tsx";
 import { useRequestMetadataByURI } from "@/hooks/b-app/use-request-metadata-by-uri.ts";
 import { useUpdateAccountMetadataURI } from "@/lib/contract-interactions/b-app/write/use-update-account-metadata-uri.ts";
@@ -61,6 +60,7 @@ const Metadata = () => {
     status: "waiting",
   });
   const protocolRegex = /^(https?:\/\/)/;
+  const urlRegex = /^(https?:\/\/)[\w.-]+\.[a-z]{2,}.*\/[\w.-]+\.json$/i;
 
   const httpsURLSchema = z
     .string()
@@ -70,15 +70,16 @@ const Metadata = () => {
     )
     .refine((url) => {
       try {
-        const parsedUrl = new URL(url);
-        const domain = parsedUrl.hostname;
-        const parts = domain.split(".");
-        return parts.length >= 2 && parts[parts.length - 1].length >= 2;
+        new URL(url);
+        return true;
       } catch {
         return false;
       }
     }, "Invalid URL")
-    .refine((url) => url.endsWith(".json"), "URL must end with .json");
+    .refine(
+      (url) => urlRegex.test(url),
+      "Invalid URI format. Please ensure the URI ends with “.json",
+    );
 
   const schema = z.object({
     strategyMetadataURI: z.union([z.literal(""), httpsURLSchema]),
@@ -92,8 +93,14 @@ const Metadata = () => {
   });
   const { strategyMetadataURI, accountMetadataURI } = form.watch();
   const { strategyMetadata, accountMetadata } = useRequestMetadataByURI({
-    strategyMetadataURI,
-    accountMetadataURI,
+    strategyMetadata: {
+      uri: strategyMetadataURI,
+      isValid: !!form.formState.errors["strategyMetadataURI"],
+    },
+    accountMetadata: {
+      uri: accountMetadataURI,
+      isValid: !!form.formState.errors["accountMetadataURI"],
+    },
   });
   const updateAccountMetadata = useUpdateAccountMetadataURI();
 
@@ -381,31 +388,19 @@ const Metadata = () => {
                       </div>
                       <div className="flex flex-col gap-3">
                         <Input {...field} placeholder="Enter URI String..." />
-                        <FormMessage />
                         <div className="px-6 py-4 rounded-[12px] bg-gray-100 flex items-center gap-3">
                           <Text
-                            className="text-gray-500"
+                            className={`${form.formState.errors["strategyMetadataURI"] ? "text-error-500" : "text-gray-500"}`}
                             variant="body-3-medium"
                           >
-                            {strategyMetadata.isSuccess &&
-                            strategyMetadata.data &&
-                            (
-                              strategyMetadata.data as {
-                                data: {
-                                  name: string;
-                                  description: string;
-                                };
-                              }
-                            ).data
-                              ? (
-                                  strategyMetadata.data as {
-                                    data: {
-                                      name: string;
-                                      description: string;
-                                    };
-                                  }
-                                ).data.name || "Missing name..."
-                              : "Strategy name"}
+                            {form.formState.errors["strategyMetadataURI"]
+                              ?.message ||
+                              (strategyMetadata.isSuccess &&
+                              strategyMetadata?.data &&
+                              strategyMetadata?.data?.data
+                                ? strategyMetadata?.data?.data?.name ||
+                                  'Missing "name"'
+                                : "Strategy name")}
                           </Text>
                         </div>
                         <div className="px-6 py-4 rounded-[12px] bg-gray-100 flex items-center gap-3">
@@ -415,22 +410,9 @@ const Metadata = () => {
                           >
                             {strategyMetadata.isSuccess &&
                             strategyMetadata.data &&
-                            (
-                              strategyMetadata.data as {
-                                data: {
-                                  name: string;
-                                  description: string;
-                                };
-                              }
-                            ).data
-                              ? (
-                                  strategyMetadata.data as {
-                                    data: {
-                                      name: string;
-                                      description: string;
-                                    };
-                                  }
-                                ).data.description || "Missing description"
+                            strategyMetadata.data.data
+                              ? strategyMetadata.data.data.description ||
+                                'Missing "description"'
                               : "Description"}
                           </Text>
                         </div>
@@ -472,56 +454,28 @@ const Metadata = () => {
                       </div>
                       <div className="flex flex-col gap-3">
                         <Input {...field} placeholder="Enter URI String..." />
-                        <FormMessage />
                         <div className="px-6 py-4 rounded-[12px] bg-gray-100 flex items-center gap-3">
                           <img
-                            className="rounded-[8px] size-7 border-gray-400 border"
+                            className="rounded-[8px] size-10 border-gray-400 border"
                             src={
-                              accountMetadata.isSuccess &&
-                              accountMetadata.data &&
-                              (
-                                accountMetadata.data as {
-                                  data: {
-                                    name: string;
-                                    logo: string;
-                                  };
-                                }
-                              ).data
-                                ? (
-                                    accountMetadata.data as {
-                                      data: {
-                                        name: string;
-                                        logo: string;
-                                      };
-                                    }
-                                  ).data.logo ||
-                                  "/images/operator_default_background/light.svg"
-                                : "/images/operator_default_background/light.svg"
+                              form.formState.errors["accountMetadataURI"]
+                                ? "/images/no-logo.svg"
+                                : accountMetadata.isSuccess
+                                  ? accountMetadata?.data?.data?.logo ||
+                                    "/images/missing-logo.svg"
+                                  : "/images/operator_default_background/light.svg"
                             }
                           />
                           <Text
-                            className="text-gray-500"
+                            className={`${form.formState.errors["accountMetadataURI"] ? "text-error-500" : "text-gray-500"}`}
                             variant="body-3-medium"
                           >
-                            {accountMetadata.isSuccess &&
-                            accountMetadata.data &&
-                            (
-                              accountMetadata.data as {
-                                data: {
-                                  name: string;
-                                  logo: string;
-                                };
-                              }
-                            ).data
-                              ? (
-                                  accountMetadata.data as {
-                                    data: {
-                                      name: string;
-                                      logo: string;
-                                    };
-                                  }
-                                ).data.name || "Missing name"
-                              : "Account Name"}
+                            {form.formState.errors["accountMetadataURI"]
+                              ?.message ||
+                              (accountMetadata.data && accountMetadata.data.data
+                                ? accountMetadata.data.data.name ||
+                                  'Missing "name"'
+                                : "Account Name")}
                           </Text>
                         </div>
                       </div>

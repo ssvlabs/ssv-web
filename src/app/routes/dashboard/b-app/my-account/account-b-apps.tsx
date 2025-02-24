@@ -29,7 +29,7 @@ const AccountBApps = () => {
             className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
             inputProps={{
               className: "bg-gray-50",
-              placeholder: "Search Strategy...",
+              placeholder: "Search bApp...",
             }}
           />
           <Button as={Link} to={"create"} size="sm" className="px-5 h-10">

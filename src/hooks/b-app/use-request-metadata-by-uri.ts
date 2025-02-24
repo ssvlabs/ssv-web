@@ -26,6 +26,10 @@ export const useRequestMetadataByURI = ({
   const strategyMetadataQuery: UseQueryResult<StrategyMetadata | undefined> =
     useQuery({
       queryKey: ["strategy_metadata", strategyMetadata?.uri],
+      staleTime: 0,
+      gcTime: 0,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
       queryFn: () =>
         strategyMetadata?.uri && validateMetadata(strategyMetadata.uri),
       enabled: strategyMetadata?.isValid,
@@ -34,6 +38,10 @@ export const useRequestMetadataByURI = ({
   const accountMetadataQuery: UseQueryResult<AccountMetadata | undefined> =
     useQuery({
       queryKey: ["account_metadata", accountMetadata?.uri],
+      staleTime: 0,
+      gcTime: 0,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
       queryFn: () =>
         accountMetadata?.uri && validateMetadata(accountMetadata.uri),
       enabled: accountMetadata?.isValid,

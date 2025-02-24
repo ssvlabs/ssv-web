@@ -8,7 +8,8 @@ import { compactFormatter } from "../../../lib/utils/number";
 import { ChevronDown } from "lucide-react";
 import type { AccountAsset } from "@/hooks/b-app/use-account-assets";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button, IconButton } from "@/components/ui/button";
+import AssetName from "@/components/ui/asset-name";
 export type AccountAssetsTableRowProps = {
   asset: AccountAsset;
 };
@@ -36,11 +37,13 @@ export const AccountAssetsTableRow: FCProps = ({
         {...props}
         onClick={(ev) => {
           onClick?.(ev);
-          return setIsOpen(!isOpen);
         }}
       >
         <TableCell className={textVariants({ variant: "body-3-medium" })}>
-          <AssetLogo address={asset.token} />
+          <div className="flex items-center gap-2">
+            <AssetLogo address={asset.token} />
+            <AssetName address={asset.token} />
+          </div>
         </TableCell>
         <TableCell className={textVariants({ variant: "body-3-medium" })}>
           {formatSSV(asset.tokenInfo.balance, asset.tokenInfo.decimals)}
@@ -78,11 +81,19 @@ export const AccountAssetsTableRow: FCProps = ({
           })}
         >
           {hasDelegations ? (
-            <ChevronDown
-              className={cn("size-4", {
-                "transform rotate-180": isOpen,
-              })}
-            />
+            <IconButton
+              variant="ghost"
+              onClick={(ev) => {
+                ev.stopPropagation();
+                setIsOpen(!isOpen);
+              }}
+            >
+              <ChevronDown
+                className={cn("size-4", {
+                  "transform rotate-180": isOpen,
+                })}
+              />
+            </IconButton>
           ) : null}
         </TableCell>
       </TableRow>

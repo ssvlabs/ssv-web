@@ -177,6 +177,9 @@ const Delegations = () => {
       /> */}
       <AccountAssetsTable
         assets={assets}
+        onRowClick={(asset) => {
+          navigate(`/account/strategies?token=${asset.token}`);
+        }}
         pagination={{
           page: 1,
           pages: 1,

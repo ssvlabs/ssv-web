@@ -12,6 +12,7 @@ import { formatEther } from "viem";
 import { formatSSV } from "@/lib/utils/number";
 import { compactFormatter } from "../../../lib/utils/number";
 import { isEthereumTokenAddress } from "@/lib/utils/token";
+import AssetName from "@/components/ui/asset-name";
 export type AssetsTableRowProps = {
   asset: BAppAsset;
 };
@@ -36,7 +37,10 @@ export const AssetsTableRow: FCProps = ({ asset, className, ...props }) => {
   return (
     <TableRow className={cn("cursor-pointer max-h-7", className)} {...props}>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        <AssetLogo address={asset.token} />
+        <div className="flex items-center gap-2">
+          <AssetLogo address={asset.token} />
+          <AssetName address={asset.token} />
+        </div>
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         {isEthereum

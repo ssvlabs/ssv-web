@@ -7,12 +7,12 @@ import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 import { Input } from "@/components/ui/input.tsx";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { useBApps } from "@/hooks/b-app/use-b-apps.ts";
+import { Text } from "@/components/ui/text.tsx";
 
 const ObligationTableRow = ({ obligation }: { obligation: `0x${string}` }) => {
   const { assetsData } = useBApps();
   const { state } = useCreateStrategyContext;
   const { selectedObligations } = useCreateStrategyContext();
-
   return (
     <TableRow key={obligation} className={"cursor-pointer max-h-7"}>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
@@ -43,9 +43,9 @@ const ObligationTableRow = ({ obligation }: { obligation: `0x${string}` }) => {
                   state.selectedObligations[obligation] = value;
                 }}
                 value={`${selectedObligations[obligation]}`}
-                className="w-14 h-8"
+                className="w-20 h-8"
+                rightSlot={<Text className="ml--4">%</Text>}
               />
-              %
               <div className="size-8 bg-error-50 hover:bg-error-50 flex items-center justify-center">
                 <FaRegTrashCan
                   onClick={() => {

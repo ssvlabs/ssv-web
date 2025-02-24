@@ -9,6 +9,7 @@ import { ChevronDown } from "lucide-react";
 import type { AccountAsset } from "@/hooks/b-app/use-account-assets";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import AssetName from "@/components/ui/asset-name";
 export type AccountAssetsTableRowProps = {
   asset: AccountAsset;
 };
@@ -40,7 +41,10 @@ export const AccountAssetsTableRow: FCProps = ({
         }}
       >
         <TableCell className={textVariants({ variant: "body-3-medium" })}>
-          <AssetLogo address={asset.token} />
+          <div className="flex items-center gap-2">
+            <AssetLogo address={asset.token} />
+            <AssetName address={asset.token} />
+          </div>
         </TableCell>
         <TableCell className={textVariants({ variant: "body-3-medium" })}>
           {formatSSV(asset.tokenInfo.balance, asset.tokenInfo.decimals)}

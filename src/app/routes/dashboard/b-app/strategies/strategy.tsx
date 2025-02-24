@@ -1,6 +1,10 @@
 import { Container } from "@/components/ui/container.tsx";
 import { Text } from "@/components/ui/text.tsx";
-import { convertToPercentage, formatSSV } from "@/lib/utils/number.ts";
+import {
+  convertToPercentage,
+  currencyFormatter,
+  formatSSV,
+} from "@/lib/utils/number.ts";
 import { useStrategy } from "@/hooks/b-app/use-strategy.ts";
 import { shortenAddress } from "@/lib/utils/strings.ts";
 import {
@@ -57,7 +61,7 @@ const Strategy = () => {
     },
     {
       label: "Total Delegated Value",
-      value: formatSSV((strategy.totalDelegatedFiat || 0n) as bigint, 18),
+      value: currencyFormatter.format(Number(strategy.totalDelegatedFiat) || 0),
       tooltipText: "Combined value of all delegated assets.",
     },
     {
@@ -137,7 +141,9 @@ const Strategy = () => {
               ETH
             </TableCell>
             <TableCell>
-              {formatSSV((strategy.totalNonSlashableFiat || 0n) as bigint, 9)} $
+              {currencyFormatter.format(
+                Number(strategy.totalNonSlashableFiat) || 0,
+              )}
             </TableCell>
           </TableRow>
         </TableBody>
@@ -154,7 +160,7 @@ const Strategy = () => {
               className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
               inputProps={{
                 className: "bg-gray-50",
-                placeholder: "Search Strategy...",
+                placeholder: "Search asset...",
               }}
             />
           </div>
@@ -182,7 +188,7 @@ const Strategy = () => {
               className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
               inputProps={{
                 className: "bg-gray-50",
-                placeholder: "Search Strategy...",
+                placeholder: "Search bApp...",
               }}
             />
           </div>

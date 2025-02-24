@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 import type { BApp } from "@/api/b-app.ts";
 import { CopyBtn } from "@/components/ui/copy-btn.tsx";
+import { currencyFormatter } from "@/lib/utils/number.ts";
 
 const BAppsTableRow = ({
   bApp,
@@ -50,7 +51,7 @@ const BAppsTableRow = ({
         {bApp.delegators}
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        {bApp.totalDelegatedValue}
+        {currencyFormatter.format(Number(bApp.totalDelegatedValue) || 0)}
       </TableCell>
       <TableCell className="p-0">
         {isCreateFlow && (

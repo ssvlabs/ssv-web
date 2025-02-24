@@ -74,7 +74,7 @@ const createInnerRow = (
             ) * 100,
           ) / 100}
         </div>,
-        <div className="text-right">$ 38.1k</div>,
+        <div className="text-right">0</div>,
       ];
     },
   );
@@ -138,7 +138,6 @@ const Delegations = () => {
   const navigate = useNavigate();
   const { data, totalDelegatedValue, effectiveBalance, isLoading } =
     useMyBAppAccount();
-
   const validatorBalanceRow = createValidatorBalanceRow(
     ({
       delegationsCount: data?.delegations.length,

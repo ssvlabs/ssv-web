@@ -2,7 +2,7 @@ import { Text } from "@/components/ui/text.tsx";
 import { Container } from "@/components/ui/container.tsx";
 import { StrategiesTable } from "@/components/based-apps/strategies-table/strategies-table.tsx";
 import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
-import { formatSSV } from "@/lib/utils/number.ts";
+import { currencyFormatter, formatSSV } from "@/lib/utils/number.ts";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button.tsx";
 
@@ -34,12 +34,14 @@ const MyStrategies = () => {
     },
     {
       label: "Assets Value (Slashable)",
-      value: "$ 7.9M",
+      value: currencyFormatter.format(Number(myStrategies.totalSlashableFiat)),
       tooltipText: "Delegators",
     },
     {
       label: "Total Delegated Value",
-      value: "$ 7.9M",
+      value: currencyFormatter.format(
+        Number(myStrategies.totalNonSlashableFiat),
+      ),
       tooltipText: "Delegators",
     },
     {

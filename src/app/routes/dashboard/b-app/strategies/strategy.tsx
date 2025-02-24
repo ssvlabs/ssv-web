@@ -29,6 +29,7 @@ import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 import { useAssetsDelegationModal } from "@/signals/modal";
 import DescriptionCard from "@/components/ui/description-card.tsx";
 import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
+import { getStrategyName } from "@/lib/utils/strategy";
 
 const Strategy = () => {
   const { strategy, isLoading } = useStrategy();
@@ -106,11 +107,11 @@ const Strategy = () => {
           {location.pathname.includes("strategies")
             ? "Strategies"
             : "My Account"}{" "}
-          {">"} {strategy.name}
+          {">"} {getStrategyName(strategy)}
         </Text>
       </div>
       <div className="flex items-center gap-2">
-        <Text variant="body-1-semibold">{strategy.name}</Text>
+        <Text variant="body-1-semibold">{getStrategyName(strategy)}</Text>
       </div>
       <div className="w-full flex flex-col gap-6 rounded-[16px] bg-white p-6">
         <div className="w-full flex items-center ">

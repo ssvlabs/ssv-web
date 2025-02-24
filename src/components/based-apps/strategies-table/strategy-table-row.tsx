@@ -14,6 +14,7 @@ import type { ComponentPropsWithoutRef, FC } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Strategy } from "@/api/b-app.ts";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
+import { getStrategyName } from "@/lib/utils/strategy";
 
 export type StrategyTableRowProps = {
   strategy: Strategy;
@@ -56,7 +57,7 @@ export const StrategyTableRow: FCProps = ({
         {strategy.id}
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-semibold" })}>
-        <Button variant="link">{strategy.name}</Button>
+        <Button variant="link">{getStrategyName(strategy)}</Button>
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         <Tooltip

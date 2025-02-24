@@ -47,6 +47,7 @@ export interface Strategy {
   bAppsList?: StrategyBApp[];
   totalDelegators?: number;
   totalDelegatedFiat?: string;
+  description?: string;
   delegationsPerToken?: {
     token: `0x${string}`;
     totalDelegation: string;

@@ -70,7 +70,7 @@ export const AccountAssetsTable: FCProps = ({
           </div>
         </>
       ) : (
-        <div className="flex w-full bg-gray-50 py-4 rounded-b-2xl"></div>
+        <div className="flex w-full bg-gray-50 py-2 rounded-b-2xl"></div>
       )}
     </div>
   );

@@ -169,11 +169,6 @@ const Delegations = () => {
         isLoading={isLoading}
         tableHeads={nonSlashableAssetsHeads(Asset.NonSlashable)}
       />
-      {/* <AssetsTable
-        onRowClick={() => navigate("accounts")}
-        data={[]}
-        tableHeads={nonSlashableAssetsHeads(Asset.Slashable)}
-      /> */}
       <AccountAssetsTable
         assets={assets}
         onRowClick={(asset) => {

@@ -17,11 +17,13 @@ import { useAssetsDelegationModal } from "@/signals/modal";
 import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
 export const AssetsDelegationModal = () => {
   const { meta, isOpen, onOpenChange } = useAssetsDelegationModal();
   const { bAppContractAddress } = useSSVNetworkDetails();
   const { address } = useAccount();
+  const navigate = useNavigate();
 
   const asset = useAsset(meta.asset);
   const delegated = useDelegatedAsset({
@@ -48,6 +50,9 @@ export const AssetsDelegationModal = () => {
       onMined: () => {
         asset.refreshBalance();
         delegated.refresh();
+        return () => {
+          navigate(`/account`);
+        };
       },
     });
 

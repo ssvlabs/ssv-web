@@ -22,8 +22,8 @@ export type Delegation = {
 export type BAppAccount = {
   bApps: number;
   delegators: number;
-  icon: string;
-  id: string;
+  id: `0x${string}`;
+  logo: string;
   name: string;
   strategies: number;
   totalDelegated: string;
@@ -40,7 +40,7 @@ export type StrategyBApp = {
 export interface Strategy {
   id: string;
   name: string;
-  ownerAddress: string;
+  ownerAddress: `0x${string}`;
   bApps: number;
   delegatedAssets: `0x${string}`[];
   fee: string;
@@ -101,7 +101,7 @@ export type BApp = {
   bAppsMetaData: BAppsMetaData;
 };
 
-export const getMyAccount = (ownerAddress: string) =>
+export const getNonSlashableAssets = (ownerAddress: string) =>
   api
     .get<MyBAppAccount>(
       endpoint(
@@ -109,6 +109,14 @@ export const getMyAccount = (ownerAddress: string) =>
         `getNonSlashableAssets?ownerAddress=${ownerAddress}`,
       ),
     )
+    .then((res) => res);
+
+export const getMyAccount = (address: `0x${string}`) =>
+  api
+    .get<{
+      data: BAppAccount[];
+      pagination: Pagination;
+    }>(endpoint("basedApp", `getAccounts?id=${address}`))
     .then((res) => res);
 
 export const getAccounts = ({

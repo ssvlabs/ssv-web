@@ -39,7 +39,7 @@ const SelectBApp = () => {
                 className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
                 inputProps={{
                   className: "bg-gray-50",
-                  placeholder: "Search Account...",
+                  placeholder: "Search bApp...",
                 }}
               />
             </div>

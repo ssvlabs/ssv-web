@@ -22,7 +22,7 @@ const headers = [
     size: 174,
   },
   {
-    label: "BApps",
+    label: "bApps",
     size: 174,
   },
   {

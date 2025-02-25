@@ -54,7 +54,11 @@ export const useMyBAppAccount = () => {
   });
 
   const myBApps = useQuery({
-    queryKey: ["get_my_b_apps", page, perPage],
+    queryKey: ["get_my_b_apps", page, perPage, address],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     queryFn: () =>
       address && getBAppsByOwnerAddress({ address, page, perPage }),
     enabled: address && isAddress(address),

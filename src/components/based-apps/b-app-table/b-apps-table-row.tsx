@@ -11,8 +11,10 @@ import { currencyFormatter } from "@/lib/utils/number.ts";
 const BAppsTableRow = ({
   bApp,
   isCreateFlow,
+  withoutOwnerAddress,
 }: {
   bApp: BApp;
+  withoutOwnerAddress?: boolean;
   isCreateFlow?: boolean;
 }) => {
   return (
@@ -33,12 +35,14 @@ const BAppsTableRow = ({
         />
         {bApp.bAppsMetaData.name || shortenAddress(bApp.id)}
       </TableCell>
-      <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        <div className=" flex items-center gap-2">
-          {shortenAddress(bApp.ownerAddress)}
-          <CopyBtn variant="subtle" text={bApp.ownerAddress} />
-        </div>
-      </TableCell>
+      {!withoutOwnerAddress && (
+        <TableCell className={textVariants({ variant: "body-3-medium" })}>
+          <div className=" flex items-center gap-2">
+            {shortenAddress(bApp.ownerAddress)}
+            <CopyBtn variant="subtle" text={bApp.ownerAddress} />
+          </div>
+        </TableCell>
+      )}
       <TableCell>
         <AssetsDisplay max={3} addresses={bApp.supportedAssets} />
       </TableCell>

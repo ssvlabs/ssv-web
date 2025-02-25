@@ -32,7 +32,7 @@ export const StrategyBAppsTable: FCProps = ({
         {...props}
       >
         <TableHeader>
-          <TableHead>BApps</TableHead>
+          <TableHead>bApps</TableHead>
           <TableHead>Asset</TableHead>
         </TableHeader>
         {bApps.map((bApp) => {

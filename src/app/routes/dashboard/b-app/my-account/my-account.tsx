@@ -10,7 +10,7 @@ import MyStrategies from "@/app/routes/dashboard/b-app/my-account/my-strategies.
 enum AccountSelect {
   Delegations = "Delegations",
   Strategy = "Strategy",
-  BApps = "BApps",
+  BApps = "bApps",
 }
 
 const MyAccount = () => {

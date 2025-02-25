@@ -1,13 +1,13 @@
-import { useBApps } from "@/hooks/b-app/use-b-apps.ts";
 import { Link, useSearchParams } from "react-router-dom";
 import { Container } from "@/components/ui/container.tsx";
 import { Text } from "@/components/ui/text.tsx";
 import { SearchInput } from "@/components/ui/search-input.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { BAppsTable } from "@/components/based-apps/b-app-table/b-apps-table.tsx";
+import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
 
 const AccountBApps = () => {
-  const { bApps, pagination, isBAppsLoading } = useBApps();
+  const { myBApps, isLoading } = useMyBAppAccount();
   const [, setSearchParams] = useSearchParams();
 
   const searchById = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,9 +38,10 @@ const AccountBApps = () => {
         </div>
       </div>
       <BAppsTable
-        isLoading={isBAppsLoading}
-        bApps={bApps}
-        pagination={pagination}
+        withoutOwnerAddress
+        isLoading={isLoading}
+        bApps={myBApps?.data}
+        pagination={myBApps?.pagination}
       />
     </Container>
   );

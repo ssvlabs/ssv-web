@@ -186,19 +186,6 @@ const Strategy = () => {
 
       {Boolean(strategy.delegationsPerToken?.length) && (
         <div className="w-full flex flex-col gap-6">
-          <div className="flex justify-between w-full items-center">
-            <Text variant="body-1-semibold">Supported Assets</Text>
-            <SearchInput
-              onChange={(e) => setAssetSearchValue(e.target.value)}
-              placeholder="Search"
-              iconPlacement="left"
-              className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
-              inputProps={{
-                className: "bg-gray-50",
-                placeholder: "Search asset...",
-              }}
-            />
-          </div>
           <StrategyAssetsTable
             onDepositClick={(asset) => {
               useAssetsDelegationModal.state.open({

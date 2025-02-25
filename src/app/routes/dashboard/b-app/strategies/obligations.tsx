@@ -37,10 +37,7 @@ const Obligations = () => {
   return (
     <Wizard
       onNext={() => navigate("../fee")}
-      isNextDisabled={
-        !useCreateStrategyContext().registerData ||
-        !!form.formState.errors["registerData"]
-      }
+      isNextDisabled={!!form.formState.errors["registerData"]}
       title={"Create Strategy"}
       steps={Object.values(STEPS_LABELS)}
       children={

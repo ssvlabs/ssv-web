@@ -30,16 +30,16 @@ import { useAssetsDelegationModal } from "@/signals/modal";
 import DescriptionCard from "@/components/ui/description-card.tsx";
 import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
 import { getStrategyName } from "@/lib/utils/strategy";
+import { isAddress } from "viem";
 
 const Strategy = () => {
-  const { strategy, isLoading } = useStrategy();
+  const { strategy, account, isLoading } = useStrategy();
   const [assetSearchValue, setAssetSearchValue] = useState("");
   const [bAppSearchValue, setBAppSearchValue] = useState("");
   const [isOpenDelegateModal, setIsOpenDelegateModal] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const [, setSearchParams] = useSearchParams();
-
   const openDelegate = () => {
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
@@ -84,18 +84,22 @@ const Strategy = () => {
         <div className="flex items-center gap-2">
           <img
             className="rounded-[8px] size-7 border-gray-400 border"
-            src={"/images/operator_default_background/light.svg"}
+            src={account?.logo}
             onError={(e) => {
               e.currentTarget.src =
                 "/images/operator_default_background/light.svg";
             }}
           />
-          {shortenAddress(strategy?.ownerAddress || "0x")}
+          {account?.name
+            ? isAddress(account?.name)
+              ? shortenAddress(account?.name)
+              : account?.name
+            : shortenAddress(strategy?.ownerAddress)}
         </div>
       ),
     },
   ];
-  console.log(strategy);
+
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <div className="flex items-center gap-2 text-gray-500">

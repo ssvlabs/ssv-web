@@ -47,7 +47,7 @@ export const StrategiesTable: FCProps = ({
           <TableHead>ID</TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Owner</TableHead>
-          <TableHead>BApps</TableHead>
+          <TableHead>bApps</TableHead>
           <TableHead>Supported Assets</TableHead>
           <TableHead>Fee</TableHead>
           <TableHead>Delegators</TableHead>

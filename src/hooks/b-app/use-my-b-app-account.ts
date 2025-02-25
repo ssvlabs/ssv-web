@@ -1,8 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { formatUnits, isAddress } from "viem";
 import type { StrategiesByOwnerResponse } from "@/api/b-app.ts";
+import { getMyAccount } from "@/api/b-app.ts";
 import { getBAppsByOwnerAddress } from "@/api/b-app.ts";
-import { getMyAccount, getStrategiesByOwnerAddress } from "@/api/b-app.ts";
+import {
+  getNonSlashableAssets,
+  getStrategiesByOwnerAddress,
+} from "@/api/b-app.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { convertToPercentage } from "@/lib/utils/number.ts";
 import { useSearchParams } from "react-router-dom";
@@ -23,7 +27,7 @@ export const useMyBAppAccount = () => {
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    queryFn: () => address && getMyAccount(address),
+    queryFn: () => address && getNonSlashableAssets(address),
     enabled: address && isAddress(address),
   });
 
@@ -43,8 +47,18 @@ export const useMyBAppAccount = () => {
     enabled: address && isAddress(address),
   });
 
+  const myAccountData = useQuery({
+    queryKey: ["my_account", address],
+    queryFn: () => address && getMyAccount(address),
+    enabled: address && isAddress(address),
+  });
+
   const myBApps = useQuery({
-    queryKey: ["get_my_b_apps", page, perPage],
+    queryKey: ["get_my_b_apps", page, perPage, address],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     queryFn: () =>
       address && getBAppsByOwnerAddress({ address, page, perPage }),
     enabled: address && isAddress(address),
@@ -72,8 +86,12 @@ export const useMyBAppAccount = () => {
     data: reactQueryData.data,
     myStrategies: myStrategies.data || ({} as StrategiesByOwnerResponse),
     myBApps: myBApps.data,
+    myAccountData: myAccountData.data?.data[0],
     isLoading:
-      reactQueryData.isLoading || myStrategies.isLoading || myBApps.isLoading,
+      reactQueryData.isLoading ||
+      myStrategies.isLoading ||
+      myBApps.isLoading ||
+      myAccountData.isLoading,
     totalPercentage,
     restBalancePercentage,
     effectiveBalance: reactQueryData.data?.effectiveBalance,

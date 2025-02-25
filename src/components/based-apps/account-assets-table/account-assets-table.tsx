@@ -12,6 +12,9 @@ import { Divider } from "@/components/ui/divider";
 import { Loading } from "@/components/ui/Loading.tsx";
 import { AccountAssetsTableRow } from "@/components/based-apps/account-assets-table/account-assets-table-row";
 import type { AccountAsset } from "@/hooks/b-app/use-account-assets";
+import { Text } from "@/components/ui/text.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { Link } from "react-router-dom";
 
 export type AccountAssetsTableProps = {
   assets: AccountAsset[];
@@ -62,6 +65,16 @@ export const AccountAssetsTable: FCProps = ({
         </TableBody>
       </Table>
       <div className="bg-gray-50 w-full">{isLoading && <Loading />}</div>
+      {!assets.length && !isLoading && (
+        <div className="bg-gray-50 w-full h-[200px] flex flex-col items-center gap-4 justify-center">
+          <Text variant="body-3-medium">
+            You don’t have any assets in your wallet
+          </Text>
+          <Button as={Link} to={"/account/strategies"}>
+            Explore Strategies
+          </Button>
+        </div>
+      )}
       {pagination.pages > 1 ? (
         <>
           <Divider />

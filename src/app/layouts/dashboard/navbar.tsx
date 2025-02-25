@@ -90,7 +90,7 @@ export const Navbar: FCProps = ({ className, ...props }) => {
             }),
           })}
         >
-          BApps
+          bApps
         </NavLink>
         <NavLink
           to={dvtRoutePath}

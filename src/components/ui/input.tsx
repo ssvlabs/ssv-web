@@ -14,6 +14,9 @@ export interface InputProps
   rightSlot?: React.ReactNode;
   isLoading?: boolean;
   withDisableButton?: boolean;
+  isSaveButtonDisabled?: boolean;
+  saveButtonAction?: () => void;
+  editButtonAction?: () => void;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
@@ -24,6 +27,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       type,
       isLoading,
       withDisableButton,
+      isSaveButtonDisabled,
+      saveButtonAction,
+      editButtonAction,
       leftSlot,
       rightSlot,
       inputProps,
@@ -53,6 +59,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           </div>
         )}
         <input
+          disabled={props.disabled || selfDisable}
           type={type}
           {...props}
           {...inputProps}
@@ -63,13 +70,23 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
         />
         {withDisableButton && !selfDisable && (
-          <Button onClick={() => setSelfDisable(true)} className="h-8">
+          <Button
+            disabled={isSaveButtonDisabled}
+            onClick={() => {
+              setSelfDisable(true);
+              saveButtonAction && saveButtonAction();
+            }}
+            className="h-8"
+          >
             Save
           </Button>
         )}
         {withDisableButton && selfDisable && props.value && (
           <div
-            onClick={() => setSelfDisable(!selfDisable)}
+            onClick={() => {
+              setSelfDisable(!selfDisable);
+              editButtonAction && editButtonAction();
+            }}
             className="ml-[50%] text-primary-500 text-[14px] cursor-pointer"
           >
             Edit Data

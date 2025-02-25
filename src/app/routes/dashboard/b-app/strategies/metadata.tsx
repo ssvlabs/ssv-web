@@ -387,7 +387,11 @@ const Metadata = () => {
                         </Text>
                       </div>
                       <div className="flex flex-col gap-3">
-                        <Input {...field} placeholder="Enter URI String..." />
+                        <Input
+                          onPaste={field.onChange}
+                          {...field}
+                          placeholder="Enter URI String..."
+                        />
                         <div className="px-6 py-4 rounded-[12px] bg-gray-100 flex items-center gap-3">
                           <Text
                             className={`${form.formState.errors["strategyMetadataURI"] ? "text-error-500" : "text-gray-500"}`}
@@ -453,7 +457,11 @@ const Metadata = () => {
                         </Text>
                       </div>
                       <div className="flex flex-col gap-3">
-                        <Input {...field} placeholder="Enter URI String..." />
+                        <Input
+                          onPaste={field.onChange}
+                          {...field}
+                          placeholder="Enter URI String..."
+                        />
                         <div className="px-6 py-4 rounded-[12px] bg-gray-100 flex items-center gap-3">
                           <img
                             className="rounded-[8px] size-10 border-gray-400 border"

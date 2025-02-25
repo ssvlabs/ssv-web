@@ -5,10 +5,11 @@ import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
 import { currencyFormatter, formatSSV } from "@/lib/utils/number.ts";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button.tsx";
+import { isAddress } from "viem";
+import { shortenAddress } from "@/lib/utils/strings.ts";
 
 const MyStrategies = () => {
-  const { myStrategies, effectiveBalance } = useMyBAppAccount();
-
+  const { myStrategies, effectiveBalance, myAccountData } = useMyBAppAccount();
   const MOCK_TIER_DATA = [
     {
       label: "Delegating Accounts",
@@ -50,13 +51,20 @@ const MyStrategies = () => {
         <div className="flex items-center gap-2">
           <img
             className="rounded-[8px] size-7 border-gray-400 border"
-            src={"/images/operator_default_background/light.svg"}
+            src={
+              myAccountData?.logo ||
+              "/images/operator_default_background/light.svg"
+            }
             onError={(e) => {
               e.currentTarget.src =
                 "/images/operator_default_background/light.svg";
             }}
           />
-          Account Name
+          {myAccountData?.name
+            ? isAddress(myAccountData?.name)
+              ? shortenAddress(myAccountData?.name)
+              : myAccountData?.name
+            : shortenAddress(myAccountData?.id || "0x")}
         </div>
       ),
       tooltipText: "Delegators",

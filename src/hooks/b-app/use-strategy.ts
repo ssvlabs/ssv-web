@@ -1,6 +1,7 @@
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import type { Strategy } from "@/api/b-app.ts";
+import { getMyAccount } from "@/api/b-app.ts";
 import { getStrategyById } from "@/api/b-app.ts";
 
 export const useStrategy = () => {
@@ -12,8 +13,16 @@ export const useStrategy = () => {
     enabled: Boolean(strategyId),
   });
 
+  const account = useQuery({
+    queryKey: ["Account", strategy.data?.ownerAddress],
+    queryFn: () =>
+      strategy.data?.ownerAddress && getMyAccount(strategy.data.ownerAddress),
+    enabled: Boolean(strategy.data?.ownerAddress),
+  });
+
   return {
-    isLoading: strategy.isLoading,
+    account: account?.data?.data[0],
+    isLoading: strategy.isLoading || account.isLoading,
     strategy: strategy.data || ({} as Strategy),
   };
 };

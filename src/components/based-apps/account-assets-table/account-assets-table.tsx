@@ -45,8 +45,8 @@ export const AccountAssetsTable: FCProps = ({
         <TableHeader>
           <TableHead>Assets</TableHead>
           <TableHead>Wallet Balance</TableHead>
-          <TableHead>Delegated Strategies</TableHead>
-          <TableHead>Delegated</TableHead>
+          <TableHead className="text-right">Delegated Strategies</TableHead>
+          <TableHead className="text-right">Delegated</TableHead>
           <TableHead className="text-right">Total Delegated Value</TableHead>
           <TableHead></TableHead>
         </TableHeader>
@@ -68,7 +68,7 @@ export const AccountAssetsTable: FCProps = ({
       {!assets.length && !isLoading && (
         <div className="bg-gray-50 w-full h-[200px] flex flex-col items-center gap-4 justify-center">
           <Text variant="body-3-medium">
-            You don’t have any assets in your wallet
+            You don't have any assets in your wallet
           </Text>
           <Button as={Link} to={"/account/strategies"}>
             Explore Strategies

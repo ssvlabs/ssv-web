@@ -295,3 +295,14 @@ export const getDelegatedAsset = ({
     ),
   );
 };
+
+export type NonSlashableAsset = {
+  id: string;
+  effectiveBalance: bigint;
+  delegations: Array<{
+    percentage: string;
+    receiver: {
+      id: string;
+    };
+  }>;
+};

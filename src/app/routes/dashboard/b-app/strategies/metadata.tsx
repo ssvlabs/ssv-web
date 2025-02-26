@@ -92,14 +92,15 @@ const Metadata = () => {
     resolver: zodResolver(schema),
   });
   const { strategyMetadataURI, accountMetadataURI } = form.watch();
+
   const { strategyMetadata, accountMetadata } = useRequestMetadataByURI({
     strategyMetadata: {
       uri: strategyMetadataURI,
-      isValid: !!form.formState.errors["strategyMetadataURI"],
+      isValid: !form.formState.errors["strategyMetadataURI"],
     },
     accountMetadata: {
       uri: accountMetadataURI,
-      isValid: !!form.formState.errors["accountMetadataURI"],
+      isValid: !form.formState.errors["accountMetadataURI"],
     },
   });
   const updateAccountMetadata = useUpdateAccountMetadataURI();
@@ -387,11 +388,7 @@ const Metadata = () => {
                         </Text>
                       </div>
                       <div className="flex flex-col gap-3">
-                        <Input
-                          onPaste={field.onChange}
-                          {...field}
-                          placeholder="Enter URI String..."
-                        />
+                        <Input {...field} placeholder="Enter URI String..." />
                         <div className="px-6 py-4 rounded-[12px] bg-gray-100 flex items-center gap-3">
                           <Text
                             className={`${form.formState.errors["strategyMetadataURI"] ? "text-error-500" : "text-gray-500"}`}
@@ -457,18 +454,15 @@ const Metadata = () => {
                         </Text>
                       </div>
                       <div className="flex flex-col gap-3">
-                        <Input
-                          onPaste={field.onChange}
-                          {...field}
-                          placeholder="Enter URI String..."
-                        />
+                        <Input {...field} placeholder="Enter URI String..." />
                         <div className="px-6 py-4 rounded-[12px] bg-gray-100 flex items-center gap-3">
                           <img
                             className="rounded-[8px] size-10 border-gray-400 border"
                             src={
                               form.formState.errors["accountMetadataURI"]
                                 ? "/images/no-logo.svg"
-                                : accountMetadata.isSuccess
+                                : accountMetadata.isSuccess &&
+                                    accountMetadata?.data?.data
                                   ? accountMetadata?.data?.data?.logo ||
                                     "/images/missing-logo.svg"
                                   : "/images/operator_default_background/light.svg"

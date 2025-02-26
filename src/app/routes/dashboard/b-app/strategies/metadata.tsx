@@ -106,7 +106,7 @@ const Metadata = () => {
   const updateAccountMetadata = useUpdateAccountMetadataURI();
 
   const finishTx = () => {
-    navigate("/account/strategies");
+    navigate(`/account/${createdStrategyId}`);
     setIsLoading(false);
     setIsTxStarted(false);
   };

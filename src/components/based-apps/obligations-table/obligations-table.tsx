@@ -17,7 +17,9 @@ const ObligationsTable = ({
         <TableHeader>
           <TableHead>Asset</TableHead>
           <TableHead>Contract Address</TableHead>
-          <TableHead>Set Obligations</TableHead>
+          <TableHead className="flex items-center justify-end">
+            Set Obligations
+          </TableHead>
         </TableHeader>
         <TableBody>
           {obligations?.map((obligation: `0x${string}`) => (

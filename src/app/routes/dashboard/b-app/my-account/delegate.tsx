@@ -107,7 +107,12 @@ const Delegate = ({
                 {restBalancePercentage}%
               </div>
             </div>
-            <Button isLoading={isPending} onClick={delegate} size={"lg"}>
+            <Button
+              disabled={!delegatePercent}
+              isLoading={isPending}
+              onClick={delegate}
+              size={"lg"}
+            >
               Delegate
             </Button>
           </div>

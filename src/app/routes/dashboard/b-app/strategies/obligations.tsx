@@ -76,7 +76,6 @@ const Obligations = () => {
                 </FormItem>
               )}
             />
-            <BAppsTable bApps={[useCreateStrategyContext().bApp as BApp]} />
             <ObligationsTable
               obligations={useCreateStrategyContext().bApp.supportedAssets}
             />

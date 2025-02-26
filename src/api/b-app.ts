@@ -97,6 +97,7 @@ export type BApp = {
   metadataURI: string;
   ownerAddress: `0x${string}`;
   supportedAssets: `0x${string}`[];
+  strategyOwners: `0x${string}`[];
   totalDelegatedValue: string;
   bAppsMetaData: BAppsMetaData;
 };

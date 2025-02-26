@@ -6,23 +6,36 @@ import { AssetLogo } from "@/components/ui/asset-logo.tsx";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 import { Input } from "@/components/ui/input.tsx";
 import { FaRegTrashCan } from "react-icons/fa6";
-import { useBApps } from "@/hooks/b-app/use-b-apps.ts";
 import { Text } from "@/components/ui/text.tsx";
+import AssetName from "@/components/ui/asset-name.tsx";
+import { CopyBtn } from "@/components/ui/copy-btn.tsx";
+import { useLinks } from "@/hooks/use-links.ts";
 
 const ObligationTableRow = ({ obligation }: { obligation: `0x${string}` }) => {
-  const { assetsData } = useBApps();
   const { state } = useCreateStrategyContext;
   const { selectedObligations } = useCreateStrategyContext();
+  const { etherscan } = useLinks();
+
   return (
     <TableRow key={obligation} className={"cursor-pointer max-h-7"}>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         <div className="flex gap-2">
           <AssetLogo address={obligation} className="size-6" />
-          {assetsData[obligation]?.name || "unknown asset"}
+          <AssetName address={obligation} />
         </div>
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        {shortenAddress(obligation)}
+        <div className={`flex items-center gap-2`}>
+          <Button
+            as="a"
+            target="_blank"
+            variant="link"
+            href={`${etherscan}/token/${obligation}`}
+          >
+            {shortenAddress(obligation)}
+          </Button>
+          <CopyBtn variant="subtle" text={obligation} />
+        </div>
       </TableCell>
       <TableCell
         className={`${textVariants({ variant: "body-3-medium" })} py-0`}

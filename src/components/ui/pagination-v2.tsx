@@ -19,7 +19,6 @@ const Pagination = ({ pagination }: PaginationProps) => {
     page: pagination.page,
     perPage: pagination.per_page,
   });
-
   return (
     <div
       className={`${textVariants({ variant: "body-3-medium" })} text-gray-600 h-[60px] w-full flex items-center justify-between px-6 py-3.5`}
@@ -31,9 +30,11 @@ const Pagination = ({ pagination }: PaginationProps) => {
           ? (pagination.page - 1) * pagination.per_page
           : pagination.page}
         &nbsp;-&nbsp;
-        {pagination.page > 1
-          ? pagination.page * pagination.per_page
-          : pagination.per_page}
+        {pagination.has_next_page
+          ? pagination.page > 1
+            ? pagination.page * pagination.per_page
+            : pagination.per_page
+          : pagination.total}
         &nbsp; of&nbsp; {pagination.total}
       </div>
       <div className={`flex items-center gap-10`}>

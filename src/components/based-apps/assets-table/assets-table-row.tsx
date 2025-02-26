@@ -10,7 +10,7 @@ import type { ComponentPropsWithoutRef, FC } from "react";
 import { useBalance } from "wagmi";
 import { formatEther } from "viem";
 import { formatSSV } from "@/lib/utils/number";
-import { compactFormatter } from "../../../lib/utils/number";
+import { currencyFormatter } from "../../../lib/utils/number";
 import { isEthereumTokenAddress } from "@/lib/utils/token";
 import AssetName from "@/components/ui/asset-name";
 export type AssetsTableRowProps = {
@@ -47,16 +47,31 @@ export const AssetsTableRow: FCProps = ({ asset, className, ...props }) => {
           ? formatSSV(ethBalance.data?.value || 0n)
           : formatSSV(tokenBalance.data || 0n, decimals?.data || 18)}
       </TableCell>
-      <TableCell className={textVariants({ variant: "body-3-medium" })}>
+      <TableCell
+        className={textVariants({
+          variant: "body-3-medium",
+          className: "text-right",
+        })}
+      >
         {asset.obligationsCount}
       </TableCell>
-      <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        {formatSSV(BigInt(asset.totalObligatedBalance))}
-      </TableCell>
-      <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        {compactFormatter.format(
+      <TableCell
+        className={textVariants({
+          variant: "body-3-medium",
+          className: "text-right",
+        })}
+      >
+        {currencyFormatter.format(
           +formatEther(BigInt(asset.totalObligatedBalance)),
         )}
+      </TableCell>
+      <TableCell
+        className={textVariants({
+          variant: "body-3-medium",
+          className: "text-right text-gray-500",
+        })}
+      >
+        {currencyFormatter.format(0)}
       </TableCell>
     </TableRow>
   );

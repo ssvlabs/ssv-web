@@ -1,0 +1,80 @@
+import type { FC, ComponentPropsWithoutRef } from "react";
+import {
+  TableHeader,
+  TableHead,
+  TableBody,
+  Table,
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils/tw";
+import { Loading } from "@/components/ui/Loading.tsx";
+import type { NonSlashableAsset } from "@/api/b-app";
+import { NonSlashableAssetsTableRow } from "@/components/based-apps/non-slashable-assets-table/non-slashable-assets-table-row";
+
+export type NonSlashableAssetsTableProps = {
+  assets: NonSlashableAsset[];
+  isLoading?: boolean;
+  onRowClick?: (asset: NonSlashableAsset) => void;
+};
+
+type FCProps = FC<
+  Omit<
+    ComponentPropsWithoutRef<typeof Table>,
+    keyof NonSlashableAssetsTableProps
+  > &
+    NonSlashableAssetsTableProps
+>;
+
+export const NonSlashableAssetsTable: FCProps = ({
+  assets,
+  className,
+  isLoading,
+  onRowClick,
+  ...props
+}) => {
+  return (
+    <div className="flex flex-col w-full">
+      <Table
+        className={cn(className, "w-full rounded-xl overflow-hidden")}
+        {...props}
+      >
+        <TableHeader>
+          <TableHead>Validator Balance</TableHead>
+          <TableHead>SSV Balance</TableHead>
+          <TableHead className="text-right">Delegated Accounts</TableHead>
+          <TableHead className="text-right">Delegated</TableHead>
+          <TableHead className="text-right">Total Delegated Value</TableHead>
+          <TableHead></TableHead>
+        </TableHeader>
+        <TableBody>
+          {isLoading ? (
+            <tr>
+              <td colSpan={6} className="bg-gray-50">
+                <Loading />
+              </td>
+            </tr>
+          ) : !assets.length ? (
+            <tr>
+              <td colSpan={6} className="bg-gray-50 h-[200px]">
+                <div className="flex flex-col items-center gap-4 justify-center h-full">
+                  <div className="text-gray-500 text-sm">
+                    No non-slashable assets found
+                  </div>
+                </div>
+              </td>
+            </tr>
+          ) : (
+            assets.map((asset) => (
+              <NonSlashableAssetsTableRow
+                key={asset.id}
+                asset={asset}
+                onClick={() => onRowClick?.(asset)}
+              />
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
+
+NonSlashableAssetsTable.displayName = "NonSlashableAssetsTable";

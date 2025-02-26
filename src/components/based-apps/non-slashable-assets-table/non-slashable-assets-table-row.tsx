@@ -1,34 +1,58 @@
-import { AssetLogo } from "@/components/ui/asset-logo";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { textVariants } from "@/components/ui/text";
 import { cn } from "@/lib/utils/tw";
 import { useState, type ComponentPropsWithoutRef, type FC } from "react";
-import { currencyFormatter, formatSSV } from "@/lib/utils/number";
+import {
+  compactFormatter,
+  currencyFormatter,
+  formatSSV,
+} from "@/lib/utils/number";
 import { ChevronDown } from "lucide-react";
-import type { AccountAsset } from "@/hooks/b-app/use-account-assets";
-import { Link } from "react-router-dom";
-import { Button, IconButton } from "@/components/ui/button";
-import AssetName from "@/components/ui/asset-name";
-export type AccountAssetsTableRowProps = {
-  asset: AccountAsset;
+import { IconButton } from "@/components/ui/button";
+import { shortenAddress } from "@/lib/utils/strings";
+import { formatGwei, formatUnits } from "viem";
+
+export type NonSlashableAssetsTableRowProps = {
+  asset: {
+    id: string;
+    effectiveBalance: bigint;
+    delegations: Array<{
+      percentage: string;
+      receiver: {
+        id: string;
+      };
+    }>;
+  };
 };
 
 type FCProps = FC<
   Omit<
     ComponentPropsWithoutRef<typeof TableRow>,
-    keyof AccountAssetsTableRowProps
+    keyof NonSlashableAssetsTableRowProps
   > &
-    AccountAssetsTableRowProps
+    NonSlashableAssetsTableRowProps
 >;
 
-export const AccountAssetsTableRow: FCProps = ({
+export const NonSlashableAssetsTableRow: FCProps = ({
   asset,
   className,
   onClick,
   ...props
 }) => {
-  const hasDelegations = Boolean(asset.slashableAsset?.deposits?.length);
+  const hasDelegations = Boolean(asset.delegations?.length);
   const [isOpen, setIsOpen] = useState(false);
+  console.log("asset:", asset);
+
+  const effectiveBalance = Number(formatGwei(asset.effectiveBalance));
+
+  const totalDelegatedPercentage =
+    asset.delegations?.reduce(
+      (acc, delegation) => acc + Number(delegation.percentage),
+      0,
+    ) / 10000;
+
+  const totalDelegatedValue = totalDelegatedPercentage * effectiveBalance;
+
   return (
     <>
       <TableRow
@@ -40,12 +64,15 @@ export const AccountAssetsTableRow: FCProps = ({
       >
         <TableCell className={textVariants({ variant: "body-3-medium" })}>
           <div className="flex items-center gap-2">
-            <AssetLogo address={asset.token} />
-            <AssetName address={asset.token} />
+            <img
+              className={"h-[24px] w-[15px]"}
+              src={`/images/balance-validator/balance-validator.svg`}
+            />
+            Validator Balance
           </div>
         </TableCell>
         <TableCell className={textVariants({ variant: "body-3-medium" })}>
-          {formatSSV(asset.tokenInfo.balance, asset.tokenInfo.decimals)}
+          {formatSSV(asset.effectiveBalance, 9)}
         </TableCell>
         <TableCell
           className={textVariants({
@@ -61,7 +88,7 @@ export const AccountAssetsTableRow: FCProps = ({
                 : "bg-gray-200 border-gray-300 text-gray-600",
             )}
           >
-            {asset.slashableAsset?.deposits?.length ?? 0}
+            {asset.delegations?.length ?? 0}
           </div>
         </TableCell>
         <TableCell
@@ -70,10 +97,7 @@ export const AccountAssetsTableRow: FCProps = ({
             className: "text-right",
           })}
         >
-          {formatSSV(
-            BigInt(asset.totalDepositAmount ?? 0),
-            asset.tokenInfo.decimals,
-          )}
+          {totalDelegatedValue}
         </TableCell>
         <TableCell
           className={textVariants({
@@ -81,7 +105,7 @@ export const AccountAssetsTableRow: FCProps = ({
             className: "text-right text-gray-500",
           })}
         >
-          {currencyFormatter.format(+asset.totalFiatDepositAmount)}
+          {currencyFormatter.format(0)}
         </TableCell>
         <TableCell
           className={textVariants({
@@ -121,7 +145,15 @@ export const AccountAssetsTableRow: FCProps = ({
                 className: "text-gray-500",
               })}
             >
-              Strategies
+              Delegated Accounts
+            </TableCell>
+            <TableCell
+              className={textVariants({
+                variant: "caption-medium",
+                className: "text-gray-500",
+              })}
+            >
+              Percentage
             </TableCell>
             <TableCell
               className={textVariants({
@@ -132,13 +164,7 @@ export const AccountAssetsTableRow: FCProps = ({
             <TableCell
               className={textVariants({
                 variant: "caption-medium",
-                className: "text-gray-500",
-              })}
-            ></TableCell>
-            <TableCell
-              className={textVariants({
-                variant: "caption-medium",
-                className: "text-gray-500",
+                className: "text-right text-gray-500",
               })}
             >
               Delegated
@@ -158,63 +184,66 @@ export const AccountAssetsTableRow: FCProps = ({
               })}
             ></TableCell>
           </TableRow>
-          {asset.slashableAsset?.deposits.map((delegation) => (
-            <TableRow
-              className={cn(
-                "cursor-pointer max-h-7 bg-gray-100 hover:bg-gray-100",
-
-                className,
-              )}
-              {...props}
-            >
-              <TableCell className={textVariants({ variant: "body-3-medium" })}>
-                <Button
-                  variant="link"
-                  size="sm"
-                  as={Link}
-                  className="px-2"
-                  to={`/account/strategies/${delegation.strategyId}`}
-                >
-                  {delegation.strategyId}
-                </Button>
-              </TableCell>
-              <TableCell
-                className={textVariants({ variant: "body-3-medium" })}
-              ></TableCell>
-              <TableCell
-                className={textVariants({ variant: "body-3-medium" })}
-              ></TableCell>
-              <TableCell
-                className={textVariants({
-                  variant: "body-3-medium",
-                  className: "text-right",
-                })}
-              >
-                {formatSSV(
-                  BigInt(delegation.depositAmount),
-                  asset.tokenInfo.decimals,
+          {asset.delegations.map((delegation) => {
+            const percentage = Number(delegation.percentage) / 10000;
+            const delegatedValue = percentage * effectiveBalance;
+            return (
+              <TableRow
+                key={delegation.receiver.id}
+                className={cn(
+                  "cursor-pointer max-h-7 bg-gray-100 hover:bg-gray-100",
+                  className,
                 )}
-              </TableCell>
-              <TableCell
-                className={textVariants({
-                  variant: "body-3-medium",
-                  className: "text-right text-gray-500",
-                })}
+                {...props}
               >
-                {currencyFormatter.format(+delegation.fiatDepositAmount)}
-              </TableCell>
-              <TableCell
-                className={textVariants({
-                  variant: "body-3-medium",
-                  className: "w-5",
-                })}
-              ></TableCell>
-            </TableRow>
-          ))}
+                <TableCell
+                  className={textVariants({ variant: "body-3-medium" })}
+                >
+                  <div className="flex items-center gap-2">
+                    <img
+                      className="rounded-[8px] size-7 border-gray-400 border"
+                      src={"/images/operator_default_background/light.svg"}
+                    />
+                    {shortenAddress(delegation.receiver.id)}
+                  </div>
+                </TableCell>
+                <TableCell
+                  className={textVariants({ variant: "body-3-medium" })}
+                >
+                  {formatUnits(BigInt(delegation.percentage), 2)}%
+                </TableCell>
+                <TableCell
+                  className={textVariants({ variant: "body-3-medium" })}
+                ></TableCell>
+                <TableCell
+                  className={textVariants({
+                    variant: "body-3-medium",
+                    className: "text-right",
+                  })}
+                >
+                  {compactFormatter.format(delegatedValue)}
+                </TableCell>
+                <TableCell
+                  className={textVariants({
+                    variant: "body-3-medium",
+                    className: "text-right text-gray-500",
+                  })}
+                >
+                  {currencyFormatter.format(0)}
+                </TableCell>
+                <TableCell
+                  className={textVariants({
+                    variant: "body-3-medium",
+                    className: "w-5",
+                  })}
+                ></TableCell>
+              </TableRow>
+            );
+          })}
         </>
       )}
     </>
   );
 };
 
-AccountAssetsTableRow.displayName = "OperatorTableRow";
+NonSlashableAssetsTableRow.displayName = "NonSlashableAssetsTableRow";

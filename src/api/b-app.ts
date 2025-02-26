@@ -212,7 +212,7 @@ export const getBAppsByOwnerAddress = ({
     }>(
       endpoint(
         "basedApp",
-        `getBApps?ownerAddress=${address}&perPage=${perPage}&page=${page}`,
+        `getBApps?owner=${address}&perPage=${perPage}&page=${page}`,
       ),
     )
     .then((res) => {
@@ -292,7 +292,7 @@ export const getDelegatedAsset = ({
     token: string;
   }>(
     endpoint(
-      `basedApp/getDepositTokensBy?tokenAddress=${tokenAddress}&contributor=${contributor}&strategyId=${strategyId}`,
+      `basedApp/getDepositTokensBy?token=${tokenAddress}&contributor=${contributor}&strategyId=${strategyId}`,
     ),
   );
 };

@@ -97,7 +97,7 @@ export const NonSlashableAssetsTableRow: FCProps = ({
             className: "text-right",
           })}
         >
-          {totalDelegatedValue}
+          {compactFormatter.format(totalDelegatedValue)}
         </TableCell>
         <TableCell
           className={textVariants({

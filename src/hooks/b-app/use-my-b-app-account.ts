@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { formatUnits, isAddress } from "viem";
 import type { StrategiesByOwnerResponse } from "@/api/b-app.ts";
 import { getMyAccount } from "@/api/b-app.ts";
@@ -21,7 +21,7 @@ export const useMyBAppAccount = () => {
 
   const { page, perPage } = usePaginationQuery();
 
-  const reactQueryData = useQuery({
+  const reactQueryData = useChainedQuery({
     queryKey: [address],
     staleTime: 0,
     gcTime: 0,
@@ -31,7 +31,7 @@ export const useMyBAppAccount = () => {
     enabled: address && isAddress(address),
   });
 
-  const myStrategies = useQuery({
+  const myStrategies = useChainedQuery({
     queryKey: ["get_my_strategies", page, perPage, idToSearch, orderBy, sort],
     staleTime: 0,
     gcTime: 0,
@@ -47,13 +47,13 @@ export const useMyBAppAccount = () => {
     enabled: address && isAddress(address),
   });
 
-  const myAccountData = useQuery({
+  const myAccountData = useChainedQuery({
     queryKey: ["my_account", address],
     queryFn: () => address && getMyAccount(address),
     enabled: address && isAddress(address),
   });
 
-  const myBApps = useQuery({
+  const myBApps = useChainedQuery({
     queryKey: ["get_my_b_apps", page, perPage, address],
     staleTime: 0,
     gcTime: 0,

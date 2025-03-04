@@ -3,7 +3,7 @@ import { useStrategiesFilters } from "@/hooks/b-app/filters/use-strategies-filte
 import { useOrdering } from "@/hooks/use-ordering.ts";
 import { createDefaultPagination } from "@/lib/utils/api.ts";
 import { getTokenMetadata } from "@/lib/utils/tokens-helper.ts";
-import { useQuery } from "@tanstack/react-query";
+import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { useParams } from "react-router";
 
 export const useStrategies = (_strategyId?: string) => {
@@ -12,7 +12,7 @@ export const useStrategies = (_strategyId?: string) => {
   const filters = useStrategiesFilters();
   const { orderBy, sort, ordering } = useOrdering();
 
-  const query = useQuery({
+  const query = useChainedQuery({
     queryKey: [
       "get_strategies",
       filters.paginationQuery.page,
@@ -36,7 +36,7 @@ export const useStrategies = (_strategyId?: string) => {
 
   const isStrategiesLoading = query.isLoading;
   const strategies = query.data?.data || [];
-  const assetsQuery = useQuery({
+  const assetsQuery = useChainedQuery({
     queryKey: ["get_assets_data", strategies],
     staleTime: 0,
     gcTime: 0,

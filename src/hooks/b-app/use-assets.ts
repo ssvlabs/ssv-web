@@ -1,6 +1,7 @@
 import { getBAppsAssets } from "@/api/b-app";
 import { createDefaultPagination } from "@/lib/utils/api";
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import { queryOptions } from "@tanstack/react-query";
+import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import type { UseQueryOptions } from "@/lib/react-query";
 import { getDefaultChainedQueryOptions, enabled } from "@/lib/react-query";
 import { usePaginationQuery } from "@/lib/query-states/use-pagination";
@@ -27,7 +28,7 @@ export const useBAppsAssets = (perPage = 10, options: UseQueryOptions = {}) => {
     perPage: perPage,
   });
 
-  const query = useQuery(
+  const query = useChainedQuery(
     getBAppsAssetsQueryOptions(paginationQuery.page, paginationQuery.perPage, {
       options,
     }),

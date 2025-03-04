@@ -5,11 +5,9 @@ import path from "path";
 import process from "process";
 import { fileURLToPath } from "url";
 import { promisify } from "util";
-import * as parser from "@babel/parser";
-import traverse from "@babel/traverse";
-import generate from "@babel/generator";
-import * as t from "@babel/types";
 import { globSync } from "glob";
+import { parse } from "@babel/parser";
+import traverse from "@babel/traverse";
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
@@ -31,134 +29,174 @@ const shouldExclude = (filePath) => {
   );
 };
 
-// Function to process the imports and usages in a file using AST
+// Function to process the imports and usages in a file
 async function processFile(filePath) {
   try {
     const content = await readFile(filePath, "utf8");
+    const lines = content.split("\n");
 
-    // Parse the file content into an AST
-    const ast = parser.parse(content, {
+    // Parse the file to identify locations but not to generate code
+    const ast = parse(content, {
       sourceType: "module",
       plugins: ["jsx", "typescript", "decorators-legacy"],
     });
 
-    let hasUseQueryImport = false;
+    // Store modifications to make
+    const modifications = [];
     let needsUseChainedQueryImport = false;
-    let modified = false;
+    let importPosition = 0;
 
-    // Traverse the AST to find and modify import declarations and useQuery usages
+    // Analyze the AST to find locations to change
     traverse.default(ast, {
-      // Handle imports
       ImportDeclaration(path) {
-        const source = path.node.source.value;
-
-        // Only process imports from @tanstack/react-query
-        if (source !== "@tanstack/react-query") {
+        const node = path.node;
+        if (node.source.value !== "@tanstack/react-query") {
           return;
         }
 
-        // Check if useQuery is being imported
-        const useQuerySpecifier = path.node.specifiers.find(
-          (specifier) =>
-            t.isImportSpecifier(specifier) &&
-            specifier.imported &&
-            specifier.imported.name === "useQuery",
+        // Track position of import declarations for later
+        const importLine = node.loc.start.line;
+        importPosition = Math.max(importPosition, importLine);
+
+        // Check for useQuery in the import specifiers
+        const useQuerySpecifierIndex = node.specifiers.findIndex(
+          (spec) => spec.imported && spec.imported.name === "useQuery",
         );
 
-        if (!useQuerySpecifier) {
+        if (useQuerySpecifierIndex === -1) {
           return;
         }
 
-        hasUseQueryImport = true;
+        // We found a useQuery import
         needsUseChainedQueryImport = true;
-        modified = true;
 
-        // Check if useQuery is imported with an alias
-        const localName = useQuerySpecifier.local.name;
+        // Get the local name of useQuery for finding references
+        const localName = node.specifiers[useQuerySpecifierIndex].local.name;
 
-        // Remove the useQuery import specifier
-        const remainingSpecifiers = path.node.specifiers.filter(
-          (specifier) =>
-            !(
-              t.isImportSpecifier(specifier) &&
-              specifier.imported &&
-              specifier.imported.name === "useQuery"
-            ),
-        );
-
-        if (remainingSpecifiers.length === 0) {
-          // If no imports remain, remove the entire import declaration
-          path.remove();
-        } else {
-          // Otherwise, update the import with remaining specifiers
-          path.node.specifiers = remainingSpecifiers;
-        }
-
-        // If useQuery was imported with a custom local name, we need to store it
-        // to replace its usages later
-        if (localName !== "useQuery") {
-          path.scope.rename(localName, "useChainedQuery");
-        }
+        // Store the start/end position to modify the import statement
+        modifications.push({
+          type: "replace-import",
+          line: node.loc.start.line - 1, // 0-indexed
+          column: node.loc.start.column,
+          endLine: node.loc.end.line - 1,
+          endColumn: node.loc.end.column,
+          localName,
+        });
       },
 
-      // Handle function calls/usages
+      // Find usage of useQuery function calls
       CallExpression(path) {
-        // Only proceed if we confirmed there was a useQuery import
-        if (!hasUseQueryImport) {
-          return;
-        }
-
-        // Check if this is a call to useQuery
+        const node = path.node;
         if (
-          t.isIdentifier(path.node.callee) &&
-          path.node.callee.name === "useQuery"
+          node.callee.type === "Identifier" &&
+          node.callee.name === "useQuery"
         ) {
-          // Replace useQuery with useChainedQuery
-          path.node.callee.name = "useChainedQuery";
-          modified = true;
+          // Store the position to replace useQuery with useChainedQuery
+          modifications.push({
+            type: "replace-usage",
+            line: node.loc.start.line - 1, // 0-indexed
+            column: node.callee.loc.start.column,
+            endColumn: node.callee.loc.end.column,
+          });
         }
       },
     });
 
-    // If no changes were needed, return false
-    if (!modified && !hasUseQueryImport) {
+    // If no changes needed, exit early
+    if (modifications.length === 0 && !needsUseChainedQueryImport) {
       return false;
     }
 
-    // Add the useChainedQuery import if needed
-    if (needsUseChainedQueryImport) {
-      const useChainedQueryImport = t.importDeclaration(
-        [
-          t.importSpecifier(
-            t.identifier("useChainedQuery"),
-            t.identifier("useChainedQuery"),
-          ),
-        ],
-        t.stringLiteral("@/hooks/react-query/use-chained-query"),
-      );
+    // Process the modifications - we process in reverse order to avoid position shifts
+    modifications.sort((a, b) => b.line - a.line || b.column - a.column);
 
-      // Find the best place to insert the new import
-      // We'll add it to the program body, right after any existing imports
-      let lastImportIndex = -1;
-      for (let i = 0; i < ast.program.body.length; i++) {
-        if (t.isImportDeclaration(ast.program.body[i])) {
-          lastImportIndex = i;
+    // Track renamed imports to update usages
+    const renamedImports = new Map();
+
+    // Apply modifications
+    for (const mod of modifications) {
+      if (mod.type === "replace-import") {
+        // Get the original import statement
+        const importLine = lines[mod.line];
+
+        // Check if it's the only import or part of a list
+        if (importLine.includes("{ useQuery }")) {
+          // It's the only import, replace the whole line
+          lines[mod.line] =
+            `import { useChainedQuery } from "@/hooks/react-query/use-chained-query";`;
+        } else {
+          // It's part of a list, need to modify just the useQuery part
+          // Preserve exact spacing and indentation
+          const beforeUseQuery = importLine.substring(
+            0,
+            importLine.indexOf("useQuery"),
+          );
+          const afterUseQuery = importLine.substring(
+            importLine.indexOf("useQuery") + "useQuery".length,
+          );
+
+          // Check if we need to remove a comma
+          if (afterUseQuery.trim().startsWith(",")) {
+            // Remove useQuery and the comma after it
+            lines[mod.line] =
+              beforeUseQuery +
+              afterUseQuery.substring(afterUseQuery.indexOf(",") + 1);
+          } else if (beforeUseQuery.trim().endsWith(",")) {
+            // Remove useQuery and the comma before it
+            lines[mod.line] =
+              beforeUseQuery.substring(0, beforeUseQuery.lastIndexOf(",")) +
+              afterUseQuery;
+          } else {
+            // Just remove useQuery
+            lines[mod.line] = beforeUseQuery + afterUseQuery;
+          }
+
+          // Clean up any empty import brackets
+          if (
+            lines[mod.line].includes("{ }") ||
+            lines[mod.line].includes("{}")
+          ) {
+            // Remove the entire import line if it's now empty
+            lines[mod.line] = "";
+          }
+
+          // Add the new import on the next line
+          lines.splice(
+            mod.line + 1,
+            0,
+            `import { useChainedQuery } from "@/hooks/react-query/use-chained-query";`,
+          );
         }
+
+        // Track the renamed import if it has a different local name
+        if (mod.localName !== "useQuery") {
+          renamedImports.set(mod.localName, "useChainedQuery");
+        }
+      } else if (mod.type === "replace-usage") {
+        // Replace useQuery() with useChainedQuery()
+        const line = lines[mod.line];
+        lines[mod.line] =
+          line.substring(0, mod.column) +
+          "useChainedQuery" +
+          line.substring(mod.endColumn);
       }
-
-      ast.program.body.splice(lastImportIndex + 1, 0, useChainedQueryImport);
     }
 
-    // Generate the modified code
-    const { code } = generate.default(ast, {}, content);
-
-    // If the content was changed, write it back to the file
-    if (code !== content) {
-      await writeFile(filePath, code, "utf8");
-      return true;
+    // If we need to add the import but didn't replace any
+    if (
+      needsUseChainedQueryImport &&
+      !modifications.some((m) => m.type === "replace-import")
+    ) {
+      lines.splice(
+        importPosition,
+        0,
+        `import { useChainedQuery } from "@/hooks/react-query/use-chained-query";`,
+      );
     }
 
-    return false;
+    // Write the changes back to the file
+    await writeFile(filePath, lines.join("\n"), "utf8");
+    return true;
   } catch (error) {
     console.error(`Error processing ${filePath}:`, error);
     return false;
@@ -167,9 +205,7 @@ async function processFile(filePath) {
 
 // Main function
 async function main() {
-  console.log(
-    "Starting to replace useQuery imports and usages with AST processing...",
-  );
+  console.log("Starting to replace useQuery imports and usages...");
 
   try {
     // Find all TypeScript and TSX files using glob
@@ -180,10 +216,7 @@ async function main() {
     console.log(`Excluding files matching: ${excludePattern}`);
 
     const files = globSync(pattern, {
-      ignore: [
-        excludePattern,
-        "src/hooks/react-query/use-chained-query.ts",
-      ],
+      ignore: excludePattern,
     });
 
     console.log(`Found ${files.length} TypeScript files to process`);

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { getAccounts } from "@/api/b-app.ts";
 import { useSearchParams } from "react-router-dom";
 import { createDefaultPagination } from "@/lib/utils/api.ts";
@@ -12,7 +12,7 @@ export const useBAppAccounts = () => {
   // const perPage = Number(searchParams.get("perPage") || 10);
   const searchInput = searchParams.get("address") || "";
 
-  const query = useQuery({
+  const query = useChainedQuery({
     queryKey: ["get_accounts", page, perPage, searchInput],
     staleTime: 0,
     gcTime: 0,

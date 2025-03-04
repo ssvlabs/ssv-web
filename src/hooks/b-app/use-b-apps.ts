@@ -1,6 +1,6 @@
 import type { BApp } from "@/api/b-app.ts";
 import { getBApps } from "@/api/b-app.ts";
-import { useQuery } from "@tanstack/react-query";
+import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { useSearchParams } from "react-router-dom";
 import { createDefaultPagination } from "@/lib/utils/api.ts";
 import { getTokenMetadata } from "@/lib/utils/tokens-helper.ts";
@@ -12,7 +12,7 @@ export const useBApps = () => {
 
   const id = searchParams.get("id") || "";
 
-  const query = useQuery({
+  const query = useChainedQuery({
     queryKey: ["get_bApps", page, perPage, id],
     staleTime: 0,
     gcTime: 0,
@@ -23,7 +23,7 @@ export const useBApps = () => {
 
   const bApps = query.data?.data || [];
   const isBAppsLoading = query.isLoading;
-  const assetsQuery = useQuery({
+  const assetsQuery = useChainedQuery({
     queryKey: ["get_assets_data", bApps],
     staleTime: 0,
     gcTime: 0,

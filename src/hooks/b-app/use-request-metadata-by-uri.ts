@@ -1,5 +1,4 @@
-import type { UseQueryResult } from "@tanstack/react-query";
-import { useQuery } from "@tanstack/react-query";
+import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { validateMetadata } from "@/api/b-app.ts";
 
 interface StrategyMetadata {
@@ -23,29 +22,25 @@ export const useRequestMetadataByURI = ({
   strategyMetadata?: { uri: string; isValid: boolean };
   accountMetadata?: { uri: string; isValid: boolean };
 }) => {
-  const strategyMetadataQuery: UseQueryResult<StrategyMetadata | undefined> =
-    useQuery({
-      queryKey: ["strategy_metadata", strategyMetadata?.uri],
-      staleTime: 0,
-      gcTime: 0,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      queryFn: () =>
-        strategyMetadata?.uri && validateMetadata(strategyMetadata.uri),
-      enabled: strategyMetadata?.isValid,
-    });
+  const strategyMetadataQuery = useChainedQuery({
+    queryKey: ["strategy_metadata", strategyMetadata?.uri],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    queryFn: () => validateMetadata<StrategyMetadata>(strategyMetadata!.uri),
+    enabled: Boolean(strategyMetadata?.isValid && strategyMetadata?.uri),
+  });
 
-  const accountMetadataQuery: UseQueryResult<AccountMetadata | undefined> =
-    useQuery({
-      queryKey: ["account_metadata", accountMetadata?.uri],
-      staleTime: 0,
-      gcTime: 0,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      queryFn: () =>
-        accountMetadata?.uri && validateMetadata(accountMetadata.uri),
-      enabled: accountMetadata?.isValid,
-    });
+  const accountMetadataQuery = useChainedQuery({
+    queryKey: ["account_metadata", accountMetadata?.uri],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    queryFn: () => validateMetadata<AccountMetadata>(accountMetadata!.uri),
+    enabled: Boolean(accountMetadata?.isValid && accountMetadata?.uri),
+  });
 
   return {
     strategyMetadata: strategyMetadataQuery,

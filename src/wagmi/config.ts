@@ -20,8 +20,25 @@ const holesky: Chain = {
   iconUrl: "/images/networks/light.svg",
 };
 
+export const devnet = {
+  id: 7032118028,
+  name: "pectra-devnet-7",
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.pectra-devnet-7.ethpandaops.io"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Explorer",
+      url: "https://explorer.pectra-devnet-7.ethpandaops.io",
+    },
+  },
+  testnet: true,
+};
+
 const chains = import.meta.env.VITE_SSV_NETWORKS.map((network) =>
-  [mainnet, holesky].find((chain) => chain.id === network.networkId),
+  [mainnet, holesky, devnet].find((chain) => chain.id === network.networkId),
 ).filter(Boolean) as [Chain, ...Chain[]];
 
 export const isChainSupported = (chainId: number) => {
@@ -56,5 +73,6 @@ export const config = createConfig({
       "https://ethereum-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
     ),
     [holesky.id]: http(),
+    [devnet.id]: http(),
   },
 });

@@ -22,12 +22,14 @@ export const useMyBAppAccount = () => {
   const { page, perPage } = usePaginationQuery();
 
   const reactQueryData = useChainedQuery({
-    queryKey: [address],
+    queryKey: ["non-slashable-assets", address],
     staleTime: 0,
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    queryFn: () => address && getNonSlashableAssets(address),
+    queryFn: () => {
+      return getNonSlashableAssets(address!);
+    },
     enabled: address && isAddress(address),
   });
 
@@ -38,18 +40,17 @@ export const useMyBAppAccount = () => {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     queryFn: () =>
-      address &&
       getStrategiesByOwnerAddress({
         page: page,
         perPage: perPage,
-        ownerAddress: address,
+        ownerAddress: address!,
       }),
     enabled: address && isAddress(address),
   });
 
   const myAccountData = useChainedQuery({
     queryKey: ["my_account", address],
-    queryFn: () => address && getMyAccount(address),
+    queryFn: () => getMyAccount(address!),
     enabled: address && isAddress(address),
   });
 
@@ -59,8 +60,7 @@ export const useMyBAppAccount = () => {
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    queryFn: () =>
-      address && getBAppsByOwnerAddress({ address, page, perPage }),
+    queryFn: () => getBAppsByOwnerAddress({ address: address!, page, perPage }),
     enabled: address && isAddress(address),
   });
 

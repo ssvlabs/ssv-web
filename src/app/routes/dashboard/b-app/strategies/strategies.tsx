@@ -15,7 +15,7 @@ import { useAssetsDelegationModal } from "@/signals/modal";
 import type { Address } from "abitype";
 
 export const Strategies: FC = () => {
-  const { pagination, strategies, isStrategiesIsLoading } = useStrategies();
+  const { pagination, strategies, isStrategiesLoading } = useStrategies();
   const [, setSearchParams] = useSearchParams();
 
   const tokensFilter = useTokensFilter();
@@ -75,7 +75,7 @@ export const Strategies: FC = () => {
       <StrategiesTable
         strategies={strategies}
         pagination={pagination}
-        isLoading={isStrategiesIsLoading}
+        isLoading={isStrategiesLoading}
         showDepositButtonOnHover={(tokensFilter.value?.length || 0) > 0}
         onDepositClick={onDepositClick}
       />

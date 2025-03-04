@@ -10,15 +10,19 @@ import { currencyFormatter } from "@/lib/utils/number.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { getAddress } from "viem";
 
+type BAppsTableRowProps = {
+  bApp: BApp;
+  withoutOwnerAddress?: boolean;
+  isCreateFlow?: boolean;
+  onRowClick?: () => void;
+};
+
 const BAppsTableRow = ({
   bApp,
   isCreateFlow,
   withoutOwnerAddress,
-}: {
-  bApp: BApp;
-  withoutOwnerAddress?: boolean;
-  isCreateFlow?: boolean;
-}) => {
+  onRowClick,
+}: BAppsTableRowProps) => {
   const { address } = useAccount();
   const isUsedBApp =
     isCreateFlow &&
@@ -29,6 +33,7 @@ const BAppsTableRow = ({
     <TableRow
       key={bApp.id}
       className={`cursor-pointer max-h-7 ${isUsedBApp && "bg-gray-100 hover:bg-gray-100 text-gray-400"}`}
+      onClick={onRowClick}
     >
       <TableCell
         className={`${textVariants({ variant: "body-3-medium" })} flex items-center gap-2 ${isUsedBApp && "text-gray-400"}`}

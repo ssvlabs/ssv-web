@@ -6,8 +6,9 @@ import { getTokenMetadata } from "@/lib/utils/tokens-helper.ts";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router";
 
-export const useStrategies = () => {
-  const { strategyId } = useParams();
+export const useStrategies = (_strategyId?: string) => {
+  const params = useParams();
+  const strategyId = _strategyId || params.strategyId;
   const filters = useStrategiesFilters();
   const { orderBy, sort, ordering } = useOrdering();
 
@@ -33,7 +34,7 @@ export const useStrategies = () => {
     enabled: true,
   });
 
-  const isStrategiesIsLoading = query.isLoading;
+  const isStrategiesLoading = query.isLoading;
   const strategies = query.data?.data || [];
   const assetsQuery = useQuery({
     queryKey: ["get_assets_data", strategies],
@@ -60,7 +61,7 @@ export const useStrategies = () => {
     assetsData,
     strategy,
     strategyId,
-    isStrategiesIsLoading,
+    isStrategiesLoading,
     orderBy,
     sort,
   };

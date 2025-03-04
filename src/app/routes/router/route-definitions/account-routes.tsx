@@ -11,6 +11,7 @@ import { CreateStrategyGuard } from "@/guard/create-strategy-context.ts";
 import BApps from "@/app/routes/dashboard/b-app/b-apps/b-apps.tsx";
 import CreateBApp from "@/app/routes/dashboard/b-app/b-apps/create-b-app.tsx";
 import { Assets } from "@/app/routes/dashboard/b-app/assets/assets";
+import { BApp } from "@/app/routes/dashboard/b-app/b-apps/b-app";
 
 export const accountRoutes = {
   path: "account",
@@ -39,6 +40,10 @@ export const accountRoutes = {
         {
           index: true,
           element: <BApps />,
+        },
+        {
+          path: ":bAppId",
+          element: <BApp />,
         },
         {
           path: "create",

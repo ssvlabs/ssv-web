@@ -11,7 +11,7 @@ import type { NonSlashableAsset } from "@/api/b-app";
 import { NonSlashableAssetsTableRow } from "@/components/based-apps/non-slashable-assets-table/non-slashable-assets-table-row";
 
 export type NonSlashableAssetsTableProps = {
-  assets: NonSlashableAsset[];
+  asset: NonSlashableAsset | undefined;
   isLoading?: boolean;
   onRowClick?: (asset: NonSlashableAsset) => void;
 };
@@ -25,7 +25,7 @@ type FCProps = FC<
 >;
 
 export const NonSlashableAssetsTable: FCProps = ({
-  assets,
+  asset,
   className,
   isLoading,
   onRowClick,
@@ -52,7 +52,7 @@ export const NonSlashableAssetsTable: FCProps = ({
                 <Loading />
               </td>
             </tr>
-          ) : !assets.length ? (
+          ) : !asset ? (
             <tr>
               <td colSpan={6} className="bg-gray-50 h-[200px]">
                 <div className="flex flex-col items-center gap-4 justify-center h-full">
@@ -63,13 +63,10 @@ export const NonSlashableAssetsTable: FCProps = ({
               </td>
             </tr>
           ) : (
-            assets.map((asset) => (
-              <NonSlashableAssetsTableRow
-                key={asset.id}
-                asset={asset}
-                onClick={() => onRowClick?.(asset)}
-              />
-            ))
+            <NonSlashableAssetsTableRow
+              asset={asset}
+              onClick={() => onRowClick?.(asset)}
+            />
           )}
         </TableBody>
       </Table>

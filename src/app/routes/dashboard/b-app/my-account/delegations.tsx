@@ -5,28 +5,17 @@ import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
 import { AccountAssetsTable } from "@/components/based-apps/account-assets-table/account-assets-table";
 import { useAccountAssets } from "@/hooks/b-app/use-account-assets";
 import { NonSlashableAssetsTable } from "@/components/based-apps/non-slashable-assets-table/non-slashable-assets-table";
-import type { NonSlashableAsset } from "@/api/b-app";
 
 const Delegations = () => {
   const navigate = useNavigate();
   const { data, isLoading } = useMyBAppAccount();
   const { assets } = useAccountAssets();
 
-  const nonSlashableAssets: NonSlashableAsset[] = data
-    ? [
-        {
-          id: "validator-balance",
-          effectiveBalance: data.effectiveBalance,
-          delegations: data.delegations,
-        },
-      ]
-    : [];
-
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <Text variant="body-1-semibold">My Assets</Text>
       <NonSlashableAssetsTable
-        assets={nonSlashableAssets}
+        asset={data}
         isLoading={isLoading}
         onRowClick={() => navigate("/account/accounts")}
       />

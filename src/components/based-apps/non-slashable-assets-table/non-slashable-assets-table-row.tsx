@@ -11,18 +11,10 @@ import { ChevronDown } from "lucide-react";
 import { IconButton } from "@/components/ui/button";
 import { shortenAddress } from "@/lib/utils/strings";
 import { formatGwei, formatUnits } from "viem";
+import type { NonSlashableAsset } from "@/api/b-app";
 
 export type NonSlashableAssetsTableRowProps = {
-  asset: {
-    id: string;
-    effectiveBalance: bigint;
-    delegations: Array<{
-      percentage: string;
-      receiver: {
-        id: string;
-      };
-    }>;
-  };
+  asset: NonSlashableAsset;
 };
 
 type FCProps = FC<
@@ -41,8 +33,8 @@ export const NonSlashableAssetsTableRow: FCProps = ({
 }) => {
   const hasDelegations = Boolean(asset.delegations?.length);
   const [isOpen, setIsOpen] = useState(false);
-  console.log("asset:", asset);
 
+  console.log("asset:", asset);
   const effectiveBalance = Number(formatGwei(asset.effectiveBalance));
 
   const totalDelegatedPercentage =

@@ -7,16 +7,16 @@ import {
   type StrategiesSearchParams,
 } from "@/lib/search-parsers/strategy-search-parsers";
 
-export type MyBAppAccount = {
+export type NonSlashableAsset = {
   effectiveBalance: bigint;
   delegations: Delegation[];
 };
 
 export type Delegation = {
+  percentage: string;
   receiver: {
     id: string;
   };
-  percentage: string;
 };
 
 export type BAppAccount = {
@@ -104,7 +104,7 @@ export type BApp = {
 
 export const getNonSlashableAssets = (ownerAddress: string) =>
   api
-    .get<MyBAppAccount>(
+    .get<NonSlashableAsset>(
       endpoint(
         "basedApp",
         `getNonSlashableAssets?ownerAddress=${ownerAddress}`,
@@ -182,18 +182,27 @@ export const getBApps = ({
   page: number;
   perPage: number;
 }) =>
+  api.get<{
+    data: BApp[];
+    pagination: Pagination;
+  }>(
+    endpoint(
+      "basedApp",
+      `getBApps?${id ? `id=${id}&perPage=${perPage}&page=${page}` : `perPage=${perPage}&page=${page}`}`,
+    ),
+  );
+
+export const getBAppByID = ({ id }: { id?: Address }) =>
   api
     .get<{
       data: BApp[];
       pagination: Pagination;
-    }>(
-      endpoint(
-        "basedApp",
-        `getBApps?${id ? `id=${id}&perPage=${perPage}&page=${page}` : `perPage=${perPage}&page=${page}`}`,
-      ),
-    )
+    }>(endpoint("basedApp", `getBApps?id=${id}`))
     .then((res) => {
-      return res;
+      if (!res.data[0]) {
+        throw new Error("BApp not found");
+      }
+      return res.data[0];
     });
 
 export const getBAppsByOwnerAddress = ({
@@ -205,19 +214,15 @@ export const getBAppsByOwnerAddress = ({
   page: number;
   perPage: number;
 }) =>
-  api
-    .get<{
-      data: BApp[];
-      pagination: Pagination;
-    }>(
-      endpoint(
-        "basedApp",
-        `getBApps?owner=${address}&perPage=${perPage}&page=${page}`,
-      ),
-    )
-    .then((res) => {
-      return res;
-    });
+  api.get<{
+    data: BApp[];
+    pagination: Pagination;
+  }>(
+    endpoint(
+      "basedApp",
+      `getBApps?owner=${address}&perPage=${perPage}&page=${page}`,
+    ),
+  );
 
 export const validateMetadata = <T>(url: string) =>
   api
@@ -295,15 +300,4 @@ export const getDelegatedAsset = ({
       `basedApp/getDepositTokensBy?token=${tokenAddress}&contributor=${contributor}&strategyId=${strategyId}`,
     ),
   );
-};
-
-export type NonSlashableAsset = {
-  id: string;
-  effectiveBalance: bigint;
-  delegations: Array<{
-    percentage: string;
-    receiver: {
-      id: string;
-    };
-  }>;
 };

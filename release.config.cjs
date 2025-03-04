@@ -6,12 +6,6 @@ module.exports = {
   branches: [
     "main",
     { name: "stage", prerelease: true },
-    { name: "pre-stage", prerelease: true },
-    { name: "prod-test", prerelease: true },
-    { name: "ilya-dev", prerelease: true },
-    { name: "chris-dev", prerelease: true },
-    { name: "dima-dev", prerelease: true },
-    { name: "sumbat-dev", prerelease: true },
   ],
   plugins: [
     "@semantic-release/commit-analyzer",

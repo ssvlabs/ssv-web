@@ -105,7 +105,7 @@ const Metadata = () => {
   });
   const updateAccountMetadata = useUpdateAccountMetadataURI();
 
-  const finishTx = () => {
+  const finishTx = (createdStrategyId: string | number) => {
     navigate(`/account/${createdStrategyId}`);
     setIsLoading(false);
     setIsTxStarted(false);
@@ -204,7 +204,9 @@ const Metadata = () => {
               description: new Date().toLocaleString(),
             });
             createdId = parseInt(`${receipt.logs[0].topics[1]}`);
-            useCreateStrategyContext.state.createdStrategyId = createdId;
+            useCreateStrategyContext.state.createdStrategyId = parseInt(
+              `${receipt.logs[0].topics[1]}`,
+            );
             setTxStatus(
               !skippedBApp
                 ? [
@@ -356,13 +358,12 @@ const Metadata = () => {
               status: "success",
               txHash: receipt.transactionHash,
             });
-            return finishTx;
           },
         },
       );
     }
     await wait(0);
-    finishTx();
+    finishTx(createdId);
   };
   return (
     <Wizard

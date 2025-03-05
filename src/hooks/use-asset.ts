@@ -18,8 +18,8 @@ export const useAsset = (tokenAddress?: `0x${string}`) => {
     enabled: !isEthereum && !!tokenAddress,
   };
 
-  const { data: name = "Ethereum" } = useName({ tokenAddress }, queryOptions);
-  const { data: symbol = "ETH" } = useSymbol({ tokenAddress }, queryOptions);
+  const { data: name = "Unknown" } = useName({ tokenAddress }, queryOptions);
+  const { data: symbol = "" } = useSymbol({ tokenAddress }, queryOptions);
   const { data: decimals = 18 } = useDecimals({ tokenAddress }, queryOptions);
   const { data: balance = 0n, queryKey } = useBalanceOf(
     { tokenAddress, account: address! },
@@ -37,8 +37,8 @@ export const useAsset = (tokenAddress?: `0x${string}`) => {
   });
 
   return {
-    name,
-    symbol,
+    name: isEthereum ? "Ethereum" : name,
+    symbol: isEthereum ? "ETH" : symbol,
     decimals,
     balance: isEthereum ? ethBalance.data?.value : balance,
     isEthereum,

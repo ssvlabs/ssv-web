@@ -1,11 +1,9 @@
-import type { FC, ComponentPropsWithoutRef } from "react";
+import { useTheme } from "@/hooks/app/use-theme";
+import { useAsset } from "@/hooks/use-asset";
+import { onlyTokens } from "@/lib/utils/tokens.ts";
 import { cn } from "@/lib/utils/tw";
 import type { Address } from "abitype";
-import { onlyTokens } from "@/lib/utils/tokens.ts";
-import { useReadContract } from "wagmi";
-import { TokenABI } from "@/lib/abi/token";
-import { isEthereumTokenAddress } from "@/lib/utils/token";
-import { useTheme } from "@/hooks/app/use-theme";
+import type { ComponentPropsWithoutRef, FC } from "react";
 
 export type AssetLogoProps = {
   address: Address;
@@ -23,23 +21,13 @@ export const AssetLogo: AssetLogoFC = ({
   ...props
 }) => {
   const { dark } = useTheme();
-  const isEthereum = isEthereumTokenAddress(address);
 
-  const { data: tokenSymbol = "ETH" } = useReadContract({
-    abi: TokenABI,
-    functionName: "symbol",
-    address,
-    query: {
-      staleTime: Infinity,
-      enabled: !isEthereum,
-    },
-  });
-
-  const logoSrc = isEthereum
+  const asset = useAsset(address);
+  const logoSrc = asset.isEthereum
     ? dark
       ? "/images/networks/light.svg"
       : "/images/networks/dark.svg"
-    : onlyTokens[tokenSymbol?.toUpperCase() || ""] || fallbackAssetSrc;
+    : onlyTokens[asset.symbol?.toUpperCase() || ""] || fallbackAssetSrc;
 
   return (
     <img

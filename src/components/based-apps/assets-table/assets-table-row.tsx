@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils/tw";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useBalance } from "wagmi";
 import { formatEther } from "viem";
-import { formatSSV } from "@/lib/utils/number";
+import { compactFormatter, formatSSV } from "@/lib/utils/number";
 import { currencyFormatter } from "../../../lib/utils/number";
 import { isEthereumTokenAddress } from "@/lib/utils/token";
 import AssetName from "@/components/ui/asset-name";
@@ -61,7 +61,7 @@ export const AssetsTableRow: FCProps = ({ asset, className, ...props }) => {
           className: "text-right",
         })}
       >
-        {currencyFormatter.format(
+        {compactFormatter.format(
           +formatEther(BigInt(asset.totalObligatedBalance)),
         )}
       </TableCell>

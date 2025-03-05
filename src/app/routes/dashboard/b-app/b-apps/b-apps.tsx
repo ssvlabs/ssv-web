@@ -2,13 +2,15 @@ import { Container } from "@/components/ui/container.tsx";
 import { Text } from "@/components/ui/text.tsx";
 import { SearchInput } from "@/components/ui/search-input.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { BAppsTable } from "@/components/based-apps/b-app-table/b-apps-table.tsx";
 import { useBApps } from "@/hooks/b-app/use-b-apps.ts";
 
 const BApps = () => {
   const { bApps, pagination, isBAppsLoading } = useBApps();
   const [, setSearchParams] = useSearchParams();
+
+  const navigate = useNavigate();
 
   const searchById = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchParams((prev) => {
@@ -17,6 +19,7 @@ const BApps = () => {
       return params;
     });
   };
+
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <div className="flex justify-between w-full items-center">
@@ -41,6 +44,9 @@ const BApps = () => {
         isLoading={isBAppsLoading}
         bApps={bApps}
         pagination={pagination}
+        onRowClick={(bApp) => {
+          navigate(`/account/bApps/${bApp.id}`);
+        }}
       />
     </Container>
   );

@@ -11,19 +11,23 @@ import { Pagination } from "@/components/ui/pagination-v2.tsx";
 import type { Pagination as IPagination } from "@/types/api";
 import { Loading } from "@/components/ui/Loading.tsx";
 
+type BAppsTableProps = {
+  bApps?: BApp[];
+  isCreateFlow?: boolean;
+  isLoading?: boolean;
+  withoutOwnerAddress?: boolean;
+  pagination?: IPagination;
+  onRowClick?: (bApp: BApp) => void;
+};
+
 export const BAppsTable = ({
   bApps,
   isCreateFlow,
   pagination,
   isLoading,
   withoutOwnerAddress,
-}: {
-  bApps?: BApp[];
-  isCreateFlow?: boolean;
-  isLoading?: boolean;
-  withoutOwnerAddress?: boolean;
-  pagination?: IPagination;
-}) => {
+  onRowClick,
+}: BAppsTableProps) => {
   return (
     <div className="flex flex-col w-full">
       <Table className={"w-full rounded-t-xl overflow-hidden"}>
@@ -43,6 +47,7 @@ export const BAppsTable = ({
               key={index}
               isCreateFlow={isCreateFlow}
               bApp={bApp}
+              onRowClick={() => onRowClick?.(bApp)}
             />
           ))}
         </TableBody>

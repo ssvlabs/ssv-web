@@ -7,6 +7,7 @@ import { Text, textVariants } from "@/components/ui/text";
 import { WithAllowance } from "@/components/with-allowance/with-allowance";
 import { useAccount } from "@/hooks/account/use-account";
 import { useDelegatedAsset } from "@/hooks/b-app/use-delegated-asset";
+import { useStrategy } from "@/hooks/b-app/use-strategy";
 import { useAsset } from "@/hooks/use-asset";
 import { useSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import { useDepositERC20 } from "@/lib/contract-interactions/b-app/write/use-deposit-erc-20";
@@ -24,6 +25,7 @@ export const AssetsDelegationModal = () => {
   const { bAppContractAddress } = useSSVNetworkDetails();
   const { address } = useAccount();
   const navigate = useNavigate();
+  const strategy = useStrategy();
 
   const asset = useAsset(meta.asset);
   const delegated = useDelegatedAsset({
@@ -50,6 +52,7 @@ export const AssetsDelegationModal = () => {
       onMined: () => {
         asset.refreshBalance();
         delegated.refresh();
+        strategy.invalidate();
         return () => {
           navigate(`/account`);
         };

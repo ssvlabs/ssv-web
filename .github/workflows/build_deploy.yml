@@ -33,7 +33,20 @@ jobs:
             \"bAppContractAddress\": \"0x9B3345F3B1Ce2d8655FC4B6e2ed39322d52aA317\",
             \"setterContractAddress\": \"${{ secrets.STAGE_HOLESKY_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
             \"getterContractAddress\": \"${{ secrets.STAGE_HOLESKY_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
-          }
+          },
+          {
+            \"networkId\": 7032118028,
+            \"apiVersion\": \"v4\",
+            \"apiNetwork\": \"holesky\",  
+            \"api\": \"https://api.stage.ops.ssvlabsinternal.com/api\",
+            \"explorerUrl\": \"https://holesky-explorer.stage.ssv.network\",
+            \"insufficientBalanceUrl\": \"https://faucet.stage.ssv.network\",
+            \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
+            \"tokenAddress\": \"0xd1b537f5c53DEf7b14801d96b9b9956648D17892\",
+            \"bAppContractAddress\": \"0x5217C9034048B1Fa9Fb1e300F94fCd7002138Ea5\",
+            \"setterContractAddress\": \"${{ secrets.STAGE_DEVNET_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
+            \"getterContractAddress\": \"${{ secrets.STAGE_DEVNET_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
+           }
         ]
       PROD_SSV_NETWORKS: >
         [
@@ -91,7 +104,7 @@ jobs:
         run: pnpm lint
 
       - name: Run semantic-release
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/pre-stage' || github.ref == 'refs/heads/prod-test' || github.ref == 'refs/heads/main')
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release

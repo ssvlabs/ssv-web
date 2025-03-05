@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { formatUnits, isAddress } from "viem";
 import type { StrategiesByOwnerResponse } from "@/api/b-app.ts";
 import { getMyAccount } from "@/api/b-app.ts";
@@ -21,46 +21,46 @@ export const useMyBAppAccount = () => {
 
   const { page, perPage } = usePaginationQuery();
 
-  const reactQueryData = useQuery({
-    queryKey: [address],
+  const reactQueryData = useChainedQuery({
+    queryKey: ["non-slashable-assets", address],
     staleTime: 0,
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    queryFn: () => address && getNonSlashableAssets(address),
+    queryFn: () => {
+      return getNonSlashableAssets(address!);
+    },
     enabled: address && isAddress(address),
   });
 
-  const myStrategies = useQuery({
+  const myStrategies = useChainedQuery({
     queryKey: ["get_my_strategies", page, perPage, idToSearch, orderBy, sort],
     staleTime: 0,
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     queryFn: () =>
-      address &&
       getStrategiesByOwnerAddress({
         page: page,
         perPage: perPage,
-        ownerAddress: address,
+        ownerAddress: address!,
       }),
     enabled: address && isAddress(address),
   });
 
-  const myAccountData = useQuery({
+  const myAccountData = useChainedQuery({
     queryKey: ["my_account", address],
-    queryFn: () => address && getMyAccount(address),
+    queryFn: () => getMyAccount(address!),
     enabled: address && isAddress(address),
   });
 
-  const myBApps = useQuery({
+  const myBApps = useChainedQuery({
     queryKey: ["get_my_b_apps", page, perPage, address],
     staleTime: 0,
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    queryFn: () =>
-      address && getBAppsByOwnerAddress({ address, page, perPage }),
+    queryFn: () => getBAppsByOwnerAddress({ address: address!, page, perPage }),
     enabled: address && isAddress(address),
   });
 

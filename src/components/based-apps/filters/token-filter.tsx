@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { CommandLoading } from "cmdk";
 import { xor } from "lodash-es";
 import { Loader2, X } from "lucide-react";
@@ -29,7 +29,7 @@ export function TokensFilter() {
   const [search, setSearch] = useState<string>("");
   const tokensFilter = useTokensFilter();
 
-  const query = useQuery({
+  const query = useChainedQuery({
     queryKey: ["b-app-assets", "tokens", search],
     queryFn: async () => getBAppsAssets(),
     select: (data) => data.data ?? [],

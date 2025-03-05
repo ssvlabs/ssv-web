@@ -4,14 +4,14 @@ import { shortenAddress } from "@/lib/utils/strings.ts";
 import { AssetsDisplay } from "@/components/ui/assets-display.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
-import type { BApp } from "@/api/b-app.ts";
+import type { BApp, BAppsMetaData } from "@/api/b-app.ts";
 import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 import { currencyFormatter } from "@/lib/utils/number.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { getAddress } from "viem";
 
 type BAppsTableRowProps = {
-  bApp: BApp;
+  bApp: BApp & BAppsMetaData;
   withoutOwnerAddress?: boolean;
   isCreateFlow?: boolean;
   onRowClick?: () => void;
@@ -40,16 +40,13 @@ const BAppsTableRow = ({
       >
         <img
           className="rounded-[8px] size-7 border-gray-400 border"
-          src={
-            bApp.bAppsMetaData.logo ||
-            "/images/operator_default_background/light.svg"
-          }
+          src={bApp?.logo || "/images/operator_default_background/light.svg"}
           onError={(e) => {
             e.currentTarget.src =
               "/images/operator_default_background/light.svg";
           }}
         />
-        {bApp.bAppsMetaData.name || shortenAddress(bApp.id)}
+        {bApp.name || shortenAddress(bApp.id)}
       </TableCell>
       {!withoutOwnerAddress && (
         <TableCell className={`${textVariants({ variant: "body-3-medium" })}`}>

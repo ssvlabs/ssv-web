@@ -18,7 +18,7 @@ import {
 import { StrategyAssetsTable } from "@/components/based-apps/strategy-assets-table/strategy-assets-table.tsx";
 import { StrategyBAppsTable } from "@/components/based-apps/strategy-b-apps-table/strategy-b-apps-table.tsx";
 import { SearchInput } from "@/components/ui/search-input.tsx";
-import { useState } from "react";
+import { type ChangeEvent, useState } from "react";
 import { Tooltip } from "@/components/ui/tooltip.tsx";
 import { FaCircleInfo } from "react-icons/fa6";
 import { useLocation } from "react-router";
@@ -31,23 +31,36 @@ import DescriptionCard from "@/components/ui/description-card.tsx";
 import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
 import { getStrategyName } from "@/lib/utils/strategy";
 import { isAddress } from "viem";
+import { useGetAsset } from "@/hooks/b-app/use-get-asset.tsx";
 
 const Strategy = () => {
   const { strategy, account, isLoading } = useStrategy();
-  const [assetSearchValue, setAssetSearchValue] = useState("");
   const [bAppSearchValue, setBAppSearchValue] = useState("");
   const [isOpenDelegateModal, setIsOpenDelegateModal] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const [, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { query } = useGetAsset(
+    (searchParams.get("asset") || "0x") as `0x${string}`,
+  );
   const openDelegate = () => {
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
       params.set("delegateAddress", strategy.ownerAddress);
       return params;
+      0;
     });
     setIsOpenDelegateModal(true);
   };
+
+  const onSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.set("asset", e.target.value);
+      return params;
+    });
+  };
+
   if (isLoading)
     return (
       <motion.div
@@ -84,7 +97,9 @@ const Strategy = () => {
         <div className="flex items-center gap-2">
           <img
             className="rounded-[8px] size-7 border-gray-400 border"
-            src={account?.logo}
+            src={
+              account?.logo || "/images/operator_default_background/light.svg"
+            }
             onError={(e) => {
               e.currentTarget.src =
                 "/images/operator_default_background/light.svg";
@@ -99,7 +114,6 @@ const Strategy = () => {
       ),
     },
   ];
-
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <div className="flex items-center gap-2 text-gray-500">
@@ -143,7 +157,8 @@ const Strategy = () => {
       <div className="flex justify-between w-full items-center">
         <Text variant="body-1-semibold">Assets</Text>
         <SearchInput
-          onChange={(e) => setAssetSearchValue(e.target.value)}
+          onChange={onSearchChange}
+          value={searchParams.get("asset") || ""}
           placeholder="Search"
           iconPlacement="left"
           className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
@@ -184,7 +199,7 @@ const Strategy = () => {
         </TableBody>
       </Table>
 
-      {Boolean(strategy.delegationsPerToken?.length) && (
+      {(Boolean(strategy.delegationsPerToken?.length) || query.data) && (
         <div className="w-full flex flex-col gap-6">
           <StrategyAssetsTable
             onDepositClick={(asset) => {
@@ -193,9 +208,8 @@ const Strategy = () => {
                 strategy,
               });
             }}
-            searchValue={assetSearchValue}
             showDepositButtonOnHover
-            assets={strategy.delegationsPerToken || []}
+            assets={query.data || strategy.delegationsPerToken || []}
           />
         </div>
       )}

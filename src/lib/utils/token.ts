@@ -8,6 +8,5 @@ export const isEthereumTokenAddress = (address: Address) =>
   isAddressEqual(address, zeroAddress) ||
   isAddressEqual(address, "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
 
-console.log("getAddress:", getAddress);
 export const normalizeTokenAddress = (address: Address) =>
   isEthereumTokenAddress(address) ? zeroAddress : getAddress(address);

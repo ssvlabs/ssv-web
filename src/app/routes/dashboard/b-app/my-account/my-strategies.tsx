@@ -7,13 +7,14 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button.tsx";
 import { isAddress } from "viem";
 import { shortenAddress } from "@/lib/utils/strings.ts";
+import type { Strategy, StrategyMetadata } from "@/api/b-app.ts";
 
 const MyStrategies = () => {
   const { myStrategies, effectiveBalance, myAccountData } = useMyBAppAccount();
   const MOCK_TIER_DATA = [
     {
       label: "Delegating Accounts",
-      value: myStrategies.strategies.reduce(
+      value: myStrategies?.strategies?.reduce(
         (acc, currentValue) => acc + (currentValue.totalDelegators || 0),
         0,
       ),
@@ -94,7 +95,9 @@ const MyStrategies = () => {
           Create Strategy
         </Button>
       </div>
-      <StrategiesTable strategies={myStrategies.strategies} />
+      <StrategiesTable
+        strategies={myStrategies.strategies as (Strategy & StrategyMetadata)[]}
+      />
     </Container>
   );
 };

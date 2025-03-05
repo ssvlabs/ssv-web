@@ -2,15 +2,10 @@ import type { FC, ComponentPropsWithoutRef } from "react";
 import { TableHeader, TableHead, Table } from "@/components/ui/table";
 import { cn } from "@/lib/utils/tw";
 import { StrategyAssetsTableRow } from "@/components/based-apps/strategy-assets-table/strategy-assets-table-row.tsx";
+import type { BAppAsset } from "@/api/b-app.ts";
 
 export type AssetsTableProps = {
-  assets: {
-    token: `0x${string}`;
-    totalDelegation: string;
-    delegations: { bAppId: `0x${string}`; percentage: string }[];
-    totalFiat: string;
-    totalTokens: bigint;
-  }[];
+  assets: BAppAsset[];
   searchValue?: string;
   showDepositButtonOnHover?: boolean;
   onDepositClick?: (asset: AssetsTableProps["assets"][0]) => void;

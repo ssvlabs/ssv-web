@@ -97,7 +97,9 @@ const Strategy = () => {
         <div className="flex items-center gap-2">
           <img
             className="rounded-[8px] size-7 border-gray-400 border"
-            src={account?.logo}
+            src={
+              account?.logo || "/images/operator_default_background/light.svg"
+            }
             onError={(e) => {
               e.currentTarget.src =
                 "/images/operator_default_background/light.svg";
@@ -197,25 +199,20 @@ const Strategy = () => {
         </TableBody>
       </Table>
 
-      {Boolean(strategy.delegationsPerToken?.length) ||
-        (query.data && (
-          <div className="w-full flex flex-col gap-6">
-            <StrategyAssetsTable
-              onDepositClick={(asset) => {
-                useAssetsDelegationModal.state.open({
-                  asset: asset.token,
-                  strategy,
-                });
-              }}
-              showDepositButtonOnHover
-              assets={
-                strategy.delegationsPerToken?.length
-                  ? strategy.delegationsPerToken || []
-                  : query.data || []
-              }
-            />
-          </div>
-        ))}
+      {(Boolean(strategy.delegationsPerToken?.length) || query.data) && (
+        <div className="w-full flex flex-col gap-6">
+          <StrategyAssetsTable
+            onDepositClick={(asset) => {
+              useAssetsDelegationModal.state.open({
+                asset: asset.token,
+                strategy,
+              });
+            }}
+            showDepositButtonOnHover
+            assets={query.data || strategy.delegationsPerToken || []}
+          />
+        </div>
+      )}
 
       <div className="w-full flex flex-col gap-6">
         <div className="flex justify-between w-full items-center">

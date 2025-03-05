@@ -23,8 +23,7 @@ export type BAppAccount = {
   bApps: number;
   delegators: number;
   id: `0x${string}`;
-  logo: string;
-  name: string;
+  metadataURI: string;
   strategies: number;
   totalDelegated: string;
   totalDelegatedValue: string;
@@ -44,18 +43,12 @@ export interface Strategy {
   bApps: number;
   delegatedAssets: `0x${string}`[];
   fee: string;
+  metadataURI: string;
   bAppsList?: StrategyBApp[];
   totalDelegators?: number;
   totalDelegatedFiat?: string;
   description?: string;
-  delegationsPerToken?: {
-    token: `0x${string}`;
-    totalDelegation: string;
-    totalTokens: bigint;
-    totalFiat: string;
-
-    delegations: { bAppId: `0x${string}`; percentage: string }[];
-  }[];
+  delegationsPerToken?: BAppAsset[];
   delegators?: [
     {
       id: string;
@@ -67,6 +60,11 @@ export interface Strategy {
   totalNonSlashableFiat?: string;
 }
 
+export type StrategyMetadata = {
+  name: string;
+  description: string;
+};
+
 export interface StrategiesResponse {
   data: Strategy[];
   pagination: Pagination;
@@ -77,16 +75,19 @@ export interface StrategiesByOwnerResponse {
   totalNonSlashableTokens: string;
   totalNonSlashableFiat: string;
   totalSlashableFiat: string;
-  ownerName: string;
-  ownerIcon: string;
   strategies: Strategy[];
 }
 
-type BAppsMetaData = {
+export type BAppsMetaData = {
   name: string;
   description: string;
   logo: string;
   website: string;
+};
+
+export type AccountMetadata = {
+  name: string;
+  logo: string;
 };
 
 export type BApp = {
@@ -99,7 +100,6 @@ export type BApp = {
   supportedAssets: `0x${string}`[];
   strategyOwners: `0x${string}`[];
   totalDelegatedValue: string;
-  bAppsMetaData: BAppsMetaData;
 };
 
 export const getNonSlashableAssets = (ownerAddress: string) =>
@@ -231,9 +231,37 @@ export const validateMetadata = <T>(url: string) =>
       return res;
     });
 
+export const getMetadata = <T>(urls: { id: string; url: string }[]) =>
+  api.post<T>(endpoint("basedApp", "fetchMetadataUrl"), urls).then((res) => {
+    return res;
+  });
+
+export const getAccountsMetadata = getMetadata<
+  {
+    id: string;
+    data: AccountMetadata;
+  }[]
+>;
+export const getStrategiesMetadata = getMetadata<
+  {
+    id: string;
+    data: StrategyMetadata;
+  }[]
+>;
+export const getBAppsMetadata = getMetadata<
+  {
+    id: string;
+    data: BAppsMetaData;
+  }[]
+>;
+
 export type BAppAsset = {
   token: Address;
   totalObligatedBalance: string;
+  totalDelegation?: string;
+  totalFiat?: string;
+  totalTokens?: bigint;
+  delegations?: { bAppId: `0x${string}`; percentage: string }[];
   obligationsCount: number;
 };
 
@@ -259,6 +287,14 @@ export const getBAppsAssets = async ({
   return api.get<BAppAssetResponse>(
     endpoint("basedApp", `getAssets?page=${page}&perPage=${perPage}`),
   );
+};
+
+export const getBAppsAssetByToken = async ({
+  token,
+}: {
+  token: `0x${string}`;
+}) => {
+  return api.get<BAppAsset[]>(endpoint("basedApp", `getAssets?token=${token}`));
 };
 
 export type SlashableAsset = {

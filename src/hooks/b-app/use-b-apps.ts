@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { createDefaultPagination } from "@/lib/utils/api.ts";
 import { getTokenMetadata } from "@/lib/utils/tokens-helper.ts";
 import { usePaginationQuery } from "@/lib/query-states/use-pagination.ts";
+import { useBAppMetadata } from "@/hooks/b-app/use-b-app-metadata.ts";
 
 export const useBApps = () => {
   const [searchParams] = useSearchParams();
@@ -22,7 +23,16 @@ export const useBApps = () => {
   });
 
   const bApps = query.data?.data || [];
-  const isBAppsLoading = query.isLoading;
+
+  const { data: bAppsMetadata, isLoading: bAppsMetadataIsLoading } =
+    useBAppMetadata(
+      bApps.map(({ id, metadataURI }) => ({
+        id,
+        url: metadataURI || "",
+      })) || [],
+    );
+
+  const isBAppsLoading = query.isLoading || bAppsMetadataIsLoading;
   const assetsQuery = useChainedQuery({
     queryKey: ["get_assets_data", bApps],
     staleTime: 0,
@@ -38,5 +48,11 @@ export const useBApps = () => {
     ({} as Record<string, { symbol: string; name: string }>);
   const pagination = query.data?.pagination || createDefaultPagination();
 
-  return { query, bApps, pagination, assetsData, isBAppsLoading };
+  return {
+    query,
+    bApps: bApps.map((bApp) => ({ ...bApp, ...bAppsMetadata[bApp.id] })),
+    pagination,
+    assetsData,
+    isBAppsLoading,
+  };
 };

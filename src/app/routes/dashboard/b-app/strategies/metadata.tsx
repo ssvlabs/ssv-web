@@ -398,8 +398,8 @@ const Metadata = () => {
                               ?.message ||
                               (strategyMetadata.isSuccess &&
                               strategyMetadata?.data &&
-                              strategyMetadata?.data?.data
-                                ? strategyMetadata?.data?.data?.name ||
+                              strategyMetadata?.data[0]?.data
+                                ? strategyMetadata?.data[0]?.data?.name ||
                                   'Missing "name"'
                                 : "Strategy name")}
                           </Text>
@@ -411,8 +411,8 @@ const Metadata = () => {
                           >
                             {strategyMetadata.isSuccess &&
                             strategyMetadata.data &&
-                            strategyMetadata.data.data
-                              ? strategyMetadata.data.data.description ||
+                            strategyMetadata.data[0]?.data
+                              ? strategyMetadata.data[0]?.data.description ||
                                 'Missing "description"'
                               : "Description"}
                           </Text>
@@ -462,8 +462,8 @@ const Metadata = () => {
                               form.formState.errors["accountMetadataURI"]
                                 ? "/images/no-logo.svg"
                                 : accountMetadata.isSuccess &&
-                                    accountMetadata?.data?.data
-                                  ? accountMetadata?.data?.data?.logo ||
+                                    accountMetadata?.data[0]?.data
+                                  ? accountMetadata?.data[0]?.data?.logo ||
                                     "/images/missing-logo.svg"
                                   : "/images/operator_default_background/light.svg"
                             }
@@ -474,8 +474,9 @@ const Metadata = () => {
                           >
                             {form.formState.errors["accountMetadataURI"]
                               ?.message ||
-                              (accountMetadata.data && accountMetadata.data.data
-                                ? accountMetadata.data.data.name ||
+                              (accountMetadata.data &&
+                              accountMetadata.data[0]?.data
+                                ? accountMetadata.data[0]?.data.name ||
                                   'Missing "name"'
                                 : "Account Name")}
                           </Text>

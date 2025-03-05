@@ -12,12 +12,12 @@ import { cn } from "@/lib/utils/tw";
 import type { Address } from "abitype";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useNavigate } from "react-router-dom";
-import type { Strategy } from "@/api/b-app.ts";
+import type { Strategy, StrategyMetadata } from "@/api/b-app.ts";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 import { getStrategyName } from "@/lib/utils/strategy";
 
 export type StrategyTableRowProps = {
-  strategy: Strategy;
+  strategy: Strategy & StrategyMetadata;
   showDepositButtonOnHover?: boolean;
   onDepositClick?: (strategy: Strategy) => void;
   onRowClick?: (strategy: Strategy) => void;

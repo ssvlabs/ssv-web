@@ -1,4 +1,4 @@
-import type { StrategyBApp } from "@/api/b-app.ts";
+import type { BAppAsset, StrategyBApp } from "@/api/b-app.ts";
 import { AssetLogo } from "@/components/ui/asset-logo";
 import AssetName from "@/components/ui/asset-name.tsx";
 import { Button } from "@/components/ui/button";
@@ -19,13 +19,7 @@ import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
 export type AssetsTableRowProps = {
   searchValue?: string;
-  asset: {
-    token: `0x${string}`;
-    totalDelegation: string;
-    totalFiat: string;
-    totalTokens: bigint;
-    delegations: { bAppId: `0x${string}`; percentage: string }[];
-  };
+  asset: BAppAsset;
   showDepositButtonOnHover?: boolean;
   onDepositClick?: () => void;
 };
@@ -46,8 +40,7 @@ export const StrategyAssetsTableRow: FCProps = ({
   const [isInnerOpen, setIsInnerOpen] = useState(false);
   const { strategy } = useStrategy();
   const AngleComponent = isInnerOpen ? FaAngleUp : FaAngleDown;
-  const { name, symbol } = useAsset(asset.token);
-
+  const { name, symbol } = useAsset(asset?.token || "");
   if (searchValue && !name.toLowerCase().includes(searchValue?.toLowerCase())) {
     return;
   }
@@ -59,25 +52,31 @@ export const StrategyAssetsTableRow: FCProps = ({
       >
         <TableCell className={textVariants({ variant: "body-3-medium" })}>
           <div className="flex items-center gap-2">
-            <AssetLogo address={asset.token} />
-            <AssetName address={asset.token} />
+            <AssetLogo address={asset?.token} />
+            <AssetName address={asset?.token} />
           </div>
         </TableCell>
         <TableCell>
-          {formatSSV(asset.totalTokens, 18)} {symbol}
+          {asset?.totalTokens
+            ? `${formatSSV(asset?.totalTokens || 0n, 18)} ${symbol}`
+            : "0"}
         </TableCell>
         <TableCell>
-          {currencyFormatter.format(Number(asset.totalFiat) || 0)}
+          {asset?.totalFiat
+            ? currencyFormatter.format(Number(asset?.totalFiat) || 0)
+            : 0}
         </TableCell>
         <TableCell
-          className={`${Number(convertToPercentage(asset.totalDelegation)) > 100 && "text-error-500"} flex items-center justify-between relative`}
+          className={`${Number(convertToPercentage(asset?.totalDelegation || 0)) > 100 && "text-error-500"} flex items-center justify-between relative`}
         >
           <Text
             className={cn({
               "group-hover:opacity-0": showDepositButtonOnHover,
             })}
           >
-            {convertToPercentage(asset.totalDelegation)}%
+            {asset?.totalDelegation
+              ? `${convertToPercentage(asset?.totalDelegation || "")}%`
+              : 0}
           </Text>
           {showDepositButtonOnHover && (
             <Button
@@ -95,7 +94,7 @@ export const StrategyAssetsTableRow: FCProps = ({
               Deposit
             </Button>
           )}
-          {Boolean(asset.delegations.length) && (
+          {Boolean((asset?.delegations || []).length) && (
             <AngleComponent onClick={() => setIsInnerOpen(!isInnerOpen)} />
           )}
         </TableCell>
@@ -122,9 +121,9 @@ export const StrategyAssetsTableRow: FCProps = ({
           </TableCell>
         </TableRow>
       )}
-      {Boolean(asset.delegations.length) &&
+      {Boolean((asset?.delegations || []).length) &&
         isInnerOpen &&
-        asset.delegations.map(({ bAppId, percentage }) => {
+        (asset?.delegations || []).map(({ bAppId, percentage }) => {
           const bApp =
             strategy.bAppsList?.find(
               (bApp: StrategyBApp) => bApp.bAppId === bAppId,

@@ -1,18 +1,14 @@
 import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
-import { validateMetadata } from "@/api/b-app.ts";
+import { getMetadata } from "@/api/b-app.ts";
 
 interface StrategyMetadata {
-  data: {
-    name: string;
-    description: string;
-  };
+  name: string;
+  description: string;
 }
 
 interface AccountMetadata {
-  data: {
-    name: string;
-    logo: string;
-  };
+  name: string;
+  logo: string;
 }
 
 export const useRequestMetadataByURI = ({
@@ -28,7 +24,10 @@ export const useRequestMetadataByURI = ({
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    queryFn: () => validateMetadata<StrategyMetadata>(strategyMetadata!.uri),
+    queryFn: () =>
+      getMetadata<{ id: string; data: StrategyMetadata }[]>([
+        { id: "strategy_metadata", url: strategyMetadata?.uri || "" },
+      ]),
     enabled: Boolean(strategyMetadata?.isValid && strategyMetadata?.uri),
   });
 
@@ -38,7 +37,10 @@ export const useRequestMetadataByURI = ({
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    queryFn: () => validateMetadata<AccountMetadata>(accountMetadata!.uri),
+    queryFn: () =>
+      getMetadata<{ id: string; data: AccountMetadata }[]>([
+        { id: "account_metadata", url: accountMetadata!.uri || "" },
+      ]),
     enabled: Boolean(accountMetadata?.isValid && accountMetadata?.uri),
   });
 

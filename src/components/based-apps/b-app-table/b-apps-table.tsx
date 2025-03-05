@@ -5,14 +5,14 @@ import {
   Table,
 } from "@/components/ui/table";
 import BAppsTableRow from "@/components/based-apps/b-app-table/b-apps-table-row.tsx";
-import type { BApp } from "@/api/b-app.ts";
+import type { BApp, BAppsMetaData } from "@/api/b-app.ts";
 import { Divider } from "@/components/ui/divider.tsx";
 import { Pagination } from "@/components/ui/pagination-v2.tsx";
 import type { Pagination as IPagination } from "@/types/api";
 import { Loading } from "@/components/ui/Loading.tsx";
 
 type BAppsTableProps = {
-  bApps?: BApp[];
+  bApps?: (BApp & BAppsMetaData)[];
   isCreateFlow?: boolean;
   isLoading?: boolean;
   withoutOwnerAddress?: boolean;
@@ -41,7 +41,7 @@ export const BAppsTable = ({
           <TableHead></TableHead>
         </TableHeader>
         <TableBody>
-          {(bApps || []).map((bApp: BApp, index) => (
+          {(bApps || []).map((bApp: BApp & BAppsMetaData, index) => (
             <BAppsTableRow
               withoutOwnerAddress={withoutOwnerAddress}
               key={index}

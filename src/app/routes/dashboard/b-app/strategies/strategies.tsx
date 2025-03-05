@@ -16,7 +16,7 @@ import type { Address } from "abitype";
 
 export const Strategies: FC = () => {
   const { pagination, strategies, isStrategiesLoading } = useStrategies();
-  const [, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const tokensFilter = useTokensFilter();
 
@@ -41,6 +41,7 @@ export const Strategies: FC = () => {
         <Text variant="body-1-semibold">Strategies</Text>
         <div className="flex items-center gap-2">
           <SearchInput
+            value={searchParams.get("id") || ""}
             onChange={searchById}
             placeholder="Search"
             iconPlacement="left"

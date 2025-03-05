@@ -5,12 +5,13 @@ import { createDefaultPagination } from "@/lib/utils/api.ts";
 import { getTokenMetadata } from "@/lib/utils/tokens-helper.ts";
 import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { useParams } from "react-router";
+import { useStrategyMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
 
 export const useStrategies = (_strategyId?: string) => {
   const params = useParams();
   const strategyId = _strategyId || params.strategyId;
   const filters = useStrategiesFilters();
-  const { orderBy, sort, ordering } = useOrdering();
+  const { orderBy, sort } = useOrdering();
 
   const query = useChainedQuery({
     queryKey: [
@@ -23,19 +24,35 @@ export const useStrategies = (_strategyId?: string) => {
       sort,
     ],
     queryFn: () => {
-      return getStrategies({
-        id: filters.idFilter.value,
+      const queryParams: Record<
+        string,
+        string | number | `0x${string}`[] | null
+      > = {
         page: filters.paginationQuery.page,
         perPage: filters.paginationQuery.perPage,
         token: filters.tokensFilter.value,
-        ordering,
-      });
+      };
+
+      if (filters.idFilter.value) {
+        queryParams.id = filters.idFilter.value;
+      }
+
+      return getStrategies(queryParams);
     },
     enabled: true,
   });
 
   const isStrategiesLoading = query.isLoading;
   const strategies = query.data?.data || [];
+
+  const { data: strategiesMetadata, isLoading: strategiesMetadataIsLoading } =
+    useStrategyMetadata(
+      strategies.map(({ id, metadataURI }) => ({
+        id,
+        url: metadataURI || "",
+      })) || [],
+    );
+
   const assetsQuery = useChainedQuery({
     queryKey: ["get_assets_data", strategies],
     staleTime: 0,
@@ -57,11 +74,14 @@ export const useStrategies = (_strategyId?: string) => {
   return {
     query,
     pagination,
-    strategies,
+    strategies: strategies.map((strategy) => ({
+      ...strategy,
+      ...strategiesMetadata[strategy.id],
+    })),
     assetsData,
     strategy,
     strategyId,
-    isStrategiesLoading,
+    isStrategiesLoading: strategiesMetadataIsLoading || isStrategiesLoading,
     orderBy,
     sort,
   };

@@ -3,7 +3,7 @@ import { Container } from "@/components/ui/container.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import ObligationsTable from "@/components/based-apps/obligations-table/obligations-table.tsx";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
-import type { BApp } from "@/api/b-app.ts";
+import type { BApp, BAppsMetaData } from "@/api/b-app.ts";
 import { useNavigate } from "react-router-dom";
 import { Wizard } from "@/components/ui/wizard.tsx";
 import { CreateSteps, STEPS_LABELS } from "@/types/b-app.ts";
@@ -42,7 +42,9 @@ const Obligations = () => {
       steps={Object.values(STEPS_LABELS)}
       children={
         <Container variant="vertical" size="xl" className="py-6">
-          <BAppsTable bApps={[useCreateStrategyContext().bApp as BApp]} />
+          <BAppsTable
+            bApps={[useCreateStrategyContext().bApp as BApp & BAppsMetaData]}
+          />
           <Form {...form}>
             <FormField
               control={form.control}

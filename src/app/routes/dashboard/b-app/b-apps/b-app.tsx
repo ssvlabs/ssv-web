@@ -32,7 +32,7 @@ import { isAddressEqual } from "viem";
 export const BApp = () => {
   const { address } = useAccount();
   const { bAppId } = useBAppPageParams();
-  const { data: bApp } = useBApp(bAppId);
+  const { bApp } = useBApp(bAppId);
 
   const [strategyId, setStrategyId] = useQueryState(
     "strategyId",
@@ -56,8 +56,7 @@ export const BApp = () => {
     false,
   );
 
-  const bAppName =
-    bApp?.bAppsMetaData.name || `bApp ${shortenAddress(bAppId!)}`;
+  const bAppName = bApp?.name || `bApp ${shortenAddress(bAppId!)}`;
 
   return (
     <Container variant="vertical" size="xl" className="py-6">
@@ -76,7 +75,7 @@ export const BApp = () => {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <BAppLogo
-            src={bApp.bAppsMetaData.logo}
+            src={bApp.logo}
             variant="unstyled"
             className="size-10 rounded-lg"
           />
@@ -99,28 +98,27 @@ export const BApp = () => {
           />
           <Stat
             title="bApp Owner"
-            content={shortenAddress(bApp.ownerAddress)}
+            content={shortenAddress(bApp.ownerAddress || "0x")}
           />
         </div>
 
         <div className="flex flex-col gap-2">
           <div className="bg-gray-200 p-2 pl-3 rounded-[12px]">
             <Text variant="body-3-medium">
-              {bApp.bAppsMetaData.description ||
-                "No description available for this bApp."}
+              {bApp.description || "No description available for this bApp."}
             </Text>
           </div>
 
           <div className="bg-gray-200 p-2 pl-3 rounded-[12px]">
             <Text variant="body-3-medium">
-              {bApp.bAppsMetaData.website ? (
+              {bApp.website ? (
                 <a
-                  href={bApp.bAppsMetaData.website}
+                  href={bApp.website}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-500 hover:underline"
                 >
-                  {bApp.bAppsMetaData.website}
+                  {bApp.website}
                 </a>
               ) : (
                 "No website available for this bApp."
@@ -143,7 +141,7 @@ export const BApp = () => {
           }}
         />
       </div>
-      {!isStrategiesLoading && !strategies.length ? (
+      {!isStrategiesLoading && !strategies?.length ? (
         <Card className="w-full h-[160px] flex flex-col items-center justify-center gap-4">
           <Text variant="body-3-medium" className="text-gray-500">
             No strategy has opted into this bApp yet

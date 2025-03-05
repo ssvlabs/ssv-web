@@ -34,7 +34,7 @@ const MyAccount = () => {
     },
     {
       label: AccountSelect.BApps,
-      count: myBApps?.pagination.total || 0,
+      count: myBApps?.pagination?.total || 0,
     },
   ];
   const Component = components[currentFilter];

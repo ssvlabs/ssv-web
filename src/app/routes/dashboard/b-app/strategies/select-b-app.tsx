@@ -58,7 +58,7 @@ const SelectBApp = () => {
         navigate("../fee");
       }}
       onClose={() => {
-        navigate("/account/strategies");
+        navigate(-1);
       }}
     />
   );

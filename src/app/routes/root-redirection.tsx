@@ -56,5 +56,5 @@ export const Redirector = () => {
   //
   // if (isNewAccount) return <Navigate to="/join" replace />;
 
-  return <Navigate to="/account" />;
+  return <Navigate to="/account/my-delegations" />;
 };

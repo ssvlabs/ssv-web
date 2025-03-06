@@ -40,7 +40,7 @@ export const useAccountState = () => {
     ? "/connect"
     : isLoading
       ? undefined
-      : "/account";
+      : "/account/my-delegations";
 
   return {
     isLoading,

@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button.tsx";
 import { isAddress } from "viem";
 import { shortenAddress } from "@/lib/utils/strings.ts";
 import type { Strategy, StrategyMetadata } from "@/api/b-app.ts";
+import MyAccountWrapper from "@/app/routes/dashboard/b-app/my-account/my-account-wrapper.tsx";
+import { AccountSelect } from "@/app/routes/dashboard/b-app/my-account/my-account-wrapper.tsx";
 
 const MyStrategies = () => {
   const { myStrategies, effectiveBalance, myAccountData } = useMyBAppAccount();
@@ -73,32 +75,31 @@ const MyStrategies = () => {
   ];
 
   return (
-    <Container variant="vertical" size="xl" className="py-6">
-      <div className="h-[100px] w-full flex items-center gap-10 rounded-[16px] bg-white p-6">
-        {MOCK_TIER_DATA.map(({ label, value }) => (
-          <div className="w-[288px] flex-col items-center gap-1">
-            <Text className="text-gray-500" variant={"caption-medium"}>
-              {label}
-            </Text>
-            <Text variant={"body-1-medium"}>{value as string}</Text>
-          </div>
-        ))}
-      </div>
-      <div className="w-full flex items-center justify-between">
-        <Text variant="body-1-semibold">My Strategies</Text>
-        <Button
-          as={Link}
-          to={"strategies/create/bApps"}
-          size="sm"
-          className="px-5 h-10"
-        >
-          Create Strategy
-        </Button>
-      </div>
-      <StrategiesTable
-        strategies={myStrategies.strategies as (Strategy & StrategyMetadata)[]}
-      />
-    </Container>
+    <MyAccountWrapper filter={AccountSelect.Strategy}>
+      <Container variant="vertical" size="xl" className="py-6">
+        <div className="h-[100px] w-full flex items-center gap-10 rounded-[16px] bg-white p-6">
+          {MOCK_TIER_DATA.map(({ label, value }) => (
+            <div className="w-[288px] flex-col items-center gap-1">
+              <Text className="text-gray-500" variant={"caption-medium"}>
+                {label}
+              </Text>
+              <Text variant={"body-1-medium"}>{value as string}</Text>
+            </div>
+          ))}
+        </div>
+        <div className="w-full flex items-center justify-between">
+          <Text variant="body-1-semibold">My Strategies</Text>
+          <Button as={Link} to={"create/bApps"} size="sm" className="px-5 h-10">
+            Create Strategy
+          </Button>
+        </div>
+        <StrategiesTable
+          strategies={
+            myStrategies.strategies as (Strategy & StrategyMetadata)[]
+          }
+        />
+      </Container>
+    </MyAccountWrapper>
   );
 };
 

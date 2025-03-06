@@ -26,13 +26,14 @@ import { currencyFormatter } from "@/lib/utils/number";
 import { shortenAddress } from "@/lib/utils/strings";
 import { tryCatch } from "@/lib/utils/tryCatch";
 import { parseAsString, useQueryState } from "nuqs";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { isAddressEqual } from "viem";
 
 export const BApp = () => {
   const { address } = useAccount();
   const { bAppId } = useBAppPageParams();
   const { bApp } = useBApp(bAppId);
+  const navigate = useNavigate();
 
   const [strategyId, setStrategyId] = useQueryState(
     "strategyId",
@@ -63,7 +64,7 @@ export const BApp = () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/account/bApps">bApps</BreadcrumbLink>
+            <BreadcrumbLink onClick={() => navigate(-1)}>bApps</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>

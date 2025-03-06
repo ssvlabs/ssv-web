@@ -14,6 +14,7 @@ import { useDepositERC20 } from "@/lib/contract-interactions/b-app/write/use-dep
 import { useDepositETH } from "@/lib/contract-interactions/b-app/write/use-deposit-eth";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { formatSSV } from "@/lib/utils/number";
+import { getStrategyName } from "@/lib/utils/strategy";
 import { useAssetsDelegationModal } from "@/signals/modal";
 import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
@@ -25,7 +26,7 @@ export const AssetsDelegationModal = () => {
   const { bAppContractAddress } = useSSVNetworkDetails();
   const { address } = useAccount();
   const navigate = useNavigate();
-  const strategy = useStrategy();
+  const { strategy, invalidate } = useStrategy();
 
   const asset = useAsset(meta.asset);
   const delegated = useDelegatedAsset({
@@ -52,7 +53,7 @@ export const AssetsDelegationModal = () => {
       onMined: () => {
         asset.refreshBalance();
         delegated.refresh();
-        strategy.invalidate();
+        invalidate();
         return () => {
           navigate(`/account`);
         };
@@ -93,7 +94,7 @@ export const AssetsDelegationModal = () => {
             Delegating to
           </Text>
           <div className="flex items-center h-[52px] w-full bg-gray-100 rounded-xl px-6">
-            <Text variant="body-3-medium">{meta.strategy?.name}</Text>
+            <Text variant="body-3-medium">{getStrategyName(strategy)}</Text>
           </div>
         </div>
         <div className="flex flex-col gap-3">

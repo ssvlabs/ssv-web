@@ -54,7 +54,7 @@ export const StrategiesTable: FCProps = ({
           <TableHead>Delegated</TableHead>
         </TableHeader>
         <TableBody>
-          {strategies.map((strategy) => {
+          {strategies?.map((strategy) => {
             return (
               <StrategyTableRow
                 onDepositClick={onDepositClick}

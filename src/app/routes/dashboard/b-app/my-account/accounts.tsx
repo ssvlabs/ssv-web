@@ -55,7 +55,7 @@ const Accounts = () => {
           )}
         </Container>
       }
-      onClose={() => navigate("/account")}
+      onClose={() => navigate(-1)}
     />
   );
 };

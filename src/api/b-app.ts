@@ -265,15 +265,7 @@ export type BAppAsset = {
   obligationsCount: number;
 };
 
-export interface BAppAssetResponse {
-  data: Array<BAppAsset>;
-  pagination: {
-    page: number;
-    perPage: number;
-    total: number;
-    pages: number;
-  };
-}
+export type BAppAssetResponse = Array<BAppAsset>;
 
 interface GetBAppsAssetsParams {
   page?: number;

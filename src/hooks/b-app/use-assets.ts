@@ -34,11 +34,11 @@ export const useBAppsAssets = (perPage = 10, options: UseQueryOptions = {}) => {
     }),
   );
 
-  const pagination = query.data?.pagination || createDefaultPagination();
+  const pagination = createDefaultPagination();
   const hasNext = paginationQuery.page < pagination.pages;
   const hasPrev = paginationQuery.page > 1;
 
-  const assets = query.data?.data || [];
+  const assets = query.data || [];
 
   return {
     query,

@@ -24,6 +24,8 @@ export const useAccountAssets = () => {
   const { data: slashableAssets, isLoading: isSlashableAssetsLoading } =
     useSlashableAssets();
 
+  console.log("slashableAssets:", slashableAssets);
+  console.log("isSlashableAssetsLoading:", isSlashableAssetsLoading);
   const isLoading = isAssetsLoading || isSlashableAssetsLoading;
 
   const delegationsMap = new Map(

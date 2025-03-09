@@ -25,7 +25,7 @@ export const devnet = {
   name: "pectra-devnet-7",
   rpcUrls: {
     default: {
-      http: ["https://rpc.pectra-devnet-7.ethpandaops.io"],
+      http: ["http://141.95.124.189:31088"],
     },
   },
   blockExplorers: {

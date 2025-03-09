@@ -41,6 +41,34 @@ export const [CreateStrategyGuard, useCreateStrategyContext] = createGuard(
         return "/account/strategies/create/bApps";
       }
     },
+
+    "/account/my-strategies/:strategyId": (_, { params }) => {
+      if (!Number(params.strategyId)) {
+        return "/account/my-strategies/";
+      }
+    },
+    "/account/my-strategies/create/bApps": (_, { resetState }) => {
+      resetState();
+    },
+    "/account/my-strategies/create/obligations": (state) => {
+      if (!Object.keys(state.bApp).length) {
+        return "/account/my-strategies/create/bApps";
+      }
+    },
+    "/account/my-strategies/create/fee": () => {
+      if (
+        !isFrom("/account/my-strategies/create/obligations") &&
+        !isFrom("/account/my-strategies/create/metadata") &&
+        !isFrom("/account/my-strategies/create/bApps")
+      ) {
+        return "/account/my-strategies/create/bApps";
+      }
+    },
+    "/account/my-strategies/create/metadata": () => {
+      if (!isFrom("/account/my-strategies/create/fee")) {
+        return "/account/my-strategies/create/bApps";
+      }
+    },
   },
   false,
 );

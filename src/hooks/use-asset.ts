@@ -17,6 +17,7 @@ export const useAsset = (tokenAddress?: `0x${string}`) => {
     staleTime: Infinity,
     enabled: !isEthereum && !!tokenAddress,
   };
+  console.log("tokenAddress:", tokenAddress);
 
   const { data: name = "Unknown" } = useName({ tokenAddress }, queryOptions);
   const { data: symbol = "" } = useSymbol({ tokenAddress }, queryOptions);

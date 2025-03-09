@@ -32,7 +32,7 @@ export function TokensFilter() {
   const query = useChainedQuery({
     queryKey: ["b-app-assets", "tokens", search],
     queryFn: async () => getBAppsAssets(),
-    select: (data) => data.data ?? [],
+    select: (data) => data ?? [],
     enabled: open,
   });
 

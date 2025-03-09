@@ -34,13 +34,14 @@ export const devnet = {
       url: "https://explorer.pectra-devnet-7.ethpandaops.io",
     },
   },
+  iconBackground: "none",
+  iconUrl: "/images/networks/light.svg",
   testnet: true,
 };
 
 const chains = import.meta.env.VITE_SSV_NETWORKS.map((network) =>
   [mainnet, holesky, devnet].find((chain) => chain.id === network.networkId),
 ).filter(Boolean) as [Chain, ...Chain[]];
-
 export const isChainSupported = (chainId: number) => {
   return chains.some((chain) => chain.id === chainId);
 };

@@ -34,14 +34,15 @@ import { isAddress } from "viem";
 import { useGetAsset } from "@/hooks/b-app/use-get-asset.tsx";
 
 const Strategy = () => {
-  const { strategy, account, isLoading } = useStrategy();
+  const { strategy, account, isLoading: isStrategyLoading } = useStrategy();
   const [bAppSearchValue, setBAppSearchValue] = useState("");
   const [isOpenDelegateModal, setIsOpenDelegateModal] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { query } = useGetAsset(
-    (searchParams.get("asset") || "0x") as `0x${string}`,
+  const searchedValue = searchParams.get("asset");
+  const { searchAssets } = useGetAsset(
+    (searchedValue || "0x") as `0x${string}`,
   );
   const openDelegate = () => {
     setSearchParams((prev) => {
@@ -61,7 +62,7 @@ const Strategy = () => {
     });
   };
 
-  if (isLoading)
+  if (isStrategyLoading)
     return (
       <motion.div
         className={cn(
@@ -114,17 +115,28 @@ const Strategy = () => {
       ),
     },
   ];
+  console.log(strategy.delegationsPerToken);
+  console.log(searchAssets.length ? 0 : 1);
+  console.log(searchAssets);
+  console.log(
+    Boolean(strategy.delegationsPerToken?.length) ||
+      Boolean(searchAssets.length),
+  );
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <div className="flex items-center gap-2 text-gray-500">
         <Text
-          onClick={() => navigate(-1)}
+          onClick={() =>
+            location.pathname.includes("my-strategies")
+              ? navigate("/account/my-strategies")
+              : navigate("/account/strategies")
+          }
           className="text-gray-500 cursor-pointer"
           variant="body-3-semibold"
         >
-          {location.pathname.includes("strategies")
-            ? "Strategies"
-            : "My Account"}{" "}
+          {location.pathname.includes("my-strategies")
+            ? "My Account"
+            : "Strategies"}{" "}
           {">"} {getStrategyName(strategy)}
         </Text>
       </div>
@@ -158,48 +170,69 @@ const Strategy = () => {
         <Text variant="body-1-semibold">Assets</Text>
         <SearchInput
           onChange={onSearchChange}
-          value={searchParams.get("asset") || ""}
+          value={searchedValue || ""}
           placeholder="Search"
           iconPlacement="left"
-          className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
+          className={`h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full ${
+            searchedValue &&
+            !isAddress(searchedValue || "0x") &&
+            !searchAssets.length &&
+            "border-error-500 focus-within:border-error-500"
+          }`}
           inputProps={{
             className: "bg-gray-50",
             placeholder: "Search Asset Name or Address...",
           }}
         />
       </div>
-      <Table className={"w-full rounded-t-xl overflow-hidden"}>
-        <TableHeader>
-          <TableHead>Non Slashable Assets</TableHead>
-          <TableHead>Total Delegated</TableHead>
-          <TableHead>Total Delegated Value</TableHead>
-        </TableHeader>
-        <TableBody>
-          <TableRow onClick={openDelegate}>
-            <TableCell>
-              <div className="flex gap-2 w-[c320px]">
-                <img
-                  className={"h-[24px] w-[15px]"}
-                  src={`/images/balance-validator/balance-validator.svg`}
-                />
-                Validator Balance
-                <Text className="text-gray-500 font-medium">ETH</Text>
-              </div>
-            </TableCell>
-            <TableCell>
-              {formatSSV((strategy.totalNonSlashableTokens || 0n) as bigint, 9)}{" "}
-              ETH
-            </TableCell>
-            <TableCell>
-              {currencyFormatter.format(
-                Number(strategy.totalNonSlashableFiat) || 0,
-              )}
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+      {searchedValue && !searchAssets.length && (
+        <div className="w-full h-[104px] bg-white flex justify-center items-center rounded-[16px]">
+          <Text variant="body-3-medium" className="text-gray-600">
+            {isAddress(searchedValue || "0x")
+              ? "Asset was not found"
+              : "Invalid address format"}
+          </Text>
+        </div>
+      )}
+      {!searchedValue && (
+        <Table className={"w-full rounded-t-xl overflow-hidden"}>
+          <TableHeader>
+            <TableHead>Non Slashable Assets</TableHead>
+            <TableHead>Total Delegated</TableHead>
+            <TableHead>Total Delegated Value</TableHead>
+          </TableHeader>
+          <TableBody>
+            <TableRow onClick={openDelegate}>
+              <TableCell>
+                <div className="flex gap-2 w-[c320px]">
+                  <img
+                    className={"h-[24px] w-[15px]"}
+                    src={`/images/balance-validator/balance-validator.svg`}
+                  />
+                  Validator Balance
+                  <Text className="text-gray-500 font-medium">ETH</Text>
+                </div>
+              </TableCell>
+              <TableCell>
+                {formatSSV(
+                  (strategy.totalNonSlashableTokens || 0n) as bigint,
+                  9,
+                )}{" "}
+                ETH
+              </TableCell>
+              <TableCell>
+                {currencyFormatter.format(
+                  Number(strategy.totalNonSlashableFiat) || 0,
+                )}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      )}
 
-      {(Boolean(strategy.delegationsPerToken?.length) || query.data) && (
+      {(searchedValue
+        ? Boolean(searchAssets.length)
+        : Boolean(strategy.delegationsPerToken?.length)) && (
         <div className="w-full flex flex-col gap-6">
           <StrategyAssetsTable
             onDepositClick={(asset) => {
@@ -209,11 +242,12 @@ const Strategy = () => {
               });
             }}
             showDepositButtonOnHover
-            assets={query.data || strategy.delegationsPerToken || []}
+            assets={
+              searchedValue ? searchAssets : strategy.delegationsPerToken || []
+            }
           />
         </div>
       )}
-
       <div className="w-full flex flex-col gap-6">
         <div className="flex justify-between w-full items-center">
           <Text variant="body-1-semibold">Supported bApps</Text>
@@ -230,7 +264,7 @@ const Strategy = () => {
         </div>
         {strategy.bAppsList && (
           <StrategyBAppsTable
-            isLoading={isLoading}
+            isLoading={isStrategyLoading}
             searchValue={bAppSearchValue}
             bApps={strategy.bAppsList}
           />

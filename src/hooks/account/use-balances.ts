@@ -4,7 +4,7 @@ import { fetchDecimals } from "@/lib/contract-interactions/erc-20/read/use-decim
 import { isEthereumTokenAddress } from "@/lib/utils/token";
 import { useQueries } from "@tanstack/react-query";
 import type { Address } from "abitype";
-import { zeroAddress } from "viem";
+import { isAddress, zeroAddress } from "viem";
 import { useBalance } from "wagmi";
 
 type Balance = {
@@ -19,7 +19,10 @@ export const useBalances = (assets: Address[]) => {
 
   const balances = useQueries({
     queries: assets
-      .filter((tokenAddress) => !isEthereumTokenAddress(tokenAddress))
+      .filter(
+        (tokenAddress) =>
+          isAddress(tokenAddress) && !isEthereumTokenAddress(tokenAddress),
+      )
       .map((tokenAddress) => ({
         queryKey: ["token-balance", tokenAddress, account.address],
         queryFn: async () => {
@@ -31,6 +34,7 @@ export const useBalances = (assets: Address[]) => {
             token: tokenAddress,
           };
         },
+        enabled: isAddress(tokenAddress),
       })),
     combine: (results) =>
       results.filter((r) => r.data != null).map((r) => r.data),

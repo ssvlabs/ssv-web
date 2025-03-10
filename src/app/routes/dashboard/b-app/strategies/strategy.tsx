@@ -115,13 +115,7 @@ const Strategy = () => {
       ),
     },
   ];
-  console.log(strategy.delegationsPerToken);
-  console.log(searchAssets.length ? 0 : 1);
-  console.log(searchAssets);
-  console.log(
-    Boolean(strategy.delegationsPerToken?.length) ||
-      Boolean(searchAssets.length),
-  );
+
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <div className="flex items-center gap-2 text-gray-500">

@@ -32,6 +32,7 @@ import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
 import { getStrategyName } from "@/lib/utils/strategy";
 import { isAddress } from "viem";
 import { useGetAsset } from "@/hooks/b-app/use-get-asset.tsx";
+import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 
 const Strategy = () => {
   const { strategy, account, isLoading: isStrategyLoading } = useStrategy();
@@ -111,6 +112,13 @@ const Strategy = () => {
               ? shortenAddress(account?.name)
               : account?.name
             : shortenAddress(strategy?.ownerAddress)}
+          <Tooltip
+            content={`Copy Address: ${shortenAddress(strategy.ownerAddress)}`}
+          >
+            <div className="flex items-center justify-center">
+              <CopyBtn text={strategy.ownerAddress} />
+            </div>
+          </Tooltip>
         </div>
       ),
     },

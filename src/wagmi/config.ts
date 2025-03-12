@@ -20,7 +20,26 @@ const holesky: Chain = {
   iconUrl: "/images/networks/light.svg",
 };
 
-export const devnet = {
+export const devnet6 = {
+  id: 7072151312,
+  name: "pectra-devnet-6",
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.pectra-devnet-6.ethpandaops.io"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Explorer",
+      url: "https://explorer.pectra-devnet-6.ethpandaops.io",
+    },
+  },
+  iconBackground: "none",
+  iconUrl: "/images/networks/light.svg",
+  testnet: true,
+};
+
+export const devnet7 = {
   id: 7032118028,
   name: "pectra-devnet-7",
   rpcUrls: {
@@ -40,7 +59,9 @@ export const devnet = {
 };
 
 const chains = import.meta.env.VITE_SSV_NETWORKS.map((network) =>
-  [mainnet, holesky, devnet].find((chain) => chain.id === network.networkId),
+  [mainnet, holesky, devnet6, devnet7].find(
+    (chain) => chain.id === network.networkId,
+  ),
 ).filter(Boolean) as [Chain, ...Chain[]];
 export const isChainSupported = (chainId: number) => {
   return chains.some((chain) => chain.id === chainId);
@@ -74,6 +95,7 @@ export const config = createConfig({
       "https://ethereum-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
     ),
     [holesky.id]: http(),
-    [devnet.id]: http(),
+    [devnet6.id]: http(),
+    [devnet7.id]: http(),
   },
 });

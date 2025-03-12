@@ -45,7 +45,6 @@ export const Navbar: FCProps = ({ className, ...props }) => {
         <NavLink to={accountRoutePath ?? "/"}>
           <SsvLogo className="h-full mr-[253px]" />
         </NavLink>
-        {/*<Spacer className="w-[253px]" />*/}
         <NavLink
           to={accountRoutePath ?? "/"}
           className={textVariants({
@@ -53,6 +52,9 @@ export const Navbar: FCProps = ({ className, ...props }) => {
             className: cn({
               "text-primary-500":
                 matchPath("/account", pathname) ||
+                matchPath("/account/my-delegations", pathname) ||
+                matchPath("/account/my-strategies", pathname) ||
+                matchPath("/account/my-bApps", pathname) ||
                 matchPath("/account/accounts", pathname),
             }),
           })}

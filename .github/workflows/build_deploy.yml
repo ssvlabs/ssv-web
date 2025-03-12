@@ -46,6 +46,19 @@ jobs:
             \"bAppContractAddress\": \"0x5217C9034048B1Fa9Fb1e300F94fCd7002138Ea5\",
             \"setterContractAddress\": \"${{ secrets.STAGE_DEVNET_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
             \"getterContractAddress\": \"${{ secrets.STAGE_DEVNET_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
+           },
+          {
+            \"networkId\": 7072151312,
+            \"apiVersion\": \"v4\",
+            \"apiNetwork\": \"holesky\",  
+            \"api\": \"https://api.stage.ops.ssvlabsinternal.com/api\",
+            \"explorerUrl\": \"https://holesky-explorer.stage.ssv.network\",
+            \"insufficientBalanceUrl\": \"https://faucet.stage.ssv.network\",
+            \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
+            \"tokenAddress\": \"0x656d5cC4e7d49EaCC063cBB8D3e072F2841D68b4\",
+            \"bAppContractAddress\": \"0xC966C5cF9f76Beaa39672D78470E4D3fb45E4641\",
+            \"setterContractAddress\": \"${{ secrets.STAGE_DEVNET_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
+            \"getterContractAddress\": \"${{ secrets.STAGE_DEVNET_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
            }
         ]
       PROD_SSV_NETWORKS: >

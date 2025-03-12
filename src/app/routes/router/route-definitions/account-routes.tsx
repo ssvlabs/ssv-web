@@ -96,6 +96,10 @@ export const accountRoutes = {
       element: <Assets />,
     },
     {
+      path: "assets/accounts",
+      element: <Accounts />,
+    },
+    {
       path: "bApps",
       element: <Outlet />,
       children: [

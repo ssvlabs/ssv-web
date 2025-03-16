@@ -6,6 +6,7 @@ import {
   FaAngleRight,
   FaAnglesLeft,
   FaAnglesRight,
+  FaChevronDown,
 } from "react-icons/fa6";
 import { usePaginationQuery } from "@/lib/query-states/use-pagination";
 
@@ -40,19 +41,24 @@ const Pagination = ({ pagination }: PaginationProps) => {
       <div className={`flex items-center gap-10`}>
         <div>
           Rows per page:&nbsp;
-          <select
-            className="w-[55px] h-[32px] border rounded-md text-center focus:outline-none focus:ring-0"
-            defaultValue={paginationQuery.perPage}
-            onChange={(event) => {
-              paginationQuery.setPerPage(parseInt(event.target.value));
-            }}
-          >
-            {options.map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </select>
+          <div className="relative inline-block">
+            <select
+              className="w-[55px] h-[32px] pl-2 pr-6 border rounded-md text-center focus:outline-none focus:ring-0 bg-gray-50 border-gray-400 appearance-none"
+              defaultValue={paginationQuery.perPage}
+              onChange={(event) => {
+                paginationQuery.setPerPage(parseInt(event.target.value));
+              }}
+            >
+              {options.map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-500">
+              <FaChevronDown className="size-2.5" />
+            </div>
+          </div>
         </div>
         <div className={`flex gap-2`}>
           <Button

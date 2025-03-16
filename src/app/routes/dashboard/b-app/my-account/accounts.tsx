@@ -1,5 +1,10 @@
 import { Wizard } from "@/components/ui/wizard.tsx";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  matchPath,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { Container } from "@/components/ui/container.tsx";
 import AccountsTable from "@/app/routes/dashboard/b-app/my-account/accounts-table.tsx";
 import { useState } from "react";
@@ -11,6 +16,7 @@ const Accounts = () => {
   const navigate = useNavigate();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [, setSearchParams] = useSearchParams();
+  const pathname = useLocation().pathname;
 
   const searchByAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchParams((prev) => {
@@ -55,7 +61,13 @@ const Accounts = () => {
           )}
         </Container>
       }
-      onClose={() => navigate(-1)}
+      onClose={() =>
+        navigate(
+          matchPath("/account/assets/accounts", pathname)
+            ? "/account/assets"
+            : "/account/my-delegations",
+        )
+      }
     />
   );
 };

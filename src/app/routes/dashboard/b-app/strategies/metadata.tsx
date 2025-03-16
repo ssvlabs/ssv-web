@@ -78,7 +78,7 @@ const Metadata = () => {
     }, "Invalid URL")
     .refine(
       (url) => urlRegex.test(url),
-      "Invalid URI format. Please ensure the URI ends with “.json",
+      "Invalid URI format. Please ensure the URI ends with “.json”",
     );
 
   const schema = z.object({

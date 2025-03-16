@@ -9,12 +9,14 @@ import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 import { currencyFormatter } from "@/lib/utils/number.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { getAddress } from "viem";
+import { cn } from "@/lib/utils/tw";
 
 type BAppsTableRowProps = {
   bApp: BApp & BAppsMetaData;
   withoutOwnerAddress?: boolean;
   isCreateFlow?: boolean;
   onRowClick?: () => void;
+  isClickable?: boolean;
 };
 
 const BAppsTableRow = ({
@@ -22,6 +24,7 @@ const BAppsTableRow = ({
   isCreateFlow,
   withoutOwnerAddress,
   onRowClick,
+  isClickable = true,
 }: BAppsTableRowProps) => {
   const { address } = useAccount();
   const isUsedBApp =
@@ -32,8 +35,11 @@ const BAppsTableRow = ({
   return (
     <TableRow
       key={bApp.id}
-      className={`cursor-pointer max-h-7 ${isUsedBApp && "bg-gray-100 hover:bg-gray-100 text-gray-400"}`}
-      onClick={onRowClick}
+      className={cn("max-h-7", {
+        "cursor-pointer": isClickable,
+        "bg-gray-100 hover:bg-gray-100 text-gray-400": isUsedBApp,
+      })}
+      onClick={isClickable ? onRowClick : undefined}
     >
       <TableCell
         className={`${textVariants({ variant: "body-3-medium" })} flex items-center gap-2 ${isUsedBApp && "text-gray-400"}`}

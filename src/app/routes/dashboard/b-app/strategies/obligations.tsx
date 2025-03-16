@@ -43,6 +43,7 @@ const Obligations = () => {
       children={
         <Container variant="vertical" size="xl" className="py-6">
           <BAppsTable
+            isClickable={false}
             bApps={[useCreateStrategyContext().bApp as BApp & BAppsMetaData]}
           />
           <Form {...form}>

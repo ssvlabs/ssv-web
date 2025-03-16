@@ -17,7 +17,7 @@ const ObligationTableRow = ({ obligation }: { obligation: `0x${string}` }) => {
   const { etherscan } = useLinks();
 
   return (
-    <TableRow key={obligation} className={"cursor-pointer max-h-7"}>
+    <TableRow key={obligation} className={"max-h-7"}>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         <div className="flex gap-2">
           <AssetLogo address={obligation} className="size-6" />

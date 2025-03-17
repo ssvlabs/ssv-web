@@ -132,7 +132,7 @@ const AssetsTable = ({
                   innerData &&
                   innerData.map((innerRow: (string | ReactNode)[], index) => (
                     <InnerRow
-                      key={index}
+                      key={index + "inner"}
                       data={{
                         innerRow,
                         sizes: tableHeads.map(({ size }) => size),
@@ -152,7 +152,7 @@ const AssetsTable = ({
           <Button>Explore Strategies</Button>
         </div>
       )}
-      {pagination && pagination.pages > 1 && (
+      {pagination && (pagination.pages > 1 || pagination?.per_page !== 10) && (
         <>
           <Divider />
           <div className="flex w-full bg-gray-50 rounded-b-2xl">

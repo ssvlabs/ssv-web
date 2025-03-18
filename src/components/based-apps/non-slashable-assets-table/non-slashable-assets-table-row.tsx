@@ -8,13 +8,18 @@ import {
   formatSSV,
 } from "@/lib/utils/number";
 import { ChevronDown } from "lucide-react";
-import { IconButton } from "@/components/ui/button";
+import { Button, IconButton } from "@/components/ui/button";
 import { shortenAddress } from "@/lib/utils/strings";
 import { formatGwei, formatUnits } from "viem";
 import type { NonSlashableAsset } from "@/api/b-app";
 
 export type NonSlashableAssetsTableRowProps = {
   asset: NonSlashableAsset;
+  updateDelegatedValue?: (
+    address: string,
+    delegatedValue: number,
+    percentage: string,
+  ) => void;
 };
 
 type FCProps = FC<
@@ -29,12 +34,13 @@ export const NonSlashableAssetsTableRow: FCProps = ({
   asset,
   className,
   onClick,
+  updateDelegatedValue,
   ...props
 }) => {
   const hasDelegations = Boolean(asset.delegations?.length);
   const [isOpen, setIsOpen] = useState(false);
+  const [focusedRow, setFocusedRow] = useState(-1);
 
-  console.log("asset:", asset);
   const effectiveBalance = Number(formatGwei(asset.effectiveBalance));
 
   const totalDelegatedPercentage =
@@ -176,11 +182,15 @@ export const NonSlashableAssetsTableRow: FCProps = ({
               })}
             ></TableCell>
           </TableRow>
-          {asset.delegations.map((delegation) => {
+          {asset.delegations.map((delegation, index) => {
             const percentage = Number(delegation.percentage) / 10000;
-            const delegatedValue = percentage * effectiveBalance;
+            const delegatedValue =
+              Math.floor(percentage * effectiveBalance * 100) / 100;
             return (
               <TableRow
+                onFocus={() => setFocusedRow(index)}
+                onMouseEnter={() => setFocusedRow(index)}
+                onMouseLeave={() => setFocusedRow(-1)}
                 key={delegation.receiver.id}
                 className={cn(
                   "cursor-pointer max-h-7 bg-gray-100 hover:bg-gray-100",
@@ -213,15 +223,29 @@ export const NonSlashableAssetsTableRow: FCProps = ({
                     className: "text-right",
                   })}
                 >
-                  {compactFormatter.format(delegatedValue)}
+                  {delegatedValue}
                 </TableCell>
                 <TableCell
                   className={textVariants({
                     variant: "body-3-medium",
-                    className: "text-right text-gray-500",
+                    className: "text-right text-gray-500 p-0",
                   })}
                 >
-                  {currencyFormatter.format(0)}
+                  {focusedRow === index && updateDelegatedValue ? (
+                    <Button
+                      onClick={() =>
+                        updateDelegatedValue(
+                          delegation?.receiver?.id || "",
+                          delegatedValue,
+                          delegation.percentage,
+                        )
+                      }
+                    >
+                      Update
+                    </Button>
+                  ) : (
+                    currencyFormatter.format(0)
+                  )}
                 </TableCell>
                 <TableCell
                   className={textVariants({

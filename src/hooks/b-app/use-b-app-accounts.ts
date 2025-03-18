@@ -1,15 +1,14 @@
 import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
+import type { AccountMetadata, BAppAccount } from "@/api/b-app.ts";
 import { getAccounts } from "@/api/b-app.ts";
 import { useSearchParams } from "react-router-dom";
 import { createDefaultPagination } from "@/lib/utils/api.ts";
 import { usePaginationQuery } from "@/lib/query-states/use-pagination.ts";
+import { useAccountMetadata } from "@/hooks/b-app/use-account-metadata.ts";
 
 export const useBAppAccounts = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { page, perPage } = usePaginationQuery();
-
-  // const page = Number(searchParams.get("page") || 1);
-  // const perPage = Number(searchParams.get("perPage") || 10);
   const searchInput = searchParams.get("address") || "";
 
   const query = useChainedQuery({
@@ -26,7 +25,15 @@ export const useBAppAccounts = () => {
   const hasPrev = page > 1;
 
   const accounts = query.data?.data || [];
-  const isLoading = query.isLoading;
+  const { data: accountsMetadata, isLoading: accountsMetadataIsLoading } =
+    useAccountMetadata(
+      accounts.map(({ id, metadataURI }) => ({
+        id,
+        url: metadataURI || "",
+      })) || [],
+    );
+
+  const isLoading = query.isLoading || accountsMetadataIsLoading;
   const next = () => {
     hasNext &&
       setSearchParams((prev) => ({
@@ -43,9 +50,18 @@ export const useBAppAccounts = () => {
       }));
   };
 
+  const mappedMetadata: Record<string, AccountMetadata> = (
+    accountsMetadata || []
+  ).reduce((acc, metadataItem) => {
+    return { ...acc, [metadataItem.id]: metadataItem.data };
+  }, {});
+
   return {
     query,
-    accounts,
+    accounts: accounts.map((account: BAppAccount) => ({
+      ...account,
+      ...mappedMetadata[account.id],
+    })) as (BAppAccount & AccountMetadata)[],
     pagination,
     hasNext,
     isLoading,

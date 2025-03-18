@@ -3,40 +3,96 @@ import { Divider } from "@/components/ui/divider.tsx";
 import Slider from "@/components/ui/slider.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { shortenAddress } from "@/lib/utils/strings.ts";
 import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
 import { formatSSV } from "@/lib/utils/number.ts";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt.tsx";
 import { useDelegateBalance } from "@/lib/contract-interactions/b-app/write/use-delegate-balance.ts";
+import { formatUnits } from "viem";
+import { useUpdateDelegatedBalance } from "@/lib/contract-interactions/b-app/write/use-update-delegated-balance.ts";
+import { useRemoveDelegatedBalance } from "@/lib/contract-interactions/b-app/write/use-remove-delegated-balance.ts";
+import { parseAsString, useQueryState } from "nuqs";
+import { retryPromiseUntilSuccess, wait } from "@/lib/utils/promise.ts";
+import { queryClient } from "@/lib/react-query.ts";
+import { useAccount } from "@/hooks/account/use-account.ts";
+import { getNonSlashableAssets } from "@/api/b-app.ts";
 
 const Delegate = ({
   closeDelegatePopUp,
+  isUpdateFlow,
 }: {
+  isUpdateFlow?: boolean;
   closeDelegatePopUp: () => void;
 }) => {
-  const [delegatePercent, setDelegatePercent] = useState(0);
-  const [searchParams] = useSearchParams();
-  const address = searchParams.get("delegateAddress") || "0x";
+  const [percentage] = useQueryState("percentage", parseAsString);
+  const [delegateAddress] = useQueryState("delegateAddress", parseAsString);
+  const [delegatedValue] = useQueryState("delegatedValue", parseAsString);
+  const delegatedPercentage = percentage
+    ? Number(formatUnits(BigInt(percentage), 2))
+    : 0;
+  const [delegatePercent, setDelegatePercent] = useState(delegatedPercentage);
   const { effectiveBalance, restBalancePercentage } = useMyBAppAccount();
   const delegateBalance = useDelegateBalance();
-  const isPending = delegateBalance.isPending;
+  const updateDelegatedBalance = useUpdateDelegatedBalance();
+  const removeDelegatedBalance = useRemoveDelegatedBalance();
+  const isPending =
+    delegateBalance.isPending ||
+    updateDelegatedBalance.isPending ||
+    removeDelegatedBalance.isPending;
   const navigate = useNavigate();
+  const contractInteractionsToMap = {
+    ["delegate"]: delegateBalance,
+    ["update"]: updateDelegatedBalance,
+    ["remove"]: removeDelegatedBalance,
+  };
+  const account = useAccount();
 
   const delegate = async () => {
+    const cleanedNumber = Math.round(delegatePercent * 100);
+
+    const contractInteraction =
+      isUpdateFlow && delegatePercent === 0
+        ? contractInteractionsToMap["remove"]
+        : isUpdateFlow
+          ? contractInteractionsToMap["update"]
+          : contractInteractionsToMap["delegate"];
     const options = withTransactionModal({
-      onMined: () => {
-        return () => navigate(`/account`);
+      onMined: async () => {
+        await retryPromiseUntilSuccess(() =>
+          getNonSlashableAssets(account.address!)
+            .then((asset) => {
+              return isUpdateFlow && delegatePercent === 0
+                ? !asset.delegations.some(
+                    ({ receiver }) => receiver.id === delegateAddress,
+                  )
+                : isUpdateFlow
+                  ? asset.delegations.some(
+                      ({ percentage }) =>
+                        Number(percentage) === Number(cleanedNumber),
+                    )
+                  : asset.delegations.some(
+                      ({ receiver }) => receiver.id === delegateAddress,
+                    );
+            })
+            .catch(() => false),
+        );
+
+        await queryClient.refetchQueries({
+          queryKey: ["non-slashable-assets", account.address],
+        });
+        closeDelegatePopUp();
       },
     });
-    const cleanedNumber = Math.round(delegatePercent * 100);
-    delegateBalance.write(
+    await contractInteraction.write(
       {
-        account: address as `0x${string}`,
+        account: delegateAddress as `0x${string}`,
         percentage: cleanedNumber,
       },
       options,
     );
+    await wait(0);
+    navigate(`/account/my-delegations`);
   };
 
   return (
@@ -68,13 +124,33 @@ const Delegate = ({
                   src={"/images/operator_default_background/light.svg"}
                 />
                 <div>
-                  <Text variant="body-3-medium">{shortenAddress(address)}</Text>
+                  <Text variant="body-3-medium">
+                    {shortenAddress(delegateAddress || "0x")}
+                  </Text>
                   <Text className="text-gray-500" variant="caption-medium">
-                    {address}
+                    {delegateAddress}
                   </Text>
                 </div>
               </div>
             </div>
+            {isUpdateFlow && (
+              <div className="flex flex-col gap-3">
+                <Text variant="caption-medium" className="text-gray-500">
+                  Total Delegated
+                </Text>
+                <div className="flex items-center justify-between px-6 py-4 rounded-[12px] bg-gray-100">
+                  <Text variant="body-3-medium">{delegatedValue} ETH</Text>
+                  <div className="flex gap-2">
+                    <img
+                      className={"h-[24px] w-[15px]"}
+                      src={`/images/balance-validator/balance-validator.svg`}
+                    />
+                    Validator Balance
+                    <Text className="text-gray-500 font-medium">ETH</Text>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="flex flex-col gap-3">
               <Text variant="caption-medium" className="text-gray-500">
                 My Validator Balance
@@ -99,21 +175,32 @@ const Delegate = ({
                 {delegatePercent}%
               </div>
               <Slider
-                maxValue={restBalancePercentage}
+                maxValue={restBalancePercentage + delegatedPercentage}
                 setValue={setDelegatePercent}
                 value={delegatePercent}
               />
               <div className="w-[140px] h-[80px] flex items-center justify-center bg-gray-100 border rounded-[12px]">
-                {restBalancePercentage}%
+                {(
+                  (restBalancePercentage * 100 + delegatedPercentage * 100) /
+                  100
+                ).toFixed(2)}
+                %
               </div>
             </div>
             <Button
-              disabled={!delegatePercent}
+              disabled={
+                (!delegatePercent && !isUpdateFlow) ||
+                delegatePercent === delegatedPercentage
+              }
               isLoading={isPending}
               onClick={delegate}
               size={"lg"}
             >
-              Delegate
+              {isUpdateFlow && delegatePercent === 0
+                ? "Remove"
+                : isUpdateFlow
+                  ? "Update"
+                  : "Delegate"}
             </Button>
           </div>
         </div>

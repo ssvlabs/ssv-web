@@ -26,10 +26,6 @@ export const useMyBAppAccount = () => {
 
   const reactQueryData = useChainedQuery({
     queryKey: ["non-slashable-assets", address],
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
     queryFn: () => {
       return getNonSlashableAssets(address!);
     },
@@ -38,10 +34,6 @@ export const useMyBAppAccount = () => {
 
   const myStrategies = useChainedQuery({
     queryKey: ["get_my_strategies", page, perPage, idToSearch, orderBy, sort],
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
     queryFn: () =>
       getStrategiesByOwnerAddress({
         page: page,
@@ -75,10 +67,6 @@ export const useMyBAppAccount = () => {
 
   const myBApps = useChainedQuery({
     queryKey: ["get_my_b_apps", page, perPage, address],
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
     queryFn: () => getBAppsByOwnerAddress({ address: address!, page, perPage }),
     enabled: address && isAddress(address),
   });

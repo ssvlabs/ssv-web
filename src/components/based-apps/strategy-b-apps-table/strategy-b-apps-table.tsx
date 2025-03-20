@@ -28,7 +28,10 @@ export const StrategyBAppsTable: FCProps = ({
   return (
     <div>
       <Table
-        className={cn(className, "w-full rounded-t-xl overflow-hidden")}
+        className={cn(
+          className,
+          `w-full rounded-t-xl overflow-hidden  ${!(!bApps.length && !isLoading) && "rounded-b-[16px]"}`,
+        )}
         {...props}
       >
         <TableHeader>
@@ -42,11 +45,11 @@ export const StrategyBAppsTable: FCProps = ({
         })}
       </Table>
       {!bApps.length && !isLoading && (
-        <div className="bg-gray-50 w-full h-[200px] flex flex-col items-center gap-4 justify-center">
+        <div className="bg-gray-50 w-full h-[200px] flex flex-col items-center gap-4 justify-center rounded-b-[16px]">
           <Text variant="body-3-medium">
             This strategy has not yet opted-in to a bApp
           </Text>
-          <Button as={Link} to={"/account/bApps"}>
+          <Button className="text-[14px]" as={Link} to={"/account/bApps"}>
             Explore bApps
           </Button>
         </div>

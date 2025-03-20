@@ -99,7 +99,7 @@ const Strategy = () => {
       value: (
         <div className="flex items-center gap-2">
           <img
-            className="rounded-[8px] size-7 border-gray-400 border"
+            className="size-6 rounded-[8px] border-gray-400 border"
             src={
               account?.logo || "/images/operator_default_background/light.svg"
             }
@@ -135,7 +135,7 @@ const Strategy = () => {
               : navigate("/account/strategies")
           }
           className="text-gray-500 cursor-pointer"
-          variant="body-3-semibold"
+          variant="body-3-medium"
         >
           {location.pathname.includes("my-strategies")
             ? "My Account"
@@ -149,7 +149,7 @@ const Strategy = () => {
       <div className="w-full flex flex-col gap-6 rounded-[16px] bg-white p-6">
         <div className="w-full flex items-center ">
           {strategyData.map(({ label, value, tooltipText }) => (
-            <div className="w-[288px] flex-col items-center gap-1">
+            <div className="w-full flex flex-col gap-1">
               <Text
                 className="text-gray-500 flex items-center gap-2"
                 variant={"caption-medium"}
@@ -198,39 +198,44 @@ const Strategy = () => {
         </div>
       )}
       {!searchedValue && (
-        <Table className={"w-full rounded-t-xl overflow-hidden"}>
-          <TableHeader>
-            <TableHead>Non Slashable Assets</TableHead>
-            <TableHead>Total Delegated</TableHead>
-            <TableHead>Total Delegated Value</TableHead>
-          </TableHeader>
-          <TableBody>
-            <TableRow onClick={openDelegate}>
-              <TableCell>
-                <div className="flex gap-2 w-[c320px]">
-                  <img
-                    className={"h-[24px] w-[15px]"}
-                    src={`/images/balance-validator/balance-validator.svg`}
-                  />
-                  Validator Balance
-                  <Text className="text-gray-500 font-medium">ETH</Text>
-                </div>
-              </TableCell>
-              <TableCell>
-                {formatSSV(
-                  (strategy.totalNonSlashableTokens || 0n) as bigint,
-                  9,
-                )}{" "}
-                ETH
-              </TableCell>
-              <TableCell>
-                {currencyFormatter.format(
-                  Number(strategy.totalNonSlashableFiat) || 0,
-                )}
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+        <div className="w-full rounded-b-[16px]">
+          <Table
+            className={"w-full rounded-t-xl overflow-hidden rounded-b-[16px]"}
+          >
+            <TableHeader>
+              <TableHead>Non Slashable Assets</TableHead>
+              <TableHead>Total Delegated</TableHead>
+              <TableHead>Total Delegated Value</TableHead>
+            </TableHeader>
+            <TableBody>
+              <TableRow onClick={openDelegate}>
+                <TableCell>
+                  <div className="flex gap-2 w-[c320px]">
+                    <img
+                      className={"h-[24px] w-[15px]"}
+                      src={`/images/balance-validator/balance-validator.svg`}
+                    />
+                    Validator Balance
+                    <Text className="text-gray-500 font-medium">ETH</Text>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  {formatSSV(
+                    (strategy.totalNonSlashableTokens || 0n) as bigint,
+                    9,
+                  )}{" "}
+                  ETH
+                </TableCell>
+                <TableCell>
+                  {currencyFormatter.format(
+                    Number(strategy.totalNonSlashableFiat) || 0,
+                  )}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+          {/*<div className="flex w-[] bg-gray-50 py-4 rounded-b-2xl"></div>*/}
+        </div>
       )}
 
       {(searchedValue

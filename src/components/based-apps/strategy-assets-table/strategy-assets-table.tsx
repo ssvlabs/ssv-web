@@ -26,7 +26,10 @@ export const StrategyAssetsTable: FCProps = ({
 }) => {
   return (
     <Table
-      className={cn(className, "w-full rounded-t-xl overflow-hidden")}
+      className={cn(
+        className,
+        "w-full rounded-t-xl overflow-hidden  rounded-b-[16px]",
+      )}
       {...props}
     >
       <TableHeader>

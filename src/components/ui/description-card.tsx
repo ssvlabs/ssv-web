@@ -10,21 +10,25 @@ const DescriptionCard = ({ description }: { description: string }) => {
   };
 
   const truncatedText =
-    description.length > 170 && !isExpanded
-      ? description.slice(0, 170) + "..."
+    description.length > 180 && !isExpanded
+      ? description.slice(0, 180)
       : description;
 
   return (
-    <div className="w-full flex flex-row justify-between bg-gray-200 p-2 items-center rounded-[12px]">
-      <Text variant="body-3-medium">{truncatedText}</Text>
+    <div className="w-full flex flex-row justify-between bg-gray-200 px-3 py-2 gap-8 rounded-[12px] overflow-hidden">
+      <div>
+        <Text variant="body-3-medium">{truncatedText}</Text>
+      </div>
       {description.length > 170 && (
-        <Button
-          className={`${textVariants({ variant: "body-3-medium" })} text-primary-500`}
-          variant="link"
-          onClick={toggleExpand}
-        >
-          {isExpanded ? "Show Less" : "Show More"}
-        </Button>
+        <div className="flex items-start">
+          <Button
+            className={`${textVariants({ variant: "body-3-medium" })} text-primary-500`}
+            variant="link"
+            onClick={toggleExpand}
+          >
+            {isExpanded ? "Show Less" : "Show More"}
+          </Button>
+        </div>
       )}
     </div>
   );

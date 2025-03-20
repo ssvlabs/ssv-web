@@ -171,20 +171,30 @@ const Delegate = ({
             </div>
             <Divider />
             <div className="flex items-center justify-between">
-              <div className="w-[140px] h-[80px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px]">
-                {delegatePercent}%
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-[140px] h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px]">
+                  {delegatePercent}%
+                </div>
+                <Text variant={"caption-medium"} className="text-gray-500">
+                  Delegate
+                </Text>
               </div>
               <Slider
                 maxValue={restBalancePercentage + delegatedPercentage}
                 setValue={setDelegatePercent}
                 value={delegatePercent}
               />
-              <div className="w-[140px] h-[80px] flex items-center justify-center bg-gray-100 border rounded-[12px]">
-                {(
-                  (restBalancePercentage * 100 + delegatedPercentage * 100) /
-                  100
-                ).toFixed(2)}
-                %
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-[140px] h-[80px] text-[28px] text-gray-5004 flex items-center justify-center bg-gray-100 rounded-[12px]">
+                  {(
+                    (restBalancePercentage * 100 + delegatedPercentage * 100) /
+                    100
+                  ).toFixed(2)}
+                  %
+                </div>
+                <Text variant={"caption-medium"} className="text-gray-500">
+                  Available
+                </Text>
               </div>
             </div>
             <Button

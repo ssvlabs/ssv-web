@@ -35,17 +35,17 @@ jobs:
             \"getterContractAddress\": \"${{ secrets.STAGE_HOLESKY_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
           },
           {
-            \"networkId\": 7032118028,
+            \"networkId\": 560048,
             \"apiVersion\": \"v4\",
-            \"apiNetwork\": \"holesky\",  
+            \"apiNetwork\": \"hoodi\",  
             \"api\": \"https://api.stage.ops.ssvlabsinternal.com/api\",
-            \"explorerUrl\": \"https://holesky-explorer.stage.ssv.network\",
+            \"explorerUrl\": \"https://hoodi-explorer.stage.ssv.network\",
             \"insufficientBalanceUrl\": \"https://faucet.stage.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
-            \"tokenAddress\": \"0xd1b537f5c53DEf7b14801d96b9b9956648D17892\",
+            \"tokenAddress\": \"0x7118C9B049E834B2351C1c9a0ECEE12610A1a29E\",
             \"bAppContractAddress\": \"0x5217C9034048B1Fa9Fb1e300F94fCd7002138Ea5\",
-            \"setterContractAddress\": \"${{ secrets.STAGE_DEVNET_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
-            \"getterContractAddress\": \"${{ secrets.STAGE_DEVNET_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
+            \"setterContractAddress\": \"${{ secrets.STAGE_HOODI_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
+            \"getterContractAddress\": \"${{ secrets.STAGE_HOODI_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
            }
         ]
       PROD_SSV_NETWORKS: >
@@ -74,7 +74,18 @@ jobs:
             \"tokenAddress\": \"0xad45A78180961079BFaeEe349704F411dfF947C6\",
             \"setterContractAddress\": \"${{ secrets.PROD_HOLESKY_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
             \"getterContractAddress\": \"${{ secrets.PROD_HOLESKY_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
-          }
+          },{
+            \"networkId\": 560048,
+            \"apiVersion\": \"v4\",
+            \"apiNetwork\": \"hoodi\",  
+            \"api\": \"https://api.ops.ssvlabsinternal.com/api\",
+            \"explorerUrl\": \"https://hoodi.explorer.ssv.network\",
+            \"insufficientBalanceUrl\": \"https://faucet.ssv.network\",
+            \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
+            \"tokenAddress\": \"0x9F5d4Ec84fC4785788aB44F9de973cF34F7A038e\",
+            \"setterContractAddress\": \"${{ secrets.PROD_HOODI_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
+            \"getterContractAddress\": \"${{ secrets.PROD_HOODI_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
+           }
         ]
 
     steps:

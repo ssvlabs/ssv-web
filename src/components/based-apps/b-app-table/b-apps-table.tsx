@@ -18,6 +18,7 @@ type BAppsTableProps = {
   withoutOwnerAddress?: boolean;
   pagination?: IPagination;
   onRowClick?: (bApp: BApp) => void;
+  isClickable?: boolean;
 };
 
 export const BAppsTable = ({
@@ -27,6 +28,7 @@ export const BAppsTable = ({
   isLoading,
   withoutOwnerAddress,
   onRowClick,
+  isClickable = true,
 }: BAppsTableProps) => {
   return (
     <div className="flex flex-col w-full">
@@ -48,6 +50,7 @@ export const BAppsTable = ({
               isCreateFlow={isCreateFlow}
               bApp={bApp}
               onRowClick={() => onRowClick?.(bApp)}
+              isClickable={isClickable}
             />
           ))}
         </TableBody>

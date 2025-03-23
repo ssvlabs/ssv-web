@@ -9,7 +9,7 @@ export const SsvLogo: FC<ComponentPropsWithoutRef<"img">> = ({
   const theme = useTheme();
   return (
     <img
-      className={cn(className, "h-7")}
+      className={cn("h-7", className)}
       {...props}
       src={`/images/logo/${theme.dark ? "light" : "dark"}.svg`}
     />

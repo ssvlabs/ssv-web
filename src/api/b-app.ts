@@ -25,7 +25,7 @@ export type BAppAccount = {
   id: `0x${string}`;
   metadataURI: string;
   strategies: number;
-  totalDelegated: string;
+  totalDelegated: bigint;
   totalDelegatedValue: string;
 };
 

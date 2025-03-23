@@ -1,5 +1,4 @@
 import { useParams } from "react-router";
-import { useQueryClient } from "@tanstack/react-query";
 import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import type { Strategy, StrategyMetadata } from "@/api/b-app.ts";
 import { getMyAccount } from "@/api/b-app.ts";
@@ -10,7 +9,6 @@ import { useStrategyMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
 export const useStrategy = () => {
   const params = useParams();
   const strategyId = params.strategyId || "";
-  const queryClient = useQueryClient();
 
   const strategyQuery = useChainedQuery({
     queryKey: ["get_strategy_by_id", strategyId],
@@ -45,14 +43,7 @@ export const useStrategy = () => {
   const accountMetadata = accountMetadataItem && accountMetadataItem[0]?.data;
 
   const invalidate = async () => {
-    await Promise.all([
-      queryClient.invalidateQueries({
-        queryKey: ["get_strategy_by_id", strategyId],
-      }),
-      queryClient.invalidateQueries({
-        queryKey: ["Account", strategyQuery.data?.ownerAddress],
-      }),
-    ]);
+    await Promise.all([strategyQuery.invalidate(), accountQuery.invalidate()]);
   };
 
   return {

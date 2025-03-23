@@ -14,6 +14,11 @@ export type NonSlashableAssetsTableProps = {
   asset: NonSlashableAsset | undefined;
   isLoading?: boolean;
   onRowClick?: (asset: NonSlashableAsset) => void;
+  updateDelegatedValue?: (
+    address: string,
+    delegatedValue: number,
+    percentage: string,
+  ) => void;
 };
 
 type FCProps = FC<
@@ -28,6 +33,7 @@ export const NonSlashableAssetsTable: FCProps = ({
   asset,
   className,
   isLoading,
+  updateDelegatedValue,
   onRowClick,
   ...props
 }) => {
@@ -64,6 +70,7 @@ export const NonSlashableAssetsTable: FCProps = ({
             </tr>
           ) : (
             <NonSlashableAssetsTableRow
+              updateDelegatedValue={updateDelegatedValue}
               asset={asset}
               onClick={() => onRowClick?.(asset)}
             />

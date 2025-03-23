@@ -78,7 +78,7 @@ const Metadata = () => {
     }, "Invalid URL")
     .refine(
       (url) => urlRegex.test(url),
-      "Invalid URI format. Please ensure the URI ends with “.json",
+      "Invalid URI format. Please ensure the URI ends with “.json”",
     );
 
   const schema = z.object({
@@ -106,7 +106,7 @@ const Metadata = () => {
   const updateAccountMetadata = useUpdateAccountMetadataURI();
 
   const finishTx = (createdStrategyId: string | number) => {
-    navigate(`/account/${createdStrategyId}`);
+    navigate(`/account/my-strategies/${createdStrategyId}`);
     setIsLoading(false);
     setIsTxStarted(false);
   };

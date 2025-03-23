@@ -38,143 +38,163 @@ export const Navbar: FCProps = ({ className, ...props }) => {
 
   return (
     <div
-      className={cn(className, "flex justify-center w-full bg-gray-50")}
+      className={cn(
+        className,
+        "flex justify-center w-full border-b border-gray-300 dark:border-gray-100",
+      )}
       {...props}
     >
-      <div className="w-[1320px] flex items-center gap-6 h-20 whitespace-nowrap">
-        <NavLink to={accountRoutePath ?? "/"}>
-          <SsvLogo className="h-full mr-[253px]" />
-        </NavLink>
-        {/*<Spacer className="w-[253px]" />*/}
-        <NavLink
-          to={accountRoutePath ?? "/"}
-          className={textVariants({
-            variant: "body-2-medium",
-            className: cn({
-              "text-primary-500":
-                matchPath("/account", pathname) ||
-                matchPath("/account/accounts", pathname),
-            }),
-          })}
-        >
-          My Account
-        </NavLink>
-        <NavLink
-          to="/account/assets"
-          className={textVariants({
-            variant: "body-2-medium",
-            className: cn({
-              "text-primary-500": matchPath("/account/assets/*", pathname),
-            }),
-          })}
-        >
-          Assets
-        </NavLink>
-        <NavLink
-          to="/account/strategies"
-          className={textVariants({
-            variant: "body-2-medium",
-            className: cn({
-              "text-primary-500": matchPath("/account/strategies/*", pathname),
-            }),
-          })}
-        >
-          Strategies
-        </NavLink>
-        <NavLink
-          to="/account/bApps"
-          className={textVariants({
-            variant: "body-2-medium",
-            className: cn({
-              "text-primary-500": matchPath("/account/bApps/*", pathname),
-            }),
-          })}
-        >
-          bApps
-        </NavLink>
-        <NavLink
-          to={dvtRoutePath}
-          className={textVariants({
-            variant: "body-2-medium",
-            className: cn({
-              "text-primary-500":
-                matchPath("/clusters/*", pathname) ||
-                matchPath("/operators/*", pathname) ||
-                matchPath("/join/*", pathname),
-            }),
-          })}
-        >
-          DVT
-        </NavLink>
-        <NavLink
-          to={links.ssv.explorer}
-          target="_blank"
-          className={textVariants({
-            variant: "body-2-medium",
-          })}
-        >
-          Explorer
-        </NavLink>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <TbDotsVertical className="size-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <a href={links.ssv.governanceForum} target="_blank">
-              <DropdownMenuItem>
-                Governance Forum{" "}
-                <HiOutlineExternalLink className="text-gray-600" />
-              </DropdownMenuItem>
-            </a>
-            <a href={links.ssv.snapshot} target="_blank">
-              <DropdownMenuItem>
-                Snapshot <HiOutlineExternalLink className="text-gray-600" />
-              </DropdownMenuItem>
-            </a>
-            <DropdownMenuSeparator />
-            <a href={links.ssv.tos} target="_blank">
-              <DropdownMenuItem>
-                Terms of Use <HiOutlineExternalLink className="text-gray-600" />
-              </DropdownMenuItem>
-            </a>
-            <a href={links.ssv.privacy} target="_blank">
-              <DropdownMenuItem>
-                Privacy Policy{" "}
-                <HiOutlineExternalLink className="text-gray-600" />
-              </DropdownMenuItem>
-            </a>
-            <div className="flex px-1 pb-1 text-gray-700">
-              <a href={links.ssv.discord} target="_blank">
-                <Tooltip delayDuration={500} content="Discord">
-                  <DropdownMenuItem className="p-3 rounded-xl">
-                    <FaDiscord className="size-4" />
-                  </DropdownMenuItem>
-                </Tooltip>
+      <div className="w-[1320px] flex items-center gap-3 h-20 whitespace-nowrap">
+        <div className="flex-1">
+          <NavLink to={accountRoutePath ?? "/"} className="w-fit">
+            <SsvLogo className="h-8" />
+          </NavLink>
+        </div>
+        <div className="flex gap-6 items-center">
+          <NavLink
+            to={accountRoutePath ?? "/"}
+            className={textVariants({
+              variant: "body-3-medium",
+              className: cn({
+                "text-primary-500":
+                  matchPath("/account", pathname) ||
+                  matchPath("/account/my-delegations", pathname) ||
+                  matchPath("/account/my-strategies", pathname) ||
+                  matchPath("/account/my-bApps", pathname) ||
+                  matchPath("/account/accounts", pathname),
+              }),
+            })}
+          >
+            My Account
+          </NavLink>
+          <NavLink
+            to="/account/assets"
+            className={textVariants({
+              variant: "body-3-medium",
+              className: cn({
+                "text-primary-500": matchPath("/account/assets/*", pathname),
+              }),
+            })}
+          >
+            Assets
+          </NavLink>
+          <NavLink
+            to="/account/strategies"
+            className={textVariants({
+              variant: "body-3-medium",
+              className: cn({
+                "text-primary-500": matchPath(
+                  "/account/strategies/*",
+                  pathname,
+                ),
+              }),
+            })}
+          >
+            Strategies
+          </NavLink>
+          <NavLink
+            to="/account/bApps"
+            className={textVariants({
+              variant: "body-3-medium",
+              className: cn({
+                "text-primary-500": matchPath("/account/bApps/*", pathname),
+              }),
+            })}
+          >
+            bApps
+          </NavLink>
+          <NavLink
+            to={dvtRoutePath}
+            className={textVariants({
+              variant: "body-3-medium",
+              className: cn({
+                "text-primary-500":
+                  matchPath("/clusters/*", pathname) ||
+                  matchPath("/operators/*", pathname) ||
+                  matchPath("/join/*", pathname),
+              }),
+            })}
+          >
+            DVT
+          </NavLink>
+          <NavLink
+            to={links.ssv.explorer}
+            target="_blank"
+            className={textVariants({
+              variant: "body-3-medium",
+            })}
+          >
+            Explorer
+          </NavLink>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="secondary"
+                colorScheme="wallet"
+                className={textVariants({
+                  variant: "body-3-medium",
+                  className: "size-12 rounded-xl",
+                })}
+              >
+                <TbDotsVertical className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <a href={links.ssv.governanceForum} target="_blank">
+                <DropdownMenuItem>
+                  Governance Forum{" "}
+                  <HiOutlineExternalLink className="text-gray-600" />
+                </DropdownMenuItem>
               </a>
-              <a href={links.ssv.x} target="_blank">
-                <Tooltip delayDuration={500} content="X">
-                  <DropdownMenuItem className="p-3 rounded-xl">
-                    <FaXTwitter className="size-4" />
-                  </DropdownMenuItem>
-                </Tooltip>
+              <a href={links.ssv.snapshot} target="_blank">
+                <DropdownMenuItem>
+                  Snapshot <HiOutlineExternalLink className="text-gray-600" />
+                </DropdownMenuItem>
               </a>
-              <a href={links.ssv.website} target="_blank">
-                <Tooltip delayDuration={500} content="ssv.network website">
-                  <DropdownMenuItem className="p-3 rounded-xl">
-                    <HiOutlineGlobeAlt className="size-4" />
-                  </DropdownMenuItem>
-                </Tooltip>
+              <DropdownMenuSeparator />
+              <a href={links.ssv.tos} target="_blank">
+                <DropdownMenuItem>
+                  Terms of Use{" "}
+                  <HiOutlineExternalLink className="text-gray-600" />
+                </DropdownMenuItem>
               </a>
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <div className="flex items-center gap-3 w-[392px]">
+              <a href={links.ssv.privacy} target="_blank">
+                <DropdownMenuItem>
+                  Privacy Policy{" "}
+                  <HiOutlineExternalLink className="text-gray-600" />
+                </DropdownMenuItem>
+              </a>
+              <div className="flex px-1 pb-1 text-gray-700">
+                <a href={links.ssv.discord} target="_blank">
+                  <Tooltip delayDuration={500} content="Discord">
+                    <DropdownMenuItem className="p-3 rounded-xl">
+                      <FaDiscord className="size-4" />
+                    </DropdownMenuItem>
+                  </Tooltip>
+                </a>
+                <a href={links.ssv.x} target="_blank">
+                  <Tooltip delayDuration={500} content="X">
+                    <DropdownMenuItem className="p-3 rounded-xl">
+                      <FaXTwitter className="size-4" />
+                    </DropdownMenuItem>
+                  </Tooltip>
+                </a>
+                <a href={links.ssv.website} target="_blank">
+                  <Tooltip delayDuration={500} content="ssv.network website">
+                    <DropdownMenuItem className="p-3 rounded-xl">
+                      <HiOutlineGlobeAlt className="size-4" />
+                    </DropdownMenuItem>
+                  </Tooltip>
+                </a>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="flex items-center gap-3">
           <NetworkSwitchBtn />
           <ConnectWalletBtn />
         </div>
-        <ThemeSwitcher />
+        <ThemeSwitcher className="ml-3" />
       </div>
     </div>
   );

@@ -1,31 +1,51 @@
 import { Wizard } from "@/components/ui/wizard.tsx";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import { Container } from "@/components/ui/container.tsx";
-import AccountsTable from "@/app/routes/dashboard/b-app/my-account/accounts-table.tsx";
 import { useState } from "react";
 import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
 import { Text } from "@/components/ui/text.tsx";
 import { SearchInput } from "@/components/ui/search-input.tsx";
+import { AccountsTable } from "@/components/based-apps/accounts-table/accounts-table.tsx";
+import { useBAppAccounts } from "@/hooks/b-app/use-b-app-accounts.ts";
+import { parseAsString, useQueryState } from "nuqs";
+import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
+import { formatGwei } from "viem";
 
 const Accounts = () => {
   const navigate = useNavigate();
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [, setSearchParams] = useSearchParams();
-
+  const { data } = useMyBAppAccount();
+  const pathname = useLocation().pathname;
+  const [, setAddress] = useQueryState("address", parseAsString);
+  const [percentage, setPercentage] = useQueryState(
+    "percentage",
+    parseAsString,
+  );
+  const [, setDelegateAddress] = useQueryState(
+    "delegateAddress",
+    parseAsString,
+  );
+  const [delegatedValue, setDelegatedValue] = useQueryState(
+    "delegatedValue",
+    parseAsString,
+  );
   const searchByAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchParams((prev) => {
-      const params = new URLSearchParams(prev);
-      params.set("address", e.target.value);
-      return params;
-    });
+    setAddress(e.currentTarget.value);
   };
-
-  const openDelegate = (address: string) => {
-    setSearchParams((prev) => {
-      const params = new URLSearchParams(prev);
-      params.set("delegateAddress", address);
-      return params;
-    });
+  const { accounts, pagination, isLoading } = useBAppAccounts();
+  const openDelegate = (
+    address: string,
+    delegatedValue?: string,
+    percentage?: string,
+  ) => {
+    if (delegatedValue && percentage) {
+      setPercentage(percentage);
+      setDelegatedValue(delegatedValue.toString());
+    } else {
+      setPercentage("");
+      setDelegatedValue("");
+    }
+    setDelegateAddress(address);
     setIsOpenModal(true);
   };
 
@@ -49,13 +69,29 @@ const Accounts = () => {
               />
             </div>
           </div>
-          <AccountsTable onDelegateClick={openDelegate} />
+          <AccountsTable
+            effectiveBalance={Number(formatGwei(data?.effectiveBalance || 0n))}
+            accountDelegations={data?.delegations}
+            pagination={pagination}
+            isLoading={isLoading}
+            onDelegateClick={openDelegate}
+            accounts={accounts}
+          />
           {isOpenModal && (
-            <Delegate closeDelegatePopUp={() => setIsOpenModal(false)} />
+            <Delegate
+              isUpdateFlow={!!(percentage && delegatedValue)}
+              closeDelegatePopUp={() => setIsOpenModal(false)}
+            />
           )}
         </Container>
       }
-      onClose={() => navigate(-1)}
+      onClose={() =>
+        navigate(
+          matchPath("/account/assets/accounts", pathname)
+            ? "/account/assets"
+            : "/account/my-delegations",
+        )
+      }
     />
   );
 };

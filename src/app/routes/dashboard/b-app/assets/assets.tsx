@@ -20,7 +20,7 @@ export const Assets: FC = () => {
       <NonSlashableAssetsTable
         asset={data}
         isLoading={isLoading}
-        onRowClick={() => navigate("/account/accounts")}
+        onRowClick={() => navigate("accounts")}
       />
 
       <AssetsTable

@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router";
 import { Collapse } from "react-collapse";
+import { Alert } from "@/components/ui/alert";
 
 export const Request = () => {
   const captchaRef = useRef(null);
@@ -92,9 +93,9 @@ export const Request = () => {
           )}
         </div>
         <Collapse isOpened={requestMutation.isError}>
-          <Text variant="body-3-semibold" className="text-error-500">
+          <Alert variant="error">
             {requestMutation.error?.response?.data.error.message}
-          </Text>
+          </Alert>
         </Collapse>
         <HCaptcha
           ref={captchaRef}

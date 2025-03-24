@@ -20,7 +20,7 @@ export const useLinks = () => {
         snapshot: `https://snapshot.org/#/mainnet.ssvnetwork.eth`,
         tos: "https://ssv.network/terms-of-use/",
         privacy: "https://ssv.network/privacy-policy/",
-        discord: "https://discord.com/invite/ssvnetworkofficial",
+        discord: "https://discord.gg/ssv-network-723834989506068561",
         x: "https://x.com/ssv_network",
         website: "https://ssv.network/",
       },

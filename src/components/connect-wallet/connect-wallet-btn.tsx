@@ -16,7 +16,7 @@ const iconMap: Record<WalletType, string> = {
   metamask: "/images/wallets/metamask.svg",
 };
 
-const getWalletIconSrc = (connectorName?: string) => {
+export const getWalletIconSrc = (connectorName?: string) => {
   return (
     iconMap[connectorName?.toLowerCase() as WalletType] ||
     "/images/wallets/metamask.svg"

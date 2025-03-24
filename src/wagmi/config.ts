@@ -22,9 +22,18 @@ const holesky: Chain = {
 
 export const hoodi = {
   id: 560048,
-  name: "hoodi",
+  name: "Hoodi",
+  network: "hoodi",
+  nativeCurrency: {
+    name: "Ethereum",
+    symbol: "ETH",
+    decimals: 18,
+  },
   rpcUrls: {
     default: {
+      http: ["https://rpc.hoodi.ethpandaops.io"],
+    },
+    public: {
       http: ["https://rpc.hoodi.ethpandaops.io"],
     },
   },

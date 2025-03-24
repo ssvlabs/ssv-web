@@ -10,3 +10,11 @@ export const endpoint = (...paths: (string | number)[]) => {
     ...paths.map(String),
   );
 };
+
+// Re-export the API modules
+export * from "./account";
+export * from "./cluster";
+export * from "./ssv";
+export * from "./validators";
+export * from "./terms";
+export * from "./faucet";

@@ -43,6 +43,7 @@
     "@deepsignal/core": "^4.0.0",
     "@deepsignal/react": "^4.0.0",
     "@fontsource/manrope": "^5.0.20",
+    "@hcaptcha/react-hcaptcha": "^1.12.0",
     "@hookform/resolvers": "^3.9.0",
     "@preact/signals-react": "^2.1.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",

@@ -60,7 +60,18 @@ jobs:
             \"tokenAddress\": \"0xad45A78180961079BFaeEe349704F411dfF947C6\",
             \"setterContractAddress\": \"${{ secrets.PROD_HOLESKY_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
             \"getterContractAddress\": \"${{ secrets.PROD_HOLESKY_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
-          }
+          },{
+            \"networkId\": 560048,
+            \"apiVersion\": \"v4\",
+            \"apiNetwork\": \"hoodi\",  
+            \"api\": \"https://api.ops.ssvlabsinternal.com/api\",
+            \"explorerUrl\": \"https://hoodi.explorer.ssv.network\",
+            \"insufficientBalanceUrl\": \"https://faucet.ssv.network\",
+            \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
+            \"tokenAddress\": \"0x9F5d4Ec84fC4785788aB44F9de973cF34F7A038e\",
+            \"setterContractAddress\": \"${{ secrets.PROD_HOODI_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
+            \"getterContractAddress\": \"${{ secrets.PROD_HOODI_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
+           }
         ]
 
     steps:

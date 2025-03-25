@@ -1,11 +1,5 @@
-import { createPublicClient, http } from "viem";
-import { holesky } from "viem/chains";
-
-const client = createPublicClient({
-  // TODO: need to use current network
-  chain: holesky,
-  transport: http(),
-});
+import { config } from "@/wagmi/config";
+import { readContract } from "@wagmi/core";
 
 const erc20ABI = [
   {
@@ -29,13 +23,13 @@ export async function getTokenMetadata(assets: `0x${string}`[][]) {
     assets.map((asset: string) =>
       (async () => {
         try {
-          const name = await client.readContract({
+          const name = await readContract(config, {
             address: asset as `0x${string}`,
             abi: erc20ABI,
             functionName: "name",
           });
 
-          const symbol = await client.readContract({
+          const symbol = await readContract(config, {
             address: asset as `0x${string}`,
             abi: erc20ABI,
             functionName: "symbol",

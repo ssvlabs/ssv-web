@@ -5,7 +5,7 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 
 import { createPublicClient, http } from "viem";
-import { createConfig } from "wagmi";
+import { createConfig, custom } from "wagmi";
 import { holesky as holeskyBase, mainnet as mainnetBase } from "wagmi/chains";
 
 const mainnet: Chain = {
@@ -22,9 +22,18 @@ const holesky: Chain = {
 
 export const hoodi = {
   id: 560048,
-  name: "hoodi",
+  name: "Hoodi",
+  network: "hoodi",
+  nativeCurrency: {
+    name: "Ethereum",
+    symbol: "ETH",
+    decimals: 18,
+  },
   rpcUrls: {
     default: {
+      http: ["https://rpc.hoodi.ethpandaops.io"],
+    },
+    public: {
       http: ["https://rpc.hoodi.ethpandaops.io"],
     },
   },
@@ -73,7 +82,7 @@ export const config = createConfig({
     [mainnet.id]: http(
       "https://ethereum-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
     ),
-    [holesky.id]: http(),
-    [hoodi.id]: http(),
+    [holesky.id]: custom(window.ethereum),
+    [hoodi.id]: custom(window.ethereum),
   },
 });

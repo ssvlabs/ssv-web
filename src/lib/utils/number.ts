@@ -7,6 +7,12 @@ export const currencyFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0,
   compactDisplay: "short",
 });
+
+export const compactFormatter = new Intl.NumberFormat("en-US", {
+  notation: "compact",
+  maximumFractionDigits: 0,
+  compactDisplay: "short",
+});
 export const numberFormatter = new Intl.NumberFormat("en-US", {
   useGrouping: true,
   maximumFractionDigits: 2,
@@ -24,8 +30,8 @@ export const percentageFormatter = {
   },
 };
 
-export const convertToPercentage = (value: string) =>
-  Number((parseInt(value, 10) / 100).toFixed(2));
+export const convertToPercentage = (value: string | number) =>
+  Number((parseInt(`${value}`, 10) / 100).toFixed(2));
 
 export const bigintFormatter = new Intl.NumberFormat("en-US", {
   useGrouping: false,

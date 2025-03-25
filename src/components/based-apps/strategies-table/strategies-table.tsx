@@ -7,14 +7,19 @@ import {
   Table,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils/tw";
-import { Pagination } from "@/components/ui/pagination";
+import { Pagination } from "@/components/ui/pagination-v2";
 import { Divider } from "@/components/ui/divider";
 import { StrategyTableRow } from "@/components/based-apps/strategies-table/strategy-table-row";
-import type { MOCK_DATA_STRATEGIES } from "../../../lib/mock/strategies";
+import type { Strategy, StrategyMetadata } from "@/api/b-app.ts";
+import { Loading } from "@/components/ui/Loading.tsx";
 
 export type OperatorsTableProps = {
-  strategies: typeof MOCK_DATA_STRATEGIES;
-  pagination: IPagination;
+  strategies: (Strategy & StrategyMetadata)[];
+  pagination?: IPagination;
+  isLoading?: boolean;
+  showDepositButtonOnHover?: boolean;
+  onDepositClick?: (strategy: Strategy) => void;
+  onRowClick?: (strategy: Strategy) => void;
 };
 
 type FCProps = FC<
@@ -26,6 +31,10 @@ export const StrategiesTable: FCProps = ({
   strategies,
   pagination,
   className,
+  isLoading,
+  showDepositButtonOnHover,
+  onDepositClick,
+  onRowClick,
   ...props
 }) => {
   return (
@@ -38,19 +47,28 @@ export const StrategiesTable: FCProps = ({
           <TableHead>ID</TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Owner</TableHead>
-          <TableHead>BApps</TableHead>
+          <TableHead>bApps</TableHead>
           <TableHead>Supported Assets</TableHead>
           <TableHead>Fee</TableHead>
           <TableHead>Delegators</TableHead>
           <TableHead>Delegated</TableHead>
         </TableHeader>
         <TableBody>
-          {strategies.map((strategy) => {
-            return <StrategyTableRow key={strategy.id} strategy={strategy} />;
+          {strategies?.map((strategy) => {
+            return (
+              <StrategyTableRow
+                onDepositClick={onDepositClick}
+                onRowClick={onRowClick}
+                showDepositButtonOnHover={showDepositButtonOnHover}
+                key={strategy.id}
+                strategy={strategy}
+              />
+            );
           })}
         </TableBody>
       </Table>
-      {pagination.pages > 1 ? (
+      <div className="bg-gray-50 w-full">{isLoading && <Loading />}</div>
+      {pagination && pagination.pages > 1 ? (
         <>
           <Divider />
           <div className="flex w-full bg-gray-50 py-4 rounded-b-2xl">

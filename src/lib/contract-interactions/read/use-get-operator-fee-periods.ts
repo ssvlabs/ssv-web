@@ -45,7 +45,7 @@ export const useGetOperatorFeePeriods = (
     functionName: "getOperatorFeePeriods",
 
     blockNumber: options.watch ? blockNumber.data : undefined,
-    query: options,
+    query: { ...options },
   });
 };
 

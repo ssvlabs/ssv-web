@@ -26,7 +26,7 @@ const abiFunction = extractAbiFunction(MainnetV4SetterABI, "transferOwnership");
 export const useTransferOwnership = () => {
   const { setterContractAddress } = useSSVNetworkDetails();
 
-  const wait = useWaitForTransactionReceipt([
+  const wait = useWaitForTransactionReceipt<MainnetEvent>([
     "useTransferOwnership",
     setterContractAddress,
   ]);

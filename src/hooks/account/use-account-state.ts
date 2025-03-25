@@ -22,7 +22,7 @@ export const useAccountState = () => {
 
   const isLoading =
     clusters.isLoading || operators.isLoading || myBAppAccount.isLoading;
-  console.log(isLoading);
+
   const hasClusters = (clusters.data?.pagination.total ?? 0) > 0;
   const hasOperators =
     ((operators.data?.pagination.total ?? 0) ||
@@ -40,7 +40,7 @@ export const useAccountState = () => {
     ? "/connect"
     : isLoading
       ? undefined
-      : "/account";
+      : "/account/my-delegations";
 
   return {
     isLoading,

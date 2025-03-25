@@ -5,7 +5,7 @@
 import { useWriteContract } from "wagmi";
 import { useSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import type {
-  MainnetEvent,
+  BAppEvent,
   MutationOptions,
 } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useWaitForTransactionReceipt } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
@@ -26,7 +26,7 @@ const abiFunction = extractAbiFunction(BAppABI, "depositERC20");
 export const useDepositERC20 = () => {
   const { bAppContractAddress } = useSSVNetworkDetails();
 
-  const wait = useWaitForTransactionReceipt([
+  const wait = useWaitForTransactionReceipt<BAppEvent>([
     "useDepositERC20",
     bAppContractAddress,
   ]);
@@ -34,7 +34,7 @@ export const useDepositERC20 = () => {
 
   const write = (
     params: AbiInputsToParams<Fn["inputs"]>,
-    options: MutationOptions<MainnetEvent> = {},
+    options: MutationOptions<BAppEvent> = {},
   ) => {
     options.onInitiated?.();
     return mutation

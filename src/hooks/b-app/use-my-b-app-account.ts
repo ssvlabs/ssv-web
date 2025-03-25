@@ -1,21 +1,83 @@
-import { useQuery } from "@tanstack/react-query";
+import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { formatUnits, isAddress } from "viem";
+import type { BApp, StrategiesByOwnerResponse } from "@/api/b-app.ts";
 import { getMyAccount } from "@/api/b-app.ts";
+import { getBAppsByOwnerAddress } from "@/api/b-app.ts";
+import {
+  getNonSlashableAssets,
+  getStrategiesByOwnerAddress,
+} from "@/api/b-app.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { convertToPercentage } from "@/lib/utils/number.ts";
+import { useSearchParams } from "react-router-dom";
+import { useOrdering } from "@/hooks/use-ordering.ts";
+import { usePaginationQuery } from "@/lib/query-states/use-pagination.ts";
+import { useAccountMetadata } from "@/hooks/b-app/use-account-metadata.ts";
+import { useStrategyMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
+import { useBAppMetadata } from "@/hooks/b-app/use-b-app-metadata.ts";
 
 export const useMyBAppAccount = () => {
   const { address } = useAccount();
+  const [searchParams] = useSearchParams();
+  const idToSearch = Number(searchParams.get("id") || "");
+  const { orderBy, sort } = useOrdering();
 
-  const reactQueryData = useQuery({
-    queryKey: [address],
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    queryFn: () => address && getMyAccount(address),
+  const { page, perPage } = usePaginationQuery();
+
+  const reactQueryData = useChainedQuery({
+    queryKey: ["non-slashable-assets", address],
+    queryFn: () => {
+      return getNonSlashableAssets(address!);
+    },
     enabled: address && isAddress(address),
   });
+
+  const myStrategies = useChainedQuery({
+    queryKey: ["get_my_strategies", page, perPage, idToSearch, orderBy, sort],
+    queryFn: () =>
+      getStrategiesByOwnerAddress({
+        page: page,
+        perPage: perPage,
+        ownerAddress: address!,
+      }),
+    enabled: address && isAddress(address),
+  });
+
+  const { data: strategiesMetadata, isLoading: strategiesMetadataIsLoading } =
+    useStrategyMetadata(
+      myStrategies.data?.strategies.map(({ id, metadataURI }) => ({
+        id,
+        url: metadataURI || "",
+      })) || [],
+    );
+
+  const myAccountQuery = useChainedQuery({
+    queryKey: ["my_account", address],
+    queryFn: () => getMyAccount(address!),
+    enabled: address && isAddress(address),
+  });
+
+  const account = myAccountQuery.data?.data[0];
+  const { data: accountMetadataItem, isLoading: accountMetadataIsLoading } =
+    useAccountMetadata([
+      { id: account?.id || "", url: account?.metadataURI || "" },
+    ]);
+
+  const accountMetadata = accountMetadataItem && accountMetadataItem[0]?.data;
+
+  const myBApps = useChainedQuery({
+    queryKey: ["get_my_b_apps", page, perPage, address],
+    queryFn: () => getBAppsByOwnerAddress({ address: address!, page, perPage }),
+    enabled: address && isAddress(address),
+  });
+
+  const { data: bAppsMetadata, isLoading: bAppsMetadataIsLoading } =
+    useBAppMetadata(
+      myBApps.data?.data.map(({ id, metadataURI }) => ({
+        id,
+        url: metadataURI || "",
+      })) || [],
+    );
 
   const totalPercentage = reactQueryData?.data?.delegations.reduce(
     (
@@ -37,7 +99,30 @@ export const useMyBAppAccount = () => {
 
   return {
     data: reactQueryData.data,
-    isLoading: reactQueryData.isLoading,
+    myStrategies:
+      {
+        ...myStrategies.data,
+        strategies: myStrategies.data?.strategies.map((strategy) => ({
+          ...strategy,
+          ...strategiesMetadata[strategy.id],
+        })),
+      } || ({} as StrategiesByOwnerResponse),
+    myBApps: {
+      pagination: myBApps.data?.pagination,
+      data: (myBApps.data?.data || []).map((bApp: BApp) => ({
+        ...bApp,
+        ...bAppsMetadata[bApp.id],
+      })),
+    },
+    myAccountData: { ...account, ...accountMetadata },
+    isLoading:
+      reactQueryData.isLoading ||
+      myStrategies.isLoading ||
+      myBApps.isLoading ||
+      accountMetadataIsLoading ||
+      bAppsMetadataIsLoading ||
+      strategiesMetadataIsLoading ||
+      myAccountQuery.isLoading,
     totalPercentage,
     restBalancePercentage,
     effectiveBalance: reactQueryData.data?.effectiveBalance,

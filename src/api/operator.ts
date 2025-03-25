@@ -20,6 +20,8 @@ export type OrderBy =
   | "validators_count"
   | "performance.30d"
   | "fee"
+  | "delegators"
+  | "strategyId"
   | "mev";
 export type Sort = "asc" | "desc";
 

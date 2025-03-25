@@ -5,6 +5,7 @@ export type Pagination = {
   pages: number;
   per_page: number;
   page: number;
+  has_next_page?: boolean;
 };
 
 export interface InfinitePagination extends Pagination {

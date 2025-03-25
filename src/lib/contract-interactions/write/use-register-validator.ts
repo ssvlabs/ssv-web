@@ -26,7 +26,7 @@ const abiFunction = extractAbiFunction(MainnetV4SetterABI, "registerValidator");
 export const useRegisterValidator = () => {
   const { setterContractAddress } = useSSVNetworkDetails();
 
-  const wait = useWaitForTransactionReceipt([
+  const wait = useWaitForTransactionReceipt<MainnetEvent>([
     "useRegisterValidator",
     setterContractAddress,
   ]);

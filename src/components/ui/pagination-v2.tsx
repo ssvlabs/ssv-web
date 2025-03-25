@@ -1,13 +1,14 @@
 import type { Pagination as IPagination } from "@/types/api";
 import { textVariants } from "@/components/ui/text.tsx";
-import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button.tsx";
 import {
   FaAngleLeft,
   FaAngleRight,
   FaAnglesLeft,
   FaAnglesRight,
+  FaChevronDown,
 } from "react-icons/fa6";
+import { usePaginationQuery } from "@/lib/query-states/use-pagination";
 
 type PaginationProps = {
   pagination: IPagination;
@@ -15,26 +16,10 @@ type PaginationProps = {
 
 const Pagination = ({ pagination }: PaginationProps) => {
   const options = Array.from({ length: 10 }, (_, i) => (i + 1) * 10);
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const perPage = searchParams.get("perPage");
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = parseInt(event.target.value);
-    setSearchParams((prev) => {
-      const params = new URLSearchParams(prev);
-      params.set("perPage", value.toString());
-      return params;
-    });
-  };
-
-  const handlePageClick = (page: number) => {
-    setSearchParams((prev) => {
-      const params = new URLSearchParams(prev);
-      params.set("page", page.toString());
-      return params;
-    });
-  };
-
+  const paginationQuery = usePaginationQuery({
+    page: pagination.page,
+    perPage: pagination.per_page,
+  });
   return (
     <div
       className={`${textVariants({ variant: "body-3-medium" })} text-gray-600 h-[60px] w-full flex items-center justify-between px-6 py-3.5`}
@@ -46,25 +31,34 @@ const Pagination = ({ pagination }: PaginationProps) => {
           ? (pagination.page - 1) * pagination.per_page
           : pagination.page}
         &nbsp;-&nbsp;
-        {pagination.page > 1
-          ? pagination.page * pagination.per_page
-          : pagination.per_page}
+        {pagination.has_next_page
+          ? pagination.page > 1
+            ? pagination.page * pagination.per_page
+            : pagination.per_page
+          : pagination.total}
         &nbsp; of&nbsp; {pagination.total}
       </div>
       <div className={`flex items-center gap-10`}>
         <div>
           Rows per page:&nbsp;
-          <select
-            className="w-[55px] h-[32px] border rounded-md text-center focus:outline-none focus:ring-0"
-            defaultValue={perPage || 10}
-            onChange={handleChange}
-          >
-            {options.map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </select>
+          <div className="relative inline-block">
+            <select
+              className="w-[55px] h-[32px] pl-2 pr-6 border rounded-md text-center focus:outline-none focus:ring-0 bg-gray-50 border-gray-400 appearance-none"
+              defaultValue={paginationQuery.perPage}
+              onChange={(event) => {
+                paginationQuery.setPerPage(parseInt(event.target.value));
+              }}
+            >
+              {options.map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-500">
+              <FaChevronDown className="size-2.5" />
+            </div>
+          </div>
         </div>
         <div className={`flex gap-2`}>
           <Button
@@ -72,7 +66,7 @@ const Pagination = ({ pagination }: PaginationProps) => {
             variant={"ghost"}
             disabled={pagination.page === 1}
             onClick={() => {
-              handlePageClick(1);
+              paginationQuery.setPage(1);
             }}
             className={
               "size-8 rounded-[8px] border border-gray-400 flex items-center justify-center cursor-pointer"
@@ -85,7 +79,7 @@ const Pagination = ({ pagination }: PaginationProps) => {
             variant={"ghost"}
             disabled={pagination.page === 1}
             onClick={() => {
-              handlePageClick(pagination.page - 1);
+              paginationQuery.prev();
             }}
             className={
               "size-8 rounded-[8px] border border-gray-400 flex items-center justify-center cursor-pointer"
@@ -98,7 +92,7 @@ const Pagination = ({ pagination }: PaginationProps) => {
             variant={"ghost"}
             disabled={pagination.page === pagination.pages}
             onClick={() => {
-              handlePageClick(pagination.page + 1);
+              paginationQuery.next();
             }}
             className={
               "size-8 rounded-[8px] border border-gray-400 flex items-center justify-center cursor-pointer"
@@ -111,7 +105,7 @@ const Pagination = ({ pagination }: PaginationProps) => {
             variant={"ghost"}
             disabled={pagination.page === pagination.pages}
             onClick={() => {
-              handlePageClick(pagination.pages);
+              paginationQuery.setPage(pagination.pages);
             }}
             className={
               "size-8 rounded-[8px] border border-gray-400 flex items-center justify-center cursor-pointer"

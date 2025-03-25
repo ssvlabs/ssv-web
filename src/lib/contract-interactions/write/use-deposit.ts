@@ -26,7 +26,7 @@ const abiFunction = extractAbiFunction(MainnetV4SetterABI, "deposit");
 export const useDeposit = () => {
   const { setterContractAddress } = useSSVNetworkDetails();
 
-  const wait = useWaitForTransactionReceipt([
+  const wait = useWaitForTransactionReceipt<MainnetEvent>([
     "useDeposit",
     setterContractAddress,
   ]);

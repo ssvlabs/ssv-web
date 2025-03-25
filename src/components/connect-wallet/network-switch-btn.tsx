@@ -1,8 +1,9 @@
 import type { ButtonProps } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
+import { textVariants } from "@/components/ui/text";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { ChevronDown } from "lucide-react";
 import type { FC } from "react";
+import { FaChevronDown } from "react-icons/fa6";
 
 export const NetworkSwitchBtn: FC<ButtonProps> = (props) => {
   return (
@@ -18,7 +19,10 @@ export const NetworkSwitchBtn: FC<ButtonProps> = (props) => {
             variant="secondary"
             colorScheme="wallet"
             onClick={openChainModal}
-            className="flex items-center gap-3"
+            className={textVariants({
+              variant: "body-3-medium",
+              className: "flex items-center gap-3 h-12 pl-4 pr-3 rounded-xl",
+            })}
             type="button"
             {...props}
           >
@@ -42,8 +46,9 @@ export const NetworkSwitchBtn: FC<ButtonProps> = (props) => {
               </div>
             )}
 
-            <div className="flex gap-1 items-center">
-              <span> {chain.name}</span> <ChevronDown className="size-5" />
+            <span>{chain.name}</span>
+            <div className="size-6 flex items-center justify-center -ml-1">
+              <FaChevronDown className="size-3" />
             </div>
           </Button>
         );

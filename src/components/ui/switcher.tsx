@@ -2,6 +2,7 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils/tw.ts";
 
 type BtnType = {
+  type: string;
   label: string;
   count: number;
   isSelected: boolean;
@@ -44,7 +45,7 @@ const Switcher = ({
     >
       {buttons.map((btn: BtnType) => (
         <div
-          onClick={() => btn.count > 0 && onBtnClick(btn.label)}
+          onClick={() => btn.count > 0 && onBtnClick(btn.type)}
           className={cn(
             buttonVariants({
               variant: btn.isSelected ? "selected" : undefined,

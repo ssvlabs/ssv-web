@@ -26,7 +26,7 @@ const abiFunction = extractAbiFunction(MainnetV4SetterABI, "bulkExitValidator");
 export const useBulkExitValidator = () => {
   const { setterContractAddress } = useSSVNetworkDetails();
 
-  const wait = useWaitForTransactionReceipt([
+  const wait = useWaitForTransactionReceipt<MainnetEvent>([
     "useBulkExitValidator",
     setterContractAddress,
   ]);

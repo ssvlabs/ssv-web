@@ -45,7 +45,7 @@ export const useGetNetworkEarnings = (
     functionName: "getNetworkEarnings",
 
     blockNumber: options.watch ? blockNumber.data : undefined,
-    query: options,
+    query: { ...options },
   });
 };
 

@@ -11,13 +11,16 @@ import { NotFound } from "./not-found";
 import { Request } from "@/app/routes/request";
 import { Success } from "@/app/routes/success";
 import { Depleted } from "@/app/routes/depleted";
+import { WatchTransferEvents } from "@/app/layouts/connected";
 const routes = [
   {
     path: "",
     element: (
       <ProtectedRoute>
         <DashboardLayout>
-          <Outlet />
+          <WatchTransferEvents>
+            <Outlet />
+          </WatchTransferEvents>
         </DashboardLayout>
       </ProtectedRoute>
     ),

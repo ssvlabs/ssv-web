@@ -5,7 +5,6 @@ import { AssetsDisplay } from "@/components/ui/assets-display.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 import type { BApp, BAppsMetaData } from "@/api/b-app.ts";
-import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 import { currencyFormatter } from "@/lib/utils/number.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { getAddress } from "viem";
@@ -13,7 +12,6 @@ import { cn } from "@/lib/utils/tw";
 
 type BAppsTableRowProps = {
   bApp: BApp & BAppsMetaData;
-  withoutOwnerAddress?: boolean;
   isCreateFlow?: boolean;
   onRowClick?: () => void;
   isClickable?: boolean;
@@ -22,7 +20,6 @@ type BAppsTableRowProps = {
 const BAppsTableRow = ({
   bApp,
   isCreateFlow,
-  withoutOwnerAddress,
   onRowClick,
   isClickable = true,
 }: BAppsTableRowProps) => {
@@ -54,18 +51,6 @@ const BAppsTableRow = ({
         />
         {bApp.name || shortenAddress(bApp.id)}
       </TableCell>
-      {!withoutOwnerAddress && (
-        <TableCell className={`${textVariants({ variant: "body-3-medium" })}`}>
-          <div className={`flex justify-start items-center gap-2`}>
-            {shortenAddress(bApp.ownerAddress)}
-            <CopyBtn
-              disabled={isUsedBApp}
-              variant="subtle"
-              text={bApp.ownerAddress}
-            />
-          </div>
-        </TableCell>
-      )}
       <TableCell>
         <AssetsDisplay max={3} addresses={bApp.supportedAssets} />
       </TableCell>

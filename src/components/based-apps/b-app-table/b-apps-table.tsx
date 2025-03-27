@@ -15,7 +15,6 @@ type BAppsTableProps = {
   bApps?: (BApp & BAppsMetaData)[];
   isCreateFlow?: boolean;
   isLoading?: boolean;
-  withoutOwnerAddress?: boolean;
   pagination?: IPagination;
   onRowClick?: (bApp: BApp) => void;
   isClickable?: boolean;
@@ -26,7 +25,6 @@ export const BAppsTable = ({
   isCreateFlow,
   pagination,
   isLoading,
-  withoutOwnerAddress,
   onRowClick,
   isClickable = true,
 }: BAppsTableProps) => {
@@ -35,7 +33,6 @@ export const BAppsTable = ({
       <Table className={"w-full rounded-t-xl overflow-hidden"}>
         <TableHeader>
           <TableHead>bApp</TableHead>
-          {!withoutOwnerAddress && <TableHead>Owner Address</TableHead>}
           <TableHead>Supported Assets</TableHead>
           <TableHead>Strategies</TableHead>
           <TableHead>Delegators</TableHead>
@@ -45,7 +42,6 @@ export const BAppsTable = ({
         <TableBody>
           {(bApps || []).map((bApp: BApp & BAppsMetaData, index) => (
             <BAppsTableRow
-              withoutOwnerAddress={withoutOwnerAddress}
               key={index}
               isCreateFlow={isCreateFlow}
               bApp={bApp}

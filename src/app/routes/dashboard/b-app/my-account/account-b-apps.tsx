@@ -42,7 +42,6 @@ const AccountBApps = () => {
           </div>
         </div>
         <BAppsTable
-          withoutOwnerAddress
           isLoading={isLoading}
           bApps={myBApps?.data}
           pagination={myBApps?.pagination}

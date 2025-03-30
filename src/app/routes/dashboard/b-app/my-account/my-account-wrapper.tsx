@@ -24,7 +24,7 @@ const MyAccountWrapper = ({
   filter: AccountSelect;
 }) => {
   const navigate = useNavigate();
-  const { myStrategies, myBApps } = useMyBAppAccount();
+  const { myStrategies } = useMyBAppAccount();
   const SWITCH_BUTTONS = [
     {
       type: AccountSelect.Delegations,
@@ -36,11 +36,11 @@ const MyAccountWrapper = ({
       label: BUTTON_LABELS[AccountSelect.Strategy],
       count: myStrategies?.strategies?.length || 0,
     },
-    {
-      type: AccountSelect.BApps,
-      label: BUTTON_LABELS[AccountSelect.BApps],
-      count: myBApps?.pagination?.total || 0,
-    },
+    // {
+    //   type: AccountSelect.BApps,
+    //   label: BUTTON_LABELS[AccountSelect.BApps],
+    //   count: myBApps?.pagination?.total || 0,
+    // },
   ];
 
   const handleChangeFilter = (filter: AccountSelect) => {

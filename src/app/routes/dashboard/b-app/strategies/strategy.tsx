@@ -36,7 +36,6 @@ import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 
 const Strategy = () => {
   const { strategy, account, isLoading: isStrategyLoading } = useStrategy();
-  console.log("strategy:", strategy);
   const [bAppSearchValue, setBAppSearchValue] = useState("");
   const [isOpenDelegateModal, setIsOpenDelegateModal] = useState(false);
   const location = useLocation();

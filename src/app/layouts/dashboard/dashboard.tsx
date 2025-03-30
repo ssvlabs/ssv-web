@@ -59,9 +59,9 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
             exit={{ opacity: 0 }}
             key="content"
           >
-            <Navbar />
+            <Navbar className="px-5" />
             <main
-              className={cn(className, "flex-1 overflow-auto")}
+              className={cn(className, "flex-1 overflow-auto px-5")}
               style={{
                 scrollbarGutter: "stable",
               }}

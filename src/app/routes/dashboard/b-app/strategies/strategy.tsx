@@ -184,7 +184,7 @@ const Strategy = () => {
           }`}
           inputProps={{
             className: "bg-gray-50",
-            placeholder: "Search Asset Name or Address...",
+            placeholder: "Search Asset Address...",
           }}
         />
       </div>
@@ -259,16 +259,18 @@ const Strategy = () => {
       <div className="w-full flex flex-col gap-6">
         <div className="flex justify-between w-full items-center">
           <Text variant="body-1-semibold">Supported bApps</Text>
-          <SearchInput
-            onChange={(e) => setBAppSearchValue(e.target.value)}
-            placeholder="Search"
-            iconPlacement="left"
-            className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
-            inputProps={{
-              className: "bg-gray-50",
-              placeholder: "Search bApp...",
-            }}
-          />
+          {!!strategy.bAppsList?.length && (
+            <SearchInput
+              onChange={(e) => setBAppSearchValue(e.target.value)}
+              placeholder="Search"
+              iconPlacement="left"
+              className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
+              inputProps={{
+                className: "bg-gray-50",
+                placeholder: "Search bApp...",
+              }}
+            />
+          )}
         </div>
         {strategy.bAppsList && (
           <StrategyBAppsTable

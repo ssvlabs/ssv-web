@@ -13,7 +13,7 @@ import { formatUnits } from "viem";
 import { useUpdateDelegatedBalance } from "@/lib/contract-interactions/b-app/write/use-update-delegated-balance.ts";
 import { useRemoveDelegatedBalance } from "@/lib/contract-interactions/b-app/write/use-remove-delegated-balance.ts";
 import { parseAsString, useQueryState } from "nuqs";
-import { retryPromiseUntilSuccess, wait } from "@/lib/utils/promise.ts";
+import { retryPromiseUntilSuccess } from "@/lib/utils/promise.ts";
 import { queryClient } from "@/lib/react-query.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { getNonSlashableAssets } from "@/api/b-app.ts";
@@ -82,6 +82,9 @@ const Delegate = ({
           queryKey: ["non-slashable-assets", account.address],
         });
         closeDelegatePopUp();
+        setTimeout(() => {
+          navigate(`/account/my-delegations`);
+        }, 100);
       },
     });
     await contractInteraction.write(
@@ -91,8 +94,6 @@ const Delegate = ({
       },
       options,
     );
-    await wait(0);
-    navigate(`/account/my-delegations`);
   };
   return (
     <div

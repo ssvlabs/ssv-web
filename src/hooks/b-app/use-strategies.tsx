@@ -7,9 +7,10 @@ import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { useParams } from "react-router";
 import { useStrategyMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
 
-export const useStrategies = (_strategyId?: string) => {
+export const useStrategies = (_strategyId?: string, _bAppId?: string) => {
   const params = useParams();
   const strategyId = _strategyId || params.strategyId;
+  const bAppId = _bAppId || params.bAppId;
   const filters = useStrategiesFilters();
   const { orderBy, sort } = useOrdering();
 
@@ -22,12 +23,14 @@ export const useStrategies = (_strategyId?: string) => {
       filters.idFilter.value,
       orderBy,
       sort,
+      bAppId,
     ],
     queryFn: () => {
       const queryParams: Record<
         string,
         string | number | `0x${string}`[] | null
       > = {
+        bappId: bAppId?.toString() || null,
         page: filters.paginationQuery.page,
         perPage: filters.paginationQuery.perPage,
         token: filters.tokensFilter.value,

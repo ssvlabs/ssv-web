@@ -17,22 +17,18 @@ import { Loading } from "@/components/ui/Loading";
 import { SearchInput } from "@/components/ui/search-input";
 import { Stat } from "@/components/ui/stat";
 import { Text } from "@/components/ui/text";
-import { useAccount } from "@/hooks/account/use-account";
 import { useBApp } from "@/hooks/b-app/use-b-app";
 import { useBAppPageParams } from "@/hooks/b-app/use-bapp-page-params";
 import { useNonSlashableAssets } from "@/hooks/b-app/use-non-slashable-assets";
 import { useStrategies } from "@/hooks/b-app/use-strategies";
 import { currencyFormatter } from "@/lib/utils/number";
 import { shortenAddress } from "@/lib/utils/strings";
-import { tryCatch } from "@/lib/utils/tryCatch";
 import { parseAsString, useQueryState } from "nuqs";
 import { Link, useNavigate } from "react-router-dom";
-import { isAddressEqual } from "viem";
 
 export const BApp = () => {
-  const { address } = useAccount();
   const { bAppId } = useBAppPageParams();
-  const { bApp } = useBApp(bAppId);
+  const { bApp, isLoading } = useBApp(bAppId);
   const navigate = useNavigate();
 
   const [strategyId, setStrategyId] = useQueryState(
@@ -42,20 +38,16 @@ export const BApp = () => {
 
   const { strategies, pagination, isStrategiesLoading } = useStrategies(
     strategyId || undefined,
+    bAppId || undefined,
   );
 
-  const { data: nonSlashableAssets, isLoading } = useNonSlashableAssets(
+  const { data: nonSlashableAssets } = useNonSlashableAssets(
     bApp?.ownerAddress,
   );
 
-  if (!bApp) {
+  if (!bApp || isLoading) {
     return <Loading />;
   }
-
-  const isOwner = tryCatch(
-    () => isAddressEqual(bApp.ownerAddress, address!),
-    false,
-  );
 
   const bAppName = bApp?.name || `bApp ${shortenAddress(bAppId!)}`;
 
@@ -82,11 +74,6 @@ export const BApp = () => {
           />
           <Text variant="body-1-semibold">{bAppName}</Text>
         </div>
-        {isOwner && (
-          <Button variant="default" size="sm">
-            Edit
-          </Button>
-        )}
       </div>
 
       <Card className="w-full">
@@ -97,10 +84,13 @@ export const BApp = () => {
             title="Total Delegated Value"
             content={currencyFormatter.format(+bApp.totalDelegatedValue)}
           />
-          <Stat
-            title="bApp Owner"
-            content={shortenAddress(bApp.ownerAddress || "0x")}
-          />
+          <div className="flex items-center gap-2">
+            <Stat
+              title="bApp ID"
+              content={shortenAddress(bApp.id || "0x")}
+              copyBtnText={bApp.id || ""}
+            />
+          </div>
         </div>
 
         <div className="flex flex-col gap-2">

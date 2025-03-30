@@ -48,7 +48,7 @@ export const AccountAssetsTable: FCProps = ({
           <TableHead className="text-right">Delegated Strategies</TableHead>
           <TableHead className="text-right">Delegated</TableHead>
           <TableHead className="text-right">Total Delegated Value</TableHead>
-          <TableHead></TableHead>
+          <TableHead className="w-[52px] p-0"></TableHead>
         </TableHeader>
         <TableBody>
           {assets.map((asset) => {

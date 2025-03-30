@@ -24,12 +24,12 @@ const MyAccountWrapper = ({
   filter: AccountSelect;
 }) => {
   const navigate = useNavigate();
-  const { myStrategies } = useMyBAppAccount();
+  const { data, myStrategies } = useMyBAppAccount();
   const SWITCH_BUTTONS = [
     {
       type: AccountSelect.Delegations,
       label: BUTTON_LABELS[AccountSelect.Delegations],
-      count: 1,
+      count: data?.delegations.length || 0,
     },
     {
       type: AccountSelect.Strategy,
@@ -52,18 +52,26 @@ const MyAccountWrapper = ({
       <Helmet>
         <title>My Account</title>
       </Helmet>
-      <Container variant="vertical" size="xl" className="py-6">
-        <Switcher
-          onBtnClick={handleChangeFilter as (value: string) => void}
-          buttons={SWITCH_BUTTONS.filter((btn) => Boolean(btn.count)).map(
-            (btn) => ({
-              ...btn,
-              isSelected: btn.type === filter,
-            }),
-          )}
-        />
+      <Container
+        variant="vertical"
+        size="xl"
+        className={`${SWITCH_BUTTONS.some(({ count }) => count > 0) && "py-6"}`}
+      >
+        {/*<div>*/}
+        {SWITCH_BUTTONS.some(({ count }) => count > 0) && (
+          <Switcher
+            onBtnClick={handleChangeFilter as (value: string) => void}
+            buttons={SWITCH_BUTTONS.filter((btn) => Boolean(btn.count)).map(
+              (btn) => ({
+                ...btn,
+                isSelected: btn.type === filter,
+              }),
+            )}
+          />
+        )}
         {children}
       </Container>
+      {/*</div>*/}
     </>
   );
 };

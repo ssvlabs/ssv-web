@@ -1,8 +1,7 @@
 import { Container } from "@/components/ui/container.tsx";
 import { Text } from "@/components/ui/text.tsx";
 import { SearchInput } from "@/components/ui/search-input.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { BAppsTable } from "@/components/based-apps/b-app-table/b-apps-table.tsx";
 import { useBApps } from "@/hooks/b-app/use-b-apps.ts";
 
@@ -35,9 +34,6 @@ const BApps = () => {
               placeholder: "Search bApp...",
             }}
           />
-          <Button as={Link} to={"create"} size="sm" className="px-5 h-10">
-            Create bApp
-          </Button>
         </div>
       </div>
       <BAppsTable

@@ -55,7 +55,7 @@ const BAppsTableRow = ({
         <AssetsDisplay max={3} addresses={bApp.supportedAssets} />
       </TableCell>
       <TableCell>
-        <div className="w-7 h-6 rounded-[4px] bg-primary-100 border border-primary-500 text-primary-500 flex items-center justify-center text-[10px]">
+        <div className="w-7 h-6 rounded-[4px] border bg-primary-50 border-primary-200 text-primary-600 flex items-center justify-center text-[10px]">
           {bApp.strategies}
         </div>
       </TableCell>

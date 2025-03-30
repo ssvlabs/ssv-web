@@ -94,7 +94,9 @@ export const Request = () => {
         </div>
         <Collapse isOpened={requestMutation.isError}>
           <Alert variant="error">
-            {requestMutation.error?.response?.data.error.message}
+            {isReachedLimit
+              ? "Reached maximum allowed transactions in the past 24 hours."
+              : requestMutation.error?.response?.data.error.message}
           </Alert>
         </Collapse>
         <HCaptcha

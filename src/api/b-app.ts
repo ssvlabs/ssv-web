@@ -333,10 +333,18 @@ export const getDelegatedAsset = ({
 type GetGlobalValidatorsBalanceParams = {
   account?: Address;
 };
+
+export type GetGlobalValidatorsBalanceResponse = {
+  ssvBalance: string;
+  totalDelegatedAccount: number;
+  totalNonSlashable: string;
+  totalDelegatedFiat: string;
+};
+
 export const getGlobalNonSlashableAssets = async (
   params: GetGlobalValidatorsBalanceParams,
 ) => {
-  return api.get<BAppAssetResponse>(
+  return api.get<GetGlobalValidatorsBalanceResponse>(
     endpoint(
       "basedApp/getGlobalValidatorsBalance",
       `?${new URLSearchParams(params)}`,

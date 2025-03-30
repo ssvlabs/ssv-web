@@ -3,29 +3,25 @@ import { Container } from "@/components/ui/container.tsx";
 import { useBAppsAssets } from "@/hooks/b-app/use-assets";
 import { AssetsTable } from "@/components/based-apps/assets-table/assets-table";
 import { useNavigate } from "react-router";
-import { NonSlashableAssetsTable } from "@/components/based-apps/non-slashable-assets-table/non-slashable-assets-table";
-import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account";
 import { Text } from "@/components/ui/text";
 import { useGlobalNonSlashableAssets } from "@/hooks/b-app/use-global-non-slashable-assets";
+import { GlobalNonSlashableAssetsTable } from "@/components/based-apps/global-non-slashable-assets-table/global-non-slashable-assets-table";
 
 export const Assets: FC = () => {
   const { assets, query } = useBAppsAssets();
   const globalNonSlashableAssets = useGlobalNonSlashableAssets();
-  console.log("globalNonSlashableAssets:", globalNonSlashableAssets);
   const navigate = useNavigate();
-  const { data, isLoading } = useMyBAppAccount();
 
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <Text variant="body-1-semibold" className="mb-4">
         Assets
       </Text>
-      <NonSlashableAssetsTable
-        asset={data}
-        isLoading={isLoading}
+      <GlobalNonSlashableAssetsTable
+        data={globalNonSlashableAssets.data}
+        isLoading={globalNonSlashableAssets.isLoading}
         onRowClick={() => navigate("accounts")}
       />
-
       <AssetsTable
         onRowClick={(asset) => {
           navigate(`/account/strategies?token=${asset.token}`);

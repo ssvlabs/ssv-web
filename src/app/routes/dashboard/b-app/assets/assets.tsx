@@ -6,9 +6,12 @@ import { useNavigate } from "react-router";
 import { NonSlashableAssetsTable } from "@/components/based-apps/non-slashable-assets-table/non-slashable-assets-table";
 import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account";
 import { Text } from "@/components/ui/text";
+import { useGlobalNonSlashableAssets } from "@/hooks/b-app/use-global-non-slashable-assets";
 
 export const Assets: FC = () => {
   const { assets, query } = useBAppsAssets();
+  const globalNonSlashableAssets = useGlobalNonSlashableAssets();
+  console.log("globalNonSlashableAssets:", globalNonSlashableAssets);
   const navigate = useNavigate();
   const { data, isLoading } = useMyBAppAccount();
 

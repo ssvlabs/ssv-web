@@ -43,11 +43,15 @@ export const AccountAssetsTable: FCProps = ({
         {...props}
       >
         <TableHeader>
-          <TableHead>Assets</TableHead>
-          <TableHead>Wallet Balance</TableHead>
-          <TableHead className="text-right">Delegated Strategies</TableHead>
-          <TableHead className="text-right">Delegated</TableHead>
-          <TableHead className="text-right">Total Delegated Value</TableHead>
+          <TableHead className="w-[26%]">Assets</TableHead>
+          <TableHead className="w-[16%]">Wallet Balance</TableHead>
+          <TableHead className="text-right w-[18%]">
+            Delegated Strategies
+          </TableHead>
+          <TableHead className="text-right w-[18%]">Delegated</TableHead>
+          <TableHead className="text-right w-[18%]">
+            Total Delegated Value
+          </TableHead>
           <TableHead className="w-[52px] p-0"></TableHead>
         </TableHeader>
         <TableBody>

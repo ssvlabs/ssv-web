@@ -44,11 +44,15 @@ export const NonSlashableAssetsTable: FCProps = ({
         {...props}
       >
         <TableHeader>
-          <TableHead>Validator Balance</TableHead>
-          <TableHead>SSV Balance</TableHead>
-          <TableHead className="text-right">Delegated Accounts</TableHead>
-          <TableHead className="text-right">Delegated</TableHead>
-          <TableHead className="text-right">Total Delegated Value</TableHead>
+          <TableHead className="w-[26%]">Validator Balance</TableHead>
+          <TableHead className="w-[16%]">SSV Balance</TableHead>
+          <TableHead className="text-right w-[18%]">
+            Delegated Accounts
+          </TableHead>
+          <TableHead className="text-right w-[18%]">Delegated</TableHead>
+          <TableHead className="text-right w-[18%]">
+            Total Delegated Value
+          </TableHead>
           <TableHead className="w-[52px] p-0"></TableHead>
         </TableHeader>
         <TableBody>

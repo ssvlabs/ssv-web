@@ -107,7 +107,7 @@ export const Button: ButtonFC = React.forwardRef<
     const _loadingText = loadingText ?? "Waiting for Wallet Confirmation...";
     return (
       <Comp
-        className={cn(
+        className={`text-[14px] ${cn(
           buttonVariants({
             variant: disabled ? "disabled" : variant,
             size,
@@ -118,7 +118,7 @@ export const Button: ButtonFC = React.forwardRef<
           {
             "opacity-50": isLoading,
           },
-        )}
+        )}`}
         aria-disabled={disabled}
         disabled={disabled}
         type={type}

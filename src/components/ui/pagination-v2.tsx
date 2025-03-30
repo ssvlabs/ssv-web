@@ -15,7 +15,7 @@ type PaginationProps = {
 };
 
 const Pagination = ({ pagination }: PaginationProps) => {
-  const options = Array.from({ length: 10 }, (_, i) => (i + 1) * 10);
+  const options = [10, 25, 50, 100];
   const paginationQuery = usePaginationQuery({
     page: pagination.page,
     perPage: pagination.per_page,

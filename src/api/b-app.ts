@@ -329,3 +329,17 @@ export const getDelegatedAsset = ({
     ),
   );
 };
+
+type GetGlobalValidatorsBalanceParams = {
+  account?: Address;
+};
+export const getGlobalNonSlashableAssets = async (
+  params: GetGlobalValidatorsBalanceParams,
+) => {
+  return api.get<BAppAssetResponse>(
+    endpoint(
+      "basedApp/getGlobalValidatorsBalance",
+      `?${new URLSearchParams(params)}`,
+    ),
+  );
+};

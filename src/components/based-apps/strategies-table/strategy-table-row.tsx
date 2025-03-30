@@ -39,7 +39,7 @@ export const StrategyTableRow: FCProps = ({
   const navigate = useNavigate();
 
   const navigateToStrategy = (strategy: Strategy) => {
-    navigate(`${strategy.id}`);
+    navigate(`/account/strategies/${strategy.id}`);
     useCreateStrategyContext.state.strategyData = strategy;
   };
 

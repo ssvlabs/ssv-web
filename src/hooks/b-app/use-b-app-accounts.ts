@@ -5,19 +5,21 @@ import { useSearchParams } from "react-router-dom";
 import { createDefaultPagination } from "@/lib/utils/api.ts";
 import { usePaginationQuery } from "@/lib/query-states/use-pagination.ts";
 import { useAccountMetadata } from "@/hooks/b-app/use-account-metadata.ts";
+import { parseAsString, useQueryState } from "nuqs";
 
 export const useBAppAccounts = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
   const { page, perPage } = usePaginationQuery();
-  const searchInput = searchParams.get("address") || "";
+  const [address] = useQueryState("address", parseAsString);
 
   const query = useChainedQuery({
-    queryKey: ["get_accounts", page, perPage, searchInput],
+    queryKey: ["get_accounts", page, perPage, address],
     staleTime: 0,
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    queryFn: () => getAccounts({ page, perPage, searchInput }),
+    queryFn: () =>
+      getAccounts({ page, perPage, searchInput: address || undefined }),
   });
 
   const pagination = query.data?.pagination || createDefaultPagination();

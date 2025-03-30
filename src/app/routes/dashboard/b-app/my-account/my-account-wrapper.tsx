@@ -36,11 +36,6 @@ const MyAccountWrapper = ({
       label: BUTTON_LABELS[AccountSelect.Strategy],
       count: myStrategies?.strategies?.length || 0,
     },
-    // {
-    //   type: AccountSelect.BApps,
-    //   label: BUTTON_LABELS[AccountSelect.BApps],
-    //   count: myBApps?.pagination?.total || 0,
-    // },
   ];
 
   const handleChangeFilter = (filter: AccountSelect) => {
@@ -52,26 +47,21 @@ const MyAccountWrapper = ({
       <Helmet>
         <title>My Account</title>
       </Helmet>
-      <Container
-        variant="vertical"
-        size="xl"
-        className={`${SWITCH_BUTTONS.some(({ count }) => count > 0) && "py-6"}`}
-      >
-        {/*<div>*/}
-        {SWITCH_BUTTONS.some(({ count }) => count > 0) && (
+      <Container variant="vertical" size="xl" className={`py-6`}>
+        {!!myStrategies?.strategies?.length && (
           <Switcher
             onBtnClick={handleChangeFilter as (value: string) => void}
-            buttons={SWITCH_BUTTONS.filter((btn) => Boolean(btn.count)).map(
-              (btn) => ({
-                ...btn,
-                isSelected: btn.type === filter,
-              }),
-            )}
+            buttons={SWITCH_BUTTONS.filter(
+              (btn) =>
+                btn.type === AccountSelect.Delegations || Boolean(btn.count),
+            ).map((btn) => ({
+              ...btn,
+              isSelected: btn.type === filter,
+            }))}
           />
         )}
         {children}
       </Container>
-      {/*</div>*/}
     </>
   );
 };

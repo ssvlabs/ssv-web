@@ -59,7 +59,6 @@ export const useAccountAssets = () => {
       tokenInfo: balancesMap.get(addr) || { balance: 0n, decimals: 18 },
     } satisfies AccountAsset;
   });
-
   return {
     assets: accountAssets,
     isLoading,

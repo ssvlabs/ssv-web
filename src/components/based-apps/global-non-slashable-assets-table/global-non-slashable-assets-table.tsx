@@ -15,6 +15,7 @@ import {
   currencyFormatter,
   formatSSV,
 } from "@/lib/utils/number";
+import { formatGwei } from "viem";
 
 export type GlobalNonSlashableAssetsTableProps = {
   data?: GetGlobalValidatorsBalanceResponse;
@@ -47,7 +48,7 @@ export const GlobalNonSlashableAssetsTable: FCProps = ({
           <TableHead className="w-[400px]">Validator Balance</TableHead>
           <TableHead>SSV Balance</TableHead>
           <TableHead className="text-right">Delegated Accounts</TableHead>
-          <TableHead className="text-right">Delegated</TableHead>
+          <TableHead className="text-right">Total Delegated</TableHead>
           <TableHead className="text-right">Total Delegated Value</TableHead>
         </TableHeader>
         <TableBody>
@@ -109,7 +110,9 @@ export const GlobalNonSlashableAssetsTable: FCProps = ({
                   className: "text-right",
                 })}
               >
-                {compactFormatter.format(Number(data.totalDelegatedFiat))}
+                {compactFormatter.format(
+                  Number(formatGwei(BigInt(data.totalNonSlashable))),
+                )}
               </TableCell>
               <TableCell
                 className={textVariants({
@@ -117,7 +120,7 @@ export const GlobalNonSlashableAssetsTable: FCProps = ({
                   className: "text-right text-gray-500",
                 })}
               >
-                {currencyFormatter.format(0)}
+                {currencyFormatter.format(+data.totalDelegatedFiat)}
               </TableCell>
             </TableRow>
           )}

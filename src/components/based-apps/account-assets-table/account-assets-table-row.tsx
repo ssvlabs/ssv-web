@@ -177,7 +177,7 @@ export const AccountAssetsTableRow: FCProps = ({
                   className="px-2"
                   to={`/account/strategies/${delegation.strategyId}`}
                 >
-                  {delegation.strategyId}
+                  Strategy {delegation.strategyId}
                 </Button>
               </TableCell>
               <TableCell

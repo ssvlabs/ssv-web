@@ -13,6 +13,7 @@ import AssetName from "@/components/ui/asset-name.tsx";
 import { TbExternalLink } from "react-icons/tb";
 import { useLinks } from "@/hooks/use-links.ts";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
+import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 export type BAppTableRowProps = {
   bApp: StrategyBApp;
   searchValue?: string;
@@ -59,6 +60,7 @@ export const StrategyBAppsTableRow: FCProps = ({
               }}
             />
             {bApp.bAppsMetadata?.name || shortenAddress(bApp.bAppId)}
+            <CopyBtn text={bApp.bAppId} />
           </div>
         </TableCell>
         <TableCell className="flex items-center justify-between">

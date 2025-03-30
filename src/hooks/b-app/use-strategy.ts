@@ -6,9 +6,9 @@ import { getStrategyById } from "@/api/b-app.ts";
 import { useAccountMetadata } from "@/hooks/b-app/use-account-metadata.ts";
 import { useStrategyMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
 
-export const useStrategy = () => {
+export const useStrategy = (_strategyId?: string) => {
   const params = useParams();
-  const strategyId = params.strategyId || "";
+  const strategyId = _strategyId || params.strategyId || "";
 
   const strategyQuery = useChainedQuery({
     queryKey: ["get_strategy_by_id", strategyId],

@@ -11,12 +11,12 @@ export const useBApp = (bAppId?: Address) => {
     enabled: !!bAppId,
   });
   const bApp = bAppQuery.data;
-
   const { data: bAppMetadata, isLoading: bAppMetadataIsLoading } =
     useBAppMetadata([{ id: bApp?.id || "", url: bApp?.metadataURI || "" }]);
 
   return {
     bApp: { ...bApp, ...bAppMetadata[`${bApp?.id}`] } as BApp & BAppsMetaData,
+    isLoading: bAppQuery.isLoading,
     bAppMetadataIsLoading,
   };
 };

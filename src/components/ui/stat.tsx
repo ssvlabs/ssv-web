@@ -6,9 +6,11 @@ import { FaInfoCircle } from "react-icons/fa";
 import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils/tw";
+import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 
 export type StatProps = {
   title: string;
+  copyBtnText?: string;
   content: ReactNode;
   tooltip?: ReactNode;
   subContent?: ReactNode;
@@ -24,6 +26,7 @@ export const Stat: StatFC = ({
   tooltip,
   content,
   subContent,
+  copyBtnText,
   ...props
 }) => {
   const ContentComponent = isString(content) || isNumber(content) ? Text : Slot;
@@ -40,8 +43,9 @@ export const Stat: StatFC = ({
             {tooltip && <FaInfoCircle className="size-3 text-gray-500" />}
           </div>
         </Tooltip>
-        <ContentComponent className="text-xl font-bold">
+        <ContentComponent className="text-xl font-bold flex items-center gap-2">
           {content}
+          {copyBtnText && <CopyBtn text={copyBtnText} />}
         </ContentComponent>
       </div>
       {subContent && (

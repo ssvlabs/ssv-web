@@ -94,7 +94,6 @@ const Delegate = ({
     await wait(0);
     navigate(`/account/my-delegations`);
   };
-
   return (
     <div
       style={{ backgroundColor: "rgba(11, 42, 60, 0.16)" }}

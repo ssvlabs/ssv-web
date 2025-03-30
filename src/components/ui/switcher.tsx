@@ -45,7 +45,7 @@ const Switcher = ({
     >
       {buttons.map((btn: BtnType) => (
         <div
-          onClick={() => btn.count > 0 && onBtnClick(btn.type)}
+          onClick={() => onBtnClick(btn.type)}
           className={cn(
             buttonVariants({
               variant: btn.isSelected ? "selected" : undefined,

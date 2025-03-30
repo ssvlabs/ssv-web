@@ -10,6 +10,8 @@ import { shortenAddress } from "@/lib/utils/strings.ts";
 import type { Strategy, StrategyMetadata } from "@/api/b-app.ts";
 import MyAccountWrapper from "@/app/routes/dashboard/b-app/my-account/my-account-wrapper.tsx";
 import { AccountSelect } from "@/app/routes/dashboard/b-app/my-account/my-account-wrapper.tsx";
+import { Tooltip } from "@/components/ui/tooltip.tsx";
+import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 
 const MyStrategies = () => {
   const { myStrategies, effectiveBalance, myAccountData } = useMyBAppAccount();
@@ -68,6 +70,13 @@ const MyStrategies = () => {
               ? shortenAddress(myAccountData?.name)
               : myAccountData?.name
             : shortenAddress(myAccountData?.id || "0x")}
+          <Tooltip
+            content={`Copy Address: ${shortenAddress(myAccountData?.id || "0x")}`}
+          >
+            <div className="flex items-center justify-center">
+              <CopyBtn text={myAccountData?.id} />
+            </div>
+          </Tooltip>
         </div>
       ),
       tooltipText: "Delegators",

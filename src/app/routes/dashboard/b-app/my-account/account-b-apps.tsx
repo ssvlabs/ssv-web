@@ -13,6 +13,7 @@ const AccountBApps = () => {
   const { myBApps, isLoading } = useMyBAppAccount();
   const [, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+
   const searchById = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
@@ -20,6 +21,7 @@ const AccountBApps = () => {
       return params;
     });
   };
+
   return (
     <MyAccountWrapper filter={AccountSelect.BApps}>
       <Container variant="vertical" size="xl" className="py-6">

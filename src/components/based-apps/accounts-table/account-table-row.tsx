@@ -63,17 +63,12 @@ export const AccountTableRow: FCProps = ({
         {shortenAddress(account.id)}
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        <div className="w-7 h-6 rounded-[4px] bg-primary-100 border border-primary-500 text-primary-500 flex items-center justify-center text-[10px]">
+        <div className="w-7 h-6 rounded-[4px] border bg-primary-50 border-primary-200 text-primary-600 flex items-center justify-center text-[10px]">
           {account.strategies}
         </div>
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        <div className="w-7 h-6 rounded-[4px] bg-primary-100 border border-primary-500 text-primary-500 flex items-center justify-center text-[10px]">
-          {account.bApps}
-        </div>
-      </TableCell>
-      <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        <div className="w-7 h-6 rounded-[4px] bg-primary-100 border border-primary-500 text-primary-500 flex items-center justify-center text-[10px]">
+        <div className="w-7 h-6 rounded-[4px] border bg-primary-50 border-primary-200 text-primary-600 flex items-center justify-center text-[10px]">
           {account.delegators}
         </div>
       </TableCell>

@@ -52,7 +52,6 @@ export const AccountsTable: FCProps = ({
           <TableHead>Account Name</TableHead>
           <TableHead>Account Address</TableHead>
           <TableHead>Strategies</TableHead>
-          <TableHead>bApps</TableHead>
           <TableHead>Delegators</TableHead>
           <TableHead>Total Delegated</TableHead>
           <TableHead>Total Delegated Value</TableHead>

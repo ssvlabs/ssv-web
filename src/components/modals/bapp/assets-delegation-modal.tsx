@@ -36,7 +36,7 @@ export const AssetsDelegationModal = () => {
   const { bAppContractAddress } = useSSVNetworkDetails();
   const { address } = useAccount();
   const navigate = useNavigate();
-  const { strategy, invalidate } = useStrategy();
+  const { strategy, invalidate } = useStrategy(meta.strategy?.id);
 
   const asset = useAsset(meta.asset);
   const delegated = useDelegatedAsset({

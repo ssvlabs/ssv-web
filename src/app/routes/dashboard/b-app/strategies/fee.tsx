@@ -32,7 +32,7 @@ const Fee = () => {
             </Text>
           </div>
           <div className="w-full flex items-center justify-between">
-            <div className="w-[140px] h-[80px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px]">
+            <div className="w-[140px] h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px]">
               {useCreateStrategyContext().selectedFee}%
             </div>
             <Slider
@@ -42,7 +42,7 @@ const Fee = () => {
               }
               value={useCreateStrategyContext().selectedFee}
             />
-            <div className="w-[140px] h-[80px] flex items-center justify-center bg-gray-100 border rounded-[12px]">
+            <div className="w-[140px] h-[80px] text-[28px] text-gray-5004 flex items-center justify-center bg-gray-100 rounded-[12px] text-gray-500">
               100%
             </div>
           </div>

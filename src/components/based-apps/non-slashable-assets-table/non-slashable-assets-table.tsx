@@ -49,7 +49,7 @@ export const NonSlashableAssetsTable: FCProps = ({
           <TableHead className="text-right">Delegated Accounts</TableHead>
           <TableHead className="text-right">Delegated</TableHead>
           <TableHead className="text-right">Total Delegated Value</TableHead>
-          <TableHead></TableHead>
+          <TableHead className="w-[52px] p-0"></TableHead>
         </TableHeader>
         <TableBody>
           {isLoading ? (

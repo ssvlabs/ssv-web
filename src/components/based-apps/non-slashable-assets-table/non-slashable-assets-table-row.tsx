@@ -183,9 +183,11 @@ export const NonSlashableAssetsTableRow: FCProps = ({
             ></TableCell>
           </TableRow>
           {asset.delegations.map((delegation, index) => {
-            const percentage = Number(delegation.percentage) / 10000;
+            const percentage = Number(
+              formatUnits(BigInt(delegation.percentage), 2),
+            );
             const delegatedValue =
-              Math.floor(percentage * effectiveBalance * 100) / 100;
+              Math.floor(percentage * effectiveBalance * 100) / 10000;
             return (
               <TableRow
                 onFocus={() => setFocusedRow(index)}

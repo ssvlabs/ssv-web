@@ -14,9 +14,9 @@ export const Assets: FC = () => {
 
   return (
     <Container variant="vertical" size="xl" className="py-6">
-      <Text variant="body-1-semibold" className="mb-4">
-        Assets
-      </Text>
+      <div className="h-10 flex justify-between w-full items-center">
+        <Text variant="body-1-semibold">Assets</Text>
+      </div>
       <GlobalNonSlashableAssetsTable
         data={globalNonSlashableAssets.data}
         isLoading={globalNonSlashableAssets.isLoading}

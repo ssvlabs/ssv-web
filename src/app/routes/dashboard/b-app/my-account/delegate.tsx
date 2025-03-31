@@ -31,7 +31,8 @@ const Delegate = ({
   const delegatedPercentage = percentage
     ? Number(formatUnits(BigInt(percentage), 2))
     : 0;
-  const [delegatePercent, setDelegatePercent] = useState(delegatedPercentage);
+  const [delegatePercent, setDelegatePercent] =
+    useState<number>(delegatedPercentage);
   const { effectiveBalance, restBalancePercentage } = useMyBAppAccount();
   const delegateBalance = useDelegateBalance();
   const updateDelegatedBalance = useUpdateDelegatedBalance();
@@ -95,6 +96,15 @@ const Delegate = ({
       options,
     );
   };
+  const inputSizes: Record<number, number> = {
+    [1]: 20,
+    [2]: 45,
+    [3]: 50,
+    [4]: 60,
+    [5]: 80,
+    [6]: 80,
+  };
+
   return (
     <div
       style={{ backgroundColor: "rgba(11, 42, 60, 0.16)" }}
@@ -173,7 +183,26 @@ const Delegate = ({
             <div className="flex items-center justify-between">
               <div className="flex flex-col items-center gap-2">
                 <div className="w-[140px] h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px]">
-                  {delegatePercent}%
+                  <input
+                    className={`
+                      bg-transparent  focus:outline-none border-none text-right w-[${inputSizes[String(delegatePercent).length]}px]
+                    `}
+                    type="number"
+                    value={delegatePercent}
+                    onChange={(e) => {
+                      const maxValue =
+                        Number(restBalancePercentage) +
+                        Number(delegatedPercentage);
+                      const currentValue = Number(e.target.value);
+                      const value =
+                        currentValue > maxValue ? maxValue : currentValue;
+                      String(value).length <= 5 &&
+                        setDelegatePercent(
+                          currentValue > maxValue ? maxValue : currentValue,
+                        );
+                    }}
+                  />
+                  <span>%</span>
                 </div>
                 <Text variant={"caption-medium"} className="text-gray-500">
                   Delegate

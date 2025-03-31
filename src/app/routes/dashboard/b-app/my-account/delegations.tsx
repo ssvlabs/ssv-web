@@ -37,7 +37,9 @@ const Delegations = () => {
   return (
     <MyAccountWrapper filter={AccountSelect.Delegations}>
       <Container variant="vertical" size="xl">
-        <Text variant="body-1-semibold">My Assets</Text>
+        <div className="h-10 flex justify-between w-full items-center">
+          <Text variant="body-1-semibold">My Assets</Text>
+        </div>
         <NonSlashableAssetsTable
           updateDelegatedValue={updateDelegatedValue}
           asset={data}

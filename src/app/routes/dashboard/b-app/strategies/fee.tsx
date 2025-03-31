@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Wizard } from "@/components/ui/wizard.tsx";
 import { CreateSteps, STEPS_LABELS } from "@/types/b-app.ts";
 const inputSizes: Record<number, number> = {
-  [1]: 20,
+  [1]: 25,
   [2]: 45,
   [3]: 50,
   [4]: 60,

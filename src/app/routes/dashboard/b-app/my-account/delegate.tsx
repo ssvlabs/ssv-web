@@ -97,7 +97,7 @@ const Delegate = ({
     );
   };
   const inputSizes: Record<number, number> = {
-    [1]: 20,
+    [1]: 25,
     [2]: 45,
     [3]: 50,
     [4]: 60,
@@ -196,10 +196,9 @@ const Delegate = ({
                       const currentValue = Number(e.target.value);
                       const value =
                         currentValue > maxValue ? maxValue : currentValue;
-                      String(value).length <= 5 &&
-                        setDelegatePercent(
-                          currentValue > maxValue ? maxValue : currentValue,
-                        );
+                      if (e.target.value.length <= 5) {
+                        setDelegatePercent(value);
+                      }
                     }}
                   />
                   <span>%</span>

@@ -1,9 +1,10 @@
 import { useBAppsAssets } from "@/hooks/b-app/use-assets";
 import { useSlashableAssets } from "@/hooks/b-app/use-slashable-assets";
-import type { SlashableAsset } from "@/api/b-app";
+import type { SlashableAsset, StrategyMetadata } from "@/api/b-app";
 import type { Address } from "abitype";
 import { useBalances } from "@/hooks/account/use-balances";
 import { normalizeTokenAddress } from "@/lib/utils/token";
+import { useStrategyMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
 
 export type AccountAsset = {
   slashableAsset?: SlashableAsset;
@@ -48,12 +49,46 @@ export const useAccountAssets = () => {
     return delegations || (balance && balance.balance > 0n);
   });
 
+  const metadatas = [...delegationsMap.values()].reduce(
+    (acc: { id: string; url: string }[], slashableAsset: SlashableAsset) => {
+      slashableAsset.deposits.forEach(
+        (
+          deposit: {
+            strategyId: string;
+            depositAmount: string;
+            fiatDepositAmount: string;
+            metadataURI?: string;
+          } & StrategyMetadata,
+        ) => {
+          acc.push({
+            id: deposit.strategyId,
+            url: deposit.metadataURI || "",
+          });
+        },
+      );
+      return acc;
+    },
+    [],
+  );
+  const { data: strategiesMetadata, isLoading: strategiesMetadataIsLoading } =
+    useStrategyMetadata(metadatas || []);
   const accountAssets = filteredAssets.map((a) => {
     const addr = normalizeTokenAddress(a.token).toLocaleLowerCase();
     const delegations = delegationsMap.get(addr);
     return {
       ...a,
-      slashableAsset: delegations,
+      slashableAsset: {
+        ...delegations,
+        deposits: delegations?.deposits.map((deposit) => ({
+          ...deposit,
+          ...strategiesMetadata[deposit.strategyId],
+        })) as ({
+          strategyId: string;
+          depositAmount: string;
+          fiatDepositAmount: string;
+          metadataURI?: string;
+        } & StrategyMetadata)[],
+      } as SlashableAsset,
       totalDepositAmount: delegations?.totalDepositAmount || "0",
       totalFiatDepositAmount: delegations?.totalFiatDepositAmount || "0",
       tokenInfo: balancesMap.get(addr) || { balance: 0n, decimals: 18 },
@@ -61,6 +96,6 @@ export const useAccountAssets = () => {
   });
   return {
     assets: accountAssets,
-    isLoading,
+    isLoading: isLoading || strategiesMetadataIsLoading,
   };
 };

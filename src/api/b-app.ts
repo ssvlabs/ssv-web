@@ -291,11 +291,12 @@ export const getBAppsAssetByToken = async ({
 
 export type SlashableAsset = {
   token: Address;
-  deposits: {
+  deposits: ({
     strategyId: string;
     depositAmount: string;
     fiatDepositAmount: string;
-  }[];
+    metadataURI?: string;
+  } & StrategyMetadata)[];
   totalDepositAmount: string;
   totalFiatDepositAmount: string;
 };

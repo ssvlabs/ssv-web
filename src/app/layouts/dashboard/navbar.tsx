@@ -222,7 +222,7 @@ export const Navbar: FCProps = ({ className, ...props }) => {
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <NavLink to={links.ssv.explorer} target="_blank">
-                  Explorer
+                  Explorer <HiOutlineExternalLink className="text-gray-600" />
                 </NavLink>
               </DropdownMenuItem>
               <DropdownMenuSeparator />

@@ -96,15 +96,6 @@ const Delegate = ({
       options,
     );
   };
-  const inputSizes: Record<number, number> = {
-    [1]: 25,
-    [2]: 45,
-    [3]: 50,
-    [4]: 60,
-    [5]: 80,
-    [6]: 80,
-  };
-
   return (
     <div
       style={{ backgroundColor: "rgba(11, 42, 60, 0.16)" }}
@@ -182,26 +173,30 @@ const Delegate = ({
             <Divider />
             <div className="flex items-center justify-between">
               <div className="flex flex-col items-center gap-2">
-                <div className="w-[140px] h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px] relative">
-                  <input
-                    className={`
-                      bg-transparent  focus:outline-none border-none text-right w-[${inputSizes[String(delegatePercent).length]}px]
+                <div className="w-[140px] h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px] ">
+                  <div
+                    className={`flex justify-center items-center m-0 px-${delegatePercent.toString().length === 1 ? 10 : delegatePercent.toString().length > 3 ? 4 : 8} py-4 relative`}
+                  >
+                    <input
+                      className={`
+                      bg-transparent m-0 focus:outline-none border-none text-right w-[100%]
                     `}
-                    type="number"
-                    value={delegatePercent}
-                    onChange={(e) => {
-                      const maxValue =
-                        Number(restBalancePercentage) +
-                        Number(delegatedPercentage);
-                      const currentValue = Number(e.target.value);
-                      const value =
-                        currentValue > maxValue ? maxValue : currentValue;
-                      if (e.target.value.length <= 5) {
-                        setDelegatePercent(value);
-                      }
-                    }}
-                  />
-                  <span>%</span>
+                      type="number"
+                      value={delegatePercent}
+                      onChange={(e) => {
+                        const maxValue =
+                          Number(restBalancePercentage) +
+                          Number(delegatedPercentage);
+                        const currentValue = Number(e.target.value);
+                        const value =
+                          currentValue > maxValue ? maxValue : currentValue;
+                        if (e.target.value.length <= 5) {
+                          setDelegatePercent(value);
+                        }
+                      }}
+                    />
+                    <span>%</span>
+                  </div>
                 </div>
                 <Text variant={"caption-medium"} className="text-gray-500">
                   Delegate

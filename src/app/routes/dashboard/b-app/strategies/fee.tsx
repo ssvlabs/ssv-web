@@ -5,15 +5,9 @@ import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 import { useNavigate } from "react-router-dom";
 import { Wizard } from "@/components/ui/wizard.tsx";
 import { CreateSteps, STEPS_LABELS } from "@/types/b-app.ts";
-const inputSizes: Record<number, number> = {
-  [1]: 25,
-  [2]: 45,
-  [3]: 50,
-  [4]: 60,
-  [5]: 80,
-  [6]: 80,
-};
+
 const Fee = () => {
+  const selectedValue = useCreateStrategyContext().selectedFee;
   const navigate = useNavigate();
   return (
     <Wizard
@@ -39,22 +33,26 @@ const Fee = () => {
             </Text>
           </div>
           <div className="w-full flex items-center justify-between">
-            <div className="w-[140px] h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px] relative">
-              <input
-                className={`
-                      bg-transparent  focus:outline-none border-none text-right w-[${inputSizes[String(useCreateStrategyContext().selectedFee).length]}px]
+            <div className="w-[140px] h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px] ">
+              <div
+                className={`flex justify-center items-center m-0 px-${selectedValue.toString().length === 1 ? 10 : selectedValue.toString().length > 3 ? 4 : 8} py-4 relative`}
+              >
+                <input
+                  className={`
+                      bg-transparent  focus:outline-none border-none text-right w-full
                     `}
-                type="number"
-                value={useCreateStrategyContext().selectedFee}
-                onChange={(e) => {
-                  if (e.target.value.length <= 5) {
-                    useCreateStrategyContext.state.selectedFee = Number(
-                      e.target.value,
-                    );
-                  }
-                }}
-              />
-              %{/*{useCreateStrategyContext().selectedFee}*/}
+                  type="number"
+                  value={useCreateStrategyContext().selectedFee}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 5) {
+                      useCreateStrategyContext.state.selectedFee = Number(
+                        e.target.value,
+                      );
+                    }
+                  }}
+                />
+                %{/*{useCreateStrategyContext().selectedFee}*/}
+              </div>
             </div>
             <Slider
               maxValue={100}

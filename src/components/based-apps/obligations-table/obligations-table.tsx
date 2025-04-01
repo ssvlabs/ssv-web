@@ -13,7 +13,7 @@ const ObligationsTable = ({
 }) => {
   return (
     <div className="flex flex-col w-full">
-      <Table className={"w-full rounded-t-xl overflow-hidden"}>
+      <Table className={"w-full rounded-xl overflow-hidden"}>
         <TableHeader>
           <TableHead>Asset</TableHead>
           <TableHead>Contract Address</TableHead>

@@ -1,5 +1,4 @@
 import { TableCell, TableRow } from "@/components/ui/table.tsx";
-import { shortenAddress } from "@/lib/utils/strings.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { textVariants } from "@/components/ui/text.tsx";
 import { AssetLogo } from "@/components/ui/asset-logo.tsx";
@@ -8,8 +7,8 @@ import { Input } from "@/components/ui/input.tsx";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { Text } from "@/components/ui/text.tsx";
 import AssetName from "@/components/ui/asset-name.tsx";
-import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 import { useLinks } from "@/hooks/use-links.ts";
+import { AddressDisplay } from "@/components/ui/address";
 
 const ObligationTableRow = ({ obligation }: { obligation: `0x${string}` }) => {
   const { state } = useCreateStrategyContext;
@@ -25,17 +24,15 @@ const ObligationTableRow = ({ obligation }: { obligation: `0x${string}` }) => {
         </div>
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        <div className={`flex items-center gap-2`}>
-          <Button
-            as="a"
-            target="_blank"
-            variant="link"
-            href={`${etherscan}/token/${obligation}`}
-          >
-            {shortenAddress(obligation)}
-          </Button>
-          <CopyBtn variant="subtle" text={obligation} />
-        </div>
+        <AddressDisplay
+          copyable
+          address={obligation}
+          linkProps={{
+            to: `${etherscan}/token/${obligation}`,
+            className: "text-primary-500",
+            target: "_blank",
+          }}
+        />
       </TableCell>
       <TableCell
         className={`${textVariants({ variant: "body-3-medium" })} py-0`}
@@ -80,7 +77,7 @@ const ObligationTableRow = ({ obligation }: { obligation: `0x${string}` }) => {
                   [obligation]: 0,
                 };
               }}
-              className={`${textVariants({ variant: "body-3-medium" })} text-white w-[116px] h-[32px]`}
+              className={`${textVariants({ variant: "body-3-medium" })} text-[#ffffff] w-[116px] h-[32px]`}
             >
               Add
             </Button>

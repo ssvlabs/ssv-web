@@ -182,7 +182,7 @@ const Delegate = ({
             <Divider />
             <div className="flex items-center justify-between">
               <div className="flex flex-col items-center gap-2">
-                <div className="w-[140px] h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px]">
+                <div className="w-[140px] h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px] relative">
                   <input
                     className={`
                       bg-transparent  focus:outline-none border-none text-right w-[${inputSizes[String(delegatePercent).length]}px]

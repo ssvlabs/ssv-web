@@ -21,7 +21,7 @@ export enum KeysharesValidationErrors {
 
 export const DKG_VERSIONS = {
   OLD: "2.1.0",
-  NEW: "3.0.1",
+  NEW: "3.0.3",
 };
 
 export class KeysharesValidationError extends Error {

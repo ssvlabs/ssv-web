@@ -7,10 +7,10 @@ import { Wizard } from "@/components/ui/wizard.tsx";
 import { CreateSteps, STEPS_LABELS } from "@/types/b-app.ts";
 import { NumericFormat } from "react-number-format";
 import { Input } from "@/components/ui/input";
+import { percentageMaxHandler } from "@/lib/utils/number-input";
 
 const Fee = () => {
   const selectedValue = useCreateStrategyContext().selectedFee;
-  console.log("selectedValue:", selectedValue);
   const navigate = useNavigate();
   return (
     <Wizard
@@ -41,14 +41,12 @@ const Fee = () => {
               className="w-[140px] text-center h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px] overflow-hidden [&>input]:text-center"
               value={selectedValue}
               decimalScale={2}
-              isAllowed={(values) => {
-                const { floatValue } = values;
-                if (floatValue && floatValue > 100) {
-                  useCreateStrategyContext.state.selectedFee = 100;
-                  return false;
-                }
-                return !floatValue || floatValue <= 100;
-              }}
+              allowLeadingZeros={false}
+              isAllowed={percentageMaxHandler({
+                setter: (value) =>
+                  (useCreateStrategyContext.state.selectedFee = value),
+                maxValue: 100,
+              })}
               onValueChange={(values) =>
                 (useCreateStrategyContext.state.selectedFee =
                   values.floatValue ?? 0)

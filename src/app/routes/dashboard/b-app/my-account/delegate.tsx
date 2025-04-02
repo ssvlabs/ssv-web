@@ -17,6 +17,9 @@ import { retryPromiseUntilSuccess } from "@/lib/utils/promise.ts";
 import { queryClient } from "@/lib/react-query.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { getNonSlashableAssets } from "@/api/b-app.ts";
+import { NumericFormat } from "react-number-format";
+import { Input } from "@/components/ui/input";
+import { percentageMaxHandler } from "@/lib/utils/number-input";
 
 const Delegate = ({
   closeDelegatePopUp,
@@ -96,6 +99,8 @@ const Delegate = ({
       options,
     );
   };
+
+  const maxValue = restBalancePercentage + delegatedPercentage;
   return (
     <div
       style={{ backgroundColor: "rgba(11, 42, 60, 0.16)" }}
@@ -173,37 +178,27 @@ const Delegate = ({
             <Divider />
             <div className="flex items-center justify-between">
               <div className="flex flex-col items-center gap-2">
-                <div className="w-[140px] h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px] ">
-                  <div
-                    className={`flex justify-center items-center m-0 px-${delegatePercent.toString().length === 1 ? 10 : delegatePercent.toString().length > 3 ? 4 : 8} py-4 relative`}
-                  >
-                    <input
-                      className={`
-                      bg-transparent m-0 focus:outline-none border-none text-right w-[100%]
-                    `}
-                      type="number"
-                      value={delegatePercent}
-                      onChange={(e) => {
-                        const maxValue =
-                          Number(restBalancePercentage) +
-                          Number(delegatedPercentage);
-                        const currentValue = Number(e.target.value);
-                        const value =
-                          currentValue > maxValue ? maxValue : currentValue;
-                        if (e.target.value.length <= 5) {
-                          setDelegatePercent(value);
-                        }
-                      }}
-                    />
-                    <span>%</span>
-                  </div>
-                </div>
+                <NumericFormat
+                  className="w-[140px] text-center h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px] overflow-hidden [&>input]:text-center"
+                  value={delegatePercent}
+                  decimalScale={2}
+                  allowLeadingZeros={false}
+                  isAllowed={percentageMaxHandler({
+                    setter: setDelegatePercent,
+                    maxValue,
+                  })}
+                  onValueChange={(values) =>
+                    setDelegatePercent(values.floatValue || 0)
+                  }
+                  customInput={Input}
+                  suffix="%"
+                />
                 <Text variant={"caption-medium"} className="text-gray-500">
                   Delegate
                 </Text>
               </div>
               <Slider
-                maxValue={restBalancePercentage + delegatedPercentage}
+                maxValue={maxValue}
                 setValue={setDelegatePercent}
                 value={delegatePercent}
               />

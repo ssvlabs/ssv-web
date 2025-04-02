@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@/components/ui/text";
-import { NumberInput } from "@/components/ui/number-input";
+import { BigNumberInput } from "@/components/ui/number-input";
 import { formatUnits, parseEther } from "viem";
 import { globals } from "@/config";
 import { Button } from "@/components/ui/button";
@@ -112,7 +112,7 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
               <FormItem>
                 <FormLabel>Annual fee</FormLabel>
                 <FormControl>
-                  <NumberInput
+                  <BigNumberInput
                     displayDecimals={7}
                     id="register-operator-fee"
                     value={field.value}

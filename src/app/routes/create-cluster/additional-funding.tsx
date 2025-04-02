@@ -6,7 +6,7 @@ import { EstimatedOperationalRunway } from "@/components/cluster/estimated-opera
 import { Divider } from "@/components/ui/divider";
 import { ClusterBalance } from "@/components/cluster/cluster-balance";
 import { Button } from "@/components/ui/button";
-import { NumberInput } from "@/components/ui/number-input";
+import { BigNumberInput } from "@/components/ui/number-input";
 import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { EstimatedOperationalRunwayAlert } from "@/components/cluster/estimated-operational-runway-alert";
@@ -134,7 +134,7 @@ export const AdditionalFunding: FC = () => {
                           render={({ field }) => (
                             <FormItem className="w-full">
                               <FormControl>
-                                <NumberInput
+                                <BigNumberInput
                                   value={field.value}
                                   max={ssvBalance?.value ?? 0n}
                                   onChange={field.onChange}

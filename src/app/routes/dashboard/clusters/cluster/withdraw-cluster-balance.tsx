@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
-import { NumberInput } from "@/components/ui/number-input";
+import { BigNumberInput } from "@/components/ui/number-input";
 import { Text } from "@/components/ui/text";
 import { getClusterQueryOptions } from "@/hooks/cluster/use-cluster";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
@@ -124,7 +124,7 @@ export const WithdrawClusterBalance: FC = () => {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <NumberInput
+                  <BigNumberInput
                     placeholder="0"
                     max={clusterBalance.data ?? 0n}
                     value={field.value}

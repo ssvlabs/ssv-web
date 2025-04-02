@@ -96,7 +96,23 @@ export const WithAllowance: WithAllowanceFC = ({
     [canProceed, props.children, size],
   );
 
-  if (allowance.isLoading || isUndefined(allowance.data)) return props.children;
+  const children = useMemo(
+    () =>
+      React.Children.map(props.children, (child) => {
+        if (React.isValidElement(child)) {
+          return React.cloneElement(child, {
+            // @ts-expect-error - disabled prop
+            isLoading: allowance.isLoading,
+            size,
+          });
+        }
+        return child;
+      }),
+    [allowance.isLoading, props.children, size],
+  );
+
+  if (allowance.isLoading || isUndefined(allowance.data)) return children;
+
   if (allowance.isSuccess && hasAllowance && approver.wait.status === "idle")
     return props.children;
 

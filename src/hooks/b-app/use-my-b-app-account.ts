@@ -87,29 +87,24 @@ export const useMyBAppAccount = () => {
       })) || [],
     );
 
-  const totalPercentage = !Number(reactQueryData.data?.effectiveBalance)
-    ? 0
-    : reactQueryData?.data?.delegations.reduce(
-        (
-          acc: number,
-          delegation: { percentage: string; receiver: { id: string } },
-        ) => {
-          const formattedPercentage = convertToPercentage(
-            delegation.percentage,
-          );
-          return Math.round((acc + Number(formattedPercentage)) * 100) / 100;
-        },
-        0,
-      );
+  const totalPercentage = reactQueryData?.data?.delegations.reduce(
+    (
+      acc: number,
+      delegation: { percentage: string; receiver: { id: string } },
+    ) => {
+      const formattedPercentage = convertToPercentage(delegation.percentage);
+      return Math.round((acc + Number(formattedPercentage)) * 100) / 100;
+    },
+    0,
+  );
 
   const totalDelegatedValue2 = Math.round(
     ((totalPercentage || 0) / 100) *
       Number(reactQueryData?.data?.effectiveBalance || 0n),
   );
 
-  const restBalancePercentage = !Number(reactQueryData.data?.effectiveBalance)
-    ? 0
-    : Math.round((100 - (totalPercentage || 0)) * 100) / 100;
+  const restBalancePercentage =
+    Math.round((100 - (totalPercentage || 0)) * 100) / 100;
   return {
     data: reactQueryData.data,
     myStrategies:

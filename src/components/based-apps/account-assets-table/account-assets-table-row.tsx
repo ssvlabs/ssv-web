@@ -4,11 +4,11 @@ import { textVariants } from "@/components/ui/text";
 import { cn } from "@/lib/utils/tw";
 import { useState, type ComponentPropsWithoutRef, type FC } from "react";
 import { currencyFormatter, formatSSV } from "@/lib/utils/number";
-import { ChevronDown } from "lucide-react";
 import type { AccountAsset } from "@/hooks/b-app/use-account-assets";
 import { Link } from "react-router-dom";
-import { Button, IconButton } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import AssetName from "@/components/ui/asset-name";
+import ExpandButton from "@/components/ui/expand-button.tsx";
 export type AccountAssetsTableRowProps = {
   asset: AccountAsset;
 };
@@ -92,19 +92,7 @@ export const AccountAssetsTableRow: FCProps = ({
           })}
         >
           {hasDelegations ? (
-            <IconButton
-              variant="ghost"
-              onClick={(ev) => {
-                ev.stopPropagation();
-                setIsOpen(!isOpen);
-              }}
-            >
-              <ChevronDown
-                className={cn("size-4", {
-                  "transform rotate-180": isOpen,
-                })}
-              />
-            </IconButton>
+            <ExpandButton setIsOpen={setIsOpen} isOpen={isOpen} />
           ) : null}
         </TableCell>
       </TableRow>

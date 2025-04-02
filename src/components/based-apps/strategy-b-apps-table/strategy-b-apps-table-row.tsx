@@ -12,8 +12,8 @@ import { AssetLogo } from "@/components/ui/asset-logo.tsx";
 import AssetName from "@/components/ui/asset-name.tsx";
 import { TbExternalLink } from "react-icons/tb";
 import { useLinks } from "@/hooks/use-links.ts";
-import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import { CopyBtn } from "@/components/ui/copy-btn.tsx";
+import ExpandButton from "@/components/ui/expand-button.tsx";
 export type BAppTableRowProps = {
   bApp: StrategyBApp;
   searchValue?: string;
@@ -32,7 +32,6 @@ export const StrategyBAppsTableRow: FCProps = ({
 }) => {
   const { etherscan } = useLinks();
   const [isInnerOpen, setIsInnerOpen] = useState(false);
-  const AngleComponent = isInnerOpen ? FaAngleUp : FaAngleDown;
   if (
     searchValue &&
     ((bApp.bAppsMetadata?.name &&
@@ -69,7 +68,7 @@ export const StrategyBAppsTableRow: FCProps = ({
             addresses={bApp.tokens.map((s) => s) as Address[]}
           />
           {Boolean(bApp.assets.length) && (
-            <AngleComponent onClick={() => setIsInnerOpen(!isInnerOpen)} />
+            <ExpandButton setIsOpen={setIsInnerOpen} isOpen={isInnerOpen} />
           )}
         </TableCell>
       </TableRow>

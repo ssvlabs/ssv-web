@@ -7,11 +7,11 @@ import {
   currencyFormatter,
   formatSSV,
 } from "@/lib/utils/number";
-import { ChevronDown } from "lucide-react";
-import { Button, IconButton } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { shortenAddress } from "@/lib/utils/strings";
 import { formatGwei, formatUnits } from "viem";
 import type { NonSlashableAsset } from "@/api/b-app";
+import ExpandButton from "@/components/ui/expand-button.tsx";
 
 export type NonSlashableAssetsTableRowProps = {
   asset: NonSlashableAsset;
@@ -112,19 +112,7 @@ export const NonSlashableAssetsTableRow: FCProps = ({
           })}
         >
           {hasDelegations ? (
-            <IconButton
-              variant="ghost"
-              onClick={(ev) => {
-                ev.stopPropagation();
-                setIsOpen(!isOpen);
-              }}
-            >
-              <ChevronDown
-                className={cn("size-4", {
-                  "transform rotate-180": isOpen,
-                })}
-              />
-            </IconButton>
+            <ExpandButton setIsOpen={setIsOpen} isOpen={isOpen} />
           ) : null}
         </TableCell>
       </TableRow>

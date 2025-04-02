@@ -15,7 +15,7 @@ import { shortenAddress } from "@/lib/utils/strings.ts";
 import { cn } from "@/lib/utils/tw";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useState } from "react";
-import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
+import ExpandButton from "@/components/ui/expand-button.tsx";
 
 export type AssetsTableRowProps = {
   searchValue?: string;
@@ -39,7 +39,6 @@ export const StrategyAssetsTableRow: FCProps = ({
 }) => {
   const [isInnerOpen, setIsInnerOpen] = useState(false);
   const { strategy } = useStrategy();
-  const AngleComponent = isInnerOpen ? FaAngleUp : FaAngleDown;
   const { name, symbol } = useAsset(asset?.token || "");
   if (searchValue && !name.toLowerCase().includes(searchValue?.toLowerCase())) {
     return;
@@ -95,7 +94,7 @@ export const StrategyAssetsTableRow: FCProps = ({
             </Button>
           )}
           {Boolean((asset?.delegations || []).length) && (
-            <AngleComponent onClick={() => setIsInnerOpen(!isInnerOpen)} />
+            <ExpandButton setIsOpen={setIsInnerOpen} isOpen={isInnerOpen} />
           )}
         </TableCell>
       </TableRow>

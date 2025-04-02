@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Loading } from "@/components/ui/Loading";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
-import { NumberInput } from "@/components/ui/number-input";
+import { BigNumberInput } from "@/components/ui/number-input";
 import { Text } from "@/components/ui/text";
 import { toast } from "@/components/ui/use-toast";
 import { WithAllowance } from "@/components/with-allowance/with-allowance";
@@ -256,7 +256,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
                             render={({ field }) => (
                               <FormItem>
                                 <FormControl>
-                                  <NumberInput
+                                  <BigNumberInput
                                     className="text-gray-800"
                                     value={BigInt(field.value)}
                                     onChange={(value) =>

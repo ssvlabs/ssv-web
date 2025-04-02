@@ -2,7 +2,7 @@ import { AssetLogo } from "@/components/ui/asset-logo";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Divider } from "@/components/ui/divider";
-import { NumberInput } from "@/components/ui/number-input";
+import { BigNumberInput } from "@/components/ui/number-input";
 import { Text, textVariants } from "@/components/ui/text";
 import { WithAllowance } from "@/components/with-allowance/with-allowance";
 import { useAccount } from "@/hooks/account/use-account";
@@ -140,7 +140,7 @@ export const AssetsDelegationModal = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <NumberInput
+                    <BigNumberInput
                       max={asset.balance}
                       value={field.value}
                       decimals={asset.decimals}

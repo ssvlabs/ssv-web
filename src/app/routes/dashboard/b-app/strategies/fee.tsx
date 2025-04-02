@@ -5,9 +5,12 @@ import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 import { useNavigate } from "react-router-dom";
 import { Wizard } from "@/components/ui/wizard.tsx";
 import { CreateSteps, STEPS_LABELS } from "@/types/b-app.ts";
+import { NumericFormat } from "react-number-format";
+import { Input } from "@/components/ui/input";
 
 const Fee = () => {
   const selectedValue = useCreateStrategyContext().selectedFee;
+  console.log("selectedValue:", selectedValue);
   const navigate = useNavigate();
   return (
     <Wizard
@@ -32,36 +35,35 @@ const Fee = () => {
               limitations) to align with market dynamics.
             </Text>
           </div>
+
           <div className="w-full flex items-center justify-between">
-            <div className="w-[140px] h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px] ">
-              <div
-                className={`flex justify-center items-center m-0 px-${selectedValue.toString().length === 1 ? 10 : selectedValue.toString().length > 3 ? 4 : 8} py-4 relative`}
-              >
-                <input
-                  className={`
-                      bg-transparent  focus:outline-none border-none text-right w-full
-                    `}
-                  type="number"
-                  value={useCreateStrategyContext().selectedFee}
-                  onChange={(e) => {
-                    if (e.target.value.length <= 5) {
-                      useCreateStrategyContext.state.selectedFee = Number(
-                        e.target.value,
-                      );
-                    }
-                  }}
-                />
-                %{/*{useCreateStrategyContext().selectedFee}*/}
-              </div>
-            </div>
+            <NumericFormat
+              className="w-[140px] text-center h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px] overflow-hidden [&>input]:text-center"
+              value={selectedValue}
+              decimalScale={2}
+              isAllowed={(values) => {
+                const { floatValue } = values;
+                if (floatValue && floatValue > 100) {
+                  useCreateStrategyContext.state.selectedFee = 100;
+                  return false;
+                }
+                return !floatValue || floatValue <= 100;
+              }}
+              onValueChange={(values) =>
+                (useCreateStrategyContext.state.selectedFee =
+                  values.floatValue ?? 0)
+              }
+              customInput={Input}
+              suffix="%"
+            />
             <Slider
               maxValue={100}
-              setValue={(value) =>
-                (useCreateStrategyContext.state.selectedFee = value)
-              }
+              setValue={(value) => {
+                return (useCreateStrategyContext.state.selectedFee = value);
+              }}
               value={useCreateStrategyContext().selectedFee}
             />
-            <div className="w-[140px] h-[80px] text-[28px] text-gray-5004 flex items-center justify-center bg-gray-100 rounded-[12px] text-gray-500">
+            <div className="w-[140px] h-[80px] text-[28px] flex items-center justify-center bg-gray-100 rounded-[12px] text-gray-500">
               100%
             </div>
           </div>

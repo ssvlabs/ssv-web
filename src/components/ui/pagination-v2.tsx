@@ -43,7 +43,7 @@ const Pagination = ({ pagination }: PaginationProps) => {
           Rows per page:&nbsp;
           <div className="relative inline-block">
             <select
-              className="w-[55px] h-[32px] pl-2 pr-6 border rounded-md text-center focus:outline-none focus:ring-0 bg-gray-50 border-gray-400 appearance-none"
+              className="w-[60px] h-[32px] pl-2 pr-6 border rounded-md text-center focus:outline-none focus:ring-0 bg-gray-50 border-gray-400 appearance-none"
               defaultValue={paginationQuery.perPage}
               onChange={(event) => {
                 paginationQuery.setPerPage(parseInt(event.target.value));

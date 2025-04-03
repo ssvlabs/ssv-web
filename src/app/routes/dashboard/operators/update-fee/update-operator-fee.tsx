@@ -141,7 +141,7 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
                                 <Button
                                   as="a"
                                   variant="link"
-                                  href="https://docs.ssv.network/learn/operators/update-fee#fee-increase-limits"
+                                  href="https://docs.ssv.network/operators/operator-onboarding/update-fee/#fee-increase-limitations"
                                   target="_blank"
                                 >
                                   Learn more

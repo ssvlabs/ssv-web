@@ -71,7 +71,7 @@ const UploadProofs = () => {
                 file generated during your validator ceremony to proceed.{" "}
                 <Button
                   as="a"
-                  href="https://docs.ssv.network/~/changes/jp5KZr2yy7T6b0RmeOmN/developers/tools/ssv-dkg-client/ceremony-output-summary#files"
+                  href="https://docs.ssv.network/developers/tools/ssv-dkg-client/ceremony-output-summary#files"
                   variant="link"
                   target="_blank"
                 >
@@ -86,7 +86,7 @@ const UploadProofs = () => {
               a DKG ceremony.{" "}
               <Button
                 as="a"
-                href="https://docs.ssv.network/~/changes/jp5KZr2yy7T6b0RmeOmN/developers/tools/ssv-dkg-client/change-operator-set-and-reshare-validator-key-shares"
+                href="https://docs.ssv.network/developers/tools/ssv-dkg-client/change-operator-set-and-reshare-validator-key-shares"
                 variant="link"
                 target="_blank"
               >

@@ -5,6 +5,9 @@ import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import type { UseQueryOptions } from "@/lib/react-query";
 import { getDefaultChainedQueryOptions, enabled } from "@/lib/react-query";
 import { usePaginationQuery } from "@/lib/query-states/use-pagination";
+import { isERC20Tokens } from "@/lib/utils/erc-20-verification.ts";
+import { getChainId } from "@wagmi/core";
+import { config } from "@/wagmi/config.ts";
 
 export const getBAppsAssetsQueryOptions = (
   page: number = 1,
@@ -40,9 +43,23 @@ export const useBAppsAssets = (perPage = 10, options: UseQueryOptions = {}) => {
 
   const assets = query.data || [];
 
+  const erc20Verification = useChainedQuery({
+    queryKey: ["erc20Verification", query.data],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    queryFn: () =>
+      isERC20Tokens(
+        assets.map(({ token }) => token),
+        getChainId(config),
+      ),
+    enabled: (query.data || []).length > 0,
+  });
+
   return {
     query,
-    assets,
+    assets: assets.filter(({ token }) => (erc20Verification.data || {})[token]),
     pagination,
     hasNext,
     hasPrev,

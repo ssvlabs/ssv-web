@@ -138,7 +138,7 @@ const CeremonySection = ({
                           reshare. For additional details, refer to our{" "}
                           <Button
                             as="a"
-                            href="https://docs.ssv.network/~/changes/jp5KZr2yy7T6b0RmeOmN/developers/tools/ssv-dkg-client/dkg-tool-commands-and-configuration#additional-flag-for-generate-resign-msg-option"
+                            href="https://docs.ssv.network/developers/tools/ssv-dkg-client/dkg-tool-commands-and-configuration#additional-flag-for-generate-resign-msg-option"
                             variant="link"
                             size="xl"
                             target="_blank"
@@ -228,7 +228,7 @@ const CeremonySection = ({
                       solutions in the{" "}
                       <Button
                         as="a"
-                        href="https://docs.ssv.network/~/changes/jp5KZr2yy7T6b0RmeOmN/developers/tools/ssv-dkg-client/troubleshooting"
+                        href="https://docs.ssv.network/developers/tools/ssv-dkg-client/troubleshooting"
                         variant="link"
                         target="_blank"
                       >

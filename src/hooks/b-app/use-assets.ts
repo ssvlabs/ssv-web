@@ -5,9 +5,9 @@ import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import type { UseQueryOptions } from "@/lib/react-query";
 import { getDefaultChainedQueryOptions, enabled } from "@/lib/react-query";
 import { usePaginationQuery } from "@/lib/query-states/use-pagination";
-import { isERC20Tokens } from "@/lib/utils/erc-20-verification.ts";
-import { getChainId } from "@wagmi/core";
-import { config } from "@/wagmi/config.ts";
+import { fetchTotalSupply } from "@/lib/contract-interactions/erc-20/read/use-total-supply.ts";
+import { fetchBalanceOf } from "@/lib/contract-interactions/erc-20/read/use-balance-of.ts";
+import { useAccount } from "@/hooks/account/use-account.ts";
 
 export const getBAppsAssetsQueryOptions = (
   page: number = 1,
@@ -26,6 +26,8 @@ export const getBAppsAssetsQueryOptions = (
 };
 
 export const useBAppsAssets = (perPage = 10, options: UseQueryOptions = {}) => {
+  const { address } = useAccount();
+
   const paginationQuery = usePaginationQuery({
     page: 1,
     perPage: perPage,
@@ -49,14 +51,23 @@ export const useBAppsAssets = (perPage = 10, options: UseQueryOptions = {}) => {
     gcTime: 0,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    queryFn: () =>
-      isERC20Tokens(
-        assets.map(({ token }) => token),
-        getChainId(config),
-      ),
+    queryFn: async () => {
+      const results: Record<`0x${string}`, boolean> = {};
+      await Promise.all(
+        assets.map(async ({ token }) => {
+          try {
+            await fetchTotalSupply(token);
+            await fetchBalanceOf(token, { account: address || "0x" });
+            results[token] = true;
+          } catch {
+            results[token] = false;
+          }
+        }),
+      );
+      return results;
+    },
     enabled: (query.data || []).length > 0,
   });
-
   return {
     query,
     assets: assets.filter(({ token }) => (erc20Verification.data || {})[token]),

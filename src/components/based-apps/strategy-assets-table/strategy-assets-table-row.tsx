@@ -11,11 +11,11 @@ import {
   currencyFormatter,
   formatSSV,
 } from "@/lib/utils/number.ts";
-import { shortenAddress } from "@/lib/utils/strings.ts";
 import { cn } from "@/lib/utils/tw";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useState } from "react";
 import ExpandButton from "@/components/ui/expand-button.tsx";
+import { AddressDisplay } from "@/components/ui/address";
 
 export type AssetsTableRowProps = {
   searchValue?: string;
@@ -149,7 +149,9 @@ export const StrategyAssetsTableRow: FCProps = ({
                         "/images/operator_default_background/light.svg";
                     }}
                   />
-                  {bApp.bAppsMetadata?.name || shortenAddress(bApp.bAppId)}
+                  {bApp.bAppsMetadata?.name || (
+                    <AddressDisplay address={bApp.bAppId} copyable />
+                  )}
                 </div>
               </TableCell>
               <TableCell />

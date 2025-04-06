@@ -39,7 +39,7 @@ export const AccountAssetsTableRow: FCProps = ({
         }}
       >
         <TableCell
-          className={`w-[320px] ${textVariants({ variant: "body-3-medium" })}`}
+          className={` w-[343px] ${textVariants({ variant: "body-3-medium" })}`}
         >
           <div className="flex items-center gap-2">
             <AssetLogo address={asset.token} />
@@ -88,7 +88,7 @@ export const AccountAssetsTableRow: FCProps = ({
         <TableCell
           className={textVariants({
             variant: "body-3-medium",
-            className: "w-[52px] p-0",
+            className: "w-[52px] p-0 flex justify-center items-center",
           })}
         >
           {hasDelegations ? (

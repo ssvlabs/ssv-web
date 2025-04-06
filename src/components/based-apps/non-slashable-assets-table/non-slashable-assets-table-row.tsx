@@ -108,7 +108,7 @@ export const NonSlashableAssetsTableRow: FCProps = ({
         <TableCell
           className={textVariants({
             variant: "body-3-medium",
-            className: "w-[52px] p-0",
+            className: "w-[52px] p-0 flex items-center justify-center",
           })}
         >
           {hasDelegations ? (
@@ -218,7 +218,7 @@ export const NonSlashableAssetsTableRow: FCProps = ({
                 <TableCell
                   className={textVariants({
                     variant: "body-3-medium",
-                    className: "text-right text-gray-500 p-0",
+                    className: "text-right text-gray-500 p-0 px-7",
                   })}
                 >
                   {focusedRow === index && updateDelegatedValue ? (

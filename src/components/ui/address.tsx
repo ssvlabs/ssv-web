@@ -20,17 +20,21 @@ export const AddressDisplay: AddressFC = ({
   className,
   copyable,
   linkProps,
+  children,
   ...props
 }) => {
   const shortened = shortenAddress(address);
 
-  if (linkProps) {
-    return (
-      <div
-        className={cn("flex font-mono items-center gap-[0.62em]", className)}
-        {...props}
-      >
-        {linkProps ? (
+  return (
+    <div
+      className={cn(
+        "inline-flex font-mono items-center gap-[0.62em]",
+        className,
+      )}
+      {...props}
+    >
+      {linkProps ? (
+        <>
           <Link
             {...linkProps}
             className={cn(
@@ -40,14 +44,19 @@ export const AddressDisplay: AddressFC = ({
           >
             {shortened}
           </Link>
-        ) : (
+          {children}
+        </>
+      ) : (
+        <>
           <span>{shortened}</span>
-        )}
+          {children}
+        </>
+      )}
 
-        {copyable && <CopyBtn text={address} />}
-      </div>
-    );
-  }
+      {copyable && <CopyBtn text={address} />}
+      {children}
+    </div>
+  );
 };
 
 AddressDisplay.displayName = "AddressDisplay";

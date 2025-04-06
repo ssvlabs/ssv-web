@@ -8,10 +8,11 @@ import {
   formatSSV,
 } from "@/lib/utils/number";
 import { Button } from "@/components/ui/button";
-import { shortenAddress } from "@/lib/utils/strings";
+import type { Address } from "viem";
 import { formatGwei, formatUnits } from "viem";
 import type { NonSlashableAsset } from "@/api/b-app";
 import ExpandButton from "@/components/ui/expand-button.tsx";
+import { AddressDisplay } from "@/components/ui/address";
 
 export type NonSlashableAssetsTableRowProps = {
   asset: NonSlashableAsset;
@@ -196,7 +197,9 @@ export const NonSlashableAssetsTableRow: FCProps = ({
                       className="rounded-[8px] size-7 border-gray-400 border"
                       src={"/images/operator_default_background/light.svg"}
                     />
-                    {shortenAddress(delegation.receiver.id)}
+                    <AddressDisplay
+                      address={delegation.receiver.id as Address}
+                    />
                   </div>
                 </TableCell>
                 <TableCell

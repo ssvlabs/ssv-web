@@ -3,7 +3,6 @@ import { textVariants } from "@/components/ui/text";
 import { cn } from "@/lib/utils/tw";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useState } from "react";
-import { shortenAddress } from "@/lib/utils/strings.ts";
 import type { Address } from "abitype";
 import { AssetsDisplay } from "@/components/ui/assets-display.tsx";
 import type { StrategyBApp } from "@/api/b-app.ts";
@@ -12,8 +11,8 @@ import { AssetLogo } from "@/components/ui/asset-logo.tsx";
 import AssetName from "@/components/ui/asset-name.tsx";
 import { TbExternalLink } from "react-icons/tb";
 import { useLinks } from "@/hooks/use-links.ts";
-import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 import ExpandButton from "@/components/ui/expand-button.tsx";
+import { AddressDisplay } from "@/components/ui/address";
 export type BAppTableRowProps = {
   bApp: StrategyBApp;
   searchValue?: string;
@@ -58,8 +57,9 @@ export const StrategyBAppsTableRow: FCProps = ({
                   "/images/operator_default_background/light.svg";
               }}
             />
-            {bApp.bAppsMetadata?.name || shortenAddress(bApp.bAppId)}
-            <CopyBtn text={bApp.bAppId} />
+            {bApp.bAppsMetadata?.name || (
+              <AddressDisplay address={bApp.bAppId} copyable />
+            )}
           </div>
         </TableCell>
         <TableCell className="flex items-center justify-between">

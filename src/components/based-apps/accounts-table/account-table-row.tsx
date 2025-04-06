@@ -7,6 +7,7 @@ import { shortenAddress } from "@/lib/utils/strings.ts";
 import { convertToPercentage, formatSSV } from "@/lib/utils/number.ts";
 import { Text, textVariants } from "@/components/ui/text.tsx";
 import { Button } from "@/components/ui/button.tsx";
+import { AddressDisplay } from "@/components/ui/address";
 
 export type AccountTableRowProps = {
   account: BAppAccount & AccountMetadata;
@@ -60,7 +61,7 @@ export const AccountTableRow: FCProps = ({
         {account.name || shortenAddress(account.id)}
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        {shortenAddress(account.id)}
+        <AddressDisplay address={account.id} copyable />
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         <div className="w-7 h-6 rounded-[4px] border bg-primary-50 border-primary-200 text-primary-600 flex items-center justify-center text-[10px]">

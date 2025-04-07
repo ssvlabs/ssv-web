@@ -233,7 +233,6 @@ const Strategy = () => {
               </TableRow>
             </TableBody>
           </Table>
-          {/*<div className="flex w-[] bg-gray-50 py-4 rounded-b-2xl"></div>*/}
         </div>
       )}
 

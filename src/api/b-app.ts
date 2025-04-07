@@ -259,6 +259,7 @@ export type BAppAsset = {
   token: Address;
   totalObligatedBalance: string;
   totalDelegation?: string;
+  delegatedStrategies?: number;
   totalFiat?: string;
   totalTokens?: bigint;
   delegations?: { bAppId: `0x${string}`; percentage: string }[];

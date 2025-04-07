@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils/tw";
 import type { Address } from "abitype";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { Link, type LinkProps } from "react-router-dom";
+import { Tooltip } from "@/components/ui/tooltip.tsx";
 
 export type AddressProps = {
   address: Address;
@@ -53,7 +54,18 @@ export const AddressDisplay: AddressFC = ({
         </>
       )}
 
-      {copyable && <CopyBtn text={address} />}
+      {copyable && (
+        <Tooltip
+          content={
+            <p className="flex gap-1">
+              Copy Address:
+              <p className="font-robotoMono">{shortenAddress(address)}</p>
+            </p>
+          }
+        >
+          <CopyBtn className="flex items-center" text={address} />
+        </Tooltip>
+      )}
       {children}
     </div>
   );

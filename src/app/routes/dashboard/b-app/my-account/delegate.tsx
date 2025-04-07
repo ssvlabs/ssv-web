@@ -133,7 +133,10 @@ const Delegate = ({
                   <Text variant="body-3-medium">
                     {shortenAddress(delegateAddress || "0x")}
                   </Text>
-                  <Text className="text-gray-500" variant="caption-medium">
+                  <Text
+                    className="text-gray-500 font-robotoMono"
+                    variant="caption-medium"
+                  >
                     {delegateAddress}
                   </Text>
                 </div>

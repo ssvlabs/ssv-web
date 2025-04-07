@@ -53,7 +53,7 @@ export const AssetsTableRow: FCProps = ({ asset, className, ...props }) => {
           className: "text-right",
         })}
       >
-        {asset.obligationsCount}
+        {asset.delegatedStrategies}
       </TableCell>
       <TableCell
         className={textVariants({

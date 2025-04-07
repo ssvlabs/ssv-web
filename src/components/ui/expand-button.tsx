@@ -12,7 +12,7 @@ const ExpandButton = ({
   return (
     <IconButton
       variant="ghost"
-      className="hover:bg-primary-100 hover:text-primary-500"
+      className="size-9 p-[2px] hover:bg-primary-100 hover:text-primary-500"
       onClick={(ev) => {
         ev.stopPropagation();
         setIsOpen(!isOpen);

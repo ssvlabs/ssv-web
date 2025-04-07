@@ -1,19 +1,20 @@
 import { Navbar } from "@/app/layouts/dashboard/navbar";
+import { HoleskySunsetBanner } from "@/components/banners/holesky-sunset-banner";
+import { AssetsDelegationModal } from "@/components/modals/bapp/assets-delegation-modal";
+import { MultisigTransactionModal } from "@/components/ui/multisig-transaction-modal";
+import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 import { TransactionModal } from "@/components/ui/transaction-modal";
+import { useAccount } from "@/hooks/account/use-account";
+import { useAccountState } from "@/hooks/account/use-account-state.ts";
+import { useMaintenance } from "@/hooks/app/use-maintenance";
 import { useBlockNavigationOnPendingTx } from "@/hooks/use-block-navigation-on-pending-tx";
+import { useIdentify } from "@/lib/analytics/mixpanel/useIdentify";
+import { useTrackPageViews } from "@/lib/analytics/mixpanel/useTrackPageViews";
 import { cn } from "@/lib/utils/tw";
 import { useIsRestoring } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ComponentPropsWithRef, FC } from "react";
-import { useAccount } from "@/hooks/account/use-account";
-import { useMaintenance } from "@/hooks/app/use-maintenance";
 import { Navigate } from "react-router";
-import { MultisigTransactionModal } from "@/components/ui/multisig-transaction-modal";
-import { useIdentify } from "@/lib/analytics/mixpanel/useIdentify";
-import { useTrackPageViews } from "@/lib/analytics/mixpanel/useTrackPageViews";
-import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
-import { useAccountState } from "@/hooks/account/use-account-state.ts";
-import { AssetsDelegationModal } from "@/components/modals/bapp/assets-delegation-modal";
 
 export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
   children,
@@ -59,6 +60,7 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
             exit={{ opacity: 0 }}
             key="content"
           >
+            <HoleskySunsetBanner />
             <Navbar className="px-5" />
             <main
               className={cn(className, "flex-1 overflow-auto px-5")}

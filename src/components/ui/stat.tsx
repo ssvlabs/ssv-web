@@ -7,6 +7,7 @@ import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils/tw";
 import { CopyBtn } from "@/components/ui/copy-btn.tsx";
+import { shortenAddress } from "@/lib/utils/strings.ts";
 
 export type StatProps = {
   title: string;
@@ -14,6 +15,7 @@ export type StatProps = {
   content: ReactNode;
   tooltip?: ReactNode;
   subContent?: ReactNode;
+  isAddress?: boolean;
 };
 
 type StatFC = FC<
@@ -27,6 +29,7 @@ export const Stat: StatFC = ({
   content,
   subContent,
   copyBtnText,
+  isAddress,
   ...props
 }) => {
   const ContentComponent = isString(content) || isNumber(content) ? Text : Slot;
@@ -43,9 +46,24 @@ export const Stat: StatFC = ({
             {tooltip && <FaInfoCircle className="size-3 text-gray-500" />}
           </div>
         </Tooltip>
-        <ContentComponent className="text-xl font-bold flex items-center gap-2">
+        <ContentComponent
+          className={`${isAddress && "font-robotoMono"} text-lg font-medium flex items-center gap-2`}
+        >
           {content}
-          {copyBtnText && <CopyBtn text={copyBtnText} />}
+          {copyBtnText && (
+            <Tooltip
+              content={
+                <p className="flex gap-1">
+                  Copy Address:
+                  <p className="font-robotoMono">
+                    {shortenAddress(copyBtnText)}
+                  </p>
+                </p>
+              }
+            >
+              <CopyBtn className="flex items-center" text={copyBtnText} />
+            </Tooltip>
+          )}
         </ContentComponent>
       </div>
       {subContent && (

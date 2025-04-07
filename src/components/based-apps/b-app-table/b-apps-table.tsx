@@ -52,7 +52,7 @@ export const BAppsTable = ({
         </TableBody>
       </Table>
       <div className="bg-gray-50 w-full">{isLoading && <Loading />}</div>
-      {pagination && pagination?.pages > 1 ? (
+      {pagination && pagination?.total > 10 ? (
         <>
           <Divider />
           <div className="flex w-full bg-gray-50 py-4 rounded-b-2xl">

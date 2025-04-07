@@ -12,7 +12,9 @@ import type { Address } from "viem";
 import { formatGwei, formatUnits } from "viem";
 import type { NonSlashableAsset } from "@/api/b-app";
 import ExpandButton from "@/components/ui/expand-button.tsx";
-import { AddressDisplay } from "@/components/ui/address";
+import { shortenAddress } from "@/lib/utils/strings.ts";
+import { CopyBtn } from "@/components/ui/copy-btn.tsx";
+import { Tooltip } from "@/components/ui/tooltip.tsx";
 
 export type NonSlashableAssetsTableRowProps = {
   asset: NonSlashableAsset;
@@ -197,9 +199,22 @@ export const NonSlashableAssetsTableRow: FCProps = ({
                       className="rounded-[8px] size-7 border-gray-400 border"
                       src={"/images/operator_default_background/light.svg"}
                     />
-                    <AddressDisplay
-                      address={delegation.receiver.id as Address}
-                    />
+                    {shortenAddress(delegation.receiver.id as Address)}
+                    <Tooltip
+                      content={
+                        <p className="flex gap-1">
+                          Copy Address:
+                          <p className="font-robotoMono">
+                            {shortenAddress(delegation.receiver.id)}
+                          </p>
+                        </p>
+                      }
+                    >
+                      <CopyBtn
+                        className="flex items-center"
+                        text={delegation.receiver.id}
+                      />
+                    </Tooltip>
                   </div>
                 </TableCell>
                 <TableCell

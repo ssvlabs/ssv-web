@@ -27,7 +27,7 @@ export const HoleskySunsetBanner: FC<ComponentPropsWithoutRef<"div">> = ({
       <div className="flex gap-3 items-center">
         <TbAlertTriangleFilled className="size-6 min-w-6" />
         <Text variant="body-2-medium" className="text-[#fff]">
-          Holesky network support will be deprecated on April 28th, 2025. As of
+          Holesky network support will be deprecated on April 21st, 2025. As of
           this date, the official testnet will shift to the Hoodi testnet.
         </Text>
       </div>

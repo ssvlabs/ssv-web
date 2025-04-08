@@ -32,12 +32,15 @@ export const BAppsTable = ({
     <div className="flex flex-col w-full">
       <Table className={"w-full rounded-t-xl overflow-hidden"}>
         <TableHeader>
-          <TableHead>bApp</TableHead>
-          <TableHead>Supported Assets</TableHead>
-          <TableHead>Strategies</TableHead>
-          <TableHead>Delegators</TableHead>
-          <TableHead>Total Delegated Value</TableHead>
-          <TableHead></TableHead>
+          <TableHead className="w-[40%]">bApp</TableHead>
+          <TableHead className="w-[14%]">bApp Address</TableHead>
+          <TableHead className="w-[14%]">Supported Assets</TableHead>
+          <TableHead className="text-right w-[7%]">Strategies</TableHead>
+          <TableHead className="text-right w-[7%]">Delegators</TableHead>
+          <TableHead className="text-right w-[15%]">
+            Total Delegated Value
+          </TableHead>
+          {isCreateFlow && <TableHead></TableHead>}
         </TableHeader>
         <TableBody>
           {(bApps || []).map((bApp: BApp & BAppsMetaData, index) => (

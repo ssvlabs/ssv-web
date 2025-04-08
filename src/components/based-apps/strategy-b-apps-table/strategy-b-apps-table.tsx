@@ -2,13 +2,13 @@ import type { FC, ComponentPropsWithoutRef } from "react";
 import { TableHeader, TableHead, Table } from "@/components/ui/table";
 import { cn } from "@/lib/utils/tw";
 import { StrategyBAppsTableRow } from "@/components/based-apps/strategy-b-apps-table/strategy-b-apps-table-row.tsx";
-import type { StrategyBApp } from "@/api/b-app.ts";
+import type { BAppsMetaData, StrategyBApp } from "@/api/b-app.ts";
 import { Text } from "@/components/ui/text.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Link } from "react-router-dom";
 
 export type BAppsTableProps = {
-  bApps: StrategyBApp[];
+  bApps: (StrategyBApp & BAppsMetaData)[];
   searchValue?: string;
   isLoading?: boolean;
 };

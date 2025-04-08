@@ -42,7 +42,7 @@ jobs:
             \"explorerUrl\": \"https://hoodi-explorer.stage.ssv.network\",
             \"insufficientBalanceUrl\": \"https://faucet.stage.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
-            \"tokenAddress\": \"0x7118C9B049E834B2351C1c9a0ECEE12610A1a29E\",
+            \"tokenAddress\": \"0x746c33ccc28b1363c35c09badaf41b2ffa7e6d56\",
             \"bAppContractAddress\": \"0x5217C9034048B1Fa9Fb1e300F94fCd7002138Ea5\",
             \"setterContractAddress\": \"${{ secrets.STAGE_HOODI_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
             \"getterContractAddress\": \"${{ secrets.STAGE_HOODI_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"

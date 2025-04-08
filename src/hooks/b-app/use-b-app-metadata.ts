@@ -10,7 +10,6 @@ export const useBAppMetadata = (
     queryFn: () => getBAppsMetadata(data),
     enabled: Boolean(data.length),
   });
-
   const { data: dataItem, isLoading } = bAppMetadata;
 
   return {

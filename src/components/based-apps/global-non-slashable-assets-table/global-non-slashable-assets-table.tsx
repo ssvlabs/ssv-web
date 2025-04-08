@@ -8,7 +8,7 @@ import {
 import { Loading } from "@/components/ui/Loading.tsx";
 import type { GetGlobalValidatorsBalanceResponse } from "@/api/b-app";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { textVariants } from "@/components/ui/text";
+import { Span, textVariants } from "@/components/ui/text";
 import { cn } from "@/lib/utils/tw";
 import {
   compactFormatter,
@@ -81,7 +81,7 @@ export const GlobalNonSlashableAssetsTable: FCProps = ({
                     className={"h-[24px] w-[15px]"}
                     src={`/images/balance-validator/balance-validator.svg`}
                   />
-                  Validator Balance
+                  Validator Balance <Span className="text-gray-500">ETH</Span>
                 </div>
               </TableCell>
               <TableCell className={textVariants({ variant: "body-3-medium" })}>

@@ -8,8 +8,6 @@ import { useAccount } from "@/hooks/account/use-account";
 import { useDelegatedAsset } from "@/hooks/b-app/use-delegated-asset";
 import { useStrategy } from "@/hooks/b-app/use-strategy";
 import { useAsset } from "@/hooks/use-asset";
-import { useDepositERC20 } from "@/lib/contract-interactions/b-app/write/use-deposit-erc-20";
-import { useDepositETH } from "@/lib/contract-interactions/b-app/write/use-deposit-eth";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { formatSSV } from "@/lib/utils/number";
 import { getStrategyName } from "@/lib/utils/strategy";
@@ -28,6 +26,10 @@ import { Stepper } from "@/components/ui/stepper";
 import { zeroAddress } from "viem";
 import AssetName from "@/components/ui/asset-name";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useProposeWithdrawal } from "@/lib/contract-interactions/b-app/write/use-propose-withdrawal";
+import { useProposeWithdrawalETH } from "@/lib/contract-interactions/b-app/write/use-propose-withdrawal-eth";
+import { useQueryClient } from "@tanstack/react-query";
+import { getWithdrawalRequestsQueryKey } from "@/hooks/b-app/use-assets-withdrawals";
 
 const formSchema = z.object({
   amount: z.bigint().min(BigInt(1), "Amount must be greater than 0"),
@@ -36,6 +38,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export const AssetWithdrawalModal = () => {
+  const queryClient = useQueryClient();
   const { meta, isOpen, onOpenChange } = useAssetWithdrawalModal();
   const { address } = useAccount();
   const navigate = useNavigate();
@@ -62,9 +65,9 @@ export const AssetWithdrawalModal = () => {
     form.reset({ amount: BigInt(0) });
   }, [meta.asset, form]);
 
-  const depositERC20 = useDepositERC20();
-  const depositETH = useDepositETH();
-  const isPending = depositETH.isPending || depositERC20.isPending;
+  const withdrawERC20 = useProposeWithdrawal();
+  const withdrawETH = useProposeWithdrawalETH();
+  const isPending = withdrawETH.isPending || withdrawERC20.isPending;
 
   const deposit = form.handleSubmit((values) => {
     if (!meta.strategyId) return;
@@ -75,7 +78,14 @@ export const AssetWithdrawalModal = () => {
       onMined: async () => {
         asset.refreshBalance();
         delegated.refresh();
+
         setTimeout(() => {
+          queryClient.invalidateQueries({
+            queryKey: getWithdrawalRequestsQueryKey({
+              strategyId: meta.strategyId!,
+              token: meta.asset!,
+            }),
+          });
           strategyQuery.invalidate();
         }, 2000); // wait for the api to catch up and then invalidate the query
         form.reset({ amount: BigInt(0) });
@@ -86,15 +96,15 @@ export const AssetWithdrawalModal = () => {
     });
 
     if (asset.isEthereum) {
-      depositETH.write(
+      withdrawETH.write(
         {
           strategyId: Number(meta.strategyId),
+          amount: values.amount,
         },
-        values.amount,
         options,
       );
     } else {
-      depositERC20.write(
+      withdrawERC20.write(
         {
           strategyId: Number(meta.strategyId),
           amount: values.amount,

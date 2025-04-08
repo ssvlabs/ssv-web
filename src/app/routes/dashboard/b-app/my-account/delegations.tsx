@@ -12,6 +12,7 @@ import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
 import { useState } from "react";
 import { parseAsString, useQueryState } from "nuqs";
 import { useAssetWithdrawalModal } from "@/signals/modal";
+import { useAssetsWithdrawalRequests } from "@/hooks/b-app/use-assets-withdrawals";
 
 const Delegations = () => {
   const navigate = useNavigate();
@@ -36,6 +37,8 @@ const Delegations = () => {
   };
 
   const assetWithdrawalModal = useAssetWithdrawalModal();
+  const requests = useAssetsWithdrawalRequests();
+  console.log("requests :", requests);
 
   return (
     <MyAccountWrapper filter={AccountSelect.Delegations}>

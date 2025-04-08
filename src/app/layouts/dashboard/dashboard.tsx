@@ -1,5 +1,6 @@
 import { Navbar } from "@/app/layouts/dashboard/navbar";
 import { HoleskySunsetBanner } from "@/components/banners/holesky-sunset-banner";
+import { AssetWithdrawalModal } from "@/components/modals/bapp/asset-withdrawal-modal";
 import { AssetsDelegationModal } from "@/components/modals/bapp/assets-delegation-modal";
 import { MultisigTransactionModal } from "@/components/ui/multisig-transaction-modal";
 import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
@@ -75,6 +76,7 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
       </AnimatePresence>
       <TransactionModal />
       <AssetsDelegationModal />
+      <AssetWithdrawalModal />
       <MultisigTransactionModal />
     </>
   );

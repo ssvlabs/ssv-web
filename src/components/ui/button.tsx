@@ -36,7 +36,7 @@ export const buttonVariants = cva(
         default: "h-10 px-4 py-2 font-medium text-md rounded-lg",
         sm: "h-9 px-3 font-medium text-sm rounded-lg",
         lg: "h-12 px-6 font-medium text-md rounded-lg",
-        xl: "h-[60px] px-6 font-medium text-md rounded-lg",
+        xl: "h-[60px] px-6 font-medium text-base rounded-lg",
         icon: "size-7 rounded-lg",
         network: "h-12 pl-3 pr-4 font-medium text-md rounded-lg",
         wallet: "h-12 px-4 font-medium text-md rounded-lg",

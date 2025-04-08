@@ -11,6 +11,7 @@ import AssetName from "@/components/ui/asset-name";
 import ExpandButton from "@/components/ui/expand-button.tsx";
 export type AccountAssetsTableRowProps = {
   asset: AccountAsset;
+  onWithdrawClick?: (strategyId: string) => void;
 };
 
 type FCProps = FC<
@@ -25,6 +26,7 @@ export const AccountAssetsTableRow: FCProps = ({
   asset,
   className,
   onClick,
+  onWithdrawClick,
   ...props
 }) => {
   const hasDelegations = Boolean(asset.slashableAsset?.deposits?.length);
@@ -198,7 +200,17 @@ export const AccountAssetsTableRow: FCProps = ({
                   variant: "body-3-medium",
                   className: "w-5",
                 })}
-              ></TableCell>
+              >
+                <Button
+                  size="sm"
+                  onClick={(ev) => {
+                    ev.stopPropagation();
+                    onWithdrawClick?.(delegation.strategyId);
+                  }}
+                >
+                  Withdraw
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </>

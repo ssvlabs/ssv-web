@@ -53,3 +53,8 @@ export const useAssetsDelegationModal = createModalSignal<{
   strategy: Strategy;
   asset: Address;
 }>();
+
+export const useAssetWithdrawalModal = createModalSignal<{
+  strategyId: string;
+  asset: Address;
+}>({ isOpen: true });

@@ -11,6 +11,7 @@ import { AccountAssetsTable } from "@/components/based-apps/account-assets-table
 import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
 import { useState } from "react";
 import { parseAsString, useQueryState } from "nuqs";
+import { useAssetWithdrawalModal } from "@/signals/modal";
 
 const Delegations = () => {
   const navigate = useNavigate();
@@ -34,6 +35,8 @@ const Delegations = () => {
     setIsOpenModal(true);
   };
 
+  const assetWithdrawalModal = useAssetWithdrawalModal();
+
   return (
     <MyAccountWrapper filter={AccountSelect.Delegations}>
       <Container variant="vertical" size="xl">
@@ -50,6 +53,9 @@ const Delegations = () => {
           assets={assets}
           onRowClick={(asset) => {
             navigate(`/account/strategies?token=${asset.token}`);
+          }}
+          onWithdrawClick={(props) => {
+            assetWithdrawalModal.open(props);
           }}
           pagination={{
             page: 1,

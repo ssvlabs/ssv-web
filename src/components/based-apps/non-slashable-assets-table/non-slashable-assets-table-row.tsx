@@ -1,5 +1,5 @@
 import { TableCell, TableRow } from "@/components/ui/table";
-import { textVariants } from "@/components/ui/text";
+import { Span, textVariants } from "@/components/ui/text";
 import { cn } from "@/lib/utils/tw";
 import { useState, type ComponentPropsWithoutRef, type FC } from "react";
 import {
@@ -69,7 +69,7 @@ export const NonSlashableAssetsTableRow: FCProps = ({
               className={"h-[24px] w-[15px]"}
               src={`/images/balance-validator/balance-validator.svg`}
             />
-            Validator Balance
+            Validator Balance <Span className="text-gray-500">ETH</Span>
           </div>
         </TableCell>
         <TableCell className={textVariants({ variant: "body-3-medium" })}>

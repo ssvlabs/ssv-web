@@ -9,6 +9,7 @@ import { currencyFormatter } from "@/lib/utils/number.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { getAddress } from "viem";
 import { cn } from "@/lib/utils/tw";
+import { AddressDisplay } from "@/components/ui/address.tsx";
 
 type BAppsTableRowProps = {
   bApp: BApp & BAppsMetaData;
@@ -52,36 +53,39 @@ const BAppsTableRow = ({
         {bApp.name || shortenAddress(bApp.id)}
       </TableCell>
       <TableCell>
-        <AssetsDisplay max={3} addresses={bApp.supportedAssets} />
+        <AddressDisplay address={bApp.id} copyable />
       </TableCell>
       <TableCell>
+        <AssetsDisplay max={3} addresses={bApp.supportedAssets} />
+      </TableCell>
+      <TableCell className="flex flex-row-reverse">
         <div className="w-7 h-6 rounded-[4px] border bg-primary-50 border-primary-200 text-primary-600 flex items-center justify-center text-[10px]">
           {bApp.strategies}
         </div>
       </TableCell>
       <TableCell
-        className={`${textVariants({ variant: "body-3-medium" })} ${isUsedBApp && "text-gray-400"}`}
+        className={`${textVariants({ variant: "body-3-medium" })} ${isUsedBApp && "text-gray-400"} text-right`}
       >
         {bApp.delegators}
       </TableCell>
       <TableCell
-        className={`${textVariants({ variant: "body-3-medium" })} ${isUsedBApp && "text-gray-400"}`}
+        className={`${textVariants({ variant: "body-3-medium" })} ${isUsedBApp && "text-gray-400"} text-right`}
       >
         {currencyFormatter.format(Number(bApp.totalDelegatedValue) || 0)}
       </TableCell>
-      <TableCell className="p-0">
-        {isCreateFlow && (
+      {isCreateFlow && (
+        <TableCell className="p-0">
           <Button
             disabled={isUsedBApp}
             onClick={() => {
               useCreateStrategyContext.state.bApp = bApp;
             }}
-            className="text-[14px]"
+            className="text-[14px] mr-3"
           >
             {isUsedBApp ? "In Use" : "Select"}
           </Button>
-        )}
-      </TableCell>
+        </TableCell>
+      )}
     </TableRow>
   );
 };

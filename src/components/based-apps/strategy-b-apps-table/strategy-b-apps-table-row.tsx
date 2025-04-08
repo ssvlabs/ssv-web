@@ -5,16 +5,16 @@ import type { ComponentPropsWithoutRef, FC } from "react";
 import { useState } from "react";
 import type { Address } from "abitype";
 import { AssetsDisplay } from "@/components/ui/assets-display.tsx";
-import type { StrategyBApp } from "@/api/b-app.ts";
+import type { BAppsMetaData, StrategyBApp } from "@/api/b-app.ts";
 import { convertToPercentage } from "@/lib/utils/number.ts";
 import { AssetLogo } from "@/components/ui/asset-logo.tsx";
 import AssetName from "@/components/ui/asset-name.tsx";
 import { TbExternalLink } from "react-icons/tb";
 import { useLinks } from "@/hooks/use-links.ts";
 import ExpandButton from "@/components/ui/expand-button.tsx";
-import { AddressDisplay } from "@/components/ui/address";
+import { shortenAddress } from "@/lib/utils/strings.ts";
 export type BAppTableRowProps = {
-  bApp: StrategyBApp;
+  bApp: StrategyBApp & BAppsMetaData;
   searchValue?: string;
 };
 
@@ -33,10 +33,8 @@ export const StrategyBAppsTableRow: FCProps = ({
   const [isInnerOpen, setIsInnerOpen] = useState(false);
   if (
     searchValue &&
-    ((bApp.bAppsMetadata?.name &&
-      !bApp.bAppsMetadata.name
-        .toLowerCase()
-        .includes(searchValue.toLowerCase())) ||
+    ((bApp.name &&
+      !bApp.name.toLowerCase().includes(searchValue.toLowerCase())) ||
       !bApp.bAppId.toLowerCase().includes(searchValue.toLowerCase()))
   ) {
     return;
@@ -49,17 +47,14 @@ export const StrategyBAppsTableRow: FCProps = ({
             <img
               className="rounded-[8px] size-7 border-gray-400 border"
               src={
-                bApp.bAppsMetadata?.logo ||
-                "/images/operator_default_background/light.svg"
+                bApp?.logo || "/images/operator_default_background/light.svg"
               }
               onError={(e) => {
                 e.currentTarget.src =
                   "/images/operator_default_background/light.svg";
               }}
             />
-            {bApp.bAppsMetadata?.name || (
-              <AddressDisplay address={bApp.bAppId} copyable />
-            )}
+            {bApp?.name || shortenAddress(bApp.bAppId)}
           </div>
         </TableCell>
         <TableCell className="flex items-center justify-between">

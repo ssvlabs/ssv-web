@@ -5,6 +5,7 @@ import { getMyAccount } from "@/api/b-app.ts";
 import { getStrategyById } from "@/api/b-app.ts";
 import { useAccountMetadata } from "@/hooks/b-app/use-account-metadata.ts";
 import { useStrategyMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
+import { useBAppMetadata } from "@/hooks/b-app/use-b-app-metadata.ts";
 
 export const useStrategy = (_strategyId?: string) => {
   const params = useParams();
@@ -22,6 +23,14 @@ export const useStrategy = (_strategyId?: string) => {
     useStrategyMetadata([
       { id: strategy?.id || "", url: strategy?.metadataURI || "" },
     ]);
+  const bAppsURIS = strategy?.bAppsList?.map((bApp) => ({
+    id: bApp.bAppId,
+    url: bApp.metadataURI,
+  }));
+  const { data: bAppsMetadata, isLoading: bAppsMetadataIsLoading } =
+    useBAppMetadata(
+      (bAppsURIS || [{ id: "", url: "" }]) as { id: string; url: string }[],
+    );
 
   const strategyMetadata = strategyMetadataItem[`${strategy?.id}`];
 
@@ -48,11 +57,18 @@ export const useStrategy = (_strategyId?: string) => {
 
   return {
     account: { ...account, ...accountMetadata },
-    strategy: { ...strategy, ...strategyMetadata } as Strategy &
-      StrategyMetadata,
+    strategy: {
+      ...strategy,
+      ...strategyMetadata,
+      bAppsList: strategy?.bAppsList?.map((bApp) => ({
+        ...bApp,
+        ...bAppsMetadata[bApp.bAppId],
+      })),
+    } as Strategy & StrategyMetadata,
     isLoading:
       strategyQuery.isLoading ||
       accountQuery.isLoading ||
+      bAppsMetadataIsLoading ||
       strategyMetadataIsLoading ||
       accountMetadataIsLoading,
     invalidate,

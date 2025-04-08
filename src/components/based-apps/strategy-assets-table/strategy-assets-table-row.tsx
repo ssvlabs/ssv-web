@@ -1,4 +1,4 @@
-import type { BAppAsset, StrategyBApp } from "@/api/b-app.ts";
+import type { BAppAsset, BAppsMetaData, StrategyBApp } from "@/api/b-app.ts";
 import { AssetLogo } from "@/components/ui/asset-logo";
 import AssetName from "@/components/ui/asset-name.tsx";
 import { Button } from "@/components/ui/button";
@@ -125,8 +125,8 @@ export const StrategyAssetsTableRow: FCProps = ({
         (asset?.delegations || []).map(({ bAppId, percentage }) => {
           const bApp =
             strategy.bAppsList?.find(
-              (bApp: StrategyBApp) => bApp.bAppId === bAppId,
-            ) || ({} as StrategyBApp);
+              (bApp: StrategyBApp & BAppsMetaData) => bApp.bAppId === bAppId,
+            ) || ({} as StrategyBApp & BAppsMetaData);
           return (
             <TableRow
               key={bAppId}
@@ -141,7 +141,7 @@ export const StrategyAssetsTableRow: FCProps = ({
                   <img
                     className="rounded-[8px] size-7 border-gray-400 border"
                     src={
-                      bApp.bAppsMetadata?.logo ||
+                      bApp?.logo ||
                       "/images/operator_default_background/light.svg"
                     }
                     onError={(e) => {
@@ -149,7 +149,7 @@ export const StrategyAssetsTableRow: FCProps = ({
                         "/images/operator_default_background/light.svg";
                     }}
                   />
-                  {bApp.bAppsMetadata?.name || (
+                  {bApp?.name || (
                     <AddressDisplay address={bApp.bAppId} copyable />
                   )}
                 </div>

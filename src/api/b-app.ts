@@ -32,7 +32,7 @@ export type BAppAccount = {
 export type StrategyBApp = {
   assets: { token: `0x${string}`; beta: string }[];
   bAppId: `0x${string}`;
-  bAppsMetadata: BAppsMetaData;
+  metadataURI?: string;
   tokens: `0x${string}`[];
 };
 
@@ -44,7 +44,7 @@ export interface Strategy {
   delegatedAssets: `0x${string}`[];
   fee: string;
   metadataURI: string;
-  bAppsList?: StrategyBApp[];
+  bAppsList?: (StrategyBApp & BAppsMetaData)[];
   totalDelegators?: number;
   totalDelegatedFiat?: string;
   description?: string;

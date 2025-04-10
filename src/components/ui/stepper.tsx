@@ -3,6 +3,9 @@ import { cn } from "@/lib/utils/tw";
 import { cva, type VariantProps } from "class-variance-authority";
 import { isUndefined } from "lodash-es";
 import { Check, X } from "lucide-react";
+import { RiMoreFill } from "react-icons/ri";
+import { FaArrowUp } from "react-icons/fa";
+
 import type { ReactNode } from "react";
 import {
   Fragment,
@@ -12,13 +15,15 @@ import {
 } from "react";
 
 export const stepperDotVariants = cva(
-  "flex items-center justify-center size-6 text-xs font-bold rounded-full disabled:opacity-30",
+  "flex items-center justify-center size-5 text-xs font-bold rounded-full disabled:opacity-30",
   {
     variants: {
       variant: {
         default: "bg-gray-300",
-        active: "border-4 border-primary-500",
-        done: "bg-primary-500 text-white",
+        active: "border-2 border-primary-500",
+        warning: "border-2 border-orange-500 text-orange-400 bg-orange-500/10",
+        done: "bg-primary-600 border-2 border-primary-500 text-[#fff]",
+        withdrawable: "bg-success-700 text-[#fff] border-2 border-success-500",
         error: "bg-error-500 text-white",
       },
     },
@@ -53,6 +58,10 @@ export const StepperDot: StepperDotFC = ({
         return <Check className="size-3" strokeWidth="4" />;
       case "error":
         return <X className="size-3" strokeWidth="4" />;
+      case "warning":
+        return <RiMoreFill className="size-4" strokeWidth="1" />;
+      case "withdrawable":
+        return <FaArrowUp className="size-3" strokeWidth="1" />;
     }
   }, [step, variant]);
 
@@ -94,7 +103,7 @@ export const Stepper: StepperFC = ({
   };
   return (
     <div className={cn(className, "flex flex-col gap-2")} {...props}>
-      <div className="flex items-center gap-2 justify-between">
+      <div className="flex items-center gap-8 justify-between">
         {steps.map((step, index) => (
           <Fragment key={index}>
             <StepperDot
@@ -107,7 +116,7 @@ export const Stepper: StepperFC = ({
             />
             {index < steps.length - 1 && (
               <div
-                className={cn("h-[3px] flex-1 rounded-full", {
+                className={cn("h-[1px] flex-1 rounded-full", {
                   "bg-gray-300":
                     (step.variant ?? getVariant(index)) !== "error",
                   "bg-primary-500":

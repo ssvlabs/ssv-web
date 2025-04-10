@@ -5,10 +5,10 @@ import { cn } from "@/lib/utils/tw";
 import { useState, type ComponentPropsWithoutRef, type FC } from "react";
 import { currencyFormatter, formatSSV } from "@/lib/utils/number";
 import type { AccountAsset } from "@/hooks/b-app/use-account-assets";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import AssetName from "@/components/ui/asset-name";
 import ExpandButton from "@/components/ui/expand-button.tsx";
+import { DelegationRow } from "./account-row-delegation";
+
 export type AccountAssetsTableRowProps = {
   asset: AccountAsset;
   onWithdrawClick?: (strategyId: string) => void;
@@ -151,67 +151,13 @@ export const AccountAssetsTableRow: FCProps = ({
             ></TableCell>
           </TableRow>
           {asset.slashableAsset?.deposits.map((delegation) => (
-            <TableRow
-              className={cn(
-                "cursor-pointer max-h-7 bg-gray-100 hover:bg-gray-100",
-
-                className,
-              )}
-              {...props}
-            >
-              <TableCell className={textVariants({ variant: "body-3-medium" })}>
-                <Button
-                  variant="link"
-                  size="sm"
-                  as={Link}
-                  className="px-2"
-                  to={`/account/strategies/${delegation.strategyId}`}
-                >
-                  {delegation.name || `Strategy ${delegation.strategyId}`}
-                </Button>
-              </TableCell>
-              <TableCell
-                className={textVariants({ variant: "body-3-medium" })}
-              ></TableCell>
-              <TableCell
-                className={textVariants({ variant: "body-3-medium" })}
-              ></TableCell>
-              <TableCell
-                className={textVariants({
-                  variant: "body-3-medium",
-                  className: "text-right",
-                })}
-              >
-                {formatSSV(
-                  BigInt(delegation.depositAmount),
-                  asset.tokenInfo.decimals,
-                )}
-              </TableCell>
-              <TableCell
-                className={textVariants({
-                  variant: "body-3-medium",
-                  className: "text-right text-gray-500",
-                })}
-              >
-                {currencyFormatter.format(+delegation.fiatDepositAmount)}
-              </TableCell>
-              <TableCell
-                className={textVariants({
-                  variant: "body-3-medium",
-                  className: "w-5",
-                })}
-              >
-                <Button
-                  size="sm"
-                  onClick={(ev) => {
-                    ev.stopPropagation();
-                    onWithdrawClick?.(delegation.strategyId);
-                  }}
-                >
-                  Withdraw
-                </Button>
-              </TableCell>
-            </TableRow>
+            <DelegationRow
+              key={delegation.strategyId}
+              delegation={delegation}
+              asset={asset}
+              className={className}
+              onWithdrawClick={onWithdrawClick}
+            />
           ))}
         </>
       )}

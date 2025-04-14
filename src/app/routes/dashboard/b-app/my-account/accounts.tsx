@@ -10,6 +10,8 @@ import { useBAppAccounts } from "@/hooks/b-app/use-b-app-accounts.ts";
 import { parseAsString, useQueryState } from "nuqs";
 import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
 import { formatGwei } from "viem";
+import { useDelegateContext } from "@/components/context/delegate-context.tsx";
+import type { AccountMetadata } from "@/api/b-app.ts";
 
 const Accounts = () => {
   const navigate = useNavigate();
@@ -17,36 +19,28 @@ const Accounts = () => {
   const { data } = useMyBAppAccount();
   const pathname = useLocation().pathname;
   const [, setAddress] = useQueryState("address", parseAsString);
-  const [percentage, setPercentage] = useQueryState(
-    "percentage",
-    parseAsString,
-  );
-  const [, setDelegateAddress] = useQueryState(
-    "delegateAddress",
-    parseAsString,
-  );
-  const [delegatedValue, setDelegatedValue] = useQueryState(
-    "delegatedValue",
-    parseAsString,
-  );
   const searchByAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddress(e.currentTarget.value);
   };
   const { accounts, pagination, isLoading } = useBAppAccounts();
+  const { setDelegationData, percentage, delegatedValue } =
+    useDelegateContext();
+
   const openDelegate = (
     address: string,
     delegatedValue?: string,
     percentage?: string,
+    metadata?: AccountMetadata,
   ) => {
-    if (delegatedValue && percentage) {
-      setPercentage(percentage);
-      setDelegatedValue(delegatedValue.toString());
-    } else {
-      setPercentage("");
-      setDelegatedValue("");
-    }
-    setDelegateAddress(address);
     setIsOpenModal(true);
+    if (setDelegationData && metadata) {
+      setDelegationData({
+        ...metadata,
+        percentage,
+        delegateAddress: address,
+        delegatedValue: delegatedValue,
+      });
+    }
   };
 
   return (

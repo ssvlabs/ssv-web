@@ -14,6 +14,7 @@ import { BApp } from "@/app/routes/dashboard/b-app/b-apps/b-app";
 import Delegations from "@/app/routes/dashboard/b-app/my-account/delegations.tsx";
 import MyStrategies from "@/app/routes/dashboard/b-app/my-account/my-strategies.tsx";
 import AccountBApps from "@/app/routes/dashboard/b-app/my-account/account-b-apps.tsx";
+import { DelegateProvider } from "@/components/context/delegate-context.tsx";
 
 const strategyRoutes = (generalPath: string) => {
   const Component = generalPath === "my-strategies" ? MyStrategies : Strategies;
@@ -61,7 +62,11 @@ const strategyRoutes = (generalPath: string) => {
 
 export const accountRoutes = {
   path: "account",
-  element: <Outlet />,
+  element: (
+    <DelegateProvider>
+      <Outlet />
+    </DelegateProvider>
+  ),
   children: [
     {
       index: true,

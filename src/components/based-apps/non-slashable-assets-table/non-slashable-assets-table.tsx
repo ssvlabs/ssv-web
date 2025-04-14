@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils/tw";
 import { Loading } from "@/components/ui/Loading.tsx";
-import type { NonSlashableAsset } from "@/api/b-app";
+import type { AccountMetadata, NonSlashableAsset } from "@/api/b-app";
 import { NonSlashableAssetsTableRow } from "@/components/based-apps/non-slashable-assets-table/non-slashable-assets-table-row";
 
 export type NonSlashableAssetsTableProps = {
@@ -18,6 +18,7 @@ export type NonSlashableAssetsTableProps = {
     address: string,
     delegatedValue: number,
     percentage: string,
+    metadata?: AccountMetadata,
   ) => void;
 };
 

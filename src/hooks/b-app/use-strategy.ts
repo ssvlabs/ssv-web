@@ -1,11 +1,13 @@
 import { useParams } from "react-router";
 import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import type { Strategy, StrategyMetadata } from "@/api/b-app.ts";
+import { getNonSlashableAssets } from "@/api/b-app.ts";
 import { getMyAccount } from "@/api/b-app.ts";
 import { getStrategyById } from "@/api/b-app.ts";
 import { useAccountMetadata } from "@/hooks/b-app/use-account-metadata.ts";
 import { useStrategyMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
 import { useBAppMetadata } from "@/hooks/b-app/use-b-app-metadata.ts";
+import { useAccount } from "@/hooks/account/use-account.ts";
 
 export const useStrategy = (_strategyId?: string) => {
   const params = useParams();
@@ -41,9 +43,15 @@ export const useStrategy = (_strategyId?: string) => {
       getMyAccount(strategyQuery.data.ownerAddress),
     enabled: Boolean(strategyQuery.data?.ownerAddress),
   });
+  const { address } = useAccount();
+
+  const accountNonSlashableAssetsQuery = useChainedQuery({
+    queryKey: ["AccountNonSlashableAssets", address],
+    queryFn: () => getNonSlashableAssets(address!),
+    enabled: Boolean(address),
+  });
 
   const account = accountQuery.data?.data[0];
-
   const { data: accountMetadataItem, isLoading: accountMetadataIsLoading } =
     useAccountMetadata([
       { id: account?.id || "", url: account?.metadataURI || "" },
@@ -56,7 +64,12 @@ export const useStrategy = (_strategyId?: string) => {
   };
 
   return {
-    account: { ...account, ...accountMetadata },
+    account: {
+      ...account,
+      ...accountMetadata,
+      delegations: accountNonSlashableAssetsQuery.data?.delegations,
+      effectiveBalance: accountNonSlashableAssetsQuery.data?.effectiveBalance,
+    },
     strategy: {
       ...strategy,
       ...strategyMetadata,

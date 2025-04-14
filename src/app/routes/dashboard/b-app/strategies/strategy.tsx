@@ -30,14 +30,16 @@ import { useAssetsDelegationModal } from "@/signals/modal";
 import DescriptionCard from "@/components/ui/description-card.tsx";
 import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
 import { getStrategyName } from "@/lib/utils/strategy";
-import { isAddress } from "viem";
+import { formatGwei, isAddress } from "viem";
 import { useGetAsset } from "@/hooks/b-app/use-get-asset.tsx";
 import { CopyBtn } from "@/components/ui/copy-btn.tsx";
+import { useDelegateContext } from "@/components/context/delegate-context.tsx";
 
 const Strategy = () => {
   const { strategy, account, isLoading: isStrategyLoading } = useStrategy();
   const [bAppSearchValue, setBAppSearchValue] = useState("");
   const [isOpenDelegateModal, setIsOpenDelegateModal] = useState(false);
+  const { setDelegationData } = useDelegateContext();
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -45,13 +47,26 @@ const Strategy = () => {
   const { searchAssets } = useGetAsset(
     (searchedValue || "0x") as `0x${string}`,
   );
+
+  const receiver = (account.delegations || []).filter(
+    (receiver) =>
+      receiver.receiver.id.toLowerCase() ===
+      strategy.ownerAddress?.toLowerCase(),
+  )[0];
   const openDelegate = () => {
-    setSearchParams((prev) => {
-      const params = new URLSearchParams(prev);
-      params.set("delegateAddress", strategy.ownerAddress);
-      return params;
-      0;
-    });
+    if (setDelegationData) {
+      setDelegationData({
+        name: account.name,
+        logo: account.logo,
+        percentage: receiver?.percentage,
+        delegatedValue: (
+          (convertToPercentage(receiver?.percentage || 0) *
+            (Number(formatGwei(account?.effectiveBalance || 0n)) || 0)) /
+          100
+        ).toFixed(4),
+        delegateAddress: strategy.ownerAddress,
+      });
+    }
     setIsOpenDelegateModal(true);
   };
 
@@ -279,7 +294,10 @@ const Strategy = () => {
         )}
       </div>
       {isOpenDelegateModal && (
-        <Delegate closeDelegatePopUp={() => setIsOpenDelegateModal(false)} />
+        <Delegate
+          isUpdateFlow={!!receiver}
+          closeDelegatePopUp={() => setIsOpenDelegateModal(false)}
+        />
       )}
     </Container>
   );

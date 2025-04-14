@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import type { Address } from "viem";
 import { formatGwei, formatUnits } from "viem";
-import type { NonSlashableAsset } from "@/api/b-app";
+import type { AccountMetadata, NonSlashableAsset } from "@/api/b-app";
 import ExpandButton from "@/components/ui/expand-button.tsx";
 import { shortenAddress } from "@/lib/utils/strings.ts";
 import { CopyBtn } from "@/components/ui/copy-btn.tsx";
@@ -22,6 +22,7 @@ export type NonSlashableAssetsTableRowProps = {
     address: string,
     delegatedValue: number,
     percentage: string,
+    metadata?: AccountMetadata,
   ) => void;
 };
 
@@ -53,7 +54,6 @@ export const NonSlashableAssetsTableRow: FCProps = ({
     ) / 10000;
 
   const totalDelegatedValue = totalDelegatedPercentage * effectiveBalance;
-
   return (
     <>
       <TableRow
@@ -197,9 +197,13 @@ export const NonSlashableAssetsTableRow: FCProps = ({
                   <div className="flex items-center gap-2">
                     <img
                       className="rounded-[8px] size-7 border-gray-400 border"
-                      src={"/images/operator_default_background/light.svg"}
+                      src={
+                        delegation.receiver.logo ||
+                        "/images/operator_default_background/light.svg"
+                      }
                     />
-                    {shortenAddress(delegation.receiver.id as Address)}
+                    {delegation.receiver.name ||
+                      shortenAddress(delegation.receiver.id as Address)}
                     <Tooltip
                       content={
                         <p className="flex gap-1">
@@ -246,6 +250,10 @@ export const NonSlashableAssetsTableRow: FCProps = ({
                           delegation?.receiver?.id || "",
                           delegatedValue,
                           delegation.percentage,
+                          {
+                            name: delegation.receiver.name,
+                            logo: delegation.receiver.logo,
+                          },
                         )
                       }
                     >

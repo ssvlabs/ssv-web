@@ -8,7 +8,7 @@ import { useDecimals } from "@/lib/contract-interactions/erc-20/read/use-decimal
 import { cn } from "@/lib/utils/tw";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useBalance } from "wagmi";
-import { formatEther } from "viem";
+import { formatUnits } from "viem";
 import { compactFormatter, formatSSV } from "@/lib/utils/number";
 import { currencyFormatter } from "../../../lib/utils/number";
 import { isEthereumTokenAddress } from "@/lib/utils/token";
@@ -62,7 +62,7 @@ export const AssetsTableRow: FCProps = ({ asset, className, ...props }) => {
         })}
       >
         {compactFormatter.format(
-          +formatEther(BigInt(asset.totalObligatedBalance)),
+          +formatUnits(BigInt(asset.totalDelegated || 0), decimals.data || 18),
         )}
       </TableCell>
       <TableCell

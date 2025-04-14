@@ -10,29 +10,32 @@ import { NonSlashableAssetsTable } from "@/components/based-apps/non-slashable-a
 import { AccountAssetsTable } from "@/components/based-apps/account-assets-table/account-assets-table.tsx";
 import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
 import { useState } from "react";
-import { parseAsString, useQueryState } from "nuqs";
 import { useAssetWithdrawalModal } from "@/signals/modal";
+import type { AccountMetadata } from "@/api/b-app.ts";
+import { useDelegateContext } from "@/components/context/delegate-context.tsx";
 
 const Delegations = () => {
   const navigate = useNavigate();
   const { data, isLoading } = useMyBAppAccount();
   const { assets } = useAccountAssets();
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [, setPercentage] = useQueryState("percentage", parseAsString);
-  const [, setDelegateAddress] = useQueryState(
-    "delegateAddress",
-    parseAsString,
-  );
-  const [, setDelegatedValue] = useQueryState("delegatedValue", parseAsString);
+  const { setDelegationData, reset } = useDelegateContext();
+
   const updateDelegatedValue = (
     address: string,
     delegatedValue: number,
     percentage: string,
+    metadata?: AccountMetadata,
   ) => {
-    setPercentage(percentage);
-    setDelegateAddress(address);
-    setDelegatedValue(delegatedValue.toString());
     setIsOpenModal(true);
+    if (setDelegationData) {
+      setDelegationData({
+        ...metadata,
+        percentage,
+        delegateAddress: address,
+        delegatedValue: delegatedValue.toString(),
+      });
+    }
   };
 
   const assetWithdrawalModal = useAssetWithdrawalModal();
@@ -69,6 +72,7 @@ const Delegations = () => {
           isUpdateFlow
           closeDelegatePopUp={() => {
             setIsOpenModal(false);
+            reset();
             navigate("/account/my-delegations");
           }}
         />

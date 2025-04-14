@@ -78,7 +78,7 @@ jobs:
             \"networkId\": 560048,
             \"apiVersion\": \"v4\",
             \"apiNetwork\": \"hoodi\",  
-            \"api\": \"https://api.ops.ssvlabsinternal.com/api\",
+            \"api\": \"https://api.ssv.network/api\",
             \"explorerUrl\": \"https://hoodi.explorer.ssv.network\",
             \"insufficientBalanceUrl\": \"https://faucet.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",

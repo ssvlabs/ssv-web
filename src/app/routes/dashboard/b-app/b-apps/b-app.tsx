@@ -40,7 +40,6 @@ export const BApp = () => {
     strategyId || undefined,
     bAppId || undefined,
   );
-
   const { data: nonSlashableAssets } = useNonSlashableAssets(
     bApp?.ownerAddress,
   );

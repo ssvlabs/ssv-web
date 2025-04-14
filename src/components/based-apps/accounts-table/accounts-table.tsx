@@ -24,6 +24,7 @@ export type AccountsTableProps = {
     address: string,
     delegatedValue?: string,
     percentage?: string,
+    metadata?: AccountMetadata,
   ) => void;
 };
 

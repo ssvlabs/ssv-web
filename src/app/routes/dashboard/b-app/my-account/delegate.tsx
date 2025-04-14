@@ -12,7 +12,6 @@ import { useDelegateBalance } from "@/lib/contract-interactions/b-app/write/use-
 import { formatUnits } from "viem";
 import { useUpdateDelegatedBalance } from "@/lib/contract-interactions/b-app/write/use-update-delegated-balance.ts";
 import { useRemoveDelegatedBalance } from "@/lib/contract-interactions/b-app/write/use-remove-delegated-balance.ts";
-import { parseAsString, useQueryState } from "nuqs";
 import { retryPromiseUntilSuccess } from "@/lib/utils/promise.ts";
 import { queryClient } from "@/lib/react-query.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
@@ -20,6 +19,7 @@ import { getNonSlashableAssets } from "@/api/b-app.ts";
 import { NumericFormat } from "react-number-format";
 import { Input } from "@/components/ui/input";
 import { percentageMaxHandler } from "@/lib/utils/number-input";
+import { useDelegateContext } from "@/components/context/delegate-context.tsx";
 
 const Delegate = ({
   closeDelegatePopUp,
@@ -28,9 +28,8 @@ const Delegate = ({
   isUpdateFlow?: boolean;
   closeDelegatePopUp: () => void;
 }) => {
-  const [percentage] = useQueryState("percentage", parseAsString);
-  const [delegateAddress] = useQueryState("delegateAddress", parseAsString);
-  const [delegatedValue] = useQueryState("delegatedValue", parseAsString);
+  const { name, logo, percentage, delegateAddress, delegatedValue } =
+    useDelegateContext();
   const delegatedPercentage = percentage
     ? Number(formatUnits(BigInt(percentage), 2))
     : 0;
@@ -51,7 +50,6 @@ const Delegate = ({
     ["remove"]: removeDelegatedBalance,
   };
   const account = useAccount();
-
   const delegate = async () => {
     const cleanedNumber = Math.round(delegatePercent * 100);
 
@@ -127,11 +125,11 @@ const Delegate = ({
               <div className="flex items-center gap-1.5 px-6 py-4 rounded-[12px] bg-gray-100">
                 <img
                   className="w-7 rounded-[8px] border-gray-400 border"
-                  src={"/images/operator_default_background/light.svg"}
+                  src={logo || "/images/operator_default_background/light.svg"}
                 />
                 <div>
                   <Text variant="body-3-medium">
-                    {shortenAddress(delegateAddress || "0x")}
+                    {name || shortenAddress(delegateAddress || "0x")}
                   </Text>
                   <Text
                     className="text-gray-500 font-robotoMono"

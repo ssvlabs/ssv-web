@@ -2,7 +2,8 @@ import { useAccount } from "@/hooks/account/use-account";
 import { useWITHDRAWAL_EXPIRE_TIME } from "@/lib/contract-interactions/b-app/read/use-withdrawal-expire-time";
 import { useWithdrawalRequests } from "@/lib/contract-interactions/b-app/read/use-withdrawal-requests";
 import { useWITHDRAWAL_TIMELOCK_PERIOD } from "@/lib/contract-interactions/b-app/read/use-withdrawal-timelock-period";
-import type { QueryKey } from "@tanstack/react-query";
+import { ms } from "@/lib/utils/number";
+import { useQueryClient } from "@tanstack/react-query";
 import type { Address } from "abitype";
 import { isAfter, isWithinInterval } from "date-fns";
 import { useMemo } from "react";
@@ -11,24 +12,21 @@ type WithdrawalRequestQueryKeyParams = {
   strategyId: string;
   asset: Address;
 };
-export const getWithdrawalRequestsQueryKey = ({
-  strategyId,
-  asset,
-}: WithdrawalRequestQueryKeyParams): QueryKey => {
-  return ["withdrawal-requests", strategyId.toString(), asset.toLowerCase()];
-};
 
-export const useAssetWithdrawalRequestStatus = ({
+export const useStrategyAssetWithdrawalRequest = ({
   strategyId,
   asset,
 }: WithdrawalRequestQueryKeyParams) => {
+  const queryClient = useQueryClient();
   const { address } = useAccount();
 
   const { data: timelockPeriod = 0 } = useWITHDRAWAL_TIMELOCK_PERIOD({
-    select: (data) => data * 1000,
+    staleTime: ms(1, "days"),
+    select: (seconds) => seconds * 1000,
   });
   const { data: expirePeriod = 0 } = useWITHDRAWAL_EXPIRE_TIME({
-    select: (data) => data * 1000,
+    staleTime: ms(1, "days"),
+    select: (seconds) => seconds * 1000,
   });
 
   const requestQuery = useWithdrawalRequests({
@@ -36,6 +34,18 @@ export const useAssetWithdrawalRequestStatus = ({
     account: address!,
     token: asset,
   });
+
+  const clearRequestQueryData = () => {
+    queryClient.setQueryData(requestQuery.queryKey, () => {
+      return [0n, 0];
+    });
+  };
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({
+      queryKey: requestQuery.queryKey,
+    });
+  };
 
   const request = {
     amount: requestQuery.data?.[0] || 0n,
@@ -72,21 +82,15 @@ export const useAssetWithdrawalRequestStatus = ({
 
   const isExpired = hasRequested && isAfter(Date.now(), periods.execution.end);
 
-  const status = !hasRequested
-    ? "no-request"
-    : inPendingPeriod
-      ? "pending"
-      : inExecutionPeriod
-        ? "execution"
-        : "expired";
-
   return {
     request,
+    requestQuery,
+    clearRequestQueryData,
+    invalidate,
     periods,
     hasRequested,
     inPendingPeriod,
     inExecutionPeriod,
     isExpired,
-    status,
   };
 };

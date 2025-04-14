@@ -9,14 +9,15 @@ import {
 
 export type NonSlashableAsset = {
   effectiveBalance: bigint;
-  delegations: Delegation[];
+  delegations: (Delegation & AccountMetadata)[];
 };
 
 export type Delegation = {
   percentage: string;
   receiver: {
     id: string;
-  };
+    metadataURI?: string;
+  } & AccountMetadata;
 };
 
 export type BAppAccount = {
@@ -86,8 +87,8 @@ export type BAppsMetaData = {
 };
 
 export type AccountMetadata = {
-  name: string;
-  logo: string;
+  name?: string;
+  logo?: string;
 };
 
 export type BApp = {
@@ -259,6 +260,7 @@ export type BAppAsset = {
   token: Address;
   totalObligatedBalance: string;
   totalDelegation?: string;
+  totalDelegated?: string;
   delegatedStrategies?: number;
   totalFiat?: string;
   totalTokens?: bigint;

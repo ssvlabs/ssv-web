@@ -1,9 +1,9 @@
 import { Text } from "@/components/ui/text";
 import { Stepper } from "@/components/ui/stepper";
 import { formatDistance } from "date-fns";
-import type { useAssetWithdrawalRequestStatus } from "@/hooks/b-app/use-asset-withdrawal-request";
+import type { useStrategyAssetWithdrawalRequest } from "@/hooks/b-app/use-asset-withdrawal-request";
 
-type WithdrawalRequest = ReturnType<typeof useAssetWithdrawalRequestStatus>;
+type WithdrawalRequest = ReturnType<typeof useStrategyAssetWithdrawalRequest>;
 
 export const WithdrawalStepper = ({
   request,

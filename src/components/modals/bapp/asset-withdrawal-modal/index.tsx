@@ -8,7 +8,6 @@ import { useAccount } from "@/hooks/account/use-account";
 import { useDelegatedAsset } from "@/hooks/b-app/use-delegated-asset";
 import { useStrategy } from "@/hooks/b-app/use-strategy";
 import { useAsset } from "@/hooks/use-asset";
-import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { formatSSV } from "@/lib/utils/number";
 import { getStrategyName } from "@/lib/utils/strategy";
 import { useAssetWithdrawalModal } from "@/signals/modal";
@@ -25,12 +24,11 @@ import { FaInfoCircle } from "react-icons/fa";
 import { zeroAddress } from "viem";
 import AssetName from "@/components/ui/asset-name";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useProposeWithdrawal } from "@/lib/contract-interactions/b-app/write/use-propose-withdrawal";
-import { useProposeWithdrawalETH } from "@/lib/contract-interactions/b-app/write/use-propose-withdrawal-eth";
-import { useQueryClient } from "@tanstack/react-query";
-import { getWithdrawalRequestsQueryKey } from "@/hooks/b-app/use-assets-withdrawals";
-import { useAssetWithdrawalRequestStatus } from "@/hooks/b-app/use-asset-withdrawal-request";
+import { useStrategyAssetWithdrawalRequest } from "@/hooks/b-app/use-asset-withdrawal-request";
 import { WithdrawalStepper } from "./withdrawal-stepper";
+import { useStrategyAssetWithdrawer } from "@/components/modals/bapp/asset-withdrawal-modal/use-strategy-asset-withdrawer";
+import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
+import { toast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   amount: z.bigint().min(BigInt(1), "Amount must be greater than 0"),
@@ -39,13 +37,12 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export const AssetWithdrawalModal = () => {
-  const queryClient = useQueryClient();
   const { meta, isOpen, onOpenChange } = useAssetWithdrawalModal();
   const { address } = useAccount();
   const navigate = useNavigate();
   const strategyQuery = useStrategy(meta.strategyId);
 
-  const request = useAssetWithdrawalRequestStatus({
+  const requestStatus = useStrategyAssetWithdrawalRequest({
     strategyId: meta.strategyId!,
     asset: meta.asset!,
   });
@@ -71,61 +68,51 @@ export const AssetWithdrawalModal = () => {
     form.reset({ amount: BigInt(0) });
   }, [meta.asset, form]);
 
-  const withdrawERC20 = useProposeWithdrawal();
-  const withdrawETH = useProposeWithdrawalETH();
-  const isPending = withdrawETH.isPending || withdrawERC20.isPending;
+  const { withdrawer } = useStrategyAssetWithdrawer({
+    strategyId: meta.strategyId!,
+    asset: meta.asset!,
+  });
 
-  const deposit = form.handleSubmit((values) => {
+  const isPending = withdrawer.isPending;
+
+  const withdraw = form.handleSubmit((values) => {
     if (!meta.strategyId) return;
-    const options = withTransactionModal({
-      onConfirmed: () => {
-        onOpenChange(false);
+    withdrawer.mutate(
+      {
+        amount: values.amount,
+        options: withTransactionModal({
+          onConfirmed: () => {
+            onOpenChange(false);
+          },
+          onMined: async () => {
+            asset.refreshBalance();
+            delegated.refresh();
+            requestStatus.invalidate();
+            setTimeout(strategyQuery.invalidate, 2000);
+            form.reset({ amount: BigInt(0) });
+            return () => {
+              navigate(`/account`);
+            };
+          },
+        }),
       },
-      onMined: async () => {
-        asset.refreshBalance();
-        delegated.refresh();
-
-        setTimeout(() => {
-          queryClient.invalidateQueries({
-            queryKey: getWithdrawalRequestsQueryKey({
-              strategyId: meta.strategyId!,
-              token: meta.asset!,
-            }),
+      {
+        onError: (error) => {
+          toast({
+            title: "Something went wrong",
+            description: error.message,
+            variant: "destructive",
           });
-          strategyQuery.invalidate();
-        }, 2000); // wait for the api to catch up and then invalidate the query
-        form.reset({ amount: BigInt(0) });
-        return () => {
-          navigate(`/account`);
-        };
+        },
       },
-    });
-
-    if (asset.isEthereum) {
-      withdrawETH.write(
-        {
-          strategyId: Number(meta.strategyId),
-          amount: values.amount,
-        },
-        options,
-      );
-    } else {
-      withdrawERC20.write(
-        {
-          strategyId: Number(meta.strategyId),
-          amount: values.amount,
-          token: meta.asset!,
-        },
-        options,
-      );
-    }
+    );
   });
 
   return (
     <Dialog isOpen={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="bg-gray-50 p-6 max-w-[648px] font-medium">
         <Form {...form}>
-          <form onSubmit={deposit} className="flex  flex-col gap-8 ">
+          <form onSubmit={withdraw} className="flex  flex-col gap-8 ">
             <div className="flex justify-between items-center">
               <Tooltip
                 asChild
@@ -155,8 +142,9 @@ export const AssetWithdrawalModal = () => {
               </DialogClose>
             </div>
 
+            <Button onClick={requestStatus.clearRequestQueryData}>Clear</Button>
             <div className=" w-full px-4">
-              <WithdrawalStepper request={request} />
+              <WithdrawalStepper request={requestStatus} />
             </div>
 
             <div className="flex flex-col gap-3">
@@ -209,7 +197,7 @@ export const AssetWithdrawalModal = () => {
                 <FormItem>
                   <FormControl>
                     <BigNumberInput
-                      max={asset.balance}
+                      max={BigInt(delegated.data?.amount || 0)}
                       value={field.value}
                       decimals={asset.decimals}
                       onChange={field.onChange}

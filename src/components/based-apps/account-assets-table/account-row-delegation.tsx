@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils/tw";
 import { Link } from "react-router-dom";
 import { currencyFormatter, formatSSV } from "@/lib/utils/number";
 import type { AccountAsset } from "@/hooks/b-app/use-account-assets";
-import { useAssetWithdrawalRequestStatus } from "@/hooks/b-app/use-asset-withdrawal-request";
+import { useStrategyAssetWithdrawalRequest } from "@/hooks/b-app/use-asset-withdrawal-request";
 
 type DelegationRowProps = {
   delegation: NonNullable<AccountAsset["slashableAsset"]>["deposits"][0];
@@ -20,7 +20,7 @@ export const DelegationRow = ({
   className,
   onWithdrawClick,
 }: DelegationRowProps) => {
-  const request = useAssetWithdrawalRequestStatus({
+  const request = useStrategyAssetWithdrawalRequest({
     strategyId: delegation.strategyId,
     asset: asset.token,
   });

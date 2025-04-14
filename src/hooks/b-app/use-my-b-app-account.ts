@@ -1,6 +1,11 @@
 import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { formatUnits, isAddress } from "viem";
-import type { BApp, StrategiesByOwnerResponse } from "@/api/b-app.ts";
+import type {
+  AccountMetadata,
+  BApp,
+  Delegation,
+  StrategiesByOwnerResponse,
+} from "@/api/b-app.ts";
 import { getMyAccount } from "@/api/b-app.ts";
 import { getBAppsByOwnerAddress } from "@/api/b-app.ts";
 import {
@@ -50,6 +55,14 @@ export const useMyBAppAccount = () => {
       }),
     enabled: address && isAddress(address),
   });
+
+  const { data: receiversMetadata, isLoading: receiversMetadataIsLoading } =
+    useAccountMetadata(
+      (reactQueryData.data?.delegations || []).map((delegation) => ({
+        id: delegation.receiver.id,
+        url: delegation.receiver.metadataURI || "",
+      })),
+    );
 
   const { data: strategiesMetadata, isLoading: strategiesMetadataIsLoading } =
     useStrategyMetadata(
@@ -103,10 +116,26 @@ export const useMyBAppAccount = () => {
       Number(reactQueryData?.data?.effectiveBalance || 0n),
   );
 
+  const mappedReceiversMetadata: Record<string, AccountMetadata> = (
+    receiversMetadata || []
+  ).reduce((acc, metadataItem) => {
+    return { ...acc, [metadataItem.id]: metadataItem.data };
+  }, {});
+
   const restBalancePercentage =
     Math.round((100 - (totalPercentage || 0)) * 100) / 100;
   return {
-    data: reactQueryData.data,
+    data: {
+      ...reactQueryData.data,
+      effectiveBalance: reactQueryData.data?.effectiveBalance || 0n,
+      delegations: reactQueryData.data?.delegations.map((delegation) => ({
+        ...delegation,
+        receiver: {
+          ...delegation.receiver,
+          ...mappedReceiversMetadata[delegation.receiver.id],
+        },
+      })) as (Delegation & AccountMetadata)[],
+    },
     myStrategies:
       {
         ...myStrategies.data,
@@ -130,7 +159,8 @@ export const useMyBAppAccount = () => {
       accountMetadataIsLoading ||
       bAppsMetadataIsLoading ||
       strategiesMetadataIsLoading ||
-      myAccountQuery.isLoading,
+      myAccountQuery.isLoading ||
+      receiversMetadataIsLoading,
     totalPercentage,
     restBalancePercentage,
     effectiveBalance: reactQueryData.data?.effectiveBalance,

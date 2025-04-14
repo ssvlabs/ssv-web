@@ -17,6 +17,7 @@ export type AccountTableRowProps = {
     address: string,
     delegatedValue?: string,
     percentage?: string,
+    metadata?: AccountMetadata,
   ) => void;
   accountDelegations?: Delegation[];
 };
@@ -35,7 +36,6 @@ export const AccountTableRow: FCProps = ({
   ...props
 }) => {
   const [showBtn, setShowBtn] = useState(false);
-
   const receiver = accountDelegations?.filter(
     (delegation: Delegation) => delegation.receiver.id === account.id,
   )[0];
@@ -97,6 +97,10 @@ export const AccountTableRow: FCProps = ({
                   100
                 ).toFixed(4),
                 receiver?.percentage,
+                {
+                  name: account.name,
+                  logo: account.logo,
+                },
               )
             }
           >

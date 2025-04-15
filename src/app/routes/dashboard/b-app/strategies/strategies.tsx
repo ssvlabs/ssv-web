@@ -30,7 +30,7 @@ export const Strategies: FC = () => {
 
   const onDepositClick = (strategy: Strategy) => {
     useAssetsDelegationModal.state.open({
-      strategy,
+      strategyId: strategy.id,
       asset: tokensFilter.value?.[0] as Address,
     });
   };

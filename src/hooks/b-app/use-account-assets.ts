@@ -72,6 +72,7 @@ export const useAccountAssets = () => {
   );
   const { data: strategiesMetadata, isLoading: strategiesMetadataIsLoading } =
     useStrategyMetadata(metadatas || []);
+
   const accountAssets = filteredAssets.map((a) => {
     const addr = normalizeTokenAddress(a.token).toLocaleLowerCase();
     const delegations = delegationsMap.get(addr);
@@ -79,7 +80,7 @@ export const useAccountAssets = () => {
       ...a,
       slashableAsset: {
         ...delegations,
-        deposits: delegations?.deposits.map((deposit) => ({
+        deposits: (delegations?.deposits || []).map((deposit) => ({
           ...deposit,
           ...strategiesMetadata[deposit.strategyId],
         })) as ({

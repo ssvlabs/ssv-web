@@ -91,16 +91,27 @@ export type AccountMetadata = {
   logo?: string;
 };
 
+export type DelegatedSlashableAsset = {
+  token: `0x${string}`;
+  totalDelegatedValue: string;
+  totalSlashable: string;
+  delegatedStrategies: number;
+};
+
 export type BApp = {
   id: `0x${string}`;
   beta: string[];
   delegators: number;
+  delegatedAccounts: number;
   strategies: number;
   metadataURI: string;
   ownerAddress: `0x${string}`;
   supportedAssets: `0x${string}`[];
   strategyOwners: `0x${string}`[];
   totalDelegatedValue: string;
+  totalNonSlashable: string;
+  totalDelegatedValueNonSlashable: string;
+  delegatedSlashable: DelegatedSlashableAsset[];
 };
 
 export const getNonSlashableAssets = (ownerAddress: string) =>

@@ -58,10 +58,7 @@ export const useStrategyAssetWithdrawalRequest = ({
 
   const request = {
     amount: requestQuery.data?.[0] || 0n,
-    timestamp:
-      (requestQuery.data?.[1] || 0) * 1000 -
-      ms(5.22, "days") -
-      ms(1.3, "minutes"),
+    timestamp: (requestQuery.data?.[1] || 0) * 1000,
   };
 
   const hasRequested = request.amount > 0n;

@@ -1,6 +1,6 @@
 import { AssetLogo } from "@/components/ui/asset-logo";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { textVariants } from "@/components/ui/text";
+import { Text, textVariants } from "@/components/ui/text";
 import { cn } from "@/lib/utils/tw";
 import { useState, type ComponentPropsWithoutRef, type FC } from "react";
 import { currencyFormatter, formatSSV } from "@/lib/utils/number";
@@ -8,10 +8,12 @@ import type { AccountAsset } from "@/hooks/b-app/use-account-assets";
 import AssetName from "@/components/ui/asset-name";
 import ExpandButton from "@/components/ui/expand-button.tsx";
 import { DelegationRow } from "./account-row-delegation";
+import { useGetTotalWithdrawalRequests } from "@/hooks/b-app/use-asset-withdrawal-request";
 
 export type AccountAssetsTableRowProps = {
   asset: AccountAsset;
   onWithdrawClick?: (strategyId: string) => void;
+  onDelegateClick?: (strategyId: string) => void;
 };
 
 type FCProps = FC<
@@ -27,9 +29,19 @@ export const AccountAssetsTableRow: FCProps = ({
   className,
   onClick,
   onWithdrawClick,
+  onDelegateClick,
   ...props
 }) => {
   const hasDelegations = Boolean(asset.slashableAsset?.deposits?.length);
+
+  const totalRequests = useGetTotalWithdrawalRequests({
+    strategyIds:
+      asset.slashableAsset?.deposits.map(
+        (delegation) => delegation.strategyId,
+      ) || [],
+    asset: asset.token,
+  });
+
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
@@ -85,7 +97,22 @@ export const AccountAssetsTableRow: FCProps = ({
             className: "text-right text-gray-500",
           })}
         >
-          {currencyFormatter.format(+asset.totalFiatDepositAmount)}
+          <div className="flex items-center justify-end gap-2">
+            <Text>
+              {currencyFormatter.format(+asset.totalFiatDepositAmount)}
+            </Text>
+            {totalRequests > 0 && (
+              <div
+                className={cn(
+                  "flex items-center justify-center size-4 text-[10px] font-bold border-[2px] text-[#fff] bg-primary-400 border-primary-500 rounded-full",
+                  className,
+                )}
+                {...props}
+              >
+                {totalRequests}
+              </div>
+            )}
+          </div>
         </TableCell>
         <TableCell
           className={textVariants({
@@ -130,7 +157,7 @@ export const AccountAssetsTableRow: FCProps = ({
             <TableCell
               className={textVariants({
                 variant: "caption-medium",
-                className: "text-gray-500",
+                className: "text-gray-500 text-right",
               })}
             >
               Delegated
@@ -146,7 +173,7 @@ export const AccountAssetsTableRow: FCProps = ({
             <TableCell
               className={textVariants({
                 variant: "caption-medium",
-                className: "w-5",
+                className: "w-[52px] p-0",
               })}
             ></TableCell>
           </TableRow>
@@ -157,6 +184,7 @@ export const AccountAssetsTableRow: FCProps = ({
               asset={asset}
               className={className}
               onWithdrawClick={onWithdrawClick}
+              onDelegateClick={onDelegateClick}
             />
           ))}
         </>

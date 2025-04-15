@@ -22,7 +22,7 @@ export const stepperDotVariants = cva(
         default: "bg-gray-300",
         active: "border-2 border-primary-500",
         warning: "border-2 border-orange-500 text-orange-400 bg-orange-500/10",
-        done: "bg-primary-600 border-2 border-primary-500 text-[#fff]",
+        done: "bg-primary-400 border-2 border-primary-500 text-[#fff]",
         withdrawable: "bg-success-700 text-[#fff] border-2 border-success-500",
         error: "bg-error-500 text-white",
       },

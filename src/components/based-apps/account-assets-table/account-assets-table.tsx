@@ -23,6 +23,7 @@ export type AccountAssetsTableProps = {
   isLoading?: boolean;
   onRowClick?: (asset: AccountAsset) => void;
   onWithdrawClick?: (props: { strategyId: string; asset: Address }) => void;
+  onDelegateClick?: (props: { strategyId: string; asset: Address }) => void;
 };
 
 type FCProps = FC<
@@ -37,6 +38,7 @@ export const AccountAssetsTable: FCProps = ({
   isLoading,
   onRowClick,
   onWithdrawClick,
+  onDelegateClick,
   ...props
 }) => {
   return (
@@ -68,6 +70,12 @@ export const AccountAssetsTable: FCProps = ({
                 }}
                 onWithdrawClick={(strategyId) => {
                   onWithdrawClick?.({
+                    strategyId,
+                    asset: asset.token,
+                  });
+                }}
+                onDelegateClick={(strategyId) => {
+                  onDelegateClick?.({
                     strategyId,
                     asset: asset.token,
                   });

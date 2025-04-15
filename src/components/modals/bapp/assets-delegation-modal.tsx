@@ -36,13 +36,13 @@ export const AssetsDelegationModal = () => {
   const { bAppContractAddress } = useSSVNetworkDetails();
   const { address } = useAccount();
   const navigate = useNavigate();
-  const { strategy, invalidate } = useStrategy(meta.strategy?.id);
+  const { strategy, invalidate } = useStrategy(meta.strategyId);
 
   const asset = useAsset(meta.asset);
   const delegated = useDelegatedAsset({
     token: meta.asset,
     contributor: address,
-    strategyId: Number(meta.strategy?.id) || -1,
+    strategyId: Number(meta.strategyId) || -1,
   });
 
   const form = useForm<FormValues>({
@@ -62,7 +62,7 @@ export const AssetsDelegationModal = () => {
   const isPending = depositETH.isPending || depositERC20.isPending;
 
   const deposit = form.handleSubmit((values) => {
-    if (!meta.strategy) return;
+    if (!meta.strategyId) return;
     const options = withTransactionModal({
       onConfirmed: () => {
         onOpenChange(false);
@@ -83,7 +83,7 @@ export const AssetsDelegationModal = () => {
     if (asset.isEthereum) {
       depositETH.write(
         {
-          strategyId: Number(meta.strategy!.id),
+          strategyId: Number(meta.strategyId),
         },
         values.amount,
         options,
@@ -91,7 +91,7 @@ export const AssetsDelegationModal = () => {
     } else {
       depositERC20.write(
         {
-          strategyId: Number(meta.strategy!.id),
+          strategyId: Number(meta.strategyId),
           amount: values.amount,
           token: meta.asset!,
         },

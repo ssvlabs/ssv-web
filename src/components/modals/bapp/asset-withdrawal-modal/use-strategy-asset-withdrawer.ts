@@ -1,4 +1,3 @@
-import { useStrategyAssetWithdrawalRequest } from "@/hooks/b-app/use-asset-withdrawal-request";
 import { useAsset } from "@/hooks/use-asset";
 import { useFinalizeWithdrawal } from "@/lib/contract-interactions/b-app/write/use-finalize-withdrawal";
 import { useFinalizeWithdrawalETH } from "@/lib/contract-interactions/b-app/write/use-finalize-withdrawal-eth";
@@ -27,36 +26,17 @@ export const useStrategyAssetWithdrawer = (
 
   const asset = useAsset(params.asset);
 
-  const withdrawalRequest = useStrategyAssetWithdrawalRequest({
-    strategyId: params.strategyId,
-    asset: params.asset,
-  });
-
-  const withdrawer = useMutation({
+  const request = useMutation({
     mutationFn: async ({
       amount,
       options,
     }: {
-      amount?: bigint;
+      amount: bigint;
       options?: MutationOptions<AllEvents>;
     }) => {
       const proposer = asset.isEthereum
         ? proposeWithdrawETH
         : proposeWithdrawERC20;
-
-      const finalizer = asset.isEthereum
-        ? finalizeWithdrawalETH
-        : finalizeWithdrawalERC20;
-
-      if (withdrawalRequest.inExecutionPeriod) {
-        return finalizer.write(
-          {
-            strategyId: Number(params.strategyId),
-            token: params.asset,
-          },
-          options,
-        );
-      }
 
       return proposer.write(
         {
@@ -69,7 +49,28 @@ export const useStrategyAssetWithdrawer = (
     },
   });
 
+  const finalize = useMutation({
+    mutationFn: async ({
+      options,
+    }: {
+      options?: MutationOptions<AllEvents>;
+    }) => {
+      const finalizer = asset.isEthereum
+        ? finalizeWithdrawalETH
+        : finalizeWithdrawalERC20;
+
+      return finalizer.write(
+        {
+          strategyId: Number(params.strategyId),
+          token: params.asset,
+        },
+        options,
+      );
+    },
+  });
+
   return {
-    withdrawer,
+    request,
+    finalize,
   };
 };

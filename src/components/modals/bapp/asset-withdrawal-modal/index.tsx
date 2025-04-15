@@ -13,7 +13,7 @@ import { getStrategyName } from "@/lib/utils/strategy";
 import { useAssetWithdrawalModal } from "@/signals/modal";
 import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
@@ -29,6 +29,8 @@ import { WithdrawalStepper } from "./withdrawal-stepper";
 import { useStrategyAssetWithdrawer } from "@/components/modals/bapp/asset-withdrawal-modal/use-strategy-asset-withdrawer";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { toast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils/tw";
+import { Alert } from "@/components/ui/alert";
 
 const formSchema = z.object({
   amount: z.bigint().min(BigInt(1), "Amount must be greater than 0"),
@@ -37,12 +39,13 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export const AssetWithdrawalModal = () => {
+  const [isUpdatingRequest, setIsUpdatingRequest] = useState(false);
   const { meta, isOpen, onOpenChange } = useAssetWithdrawalModal();
   const { address } = useAccount();
   const navigate = useNavigate();
   const strategyQuery = useStrategy(meta.strategyId);
 
-  const requestStatus = useStrategyAssetWithdrawalRequest({
+  const assetWithdrawalRequest = useStrategyAssetWithdrawalRequest({
     strategyId: meta.strategyId!,
     asset: meta.asset!,
   });
@@ -57,44 +60,54 @@ export const AssetWithdrawalModal = () => {
   const form = useForm<FormValues>({
     mode: "all",
     defaultValues: {
-      amount: BigInt(0),
+      amount: assetWithdrawalRequest.request.amount,
     },
     resolver: zodResolver(formSchema),
   });
+  const canInputAmount =
+    !assetWithdrawalRequest.hasRequested || isUpdatingRequest;
 
   const withdrawAmount = form.watch("amount");
 
-  useEffect(() => {
-    form.reset({ amount: BigInt(0) });
-  }, [meta.asset, form]);
+  const canSubmitNewRequest =
+    isUpdatingRequest &&
+    withdrawAmount > 0n &&
+    withdrawAmount !== assetWithdrawalRequest.request.amount;
 
-  const { withdrawer } = useStrategyAssetWithdrawer({
+  useEffect(() => {
+    form.reset({ amount: assetWithdrawalRequest.request.amount });
+    setIsUpdatingRequest(false);
+  }, [meta.asset, form, isOpen, assetWithdrawalRequest.request.amount]);
+
+  const withdrawer = useStrategyAssetWithdrawer({
     strategyId: meta.strategyId!,
     asset: meta.asset!,
   });
 
-  const isPending = withdrawer.isPending;
+  const isPending =
+    withdrawer.request.isPending || withdrawer.finalize.isPending;
 
-  const withdraw = form.handleSubmit((values) => {
-    if (!meta.strategyId) return;
-    withdrawer.mutate(
+  const transactionOptions = withTransactionModal({
+    onConfirmed: () => {
+      onOpenChange(false);
+    },
+    onMined: async () => {
+      asset.refreshBalance();
+      delegated.refresh();
+      assetWithdrawalRequest.invalidate();
+      setTimeout(strategyQuery.invalidate, 2000);
+      form.reset({ amount: BigInt(0) });
+      return () => {
+        navigate(`/account`);
+      };
+    },
+  });
+
+  const requestWithdraw = (amount: bigint) => {
+    withdrawer.request.mutate(
       {
-        amount: values.amount,
-        options: withTransactionModal({
-          onConfirmed: () => {
-            onOpenChange(false);
-          },
-          onMined: async () => {
-            asset.refreshBalance();
-            delegated.refresh();
-            requestStatus.invalidate();
-            setTimeout(strategyQuery.invalidate, 2000);
-            form.reset({ amount: BigInt(0) });
-            return () => {
-              navigate(`/account`);
-            };
-          },
-        }),
+        amount,
+        options: transactionOptions,
       },
       {
         onError: (error) => {
@@ -106,13 +119,24 @@ export const AssetWithdrawalModal = () => {
         },
       },
     );
+  };
+
+  const finalizeWithdraw = () => {
+    withdrawer.finalize.mutate({
+      options: transactionOptions,
+    });
+  };
+
+  const submit = form.handleSubmit((values) => {
+    if (!meta.strategyId) return;
+    requestWithdraw(values.amount);
   });
 
   return (
     <Dialog isOpen={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="bg-gray-50 p-6 max-w-[648px] font-medium">
         <Form {...form}>
-          <form onSubmit={withdraw} className="flex  flex-col gap-8 ">
+          <form onSubmit={submit} className="flex  flex-col gap-8 ">
             <div className="flex justify-between items-center">
               <Tooltip
                 asChild
@@ -142,9 +166,8 @@ export const AssetWithdrawalModal = () => {
               </DialogClose>
             </div>
 
-            <Button onClick={requestStatus.clearRequestQueryData}>Clear</Button>
             <div className=" w-full px-4">
-              <WithdrawalStepper request={requestStatus} />
+              <WithdrawalStepper request={assetWithdrawalRequest} />
             </div>
 
             <div className="flex flex-col gap-3">
@@ -197,15 +220,25 @@ export const AssetWithdrawalModal = () => {
                 <FormItem>
                   <FormControl>
                     <BigNumberInput
+                      disabled={!canInputAmount}
                       max={BigInt(delegated.data?.amount || 0)}
                       value={field.value}
                       decimals={asset.decimals}
                       onChange={field.onChange}
                       placeholder=""
                       render={(props, ref) => (
-                        <div className="flex flex-col pl-6 pr-5 py-4 gap-3 rounded-xl border border-primary-300 bg-gray-100">
+                        <div
+                          className={cn(
+                            "flex flex-col pl-6 pr-5 py-4 gap-3 rounded-xl border border-primary-300 bg-gray-100",
+                            {
+                              "opacity-50 pointer-events-none border-gray-300":
+                                !canInputAmount,
+                            },
+                          )}
+                        >
                           <div className="flex h-14 items-center gap-5">
                             <input
+                              readOnly={!canInputAmount}
                               placeholder="0"
                               className="w-full h-full border outline-none flex-1 text-[28px] font-medium border-none bg-transparent"
                               {...props}
@@ -235,6 +268,7 @@ export const AssetWithdrawalModal = () => {
                               )}
                             </Text>
                             <Button
+                              tabIndex={!canInputAmount ? -1 : undefined}
                               variant="link"
                               className={textVariants({
                                 variant: "body-2-medium",
@@ -258,22 +292,96 @@ export const AssetWithdrawalModal = () => {
                 </FormItem>
               )}
             />
-            <Button
-              size="xl"
-              type="submit"
-              className="w-full"
-              isLoading={isPending}
-              disabled={!form.formState.isValid}
-            >
-              {withdrawAmount > 0 ? (
+            <div className="flex flex-col gap-3">
+              {isUpdatingRequest && (
                 <>
-                  Withdraw {formatSSV(withdrawAmount, asset.decimals)}{" "}
-                  {asset.symbol}
+                  <Alert variant="warning">
+                    New request will replace the current one and reset the
+                    pending period.
+                  </Alert>
+                  <Button
+                    size="xl"
+                    type="submit"
+                    className="w-full"
+                    isLoading={isPending}
+                    disabled={!canSubmitNewRequest}
+                  >
+                    Request New Withdrawal
+                  </Button>
                 </>
-              ) : (
-                <>Withdraw</>
               )}
-            </Button>
+              {!assetWithdrawalRequest.hasRequested && (
+                <Button
+                  size="xl"
+                  type="submit"
+                  className="w-full"
+                  isLoading={isPending}
+                  disabled={!form.formState.isValid}
+                >
+                  {withdrawAmount > 0 ? (
+                    <>
+                      Withdraw {formatSSV(withdrawAmount, asset.decimals)}{" "}
+                      {asset.symbol}
+                    </>
+                  ) : (
+                    <>Withdraw</>
+                  )}
+                </Button>
+              )}
+              {assetWithdrawalRequest.inPendingPeriod && !isUpdatingRequest && (
+                <Button
+                  size="xl"
+                  type="submit"
+                  className="w-full"
+                  isLoading={isPending}
+                  disabled={true}
+                >
+                  Pending{" "}
+                  {formatSSV(
+                    assetWithdrawalRequest.request.amount,
+                    asset.decimals,
+                  )}{" "}
+                  {asset.symbol} Withdrawal...
+                </Button>
+              )}
+              {assetWithdrawalRequest.inExecutionPeriod && (
+                <Button
+                  size="xl"
+                  type="submit"
+                  className="w-full"
+                  onClick={() => finalizeWithdraw()}
+                  isLoading={isPending}
+                >
+                  Withdraw{" "}
+                  {formatSSV(
+                    assetWithdrawalRequest.request.amount,
+                    asset.decimals,
+                  )}{" "}
+                  {asset.symbol}
+                </Button>
+              )}
+              {assetWithdrawalRequest.inPendingPeriod && !isUpdatingRequest && (
+                <Button
+                  size="xl"
+                  type="submit"
+                  variant="secondary"
+                  className="w-full"
+                  onClick={() => setIsUpdatingRequest(true)}
+                >
+                  Update Request
+                </Button>
+              )}
+              {assetWithdrawalRequest.isExpired && (
+                <Button
+                  size="xl"
+                  type="button"
+                  className="w-full"
+                  onClick={assetWithdrawalRequest.clearRequestQueryData}
+                >
+                  Request New Withdrawal
+                </Button>
+              )}
+            </div>
           </form>
         </Form>
       </DialogContent>

@@ -15,12 +15,15 @@ import type { AccountAsset } from "@/hooks/b-app/use-account-assets";
 import { Text } from "@/components/ui/text.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Link } from "react-router-dom";
+import type { Address } from "abitype";
 
 export type AccountAssetsTableProps = {
   assets: AccountAsset[];
   pagination: IPagination;
   isLoading?: boolean;
   onRowClick?: (asset: AccountAsset) => void;
+  onWithdrawClick?: (props: { strategyId: string; asset: Address }) => void;
+  onDelegateClick?: (props: { strategyId: string; asset: Address }) => void;
 };
 
 type FCProps = FC<
@@ -34,6 +37,8 @@ export const AccountAssetsTable: FCProps = ({
   className,
   isLoading,
   onRowClick,
+  onWithdrawClick,
+  onDelegateClick,
   ...props
 }) => {
   return (
@@ -62,6 +67,18 @@ export const AccountAssetsTable: FCProps = ({
                 asset={asset}
                 onClick={() => {
                   onRowClick?.(asset);
+                }}
+                onWithdrawClick={(strategyId) => {
+                  onWithdrawClick?.({
+                    strategyId,
+                    asset: asset.token,
+                  });
+                }}
+                onDelegateClick={(strategyId) => {
+                  onDelegateClick?.({
+                    strategyId,
+                    asset: asset.token,
+                  });
                 }}
               />
             );

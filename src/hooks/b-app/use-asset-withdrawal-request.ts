@@ -1,7 +1,7 @@
 import { useAccount } from "@/hooks/account/use-account";
 import { useWITHDRAWAL_EXPIRE_TIME } from "@/lib/contract-interactions/b-app/read/use-withdrawal-expire-time";
 import {
-  fetchWithdrawalRequests,
+  getWithdrawalRequestsQueryOptions,
   useWithdrawalRequests,
 } from "@/lib/contract-interactions/b-app/read/use-withdrawal-requests";
 import { useWITHDRAWAL_TIMELOCK_PERIOD } from "@/lib/contract-interactions/b-app/read/use-withdrawal-timelock-period";
@@ -125,15 +125,13 @@ export const useGetTotalWithdrawalRequests = (
 ) => {
   const { address } = useAccount();
   return useQueries({
-    queries: params.strategyIds.map((strategyId) => ({
-      queryKey: ["withdrawal-requests", strategyId, params.asset],
-      queryFn: () =>
-        fetchWithdrawalRequests({
-          strategyId: Number(strategyId),
-          account: address!,
-          token: params.asset,
-        }),
-    })),
+    queries: params.strategyIds.map((strategyId) =>
+      getWithdrawalRequestsQueryOptions({
+        strategyId: Number(strategyId),
+        account: address!,
+        token: params.asset,
+      }),
+    ),
     combine(result) {
       return result.reduce(
         (acc, curr) => acc + +Boolean(curr.data?.[0] || 0n),

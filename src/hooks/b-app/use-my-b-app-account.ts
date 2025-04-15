@@ -3,7 +3,6 @@ import { formatUnits, isAddress } from "viem";
 import type {
   AccountMetadata,
   BApp,
-  Delegation,
   StrategiesByOwnerResponse,
 } from "@/api/b-app.ts";
 import { getMyAccount } from "@/api/b-app.ts";
@@ -128,13 +127,15 @@ export const useMyBAppAccount = () => {
     data: {
       ...reactQueryData.data,
       effectiveBalance: reactQueryData.data?.effectiveBalance || 0n,
-      delegations: reactQueryData.data?.delegations.map((delegation) => ({
-        ...delegation,
-        receiver: {
-          ...delegation.receiver,
-          ...mappedReceiversMetadata[delegation.receiver.id],
-        },
-      })) as (Delegation & AccountMetadata)[],
+      delegations: (reactQueryData.data?.delegations || []).map(
+        (delegation) => ({
+          ...delegation,
+          receiver: {
+            ...delegation.receiver,
+            ...mappedReceiversMetadata[delegation.receiver.id],
+          },
+        }),
+      ),
     },
     myStrategies:
       {

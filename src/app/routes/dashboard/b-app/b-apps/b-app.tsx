@@ -1,5 +1,3 @@
-import { AssetsTable } from "@/components/based-apps/assets-table/assets-table";
-import { NonSlashableAssetsTable } from "@/components/based-apps/non-slashable-assets-table/non-slashable-assets-table";
 import { StrategiesTable } from "@/components/based-apps/strategies-table/strategies-table";
 import { BAppLogo } from "@/components/ui/b-app-logo";
 import {
@@ -19,18 +17,18 @@ import { Stat } from "@/components/ui/stat";
 import { Text } from "@/components/ui/text";
 import { useBApp } from "@/hooks/b-app/use-b-app";
 import { useBAppPageParams } from "@/hooks/b-app/use-bapp-page-params";
-import { useNonSlashableAssets } from "@/hooks/b-app/use-non-slashable-assets";
 import { useStrategies } from "@/hooks/b-app/use-strategies";
 import { currencyFormatter } from "@/lib/utils/number";
 import { shortenAddress } from "@/lib/utils/strings";
 import { parseAsString, useQueryState } from "nuqs";
 import { Link, useNavigate } from "react-router-dom";
+import { BAppNonSlashableAssetsTable } from "@/components/based-apps/b-app-non-slashable-table/b-app-non-slashable-assets-table.tsx";
+import BAppSlashableAssetsTable from "@/components/based-apps/b-app-slashable-assets-table/b-app-slashable-assets-table.tsx";
 
 export const BApp = () => {
   const { bAppId } = useBAppPageParams();
   const { bApp, isLoading } = useBApp(bAppId);
   const navigate = useNavigate();
-
   const [strategyId, setStrategyId] = useQueryState(
     "strategyId",
     parseAsString,
@@ -39,9 +37,6 @@ export const BApp = () => {
   const { strategies, pagination, isStrategiesLoading } = useStrategies(
     strategyId || undefined,
     bAppId || undefined,
-  );
-  const { data: nonSlashableAssets } = useNonSlashableAssets(
-    bApp?.ownerAddress,
   );
 
   if (!bApp || isLoading) {
@@ -165,12 +160,19 @@ export const BApp = () => {
           }}
         />
       </div>
-      <NonSlashableAssetsTable
-        asset={nonSlashableAssets}
+      <BAppNonSlashableAssetsTable
+        asset={{
+          delegatedAccounts: bApp.delegatedAccounts,
+          totalDelegatedValue: bApp.totalDelegatedValue,
+          totalDelegatedValueNonSlashable: bApp.totalDelegatedValueNonSlashable,
+        }}
         isLoading={isLoading}
       />
 
-      <AssetsTable assets={[]} pagination={pagination} />
+      <BAppSlashableAssetsTable
+        assets={bApp.delegatedSlashable}
+        pagination={pagination}
+      />
     </Container>
   );
 };

@@ -10,6 +10,10 @@ import { NonSlashableAssetsTable } from "@/components/based-apps/non-slashable-a
 import { AccountAssetsTable } from "@/components/based-apps/account-assets-table/account-assets-table.tsx";
 import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
 import { useState } from "react";
+import {
+  useAssetsDelegationModal,
+  useAssetWithdrawalModal,
+} from "@/signals/modal";
 import type { AccountMetadata } from "@/api/b-app.ts";
 import { useDelegateContext } from "@/components/context/delegate-context.tsx";
 
@@ -37,6 +41,7 @@ const Delegations = () => {
     }
   };
 
+  const assetWithdrawalModal = useAssetWithdrawalModal();
   return (
     <MyAccountWrapper filter={AccountSelect.Delegations}>
       <Container variant="vertical" size="xl">
@@ -53,6 +58,15 @@ const Delegations = () => {
           assets={assets}
           onRowClick={(asset) => {
             navigate(`/account/strategies?token=${asset.token}`);
+          }}
+          onWithdrawClick={(props) => {
+            assetWithdrawalModal.open(props);
+          }}
+          onDelegateClick={(props) => {
+            useAssetsDelegationModal.state.open({
+              asset: props.asset,
+              strategyId: props.strategyId,
+            });
           }}
           pagination={{
             page: 1,

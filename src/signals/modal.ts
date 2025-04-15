@@ -1,4 +1,3 @@
-import type { Strategy } from "@/api/b-app";
 import type { Address } from "abitype";
 import { proxy, useSnapshot } from "valtio";
 
@@ -50,6 +49,11 @@ export const useTransactionModal = createModalSignal<{
 export const usePastingLimitExceededModal = createModalSignal();
 export const useMultisigTransactionModal = createModalSignal();
 export const useAssetsDelegationModal = createModalSignal<{
-  strategy: Strategy;
+  strategyId: string;
+  asset: Address;
+}>();
+
+export const useAssetWithdrawalModal = createModalSignal<{
+  strategyId: string;
   asset: Address;
 }>();

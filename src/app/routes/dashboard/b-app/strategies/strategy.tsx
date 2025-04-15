@@ -259,7 +259,7 @@ const Strategy = () => {
             onDepositClick={(asset) => {
               useAssetsDelegationModal.state.open({
                 asset: asset.token,
-                strategy,
+                strategyId: strategy.id,
               });
             }}
             showDepositButtonOnHover

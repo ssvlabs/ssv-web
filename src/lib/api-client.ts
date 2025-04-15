@@ -2,6 +2,7 @@ import Axios from "axios";
 
 export const api = Axios.create({
   headers: {
+    "Access-Control-Allow-Origin": "*",
     "web-app-source": true,
   },
 });

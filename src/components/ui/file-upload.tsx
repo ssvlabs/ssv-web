@@ -389,7 +389,6 @@ export const JSONFileUploader = ({
     <FileUploader
       dropzoneOptions={{
         maxFiles: 1,
-        maxSize: 1024 * 1024 * 4,
         multiple: false,
         accept: {
           "application/json": [".json"],

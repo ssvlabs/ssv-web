@@ -4,15 +4,27 @@ import type { InputProps } from "@/components/ui/input";
 import { Input } from "@/components/ui/input";
 import { FiSearch } from "react-icons/fi";
 
+type SearchInputProps = {
+  iconPlacement?: "left" | "right";
+};
 type FCProps = FC<
-  Omit<ComponentPropsWithoutRef<"input">, keyof InputProps> & InputProps
+  Omit<ComponentPropsWithoutRef<"input">, keyof InputProps> &
+    InputProps &
+    SearchInputProps
 >;
 
-export const SearchInput: FCProps = ({ className, ...props }) => {
+export const SearchInput: FCProps = ({
+  className,
+  iconPlacement = "right",
+  ...props
+}) => {
   return (
     <Input
       className={cn(className)}
-      rightSlot={<FiSearch className="mx-3" />}
+      rightSlot={
+        iconPlacement === "right" ? <FiSearch className="mx-3" /> : undefined
+      }
+      leftSlot={iconPlacement === "left" ? <FiSearch /> : undefined}
       {...props}
     />
   );

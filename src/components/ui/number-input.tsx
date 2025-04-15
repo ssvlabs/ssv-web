@@ -2,14 +2,15 @@ import type { InputProps } from "@/components/ui/input";
 import { Input } from "@/components/ui/input";
 import { Tooltip } from "@/components/ui/tooltip";
 import { formatBigintInput } from "@/lib/utils/number";
+import { mergeRefs } from "@/lib/utils/refs";
 import { cn } from "@/lib/utils/tw";
 import { isUndefined } from "lodash-es";
 import type { ReactNode, Ref } from "react";
-import { type FC, forwardRef, useMemo, useState } from "react";
+import { type FC, forwardRef, useMemo, useRef, useState } from "react";
 import { useDebounce, useKey } from "react-use";
 import { parseUnits } from "viem";
 
-export type NumberInputProps = {
+export type BigNumberInputProps = {
   value: bigint;
   max?: bigint;
   allowNegative?: boolean;
@@ -28,8 +29,8 @@ export type NumberInputProps = {
   ) => ReactNode;
 };
 
-type Props = Omit<InputProps, keyof NumberInputProps> & NumberInputProps;
-type NumberInputFC = FC<Props>;
+type Props = Omit<InputProps, keyof BigNumberInputProps> & BigNumberInputProps;
+type BigNumberInputFC = FC<Props>;
 
 const ignoreKeys = ["ArrowUp", "ArrowDown"];
 const defaultStep = 0.1;
@@ -38,7 +39,10 @@ const format = (value: bigint, decimals: number) => {
   return formatBigintInput(value, decimals);
 };
 
-export const NumberInput: NumberInputFC = forwardRef<HTMLInputElement, Props>(
+export const BigNumberInput: BigNumberInputFC = forwardRef<
+  HTMLInputElement,
+  Props
+>(
   (
     {
       value,
@@ -53,6 +57,9 @@ export const NumberInput: NumberInputFC = forwardRef<HTMLInputElement, Props>(
     },
     ref,
   ) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+    const mergedRefs = mergeRefs([ref, inputRef]);
+
     const capture = useMemo(() => {
       const left = "^(-)?(0)?(\\d+)?";
       const right = `(\\.\\d{0,${displayDecimals}})?`;
@@ -98,8 +105,22 @@ export const NumberInput: NumberInputFC = forwardRef<HTMLInputElement, Props>(
         );
       };
 
-    useKey("ArrowUp", handleArrowKey("up"), undefined, [value, decimals]);
-    useKey("ArrowDown", handleArrowKey("down"), undefined, [value, decimals]);
+    useKey(
+      "ArrowUp",
+      handleArrowKey("up"),
+      {
+        target: inputRef.current,
+      },
+      [value, decimals],
+    );
+    useKey(
+      "ArrowDown",
+      handleArrowKey("down"),
+      {
+        target: inputRef.current,
+      },
+      [value, decimals],
+    );
 
     const onInput = (ev: React.FormEvent<HTMLInputElement>) => {
       const input = ev.currentTarget.value;
@@ -132,7 +153,7 @@ export const NumberInput: NumberInputFC = forwardRef<HTMLInputElement, Props>(
               inputMode: "numeric",
               type: "text",
             },
-            ref,
+            mergedRefs,
           )
         ) : (
           <Input
@@ -151,4 +172,4 @@ export const NumberInput: NumberInputFC = forwardRef<HTMLInputElement, Props>(
   },
 );
 
-NumberInput.displayName = "NumberInput";
+BigNumberInput.displayName = "BigNumberInput";

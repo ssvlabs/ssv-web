@@ -44,7 +44,7 @@ export const useOwner = (
     functionName: "owner",
 
     blockNumber: options.watch ? blockNumber.data : undefined,
-    query: options,
+    query: { ...options },
   });
 };
 

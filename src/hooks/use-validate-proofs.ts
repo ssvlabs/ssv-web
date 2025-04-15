@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { toChecksumAddress } from "ssv-keys/dist/tsc/src/lib/helpers/web3.helper";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { getAllValidators } from "@/api/validators.ts";
@@ -56,7 +56,7 @@ export const useValidateProofs = (files: File[]) => {
     });
   };
 
-  return useQuery<ValidateProofsResult, Error>({
+  return useChainedQuery<ValidateProofsResult, Error>({
     queryKey: [files.length, files.map((file) => file.name).join("-")],
     retry: false,
     staleTime: 0,

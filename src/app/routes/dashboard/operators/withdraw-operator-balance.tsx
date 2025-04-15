@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
-import { NumberInput } from "@/components/ui/number-input";
+import { BigNumberInput } from "@/components/ui/number-input";
 import { Text } from "@/components/ui/text";
 import { toast } from "@/components/ui/use-toast";
 import { useOperator } from "@/hooks/operator/use-operator";
@@ -83,7 +83,7 @@ export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
           Withdraw
         </Text>
         <div className="flex flex-col">
-          <NumberInput
+          <BigNumberInput
             disabled={withdraw.isPending || !hasBalance}
             value={form.watch("value")}
             onChange={(value) =>

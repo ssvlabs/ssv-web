@@ -77,7 +77,7 @@ export const DKGCeremonySummary: FC = () => {
             or refer to the{" "}
             <Button
               as="a"
-              href="https://docs.ssv.network/validator-user-guides/validator-management/creating-a-new-validator#activate-validator-keys"
+              href="https://docs.ssv.network/stakers/validator-management/creating-a-new-validator/#activate-validator-keys"
               target="_blank"
               variant="link"
             >

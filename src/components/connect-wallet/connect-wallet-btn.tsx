@@ -1,5 +1,6 @@
 import type { ButtonProps } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
+import { textVariants } from "@/components/ui/text";
 import { useAccount } from "@/hooks/account/use-account";
 import { shortenAddress } from "@/lib/utils/strings";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
@@ -24,10 +25,10 @@ const getWalletIconSrc = (connectorName?: string) => {
 export const ConnectWalletBtn: FC<ButtonProps> = (props) => {
   const account = useAccount();
 
-  // if (account.isConnected)
+  // if (my-account.isConnected)
   //   return (
   //     <Button onClick={() => disconnect()}>
-  //       {shortenAddress(account.address ?? "")}Disconnect
+  //       {shortenAddress(my-account.address ?? "")}Disconnect
   //     </Button>
   //   );
 
@@ -69,6 +70,10 @@ export const ConnectWalletBtn: FC<ButtonProps> = (props) => {
               size="lg"
               variant="destructive"
               onClick={openChainModal}
+              className={textVariants({
+                variant: "body-3-medium",
+                className: "flex items-center gap-3 h-12 px-4 rounded-xl",
+              })}
               {...props}
             >
               <div className="flex gap-1 items-center">
@@ -82,7 +87,10 @@ export const ConnectWalletBtn: FC<ButtonProps> = (props) => {
           <Button
             data-cy="wallet-button"
             size="wallet"
-            className="gap-3"
+            className={textVariants({
+              variant: "body-3-medium",
+              className: "flex items-center gap-3 h-12 pl-4 pr-3 rounded-xl",
+            })}
             variant="secondary"
             colorScheme="wallet"
             onClick={openAccountModal}
@@ -96,7 +104,7 @@ export const ConnectWalletBtn: FC<ButtonProps> = (props) => {
               />
             </div>
             {shortenAddress(account.address ?? "")}
-            {/* {account.isContract && (
+            {/* {my-account.isContract && (
               <Tooltip content="Onchain wallet">
                 <img
                   src="https://pbs.twimg.com/profile_images/1643941027898613760/gyhYEOCE_400x400.jpg"

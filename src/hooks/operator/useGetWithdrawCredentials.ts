@@ -1,5 +1,5 @@
 import { useReshareDkg } from "@/hooks/use-reshare-dkg.ts";
-import { useQuery } from "@tanstack/react-query";
+import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import type { WithdrawCredentialResponse } from "@/api/validators.ts";
 import { getValidatorsWithdrawCredentials } from "@/api/validators.ts";
 
@@ -11,7 +11,7 @@ export const useGetWithdrawCredentials = ({
   setWithdrawCredentials?: (res: string) => void;
 }) => {
   const { proofsQuery } = useReshareDkg();
-  return useQuery({
+  return useChainedQuery({
     queryKey: [proofsQuery?.data?.validators],
     retry: false,
     staleTime: 0,

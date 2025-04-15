@@ -127,7 +127,7 @@ export const RegisterOperator: FC<ComponentPropsWithoutRef<"div">> = ({
                       <Button
                         variant="link"
                         as="a"
-                        href="https://docs.ssv.network/run-a-node/operator-node/installation#generate-operator-keys"
+                        href="https://docs.ssv.network/operators/operator-node/node-setup/manual-setup/#generate-operator-keys-encrypted"
                         target="_blank"
                       >
                         documentation{" "}
@@ -155,7 +155,7 @@ export const RegisterOperator: FC<ComponentPropsWithoutRef<"div">> = ({
                     <Button
                       variant="link"
                       as="a"
-                      href="https://docs.ssv.network/run-a-node/operator-node/installation#generate-operator-keys"
+                      href="https://docs.ssv.network/operators/operator-node/node-setup/manual-setup/#generate-operator-keys-encrypted"
                       target="_blank"
                     >
                       documentation
@@ -184,7 +184,7 @@ export const RegisterOperator: FC<ComponentPropsWithoutRef<"div">> = ({
                     <Button
                       variant="link"
                       as="a"
-                      href="https://docs.ssv.network/learn/operators/permissioned-operators"
+                      href="https://docs.ssv.network/operators/operator-onboarding/permissioned-operators/"
                       target="_blank"
                     >
                       Permissioned Operators.

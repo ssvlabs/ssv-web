@@ -45,7 +45,7 @@ export const useGetLiquidationThresholdPeriod = (
     functionName: "getLiquidationThresholdPeriod",
 
     blockNumber: options.watch ? blockNumber.data : undefined,
-    query: options,
+    query: { ...options },
   });
 };
 

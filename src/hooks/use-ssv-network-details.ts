@@ -21,6 +21,7 @@ const networkSchema = z
       tokenAddress: z.string().refine(isAddress).optional(),
       setterContractAddress: z.string().refine(isAddress).optional(),
       getterContractAddress: z.string().refine(isAddress).optional(),
+      bAppContractAddress: z.string().refine(isAddress).optional(),
     }),
   )
   .min(1);

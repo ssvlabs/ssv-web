@@ -113,7 +113,6 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
         navigate("..");
       });
   };
-
   return (
     <Container variant="vertical" className={cn(className, "py-6")} {...props}>
       <NavigateBackBtn />

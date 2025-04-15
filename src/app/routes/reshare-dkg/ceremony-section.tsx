@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { Alert, AlertDescription } from "@/components/ui/alert.tsx";
 import { LuCheck, LuCopy } from "react-icons/lu";
 import CeremonySummary from "@/app/routes/create-cluster/ceremony-summary.tsx";
-import { useQuery } from "@tanstack/react-query";
+import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { stringifyBigints } from "@/lib/utils/bigint.ts";
 import { generateSSVKeysDockerCMD } from "@/lib/utils/keyshares.ts";
 import type { Address } from "viem";
@@ -50,7 +50,7 @@ const CeremonySection = ({
   const context = useBulkActionContext();
   const reshareContext = useReshareDkg();
 
-  const cmd = useQuery({
+  const cmd = useChainedQuery({
     queryKey: stringifyBigints([
       "docker-cmd",
       ssvAccount.data,
@@ -138,7 +138,7 @@ const CeremonySection = ({
                           reshare. For additional details, refer to our{" "}
                           <Button
                             as="a"
-                            href="https://docs.ssv.network/~/changes/jp5KZr2yy7T6b0RmeOmN/developers/tools/ssv-dkg-client/dkg-tool-commands-and-configuration#additional-flag-for-generate-resign-msg-option"
+                            href="https://docs.ssv.network/developers/tools/ssv-dkg-client/dkg-tool-commands-and-configuration#additional-flag-for-generate-resign-msg-option"
                             variant="link"
                             size="xl"
                             target="_blank"
@@ -228,7 +228,7 @@ const CeremonySection = ({
                       solutions in the{" "}
                       <Button
                         as="a"
-                        href="https://docs.ssv.network/~/changes/jp5KZr2yy7T6b0RmeOmN/developers/tools/ssv-dkg-client/troubleshooting"
+                        href="https://docs.ssv.network/developers/tools/ssv-dkg-client/troubleshooting"
                         variant="link"
                         target="_blank"
                       >

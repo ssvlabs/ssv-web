@@ -32,7 +32,7 @@ const abiFunction = extractAbiFunction(
 export const useSetFeeRecipientAddress = () => {
   const { setterContractAddress } = useSSVNetworkDetails();
 
-  const wait = useWaitForTransactionReceipt([
+  const wait = useWaitForTransactionReceipt<MainnetEvent>([
     "useSetFeeRecipientAddress",
     setterContractAddress,
   ]);

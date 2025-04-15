@@ -14,8 +14,12 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        robotoMono: ['"Roboto Mono"', "monospace"],
+      },
       colors: {
         black: "hsl(var(--black))",
+        white: "var(--gray-50)",
         primary: {
           50: "var(--primary-50)",
           100: "var(--primary-100)",

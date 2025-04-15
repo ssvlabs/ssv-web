@@ -45,7 +45,7 @@ export const usePendingOwner = (
     functionName: "pendingOwner",
 
     blockNumber: options.watch ? blockNumber.data : undefined,
-    query: options,
+    query: { ...options },
   });
 };
 

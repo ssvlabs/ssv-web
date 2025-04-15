@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
-import { NumberInput } from "@/components/ui/number-input";
+import { BigNumberInput } from "@/components/ui/number-input";
 import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useUpdateOperatorFeeContext } from "@/guard/register-operator-guards";
@@ -108,7 +108,7 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <NumberInput
+                  <BigNumberInput
                     max={max}
                     placeholder=""
                     {...field}
@@ -141,7 +141,7 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
                                 <Button
                                   as="a"
                                   variant="link"
-                                  href="https://docs.ssv.network/learn/operators/update-fee#fee-increase-limits"
+                                  href="https://docs.ssv.network/operators/operator-onboarding/update-fee/#fee-increase-limitations"
                                   target="_blank"
                                 >
                                   Learn more

@@ -1,4 +1,5 @@
 import { useAccount } from "@/hooks/account/use-account";
+import { useStrategyAssetWithdrawFeatureFlag } from "@/hooks/feature-flags/use-withdraw-feature-flag";
 import { useWITHDRAWAL_EXPIRE_TIME } from "@/lib/contract-interactions/b-app/read/use-withdrawal-expire-time";
 import {
   getWithdrawalRequestsQueryOptions,
@@ -38,11 +39,18 @@ export const useStrategyAssetWithdrawalRequest = ({
     select: (seconds) => seconds * 1000,
   });
 
-  const requestQuery = useWithdrawalRequests({
-    strategyId: Number(strategyId),
-    account: address!,
-    token: asset,
-  });
+  const withdrawFeatureFlag = useStrategyAssetWithdrawFeatureFlag();
+
+  const requestQuery = useWithdrawalRequests(
+    {
+      strategyId: Number(strategyId),
+      account: address!,
+      token: asset,
+    },
+    {
+      enabled: withdrawFeatureFlag.enabled,
+    },
+  );
 
   const clearRequestQueryData = () => {
     queryClient.setQueryData(requestQuery.queryKey, () => {

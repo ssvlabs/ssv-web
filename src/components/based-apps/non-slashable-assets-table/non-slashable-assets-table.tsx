@@ -9,6 +9,9 @@ import { cn } from "@/lib/utils/tw";
 import { Loading } from "@/components/ui/Loading.tsx";
 import type { AccountMetadata, NonSlashableAsset } from "@/api/b-app";
 import { NonSlashableAssetsTableRow } from "@/components/based-apps/non-slashable-assets-table/non-slashable-assets-table-row";
+import { FaInfoCircle } from "react-icons/fa";
+import { Text } from "@/components/ui/text";
+import { Tooltip } from "@/components/ui/tooltip";
 
 export type NonSlashableAssetsTableProps = {
   asset: NonSlashableAsset | undefined;
@@ -45,8 +48,18 @@ export const NonSlashableAssetsTable: FCProps = ({
         {...props}
       >
         <TableHeader>
-          <TableHead className="w-[26%]">Validator Balance</TableHead>
-          <TableHead className="w-[16%]">SSV Balance</TableHead>
+          <TableHead className="w-[26%]">Asset</TableHead>
+          <TableHead className="w-[16%]">
+            <Tooltip
+              asChild
+              className="max-w-max"
+              content="Total effective balance (ETH) of all validators within your DVT clusters"
+            >
+              <div className="flex items-center gap-1">
+                <Text>My Balance</Text> <FaInfoCircle />{" "}
+              </div>
+            </Tooltip>
+          </TableHead>
           <TableHead className="text-right w-[18%]">
             Delegated Accounts
           </TableHead>

@@ -8,7 +8,7 @@ import {
 import { Loading } from "@/components/ui/Loading.tsx";
 import type { GetGlobalValidatorsBalanceResponse } from "@/api/b-app";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { Span, textVariants } from "@/components/ui/text";
+import { Span, Text, textVariants } from "@/components/ui/text";
 import { cn } from "@/lib/utils/tw";
 import {
   compactFormatter,
@@ -16,6 +16,8 @@ import {
   formatSSV,
 } from "@/lib/utils/number";
 import { formatGwei } from "viem";
+import { Tooltip } from "@/components/ui/tooltip";
+import { FaInfoCircle } from "react-icons/fa";
 
 export type GlobalNonSlashableAssetsTableProps = {
   data?: GetGlobalValidatorsBalanceResponse;
@@ -45,8 +47,19 @@ export const GlobalNonSlashableAssetsTable: FCProps = ({
         {...props}
       >
         <TableHeader>
-          <TableHead className="w-[400px]">Validator Balance</TableHead>
-          <TableHead>SSV Balance</TableHead>
+          <TableHead className="w-[400px]">Asset</TableHead>
+          <TableHead>
+            {" "}
+            <Tooltip
+              asChild
+              className="max-w-max"
+              content="Total effective balance (ETH) of all validators within your DVT clusters"
+            >
+              <div className="flex items-center gap-1">
+                <Text>My Balance</Text> <FaInfoCircle />{" "}
+              </div>
+            </Tooltip>
+          </TableHead>
           <TableHead className="text-right">Delegated Accounts</TableHead>
           <TableHead className="text-right">Total Delegated</TableHead>
           <TableHead className="text-right">Total Delegated Value</TableHead>

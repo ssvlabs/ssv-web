@@ -116,7 +116,7 @@ export const StrategyTableRow: FCProps = ({
             onDepositClick?.(strategy);
           }}
         >
-          Delegate
+          Deposit
         </Button>
       </TableCell>
     </TableRow>

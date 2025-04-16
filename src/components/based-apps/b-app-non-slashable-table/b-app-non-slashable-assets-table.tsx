@@ -51,7 +51,7 @@ export const BAppNonSlashableAssetsTable: FCProps = ({
         {...props}
       >
         <TableHeader>
-          <TableHead className="w-[26%]">Validator Balance</TableHead>
+          <TableHead className="w-[26%]">Asset</TableHead>
           <TableHead className="text-right w-[18%]">
             Delegated Accounts
           </TableHead>

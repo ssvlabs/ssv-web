@@ -45,6 +45,7 @@ export interface Strategy {
   delegatedAssets: `0x${string}`[];
   fee: string;
   metadataURI: string;
+  ownerAddressMetadataURI: string;
   bAppsList?: (StrategyBApp & BAppsMetaData)[];
   totalDelegators?: number;
   totalDelegatedFiat?: string;

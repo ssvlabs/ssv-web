@@ -9,6 +9,7 @@ import AssetName from "@/components/ui/asset-name";
 import ExpandButton from "@/components/ui/expand-button.tsx";
 import { DelegationRow } from "./account-row-delegation";
 import { useGetTotalWithdrawalRequests } from "@/hooks/b-app/use-asset-withdrawal-request";
+import { useStrategyAssetWithdrawFeatureFlag } from "@/hooks/feature-flags/use-withdraw-feature-flag";
 
 export type AccountAssetsTableRowProps = {
   asset: AccountAsset;
@@ -43,6 +44,7 @@ export const AccountAssetsTableRow: FCProps = ({
   });
 
   const [isOpen, setIsOpen] = useState(false);
+  const withdrawFeatureFlag = useStrategyAssetWithdrawFeatureFlag();
   return (
     <>
       <TableRow
@@ -101,7 +103,7 @@ export const AccountAssetsTableRow: FCProps = ({
             <Text>
               {currencyFormatter.format(+asset.totalFiatDepositAmount)}
             </Text>
-            {totalRequests > 0 && (
+            {totalRequests > 0 && withdrawFeatureFlag.enabled && (
               <div
                 className={cn(
                   "flex items-center justify-center size-4 text-[10px] font-bold border-[2px] text-[#fff] bg-primary-400 border-primary-500 rounded-full",

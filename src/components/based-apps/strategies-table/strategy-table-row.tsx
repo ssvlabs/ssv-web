@@ -12,12 +12,17 @@ import { cn } from "@/lib/utils/tw";
 import type { Address } from "abitype";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useNavigate } from "react-router-dom";
-import type { Strategy, StrategyMetadata } from "@/api/b-app.ts";
+import type {
+  AccountMetadata,
+  Strategy,
+  StrategyMetadata,
+} from "@/api/b-app.ts";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 import { getStrategyName } from "@/lib/utils/strategy";
 
 export type StrategyTableRowProps = {
-  strategy: Strategy & StrategyMetadata;
+  strategy: Strategy &
+    StrategyMetadata & { ownerAddressMetadata: AccountMetadata };
   showDepositButtonOnHover?: boolean;
   onDepositClick?: (strategy: Strategy) => void;
   onRowClick?: (strategy: Strategy) => void;
@@ -63,13 +68,18 @@ export const StrategyTableRow: FCProps = ({
         <Tooltip
           content={
             <div className="flex gap-2 items-center">
-              <Text>{strategy.ownerAddress}</Text>
+              <Text>
+                {strategy.ownerAddressMetadata?.name || strategy.ownerAddress}
+              </Text>
             </div>
           }
         >
           <img
             className={cn("size-7 flex flex-wrap gap-1 rounded-md", className)}
-            src={"/images/operator_default_background/light.svg"}
+            src={
+              strategy.ownerAddressMetadata?.logo ||
+              "/images/operator_default_background/light.svg"
+            }
             alt={strategy.ownerAddress}
           />
         </Tooltip>

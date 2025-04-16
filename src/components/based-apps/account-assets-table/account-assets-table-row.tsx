@@ -162,7 +162,7 @@ export const AccountAssetsTableRow: FCProps = ({
                 className: "text-gray-500 text-right",
               })}
             >
-              Delegated
+              Deposited
             </TableCell>
             <TableCell
               className={textVariants({

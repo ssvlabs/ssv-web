@@ -40,11 +40,11 @@ export const AssetsTable: FCProps = ({
         {...props}
       >
         <TableHeader>
-          <TableHead>Assets</TableHead>
+          <TableHead>Asset</TableHead>
           <TableHead>Wallet Balance</TableHead>
-          <TableHead className="text-right">Delegated Strategies</TableHead>
-          <TableHead className="text-right">Total Delegated</TableHead>
-          <TableHead className="text-right">Total Delegated Value</TableHead>
+          <TableHead className="text-right">Deposited Strategies</TableHead>
+          <TableHead className="text-right">Total Deposited</TableHead>
+          <TableHead className="text-right">Total Deposited Value</TableHead>
         </TableHeader>
         <TableBody>
           {assets.map((asset) => {

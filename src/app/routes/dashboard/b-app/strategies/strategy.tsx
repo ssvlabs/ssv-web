@@ -217,7 +217,7 @@ const Strategy = () => {
             className={"w-full rounded-t-xl overflow-hidden rounded-b-[16px]"}
           >
             <TableHeader>
-              <TableHead>Validator Balance</TableHead>
+              <TableHead>Asset</TableHead>
               <TableHead>Total Delegated</TableHead>
               <TableHead>Total Delegated Value</TableHead>
             </TableHeader>

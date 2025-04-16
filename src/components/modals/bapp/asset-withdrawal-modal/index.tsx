@@ -187,7 +187,7 @@ export const AssetWithdrawalModal = () => {
             <Divider />
             <div className="flex flex-col gap-3">
               <Text variant="caption-medium" className="text-gray-500">
-                Total Delegated
+                Total Deposited
               </Text>
               <div className="flex items-center justify-between h-[52px] w-full bg-gray-100 rounded-xl px-6">
                 <Text variant="body-3-medium">
@@ -261,7 +261,7 @@ export const AssetWithdrawalModal = () => {
                               variant="body-2-medium"
                               className="text-gray-500"
                             >
-                              Delegated Balance:{" "}
+                              Deposited Balance:{" "}
                               {formatSSV(
                                 BigInt(delegated.data?.amount || 0),
                                 asset.decimals,

@@ -67,7 +67,7 @@ export const DelegationRow = ({
         {currencyFormatter.format(+delegation.fiatDepositAmount)}
         {withdrawFeatureFlag.enabled && (
           <div className="gap-1 items-center absolute top-1/2 -translate-y-1/2 right-0 mr-7 hidden group-hover:flex">
-            <Tooltip content="Delegate" asChild>
+            <Tooltip content="Deposit" asChild>
               <Button
                 className="w-12 h-8"
                 variant="secondary"

@@ -7,6 +7,10 @@ export const useStrategyMetadata = (
 ): { data: Record<string, StrategyMetadata>; isLoading: boolean } => {
   const strategyMetadata = useChainedQuery({
     queryKey: ["strategy_metadata", data],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     queryFn: () => getStrategiesMetadata(data),
     enabled: Boolean(data.length),
   });

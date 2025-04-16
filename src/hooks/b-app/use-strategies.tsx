@@ -44,7 +44,6 @@ export const useStrategies = (_strategyId?: string, _bAppId?: string) => {
     },
     enabled: true,
   });
-
   const isStrategiesLoading = query.isLoading;
   const strategies = query.data?.data || [];
 

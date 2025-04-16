@@ -3,6 +3,7 @@ import Switcher from "@/components/ui/switcher.tsx";
 import { Container } from "@/components/ui/container.tsx";
 import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
 import { useNavigate } from "react-router-dom";
+import { useAccountAssets } from "@/hooks/b-app/use-account-assets.ts";
 
 export enum AccountSelect {
   Delegations = "my-delegations",
@@ -25,11 +26,17 @@ const MyAccountWrapper = ({
 }) => {
   const navigate = useNavigate();
   const { data, myStrategies } = useMyBAppAccount();
+  const { assets } = useAccountAssets();
+
   const SWITCH_BUTTONS = [
     {
       type: AccountSelect.Delegations,
       label: BUTTON_LABELS[AccountSelect.Delegations],
-      count: data?.delegations.length || 0,
+      count:
+        (data?.delegations.length || 0) +
+        assets.reduce((acc, asset) => {
+          return acc + asset.slashableAsset.deposits.length;
+        }, 0),
     },
     {
       type: AccountSelect.Strategy,

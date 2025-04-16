@@ -143,6 +143,7 @@ export const useMyBAppAccount = () => {
         strategies: myStrategies.data?.strategies.map((strategy) => ({
           ...strategy,
           ...strategiesMetadata[strategy.id],
+          ownerAddressMetadata: accountMetadata,
         })),
       } || ({} as StrategiesByOwnerResponse),
     myBApps: {

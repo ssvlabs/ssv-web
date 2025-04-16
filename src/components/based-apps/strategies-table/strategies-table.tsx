@@ -10,11 +10,16 @@ import { cn } from "@/lib/utils/tw";
 import { Pagination } from "@/components/ui/pagination-v2";
 import { Divider } from "@/components/ui/divider";
 import { StrategyTableRow } from "@/components/based-apps/strategies-table/strategy-table-row";
-import type { Strategy, StrategyMetadata } from "@/api/b-app.ts";
+import type {
+  AccountMetadata,
+  Strategy,
+  StrategyMetadata,
+} from "@/api/b-app.ts";
 import { Loading } from "@/components/ui/Loading.tsx";
 
 export type OperatorsTableProps = {
-  strategies: (Strategy & StrategyMetadata)[];
+  strategies: (Strategy &
+    StrategyMetadata & { ownerAddressMetadata: AccountMetadata })[];
   pagination?: IPagination;
   isLoading?: boolean;
   showDepositButtonOnHover?: boolean;

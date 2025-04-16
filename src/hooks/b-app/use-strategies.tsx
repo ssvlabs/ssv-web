@@ -1,4 +1,4 @@
-import { getStrategies } from "@/api/b-app.ts";
+import { type AccountMetadata, getStrategies } from "@/api/b-app.ts";
 import { useStrategiesFilters } from "@/hooks/b-app/filters/use-strategies-filters";
 import { useOrdering } from "@/hooks/use-ordering.ts";
 import { createDefaultPagination } from "@/lib/utils/api.ts";
@@ -6,6 +6,7 @@ import { getTokenMetadata } from "@/lib/utils/tokens-helper.ts";
 import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { useParams } from "react-router";
 import { useStrategyMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
+import { useAccountMetadata } from "@/hooks/b-app/use-account-metadata.ts";
 
 export const useStrategies = (_strategyId?: string, _bAppId?: string) => {
   const params = useParams();
@@ -55,6 +56,16 @@ export const useStrategies = (_strategyId?: string, _bAppId?: string) => {
       })) || [],
     );
 
+  const {
+    data: strategiesAccountsMetadata,
+    isLoading: strategiesAccountsMetadataIsLoading,
+  } = useAccountMetadata(
+    strategies.map(({ ownerAddress, ownerAddressMetadataURI }) => ({
+      id: ownerAddress,
+      url: ownerAddressMetadataURI || "",
+    })) || [],
+  );
+
   const assetsQuery = useChainedQuery({
     queryKey: ["get_assets_data", strategies],
     staleTime: 0,
@@ -65,6 +76,12 @@ export const useStrategies = (_strategyId?: string, _bAppId?: string) => {
       getTokenMetadata(strategies.map((strategy) => strategy.delegatedAssets)),
     enabled: true,
   });
+
+  const mappedOwnerAddressesMetadata: Record<string, AccountMetadata> = (
+    strategiesAccountsMetadata || []
+  ).reduce((acc, metadataItem) => {
+    return { ...acc, [metadataItem.id]: metadataItem.data };
+  }, {});
 
   const assetsData =
     assetsQuery.data ||
@@ -79,11 +96,15 @@ export const useStrategies = (_strategyId?: string, _bAppId?: string) => {
     strategies: strategies.map((strategy) => ({
       ...strategy,
       ...strategiesMetadata[strategy.id],
+      ownerAddressMetadata: mappedOwnerAddressesMetadata[strategy.ownerAddress],
     })),
     assetsData,
     strategy,
     strategyId,
-    isStrategiesLoading: strategiesMetadataIsLoading || isStrategiesLoading,
+    isStrategiesLoading:
+      strategiesMetadataIsLoading ||
+      isStrategiesLoading ||
+      strategiesAccountsMetadataIsLoading,
     orderBy,
     sort,
   };

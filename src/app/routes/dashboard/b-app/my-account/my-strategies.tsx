@@ -7,7 +7,11 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button.tsx";
 import { isAddress } from "viem";
 import { shortenAddress } from "@/lib/utils/strings.ts";
-import type { Strategy, StrategyMetadata } from "@/api/b-app.ts";
+import type {
+  AccountMetadata,
+  Strategy,
+  StrategyMetadata,
+} from "@/api/b-app.ts";
 import MyAccountWrapper from "@/app/routes/dashboard/b-app/my-account/my-account-wrapper.tsx";
 import { AccountSelect } from "@/app/routes/dashboard/b-app/my-account/my-account-wrapper.tsx";
 import { Tooltip } from "@/components/ui/tooltip.tsx";
@@ -104,7 +108,8 @@ const MyStrategies = () => {
         </div>
         <StrategiesTable
           strategies={
-            myStrategies.strategies as (Strategy & StrategyMetadata)[]
+            myStrategies.strategies as (Strategy &
+              StrategyMetadata & { ownerAddressMetadata: AccountMetadata })[]
           }
         />
       </Container>

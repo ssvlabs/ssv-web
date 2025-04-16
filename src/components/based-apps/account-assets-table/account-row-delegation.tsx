@@ -8,6 +8,7 @@ import type { AccountAsset } from "@/hooks/b-app/use-account-assets";
 import { WithdrawalRequestStatusIcon } from "@/components/ui/withdrawal-request-status-icon";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { Tooltip } from "@/components/ui/tooltip";
+import { useStrategyAssetWithdrawFeatureFlag } from "@/hooks/feature-flags/use-withdraw-feature-flag";
 
 type DelegationRowProps = {
   delegation: NonNullable<AccountAsset["slashableAsset"]>["deposits"][0];
@@ -24,6 +25,7 @@ export const DelegationRow = ({
   onWithdrawClick,
   onDelegateClick,
 }: DelegationRowProps) => {
+  const withdrawFeatureFlag = useStrategyAssetWithdrawFeatureFlag();
   return (
     <TableRow
       className={cn(
@@ -63,43 +65,53 @@ export const DelegationRow = ({
         })}
       >
         {currencyFormatter.format(+delegation.fiatDepositAmount)}
-        <div className="gap-1 items-center absolute top-1/2 -translate-y-1/2 right-0 mr-7 hidden group-hover:flex">
-          <Tooltip content="Delegate" asChild>
-            <Button
-              className="w-12 h-8"
-              variant="secondary"
-              onClick={(ev) => {
-                ev.stopPropagation();
-                onDelegateClick?.(delegation.strategyId);
-              }}
-            >
-              <FaArrowDown />
-            </Button>
-          </Tooltip>
-          <Tooltip content="Withdraw" asChild>
-            <Button
-              className="w-12 h-8"
-              variant="secondary"
-              onClick={(ev) => {
-                ev.stopPropagation();
-                onWithdrawClick?.(delegation.strategyId);
-              }}
-            >
-              <FaArrowUp />
-            </Button>
-          </Tooltip>
-        </div>
+        {withdrawFeatureFlag.enabled && (
+          <div className="gap-1 items-center absolute top-1/2 -translate-y-1/2 right-0 mr-7 hidden group-hover:flex">
+            <Tooltip content="Deposit" asChild>
+              <Button
+                className="w-12 h-8"
+                variant="secondary"
+                onClick={(ev) => {
+                  ev.stopPropagation();
+                  onDelegateClick?.(delegation.strategyId);
+                }}
+              >
+                <FaArrowDown />
+              </Button>
+            </Tooltip>
+            <Tooltip content="Withdraw" asChild>
+              <Button
+                className="w-12 h-8"
+                variant="secondary"
+                onClick={(ev) => {
+                  ev.stopPropagation();
+                  onWithdrawClick?.(delegation.strategyId);
+                }}
+              >
+                <FaArrowUp />
+              </Button>
+            </Tooltip>
+          </div>
+        )}
       </TableCell>
       <TableCell
         className={textVariants({
           className: "w-[52px] flex items-center justify-center p-0",
         })}
       >
-        <WithdrawalRequestStatusIcon
-          strategyId={delegation.strategyId}
-          asset={asset.token}
-          className="text-base"
-        />
+        {withdrawFeatureFlag.enabled && (
+          // <IconButton className="bg-transparent">
+          <WithdrawalRequestStatusIcon
+            strategyId={delegation.strategyId}
+            asset={asset.token}
+            className="text-base"
+            onClick={(ev) => {
+              ev.stopPropagation();
+              onWithdrawClick?.(delegation.strategyId);
+            }}
+          />
+          // </IconButton>
+        )}
       </TableCell>
     </TableRow>
   );

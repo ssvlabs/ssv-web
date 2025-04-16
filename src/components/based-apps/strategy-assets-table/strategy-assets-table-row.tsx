@@ -90,7 +90,7 @@ export const StrategyAssetsTableRow: FCProps = ({
                 onDepositClick?.();
               }}
             >
-              Delegate
+              Deposit
             </Button>
           )}
           {Boolean((asset?.delegations || []).length) && (

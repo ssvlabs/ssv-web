@@ -148,7 +148,7 @@ export const BApp = () => {
         />
       )}
       <div className="flex justify-between w-full items-center">
-        <Text variant="body-1-semibold">Delegated Assets</Text>
+        <Text variant="body-1-semibold">Assets</Text>
         <SearchInput
           onChange={(e) => setStrategyId(e.target.value)}
           placeholder="Search"
@@ -156,7 +156,7 @@ export const BApp = () => {
           className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
           inputProps={{
             className: "bg-gray-50",
-            placeholder: "Search Strategy...",
+            placeholder: "Search Asset Address...",
           }}
         />
       </div>

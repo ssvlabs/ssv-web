@@ -50,8 +50,8 @@ export const StrategiesTable: FCProps = ({
           <TableHead>bApps</TableHead>
           <TableHead>Supported Assets</TableHead>
           <TableHead>Fee</TableHead>
-          <TableHead>Delegators</TableHead>
-          <TableHead>Delegated</TableHead>
+          <TableHead>Depositors</TableHead>
+          <TableHead>Deposited Value</TableHead>
         </TableHeader>
         <TableBody>
           {strategies?.map((strategy) => {

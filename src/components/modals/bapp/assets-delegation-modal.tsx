@@ -106,14 +106,14 @@ export const AssetsDelegationModal = () => {
         <Form {...form}>
           <form onSubmit={deposit} className="flex  flex-col gap-8 ">
             <div className="flex justify-between items-center">
-              <DialogTitle>Assets Delegation</DialogTitle>
+              <DialogTitle>Deposit Asset</DialogTitle>
               <DialogClose>
                 <X className="size-4" />
               </DialogClose>
             </div>
             <div className="flex flex-col gap-3">
               <Text variant="caption-medium" className="text-gray-500">
-                Delegating to
+                Depositing to
               </Text>
               <div className="flex items-center h-[52px] w-full bg-gray-100 rounded-xl px-6">
                 <Text variant="body-3-medium">{getStrategyName(strategy)}</Text>
@@ -121,7 +121,7 @@ export const AssetsDelegationModal = () => {
             </div>
             <div className="flex flex-col gap-3">
               <Text variant="caption-medium" className="text-gray-500">
-                Delegated
+                Deposited
               </Text>
               <div className="flex items-center h-[52px] w-full bg-gray-100 rounded-xl px-6">
                 <Text variant="body-3-medium">
@@ -209,7 +209,7 @@ export const AssetsDelegationModal = () => {
                 isLoading={isPending}
                 disabled={!form.formState.isValid}
               >
-                Delegate
+                Deposit
               </Button>
             ) : (
               meta.asset && (
@@ -231,7 +231,7 @@ export const AssetsDelegationModal = () => {
                     isLoading={isPending}
                     disabled={!form.formState.isValid}
                   >
-                    Delegate
+                    Deposit
                   </Button>
                 </WithAllowance>
               )

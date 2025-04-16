@@ -6,6 +6,7 @@ import { createDefaultPagination } from "@/lib/utils/api.ts";
 import { getTokenMetadata } from "@/lib/utils/tokens-helper.ts";
 import { usePaginationQuery } from "@/lib/query-states/use-pagination.ts";
 import { useBAppMetadata } from "@/hooks/b-app/use-b-app-metadata.ts";
+import { erc20verificationTokenAddress } from "@/lib/utils/token.ts";
 
 export const useBApps = () => {
   const [searchParams] = useSearchParams();
@@ -33,6 +34,7 @@ export const useBApps = () => {
     );
 
   const isBAppsLoading = query.isLoading || bAppsMetadataIsLoading;
+
   const assetsQuery = useChainedQuery({
     queryKey: ["get_assets_data", bApps],
     staleTime: 0,
@@ -43,14 +45,44 @@ export const useBApps = () => {
       getTokenMetadata(bApps.map((bApp: BApp) => bApp.supportedAssets)),
     enabled: true,
   });
+
+  const erc20Verification = useChainedQuery({
+    queryKey: ["erc20Verification", bApps],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    queryFn: async () => {
+      const results: Record<`0x${string}`, boolean> = {};
+      await Promise.all(
+        bApps.map(async ({ supportedAssets }) =>
+          supportedAssets.map(async (token) => {
+            if (Object.keys(results).includes(token)) {
+              return;
+            }
+            results[token] = await erc20verificationTokenAddress(token);
+          }),
+        ),
+      );
+      return results;
+    },
+    enabled: (bApps || []).length > 0,
+  });
+
   const assetsData =
     assetsQuery.data ||
     ({} as Record<string, { symbol: string; name: string }>);
-  const pagination = query.data?.pagination || createDefaultPagination();
 
+  const pagination = query.data?.pagination || createDefaultPagination();
   return {
     query,
-    bApps: bApps.map((bApp) => ({ ...bApp, ...bAppsMetadata[bApp.id] })),
+    bApps: bApps.map((bApp) => ({
+      ...bApp,
+      ...bAppsMetadata[bApp.id],
+      supportedAssets: bApp.supportedAssets.filter(
+        (token) => (erc20Verification.data || {})[token],
+      ),
+    })),
     pagination,
     assetsData,
     isBAppsLoading,

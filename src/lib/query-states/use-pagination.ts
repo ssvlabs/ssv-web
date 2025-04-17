@@ -6,10 +6,15 @@ export const usePaginationQuery = (params = { page: 1, perPage: 10 }) => {
     parseAsInteger.withDefault(params.page),
   );
 
-  const [perPage, setPerPage] = useQueryState(
+  const [perPage, _setPerPage] = useQueryState(
     "perPage",
     parseAsInteger.withDefault(params.perPage),
   );
+
+  const setPerPage = (perPage: number) => {
+    _setPerPage(perPage);
+    setPage(1);
+  };
 
   const next = () => {
     setPage(page + 1);

@@ -3,11 +3,11 @@ import { useTokensFilter } from "@/hooks/b-app/filters/use-tokens-filter";
 import { usePaginationQuery } from "@/lib/query-states/use-pagination";
 import { useEffect, useRef } from "react";
 
-export const useStrategiesFilters = (params = { page: 1, perPage: 10 }) => {
+export const useStrategiesFilters = () => {
   const idFilter = useStrategyIdFilter();
   const tokensFilter = useTokensFilter();
 
-  const paginationQuery = usePaginationQuery(params);
+  const paginationQuery = usePaginationQuery();
 
   const _page = useRef(paginationQuery.page);
   _page.current = paginationQuery.page;

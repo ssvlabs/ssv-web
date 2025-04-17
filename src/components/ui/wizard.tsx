@@ -34,7 +34,7 @@ export const Wizard = ({
   }
 
   return (
-    <div className="h-full flex flex-col items-center justify-between">
+    <div className="w-full h-full flex flex-col items-center justify-between">
       <div className="w-full h-20 bg-gray-50 flex items-center justify-center">
         <div className="w-[1320px] flex items-center justify-between">
           <Text variant="body-1-bold">{title}</Text>

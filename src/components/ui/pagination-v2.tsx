@@ -16,10 +16,7 @@ type PaginationProps = {
 
 const Pagination = ({ pagination }: PaginationProps) => {
   const options = [10, 25, 50, 100];
-  const paginationQuery = usePaginationQuery({
-    page: pagination.page,
-    perPage: pagination.per_page,
-  });
+  const paginationQuery = usePaginationQuery();
   return (
     <div
       className={`${textVariants({ variant: "body-3-medium" })} text-gray-600 h-[60px] w-full flex items-center justify-between px-6 py-3.5`}
@@ -44,7 +41,7 @@ const Pagination = ({ pagination }: PaginationProps) => {
           <div className="relative inline-block">
             <select
               className="w-[60px] h-[32px] pl-2 pr-6 border rounded-md text-center focus:outline-none focus:ring-0 bg-gray-50 border-gray-400 appearance-none"
-              defaultValue={paginationQuery.perPage}
+              value={paginationQuery.perPage}
               onChange={(event) => {
                 paginationQuery.setPerPage(parseInt(event.target.value));
               }}

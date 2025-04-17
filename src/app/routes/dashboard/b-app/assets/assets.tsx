@@ -8,7 +8,7 @@ import { useGlobalNonSlashableAssets } from "@/hooks/b-app/use-global-non-slasha
 import { GlobalNonSlashableAssetsTable } from "@/components/based-apps/global-non-slashable-assets-table/global-non-slashable-assets-table";
 
 export const Assets: FC = () => {
-  const { assets, query } = useBAppsAssets();
+  const { assets, pagination, query } = useBAppsAssets();
   const globalNonSlashableAssets = useGlobalNonSlashableAssets();
   const navigate = useNavigate();
 
@@ -27,12 +27,7 @@ export const Assets: FC = () => {
           navigate(`/account/strategies?token=${asset.token}`);
         }}
         assets={assets || []}
-        pagination={{
-          page: 1,
-          per_page: 10,
-          total: 10,
-          pages: 1,
-        }}
+        pagination={pagination}
         isLoading={query.isLoading}
       />
     </Container>

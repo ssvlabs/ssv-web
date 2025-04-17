@@ -15,11 +15,11 @@ export const normalizeTokenAddress = (address: Address) =>
 
 export const erc20verificationTokenAddress = async (address: Address) => {
   try {
-    if (isEthereumTokenAddress(address)) {
-      return true;
-    }
-    await fetchTotalSupply(address);
-    await fetchBalanceOf(address, { account: zeroAddress || "0x" });
+    if (isEthereumTokenAddress(address)) return true;
+    await Promise.all([
+      fetchTotalSupply(address),
+      fetchBalanceOf(address, { account: zeroAddress || "0x" }),
+    ]);
     return true;
   } catch {
     return false;

@@ -36,10 +36,8 @@ export const useBAppsAssets = () => {
   const verifiedAssets = assets.filter(
     ({ token }) => (erc20Verification.data || {})[token],
   );
-  console.log("verifiedAssets:", verifiedAssets);
 
   const paginatedAssets = chunk(verifiedAssets, paginationQuery.perPage);
-  console.log("paginatedAssets:", paginatedAssets);
 
   const pagination = createDefaultPagination({
     pages: paginatedAssets.length,

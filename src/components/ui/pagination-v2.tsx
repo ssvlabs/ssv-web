@@ -16,10 +16,7 @@ type PaginationProps = {
 
 const Pagination = ({ pagination }: PaginationProps) => {
   const options = [10, 25, 50, 100];
-  const paginationQuery = usePaginationQuery({
-    page: pagination.page,
-    perPage: pagination.per_page,
-  });
+  const paginationQuery = usePaginationQuery();
   return (
     <div
       className={`${textVariants({ variant: "body-3-medium" })} text-gray-600 h-[60px] w-full flex items-center justify-between px-6 py-3.5`}

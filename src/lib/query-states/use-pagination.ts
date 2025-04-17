@@ -1,14 +1,18 @@
 import { parseAsInteger, useQueryState } from "nuqs";
 
-export const usePaginationQuery = (params = { page: 1, perPage: 10 }) => {
+export const usePaginationQuery = () => {
   const [page, setPage] = useQueryState(
     "page",
-    parseAsInteger.withDefault(params.page),
+    parseAsInteger.withDefault(1).withOptions({
+      history: "push",
+    }),
   );
 
   const [perPage, _setPerPage] = useQueryState(
     "perPage",
-    parseAsInteger.withDefault(params.perPage),
+    parseAsInteger.withDefault(10).withOptions({
+      history: "push",
+    }),
   );
 
   const setPerPage = (perPage: number) => {

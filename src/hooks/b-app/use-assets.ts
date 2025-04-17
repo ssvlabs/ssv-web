@@ -5,11 +5,8 @@ import { usePaginationQuery } from "@/lib/query-states/use-pagination";
 import { erc20verificationTokenAddress } from "@/lib/utils/token.ts";
 import { chunk } from "lodash-es";
 
-export const useBAppsAssets = (perPage = 10) => {
-  const paginationQuery = usePaginationQuery({
-    page: 1,
-    perPage: perPage,
-  });
+export const useBAppsAssets = () => {
+  const paginationQuery = usePaginationQuery();
 
   const query = useChainedQuery({
     queryKey: ["bapp-assets"],

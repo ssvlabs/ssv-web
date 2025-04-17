@@ -12,6 +12,7 @@ import { Divider } from "@/components/ui/divider";
 import type { AccountMetadata, BAppAccount, Delegation } from "@/api/b-app.ts";
 import { Loading } from "@/components/ui/Loading.tsx";
 import { AccountTableRow } from "@/components/based-apps/accounts-table/account-table-row.tsx";
+import { Text } from "@/components/ui/text";
 
 export type AccountsTableProps = {
   accounts: (BAppAccount & AccountMetadata)[];
@@ -20,6 +21,7 @@ export type AccountsTableProps = {
   effectiveBalance?: number;
   accountDelegations?: Delegation[];
   showDepositButtonOnHover?: boolean;
+  hasUnlistedAccount?: boolean;
   onDelegateClick: (
     address: string,
     delegatedValue?: string,
@@ -40,6 +42,7 @@ export const AccountsTable: FCProps = ({
   isLoading,
   effectiveBalance,
   onDelegateClick,
+  hasUnlistedAccount,
   accountDelegations,
   ...props
 }) => {
@@ -80,6 +83,16 @@ export const AccountsTable: FCProps = ({
         </>
       ) : (
         <div className="flex w-full bg-gray-50 py-4 rounded-b-2xl"></div>
+      )}
+      {hasUnlistedAccount && (
+        <div className="w-full flex flex-col justify-center items-center mt-7">
+          <Text className="color-gray-600" variant={"body-3-medium"}>
+            This account is unlisted.
+          </Text>
+          <Text className="color-gray-600" variant={"body-3-medium"}>
+            Exercise caution when delegating your assets.
+          </Text>
+        </div>
       )}
     </div>
   );

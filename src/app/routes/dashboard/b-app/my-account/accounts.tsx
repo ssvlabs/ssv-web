@@ -9,23 +9,34 @@ import { AccountsTable } from "@/components/based-apps/accounts-table/accounts-t
 import { useBAppAccounts } from "@/hooks/b-app/use-b-app-accounts.ts";
 import { parseAsString, useQueryState } from "nuqs";
 import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
-import { formatGwei } from "viem";
+import { formatGwei, isAddress } from "viem";
 import { useDelegateContext } from "@/components/context/delegate-context.tsx";
 import type { AccountMetadata } from "@/api/b-app.ts";
+
+const EMPTY_ACCOUNT = {
+  id: `0x`,
+  bApps: 0,
+  strategies: 0,
+  delegators: 0,
+  metadataURI: "",
+  totalDelegated: 0n,
+  totalDelegatedValue: "",
+};
 
 const Accounts = () => {
   const navigate = useNavigate();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const { data } = useMyBAppAccount();
   const pathname = useLocation().pathname;
-  const [, setAddress] = useQueryState("address", parseAsString);
+  const [address, setAddress] = useQueryState("address", parseAsString);
   const searchByAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddress(e.currentTarget.value);
   };
   const { accounts, pagination, isLoading } = useBAppAccounts();
   const { setDelegationData, percentage, delegatedValue } =
     useDelegateContext();
-
+  const hasUnlistedAccount =
+    !accounts.length && !!address && isAddress(address);
   const openDelegate = (
     address: string,
     delegatedValue?: string,
@@ -42,7 +53,6 @@ const Accounts = () => {
       });
     }
   };
-
   return (
     <Wizard
       title={"Delegate Validator Balance"}
@@ -69,7 +79,12 @@ const Accounts = () => {
             pagination={pagination}
             isLoading={isLoading}
             onDelegateClick={openDelegate}
-            accounts={accounts}
+            hasUnlistedAccount={hasUnlistedAccount}
+            accounts={
+              hasUnlistedAccount
+                ? [...accounts, { ...EMPTY_ACCOUNT, id: address }]
+                : accounts
+            }
           />
           {isOpenModal && (
             <Delegate

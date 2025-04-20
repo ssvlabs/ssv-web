@@ -13,6 +13,8 @@ import { TbExternalLink } from "react-icons/tb";
 import { useLinks } from "@/hooks/use-links.ts";
 import ExpandButton from "@/components/ui/expand-button.tsx";
 import { shortenAddress } from "@/lib/utils/strings.ts";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 export type BAppTableRowProps = {
   bApp: StrategyBApp & BAppsMetaData;
   searchValue?: string;
@@ -43,7 +45,10 @@ export const StrategyBAppsTableRow: FCProps = ({
     <TableBody>
       <TableRow className={cn("cursor-pointer max-h-7", className)} {...props}>
         <TableCell className={textVariants({ variant: "body-3-medium" })}>
-          <div className="flex items-center gap-2">
+          <Link
+            to={`/account/bApps/${bApp.bAppId}`}
+            className="flex items-center gap-2 text-primary-500"
+          >
             <img
               className="rounded-[8px] size-7 border-gray-400 border"
               src={
@@ -54,8 +59,10 @@ export const StrategyBAppsTableRow: FCProps = ({
                   "/images/operator_default_background/light.svg";
               }}
             />
-            {bApp?.name || shortenAddress(bApp.bAppId)}
-          </div>
+            <Button variant="link">
+              {bApp?.name || shortenAddress(bApp.bAppId)}
+            </Button>
+          </Link>
         </TableCell>
         <TableCell className="flex items-center justify-between">
           <AssetsDisplay

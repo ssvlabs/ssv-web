@@ -12,8 +12,8 @@ export enum AccountSelect {
 }
 
 const BUTTON_LABELS = {
-  [AccountSelect.Delegations]: "Delegations",
-  [AccountSelect.Strategy]: "Strategy",
+  [AccountSelect.Delegations]: "Assets",
+  [AccountSelect.Strategy]: "Strategies",
   [AccountSelect.BApps]: "bApps",
 };
 

@@ -36,7 +36,7 @@ export const Wizard = ({
   return (
     <div className="w-full h-full flex flex-col items-center justify-between">
       <div className="w-full h-20 bg-gray-50 flex items-center justify-center">
-        <div className="w-[1320px] flex items-center justify-between">
+        <div className="w-[1320px] flex items-center justify-between mx-5">
           <Text variant="body-1-bold">{title}</Text>
           {steps && (
             <div className={"flex items-center gap-3"}>
@@ -64,7 +64,7 @@ export const Wizard = ({
         </div>
       </div>
       <div className="flex-1 w-full overflow-auto">{children}</div>
-      <div className="w-full h-20 bg-gray-50 flex items-center justify-center">
+      <div className="w-full h-20 bg-gray-50 flex items-center justify-center px-5">
         <div className="w-[1320px] flex items-center justify-between">
           <div className="w-[160px] h-48px">
             <Button onClick={onClose} className="size-full" variant="secondary">

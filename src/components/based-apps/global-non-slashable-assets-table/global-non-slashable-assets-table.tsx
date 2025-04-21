@@ -47,22 +47,24 @@ export const GlobalNonSlashableAssetsTable: FCProps = ({
         {...props}
       >
         <TableHeader>
-          <TableHead className="w-[400px]">Asset</TableHead>
-          <TableHead>
-            {" "}
-            <Tooltip
-              asChild
-              className="max-w-max"
-              content="Total effective balance (ETH) of all validators within your DVT clusters"
-            >
-              <div className="flex items-center gap-1">
-                <Text>My Balance</Text> <FaInfoCircle />{" "}
-              </div>
-            </Tooltip>
-          </TableHead>
-          <TableHead className="text-right">Delegated Accounts</TableHead>
-          <TableHead className="text-right">Total Delegated</TableHead>
-          <TableHead className="text-right">Total Delegated Value</TableHead>
+          <TableRow>
+            <TableHead className="w-[400px]">Asset</TableHead>
+            <TableHead>
+              {" "}
+              <Tooltip
+                asChild
+                className="max-w-max"
+                content="Total effective balance (ETH) of all validators within your DVT clusters"
+              >
+                <div className="flex items-center gap-1">
+                  <Text>My Balance</Text> <FaInfoCircle />{" "}
+                </div>
+              </Tooltip>
+            </TableHead>
+            <TableHead className="text-right">Delegated Accounts</TableHead>
+            <TableHead className="text-right">Total Delegated</TableHead>
+            <TableHead className="text-right">Total Delegated Value</TableHead>
+          </TableRow>
         </TableHeader>
         <TableBody>
           {isLoading ? (

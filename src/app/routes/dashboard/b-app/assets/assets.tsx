@@ -1,16 +1,147 @@
-import type { FC } from "react";
-import { Container } from "@/components/ui/container.tsx";
-import { useBAppsAssets } from "@/hooks/b-app/use-assets";
-import { AssetsTable } from "@/components/based-apps/assets-table/assets-table";
-import { useNavigate } from "react-router";
-import { Text } from "@/components/ui/text";
-import { useGlobalNonSlashableAssets } from "@/hooks/b-app/use-global-non-slashable-assets";
+/* eslint-disable react-hooks/rules-of-hooks */
 import { GlobalNonSlashableAssetsTable } from "@/components/based-apps/global-non-slashable-assets-table/global-non-slashable-assets-table";
+import { AssetLogo } from "@/components/ui/asset-logo";
+import AssetName from "@/components/ui/asset-name";
+import { Container } from "@/components/ui/container.tsx";
+import { DataTable } from "@/components/ui/data-table/data-table";
+import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
+import { Text } from "@/components/ui/text";
+import { useAccount } from "@/hooks/account/use-account";
+import { useBAppsAssets } from "@/hooks/b-app/use-assets";
+import { useGlobalNonSlashableAssets } from "@/hooks/b-app/use-global-non-slashable-assets";
+import { useDataTable } from "@/hooks/data-table/use-data-table";
+import { useBalanceOf } from "@/lib/contract-interactions/erc-20/read/use-balance-of";
+import { useDecimals } from "@/lib/contract-interactions/erc-20/read/use-decimals";
+import {
+  compactFormatter,
+  currencyFormatter,
+  formatSSV,
+} from "@/lib/utils/number";
+import { isEthereumTokenAddress } from "@/lib/utils/token";
+import type { FC } from "react";
+import { useNavigate } from "react-router";
+import { formatUnits } from "viem";
+import { useBalance } from "wagmi";
 
 export const Assets: FC = () => {
   const { assets, pagination, query } = useBAppsAssets();
   const globalNonSlashableAssets = useGlobalNonSlashableAssets();
   const navigate = useNavigate();
+
+  const { table } = useDataTable({
+    name: "assets-table",
+    data: assets,
+    columns: [
+      {
+        size: 262,
+        id: "token",
+        accessorKey: "token",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Assets" />
+        ),
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2 ">
+            <AssetLogo address={row.original.token} />
+            <AssetName address={row.original.token} />
+          </div>
+        ),
+
+        enableSorting: false,
+      },
+      {
+        id: "balance",
+        accessorKey: "balance",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Balance" />
+        ),
+        cell: ({ row }) => {
+          const { address } = useAccount();
+          const isEthereum = isEthereumTokenAddress(row.original.token);
+          const ethBalance = useBalance({ address: address! });
+
+          const decimals = useDecimals({ tokenAddress: row.original.token });
+          const tokenBalance = useBalanceOf({
+            tokenAddress: row.original.token,
+            account: address!,
+          });
+          return isEthereum
+            ? formatSSV(ethBalance.data?.value || 0n)
+            : formatSSV(tokenBalance.data || 0n, decimals?.data || 18);
+        },
+        enableSorting: false,
+      },
+      {
+        id: "delegatedStrategies",
+        accessorKey: "delegatedStrategies",
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            className="justify-end"
+            title="Delegated Strategies"
+          />
+        ),
+        cell: ({ row }) => {
+          return (
+            <Text variant="body-3-medium" className="text-right">
+              {row.original.delegatedStrategies}
+            </Text>
+          );
+        },
+        enableSorting: true,
+      },
+      {
+        id: "totalDelegated",
+        accessorKey: "totalDelegated",
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            className="justify-end"
+            title="Total Delegated"
+          />
+        ),
+        cell: ({ row }) => {
+          const decimals = useDecimals({ tokenAddress: row.original.token });
+          return (
+            <Text variant="body-3-medium" className="text-right">
+              {compactFormatter.format(
+                +formatUnits(
+                  BigInt(row.original.totalDelegated || 0),
+                  decimals.data || 18,
+                ),
+              )}
+            </Text>
+          );
+        },
+        enableSorting: true,
+      },
+      {
+        id: "totalFiat",
+        accessorKey: "totalFiat",
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            className="justify-end text-right"
+            title="Total Fiat"
+          />
+        ),
+        cell: () => {
+          return (
+            <Text variant="body-3-medium" className="text-right text-gray-500">
+              {currencyFormatter.format(0)}
+            </Text>
+          );
+        },
+        enableSorting: false,
+      },
+    ],
+    pageCount: pagination.pages,
+    getRowId: (originalRow, index) => `${originalRow.token}-${index}`,
+    shallow: false,
+    clearOnDefault: true,
+    meta: {
+      total: pagination.total,
+    },
+  });
 
   return (
     <Container variant="vertical" size="xl" className="py-6">
@@ -22,14 +153,21 @@ export const Assets: FC = () => {
         isLoading={globalNonSlashableAssets.isLoading}
         onRowClick={() => navigate("accounts")}
       />
-      <AssetsTable
+      <DataTable
+        table={table}
+        onRowClick={(asset) => {
+          navigate(`/account/strategies?token=${asset.token}`);
+        }}
+        isLoading={query.isLoading}
+      />
+      {/* <AssetsTable
         onRowClick={(asset) => {
           navigate(`/account/strategies?token=${asset.token}`);
         }}
         assets={assets || []}
         pagination={pagination}
         isLoading={query.isLoading}
-      />
+      /> */}
     </Container>
   );
 };

@@ -1,12 +1,23 @@
+import type { BAppAsset } from "@/api/b-app";
 import { getBAppsAssets } from "@/api/b-app";
 import { createDefaultPagination } from "@/lib/utils/api";
 import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { usePaginationQuery } from "@/lib/query-states/use-pagination";
 import { erc20verificationTokenAddress } from "@/lib/utils/token.ts";
 import { chunk } from "lodash-es";
+import { useQueryState } from "nuqs";
+import { getSortingStateParser } from "@/lib/utils/parsers";
 
 export const useBAppsAssets = () => {
   const paginationQuery = usePaginationQuery();
+
+  const [sorting] = useQueryState(
+    "ordering",
+    getSortingStateParser<BAppAsset>().withOptions({
+      clearOnDefault: true,
+      shallow: false,
+    }),
+  );
 
   const query = useChainedQuery({
     queryKey: ["bapp-assets"],
@@ -33,9 +44,28 @@ export const useBAppsAssets = () => {
     enabled: (query.data || []).length > 0,
   });
 
-  const verifiedAssets = assets.filter(
-    ({ token }) => (erc20Verification.data || {})[token],
-  );
+  const verifiedAssets = assets
+    .filter(({ token }) => (erc20Verification.data || {})[token])
+    .sort((a, b) => {
+      const sort = sorting?.[0];
+      if (!sort) return 0;
+      switch (sort.id) {
+        case "totalDelegated": {
+          const [aValue, bValue] = sort.desc
+            ? [Number(b.totalDelegated), Number(a.totalDelegated)]
+            : [Number(a.totalDelegated), Number(b.totalDelegated)];
+          return aValue - bValue;
+        }
+        case "delegatedStrategies": {
+          const [aValue, bValue] = sort.desc
+            ? [Number(b.delegatedStrategies), Number(a.delegatedStrategies)]
+            : [Number(a.delegatedStrategies), Number(b.delegatedStrategies)];
+          return aValue - bValue;
+        }
+        default:
+          return 0;
+      }
+    });
 
   const paginatedAssets = chunk(verifiedAssets, paginationQuery.perPage);
 

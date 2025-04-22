@@ -14,6 +14,7 @@
     "lint-staged": "pnpm run type-check && lint-staged && pnpm run log-todos",
     "generate-all": "node scripts/runAllScripts.cjs",
     "log-todos": "node scripts/log-todos.js",
+    "monday-automation": "cross-env COMMITS_URL=https://api.github.com/repos/ssvlabs/ssv-web/pulls/1395/commits node scripts/monday/index.cjs",
     "commit": "cz"
   },
   "config": {
@@ -132,6 +133,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.19",
     "commitizen": "^4.3.0",
+    "cross-env": "^7.0.3",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.2",

@@ -72,4 +72,4 @@ async function runWithMockData() {
   await updateMonday(processedTickets);
 }
 
-runWithMockData();
+runMondayAutomation();

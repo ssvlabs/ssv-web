@@ -53,7 +53,7 @@ export const AssetsTableRow: FCProps = ({ asset, className, ...props }) => {
           className: "text-right",
         })}
       >
-        {asset.delegatedStrategies}
+        {asset.depositedStrategies}
       </TableCell>
       <TableCell
         className={textVariants({
@@ -62,7 +62,10 @@ export const AssetsTableRow: FCProps = ({ asset, className, ...props }) => {
         })}
       >
         {compactFormatter.format(
-          +formatUnits(BigInt(asset.totalDelegated || 0), decimals.data || 18),
+          +formatUnits(
+            BigInt(asset.totalDepositsValue || 0),
+            decimals.data || 18,
+          ),
         )}
       </TableCell>
       <TableCell

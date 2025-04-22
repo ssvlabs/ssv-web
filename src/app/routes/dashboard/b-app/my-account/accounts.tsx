@@ -11,7 +11,7 @@ import { parseAsString, useQueryState } from "nuqs";
 import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
 import { formatGwei, isAddress } from "viem";
 import { useDelegateContext } from "@/components/context/delegate-context.tsx";
-import type { AccountMetadata } from "@/api/b-app.ts";
+import type { AccountMetadata, BAppAccount } from "@/api/b-app.ts";
 
 const EMPTY_ACCOUNT = {
   id: `0x`,
@@ -82,7 +82,10 @@ const Accounts = () => {
             hasUnlistedAccount={hasUnlistedAccount}
             accounts={
               hasUnlistedAccount
-                ? [...accounts, { ...EMPTY_ACCOUNT, id: address }]
+                ? ([
+                    ...accounts,
+                    { ...EMPTY_ACCOUNT, id: address },
+                  ] as (BAppAccount & AccountMetadata)[])
                 : accounts
             }
           />

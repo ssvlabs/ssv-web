@@ -357,3 +357,11 @@ jobs:
       #          AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_SECRET_KEY_ID }}
       #          AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
       # </claim.ssv.network>
+       # Run Monday automation only when merging to stage branch via PR
+      - name: Run Monday automation
+        if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'stage'
+        run: node scripts/monday/index.cjs
+        env:
+          MONDAY_API_KEY: ${{ secrets.MONDAY_API_KEY }}
+          COMMITS_URL: ${{ github.event.pull_request.commits_url }}
+

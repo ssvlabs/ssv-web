@@ -1,11 +1,10 @@
 import { Text } from "@/components/ui/text.tsx";
 import { Container } from "@/components/ui/container.tsx";
-import { StrategiesTable } from "@/components/based-apps/strategies-table/strategies-table.tsx";
 import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
-import { currencyFormatter, formatSSV } from "@/lib/utils/number.ts";
+import { currencyFormatter } from "@/lib/utils/number.ts";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button.tsx";
-import { isAddress } from "viem";
+import { formatUnits, isAddress } from "viem";
 import { shortenAddress } from "@/lib/utils/strings.ts";
 import type {
   AccountMetadata,
@@ -16,23 +15,23 @@ import MyAccountWrapper from "@/app/routes/dashboard/b-app/my-account/my-account
 import { AccountSelect } from "@/app/routes/dashboard/b-app/my-account/my-account-wrapper.tsx";
 import { Tooltip } from "@/components/ui/tooltip.tsx";
 import { CopyBtn } from "@/components/ui/copy-btn.tsx";
+import { FaInfoCircle } from "react-icons/fa";
+import { MyStrategiesTable } from "@/components/based-apps/my-strategies-table/my-strategies-table.tsx";
 
 const MyStrategies = () => {
-  const { myStrategies, effectiveBalance, myAccountData } = useMyBAppAccount();
+  const { myStrategies, myAccountData } = useMyBAppAccount();
   const MOCK_TIER_DATA = [
     {
-      label: "Delegating Accounts",
-      value: myStrategies?.strategies?.reduce(
-        (acc, currentValue) => acc + (currentValue.totalDelegators || 0),
-        0,
-      ),
-      tooltipText: "Delegators",
+      label: "Delegators",
+      value: myStrategies.totalDelegators,
+      tooltipText:
+        "Total number of accounts that have delegated to your account",
     },
     {
-      label: "Validator Balance (Non Slashable)",
+      label: "Delegated Validator Balance",
       value: (
         <div className="flex gap-2">
-          {formatSSV(effectiveBalance || 0n, 9)}
+          {formatUnits(myStrategies.totalDelegatedValue || 0n, 18)}
           <img
             className={"h-[24px] w-[15px]"}
             src={`/images/balance-validator/balance-validator.svg`}
@@ -40,24 +39,24 @@ const MyStrategies = () => {
           <Text className="text-gray-500 font-medium">ETH</Text>
         </div>
       ),
-      tooltipText: "Delegators",
+      tooltipText:
+        "Total effective balance (ETH) of all validators delegated to your account",
     },
     {
-      label: "Assets Value (Slashable)",
-      value: currencyFormatter.format(Number(myStrategies.totalSlashableFiat)),
-      tooltipText: "Delegators",
+      label: "Total Deposited Value",
+      value: currencyFormatter.format(Number(myStrategies.totalDepositedFiat)),
+      tooltipText: "Total value of all deposits made to all of your strategies",
     },
     {
-      label: "Total Delegated Value",
-      value: currencyFormatter.format(
-        Number(myStrategies.totalNonSlashableFiat),
-      ),
-      tooltipText: "Delegators",
+      label: "Total Asset Value",
+      value: currencyFormatter.format(Number(myStrategies.totalAssetsFiat)),
+      tooltipText:
+        "Combined value of all deposits and delegations made to your account and all of your strategies",
     },
     {
       label: "Account",
       value: (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 text-nowrap">
           <img
             className="rounded-[8px] size-7 border-gray-400 border"
             src={
@@ -69,11 +68,13 @@ const MyStrategies = () => {
                 "/images/operator_default_background/light.svg";
             }}
           />
-          {myAccountData?.name
-            ? isAddress(myAccountData?.name)
-              ? shortenAddress(myAccountData?.name)
-              : myAccountData?.name
-            : shortenAddress(myAccountData?.id || "0x")}
+          <Text className="w-[120px] overflow-x-hidden text-ellipsis">
+            {myAccountData?.name
+              ? isAddress(myAccountData?.name)
+                ? shortenAddress(myAccountData?.name)
+                : myAccountData?.name
+              : shortenAddress(myAccountData?.id || "0x")}
+          </Text>
           <Tooltip
             content={`Copy Address: ${shortenAddress(myAccountData?.id || "0x")}`}
           >
@@ -83,7 +84,6 @@ const MyStrategies = () => {
           </Tooltip>
         </div>
       ),
-      tooltipText: "Delegators",
     },
   ];
 
@@ -91,11 +91,20 @@ const MyStrategies = () => {
     <MyAccountWrapper filter={AccountSelect.Strategy}>
       <Container variant="vertical" size="xl" className="py-6">
         <div className="h-[100px] w-full flex items-center gap-10 rounded-[16px] bg-white p-6">
-          {MOCK_TIER_DATA.map(({ label, value }) => (
+          {MOCK_TIER_DATA.map(({ label, value, tooltipText }) => (
             <div className="w-[288px] flex-col items-center gap-1">
-              <Text className="text-gray-500" variant={"caption-medium"}>
-                {label}
-              </Text>
+              <div className="flex ">
+                <Tooltip asChild className="max-w-max" content={tooltipText}>
+                  <div className="flex items-center gap-1">
+                    <Text className="text-gray-500" variant={"caption-medium"}>
+                      {label}
+                    </Text>{" "}
+                    {!!tooltipText && (
+                      <FaInfoCircle className="text-gray-500 size-3" />
+                    )}
+                  </div>
+                </Tooltip>
+              </div>
               <Text variant={"body-1-medium"}>{value as string}</Text>
             </div>
           ))}
@@ -106,7 +115,7 @@ const MyStrategies = () => {
             Create Strategy
           </Button>
         </div>
-        <StrategiesTable
+        <MyStrategiesTable
           strategies={
             myStrategies.strategies as (Strategy &
               StrategyMetadata & { ownerAddressMetadata: AccountMetadata })[]

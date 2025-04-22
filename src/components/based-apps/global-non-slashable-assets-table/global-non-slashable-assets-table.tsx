@@ -15,9 +15,9 @@ import {
   currencyFormatter,
   formatSSV,
 } from "@/lib/utils/number";
-import { formatGwei } from "viem";
 import { Tooltip } from "@/components/ui/tooltip";
 import { FaInfoCircle } from "react-icons/fa";
+import { formatUnits } from "viem";
 
 export type GlobalNonSlashableAssetsTableProps = {
   data?: GetGlobalValidatorsBalanceResponse;
@@ -100,7 +100,7 @@ export const GlobalNonSlashableAssetsTable: FCProps = ({
                 </div>
               </TableCell>
               <TableCell className={textVariants({ variant: "body-3-medium" })}>
-                {formatSSV(BigInt(data.ssvBalance), 9)}
+                {formatSSV(BigInt(data.ssvBalance || 0n))}
               </TableCell>
               <TableCell
                 className={textVariants({
@@ -111,12 +111,12 @@ export const GlobalNonSlashableAssetsTable: FCProps = ({
                 <div
                   className={cn(
                     "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border ml-auto",
-                    data.totalDelegatedAccount
+                    data.delegatedAccounts
                       ? "bg-primary-50 border-primary-200 text-primary-600"
                       : "bg-gray-200 border-gray-300 text-gray-600",
                   )}
                 >
-                  {data.totalDelegatedAccount ?? 0}
+                  {data.delegatedAccounts ?? 0}
                 </div>
               </TableCell>
               <TableCell
@@ -126,8 +126,9 @@ export const GlobalNonSlashableAssetsTable: FCProps = ({
                 })}
               >
                 {compactFormatter.format(
-                  Number(formatGwei(BigInt(data.totalNonSlashable))),
+                  Number(formatUnits(data.totalDelegatedValue || 0n, 18)),
                 )}
+                &nbsp; ETH
               </TableCell>
               <TableCell
                 className={textVariants({
@@ -135,7 +136,7 @@ export const GlobalNonSlashableAssetsTable: FCProps = ({
                   className: "text-right text-gray-500",
                 })}
               >
-                {currencyFormatter.format(+data.totalDelegatedFiat)}
+                {currencyFormatter.format(+data.totalDelegatedFiat || 0)}
               </TableCell>
             </TableRow>
           )}

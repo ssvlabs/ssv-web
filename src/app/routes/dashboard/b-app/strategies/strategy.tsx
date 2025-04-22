@@ -98,15 +98,14 @@ const Strategy = () => {
       value: `${convertToPercentage(strategy.fee)}%`,
     },
     {
-      label: "Delegators",
-      value: strategy.totalDelegators,
-      tooltipText:
-        "The total number of accounts that have delegated to this strategy and/or strategy owner.",
+      label: "Depositors",
+      value: strategy.totalDeposited,
+      tooltipText: "Total number of unique depositors to this strategy",
     },
     {
-      label: "Total Delegated Value",
-      value: currencyFormatter.format(Number(strategy.totalDelegatedFiat) || 0),
-      tooltipText: "Combined value of all delegated assets.",
+      label: "Total Deposited Value",
+      value: currencyFormatter.format(Number(strategy.totalDepositedFiat) || 0),
+      tooltipText: "Total value of all deposits made to this strategy",
     },
     {
       label: "Strategy Owner",
@@ -218,7 +217,18 @@ const Strategy = () => {
           >
             <TableHeader>
               <TableHead>Asset</TableHead>
-              <TableHead>Total Delegated</TableHead>
+              <TableHead></TableHead>
+              <TableHead></TableHead>
+              <TableHead className=" flex items-center gap-1">
+                Total Delegated
+                <Tooltip
+                  content={
+                    "Total effective balance (ETH) delegated to the owner of this strategy"
+                  }
+                >
+                  <FaCircleInfo className="size-3 text-gray-500" />
+                </Tooltip>
+              </TableHead>
               <TableHead>Total Delegated Value</TableHead>
             </TableHeader>
             <TableBody>
@@ -233,6 +243,8 @@ const Strategy = () => {
                     <Text className="text-gray-500 font-medium">ETH</Text>
                   </div>
                 </TableCell>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
                 <TableCell>
                   {formatSSV(
                     (strategy.totalNonSlashableTokens || 0n) as bigint,

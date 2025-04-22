@@ -26,8 +26,10 @@ export type BAppAccount = {
   id: `0x${string}`;
   metadataURI: string;
   strategies: number;
-  totalDelegated: bigint;
-  totalDelegatedValue: string;
+  totalDelegators: number;
+  totalDepositors: number;
+  totalDelegatedValue: bigint;
+  totalDelegatedFiat: string;
 };
 
 export type StrategyBApp = {
@@ -42,7 +44,7 @@ export interface Strategy {
   name: string;
   ownerAddress: `0x${string}`;
   bApps: number;
-  delegatedAssets: `0x${string}`[];
+  depositedAssets: `0x${string}`[];
   fee: string;
   metadataURI: string;
   ownerAddressMetadataURI: string;
@@ -51,13 +53,15 @@ export interface Strategy {
   totalDelegatedFiat?: string;
   description?: string;
   delegationsPerToken?: BAppAsset[];
-  delegators?: [
+  deposits?: [
     {
-      id: string;
-      token: string[];
+      id: `0x${string}`;
+      tokens: `0x${string}`[];
       depositFiatAmount: string;
     },
   ];
+  totalDepositedFiat?: string;
+  totalDeposited: number;
   totalNonSlashableTokens?: string;
   totalNonSlashableFiat?: string;
 }
@@ -74,9 +78,10 @@ export interface StrategiesResponse {
 
 export interface StrategiesByOwnerResponse {
   totalDelegators: number;
-  totalNonSlashableTokens: string;
-  totalNonSlashableFiat: string;
-  totalSlashableFiat: string;
+  totalDelegatedValue: bigint;
+  totalDelegatedFiat: string;
+  totalDepositedFiat: string;
+  totalAssetsFiat: string;
   strategies: Strategy[];
 }
 
@@ -92,11 +97,11 @@ export type AccountMetadata = {
   logo?: string;
 };
 
-export type DelegatedSlashableAsset = {
+export type DepositedToken = {
   token: `0x${string}`;
-  totalDelegatedValue: string;
-  totalSlashable: string;
-  delegatedStrategies: number;
+  totalDepositsValue: bigint;
+  totalDepositsFiat: string;
+  depositedStrategies: number;
 };
 
 export type BApp = {
@@ -109,11 +114,24 @@ export type BApp = {
   ownerAddress: `0x${string}`;
   supportedAssets: `0x${string}`[];
   strategyOwners: `0x${string}`[];
-  totalDelegatedValue: string;
+  totalDelegatedValue: bigint;
+  totalDelegatedFiat: string;
+  totalDepositedValue: bigint;
+  totalDelegators: number;
+  totalDepositors: number;
   totalNonSlashable: string;
+  totalBAppAssetsFiat: string;
   totalDelegatedValueNonSlashable: string;
-  delegatedSlashable: DelegatedSlashableAsset[];
+  depositsPerToken: DepositedToken[];
 };
+
+export type BAppDepositData = Pick<
+  BApp,
+  | "delegatedAccounts"
+  | "depositsPerToken"
+  | "totalDelegatedFiat"
+  | "totalDelegatedValue"
+>;
 
 export const getNonSlashableAssets = (ownerAddress: string) =>
   api
@@ -218,6 +236,13 @@ export const getBAppByID = ({ id }: { id?: Address }) =>
       return res.data[0];
     });
 
+export const getBAppDataByID = ({ id }: { id?: Address }) =>
+  api
+    .get<BAppDepositData>(endpoint("basedApp", `getBAppsById`, `${id}`))
+    .then((res) => {
+      return res;
+    });
+
 export const getBAppsByOwnerAddress = ({
   address,
   page = 1,
@@ -267,13 +292,12 @@ export const getBAppsMetadata = getMetadata<
     data: BAppsMetaData;
   }[]
 >;
-
 export type BAppAsset = {
   token: Address;
   totalObligatedBalance: string;
-  totalDelegation?: string;
-  totalDelegated?: string;
-  delegatedStrategies?: number;
+  totalDepositsValue?: string;
+  totalDepositsFiat?: string;
+  depositedStrategies?: number;
   totalFiat?: string;
   totalTokens?: bigint;
   delegations?: { bAppId: `0x${string}`; percentage: string }[];
@@ -352,8 +376,8 @@ type GetGlobalValidatorsBalanceParams = {
 
 export type GetGlobalValidatorsBalanceResponse = {
   ssvBalance: string;
-  totalDelegatedAccount: number;
-  totalNonSlashable: string;
+  delegatedAccounts: number;
+  totalDelegatedValue: bigint;
   totalDelegatedFiat: string;
 };
 

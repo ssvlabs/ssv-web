@@ -66,15 +66,15 @@ export const StrategyAssetsTableRow: FCProps = ({
             : 0}
         </TableCell>
         <TableCell
-          className={`${Number(convertToPercentage(asset?.totalDelegation || 0)) > 100 && "text-error-500"} flex items-center justify-between relative`}
+          className={`${Number(convertToPercentage(asset?.totalDepositsValue || 0)) > 100 && "text-error-500"} flex items-center justify-between relative`}
         >
           <Text
             className={cn({
               "group-hover:opacity-0": showDepositButtonOnHover,
             })}
           >
-            {asset?.totalDelegation
-              ? `${convertToPercentage(asset?.totalDelegation || "")}%`
+            {asset?.totalDepositsValue
+              ? `${convertToPercentage(asset?.totalDepositsValue || "")}%`
               : 0}
           </Text>
           {showDepositButtonOnHover && (

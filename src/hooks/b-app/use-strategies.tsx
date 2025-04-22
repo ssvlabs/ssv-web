@@ -73,7 +73,7 @@ export const useStrategies = (_strategyId?: string, _bAppId?: string) => {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     queryFn: () =>
-      getTokenMetadata(strategies.map((strategy) => strategy.delegatedAssets)),
+      getTokenMetadata(strategies.map((strategy) => strategy.depositedAssets)),
     enabled: true,
   });
 

@@ -2,14 +2,10 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Span, textVariants } from "@/components/ui/text";
 import { cn } from "@/lib/utils/tw";
 import { useState, type ComponentPropsWithoutRef, type FC } from "react";
-import {
-  compactFormatter,
-  currencyFormatter,
-  formatSSV,
-} from "@/lib/utils/number";
+import { currencyFormatter, formatSSV } from "@/lib/utils/number";
 import { Button } from "@/components/ui/button";
 import type { Address } from "viem";
-import { formatGwei, formatUnits } from "viem";
+import { formatUnits } from "viem";
 import type { AccountMetadata, NonSlashableAsset } from "@/api/b-app";
 import ExpandButton from "@/components/ui/expand-button.tsx";
 import { shortenAddress } from "@/lib/utils/strings.ts";
@@ -45,7 +41,7 @@ export const NonSlashableAssetsTableRow: FCProps = ({
   const [isOpen, setIsOpen] = useState(false);
   const [focusedRow, setFocusedRow] = useState(-1);
 
-  const effectiveBalance = Number(formatGwei(asset.effectiveBalance));
+  const effectiveBalance = Number(formatSSV(asset.effectiveBalance));
 
   const totalDelegatedPercentage =
     asset.delegations?.reduce(
@@ -73,7 +69,7 @@ export const NonSlashableAssetsTableRow: FCProps = ({
           </div>
         </TableCell>
         <TableCell className={textVariants({ variant: "body-3-medium" })}>
-          {formatSSV(asset.effectiveBalance, 9)}
+          {formatSSV(asset.effectiveBalance)}
         </TableCell>
         <TableCell
           className={textVariants({
@@ -98,7 +94,7 @@ export const NonSlashableAssetsTableRow: FCProps = ({
             className: "text-right",
           })}
         >
-          {compactFormatter.format(totalDelegatedValue)}
+          {totalDelegatedValue}
         </TableCell>
         <TableCell
           className={textVariants({

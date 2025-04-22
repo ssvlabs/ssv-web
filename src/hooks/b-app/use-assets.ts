@@ -50,16 +50,16 @@ export const useBAppsAssets = () => {
       const sort = sorting?.[0];
       if (!sort) return 0;
       switch (sort.id) {
-        case "totalDelegated": {
+        case "totalDepositsValue": {
           const [aValue, bValue] = sort.desc
-            ? [Number(b.totalDelegated), Number(a.totalDelegated)]
-            : [Number(a.totalDelegated), Number(b.totalDelegated)];
+            ? [Number(b.totalDepositsValue), Number(a.totalDepositsValue)]
+            : [Number(a.totalDepositsValue), Number(b.totalDepositsValue)];
           return aValue - bValue;
         }
-        case "delegatedStrategies": {
+        case "depositedStrategies": {
           const [aValue, bValue] = sort.desc
-            ? [Number(b.delegatedStrategies), Number(a.delegatedStrategies)]
-            : [Number(a.delegatedStrategies), Number(b.delegatedStrategies)];
+            ? [Number(b.depositedStrategies), Number(a.depositedStrategies)]
+            : [Number(a.depositedStrategies), Number(b.depositedStrategies)];
           return aValue - bValue;
         }
         default:

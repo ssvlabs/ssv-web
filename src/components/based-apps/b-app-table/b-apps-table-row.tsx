@@ -27,7 +27,7 @@ const BAppsTableRow = ({
   const { address } = useAccount();
   const isUsedBApp =
     isCreateFlow &&
-    bApp.strategyOwners
+    (bApp.strategyOwners || [])
       .map((address) => getAddress(address))
       .includes(getAddress(address || "0x"));
   return (
@@ -59,19 +59,31 @@ const BAppsTableRow = ({
         <AssetsDisplay max={3} addresses={bApp.supportedAssets} />
       </TableCell>
       <TableCell className="flex flex-row-reverse">
-        <div className="w-7 h-6 rounded-[4px] border bg-primary-50 border-primary-200 text-primary-600 flex items-center justify-center text-[10px]">
+        <div
+          className={cn(
+            "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border ml-auto",
+            bApp.strategies
+              ? "bg-primary-50 border-primary-200 text-primary-600"
+              : "bg-gray-200 border-gray-300 text-gray-600",
+          )}
+        >
           {bApp.strategies}
         </div>
       </TableCell>
       <TableCell
         className={`${textVariants({ variant: "body-3-medium" })} ${isUsedBApp && "text-gray-400"} text-right`}
       >
-        {bApp.delegators}
+        {bApp.totalDelegators}
       </TableCell>
       <TableCell
         className={`${textVariants({ variant: "body-3-medium" })} ${isUsedBApp && "text-gray-400"} text-right`}
       >
-        {currencyFormatter.format(Number(bApp.totalDelegatedValue) || 0)}
+        {bApp.totalDepositors}
+      </TableCell>
+      <TableCell
+        className={`${textVariants({ variant: "body-3-medium" })} ${isUsedBApp && "text-gray-400"} text-right`}
+      >
+        {currencyFormatter.format(Number(bApp.totalBAppAssetsFiat) || 0)}
       </TableCell>
       {isCreateFlow && (
         <TableCell className="p-0">

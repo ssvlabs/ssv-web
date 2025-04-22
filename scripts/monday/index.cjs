@@ -29,6 +29,7 @@ async function runMondayAutomation() {
       console.error("MONDAY_API_KEY is not set");
       return;
     }
+    console.log("process.env.COMMITS_URL:", process.env.COMMITS_URL);
 
     console.log("Starting Monday automation workflow...");
 

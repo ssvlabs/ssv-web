@@ -7,9 +7,7 @@
  * @typedef {import('./types').MondayResponse} MondayResponse
  */
 
-const queries = require('./monday-queries');
-
-const MONDAY_API_URL = "https://api.monday.com/v2";
+const queries = require("./monday-queries");
 
 /**
  * Makes a request to the Monday.com API
@@ -17,7 +15,7 @@ const MONDAY_API_URL = "https://api.monday.com/v2";
  * @returns {Promise<any>} API response
  */
 async function postMondayAPI(query) {
-  return fetch(MONDAY_API_URL, {
+  return fetch("https://api.monday.com/v2", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -37,18 +35,14 @@ async function getTicketBoardIds(ticketIds) {
     return new Map();
   }
 
-  const response = await postMondayAPI(
-    queries.getFindTicketsQuery(ticketIds)
-  );
+  const response = await postMondayAPI(queries.getFindTicketsQuery(ticketIds));
 
   if (!response?.data?.items || !response.data.items.length) {
     console.log("No tickets found in Monday.com");
     return new Map();
   }
 
-  return new Map(
-    response.data.items.map((item) => [item.id, item.board.id])
-  );
+  return new Map(response.data.items.map((item) => [item.id, item.board.id]));
 }
 
 /**
@@ -59,9 +53,7 @@ async function getTicketBoardIds(ticketIds) {
  */
 async function updateTicketStatus(itemId, boardId) {
   console.log(`Updating ticket ${itemId} status to "Ready for QA"`);
-  return postMondayAPI(
-    queries.createUpdateStatusMutation(itemId, boardId)
-  );
+  return postMondayAPI(queries.createUpdateStatusMutation(itemId, boardId));
 }
 
 /**
@@ -72,28 +64,7 @@ async function updateTicketStatus(itemId, boardId) {
  */
 async function addStageDeploymentComment(itemId, commits) {
   console.log(`Adding stage deployment comment to ticket ${itemId}`);
-  return postMondayAPI(
-    queries.createStageDeploymentComment(itemId, commits)
-  );
-}
-
-/**
- * Updates a column value for a ticket
- * @param {string} itemId - Monday item ID
- * @param {string} boardId - Monday board ID
- * @param {string} columnId - Column ID to update
- * @param {string} value - New column value
- * @returns {Promise<any>} API response
- */
-async function updateColumnValue(itemId, boardId, columnId, value) {
-  console.log(`Updating ${columnId} column for ticket ${itemId} to "${value}"`);
-  return postMondayAPI(
-    `mutation {
-      change_simple_column_value (item_id:${itemId}, board_id:${boardId}, column_id:"${columnId}", value: "${value}") {
-        id
-      }
-    }`
-  );
+  return postMondayAPI(queries.createStageDeploymentComment(itemId, commits));
 }
 
 /**
@@ -102,53 +73,47 @@ async function updateColumnValue(itemId, boardId, columnId, value) {
  * @returns {Promise<void>}
  */
 async function updateMonday(ticketsMap) {
-  if (ticketsMap.size === 0) {
-    console.log("No tickets to update in Monday.com");
-    return;
-  }
+  if (ticketsMap.size === 0)
+    return console.log("No tickets to update in Monday.com");
 
   console.log(
     `Preparing to update ${ticketsMap.size} tickets in Monday.com to "Ready For QA" status...`,
   );
 
-  try {
-    const boardIds = await getTicketBoardIds([...ticketsMap.keys()]);
+  const boardIds = await getTicketBoardIds([...ticketsMap.keys()]);
 
-    for (const [ticketId, commits] of ticketsMap.entries()) {
-      if (!boardIds.has(ticketId)) {
-        console.log(`Ticket ${ticketId} not found in Monday.com`);
+  for (const [ticketId, commits] of ticketsMap.entries()) {
+    if (!boardIds.has(ticketId)) {
+      console.log(`Ticket ${ticketId} not found in Monday.com`);
+      continue;
+    }
+
+    try {
+      console.log(
+        `Processing ticket ${ticketId} with ${commits.length} commits`,
+      );
+
+      // Update ticket status to "Ready for QA"
+      const updateResult = await updateTicketStatus(
+        ticketId,
+        boardIds.get(ticketId),
+      );
+
+      if (!updateResult) {
+        console.error(`Failed to update status for ticket ${ticketId}`);
         continue;
       }
-      
-      try {
-        console.log(
-          `Processing ticket ${ticketId} with ${commits.length} commits`,
-        );
 
-        // Update ticket status to "Ready for QA"
-        const updateResult = await updateTicketStatus(
-          ticketId, 
-          boardIds.get(ticketId)
-        );
-        
-        if (!updateResult) {
-          console.error(`Failed to update status for ticket ${ticketId}`);
-          continue;
-        }
-        
-        // Add commit information as an update
-        const commentResult = await addStageDeploymentComment(ticketId, commits);
+      // Add commit information as an update
+      const commentResult = await addStageDeploymentComment(ticketId, commits);
 
-        console.log(`Comment added to ticket ${ticketId}:`, commentResult);
-      } catch (error) {
-        console.error(`Failed to process ticket ${ticketId}:`, error);
-      }
+      console.log(`Comment added to ticket ${ticketId}:`, commentResult);
+    } catch (error) {
+      console.error(`Failed to process ticket ${ticketId}:`, error);
     }
-    
-    console.log("Monday.com update process completed");
-  } catch (error) {
-    console.error("Error updating Monday tickets:", error);
   }
+
+  console.log("Monday.com update process completed");
 }
 
 module.exports = {
@@ -156,6 +121,5 @@ module.exports = {
   getTicketBoardIds,
   updateTicketStatus,
   addStageDeploymentComment,
-  updateColumnValue,
-  updateMonday
+  updateMonday,
 };

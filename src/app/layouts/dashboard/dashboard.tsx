@@ -13,7 +13,6 @@ import { useIdentify } from "@/lib/analytics/mixpanel/useIdentify";
 import { useTrackPageViews } from "@/lib/analytics/mixpanel/useTrackPageViews";
 import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 import { useAccountState } from "@/hooks/account/use-account-state.ts";
-import { HoleskySunsetBanner } from "@/components/banners/holesky-sunset-banner";
 
 export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
   children,
@@ -59,7 +58,6 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
             exit={{ opacity: 0 }}
             key="content"
           >
-            <HoleskySunsetBanner />
             <Navbar />
             <main
               className={cn(className, "flex-1 overflow-auto")}

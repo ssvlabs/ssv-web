@@ -95,6 +95,7 @@ export const Assets: FC = () => {
           );
         },
         enableSorting: true,
+        sortDescFirst: true,
       },
       {
         id: "totalDepositsValue",
@@ -120,6 +121,7 @@ export const Assets: FC = () => {
           );
         },
         enableSorting: true,
+        sortDescFirst: true,
       },
       {
         id: "totalDepositsFiat",

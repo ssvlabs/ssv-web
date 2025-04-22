@@ -30,7 +30,7 @@ function createStageDeploymentComment(itemId, commits) {
   const commitLinks = commits
     .map((commit) => {
       console.log("commit:", JSON.stringify(commit, null, 2));
-      return `<li><a href="${commit.html_url}">${commit.commit.message.split("#")[0].trim()}</a> <span style="font-size:12px; color:gray"> by ${commit.commit.committer.name}</span></li>`;
+      return `<li><a href="${commit.html_url}">${commit.commit.message.split("#")[0].trim()}</a> <span style="font-size:12px; color:gray"> by ${commit.commit.author.name}</span></li>`;
     })
     .join("");
 

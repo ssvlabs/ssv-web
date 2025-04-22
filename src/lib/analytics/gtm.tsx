@@ -9,7 +9,7 @@ export const GTMFrame = () => {
   const ssvNetwork = useSSVNetworkDetails();
 
   useEffect(() => {
-    if (!scriptCreatedRef.current) {
+    if (!scriptCreatedRef.current && ssvNetwork?.googleTagSecret) {
       // @ts-expect-error window.dataLayer is not defined in the global scope
       window.dataLayer = window.dataLayer || [];
       // @ts-expect-error window.dataLayer is not defined in the global scope
@@ -26,7 +26,7 @@ export const GTMFrame = () => {
 
       scriptCreatedRef.current = true;
     }
-  }, [ssvNetwork.googleTagSecret]);
+  }, [ssvNetwork?.googleTagSecret]);
 
   return (
     <noscript>

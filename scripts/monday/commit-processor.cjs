@@ -2,7 +2,7 @@
 // @ts-check
 
 /**
- * @typedef {import('./types').CommitRoot} CommitRoot
+ * @typedef {import('./types.cjs').CommitRoot} CommitRoot
  */
 
 const ticketIdReg = /\b\d{10}\b/;
@@ -48,6 +48,11 @@ const mockCommits = [
         email: "john@example.com",
         date: "2023-05-15T10:00:00Z",
       },
+      committer: {
+        name: "Sumbat",
+        email: "sumbat15@gmail.com",
+        date: "2025-04-20T09:12:11Z",
+      },
     },
   },
   {
@@ -60,6 +65,11 @@ const mockCommits = [
         name: "John Doe",
         email: "john@example.com",
         date: "2023-05-15T10:00:00Z",
+      },
+      committer: {
+        name: "Sumbat",
+        email: "sumbat15@gmail.com",
+        date: "2025-04-20T09:12:11Z",
       },
     },
   },
@@ -74,6 +84,11 @@ const mockCommits = [
         email: "john@example.com",
         date: "2023-05-15T10:00:00Z",
       },
+      committer: {
+        name: "Sumbat",
+        email: "sumbat15@gmail.com",
+        date: "2025-04-20T09:12:11Z",
+      },
     },
   },
   {
@@ -87,6 +102,11 @@ const mockCommits = [
         email: "john@example.com",
         date: "2023-05-15T10:00:00Z",
       },
+      committer: {
+        name: "Sumbat",
+        email: "sumbat15@gmail.com",
+        date: "2025-04-20T09:12:11Z",
+      },
     },
   },
 ];
@@ -94,5 +114,5 @@ const mockCommits = [
 module.exports = {
   processCommits,
   mockCommits,
-  ticketIdReg
-}; 
+  ticketIdReg,
+};

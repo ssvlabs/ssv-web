@@ -2,7 +2,7 @@
 // @ts-check
 
 /**
- * @typedef {import('./types').CommitRoot} CommitRoot
+ * @typedef {import('./types.cjs').CommitRoot} CommitRoot
  */
 
 /**
@@ -28,10 +28,10 @@ function createUpdateStatusMutation(itemId, boardId) {
 function createStageDeploymentComment(itemId, commits) {
   // Create commit links using Monday-compatible HTML formatting
   const commitLinks = commits
-    .map(
-      (commit) =>
-        `<li><a href="${commit.html_url}">${commit.commit.message.split("#")[0].trim()}</a> <span style="font-size:12px; color:gray"> by ${commit.commit.author.name}</span></li>`,
-    )
+    .map((commit) => {
+      console.log("commit:", JSON.stringify(commit, null, 2));
+      return `<li><a href="${commit.html_url}">${commit.commit.message.split("#")[0].trim()}</a> <span style="font-size:12px; color:gray"> by ${commit.commit.committer.name}</span></li>`;
+    })
     .join("");
 
   const bodyContent = `

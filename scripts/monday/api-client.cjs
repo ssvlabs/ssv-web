@@ -3,11 +3,11 @@
 // @ts-check
 
 /**
- * @typedef {import('./types').CommitRoot} CommitRoot
- * @typedef {import('./types').MondayResponse} MondayResponse
+ * @typedef {import('./types.cjs').CommitRoot} CommitRoot
+ * @typedef {import('./types.cjs').MondayResponse} MondayResponse
  */
 
-const queries = require("./monday-queries");
+const queries = require("./monday-queries.cjs");
 
 /**
  * Makes a request to the Monday.com API
@@ -81,6 +81,7 @@ async function updateMonday(ticketsMap) {
   );
 
   const boardIds = await getTicketBoardIds([...ticketsMap.keys()]);
+  console.log('boardIds:', boardIds)
 
   for (const [ticketId, commits] of ticketsMap.entries()) {
     if (!boardIds.has(ticketId)) {

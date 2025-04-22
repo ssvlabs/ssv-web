@@ -2,8 +2,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 // @ts-check
 
-// trigger a build
-
 /**
  * @typedef {import('./types.cjs').CommitRoot} CommitRoot
  * @typedef {import('./types.cjs').MondayResponse} MondayResponse
@@ -83,7 +81,7 @@ async function updateMonday(ticketsMap) {
   );
 
   const boardIds = await getTicketBoardIds([...ticketsMap.keys()]);
-  console.log('boardIds:', boardIds)
+  console.log("boardIds:", boardIds);
 
   for (const [ticketId, commits] of ticketsMap.entries()) {
     if (!boardIds.has(ticketId)) {

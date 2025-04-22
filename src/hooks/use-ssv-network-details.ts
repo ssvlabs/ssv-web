@@ -2,7 +2,7 @@ import { isAddress } from "viem";
 import { useChainId } from "wagmi";
 import { z } from "zod";
 
-import { config } from "@/wagmi/config";
+import { config, hoodi } from "@/wagmi/config";
 import { getAccount, getChainId } from "@wagmi/core";
 import { useAccount } from "@/hooks/account/use-account";
 
@@ -48,7 +48,7 @@ export const getSSVNetworkDetails = (chainId?: number) => {
   const _chainId = chainId ?? getChainId(config);
   const { isConnected } = getAccount(config);
   return networks.find(
-    (network) => network.networkId === (isConnected ? _chainId : 17000),
+    (network) => network.networkId === (isConnected ? _chainId : hoodi.id),
   )!;
 };
 
@@ -57,6 +57,6 @@ export const useSSVNetworkDetails = () => {
   const chainId = useChainId();
 
   return import.meta.env.VITE_SSV_NETWORKS.find(
-    (network) => network.networkId === (isConnected ? chainId : 17000),
+    (network) => network.networkId === (isConnected ? chainId : hoodi.id),
   )!;
 };

@@ -22,12 +22,12 @@ import type { FC } from "react";
 import { useNavigate } from "react-router";
 import { formatUnits } from "viem";
 import { useBalance } from "wagmi";
+import { cn } from "@/lib/utils/tw.ts";
 
 export const Assets: FC = () => {
   const { assets, pagination, query } = useBAppsAssets();
   const globalNonSlashableAssets = useGlobalNonSlashableAssets();
   const navigate = useNavigate();
-
   const { table } = useDataTable({
     name: "assets-table",
     data: assets,
@@ -71,8 +71,8 @@ export const Assets: FC = () => {
         enableSorting: false,
       },
       {
-        id: "delegatedStrategies",
-        accessorKey: "delegatedStrategies",
+        id: "depositedStrategies",
+        accessorKey: "depositedStrategies",
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
@@ -82,16 +82,23 @@ export const Assets: FC = () => {
         ),
         cell: ({ row }) => {
           return (
-            <Text variant="body-3-medium" className="text-right">
-              {row.original.delegatedStrategies}
-            </Text>
+            <div
+              className={cn(
+                "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border ml-auto",
+                row.original.depositedStrategies
+                  ? "bg-primary-50 border-primary-200 text-primary-600"
+                  : "bg-gray-200 border-gray-300 text-gray-600",
+              )}
+            >
+              {row.original.depositedStrategies}
+            </div>
           );
         },
         enableSorting: true,
       },
       {
-        id: "totalDelegated",
-        accessorKey: "totalDelegated",
+        id: "totalDepositsValue",
+        accessorKey: "totalDepositsValue",
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
@@ -105,7 +112,7 @@ export const Assets: FC = () => {
             <Text variant="body-3-medium" className="text-right">
               {compactFormatter.format(
                 +formatUnits(
-                  BigInt(row.original.totalDelegated || 0),
+                  BigInt(row.original.totalDepositsValue || 0),
                   decimals.data || 18,
                 ),
               )}
@@ -115,8 +122,8 @@ export const Assets: FC = () => {
         enableSorting: true,
       },
       {
-        id: "totalFiat",
-        accessorKey: "totalFiat",
+        id: "totalDepositsFiat",
+        accessorKey: "totalDepositsFiat",
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
@@ -124,10 +131,12 @@ export const Assets: FC = () => {
             title="Total Fiat"
           />
         ),
-        cell: () => {
+        cell: ({ row }) => {
           return (
             <Text variant="body-3-medium" className="text-right text-gray-500">
-              {currencyFormatter.format(0)}
+              {currencyFormatter.format(
+                +(row?.original?.totalDepositsFiat || 0),
+              )}
             </Text>
           );
         },
@@ -160,14 +169,6 @@ export const Assets: FC = () => {
         }}
         isLoading={query.isLoading}
       />
-      {/* <AssetsTable
-        onRowClick={(asset) => {
-          navigate(`/account/strategies?token=${asset.token}`);
-        }}
-        assets={assets || []}
-        pagination={pagination}
-        isLoading={query.isLoading}
-      /> */}
     </Container>
   );
 };

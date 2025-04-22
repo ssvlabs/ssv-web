@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils/tw";
 import { Loading } from "@/components/ui/Loading.tsx";
 import type { AccountMetadata, BApp, NonSlashableAsset } from "@/api/b-app";
 import { Span, textVariants } from "@/components/ui/text.tsx";
-import { currencyFormatter } from "@/lib/utils/number.ts";
+import { currencyFormatter, formatSSV } from "@/lib/utils/number.ts";
 
 export type BAppNonSlashableAssetsTableProps = {
   asset: Pick<
@@ -101,7 +101,7 @@ export const BAppNonSlashableAssetsTable: FCProps = ({
                 </div>
               </TableCell>
               <TableCell className="text-right">
-                {asset.totalDelegatedValue} ETH
+                {formatSSV(asset.totalDelegatedValue)} ETH
               </TableCell>
               <TableCell className="text-right">
                 {currencyFormatter.format(

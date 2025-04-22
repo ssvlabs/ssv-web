@@ -4,7 +4,11 @@ import type { ComponentPropsWithoutRef, FC } from "react";
 import { useState } from "react";
 import type { AccountMetadata, BAppAccount, Delegation } from "@/api/b-app.ts";
 import { shortenAddress } from "@/lib/utils/strings.ts";
-import { convertToPercentage, formatSSV } from "@/lib/utils/number.ts";
+import {
+  convertToPercentage,
+  currencyFormatter,
+  formatSSV,
+} from "@/lib/utils/number.ts";
 import { Text, textVariants } from "@/components/ui/text.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { AddressDisplay } from "@/components/ui/address";
@@ -64,18 +68,32 @@ export const AccountTableRow: FCProps = ({
         <AddressDisplay address={account.id} copyable />
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        <div className="w-7 h-6 rounded-[4px] border bg-primary-50 border-primary-200 text-primary-600 flex items-center justify-center text-[10px]">
+        <div
+          className={cn(
+            "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border ml-[50%]",
+            account.strategies
+              ? "bg-primary-50 border-primary-200 text-primary-600"
+              : "bg-gray-200 border-gray-300 text-gray-600",
+          )}
+        >
           {account.strategies}
         </div>
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        <div className="w-7 h-6 rounded-[4px] border bg-primary-50 border-primary-200 text-primary-600 flex items-center justify-center text-[10px]">
-          {account.delegators}
+        <div
+          className={cn(
+            "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border ml-[50%]",
+            account.totalDelegators
+              ? "bg-primary-50 border-primary-200 text-primary-600"
+              : "bg-gray-200 border-gray-300 text-gray-600",
+          )}
+        >
+          {account.totalDelegators}
         </div>
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         <div className="flex gap-2">
-          {formatSSV(account.totalDelegated || 0n, 9)}
+          {formatSSV(account.totalDelegatedValue || 0n, 9)}
           <img
             className={"h-[24px] w-[15px]"}
             src={`/images/balance-validator/balance-validator.svg`}
@@ -107,7 +125,7 @@ export const AccountTableRow: FCProps = ({
             {receiver ? "Update" : "Delegate"}
           </Button>
         ) : (
-          account.totalDelegatedValue
+          currencyFormatter.format(Number(account.totalDelegatedFiat) || 0)
         )}
       </TableCell>
     </TableRow>

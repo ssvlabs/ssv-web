@@ -1,4 +1,5 @@
 import type { BApp, BAppsMetaData } from "@/api/b-app.ts";
+import { getBAppDataByID } from "@/api/b-app.ts";
 import { getBAppByID } from "@/api/b-app.ts";
 import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import type { Address } from "abitype";
@@ -10,6 +11,12 @@ export const useBApp = (bAppId?: Address) => {
   const bAppQuery = useChainedQuery({
     queryKey: ["get_bApp", bAppId],
     queryFn: () => getBAppByID({ id: bAppId }),
+    enabled: !!bAppId,
+  });
+
+  const bAppDataQuery = useChainedQuery({
+    queryKey: ["get_bAppData", bAppId],
+    queryFn: () => getBAppDataByID({ id: bAppId }),
     enabled: !!bAppId,
   });
   const bApp = bAppQuery.data;
@@ -38,11 +45,12 @@ export const useBApp = (bAppId?: Address) => {
     bApp: {
       ...bApp,
       ...bAppMetadata[`${bApp?.id}`],
+      ...bAppDataQuery.data,
+      depositsPerToken: bAppDataQuery.data?.depositsPerToken.filter(
+        (token) => (erc20Verification.data || {})[token.token],
+      ),
       supportedAssets: (bApp?.supportedAssets || []).filter(
         (token) => (erc20Verification.data || {})[token],
-      ),
-      delegatedSlashable: (bApp?.delegatedSlashable || []).filter(
-        (asset) => (erc20Verification.data || {})[asset.token],
       ),
     } as BApp & BAppsMetaData,
     isLoading: bAppQuery.isLoading,

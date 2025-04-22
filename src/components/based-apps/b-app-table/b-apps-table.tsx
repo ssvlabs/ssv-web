@@ -37,9 +37,8 @@ export const BAppsTable = ({
           <TableHead className="w-[14%]">Supported Assets</TableHead>
           <TableHead className="text-right w-[7%]">Strategies</TableHead>
           <TableHead className="text-right w-[7%]">Delegators</TableHead>
-          <TableHead className="text-right w-[15%]">
-            Total Delegated Value
-          </TableHead>
+          <TableHead className="text-right w-[7%]">Depositors</TableHead>
+          <TableHead className="text-right w-[15%]">bApp Asset Value</TableHead>
           {isCreateFlow && <TableHead></TableHead>}
         </TableHeader>
         <TableBody>

@@ -44,7 +44,6 @@ export const BApp = () => {
   }
 
   const bAppName = bApp?.name || `bApp ${shortenAddress(bAppId!)}`;
-
   return (
     <Container variant="vertical" size="xl" className="py-6">
       <Breadcrumb>
@@ -72,11 +71,28 @@ export const BApp = () => {
 
       <Card className="w-full">
         <div className="flex [&>*]:flex-1  [&>*:not(:last-child)]:border-r [&>*:not(:last-child)]:border-gray-200 gap-5">
-          <Stat title="Strategies" content={bApp.strategies} />
-          <Stat title="Delegators" content={bApp.delegators} />
+          <Stat
+            tooltip="Total number of Strategies that have opted-in to this bApp"
+            title="Strategies"
+            content={bApp.strategies}
+          />
+          <Stat
+            tooltip={
+              "Total number of accounts that have delegated to strategy owners securing this bApp"
+            }
+            title="Delegators"
+            content={bApp.totalDelegators}
+          />
+          <Stat
+            tooltip={
+              "Total number of accounts that have deposited assets to strategies securing this bApp"
+            }
+            title="Depositors"
+            content={bApp.totalDepositors}
+          />
           <Stat
             title="Total Delegated Value"
-            content={currencyFormatter.format(+bApp.totalDelegatedValue)}
+            content={currencyFormatter.format(+bApp.totalDelegatedFiat)}
           />
           <div className="flex items-center gap-2">
             <Stat
@@ -170,7 +186,7 @@ export const BApp = () => {
       />
 
       <BAppSlashableAssetsTable
-        assets={bApp.delegatedSlashable}
+        assets={bApp.depositsPerToken}
         pagination={pagination}
       />
     </Container>

@@ -85,21 +85,37 @@ export const StrategyTableRow: FCProps = ({
         </Tooltip>
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        <div className="w-7 h-6 rounded-[4px] border bg-primary-50 border-primary-200 text-primary-600 flex items-center justify-center text-[10px]">
+        <div
+          className={cn(
+            "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border",
+            strategy.bApps
+              ? "bg-primary-50 border-primary-200 text-primary-600"
+              : "bg-gray-200 border-gray-300 text-gray-600",
+          )}
+        >
           {strategy.bApps}
         </div>
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         <AssetsDisplay
           max={3}
-          addresses={strategy.delegatedAssets.map((s) => s) as Address[]}
+          addresses={strategy.depositedAssets.map((s) => s) as Address[]}
         />
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         {percentageFormatter.format(convertToPercentage(strategy.fee))}
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        {strategy.totalDelegators || 0}
+        <div
+          className={cn(
+            "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border ml-[40%]",
+            strategy.totalDeposited
+              ? "bg-primary-50 border-primary-200 text-primary-600"
+              : "bg-gray-200 border-gray-300 text-gray-600",
+          )}
+        >
+          {strategy.totalDeposited}
+        </div>
       </TableCell>
       <TableCell
         className={textVariants({
@@ -112,7 +128,7 @@ export const StrategyTableRow: FCProps = ({
             "group-hover:opacity-0": showDepositButtonOnHover,
           })}
         >
-          {currencyFormatter.format(Number(strategy.totalDelegatedFiat) || 0)}
+          {currencyFormatter.format(Number(strategy.totalDepositedFiat) || 0)}
         </Text>
         <Button
           className={cn(

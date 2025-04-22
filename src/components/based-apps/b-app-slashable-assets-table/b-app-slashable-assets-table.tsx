@@ -9,15 +9,15 @@ import { cn } from "@/lib/utils/tw.ts";
 import { Loading } from "@/components/ui/Loading.tsx";
 import { Divider } from "@/components/ui/divider.tsx";
 import { Pagination } from "@/components/ui/pagination-v2.tsx";
-import type { DelegatedSlashableAsset } from "@/api/b-app.ts";
+import type { DepositedToken } from "@/api/b-app.ts";
 import type { Pagination as IPagination } from "@/types/api.ts";
 import BAppSlashableAssetTableRow from "@/components/based-apps/b-app-slashable-assets-table/b-app-slashable-asset-table-row.tsx";
 
 export type AssetsTableProps = {
-  assets: DelegatedSlashableAsset[];
+  assets: DepositedToken[];
   pagination: IPagination;
   isLoading?: boolean;
-  onRowClick?: (asset: DelegatedSlashableAsset) => void;
+  onRowClick?: (asset: DepositedToken) => void;
 };
 
 type FCProps = FC<
@@ -49,7 +49,7 @@ const BAppSlashableAssetsTable: FCProps = ({
           </TableHead>
         </TableHeader>
         <TableBody>
-          {assets.map((asset) => {
+          {(assets || []).map((asset) => {
             return (
               <BAppSlashableAssetTableRow
                 key={asset.token}

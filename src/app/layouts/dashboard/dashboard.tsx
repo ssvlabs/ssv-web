@@ -1,5 +1,5 @@
 import { Navbar } from "@/app/layouts/dashboard/navbar";
-import { HoleskySunsetBanner } from "@/components/banners/holesky-sunset-banner";
+import { NavbarDVT } from "@/app/layouts/dashboard/navbar-dvt";
 import { AssetWithdrawalModal } from "@/components/modals/bapp/asset-withdrawal-modal";
 import { AssetsDelegationModal } from "@/components/modals/bapp/assets-delegation-modal";
 import { MultisigTransactionModal } from "@/components/ui/multisig-transaction-modal";
@@ -8,6 +8,7 @@ import { TransactionModal } from "@/components/ui/transaction-modal";
 import { useAccount } from "@/hooks/account/use-account";
 import { useAccountState } from "@/hooks/account/use-account-state.ts";
 import { useMaintenance } from "@/hooks/app/use-maintenance";
+import { useAppVersion } from "@/hooks/temp-delete-after-merge/use-app-version";
 import { useBlockNavigationOnPendingTx } from "@/hooks/use-block-navigation-on-pending-tx";
 import { useIdentify } from "@/lib/analytics/mixpanel/useIdentify";
 import { useTrackPageViews } from "@/lib/analytics/mixpanel/useTrackPageViews";
@@ -30,6 +31,7 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
 
   const { isMaintenancePage } = useMaintenance();
   const { isLoadingClusters, isLoadingOperators } = useAccountState();
+  const app = useAppVersion();
   if (isMaintenancePage) {
     return <Navigate to="/maintenance" replace />;
   }
@@ -61,8 +63,11 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
             exit={{ opacity: 0 }}
             key="content"
           >
-            <HoleskySunsetBanner />
-            <Navbar className="px-5" />
+            {app.isDvtOnly ? (
+              <NavbarDVT className="px-5" />
+            ) : (
+              <Navbar className="px-5" />
+            )}
             <main className={cn(className, "flex-1 overflow-auto")}>
               {children}
             </main>

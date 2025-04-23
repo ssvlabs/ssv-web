@@ -1,5 +1,4 @@
 import { Text } from "@/components/ui/text.tsx";
-import { Container } from "@/components/ui/container.tsx";
 import { useNavigate } from "react-router-dom";
 import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
 import { useAccountAssets } from "@/hooks/b-app/use-account-assets";
@@ -44,38 +43,36 @@ const Delegations = () => {
   const assetWithdrawalModal = useAssetWithdrawalModal();
   return (
     <MyAccountWrapper filter={AccountSelect.Delegations}>
-      <Container variant="vertical" size="xl">
-        <div className="h-10 flex justify-between w-full items-center">
-          <Text variant="body-1-semibold">My Assets</Text>
-        </div>
-        <NonSlashableAssetsTable
-          updateDelegatedValue={updateDelegatedValue}
-          asset={data}
-          isLoading={isLoading}
-          onRowClick={() => navigate("/account/accounts")}
-        />
-        <AccountAssetsTable
-          assets={assets}
-          onRowClick={(asset) => {
-            navigate(`/account/strategies?token=${asset.token}`);
-          }}
-          onWithdrawClick={(props) => {
-            assetWithdrawalModal.open(props);
-          }}
-          onDelegateClick={(props) => {
-            useAssetsDelegationModal.state.open({
-              asset: props.asset,
-              strategyId: props.strategyId,
-            });
-          }}
-          pagination={{
-            page: 1,
-            pages: 1,
-            total: 1,
-            per_page: 1,
-          }}
-        />
-      </Container>
+      <div className="h-10 flex justify-between w-full items-center">
+        <Text variant="body-1-semibold">My Assets</Text>
+      </div>
+      <NonSlashableAssetsTable
+        updateDelegatedValue={updateDelegatedValue}
+        asset={data}
+        isLoading={isLoading}
+        onRowClick={() => navigate("/account/accounts")}
+      />
+      <AccountAssetsTable
+        assets={assets}
+        onRowClick={(asset) => {
+          navigate(`/account/strategies?token=${asset.token}`);
+        }}
+        onWithdrawClick={(props) => {
+          assetWithdrawalModal.open(props);
+        }}
+        onDelegateClick={(props) => {
+          useAssetsDelegationModal.state.open({
+            asset: props.asset,
+            strategyId: props.strategyId,
+          });
+        }}
+        pagination={{
+          page: 1,
+          pages: 1,
+          total: 1,
+          per_page: 1,
+        }}
+      />
       {isOpenModal && (
         <Delegate
           isUpdateFlow

@@ -48,7 +48,7 @@ export const AccountAssetsTable: FCProps = ({
         {...props}
       >
         <TableHeader>
-          <TableHead className="w-[26%]">Asset</TableHead>
+          <TableHead className="w-[26%]">Depositable Asset</TableHead>
           <TableHead className="w-[16%]">Wallet Balance</TableHead>
           <TableHead className="text-right w-[18%]">
             Deposited Strategies

@@ -34,7 +34,6 @@ export const AccountAssetsTableRow: FCProps = ({
   ...props
 }) => {
   const hasDelegations = Boolean(asset.slashableAsset?.deposits?.length);
-
   const totalRequests = useGetTotalWithdrawalRequests({
     strategyIds:
       asset.slashableAsset?.deposits.map(

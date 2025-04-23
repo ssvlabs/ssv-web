@@ -66,7 +66,7 @@ export const StrategyAssetsTableRow: FCProps = ({
             : 0}
         </TableCell>
         <TableCell
-          className={`${Number(convertToPercentage(asset?.totalDepositsValue || 0)) > 100 && "text-error-500"} flex items-center justify-between relative`}
+          className={`${Number(convertToPercentage(asset?.totalDepositsPercentage || 0)) > 100 && "text-error-500"} flex items-center justify-between relative`}
         >
           <Text
             className={cn({
@@ -74,7 +74,7 @@ export const StrategyAssetsTableRow: FCProps = ({
             })}
           >
             {asset?.totalDepositsValue
-              ? `${convertToPercentage(asset?.totalDepositsValue || "")}%`
+              ? `${convertToPercentage(asset?.totalDepositsPercentage || "")}%`
               : 0}
           </Text>
           {showDepositButtonOnHover && (
@@ -93,7 +93,7 @@ export const StrategyAssetsTableRow: FCProps = ({
               Deposit
             </Button>
           )}
-          {Boolean((asset?.delegations || []).length) && (
+          {Boolean((asset?.deposits || []).length) && (
             <ExpandButton setIsOpen={setIsInnerOpen} isOpen={isInnerOpen} />
           )}
         </TableCell>
@@ -120,9 +120,9 @@ export const StrategyAssetsTableRow: FCProps = ({
           </TableCell>
         </TableRow>
       )}
-      {Boolean((asset?.delegations || []).length) &&
+      {Boolean((asset?.deposits || []).length) &&
         isInnerOpen &&
-        (asset?.delegations || []).map(({ bAppId, percentage }) => {
+        (asset?.deposits || []).map(({ bAppId, percentage }) => {
           const bApp =
             strategy.bAppsList?.find(
               (bApp: StrategyBApp & BAppsMetaData) => bApp.bAppId === bAppId,

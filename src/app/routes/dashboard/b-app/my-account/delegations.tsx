@@ -22,7 +22,6 @@ const Delegations = () => {
   const { assets } = useAccountAssets();
   const [isOpenModal, setIsOpenModal] = useState(false);
   const { setDelegationData, reset } = useDelegateContext();
-
   const updateDelegatedValue = (
     address: string,
     delegatedValue: number,

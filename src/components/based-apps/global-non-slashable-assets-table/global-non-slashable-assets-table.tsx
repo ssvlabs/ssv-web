@@ -48,7 +48,7 @@ export const GlobalNonSlashableAssetsTable: FCProps = ({
       >
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[400px]">Asset</TableHead>
+            <TableHead className="w-[400px]">Delegatable asset</TableHead>
             <TableHead>
               {" "}
               <Tooltip

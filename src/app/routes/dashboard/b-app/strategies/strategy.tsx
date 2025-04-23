@@ -69,7 +69,6 @@ const Strategy = () => {
     }
     setIsOpenDelegateModal(true);
   };
-
   const onSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
@@ -96,6 +95,11 @@ const Strategy = () => {
     {
       label: "Fee",
       value: `${convertToPercentage(strategy.fee)}%`,
+    },
+    {
+      label: "Delegators",
+      value: strategy.totalDelegators,
+      tooltipText: "Total number of unique delegators to this strategy’s owner",
     },
     {
       label: "Depositors",
@@ -216,7 +220,7 @@ const Strategy = () => {
             className={"w-full rounded-t-xl overflow-hidden rounded-b-[16px]"}
           >
             <TableHeader>
-              <TableHead>Asset</TableHead>
+              <TableHead>Delegatable Asset</TableHead>
               <TableHead></TableHead>
               <TableHead></TableHead>
               <TableHead className=" flex items-center gap-1">
@@ -265,7 +269,7 @@ const Strategy = () => {
 
       {(searchedValue
         ? Boolean(searchAssets.length)
-        : Boolean(strategy.delegationsPerToken?.length)) && (
+        : Boolean(strategy.depositsPerToken?.length)) && (
         <div className="w-full flex flex-col gap-6">
           <StrategyAssetsTable
             onDepositClick={(asset) => {
@@ -276,7 +280,7 @@ const Strategy = () => {
             }}
             showDepositButtonOnHover
             assets={
-              searchedValue ? searchAssets : strategy.delegationsPerToken || []
+              searchedValue ? searchAssets : strategy.depositsPerToken || []
             }
           />
         </div>

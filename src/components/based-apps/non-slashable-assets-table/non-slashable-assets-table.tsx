@@ -48,7 +48,7 @@ export const NonSlashableAssetsTable: FCProps = ({
         {...props}
       >
         <TableHeader>
-          <TableHead className="w-[26%]">Asset</TableHead>
+          <TableHead className="w-[26%]">Delegatable Asset</TableHead>
           <TableHead className="w-[16%]">
             <Tooltip
               asChild

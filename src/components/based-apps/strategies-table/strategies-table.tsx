@@ -56,6 +56,7 @@ export const StrategiesTable: FCProps = ({
           <TableHead>Supported Assets</TableHead>
           <TableHead>Fee</TableHead>
           <TableHead>Depositors</TableHead>
+          <TableHead>Delegators</TableHead>
           <TableHead>Deposited Value</TableHead>
         </TableHeader>
         <TableBody>

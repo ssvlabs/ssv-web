@@ -37,7 +37,7 @@ export const Assets: FC = () => {
         id: "token",
         accessorKey: "token",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Assets" />
+          <DataTableColumnHeader column={column} title="Depositable Assets" />
         ),
         cell: ({ row }) => (
           <div className="flex items-center gap-2 ">

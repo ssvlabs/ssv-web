@@ -91,7 +91,7 @@ export const BApp = () => {
             content={bApp.totalDepositors}
           />
           <Stat
-            title="Total Delegated Value"
+            title="Total Asset Value"
             content={currencyFormatter.format(+bApp.totalDelegatedFiat)}
           />
           <div className="flex items-center gap-2">

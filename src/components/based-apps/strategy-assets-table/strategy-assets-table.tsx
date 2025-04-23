@@ -33,7 +33,7 @@ export const StrategyAssetsTable: FCProps = ({
       {...props}
     >
       <TableHeader>
-        <TableHead>Asset</TableHead>
+        <TableHead>Depositable Asset</TableHead>
         <TableHead>Total Deposited</TableHead>
         <TableHead>Total Deposited Value</TableHead>
         <TableHead>Total Obligation</TableHead>

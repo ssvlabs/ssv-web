@@ -52,7 +52,7 @@ export interface Strategy {
   totalDelegators?: number;
   totalDelegatedFiat?: string;
   description?: string;
-  delegationsPerToken?: BAppAsset[];
+  depositsPerToken?: BAppAsset[];
   deposits?: [
     {
       id: `0x${string}`;
@@ -296,11 +296,12 @@ export type BAppAsset = {
   token: Address;
   totalObligatedBalance: string;
   totalDepositsValue?: string;
+  totalDepositsPercentage?: string;
   totalDepositsFiat?: string;
   depositedStrategies?: number;
   totalFiat?: string;
   totalTokens?: bigint;
-  delegations?: { bAppId: `0x${string}`; percentage: string }[];
+  deposits?: { bAppId: `0x${string}`; percentage: string }[];
   obligationsCount: number;
 };
 

@@ -32,7 +32,6 @@ type FCProps = FC<
   Omit<ComponentPropsWithoutRef<typeof TableRow>, keyof StrategyTableRowProps> &
     StrategyTableRowProps
 >;
-
 export const StrategyTableRow: FCProps = ({
   strategy,
   className,
@@ -115,6 +114,18 @@ export const StrategyTableRow: FCProps = ({
           )}
         >
           {strategy.totalDeposited}
+        </div>
+      </TableCell>
+      <TableCell className={textVariants({ variant: "body-3-medium" })}>
+        <div
+          className={cn(
+            "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border ml-[40%]",
+            strategy.totalDelegators
+              ? "bg-primary-50 border-primary-200 text-primary-600"
+              : "bg-gray-200 border-gray-300 text-gray-600",
+          )}
+        >
+          {strategy.totalDelegators}
         </div>
       </TableCell>
       <TableCell

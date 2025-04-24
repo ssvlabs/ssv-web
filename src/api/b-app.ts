@@ -9,6 +9,8 @@ import {
 
 export type NonSlashableAsset = {
   effectiveBalance: bigint;
+  totalDelegatedValue?: bigint;
+  totalDelegatedFiat?: string;
   delegations: (Delegation & AccountMetadata)[];
 };
 

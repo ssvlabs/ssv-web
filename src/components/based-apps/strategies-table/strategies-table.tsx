@@ -57,7 +57,7 @@ export const StrategiesTable: FCProps = ({
           <TableHead>Fee</TableHead>
           <TableHead>Depositors</TableHead>
           <TableHead>Delegators</TableHead>
-          <TableHead>Deposited Value</TableHead>
+          <TableHead>Total Asset Value</TableHead>
         </TableHeader>
         <TableBody>
           {strategies?.map((strategy) => {

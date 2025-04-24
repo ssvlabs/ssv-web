@@ -107,7 +107,7 @@ const Strategy = () => {
       tooltipText: "Total number of unique depositors to this strategy",
     },
     {
-      label: "Total Deposited Value",
+      label: "Total Asset Value",
       value: currencyFormatter.format(Number(strategy.totalDepositedFiat) || 0),
       tooltipText: "Total value of all deposits made to this strategy",
     },

@@ -105,12 +105,12 @@ export const GlobalNonSlashableAssetsTable: FCProps = ({
               <TableCell
                 className={textVariants({
                   variant: "body-3-medium",
-                  className: "text-right",
+                  className: "text-right flex items-center justify-end",
                 })}
               >
                 <div
                   className={cn(
-                    "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border ml-auto",
+                    "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border",
                     data.delegatedAccounts
                       ? "bg-primary-50 border-primary-200 text-primary-600"
                       : "bg-gray-200 border-gray-300 text-gray-600",

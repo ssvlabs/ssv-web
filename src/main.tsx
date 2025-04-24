@@ -25,6 +25,8 @@ import "@fontsource/manrope/700.css";
 import "@fontsource/manrope/800.css";
 import { GTMFrame } from "@/lib/analytics/gtm";
 
+console.log("merge testing");
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <WagmiProvider config={config}>
     <PersistQueryClientProvider

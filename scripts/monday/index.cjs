@@ -58,19 +58,4 @@ async function runMondayAutomation() {
   }
 }
 
-// For testing with mock data
-async function runWithMockData() {
-  if (!process.env.COMMITS_URL) {
-    console.error("COMMITS_URL is not set");
-    return;
-  }
-
-  if (!process.env.MONDAY_API_KEY) {
-    console.error("MONDAY_API_KEY is not set");
-    return;
-  }
-  const processedTickets = processCommits(mockCommits);
-  await updateMonday(processedTickets);
-}
-
 runMondayAutomation();

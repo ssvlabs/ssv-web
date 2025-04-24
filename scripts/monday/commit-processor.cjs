@@ -42,63 +42,9 @@ const mockCommits = [
     html_url:
       "https://github.com/ssvlabs/ssv-web/commit/1bc5097fb0045e40874e1bb67acebb9415a25ef1",
     commit: {
-      message: "Fix login issue #8969579291",
+      message: "Fix login issue 8996665933",
       author: {
-        name: "John Doe",
-        email: "john@example.com",
-        date: "2023-05-15T10:00:00Z",
-      },
-      committer: {
-        name: "Sumbat",
-        email: "sumbat15@gmail.com",
-        date: "2025-04-20T09:12:11Z",
-      },
-    },
-  },
-  {
-    sha: "abc123",
-    html_url:
-      "https://github.com/ssvlabs/ssv-web/commit/1bc5097fb0045e40874e1bb67acebb9415a25ef1",
-    commit: {
-      message: "fix: added new feature #8969579291",
-      author: {
-        name: "John Doe",
-        email: "john@example.com",
-        date: "2023-05-15T10:00:00Z",
-      },
-      committer: {
-        name: "Sumbat",
-        email: "sumbat15@gmail.com",
-        date: "2025-04-20T09:12:11Z",
-      },
-    },
-  },
-  {
-    sha: "abc123",
-    html_url:
-      "https://github.com/ssvlabs/ssv-web/commit/1bc5097fb0045e40874e1bb67acebb9415a25ef1",
-    commit: {
-      message: "fix: fix login issue #8969579291",
-      author: {
-        name: "John Doe",
-        email: "john@example.com",
-        date: "2023-05-15T10:00:00Z",
-      },
-      committer: {
-        name: "Sumbat",
-        email: "sumbat15@gmail.com",
-        date: "2025-04-20T09:12:11Z",
-      },
-    },
-  },
-  {
-    sha: "abc123",
-    html_url:
-      "https://github.com/ssvlabs/ssv-web/commit/1bc5097fb0045e40874e1bb67acebb9415a25ef1",
-    commit: {
-      message: "style: added holesky sunset banner #8969579291",
-      author: {
-        name: "John Doe",
+        name: "Sumbat(testing)",
         email: "john@example.com",
         date: "2023-05-15T10:00:00Z",
       },

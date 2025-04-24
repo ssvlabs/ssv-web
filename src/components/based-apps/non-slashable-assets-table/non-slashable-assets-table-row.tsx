@@ -43,13 +43,6 @@ export const NonSlashableAssetsTableRow: FCProps = ({
 
   const effectiveBalance = Number(formatSSV(asset.effectiveBalance));
 
-  const totalDelegatedPercentage =
-    asset.delegations?.reduce(
-      (acc, delegation) => acc + Number(delegation.percentage),
-      0,
-    ) / 10000;
-
-  const totalDelegatedValue = totalDelegatedPercentage * effectiveBalance;
   return (
     <>
       <TableRow
@@ -94,7 +87,7 @@ export const NonSlashableAssetsTableRow: FCProps = ({
             className: "text-right",
           })}
         >
-          {totalDelegatedValue}
+          {formatSSV(asset.totalDelegatedValue || 0n)}
         </TableCell>
         <TableCell
           className={textVariants({

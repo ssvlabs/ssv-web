@@ -52,7 +52,7 @@ export const Assets: FC = () => {
         id: "balance",
         accessorKey: "balance",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Balance" />
+          <DataTableColumnHeader column={column} title="Wallet Balance" />
         ),
         cell: ({ row }) => {
           const { address } = useAccount();
@@ -77,14 +77,14 @@ export const Assets: FC = () => {
           <DataTableColumnHeader
             column={column}
             className="justify-end"
-            title="Delegated Strategies"
+            title="Deposited Strategies"
           />
         ),
         cell: ({ row }) => {
           return (
             <div
               className={cn(
-                "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border ml-auto",
+                "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border ml-[77%]",
                 row.original.depositedStrategies
                   ? "bg-primary-50 border-primary-200 text-primary-600"
                   : "bg-gray-200 border-gray-300 text-gray-600",
@@ -103,14 +103,14 @@ export const Assets: FC = () => {
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
-            className="justify-end"
-            title="Total Delegated"
+            className="justify-end w-[90%]"
+            title="Total Deposited"
           />
         ),
         cell: ({ row }) => {
           const decimals = useDecimals({ tokenAddress: row.original.token });
           return (
-            <Text variant="body-3-medium" className="text-right">
+            <Text variant="body-3-medium" className="mr-[18%] text-right">
               {compactFormatter.format(
                 +formatUnits(
                   BigInt(row.original.totalDepositsValue || 0),
@@ -130,7 +130,7 @@ export const Assets: FC = () => {
           <DataTableColumnHeader
             column={column}
             className="justify-end text-right"
-            title="Total Fiat"
+            title="Total Deposited Value"
           />
         ),
         cell: ({ row }) => {

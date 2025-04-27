@@ -52,6 +52,7 @@ export interface Strategy {
   ownerAddressMetadataURI: string;
   bAppsList?: (StrategyBApp & BAppsMetaData)[];
   totalDelegators?: number;
+  totalDelegatedValue?: bigint;
   totalDelegatedFiat?: string;
   description?: string;
   depositsPerToken?: BAppAsset[];
@@ -297,7 +298,7 @@ export const getBAppsMetadata = getMetadata<
 export type BAppAsset = {
   token: Address;
   totalObligatedBalance: string;
-  totalDepositsValue?: string;
+  totalDepositsValue?: bigint;
   totalDepositsPercentage?: string;
   totalDepositsFiat?: string;
   depositedStrategies?: number;

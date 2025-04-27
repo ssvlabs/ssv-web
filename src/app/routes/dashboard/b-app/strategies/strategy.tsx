@@ -250,15 +250,11 @@ const Strategy = () => {
                 <TableCell></TableCell>
                 <TableCell></TableCell>
                 <TableCell>
-                  {formatSSV(
-                    (strategy.totalNonSlashableTokens || 0n) as bigint,
-                    9,
-                  )}{" "}
-                  ETH
+                  {formatSSV(strategy.totalDelegatedValue || 0n)} ETH
                 </TableCell>
                 <TableCell>
                   {currencyFormatter.format(
-                    Number(strategy.totalNonSlashableFiat) || 0,
+                    Number(strategy.totalDelegatedFiat) || 0,
                   )}
                 </TableCell>
               </TableRow>

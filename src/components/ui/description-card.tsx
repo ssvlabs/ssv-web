@@ -10,8 +10,8 @@ const DescriptionCard = ({ description }: { description: string }) => {
   };
 
   const truncatedText =
-    description.length > 180 && !isExpanded
-      ? description.slice(0, 180)
+    description.length > 170 && !isExpanded
+      ? `${description.slice(0, 170)}...`
       : description;
 
   return (

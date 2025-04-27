@@ -220,9 +220,9 @@ const Strategy = () => {
             className={"w-full rounded-t-xl overflow-hidden rounded-b-[16px]"}
           >
             <TableHeader>
-              <TableHead>Delegatable Asset</TableHead>
-              <TableHead></TableHead>
-              <TableHead></TableHead>
+              <TableHead className="size-[28%]">Delegatable Asset</TableHead>
+              <TableHead className="size-[15%]"></TableHead>
+              <TableHead className="size-[15%]"></TableHead>
               <TableHead className=" flex items-center gap-1">
                 Total Delegated
                 <Tooltip
@@ -230,14 +230,16 @@ const Strategy = () => {
                     "Total effective balance (ETH) delegated to the owner of this strategy"
                   }
                 >
-                  <FaCircleInfo className="size-3 text-gray-500" />
+                  <FaCircleInfo className="text-gray-500" />
                 </Tooltip>
               </TableHead>
-              <TableHead>Total Delegated Value</TableHead>
+              <TableHead className="size-[19%]">
+                Total Delegated Value
+              </TableHead>
             </TableHeader>
             <TableBody>
               <TableRow onClick={openDelegate}>
-                <TableCell>
+                <TableCell className="size-[28%]">
                   <div className="flex gap-2 w-[c320px]">
                     <img
                       className={"h-[24px] w-[15px]"}
@@ -247,8 +249,8 @@ const Strategy = () => {
                     <Text className="text-gray-500 font-medium">ETH</Text>
                   </div>
                 </TableCell>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
+                <TableCell className="size-[15%]"></TableCell>
+                <TableCell className="size-[15%]"></TableCell>
                 <TableCell>
                   {formatSSV(strategy.totalDelegatedValue || 0n)} ETH
                 </TableCell>

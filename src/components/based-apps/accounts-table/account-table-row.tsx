@@ -84,7 +84,7 @@ export const AccountTableRow: FCProps = ({
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         <div className="flex gap-2">
-          {formatSSV(account.totalDelegatedValue || 0n, 9)}
+          {formatSSV(account.totalDelegatedValue || 0n)}
           <img
             className={"h-[24px] w-[15px]"}
             src={`/images/balance-validator/balance-validator.svg`}

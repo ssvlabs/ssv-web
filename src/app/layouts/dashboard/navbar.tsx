@@ -143,7 +143,7 @@ export const Navbar: FCProps = ({ className, ...props }) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuGroup className="min-[1140px]:hidden">
-              <DropdownMenuItem asChild>
+              <DropdownMenuItem className="h-[52px]" asChild>
                 <NavLink
                   to={accountRoutePath ?? "/"}
                   className={textVariants({
@@ -160,7 +160,9 @@ export const Navbar: FCProps = ({ className, ...props }) => {
                   My Account
                 </NavLink>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem className="h-[52px]" asChild>
                 <NavLink
                   to="/account/assets"
                   className={textVariants({
@@ -175,7 +177,9 @@ export const Navbar: FCProps = ({ className, ...props }) => {
                   Assets
                 </NavLink>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem className="h-[52px]" asChild>
                 <NavLink
                   to="/account/strategies"
                   className={textVariants({
@@ -190,7 +194,9 @@ export const Navbar: FCProps = ({ className, ...props }) => {
                   Strategies
                 </NavLink>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem className="h-[52px]" asChild>
                 <NavLink
                   to="/account/bApps"
                   className={textVariants({
@@ -205,7 +211,8 @@ export const Navbar: FCProps = ({ className, ...props }) => {
                   bApps
                 </NavLink>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="h-[52px]" asChild>
                 <NavLink
                   to={dvtRoutePath}
                   className={textVariants({
@@ -220,56 +227,65 @@ export const Navbar: FCProps = ({ className, ...props }) => {
                   DVT
                 </NavLink>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="h-[52px]" asChild>
                 <NavLink to={links.ssv.explorer} target="_blank">
                   Explorer <HiOutlineExternalLink className="text-gray-600" />
                 </NavLink>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
             </DropdownMenuGroup>
-
+            <a href={links.ssv.docs} target="_blank">
+              <DropdownMenuItem className="h-[52px]">
+                Docs <HiOutlineExternalLink className="text-gray-600" />
+              </DropdownMenuItem>
+            </a>
+            <DropdownMenuSeparator />
             <a href={links.ssv.governanceForum} target="_blank">
-              <DropdownMenuItem>
+              <DropdownMenuItem className="h-[52px]">
                 Governance Forum{" "}
                 <HiOutlineExternalLink className="text-gray-600" />
               </DropdownMenuItem>
             </a>
+            <DropdownMenuSeparator />
             <a href={links.ssv.snapshot} target="_blank">
-              <DropdownMenuItem>
+              <DropdownMenuItem className="h-[52px]">
                 Snapshot <HiOutlineExternalLink className="text-gray-600" />
               </DropdownMenuItem>
             </a>
             <DropdownMenuSeparator />
             <a href={links.ssv.tos} target="_blank">
-              <DropdownMenuItem>
+              <DropdownMenuItem className="h-[52px]">
                 Terms of Use <HiOutlineExternalLink className="text-gray-600" />
               </DropdownMenuItem>
             </a>
+            <DropdownMenuSeparator />
             <a href={links.ssv.privacy} target="_blank">
-              <DropdownMenuItem>
+              <DropdownMenuItem className="h-[52px]">
                 Privacy Policy{" "}
                 <HiOutlineExternalLink className="text-gray-600" />
               </DropdownMenuItem>
             </a>
+            <DropdownMenuSeparator />
             <div className="flex px-1 pb-1 text-gray-700">
               <a href={links.ssv.discord} target="_blank">
                 <Tooltip delayDuration={500} content="Discord">
                   <DropdownMenuItem className="p-3 rounded-xl">
-                    <FaDiscord className="size-4" />
+                    <FaDiscord className="size-6" />
                   </DropdownMenuItem>
                 </Tooltip>
               </a>
               <a href={links.ssv.x} target="_blank">
                 <Tooltip delayDuration={500} content="X">
                   <DropdownMenuItem className="p-3 rounded-xl">
-                    <FaXTwitter className="size-4" />
+                    <FaXTwitter className="size-6" />
                   </DropdownMenuItem>
                 </Tooltip>
               </a>
               <a href={links.ssv.website} target="_blank">
                 <Tooltip delayDuration={500} content="ssv.network website">
                   <DropdownMenuItem className="p-3 rounded-xl">
-                    <HiOutlineGlobeAlt className="size-4" />
+                    <HiOutlineGlobeAlt className="size-6" />
                   </DropdownMenuItem>
                 </Tooltip>
               </a>

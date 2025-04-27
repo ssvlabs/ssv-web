@@ -80,16 +80,7 @@ export const AccountTableRow: FCProps = ({
         </div>
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        <div
-          className={cn(
-            "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border ml-[50%]",
-            account.totalDelegators
-              ? "bg-primary-50 border-primary-200 text-primary-600"
-              : "bg-gray-200 border-gray-300 text-gray-600",
-          )}
-        >
-          {account.totalDelegators}
-        </div>
+        <div className={cn("ml-[60%]")}>{account.totalDelegators}</div>
       </TableCell>
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         <div className="flex gap-2">

@@ -104,29 +104,11 @@ export const StrategyTableRow: FCProps = ({
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
         {percentageFormatter.format(convertToPercentage(strategy.fee))}
       </TableCell>
-      <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        <div
-          className={cn(
-            "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border ml-[40%]",
-            strategy.totalDeposited
-              ? "bg-primary-50 border-primary-200 text-primary-600"
-              : "bg-gray-200 border-gray-300 text-gray-600",
-          )}
-        >
-          {strategy.totalDeposited}
-        </div>
+      <TableCell className={`${textVariants({ variant: "body-3-medium" })}`}>
+        <div className="ml-[60%]">{strategy.totalDeposited}</div>
       </TableCell>
-      <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        <div
-          className={cn(
-            "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border ml-[40%]",
-            strategy.totalDelegators
-              ? "bg-primary-50 border-primary-200 text-primary-600"
-              : "bg-gray-200 border-gray-300 text-gray-600",
-          )}
-        >
-          {strategy.totalDelegators}
-        </div>
+      <TableCell className={`${textVariants({ variant: "body-3-medium" })}`}>
+        <div className="ml-[60%]">{strategy.totalDelegators}</div>
       </TableCell>
       <TableCell
         className={textVariants({

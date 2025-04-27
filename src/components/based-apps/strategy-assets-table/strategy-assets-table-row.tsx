@@ -56,13 +56,13 @@ export const StrategyAssetsTableRow: FCProps = ({
           </div>
         </TableCell>
         <TableCell>
-          {asset?.totalTokens
-            ? `${formatSSV(asset?.totalTokens || 0n, 18)} ${symbol}`
+          {asset?.totalDepositsValue
+            ? `${formatSSV(asset?.totalDepositsValue || 0n, 18)} ${symbol}`
             : "0"}
         </TableCell>
         <TableCell>
           {asset?.totalFiat
-            ? currencyFormatter.format(Number(asset?.totalFiat) || 0)
+            ? currencyFormatter.format(Number(asset?.totalDepositsFiat) || 0)
             : 0}
         </TableCell>
         <TableCell

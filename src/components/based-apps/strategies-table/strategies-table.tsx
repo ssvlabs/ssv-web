@@ -73,7 +73,9 @@ export const StrategiesTable: FCProps = ({
           })}
         </TableBody>
       </Table>
-      <div className="bg-gray-50 w-full">{isLoading && <Loading />}</div>
+      <div className="bg-gray-50 w-full">
+        {isLoading && !strategies.length && <Loading />}
+      </div>
       {pagination && pagination.total > 10 ? (
         <>
           <Divider />

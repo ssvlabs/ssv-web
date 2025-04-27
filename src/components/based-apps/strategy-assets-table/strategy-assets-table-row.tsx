@@ -43,39 +43,45 @@ export const StrategyAssetsTableRow: FCProps = ({
   if (searchValue && !name.toLowerCase().includes(searchValue?.toLowerCase())) {
     return;
   }
+  const isAssetIncludeInStrategy = (strategy.depositsPerToken || []).some(
+    ({ token }) => token.toString() === asset.token.toLowerCase(),
+  );
+
   return (
     <TableBody>
       <TableRow
         className={cn("cursor-pointer max-h-7 group", className)}
         {...props}
       >
-        <TableCell className={textVariants({ variant: "body-3-medium" })}>
+        <TableCell
+          className={`w-[27%] ${textVariants({ variant: "body-3-medium" })}`}
+        >
           <div className="flex items-center gap-2">
             <AssetLogo address={asset?.token} />
             <AssetName address={asset?.token} />
           </div>
         </TableCell>
-        <TableCell>
-          {asset?.totalDepositsValue
+        <TableCell className="w-[16%]">
+          {asset?.totalDepositsValue && isAssetIncludeInStrategy
             ? `${formatSSV(asset?.totalDepositsValue || 0n, 18)} ${symbol}`
             : "0"}
         </TableCell>
-        <TableCell>
-          {asset?.totalFiat
+        <TableCell className="w-[15%]">
+          {asset?.totalFiat && isAssetIncludeInStrategy
             ? currencyFormatter.format(Number(asset?.totalDepositsFiat) || 0)
             : 0}
         </TableCell>
         <TableCell
-          className={`${Number(convertToPercentage(asset?.totalDepositsPercentage || 0)) > 100 && "text-error-500"} flex items-center justify-between relative`}
+          className={`w-[100%] ${Number(convertToPercentage(asset?.totalObligatedPercentage || 0)) > 100 && "text-error-500"} flex items-center justify-between relative`}
         >
           <Text
             className={cn({
               "group-hover:opacity-0": showDepositButtonOnHover,
             })}
           >
-            {asset?.totalDepositsValue
-              ? `${convertToPercentage(asset?.totalDepositsPercentage || "")}%`
-              : 0}
+            {asset?.totalObligatedPercentage && isAssetIncludeInStrategy
+              ? `${convertToPercentage(asset?.totalObligatedPercentage || "")}%`
+              : "0%"}
           </Text>
           {showDepositButtonOnHover && (
             <Button
@@ -93,7 +99,7 @@ export const StrategyAssetsTableRow: FCProps = ({
               Deposit
             </Button>
           )}
-          {Boolean((asset?.deposits || []).length) && (
+          {Boolean((asset?.obligations || []).length) && (
             <ExpandButton setIsOpen={setIsInnerOpen} isOpen={isInnerOpen} />
           )}
         </TableCell>
@@ -120,9 +126,9 @@ export const StrategyAssetsTableRow: FCProps = ({
           </TableCell>
         </TableRow>
       )}
-      {Boolean((asset?.deposits || []).length) &&
+      {Boolean((asset?.obligations || []).length) &&
         isInnerOpen &&
-        (asset?.deposits || []).map(({ bAppId, percentage }) => {
+        (asset?.obligations || []).map(({ bAppId, percentage }) => {
           const bApp =
             strategy.bAppsList?.find(
               (bApp: StrategyBApp & BAppsMetaData) => bApp.bAppId === bAppId,

@@ -36,10 +36,11 @@ function createStageDeploymentComment(itemId, commits) {
 
   const bodyContent = `
   <p style="font-size:18px">
-    <strong>🪸 Merged to Stage Environment</strong>
+    <strong>⤴️ Merged to Stage Environment</strong>
   </p>
-  <p>The following commits have been successfully merged to the stage branch</p>
-  <ul>${commitLinks}</ul>`
+  <ul>${commitLinks}</ul>
+  <p style="font-size:12px; margin-top:10px; color:gray">Will be live in 3 minutes on <a href="https://app.stage.ssv.network/">app.stage.ssv.network</a></p>
+  `
     .replace(/>\s+</g, "><")
     .trim();
 

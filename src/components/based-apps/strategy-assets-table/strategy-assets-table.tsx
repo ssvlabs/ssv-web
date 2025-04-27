@@ -33,10 +33,10 @@ export const StrategyAssetsTable: FCProps = ({
       {...props}
     >
       <TableHeader>
-        <TableHead>Depositable Asset</TableHead>
-        <TableHead>Total Deposited</TableHead>
-        <TableHead>Total Deposited Value</TableHead>
-        <TableHead>Total Obligation</TableHead>
+        <TableHead className="w-[28%]">Depositable Asset</TableHead>
+        <TableHead className="w-[17%]">Total Deposited</TableHead>
+        <TableHead className="w-[18%]">Total Deposited Value</TableHead>
+        <TableHead className="w-[15%]">Total Obligation</TableHead>
       </TableHeader>
       {assets.map((asset) => {
         return (

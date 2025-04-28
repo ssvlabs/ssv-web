@@ -4,65 +4,48 @@
 
 import type { UseReadContractParameters } from "wagmi";
 import { useReadContract, useBlockNumber } from "wagmi";
-import { isUndefined } from "lodash-es";
 
 import {
   useSSVNetworkDetails,
   getSSVNetworkDetails,
 } from "@/hooks/use-ssv-network-details";
 import { BAppABI } from "@/lib/abi/b-app/b-app";
-import type { AbiInputsToParams } from "@/lib/contract-interactions/utils";
-import {
-  paramsToArray,
-  extractAbiFunction,
-} from "@/lib/contract-interactions/utils";
-import type { ExtractAbiFunction } from "abitype";
+
 import { readContractQueryOptions } from "wagmi/query";
 import { getChainId } from "@wagmi/core";
 import { config } from "@/wagmi/config";
 import { queryClient } from "@/lib/react-query";
 
-type Fn = ExtractAbiFunction<typeof BAppABI, "strategyTokenBalances">;
-const abiFunction = extractAbiFunction(BAppABI, "strategyTokenBalances");
-
-export const getStrategyTokenBalancesQueryOptions = (
-  params: AbiInputsToParams<Fn["inputs"]>,
-) =>
+export const getDisabledFeaturesQueryOptions = () =>
   readContractQueryOptions(config, {
     abi: BAppABI,
     chainId: getChainId(config),
     address: getSSVNetworkDetails().bAppContractAddress,
-    functionName: "strategyTokenBalances",
-    args: paramsToArray({ params, abiFunction }),
+    functionName: "disabledFeatures",
   });
 
 type QueryOptions = UseReadContractParameters<
   typeof BAppABI,
-  "strategyTokenBalances"
+  "disabledFeatures"
 >["query"];
 
-export const fetchStrategyTokenBalances = (
-  params: AbiInputsToParams<Fn["inputs"]>,
-) => queryClient.fetchQuery(getStrategyTokenBalancesQueryOptions(params));
+export const fetchDisabledFeatures = () =>
+  queryClient.fetchQuery(getDisabledFeaturesQueryOptions());
 
-export const useStrategyTokenBalances = (
-  params: AbiInputsToParams<Fn["inputs"]>,
+export const useDisabledFeatures = (
   options: QueryOptions & { watch?: boolean } = { enabled: true },
 ) => {
   const { bAppContractAddress } = useSSVNetworkDetails();
-  const args = paramsToArray({ params, abiFunction });
+
   const blockNumber = useBlockNumber({ watch: options.watch });
 
   return useReadContract({
     abi: BAppABI,
     address: bAppContractAddress,
-    functionName: "strategyTokenBalances",
-    args,
+    functionName: "disabledFeatures",
+
     blockNumber: options.watch ? blockNumber.data : undefined,
-    query: {
-      ...options,
-      enabled: options?.enabled && args.every((arg) => !isUndefined(arg)),
-    },
+    query: { ...options },
   });
 };
 

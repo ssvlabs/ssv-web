@@ -91,7 +91,7 @@ const Delegate = ({
     });
     await contractInteraction.write(
       {
-        account: delegateAddress as `0x${string}`,
+        receiver: delegateAddress as `0x${string}`,
         percentage: cleanedNumber,
       },
       options,

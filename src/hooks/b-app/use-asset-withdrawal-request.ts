@@ -1,11 +1,11 @@
 import { useAccount } from "@/hooks/account/use-account";
 import { useStrategyAssetWithdrawFeatureFlag } from "@/hooks/feature-flags/use-withdraw-feature-flag";
-import { useWITHDRAWAL_EXPIRE_TIME } from "@/lib/contract-interactions/b-app/read/use-withdrawal-expire-time";
+import { useWithdrawalExpireTime } from "@/lib/contract-interactions/b-app/read/use-withdrawal-expire-time";
 import {
   getWithdrawalRequestsQueryOptions,
   useWithdrawalRequests,
 } from "@/lib/contract-interactions/b-app/read/use-withdrawal-requests";
-import { useWITHDRAWAL_TIMELOCK_PERIOD } from "@/lib/contract-interactions/b-app/read/use-withdrawal-timelock-period";
+import { useWithdrawalTimelockPeriod } from "@/lib/contract-interactions/b-app/read/use-withdrawal-timelock-period";
 import { ms } from "@/lib/utils/number";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 import type { Address } from "abitype";
@@ -30,11 +30,11 @@ export const useStrategyAssetWithdrawalRequest = ({
   const queryClient = useQueryClient();
   const { address } = useAccount();
 
-  const { data: timelockPeriod = 0 } = useWITHDRAWAL_TIMELOCK_PERIOD({
+  const { data: timelockPeriod = 0 } = useWithdrawalTimelockPeriod({
     staleTime: ms(1, "days"),
     select: (seconds) => seconds * 1000,
   });
-  const { data: expirePeriod = 0 } = useWITHDRAWAL_EXPIRE_TIME({
+  const { data: expirePeriod = 0 } = useWithdrawalExpireTime({
     staleTime: ms(1, "days"),
     select: (seconds) => seconds * 1000,
   });

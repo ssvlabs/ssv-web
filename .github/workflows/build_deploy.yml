@@ -22,19 +22,6 @@ jobs:
       STAGE_SSV_NETWORKS: >
         [
           {
-            \"networkId\": 17000,
-            \"apiVersion\": \"v4\",
-            \"apiNetwork\": \"holesky\",
-            \"api\": \"https://api.stage.ops.ssvlabsinternal.com/api\",
-            \"explorerUrl\": \"https://holesky-explorer.stage.ssv.network\",
-            \"insufficientBalanceUrl\": \"https://faucet.stage.ssv.network\",
-            \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
-            \"tokenAddress\": \"0x68A8DDD7a59A900E0657e9f8bbE02B70c947f25F\",
-            \"bAppContractAddress\": \"0x9B3345F3B1Ce2d8655FC4B6e2ed39322d52aA317\",
-            \"setterContractAddress\": \"${{ secrets.STAGE_HOLESKY_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
-            \"getterContractAddress\": \"${{ secrets.STAGE_HOLESKY_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
-          },
-          {
             \"networkId\": 560048,
             \"apiVersion\": \"v4\",
             \"apiNetwork\": \"hoodi\",  
@@ -43,7 +30,7 @@ jobs:
             \"insufficientBalanceUrl\": \"https://faucet.stage.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
             \"tokenAddress\": \"0x746c33ccc28b1363c35c09badaf41b2ffa7e6d56\",
-            \"bAppContractAddress\": \"0x5217C9034048B1Fa9Fb1e300F94fCd7002138Ea5\",
+            \"bAppContractAddress\": \"0x40d959B95e7c56962D6d388d87921c03734b9C2C\",
             \"setterContractAddress\": \"${{ secrets.STAGE_HOODI_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
             \"getterContractAddress\": \"${{ secrets.STAGE_HOODI_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
            }
@@ -64,17 +51,6 @@ jobs:
             \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_MAINNET }}\"
           },
           {
-            \"networkId\": 17000,
-            \"apiVersion\": \"v4\",
-            \"apiNetwork\": \"holesky\",
-            \"api\": \"https://api.ssv.network/api\",
-            \"explorerUrl\": \"https://holesky.explorer.ssv.network\",
-            \"insufficientBalanceUrl\": \"https://faucet.ssv.network\",
-            \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
-            \"tokenAddress\": \"0xad45A78180961079BFaeEe349704F411dfF947C6\",
-            \"setterContractAddress\": \"${{ secrets.PROD_HOLESKY_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
-            \"getterContractAddress\": \"${{ secrets.PROD_HOLESKY_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
-          },{
             \"networkId\": 560048,
             \"apiVersion\": \"v4\",
             \"apiNetwork\": \"hoodi\",  

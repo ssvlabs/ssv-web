@@ -19,15 +19,18 @@ import {
 import type { WriteContractErrorType } from "@wagmi/core";
 import type { WaitForTransactionReceiptErrorType } from "viem";
 
-type Fn = ExtractAbiFunction<typeof BAppABI, "fastWithdrawERC20">;
-const abiFunction = extractAbiFunction(BAppABI, "fastWithdrawERC20");
+type Fn = ExtractAbiFunction<typeof BAppABI, "updateObligationTimelockPeriod">;
+const abiFunction = extractAbiFunction(
+  BAppABI,
+  "updateObligationTimelockPeriod",
+);
 // type State = "idle" | "confirming" | "mining" | "mined" | "error";
 
-export const useFastWithdrawERC20 = () => {
+export const useUpdateObligationTimelockPeriod = () => {
   const { bAppContractAddress } = useSSVNetworkDetails();
 
   const wait = useWaitForTransactionReceipt<BAppEvent>([
-    "useFastWithdrawERC20",
+    "useUpdateObligationTimelockPeriod",
     bAppContractAddress,
   ]);
   const mutation = useWriteContract();
@@ -42,7 +45,7 @@ export const useFastWithdrawERC20 = () => {
         {
           abi: BAppABI,
           address: bAppContractAddress,
-          functionName: "fastWithdrawERC20",
+          functionName: "updateObligationTimelockPeriod",
           args: paramsToArray({ params, abiFunction }),
         },
         {

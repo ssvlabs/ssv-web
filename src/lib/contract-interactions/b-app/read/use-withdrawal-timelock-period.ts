@@ -16,23 +16,23 @@ import { getChainId } from "@wagmi/core";
 import { config } from "@/wagmi/config";
 import { queryClient } from "@/lib/react-query";
 
-export const getWITHDRAWAL_TIMELOCK_PERIODQueryOptions = () =>
+export const getWithdrawalTimelockPeriodQueryOptions = () =>
   readContractQueryOptions(config, {
     abi: BAppABI,
     chainId: getChainId(config),
     address: getSSVNetworkDetails().bAppContractAddress,
-    functionName: "WITHDRAWAL_TIMELOCK_PERIOD",
+    functionName: "withdrawalTimelockPeriod",
   });
 
 type QueryOptions = UseReadContractParameters<
   typeof BAppABI,
-  "WITHDRAWAL_TIMELOCK_PERIOD"
+  "withdrawalTimelockPeriod"
 >["query"];
 
-export const fetchWITHDRAWAL_TIMELOCK_PERIOD = () =>
-  queryClient.fetchQuery(getWITHDRAWAL_TIMELOCK_PERIODQueryOptions());
+export const fetchWithdrawalTimelockPeriod = () =>
+  queryClient.fetchQuery(getWithdrawalTimelockPeriodQueryOptions());
 
-export const useWITHDRAWAL_TIMELOCK_PERIOD = (
+export const useWithdrawalTimelockPeriod = (
   options: QueryOptions & { watch?: boolean } = { enabled: true },
 ) => {
   const { bAppContractAddress } = useSSVNetworkDetails();
@@ -42,7 +42,7 @@ export const useWITHDRAWAL_TIMELOCK_PERIOD = (
   return useReadContract({
     abi: BAppABI,
     address: bAppContractAddress,
-    functionName: "WITHDRAWAL_TIMELOCK_PERIOD",
+    functionName: "withdrawalTimelockPeriod",
 
     blockNumber: options.watch ? blockNumber.data : undefined,
     query: { ...options },

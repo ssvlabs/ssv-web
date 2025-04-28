@@ -299,12 +299,12 @@ export type BAppAsset = {
   token: Address;
   totalObligatedBalance: string;
   totalDepositsValue?: bigint;
-  totalDepositsPercentage?: string;
+  totalObligatedPercentage?: string;
   totalDepositsFiat?: string;
   depositedStrategies?: number;
   totalFiat?: string;
   totalTokens?: bigint;
-  deposits?: { bAppId: `0x${string}`; percentage: string }[];
+  obligations?: { bAppId: `0x${string}`; percentage: string }[];
   obligationsCount: number;
 };
 

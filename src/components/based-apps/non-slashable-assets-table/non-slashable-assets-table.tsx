@@ -63,7 +63,7 @@ export const NonSlashableAssetsTable: FCProps = ({
           <TableHead className="text-right w-[18%]">
             Delegated Accounts
           </TableHead>
-          <TableHead className="text-right w-[18%]">Delegated</TableHead>
+          <TableHead className="text-right w-[18%]">Total Delegated</TableHead>
           <TableHead className="text-right w-[18%]">
             Total Delegated Value
           </TableHead>

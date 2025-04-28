@@ -1,4 +1,4 @@
-export const HoleskyV4GetterABI = [
+export const TestnetV4GetterABI = [
   {
     inputs: [],
     stateMutability: "nonpayable",

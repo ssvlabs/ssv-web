@@ -4,64 +4,48 @@
 
 import type { UseReadContractParameters } from "wagmi";
 import { useReadContract, useBlockNumber } from "wagmi";
-import { isUndefined } from "lodash-es";
 
 import {
   useSSVNetworkDetails,
   getSSVNetworkDetails,
 } from "@/hooks/use-ssv-network-details";
 import { BAppABI } from "@/lib/abi/b-app/b-app";
-import type { AbiInputsToParams } from "@/lib/contract-interactions/utils";
-import {
-  paramsToArray,
-  extractAbiFunction,
-} from "@/lib/contract-interactions/utils";
-import type { ExtractAbiFunction } from "abitype";
+
 import { readContractQueryOptions } from "wagmi/query";
 import { getChainId } from "@wagmi/core";
 import { config } from "@/wagmi/config";
 import { queryClient } from "@/lib/react-query";
 
-type Fn = ExtractAbiFunction<typeof BAppABI, "usedTokens">;
-const abiFunction = extractAbiFunction(BAppABI, "usedTokens");
-
-export const getUsedTokensQueryOptions = (
-  params: AbiInputsToParams<Fn["inputs"]>,
-) =>
+export const getMaxSharesQueryOptions = () =>
   readContractQueryOptions(config, {
     abi: BAppABI,
     chainId: getChainId(config),
     address: getSSVNetworkDetails().bAppContractAddress,
-    functionName: "usedTokens",
-    args: paramsToArray({ params, abiFunction }),
+    functionName: "maxShares",
   });
 
 type QueryOptions = UseReadContractParameters<
   typeof BAppABI,
-  "usedTokens"
+  "maxShares"
 >["query"];
 
-export const fetchUsedTokens = (params: AbiInputsToParams<Fn["inputs"]>) =>
-  queryClient.fetchQuery(getUsedTokensQueryOptions(params));
+export const fetchMaxShares = () =>
+  queryClient.fetchQuery(getMaxSharesQueryOptions());
 
-export const useUsedTokens = (
-  params: AbiInputsToParams<Fn["inputs"]>,
+export const useMaxShares = (
   options: QueryOptions & { watch?: boolean } = { enabled: true },
 ) => {
   const { bAppContractAddress } = useSSVNetworkDetails();
-  const args = paramsToArray({ params, abiFunction });
+
   const blockNumber = useBlockNumber({ watch: options.watch });
 
   return useReadContract({
     abi: BAppABI,
     address: bAppContractAddress,
-    functionName: "usedTokens",
-    args,
+    functionName: "maxShares",
+
     blockNumber: options.watch ? blockNumber.data : undefined,
-    query: {
-      ...options,
-      enabled: options?.enabled && args.every((arg) => !isUndefined(arg)),
-    },
+    query: { ...options },
   });
 };
 

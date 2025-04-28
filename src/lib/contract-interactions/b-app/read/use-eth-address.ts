@@ -16,23 +16,23 @@ import { getChainId } from "@wagmi/core";
 import { config } from "@/wagmi/config";
 import { queryClient } from "@/lib/react-query";
 
-export const getETH_ADDRESSQueryOptions = () =>
+export const getEthAddressQueryOptions = () =>
   readContractQueryOptions(config, {
     abi: BAppABI,
     chainId: getChainId(config),
     address: getSSVNetworkDetails().bAppContractAddress,
-    functionName: "ETH_ADDRESS",
+    functionName: "ethAddress",
   });
 
 type QueryOptions = UseReadContractParameters<
   typeof BAppABI,
-  "ETH_ADDRESS"
+  "ethAddress"
 >["query"];
 
-export const fetchETH_ADDRESS = () =>
-  queryClient.fetchQuery(getETH_ADDRESSQueryOptions());
+export const fetchEthAddress = () =>
+  queryClient.fetchQuery(getEthAddressQueryOptions());
 
-export const useETH_ADDRESS = (
+export const useEthAddress = (
   options: QueryOptions & { watch?: boolean } = { enabled: true },
 ) => {
   const { bAppContractAddress } = useSSVNetworkDetails();
@@ -42,7 +42,7 @@ export const useETH_ADDRESS = (
   return useReadContract({
     abi: BAppABI,
     address: bAppContractAddress,
-    functionName: "ETH_ADDRESS",
+    functionName: "ethAddress",
 
     blockNumber: options.watch ? blockNumber.data : undefined,
     query: { ...options },

@@ -75,6 +75,10 @@ export const StrategyTableRow: FCProps = ({
         >
           <img
             className={cn("size-7 flex flex-wrap gap-1 rounded-md", className)}
+            onError={(e) => {
+              e.currentTarget.src =
+                "/images/operator_default_background/light.svg";
+            }}
             src={
               strategy.ownerAddressMetadata?.logo ||
               "/images/operator_default_background/light.svg"

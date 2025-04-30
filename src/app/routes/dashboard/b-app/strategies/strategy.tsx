@@ -30,7 +30,7 @@ import { useAssetsDelegationModal } from "@/signals/modal";
 import DescriptionCard from "@/components/ui/description-card.tsx";
 import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
 import { getStrategyName } from "@/lib/utils/strategy";
-import { formatGwei, isAddress } from "viem";
+import { isAddress } from "viem";
 import { useGetAsset } from "@/hooks/b-app/use-get-asset.tsx";
 import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 import { useDelegateContext } from "@/components/context/delegate-context.tsx";
@@ -59,11 +59,11 @@ const Strategy = () => {
         name: account.name,
         logo: account.logo,
         percentage: receiver?.percentage,
-        delegatedValue: (
+        delegatedValue: `${
           (convertToPercentage(receiver?.percentage || 0) *
-            (Number(formatGwei(account?.effectiveBalance || 0n)) || 0)) /
+            (Number(formatSSV(account?.effectiveBalance || 0n)) || 0)) /
           100
-        ).toFixed(4),
+        }`,
         delegateAddress: strategy.ownerAddress,
       });
     }

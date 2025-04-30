@@ -126,6 +126,10 @@ const Delegate = ({
                 <img
                   className="w-7 rounded-[8px] border-gray-400 border"
                   src={logo || "/images/operator_default_background/light.svg"}
+                  onError={(e) => {
+                    e.currentTarget.src =
+                      "/images/operator_default_background/light.svg";
+                  }}
                 />
                 <div>
                   <Text variant="body-3-medium">

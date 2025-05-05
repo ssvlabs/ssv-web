@@ -103,7 +103,7 @@ const Strategy = () => {
     },
     {
       label: "Depositors",
-      value: strategy.totalDeposited,
+      value: strategy.totalDepositors,
       tooltipText: "Total number of unique depositors to this strategy",
     },
     {

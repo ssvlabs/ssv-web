@@ -190,6 +190,10 @@ export const NonSlashableAssetsTableRow: FCProps = ({
                         delegation.receiver.logo ||
                         "/images/operator_default_background/light.svg"
                       }
+                      onError={(e) => {
+                        e.currentTarget.src =
+                          "/images/operator_default_background/light.svg";
+                      }}
                     />
                     {delegation.receiver.name ||
                       shortenAddress(delegation.receiver.id as Address)}

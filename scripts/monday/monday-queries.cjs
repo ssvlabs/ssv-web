@@ -9,11 +9,12 @@
  * Generates a GraphQL mutation to update a ticket status to "Ready for QA"
  * @param {string} itemId - The Monday item ID
  * @param {string} boardId - The Monday board ID
+ * @param {string} columnId - The Monday column ID
  * @returns {string} - GraphQL mutation
  */
-function createUpdateStatusMutation(itemId, boardId) {
+function createUpdateStatusMutation(itemId, boardId, columnId) {
   return `mutation {
-  change_simple_column_value (item_id:${itemId}, board_id:${boardId}, column_id:"bug_status", value: "Ready for QA") {
+  change_simple_column_value (item_id:${itemId}, board_id:${boardId}, column_id:"${columnId}", value: "Ready for QA") {
     id
   }
 }`;
@@ -29,17 +30,17 @@ function createStageDeploymentComment(itemId, commits) {
   // Create commit links using Monday-compatible HTML formatting
   const commitLinks = commits
     .map((commit) => {
-      console.log("commit:", JSON.stringify(commit, null, 2));
       return `<li><a href="${commit.html_url}">${commit.commit.message.split("#")[0].trim()}</a> <span style="font-size:12px; color:gray"> by ${commit.commit.author.name}</span></li>`;
     })
     .join("");
 
   const bodyContent = `
   <p style="font-size:18px">
-    <strong>🪸 Merged to Stage Environment</strong>
+    <strong>⤴️ Merged to Stage Environment</strong>
   </p>
-  <p>The following commits have been successfully merged to the stage branch</p>
-  <ul>${commitLinks}</ul>`
+  <ul>${commitLinks}</ul>
+  <p style="font-size:12px; margin-top:10px; color:gray">Will be live in 3 minutes on <a href="https://app.stage.ssv.network/">app.stage.ssv.network</a></p>
+  `
     .replace(/>\s+</g, "><")
     .trim();
 
@@ -66,6 +67,11 @@ function getFindTicketsQuery(ticketIds) {
     name
     board {
       id
+      columns {
+        id
+        title
+        type
+      }
     }
   }
 }`;

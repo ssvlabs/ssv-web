@@ -1,4 +1,4 @@
-import { HoleskyV4SetterABI } from "@/lib/abi/holesky/v4/setter";
+import { TestnetV4SetterABI } from "@/lib/abi/testnet/v4/setter";
 import { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
 import { BAppABI } from "@/lib/abi/b-app/b-app";
 
@@ -31,7 +31,7 @@ import { tryCatch } from "@/lib/utils/tryCatch";
 
 export type MainnetEvent = DecodeEventLogReturnType<typeof MainnetV4SetterABI>;
 export type BAppEvent = DecodeEventLogReturnType<typeof BAppABI>;
-export type TestnetEvent = DecodeEventLogReturnType<typeof HoleskyV4SetterABI>;
+export type TestnetEvent = DecodeEventLogReturnType<typeof TestnetV4SetterABI>;
 
 export type AllEvents = MainnetEvent | TestnetEvent | BAppEvent;
 
@@ -171,7 +171,7 @@ export const useWaitForTransactionReceipt_Testnet = () => {
           try {
             acc.push(
               decodeEventLog({
-                abi: HoleskyV4SetterABI,
+                abi: TestnetV4SetterABI,
                 data: log.data,
                 topics: log.topics,
               }),

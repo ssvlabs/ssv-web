@@ -76,7 +76,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <a
-                  href="https://docs.ssv.network/learn/stakers/validators/update-operators"
+                  href="https://docs.ssv.network/stakers/validators/update-operators"
                   target="_blank"
                 >
                   <DropdownMenuItem>

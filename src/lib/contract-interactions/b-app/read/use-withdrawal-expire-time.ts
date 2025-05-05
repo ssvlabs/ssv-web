@@ -16,23 +16,23 @@ import { getChainId } from "@wagmi/core";
 import { config } from "@/wagmi/config";
 import { queryClient } from "@/lib/react-query";
 
-export const getWITHDRAWAL_EXPIRE_TIMEQueryOptions = () =>
+export const getWithdrawalExpireTimeQueryOptions = () =>
   readContractQueryOptions(config, {
     abi: BAppABI,
     chainId: getChainId(config),
     address: getSSVNetworkDetails().bAppContractAddress,
-    functionName: "WITHDRAWAL_EXPIRE_TIME",
+    functionName: "withdrawalExpireTime",
   });
 
 type QueryOptions = UseReadContractParameters<
   typeof BAppABI,
-  "WITHDRAWAL_EXPIRE_TIME"
+  "withdrawalExpireTime"
 >["query"];
 
-export const fetchWITHDRAWAL_EXPIRE_TIME = () =>
-  queryClient.fetchQuery(getWITHDRAWAL_EXPIRE_TIMEQueryOptions());
+export const fetchWithdrawalExpireTime = () =>
+  queryClient.fetchQuery(getWithdrawalExpireTimeQueryOptions());
 
-export const useWITHDRAWAL_EXPIRE_TIME = (
+export const useWithdrawalExpireTime = (
   options: QueryOptions & { watch?: boolean } = { enabled: true },
 ) => {
   const { bAppContractAddress } = useSSVNetworkDetails();
@@ -42,7 +42,7 @@ export const useWITHDRAWAL_EXPIRE_TIME = (
   return useReadContract({
     abi: BAppABI,
     address: bAppContractAddress,
-    functionName: "WITHDRAWAL_EXPIRE_TIME",
+    functionName: "withdrawalExpireTime",
 
     blockNumber: options.watch ? blockNumber.data : undefined,
     query: { ...options },

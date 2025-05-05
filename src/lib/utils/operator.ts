@@ -179,7 +179,7 @@ export const createDefaultOperator = (
   status: "No validators",
   validators_count: 0,
   version: "v4",
-  network: "holesky",
+  network: "hoodi",
   whitelist_addresses: [],
   updated_at: 0,
   ...operator,

@@ -16,23 +16,23 @@ import { getChainId } from "@wagmi/core";
 import { config } from "@/wagmi/config";
 import { queryClient } from "@/lib/react-query";
 
-export const getMAX_PERCENTAGEQueryOptions = () =>
+export const getMaxPercentageQueryOptions = () =>
   readContractQueryOptions(config, {
     abi: BAppABI,
     chainId: getChainId(config),
     address: getSSVNetworkDetails().bAppContractAddress,
-    functionName: "MAX_PERCENTAGE",
+    functionName: "maxPercentage",
   });
 
 type QueryOptions = UseReadContractParameters<
   typeof BAppABI,
-  "MAX_PERCENTAGE"
+  "maxPercentage"
 >["query"];
 
-export const fetchMAX_PERCENTAGE = () =>
-  queryClient.fetchQuery(getMAX_PERCENTAGEQueryOptions());
+export const fetchMaxPercentage = () =>
+  queryClient.fetchQuery(getMaxPercentageQueryOptions());
 
-export const useMAX_PERCENTAGE = (
+export const useMaxPercentage = (
   options: QueryOptions & { watch?: boolean } = { enabled: true },
 ) => {
   const { bAppContractAddress } = useSSVNetworkDetails();
@@ -42,7 +42,7 @@ export const useMAX_PERCENTAGE = (
   return useReadContract({
     abi: BAppABI,
     address: bAppContractAddress,
-    functionName: "MAX_PERCENTAGE",
+    functionName: "maxPercentage",
 
     blockNumber: options.watch ? blockNumber.data : undefined,
     query: { ...options },

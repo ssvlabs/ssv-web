@@ -54,7 +54,7 @@ export const links = {
   REACTIVATION_LINK:
     "https://docs.ssv.network/learn/stakers/clusters/reactivation",
   UPDATE_OPERATORS_LINK:
-    "https://docs.ssv.network/learn/stakers/validators/update-operators",
+    "https://docs.ssv.network/stakers/validators/update-operators",
   MORE_ABOUT_UPDATE_FEES:
     "https://docs.ssv.network/learn/operators/update-fee#_nn1qsdauoghf",
   MORE_ON_FEES:

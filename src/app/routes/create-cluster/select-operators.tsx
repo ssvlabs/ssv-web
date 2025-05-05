@@ -194,7 +194,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
                   <Button
                     as="a"
                     variant="link"
-                    href="https://docs.ssv.network/learn/operators/verified-operators"
+                    href="https://docs.ssv.network/operators/operator-onboarding/verified-operators"
                   >
                     not verified
                   </Button>

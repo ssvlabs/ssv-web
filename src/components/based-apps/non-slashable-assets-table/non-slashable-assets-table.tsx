@@ -48,7 +48,7 @@ export const NonSlashableAssetsTable: FCProps = ({
         {...props}
       >
         <TableHeader>
-          <TableHead className="w-[26%]">Asset</TableHead>
+          <TableHead className="w-[26%]">Delegatable Asset</TableHead>
           <TableHead className="w-[16%]">
             <Tooltip
               asChild
@@ -63,7 +63,7 @@ export const NonSlashableAssetsTable: FCProps = ({
           <TableHead className="text-right w-[18%]">
             Delegated Accounts
           </TableHead>
-          <TableHead className="text-right w-[18%]">Delegated</TableHead>
+          <TableHead className="text-right w-[18%]">Total Delegated</TableHead>
           <TableHead className="text-right w-[18%]">
             Total Delegated Value
           </TableHead>

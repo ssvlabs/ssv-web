@@ -1,10 +1,10 @@
 import { Text } from "@/components/ui/text.tsx";
 import { Container } from "@/components/ui/container.tsx";
 import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
-import { currencyFormatter } from "@/lib/utils/number.ts";
+import { currencyFormatter, formatSSV } from "@/lib/utils/number.ts";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button.tsx";
-import { formatUnits, isAddress } from "viem";
+import { isAddress } from "viem";
 import { shortenAddress } from "@/lib/utils/strings.ts";
 import type {
   AccountMetadata,
@@ -31,7 +31,7 @@ const MyStrategies = () => {
       label: "Delegated Validator Balance",
       value: (
         <div className="flex gap-2">
-          {formatUnits(myStrategies.totalDelegatedValue || 0n, 18)}
+          {formatSSV(myStrategies.totalDelegatedValue || 0n)}
           <img
             className={"h-[24px] w-[15px]"}
             src={`/images/balance-validator/balance-validator.svg`}

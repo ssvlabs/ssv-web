@@ -39,7 +39,7 @@ const BAppSlashableAssetsTable: FCProps = ({
         {...props}
       >
         <TableHeader>
-          <TableHead className="w-[27%]">Asset</TableHead>
+          <TableHead className="w-[27%]">Depositable Asset</TableHead>
           <TableHead className="text-right w-[18%]">
             Deposited Strategies
           </TableHead>

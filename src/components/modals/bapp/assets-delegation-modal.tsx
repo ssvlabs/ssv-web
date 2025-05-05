@@ -24,6 +24,7 @@ import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Alert } from "@/components/ui/alert.tsx";
 
 const formSchema = z.object({
   amount: z.bigint().min(BigInt(1), "Amount must be greater than 0"),
@@ -133,7 +134,13 @@ export const AssetsDelegationModal = () => {
                 </Text>
               </div>
             </div>
-
+            {!(strategy.depositsPerToken || []).some(
+              ({ token }) => token.toString() === meta.asset?.toLowerCase(),
+            ) && (
+              <Alert variant="warning">
+                This Strategy is not currently utilizing this asset
+              </Alert>
+            )}
             <FormField
               control={form.control}
               name="amount"

@@ -16,23 +16,23 @@ import { getChainId } from "@wagmi/core";
 import { config } from "@/wagmi/config";
 import { queryClient } from "@/lib/react-query";
 
-export const getFEE_EXPIRE_TIMEQueryOptions = () =>
+export const getFeeExpireTimeQueryOptions = () =>
   readContractQueryOptions(config, {
     abi: BAppABI,
     chainId: getChainId(config),
     address: getSSVNetworkDetails().bAppContractAddress,
-    functionName: "FEE_EXPIRE_TIME",
+    functionName: "feeExpireTime",
   });
 
 type QueryOptions = UseReadContractParameters<
   typeof BAppABI,
-  "FEE_EXPIRE_TIME"
+  "feeExpireTime"
 >["query"];
 
-export const fetchFEE_EXPIRE_TIME = () =>
-  queryClient.fetchQuery(getFEE_EXPIRE_TIMEQueryOptions());
+export const fetchFeeExpireTime = () =>
+  queryClient.fetchQuery(getFeeExpireTimeQueryOptions());
 
-export const useFEE_EXPIRE_TIME = (
+export const useFeeExpireTime = (
   options: QueryOptions & { watch?: boolean } = { enabled: true },
 ) => {
   const { bAppContractAddress } = useSSVNetworkDetails();
@@ -42,7 +42,7 @@ export const useFEE_EXPIRE_TIME = (
   return useReadContract({
     abi: BAppABI,
     address: bAppContractAddress,
-    functionName: "FEE_EXPIRE_TIME",
+    functionName: "feeExpireTime",
 
     blockNumber: options.watch ? blockNumber.data : undefined,
     query: { ...options },

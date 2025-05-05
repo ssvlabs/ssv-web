@@ -10,7 +10,7 @@
 
   const mainnetAbi = require("../src/lib/abi/mainnet/v4/getter.json");
 
-  const holeskyAbi = require("../src/lib/abi/holesky/v4/getter.json").filter(
+  const testnetAbi = require("../src/lib/abi/testnet/v4/getter.json").filter(
     (item) => {
       const mainnetItem = mainnetAbi.find((f) => f?.name === item?.name);
       return !isEqual(mainnetItem, item);
@@ -31,7 +31,7 @@
     fs.unlinkSync(path.join(folder, file));
   });
 
-  const readFns = holeskyAbi.filter(
+  const readFns = testnetAbi.filter(
     (item) =>
       item.type === "function" &&
       (item.stateMutability == "view" || item.stateMutability == "pure"),
@@ -50,9 +50,9 @@
     const filePath = path.join(folder, `${fileName}`);
     const hasInputs = Boolean(item.inputs?.length);
 
-    const networkName = isTestnet ? "holesky" : "mainnet";
+    const networkName = isTestnet ? "testnet" : "mainnet";
 
-    const abiName = isTestnet ? "HoleskyV4GetterABI" : "MainnetV4GetterABI";
+    const abiName = isTestnet ? "TestnetV4GetterABI" : "MainnetV4GetterABI";
 
     const content = `
 // ------------------------------------------------

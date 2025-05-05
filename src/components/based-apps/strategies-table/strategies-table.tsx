@@ -56,7 +56,8 @@ export const StrategiesTable: FCProps = ({
           <TableHead>Supported Assets</TableHead>
           <TableHead>Fee</TableHead>
           <TableHead>Depositors</TableHead>
-          <TableHead>Deposited Value</TableHead>
+          <TableHead>Delegators</TableHead>
+          <TableHead>Total Asset Value</TableHead>
         </TableHeader>
         <TableBody>
           {strategies?.map((strategy) => {
@@ -72,7 +73,9 @@ export const StrategiesTable: FCProps = ({
           })}
         </TableBody>
       </Table>
-      <div className="bg-gray-50 w-full">{isLoading && <Loading />}</div>
+      <div className="bg-gray-50 w-full">
+        {isLoading && !strategies.length && <Loading />}
+      </div>
       {pagination && pagination.total > 10 ? (
         <>
           <Divider />

@@ -16,23 +16,23 @@ import { getChainId } from "@wagmi/core";
 import { config } from "@/wagmi/config";
 import { queryClient } from "@/lib/react-query";
 
-export const getOBLIGATION_TIMELOCK_PERIODQueryOptions = () =>
+export const getObligationTimelockPeriodQueryOptions = () =>
   readContractQueryOptions(config, {
     abi: BAppABI,
     chainId: getChainId(config),
     address: getSSVNetworkDetails().bAppContractAddress,
-    functionName: "OBLIGATION_TIMELOCK_PERIOD",
+    functionName: "obligationTimelockPeriod",
   });
 
 type QueryOptions = UseReadContractParameters<
   typeof BAppABI,
-  "OBLIGATION_TIMELOCK_PERIOD"
+  "obligationTimelockPeriod"
 >["query"];
 
-export const fetchOBLIGATION_TIMELOCK_PERIOD = () =>
-  queryClient.fetchQuery(getOBLIGATION_TIMELOCK_PERIODQueryOptions());
+export const fetchObligationTimelockPeriod = () =>
+  queryClient.fetchQuery(getObligationTimelockPeriodQueryOptions());
 
-export const useOBLIGATION_TIMELOCK_PERIOD = (
+export const useObligationTimelockPeriod = (
   options: QueryOptions & { watch?: boolean } = { enabled: true },
 ) => {
   const { bAppContractAddress } = useSSVNetworkDetails();
@@ -42,7 +42,7 @@ export const useOBLIGATION_TIMELOCK_PERIOD = (
   return useReadContract({
     abi: BAppABI,
     address: bAppContractAddress,
-    functionName: "OBLIGATION_TIMELOCK_PERIOD",
+    functionName: "obligationTimelockPeriod",
 
     blockNumber: options.watch ? blockNumber.data : undefined,
     query: { ...options },

@@ -91,7 +91,7 @@ const Delegate = ({
     });
     await contractInteraction.write(
       {
-        account: delegateAddress as `0x${string}`,
+        receiver: delegateAddress as `0x${string}`,
         percentage: cleanedNumber,
       },
       options,
@@ -126,6 +126,10 @@ const Delegate = ({
                 <img
                   className="w-7 rounded-[8px] border-gray-400 border"
                   src={logo || "/images/operator_default_background/light.svg"}
+                  onError={(e) => {
+                    e.currentTarget.src =
+                      "/images/operator_default_background/light.svg";
+                  }}
                 />
                 <div>
                   <Text variant="body-3-medium">
@@ -164,7 +168,7 @@ const Delegate = ({
               </Text>
               <div className="flex items-center justify-between px-6 py-4 rounded-[12px] bg-gray-100">
                 <Text variant="body-3-medium">
-                  {formatSSV(effectiveBalance || 0n, 9)} ETH
+                  {formatSSV(effectiveBalance || 0n)} ETH
                 </Text>
                 <div className="flex gap-2">
                   <img

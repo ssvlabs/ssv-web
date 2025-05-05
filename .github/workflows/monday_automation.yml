@@ -1,0 +1,27 @@
+# .github/workflows/monday_automation.yml
+name: Monday Automation on Stage Merge
+
+on:
+  pull_request_target:
+    types:
+      - closed
+    branches:
+      - stage
+
+jobs:
+  run_monday_automation:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 # Need to checkout the code to access the script
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.12.2 # Use the same version as in build_deploy.yml
+
+      - name: Run Monday automation
+        run: node scripts/monday/index.cjs
+        env:
+          MONDAY_API_KEY: ${{ secrets.MONDAY_API_KEY }}
+          COMMITS_URL: ${{ github.event.pull_request.commits_url }}

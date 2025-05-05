@@ -1,299 +1,100 @@
 export const BAppABI = [
+  { inputs: [], stateMutability: "nonpayable", type: "constructor" },
   {
-    inputs: [],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "target",
-        type: "address",
-      },
-    ],
+    inputs: [{ internalType: "address", name: "target", type: "address" }],
     name: "AddressEmptyCode",
     type: "error",
   },
-  {
-    inputs: [],
-    name: "BAppAlreadyOptedIn",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "BAppAlreadyRegistered",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "BAppNotOptedIn",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DelegationAlreadyExists",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DelegationDoesNotExist",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "DelegationExistsWithSameValue",
-    type: "error",
-  },
+  { inputs: [], name: "BAppAlreadyOptedIn", type: "error" },
+  { inputs: [], name: "BAppAlreadyRegistered", type: "error" },
+  { inputs: [], name: "BAppDoesNotSupportInterface", type: "error" },
+  { inputs: [], name: "BAppNotOptedIn", type: "error" },
+  { inputs: [], name: "BAppNotRegistered", type: "error" },
+  { inputs: [], name: "BAppOptInFailed", type: "error" },
+  { inputs: [], name: "BAppSlashingFailed", type: "error" },
+  { inputs: [], name: "DelegationAlreadyExists", type: "error" },
+  { inputs: [], name: "DelegationDoesNotExist", type: "error" },
+  { inputs: [], name: "DelegationExistsWithSameValue", type: "error" },
   {
     inputs: [
-      {
-        internalType: "address",
-        name: "implementation",
-        type: "address",
-      },
+      { internalType: "address", name: "implementation", type: "address" },
     ],
     name: "ERC1967InvalidImplementation",
     type: "error",
   },
-  {
-    inputs: [],
-    name: "ERC1967NonPayable",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "EmptyTokenList",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "ExceedingPercentageUpdate",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "FailedCall",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "FeeAlreadySet",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InsufficientBalance",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InvalidAmount",
-    type: "error",
-  },
+  { inputs: [], name: "ERC1967NonPayable", type: "error" },
+  { inputs: [], name: "ExceedingMaxShares", type: "error" },
+  { inputs: [], name: "ExceedingPercentageUpdate", type: "error" },
+  { inputs: [], name: "FailedCall", type: "error" },
+  { inputs: [], name: "FeeAlreadySet", type: "error" },
+  { inputs: [], name: "InsufficientBalance", type: "error" },
+  { inputs: [], name: "InsufficientLiquidity", type: "error" },
+  { inputs: [], name: "InvalidAccountGeneration", type: "error" },
+  { inputs: [], name: "InvalidAmount", type: "error" },
   {
     inputs: [
-      {
-        internalType: "address",
-        name: "caller",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "expectedOwner",
-        type: "address",
-      },
+      { internalType: "address", name: "caller", type: "address" },
+      { internalType: "address", name: "expectedOwner", type: "address" },
     ],
     name: "InvalidBAppOwner",
     type: "error",
   },
-  {
-    inputs: [],
-    name: "InvalidInitialization",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InvalidMaxFeeIncrement",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InvalidPercentage",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InvalidPercentageIncrement",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InvalidStrategyFee",
-    type: "error",
-  },
+  { inputs: [], name: "InvalidInitialization", type: "error" },
+  { inputs: [], name: "InvalidMaxFeeIncrement", type: "error" },
+  { inputs: [], name: "InvalidPercentageIncrement", type: "error" },
+  { inputs: [], name: "InvalidStrategyFee", type: "error" },
   {
     inputs: [
-      {
-        internalType: "address",
-        name: "caller",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "expectedOwner",
-        type: "address",
-      },
+      { internalType: "address", name: "caller", type: "address" },
+      { internalType: "address", name: "expectedOwner", type: "address" },
     ],
     name: "InvalidStrategyOwner",
     type: "error",
   },
+  { inputs: [], name: "InvalidToken", type: "error" },
+  { inputs: [], name: "NoPendingFeeUpdate", type: "error" },
+  { inputs: [], name: "NoPendingObligationUpdate", type: "error" },
+  { inputs: [], name: "NoPendingWithdrawal", type: "error" },
+  { inputs: [], name: "NotInitializing", type: "error" },
+  { inputs: [], name: "ObligationAlreadySet", type: "error" },
+  { inputs: [], name: "ObligationHasNotBeenCreated", type: "error" },
   {
-    inputs: [],
-    name: "InvalidToken",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "LengthsNotMatching",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "NoPendingFeeUpdate",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "NoPendingObligationUpdate",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "NoPendingWithdrawal",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "NoPendingWithdrawalETH",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "NotInitializing",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "ObligationAlreadySet",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "ObligationHasNotBeenCreated",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-    ],
+    inputs: [{ internalType: "address", name: "owner", type: "address" }],
     name: "OwnableInvalidOwner",
     type: "error",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-    ],
+    inputs: [{ internalType: "address", name: "account", type: "address" }],
     name: "OwnableUnauthorizedAccount",
     type: "error",
   },
+  { inputs: [], name: "RequestTimeExpired", type: "error" },
+  { inputs: [], name: "SlashingDisabled", type: "error" },
   {
-    inputs: [],
-    name: "ReentrancyGuardReentrantCall",
+    inputs: [{ internalType: "uint8", name: "moduleId", type: "uint8" }],
+    name: "TargetModuleDoesNotExist",
     type: "error",
   },
+  { inputs: [], name: "TimelockNotElapsed", type: "error" },
   {
-    inputs: [],
-    name: "RequestTimeExpired",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
-    ],
-    name: "SafeERC20FailedOperation",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "SharedRiskLevelAlreadySet",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "TimelockNotElapsed",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
-    ],
+    inputs: [{ internalType: "address", name: "token", type: "address" }],
     name: "TokenAlreadyAddedToBApp",
     type: "error",
   },
   {
-    inputs: [],
-    name: "TokenIsUsedByTheBApp",
+    inputs: [{ internalType: "address", name: "token", type: "address" }],
+    name: "TokenNotSupportedByBApp",
     type: "error",
   },
+  { inputs: [], name: "UUPSUnauthorizedCallContext", type: "error" },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
-    ],
-    name: "TokenNoTSupportedByBApp",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "UUPSUnauthorizedCallContext",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "slot",
-        type: "bytes32",
-      },
-    ],
+    inputs: [{ internalType: "bytes32", name: "slot", type: "bytes32" }],
     name: "UUPSUnsupportedProxiableUUID",
     type: "error",
   },
-  {
-    inputs: [],
-    name: "ZeroAddressNotAllowed",
-    type: "error",
-  },
+  { inputs: [], name: "WithdrawTransferFailed", type: "error" },
+  { inputs: [], name: "WithdrawalsDisabled", type: "error" },
+  { inputs: [], name: "ZeroAddressNotAllowed", type: "error" },
   {
     anonymous: false,
     inputs: [
@@ -319,7 +120,7 @@ export const BAppABI = [
       {
         indexed: true,
         internalType: "address",
-        name: "bAppAddress",
+        name: "bApp",
         type: "address",
       },
       {
@@ -375,13 +176,7 @@ export const BAppABI = [
       {
         indexed: true,
         internalType: "address",
-        name: "bAppAddress",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "owner",
+        name: "bApp",
         type: "address",
       },
       {
@@ -412,45 +207,22 @@ export const BAppABI = [
       {
         indexed: true,
         internalType: "address",
-        name: "bAppAddress",
+        name: "bApp",
         type: "address",
       },
       {
+        components: [
+          { internalType: "address", name: "token", type: "address" },
+          {
+            internalType: "uint32",
+            name: "sharedRiskLevel",
+            type: "uint32",
+          },
+        ],
         indexed: false,
-        internalType: "address[]",
-        name: "tokens",
-        type: "address[]",
-      },
-      {
-        indexed: false,
-        internalType: "uint32[]",
-        name: "sharedRiskLevels",
-        type: "uint32[]",
-      },
-    ],
-    name: "BAppTokensCreated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "bAppAddress",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "address[]",
-        name: "tokens",
-        type: "address[]",
-      },
-      {
-        indexed: false,
-        internalType: "uint32[]",
-        name: "sharedRiskLevels",
-        type: "uint32[]",
+        internalType: "struct ICore.TokenConfig[]",
+        name: "tokenConfigs",
+        type: "tuple[]",
       },
     ],
     name: "BAppTokensUpdated",
@@ -530,6 +302,45 @@ export const BAppABI = [
     inputs: [
       {
         indexed: false,
+        internalType: "uint32",
+        name: "disabledFeatures",
+        type: "uint32",
+      },
+    ],
+    name: "DisabledFeaturesUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint32",
+        name: "feeExpireTime",
+        type: "uint32",
+      },
+    ],
+    name: "FeeExpireTimeUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint32",
+        name: "feeTimelockPeriod",
+        type: "uint32",
+      },
+    ],
+    name: "FeeTimelockPeriodUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: "uint64",
         name: "version",
         type: "uint64",
@@ -549,6 +360,25 @@ export const BAppABI = [
       },
     ],
     name: "MaxFeeIncrementSet",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "enum SSVCoreModules",
+        name: "moduleId",
+        type: "uint8",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "moduleAddress",
+        type: "address",
+      },
+    ],
+    name: "ModuleUpdated",
     type: "event",
   },
   {
@@ -580,6 +410,32 @@ export const BAppABI = [
       },
     ],
     name: "ObligationCreated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint32",
+        name: "obligationExpireTime",
+        type: "uint32",
+      },
+    ],
+    name: "ObligationExpireTimeUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint32",
+        name: "obligationTimelockPeriod",
+        type: "uint32",
+      },
+    ],
+    name: "ObligationTimelockPeriodUpdated",
     type: "event",
   },
   {
@@ -640,12 +496,6 @@ export const BAppABI = [
         name: "percentage",
         type: "uint32",
       },
-      {
-        indexed: false,
-        internalType: "bool",
-        name: "isFast",
-        type: "bool",
-      },
     ],
     name: "ObligationUpdated",
     type: "event",
@@ -666,7 +516,45 @@ export const BAppABI = [
         type: "address",
       },
     ],
+    name: "OwnershipTransferStarted",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "previousOwner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
     name: "OwnershipTransferred",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "SlashingFundWithdrawn",
     type: "event",
   },
   {
@@ -752,12 +640,6 @@ export const BAppABI = [
         name: "proposedFee",
         type: "uint32",
       },
-      {
-        indexed: false,
-        internalType: "uint32",
-        name: "fee",
-        type: "uint32",
-      },
     ],
     name: "StrategyFeeUpdateProposed",
     type: "event",
@@ -780,17 +662,43 @@ export const BAppABI = [
       {
         indexed: false,
         internalType: "uint32",
-        name: "fee",
+        name: "newFee",
         type: "uint32",
       },
       {
         indexed: false,
-        internalType: "uint32",
-        name: "oldFee",
-        type: "uint32",
+        internalType: "bool",
+        name: "isFast",
+        type: "bool",
       },
     ],
     name: "StrategyFeeUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint32",
+        name: "maxFeeIncrement",
+        type: "uint32",
+      },
+    ],
+    name: "StrategyMaxFeeIncrementUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "maxShares",
+        type: "uint256",
+      },
+    ],
+    name: "StrategyMaxSharesUpdated",
     type: "event",
   },
   {
@@ -810,6 +718,43 @@ export const BAppABI = [
       },
     ],
     name: "StrategyMetadataURIUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint32",
+        name: "strategyId",
+        type: "uint32",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "bApp",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint32",
+        name: "percentage",
+        type: "uint32",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "receiver",
+        type: "address",
+      },
+    ],
+    name: "StrategySlashed",
     type: "event",
   },
   {
@@ -884,6 +829,19 @@ export const BAppABI = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "uint32",
+        name: "tokenUpdateTimelockPeriod",
+        type: "uint32",
+      },
+    ],
+    name: "TokenUpdateTimelockPeriodUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "implementation",
@@ -894,234 +852,75 @@ export const BAppABI = [
     type: "event",
   },
   {
-    inputs: [],
-    name: "ETH_ADDRESS",
-    outputs: [
+    anonymous: false,
+    inputs: [
       {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "FEE_EXPIRE_TIME",
-    outputs: [
-      {
+        indexed: false,
         internalType: "uint32",
-        name: "",
+        name: "withdrawalExpireTime",
         type: "uint32",
       },
     ],
-    stateMutability: "view",
-    type: "function",
+    name: "WithdrawalExpireTimeUpdated",
+    type: "event",
   },
   {
-    inputs: [],
-    name: "FEE_TIMELOCK_PERIOD",
-    outputs: [
+    anonymous: false,
+    inputs: [
       {
+        indexed: false,
         internalType: "uint32",
-        name: "",
+        name: "withdrawalTimelockPeriod",
         type: "uint32",
       },
     ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "MAX_PERCENTAGE",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "",
-        type: "uint32",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "OBLIGATION_EXPIRE_TIME",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "",
-        type: "uint32",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "OBLIGATION_TIMELOCK_PERIOD",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "",
-        type: "uint32",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
+    name: "WithdrawalTimelockPeriodUpdated",
+    type: "event",
   },
   {
     inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
+    outputs: [{ internalType: "string", name: "", type: "string" }],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [],
-    name: "WITHDRAWAL_EXPIRE_TIME",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "",
-        type: "uint32",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "WITHDRAWAL_TIMELOCK_PERIOD",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "",
-        type: "uint32",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "bApp",
-        type: "address",
-      },
-    ],
-    name: "accountBAppStrategy",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "bApp",
-        type: "address",
-      },
-      {
-        internalType: "address[]",
-        name: "tokens",
-        type: "address[]",
-      },
-      {
-        internalType: "uint32[]",
-        name: "sharedRiskLevels",
-        type: "uint32[]",
-      },
-    ],
-    name: "addTokensToBApp",
+    name: "acceptOwnership",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
     inputs: [
-      {
-        internalType: "address",
-        name: "bApp",
-        type: "address",
-      },
+      { internalType: "address", name: "account", type: "address" },
+      { internalType: "address", name: "bApp", type: "address" },
     ],
-    name: "bAppOwners",
-    outputs: [
-      {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-    ],
+    name: "accountBAppStrategy",
+    outputs: [{ internalType: "uint32", name: "", type: "uint32" }],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
-      {
-        internalType: "address",
-        name: "bApp",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
+      { internalType: "address", name: "bApp", type: "address" },
+      { internalType: "address", name: "token", type: "address" },
     ],
     name: "bAppTokens",
     outputs: [
-      {
-        internalType: "uint32",
-        name: "value",
-        type: "uint32",
-      },
-      {
-        internalType: "bool",
-        name: "isSet",
-        type: "bool",
-      },
+      { internalType: "uint32", name: "currentValue", type: "uint32" },
+      { internalType: "bool", name: "isSet", type: "bool" },
+      { internalType: "uint32", name: "pendingValue", type: "uint32" },
+      { internalType: "uint32", name: "effectTime", type: "uint32" },
     ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "address",
-        name: "bApp",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "address", name: "bApp", type: "address" },
+      { internalType: "address", name: "token", type: "address" },
       {
         internalType: "uint32",
         name: "obligationPercentage",
@@ -1135,40 +934,18 @@ export const BAppABI = [
   },
   {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "fee",
-        type: "uint32",
-      },
-      {
-        internalType: "string",
-        name: "metadataURI",
-        type: "string",
-      },
+      { internalType: "uint32", name: "fee", type: "uint32" },
+      { internalType: "string", name: "metadataURI", type: "string" },
     ],
     name: "createStrategy",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-    ],
+    outputs: [{ internalType: "uint32", name: "strategyId", type: "uint32" }],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
     inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        internalType: "uint32",
-        name: "percentage",
-        type: "uint32",
-      },
+      { internalType: "address", name: "receiver", type: "address" },
+      { internalType: "uint32", name: "percentage", type: "uint32" },
     ],
     name: "delegateBalance",
     outputs: [],
@@ -1177,45 +954,19 @@ export const BAppABI = [
   },
   {
     inputs: [
-      {
-        internalType: "address",
-        name: "delegator",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
+      { internalType: "address", name: "account", type: "address" },
+      { internalType: "address", name: "receiver", type: "address" },
     ],
     name: "delegations",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "percentage",
-        type: "uint32",
-      },
-    ],
+    outputs: [{ internalType: "uint32", name: "", type: "uint32" }],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "contract IERC20",
-        name: "token",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "contract IERC20", name: "token", type: "address" },
+      { internalType: "uint256", name: "amount", type: "uint256" },
     ],
     name: "depositERC20",
     outputs: [],
@@ -1223,95 +974,52 @@ export const BAppABI = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-    ],
+    inputs: [{ internalType: "uint32", name: "strategyId", type: "uint32" }],
     name: "depositETH",
     outputs: [],
     stateMutability: "payable",
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "address",
-        name: "bApp",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
-      {
-        internalType: "uint32",
-        name: "obligationPercentage",
-        type: "uint32",
-      },
-    ],
-    name: "fastUpdateObligation",
-    outputs: [],
-    stateMutability: "nonpayable",
+    inputs: [],
+    name: "disabledFeatures",
+    outputs: [{ internalType: "uint32", name: "", type: "uint32" }],
+    stateMutability: "view",
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "contract IERC20",
-        name: "token",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "fastWithdrawERC20",
-    outputs: [],
-    stateMutability: "nonpayable",
+    inputs: [],
+    name: "ethAddress",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "pure",
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "fastWithdrawETH",
-    outputs: [],
-    stateMutability: "nonpayable",
+    inputs: [],
+    name: "feeExpireTime",
+    outputs: [{ internalType: "uint32", name: "", type: "uint32" }],
+    stateMutability: "view",
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
+    inputs: [],
+    name: "feeTimelockPeriod",
+    outputs: [{ internalType: "uint32", name: "", type: "uint32" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint32", name: "strategyId", type: "uint32" }],
+    name: "feeUpdateRequests",
+    outputs: [
+      { internalType: "uint32", name: "percentage", type: "uint32" },
+      { internalType: "uint32", name: "requestTime", type: "uint32" },
     ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint32", name: "strategyId", type: "uint32" }],
     name: "finalizeFeeUpdate",
     outputs: [],
     stateMutability: "nonpayable",
@@ -1319,21 +1027,9 @@ export const BAppABI = [
   },
   {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "address",
-        name: "bApp",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "address", name: "bApp", type: "address" },
+      { internalType: "address", name: "token", type: "address" },
     ],
     name: "finalizeUpdateObligation",
     outputs: [],
@@ -1342,16 +1038,8 @@ export const BAppABI = [
   },
   {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "contract IERC20",
-        name: "token",
-        type: "address",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "contract IERC20", name: "token", type: "address" },
     ],
     name: "finalizeWithdrawal",
     outputs: [],
@@ -1359,13 +1047,7 @@ export const BAppABI = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-    ],
+    inputs: [{ internalType: "uint32", name: "strategyId", type: "uint32" }],
     name: "finalizeWithdrawalETH",
     outputs: [],
     stateMutability: "nonpayable",
@@ -1374,14 +1056,110 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "owner",
+        internalType: "enum SSVCoreModules",
+        name: "moduleId",
+        type: "uint8",
+      },
+    ],
+    name: "getModuleAddress",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "address", name: "bApp", type: "address" },
+      { internalType: "address", name: "token", type: "address" },
+    ],
+    name: "getSlashableBalance",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "slashableBalance",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getVersion",
+    outputs: [{ internalType: "string", name: "", type: "string" }],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "owner_", type: "address" },
+      {
+        internalType: "contract IBasedAppManager",
+        name: "ssvBasedAppManger_",
         type: "address",
       },
       {
-        internalType: "uint32",
-        name: "_maxFeeIncrement",
-        type: "uint32",
+        internalType: "contract IStrategyManager",
+        name: "ssvStrategyManager_",
+        type: "address",
+      },
+      {
+        internalType: "contract IProtocolManager",
+        name: "protocolManager_",
+        type: "address",
+      },
+      {
+        components: [
+          { internalType: "uint256", name: "maxShares", type: "uint256" },
+          {
+            internalType: "uint32",
+            name: "feeTimelockPeriod",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "feeExpireTime",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "withdrawalTimelockPeriod",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "withdrawalExpireTime",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "obligationTimelockPeriod",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "obligationExpireTime",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "tokenUpdateTimelockPeriod",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "maxFeeIncrement",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "disabledFeatures",
+            type: "uint32",
+          },
+        ],
+        internalType: "struct ProtocolStorageLib.Data",
+        name: "config",
+        type: "tuple",
       },
     ],
     name: "initialize",
@@ -1392,111 +1170,77 @@ export const BAppABI = [
   {
     inputs: [],
     name: "maxFeeIncrement",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "",
-        type: "uint32",
-      },
-    ],
+    outputs: [{ internalType: "uint32", name: "", type: "uint32" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "maxPercentage",
+    outputs: [{ internalType: "uint32", name: "", type: "uint32" }],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "maxShares",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "obligationExpireTime",
+    outputs: [{ internalType: "uint32", name: "", type: "uint32" }],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "bApp",
-        type: "address",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "address", name: "token", type: "address" },
+      { internalType: "address", name: "bApp", type: "address" },
     ],
     name: "obligationRequests",
     outputs: [
-      {
-        internalType: "uint32",
-        name: "percentage",
-        type: "uint32",
-      },
-      {
-        internalType: "uint32",
-        name: "requestTime",
-        type: "uint32",
-      },
+      { internalType: "uint32", name: "percentage", type: "uint32" },
+      { internalType: "uint32", name: "requestTime", type: "uint32" },
     ],
     stateMutability: "view",
     type: "function",
   },
   {
+    inputs: [],
+    name: "obligationTimelockPeriod",
+    outputs: [{ internalType: "uint32", name: "", type: "uint32" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "address",
-        name: "bApp",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "address", name: "bApp", type: "address" },
+      { internalType: "address", name: "token", type: "address" },
     ],
     name: "obligations",
     outputs: [
-      {
-        internalType: "uint32",
-        name: "percentage",
-        type: "uint32",
-      },
-      {
-        internalType: "bool",
-        name: "isSet",
-        type: "bool",
-      },
+      { internalType: "uint32", name: "percentage", type: "uint32" },
+      { internalType: "bool", name: "isSet", type: "bool" },
     ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "address",
-        name: "bApp",
-        type: "address",
-      },
-      {
-        internalType: "address[]",
-        name: "tokens",
-        type: "address[]",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "address", name: "bApp", type: "address" },
+      { internalType: "address[]", name: "tokens", type: "address[]" },
       {
         internalType: "uint32[]",
         name: "obligationPercentages",
         type: "uint32[]",
       },
-      {
-        internalType: "bytes",
-        name: "data",
-        type: "bytes",
-      },
+      { internalType: "bytes", name: "data", type: "bytes" },
     ],
     name: "optInToBApp",
     outputs: [],
@@ -1504,30 +1248,32 @@ export const BAppABI = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "owner",
+    inputs: [{ internalType: "address", name: "owner", type: "address" }],
+    name: "ownedStrategies",
     outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
+      { internalType: "uint32[]", name: "strategyIds", type: "uint32[]" },
     ],
     stateMutability: "view",
     type: "function",
   },
   {
+    inputs: [],
+    name: "owner",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "pendingOwner",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "uint32",
-        name: "proposedFee",
-        type: "uint32",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "uint32", name: "proposedFee", type: "uint32" },
     ],
     name: "proposeFeeUpdate",
     outputs: [],
@@ -1536,21 +1282,9 @@ export const BAppABI = [
   },
   {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "address",
-        name: "bApp",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "address", name: "bApp", type: "address" },
+      { internalType: "address", name: "token", type: "address" },
       {
         internalType: "uint32",
         name: "obligationPercentage",
@@ -1564,21 +1298,9 @@ export const BAppABI = [
   },
   {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "address", name: "token", type: "address" },
+      { internalType: "uint256", name: "amount", type: "uint256" },
     ],
     name: "proposeWithdrawal",
     outputs: [],
@@ -1587,16 +1309,8 @@ export const BAppABI = [
   },
   {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "uint256", name: "amount", type: "uint256" },
     ],
     name: "proposeWithdrawalETH",
     outputs: [],
@@ -1606,38 +1320,29 @@ export const BAppABI = [
   {
     inputs: [],
     name: "proxiableUUID",
-    outputs: [
-      {
-        internalType: "bytes32",
-        name: "",
-        type: "bytes32",
-      },
-    ],
+    outputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
-      {
-        internalType: "address",
-        name: "bApp",
-        type: "address",
-      },
-      {
-        internalType: "address[]",
-        name: "tokens",
-        type: "address[]",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "uint32", name: "proposedFee", type: "uint32" },
+    ],
+    name: "reduceFee",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address[]", name: "tokens", type: "address[]" },
       {
         internalType: "uint32[]",
         name: "sharedRiskLevels",
         type: "uint32[]",
       },
-      {
-        internalType: "string",
-        name: "metadataURI",
-        type: "string",
-      },
+      { internalType: "string", name: "metadataURI", type: "string" },
     ],
     name: "registerBApp",
     outputs: [],
@@ -1645,13 +1350,14 @@ export const BAppABI = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-    ],
+    inputs: [{ internalType: "address", name: "bApp", type: "address" }],
+    name: "registeredBApps",
+    outputs: [{ internalType: "bool", name: "isRegistered", type: "bool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "receiver", type: "address" }],
     name: "removeDelegatedBalance",
     outputs: [],
     stateMutability: "nonpayable",
@@ -1666,125 +1372,108 @@ export const BAppABI = [
   },
   {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "address", name: "bApp", type: "address" },
+      { internalType: "address", name: "token", type: "address" },
+      { internalType: "uint32", name: "percentage", type: "uint32" },
+      { internalType: "bytes", name: "data", type: "bytes" },
     ],
+    name: "slash",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "account", type: "address" },
+      { internalType: "address", name: "token", type: "address" },
+    ],
+    name: "slashingFund",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint32", name: "strategyId", type: "uint32" }],
     name: "strategies",
     outputs: [
-      {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        internalType: "uint32",
-        name: "fee",
-        type: "uint32",
-      },
-      {
-        internalType: "uint32",
-        name: "feeProposed",
-        type: "uint32",
-      },
-      {
-        internalType: "uint32",
-        name: "feeRequestTime",
-        type: "uint32",
-      },
+      { internalType: "address", name: "strategyOwner", type: "address" },
+      { internalType: "uint32", name: "fee", type: "uint32" },
     ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "address", name: "account", type: "address" },
+      { internalType: "address", name: "token", type: "address" },
     ],
-    name: "strategyTokenBalances",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "balance",
-        type: "uint256",
-      },
-    ],
+    name: "strategyAccountShares",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
-      {
-        internalType: "address",
-        name: "delegator",
-        type: "address",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "address", name: "token", type: "address" },
     ],
+    name: "strategyGeneration",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "address", name: "token", type: "address" },
+    ],
+    name: "strategyTotalBalance",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "address", name: "token", type: "address" },
+    ],
+    name: "strategyTotalShares",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "tokenUpdateTimelockPeriod",
+    outputs: [{ internalType: "uint32", name: "", type: "uint32" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "delegator", type: "address" }],
     name: "totalDelegatedPercentage",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "totalPercentage",
-        type: "uint32",
-      },
-    ],
+    outputs: [{ internalType: "uint32", name: "", type: "uint32" }],
     stateMutability: "view",
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
-    ],
+    inputs: [{ internalType: "address", name: "newOwner", type: "address" }],
     name: "transferOwnership",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "string",
-        name: "metadataURI",
-        type: "string",
-      },
-    ],
+    inputs: [{ internalType: "string", name: "metadataURI", type: "string" }],
     name: "updateAccountMetadataURI",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "bApp",
-        type: "address",
-      },
-      {
-        internalType: "string",
-        name: "metadataURI",
-        type: "string",
-      },
-    ],
+    inputs: [{ internalType: "string", name: "metadataURI", type: "string" }],
     name: "updateBAppMetadataURI",
     outputs: [],
     stateMutability: "nonpayable",
@@ -1793,38 +1482,28 @@ export const BAppABI = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "bApp",
-        type: "address",
-      },
-      {
-        internalType: "address[]",
-        name: "tokens",
-        type: "address[]",
-      },
-      {
-        internalType: "uint32[]",
-        name: "sharedRiskLevels",
-        type: "uint32[]",
+        components: [
+          { internalType: "address", name: "token", type: "address" },
+          {
+            internalType: "uint32",
+            name: "sharedRiskLevel",
+            type: "uint32",
+          },
+        ],
+        internalType: "struct ICore.TokenConfig[]",
+        name: "tokenConfigs",
+        type: "tuple[]",
       },
     ],
-    name: "updateBAppTokens",
+    name: "updateBAppsTokens",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
     inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        internalType: "uint32",
-        name: "percentage",
-        type: "uint32",
-      },
+      { internalType: "address", name: "receiver", type: "address" },
+      { internalType: "uint32", name: "percentage", type: "uint32" },
     ],
     name: "updateDelegatedBalance",
     outputs: [],
@@ -1833,18 +1512,100 @@ export const BAppABI = [
   },
   {
     inputs: [
+      { internalType: "uint32", name: "disabledFeatures", type: "uint32" },
+    ],
+    name: "updateDisabledFeatures",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint32", name: "value", type: "uint32" }],
+    name: "updateFeeExpireTime",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint32", name: "value", type: "uint32" }],
+    name: "updateFeeTimelockPeriod",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint32", name: "value", type: "uint32" }],
+    name: "updateMaxFeeIncrement",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "value", type: "uint256" }],
+    name: "updateMaxShares",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
       {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
+        internalType: "enum SSVCoreModules[]",
+        name: "moduleIds",
+        type: "uint8[]",
       },
       {
-        internalType: "string",
-        name: "metadataURI",
-        type: "string",
+        internalType: "address[]",
+        name: "moduleAddresses",
+        type: "address[]",
       },
     ],
+    name: "updateModule",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint32", name: "value", type: "uint32" }],
+    name: "updateObligationExpireTime",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint32", name: "value", type: "uint32" }],
+    name: "updateObligationTimelockPeriod",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "string", name: "metadataURI", type: "string" },
+    ],
     name: "updateStrategyMetadataURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint32", name: "value", type: "uint32" }],
+    name: "updateTokenUpdateTimelockPeriod",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint32", name: "value", type: "uint32" }],
+    name: "updateWithdrawalExpireTime",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint32", name: "value", type: "uint32" }],
+    name: "updateWithdrawalTimelockPeriod",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -1856,11 +1617,7 @@ export const BAppABI = [
         name: "newImplementation",
         type: "address",
       },
-      {
-        internalType: "bytes",
-        name: "data",
-        type: "bytes",
-      },
+      { internalType: "bytes", name: "data", type: "bytes" },
     ],
     name: "upgradeToAndCall",
     outputs: [],
@@ -1868,60 +1625,47 @@ export const BAppABI = [
     type: "function",
   },
   {
+    inputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
+    name: "withdrawETHSlashingFund",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
+      { internalType: "address", name: "token", type: "address" },
+      { internalType: "uint256", name: "amount", type: "uint256" },
     ],
-    name: "usedTokens",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "bAppsCounter",
-        type: "uint32",
-      },
-    ],
+    name: "withdrawSlashingFund",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "withdrawalExpireTime",
+    outputs: [{ internalType: "uint32", name: "", type: "uint32" }],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
-      {
-        internalType: "uint32",
-        name: "strategyId",
-        type: "uint32",
-      },
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
+      { internalType: "uint32", name: "strategyId", type: "uint32" },
+      { internalType: "address", name: "account", type: "address" },
+      { internalType: "address", name: "token", type: "address" },
     ],
     name: "withdrawalRequests",
     outputs: [
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-      {
-        internalType: "uint32",
-        name: "requestTime",
-        type: "uint32",
-      },
+      { internalType: "uint256", name: "shares", type: "uint256" },
+      { internalType: "uint32", name: "requestTime", type: "uint32" },
     ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "withdrawalTimelockPeriod",
+    outputs: [{ internalType: "uint32", name: "", type: "uint32" }],
     stateMutability: "view",
     type: "function",
   },

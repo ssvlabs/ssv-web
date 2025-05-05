@@ -22,29 +22,30 @@ import { getChainId } from "@wagmi/core";
 import { config } from "@/wagmi/config";
 import { queryClient } from "@/lib/react-query";
 
-type Fn = ExtractAbiFunction<typeof BAppABI, "bAppOwners">;
-const abiFunction = extractAbiFunction(BAppABI, "bAppOwners");
+type Fn = ExtractAbiFunction<typeof BAppABI, "feeUpdateRequests">;
+const abiFunction = extractAbiFunction(BAppABI, "feeUpdateRequests");
 
-export const getBAppOwnersQueryOptions = (
+export const getFeeUpdateRequestsQueryOptions = (
   params: AbiInputsToParams<Fn["inputs"]>,
 ) =>
   readContractQueryOptions(config, {
     abi: BAppABI,
     chainId: getChainId(config),
     address: getSSVNetworkDetails().bAppContractAddress,
-    functionName: "bAppOwners",
+    functionName: "feeUpdateRequests",
     args: paramsToArray({ params, abiFunction }),
   });
 
 type QueryOptions = UseReadContractParameters<
   typeof BAppABI,
-  "bAppOwners"
+  "feeUpdateRequests"
 >["query"];
 
-export const fetchBAppOwners = (params: AbiInputsToParams<Fn["inputs"]>) =>
-  queryClient.fetchQuery(getBAppOwnersQueryOptions(params));
+export const fetchFeeUpdateRequests = (
+  params: AbiInputsToParams<Fn["inputs"]>,
+) => queryClient.fetchQuery(getFeeUpdateRequestsQueryOptions(params));
 
-export const useBAppOwners = (
+export const useFeeUpdateRequests = (
   params: AbiInputsToParams<Fn["inputs"]>,
   options: QueryOptions & { watch?: boolean } = { enabled: true },
 ) => {
@@ -55,7 +56,7 @@ export const useBAppOwners = (
   return useReadContract({
     abi: BAppABI,
     address: bAppContractAddress,
-    functionName: "bAppOwners",
+    functionName: "feeUpdateRequests",
     args,
     blockNumber: options.watch ? blockNumber.data : undefined,
     query: {

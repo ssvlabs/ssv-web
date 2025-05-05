@@ -19,15 +19,15 @@ import {
 import type { WriteContractErrorType } from "@wagmi/core";
 import type { WaitForTransactionReceiptErrorType } from "viem";
 
-type Fn = ExtractAbiFunction<typeof BAppABI, "updateBAppTokens">;
-const abiFunction = extractAbiFunction(BAppABI, "updateBAppTokens");
+type Fn = ExtractAbiFunction<typeof BAppABI, "updateWithdrawalExpireTime">;
+const abiFunction = extractAbiFunction(BAppABI, "updateWithdrawalExpireTime");
 // type State = "idle" | "confirming" | "mining" | "mined" | "error";
 
-export const useUpdateBAppTokens = () => {
+export const useUpdateWithdrawalExpireTime = () => {
   const { bAppContractAddress } = useSSVNetworkDetails();
 
   const wait = useWaitForTransactionReceipt<BAppEvent>([
-    "useUpdateBAppTokens",
+    "useUpdateWithdrawalExpireTime",
     bAppContractAddress,
   ]);
   const mutation = useWriteContract();
@@ -42,7 +42,7 @@ export const useUpdateBAppTokens = () => {
         {
           abi: BAppABI,
           address: bAppContractAddress,
-          functionName: "updateBAppTokens",
+          functionName: "updateWithdrawalExpireTime",
           args: paramsToArray({ params, abiFunction }),
         },
         {

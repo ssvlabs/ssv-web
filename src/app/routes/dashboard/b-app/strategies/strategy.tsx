@@ -30,7 +30,7 @@ import { useAssetsDelegationModal } from "@/signals/modal";
 import DescriptionCard from "@/components/ui/description-card.tsx";
 import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
 import { getStrategyName } from "@/lib/utils/strategy";
-import { formatGwei, isAddress } from "viem";
+import { isAddress } from "viem";
 import { useGetAsset } from "@/hooks/b-app/use-get-asset.tsx";
 import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 import { useDelegateContext } from "@/components/context/delegate-context.tsx";
@@ -59,17 +59,16 @@ const Strategy = () => {
         name: account.name,
         logo: account.logo,
         percentage: receiver?.percentage,
-        delegatedValue: (
+        delegatedValue: `${
           (convertToPercentage(receiver?.percentage || 0) *
-            (Number(formatGwei(account?.effectiveBalance || 0n)) || 0)) /
+            (Number(formatSSV(account?.effectiveBalance || 0n)) || 0)) /
           100
-        ).toFixed(4),
+        }`,
         delegateAddress: strategy.ownerAddress,
       });
     }
     setIsOpenDelegateModal(true);
   };
-
   const onSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
@@ -98,12 +97,17 @@ const Strategy = () => {
       value: `${convertToPercentage(strategy.fee)}%`,
     },
     {
+      label: "Delegators",
+      value: strategy.totalDelegators,
+      tooltipText: "Total number of unique delegators to this strategy’s owner",
+    },
+    {
       label: "Depositors",
-      value: strategy.totalDeposited,
+      value: strategy.totalDepositors,
       tooltipText: "Total number of unique depositors to this strategy",
     },
     {
-      label: "Total Deposited Value",
+      label: "Total Asset Value",
       value: currencyFormatter.format(Number(strategy.totalDepositedFiat) || 0),
       tooltipText: "Total value of all deposits made to this strategy",
     },
@@ -216,9 +220,9 @@ const Strategy = () => {
             className={"w-full rounded-t-xl overflow-hidden rounded-b-[16px]"}
           >
             <TableHeader>
-              <TableHead>Asset</TableHead>
-              <TableHead></TableHead>
-              <TableHead></TableHead>
+              <TableHead className="size-[28%]">Delegatable Asset</TableHead>
+              <TableHead className="size-[15%]"></TableHead>
+              <TableHead className="size-[15%]"></TableHead>
               <TableHead className=" flex items-center gap-1">
                 Total Delegated
                 <Tooltip
@@ -226,14 +230,16 @@ const Strategy = () => {
                     "Total effective balance (ETH) delegated to the owner of this strategy"
                   }
                 >
-                  <FaCircleInfo className="size-3 text-gray-500" />
+                  <FaCircleInfo className="text-gray-500" />
                 </Tooltip>
               </TableHead>
-              <TableHead>Total Delegated Value</TableHead>
+              <TableHead className="size-[19%]">
+                Total Delegated Value
+              </TableHead>
             </TableHeader>
             <TableBody>
               <TableRow onClick={openDelegate}>
-                <TableCell>
+                <TableCell className="size-[28%]">
                   <div className="flex gap-2 w-[c320px]">
                     <img
                       className={"h-[24px] w-[15px]"}
@@ -243,18 +249,14 @@ const Strategy = () => {
                     <Text className="text-gray-500 font-medium">ETH</Text>
                   </div>
                 </TableCell>
-                <TableCell></TableCell>
-                <TableCell></TableCell>
+                <TableCell className="size-[15%]"></TableCell>
+                <TableCell className="size-[15%]"></TableCell>
                 <TableCell>
-                  {formatSSV(
-                    (strategy.totalNonSlashableTokens || 0n) as bigint,
-                    9,
-                  )}{" "}
-                  ETH
+                  {formatSSV(strategy.totalDelegatedValue || 0n)} ETH
                 </TableCell>
                 <TableCell>
                   {currencyFormatter.format(
-                    Number(strategy.totalNonSlashableFiat) || 0,
+                    Number(strategy.totalDelegatedFiat) || 0,
                   )}
                 </TableCell>
               </TableRow>
@@ -265,7 +267,7 @@ const Strategy = () => {
 
       {(searchedValue
         ? Boolean(searchAssets.length)
-        : Boolean(strategy.delegationsPerToken?.length)) && (
+        : Boolean(strategy.depositsPerToken?.length)) && (
         <div className="w-full flex flex-col gap-6">
           <StrategyAssetsTable
             onDepositClick={(asset) => {
@@ -276,7 +278,7 @@ const Strategy = () => {
             }}
             showDepositButtonOnHover
             assets={
-              searchedValue ? searchAssets : strategy.delegationsPerToken || []
+              searchedValue ? searchAssets : strategy.depositsPerToken || []
             }
           />
         </div>

@@ -69,7 +69,8 @@ export const StrategyBAppsTableRow: FCProps = ({
             max={3}
             addresses={bApp.tokens.map((s) => s) as Address[]}
           />
-          {Boolean(bApp.assets.length) && (
+          {/*will use in future*/}
+          {false && Boolean(bApp.assets.length) && (
             <ExpandButton setIsOpen={setIsInnerOpen} isOpen={isInnerOpen} />
           )}
         </TableCell>

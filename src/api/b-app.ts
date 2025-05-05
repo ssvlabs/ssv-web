@@ -9,6 +9,8 @@ import {
 
 export type NonSlashableAsset = {
   effectiveBalance: bigint;
+  totalDelegatedValue?: bigint;
+  totalDelegatedFiat?: string;
   delegations: (Delegation & AccountMetadata)[];
 };
 
@@ -50,9 +52,10 @@ export interface Strategy {
   ownerAddressMetadataURI: string;
   bAppsList?: (StrategyBApp & BAppsMetaData)[];
   totalDelegators?: number;
+  totalDelegatedValue?: bigint;
   totalDelegatedFiat?: string;
   description?: string;
-  delegationsPerToken?: BAppAsset[];
+  depositsPerToken?: BAppAsset[];
   deposits?: [
     {
       id: `0x${string}`;
@@ -61,7 +64,7 @@ export interface Strategy {
     },
   ];
   totalDepositedFiat?: string;
-  totalDeposited: number;
+  totalDepositors: number;
   totalNonSlashableTokens?: string;
   totalNonSlashableFiat?: string;
 }
@@ -295,12 +298,13 @@ export const getBAppsMetadata = getMetadata<
 export type BAppAsset = {
   token: Address;
   totalObligatedBalance: string;
-  totalDepositsValue?: string;
+  totalDepositsValue?: bigint;
+  totalObligatedPercentage?: string;
   totalDepositsFiat?: string;
   depositedStrategies?: number;
   totalFiat?: string;
   totalTokens?: bigint;
-  delegations?: { bAppId: `0x${string}`; percentage: string }[];
+  obligations?: { bAppId: `0x${string}`; percentage: string }[];
   obligationsCount: number;
 };
 

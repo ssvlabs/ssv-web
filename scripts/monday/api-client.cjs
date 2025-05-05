@@ -28,7 +28,7 @@ async function postMondayAPI(query) {
 /**
  * Retrieves board IDs for multiple tickets
  * @param {string[]} ticketIds - Array of Monday ticket IDs
- * @returns {Promise<Map<string, string>>} Map of ticket IDs to board IDs
+ * @returns {Promise<Map<string, { boardId: string; statusColumnID: string }>>} Map of ticket IDs to board IDs and status column IDs
  */
 async function getTicketBoardIds(ticketIds) {
   if (!ticketIds || ticketIds.length === 0) {
@@ -42,18 +42,30 @@ async function getTicketBoardIds(ticketIds) {
     return new Map();
   }
 
-  return new Map(response.data.items.map((item) => [item.id, item.board.id]));
+  return new Map(
+    response.data.items.map((item) => {
+      const statusColumnID = (item.board.columns || []).find((column) =>
+        column.id.includes("_status"),
+      )?.id;
+      return [item.id, { id: item.board.id, statusColumnID }];
+    }),
+  );
 }
 
 /**
  * Updates a ticket's status to "Ready for QA"
  * @param {string} itemId - Monday item ID
  * @param {string} boardId - Monday board ID
+ * @param {string} statusColumnID - Monday status column ID
  * @returns {Promise<any>} API response
  */
-async function updateTicketStatus(itemId, boardId) {
-  console.log(`Updating ticket ${itemId} status to "Ready for QA"`);
-  return postMondayAPI(queries.createUpdateStatusMutation(itemId, boardId));
+async function updateTicketStatus(itemId, boardId, statusColumnID) {
+  console.log(
+    `Updating ticket ${itemId} status(${statusColumnID}) to "Ready for QA"`,
+  );
+  return postMondayAPI(
+    queries.createUpdateStatusMutation(itemId, boardId, statusColumnID),
+  );
 }
 
 /**
@@ -81,7 +93,6 @@ async function updateMonday(ticketsMap) {
   );
 
   const boardIds = await getTicketBoardIds([...ticketsMap.keys()]);
-  console.log("boardIds:", boardIds);
 
   for (const [ticketId, commits] of ticketsMap.entries()) {
     if (!boardIds.has(ticketId)) {
@@ -94,10 +105,13 @@ async function updateMonday(ticketsMap) {
         `Processing ticket ${ticketId} with ${commits.length} commits`,
       );
 
+      const board = boardIds.get(ticketId);
+      console.log("board:", board);
       // Update ticket status to "Ready for QA"
       const updateResult = await updateTicketStatus(
         ticketId,
-        boardIds.get(ticketId),
+        board.id,
+        board.statusColumnID,
       );
 
       if (!updateResult) {

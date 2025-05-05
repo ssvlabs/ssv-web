@@ -64,7 +64,7 @@ export interface Strategy {
     },
   ];
   totalDepositedFiat?: string;
-  totalDeposited: number;
+  totalDepositors: number;
   totalNonSlashableTokens?: string;
   totalNonSlashableFiat?: string;
 }

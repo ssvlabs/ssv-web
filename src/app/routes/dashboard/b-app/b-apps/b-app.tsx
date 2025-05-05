@@ -114,12 +114,18 @@ export const BApp = () => {
             <Text variant="body-3-medium">
               {bApp.website ? (
                 <a
-                  href={bApp.website}
+                  href={
+                    bApp.website.startsWith("http")
+                      ? bApp.website
+                      : `https://${bApp.website}`
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-500 hover:underline"
                 >
-                  {bApp.website}
+                  {bApp.website.startsWith("http")
+                    ? bApp.website
+                    : `https://${bApp.website}`}
                 </a>
               ) : (
                 "No website available for this bApp."

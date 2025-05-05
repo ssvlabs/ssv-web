@@ -16,6 +16,7 @@ import type {
   StrategyMetadata,
 } from "@/api/b-app.ts";
 import { Loading } from "@/components/ui/Loading.tsx";
+import { Text } from "@/components/ui/text";
 
 export type OperatorsTableProps = {
   strategies: (Strategy &
@@ -25,6 +26,7 @@ export type OperatorsTableProps = {
   showDepositButtonOnHover?: boolean;
   onDepositClick?: (strategy: Strategy) => void;
   onRowClick?: (strategy: Strategy) => void;
+  emptyState?: React.ReactNode;
 };
 
 type FCProps = FC<
@@ -38,6 +40,7 @@ export const StrategiesTable: FCProps = ({
   className,
   isLoading,
   showDepositButtonOnHover,
+  emptyState,
   onDepositClick,
   onRowClick,
   ...props
@@ -75,6 +78,17 @@ export const StrategiesTable: FCProps = ({
       </Table>
       <div className="bg-gray-50 w-full">
         {isLoading && !strategies.length && <Loading />}
+        {!isLoading && !strategies.length && (
+          <div className="flex flex-col items-center h-[168px] pt-4 justify-center w-full py-4">
+            {emptyState || (
+              <>
+                <Text variant="body-3-medium" className="text-gray-600">
+                  No strategies found
+                </Text>
+              </>
+            )}
+          </div>
+        )}
       </div>
       {pagination && pagination.total > 10 ? (
         <>

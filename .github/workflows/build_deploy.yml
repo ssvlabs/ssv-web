@@ -59,6 +59,7 @@ jobs:
             \"insufficientBalanceUrl\": \"https://faucet.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
             \"tokenAddress\": \"0x9F5d4Ec84fC4785788aB44F9de973cF34F7A038e\",
+            \"bAppContractAddress\": \"0xc7fCFeEc5FB9962bDC2234A7a25dCec739e27f9f\",
             \"setterContractAddress\": \"${{ secrets.PROD_HOODI_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
             \"getterContractAddress\": \"${{ secrets.PROD_HOODI_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
            }

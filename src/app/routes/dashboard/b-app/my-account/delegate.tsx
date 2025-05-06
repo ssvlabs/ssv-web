@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { shortenAddress } from "@/lib/utils/strings.ts";
 import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
-import { formatSSV } from "@/lib/utils/number.ts";
+import { ethFormatter, formatSSV } from "@/lib/utils/number.ts";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt.tsx";
 import { useDelegateBalance } from "@/lib/contract-interactions/b-app/write/use-delegate-balance.ts";
 import { formatUnits } from "viem";
@@ -150,7 +150,9 @@ const Delegate = ({
                   Total Delegated
                 </Text>
                 <div className="flex items-center justify-between px-6 py-4 rounded-[12px] bg-gray-100">
-                  <Text variant="body-3-medium">{delegatedValue} ETH</Text>
+                  <Text variant="body-3-medium">
+                    {ethFormatter.format(Number(delegatedValue))} ETH
+                  </Text>
                   <div className="flex gap-2">
                     <img
                       className={"h-[24px] w-[15px]"}

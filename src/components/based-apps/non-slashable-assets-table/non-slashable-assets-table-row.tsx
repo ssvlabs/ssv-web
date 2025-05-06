@@ -2,7 +2,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Span, textVariants } from "@/components/ui/text";
 import { cn } from "@/lib/utils/tw";
 import { useState, type ComponentPropsWithoutRef, type FC } from "react";
-import { currencyFormatter, formatSSV } from "@/lib/utils/number";
+import { currencyFormatter, ethFormatter, formatSSV } from "@/lib/utils/number";
 import { Button } from "@/components/ui/button";
 import type { Address } from "viem";
 import { formatUnits } from "viem";
@@ -41,7 +41,7 @@ export const NonSlashableAssetsTableRow: FCProps = ({
   const [isOpen, setIsOpen] = useState(false);
   const [focusedRow, setFocusedRow] = useState(-1);
 
-  const effectiveBalance = Number(formatSSV(asset.effectiveBalance));
+  const effectiveBalance = Number(formatUnits(asset.effectiveBalance, 18));
 
   return (
     <>
@@ -228,7 +228,7 @@ export const NonSlashableAssetsTableRow: FCProps = ({
                     className: "text-right",
                   })}
                 >
-                  {delegatedValue}
+                  {ethFormatter.format(delegatedValue)}
                 </TableCell>
                 <TableCell
                   className={textVariants({

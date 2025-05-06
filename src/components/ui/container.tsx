@@ -27,6 +27,7 @@ type FCProps = FC<
       backButtonLabel?: string | ReactElement;
       navigateRoutePath?: string;
       onBackButtonClick?: () => void;
+      wrapperClassName?: ComponentPropsWithoutRef<"div">["className"];
     }
 >;
 
@@ -37,11 +38,12 @@ export const Container: FCProps = ({
   onBackButtonClick,
   backButtonLabel,
   navigateRoutePath,
+  wrapperClassName,
   ...props
 }) => {
   const navigate = useNavigate();
   return (
-    <div>
+    <div className={cn("px-5", wrapperClassName)}>
       {backButtonLabel && (
         <div
           onClick={() => {

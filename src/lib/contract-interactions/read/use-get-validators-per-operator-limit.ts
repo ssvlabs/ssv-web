@@ -45,7 +45,7 @@ export const useGetValidatorsPerOperatorLimit = (
     functionName: "getValidatorsPerOperatorLimit",
 
     blockNumber: options.watch ? blockNumber.data : undefined,
-    query: options,
+    query: { ...options },
   });
 };
 

@@ -45,7 +45,7 @@ export const useGetNetworkFee = (
     functionName: "getNetworkFee",
 
     blockNumber: options.watch ? blockNumber.data : undefined,
-    query: options,
+    query: { ...options },
   });
 };
 

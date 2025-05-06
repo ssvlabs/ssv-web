@@ -1,6 +1,8 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils/tw";
+import { Text } from "@/components/ui/text";
+import { Slot } from "@radix-ui/react-slot";
 
 const Table = React.forwardRef<
   HTMLTableElement,
@@ -59,12 +61,13 @@ TableFooter.displayName = "TableFooter";
 
 const TableRow = React.forwardRef<
   HTMLTableRowElement,
-  React.HTMLAttributes<HTMLTableRowElement>
->(({ className, ...props }, ref) => (
+  React.HTMLAttributes<HTMLTableRowElement> & { clickable?: boolean }
+>(({ className, clickable, ...props }, ref) => (
   <tr
     ref={ref}
     className={cn(
-      "border-b border-b-gray-200 transition-colors bg-gray-50 hover:bg-gray-200 data-[state=selected]:bg-gray-300",
+      "border-b border-b-gray-300 transition-colors bg-gray-50 hover:bg-gray-200 data-[state=selected]:bg-gray-300",
+      { "cursor-pointer": clickable },
       className,
     )}
     {...props}
@@ -79,7 +82,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-14 px-7 text-left align-middle font-medium [&:has([role=checkbox])]:pr-0",
+      "h-[52px] px-7 text-left align-middle font-medium [&:has([role=checkbox])]:pr-0 bg-white border-b border-gray-300",
       className,
     )}
     {...props}
@@ -94,7 +97,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      "px-7 py-5 text-base font-medium align-middle [&:has([role=checkbox])]:pr-0",
+      "h-[52px] px-7 py-3 text-base font-medium align-middle [&:has([role=checkbox])]:pr-0 text-[14px]",
       className,
     )}
     {...props}
@@ -114,6 +117,56 @@ const TableCaption = React.forwardRef<
 ));
 TableCaption.displayName = "TableCaption";
 
+const TableMenuButton = React.forwardRef<
+  HTMLButtonElement,
+  React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    icon?: React.ReactNode;
+    activeCount?: number;
+    isActive?: boolean;
+  }
+>(({ className, icon, activeCount, isActive, children, ...props }, ref) => (
+  <button
+    ref={ref}
+    className={cn(
+      "group flex h-10 select-none items-center gap-2 whitespace-nowrap rounded-xl border border-transparent bg-gray-50 px-4 text-sm font-medium transition-colors hover:bg-gray-100",
+      {
+        "border border-primary-500": isActive,
+        "pr-2": activeCount && activeCount > 0,
+      },
+      className,
+    )}
+    {...props}
+  >
+    {icon && (
+      <Slot
+        className={cn(
+          "size-4 text-gray-500 transition-colors group-hover:text-gray-800",
+          {
+            "text-gray-800": isActive,
+          },
+        )}
+      >
+        {icon}
+      </Slot>
+    )}
+    {children}
+    {Boolean(activeCount) && (
+      <div className="rounded-md bg-primary-50 px-2 py-[2px]">
+        <Text
+          variant="body-3-semibold"
+          className={cn("text-primary-500")}
+          style={{
+            width: `${(activeCount?.toString().length ?? 1) * 0.9}ch`,
+          }}
+        >
+          {activeCount}
+        </Text>
+      </div>
+    )}
+  </button>
+));
+TableMenuButton.displayName = "TableMenuButton";
+
 export {
   Table,
   TableHeader,
@@ -123,4 +176,5 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  TableMenuButton,
 };

@@ -4,21 +4,18 @@ import { Navigate } from "react-router";
 import { cn } from "@/lib/utils/tw.ts";
 import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 import { motion } from "framer-motion";
+import { useAppVersion } from "@/hooks/temp-delete-after-merge/use-app-version";
 
 export const Redirector = () => {
-  const {
-    isNewAccount,
-    isLoadingClusters,
-    isLoadingOperators,
-    hasClusters,
-    hasOperators,
-  } = useAccountState();
+  const { isLoadingClusters, isLoadingOperators, hasClusters, hasOperators } =
+    useAccountState();
 
   const referral =
     locationState.previous.pathname + locationState.previous.search;
-
   const clusterMatch = referral.match(/clusters/);
   const operatorMatch = referral.match(/operators/);
+
+  const app = useAppVersion();
 
   if (isLoadingClusters)
     return (
@@ -50,12 +47,16 @@ export const Redirector = () => {
         <SsvLoader className={"size-[160px]"} />
       </motion.div>
     );
-  if (operatorMatch && hasOperators) return <Navigate to={referral} replace />;
 
-  if (hasClusters) return <Navigate to={"/clusters"} replace />;
-  if (hasOperators) return <Navigate to={"/operators"} replace />;
+  if (app.isDvtOnly) {
+    if (operatorMatch && hasOperators)
+      return <Navigate to={referral} replace />;
 
-  if (isNewAccount) return <Navigate to="/join" replace />;
+    if (hasClusters) return <Navigate to={"/clusters"} replace />;
+    if (hasOperators) return <Navigate to={"/operators"} replace />;
 
-  return <Navigate to="/clusters" />;
+    return <Navigate to="/join" replace />;
+  }
+
+  return <Navigate to="/account/my-delegations" />;
 };

@@ -1,13 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Text } from "@/components/ui/text";
-import { useAccountState } from "@/hooks/account/use-account-state";
 import type { FC } from "react";
 import { Link } from "react-router-dom";
 
 export const NotFound: FC = () => {
-  const { accountRoutePath } = useAccountState();
-
   return (
     <Container
       variant="vertical"
@@ -27,7 +24,7 @@ export const NotFound: FC = () => {
             variant="secondary"
             size="xl"
             className="w-fit"
-            to={accountRoutePath}
+            to="/"
           >
             Go to My Account
           </Button>

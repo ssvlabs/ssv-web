@@ -4,8 +4,10 @@ import { FaArrowsRotate } from "react-icons/fa6";
 const ImgCropUpload = ({
   value,
   setValue,
+  className,
 }: {
   value: File | string;
+  className?: string;
   setValue: (value: File | string) => void;
   defaultValue?: string;
 }) => {
@@ -18,7 +20,6 @@ const ImgCropUpload = ({
 
   return (
     <div
-      className="relative flex justify-center items-center rounded-[8px] overflow-hidden cursor-pointer group"
       style={{
         width: "82px",
         height: "82px",
@@ -29,6 +30,7 @@ const ImgCropUpload = ({
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
+      className={`relative flex justify-center items-center rounded-[8px] overflow-hidden cursor-pointer group ${className}`}
     >
       {value ? (
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center gap-2 opacity-0 hover:opacity-60 transition-opacity duration-300">

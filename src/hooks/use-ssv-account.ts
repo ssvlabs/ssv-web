@@ -19,7 +19,7 @@ export const getSSVAccountQueryOptions = (
   return queryOptions({
     staleTime: ms(1, "minutes"),
     queryKey: [
-      "ssv-account",
+      "ssv-my-account",
       account?.toLowerCase(),
       getSSVNetworkDetails().networkId,
       chainId,

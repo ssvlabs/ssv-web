@@ -4,7 +4,7 @@ import {
   coinbaseWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
-import { createPublicClient, defineChain, http } from "viem";
+import { createPublicClient, http } from "viem";
 import { createConfig, custom } from "wagmi";
 import { mainnet as mainnetBase } from "wagmi/chains";
 
@@ -14,7 +14,7 @@ const mainnet: Chain = {
   iconUrl: "/images/networks/dark.svg",
 };
 
-export const hoodi = defineChain({
+export const hoodi = {
   id: 560048,
   name: "Hoodi",
   network: "hoodi",
@@ -40,12 +40,11 @@ export const hoodi = defineChain({
   iconBackground: "none",
   iconUrl: "/images/networks/light.svg",
   testnet: true,
-});
+};
 
 const chains = import.meta.env.VITE_SSV_NETWORKS.map((network) =>
   [mainnet, hoodi].find((chain) => chain.id === network.networkId),
 ).filter(Boolean) as [Chain, ...Chain[]];
-
 export const isChainSupported = (chainId: number) => {
   return chains.some((chain) => chain.id === chainId);
 };

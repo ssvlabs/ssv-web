@@ -1,18 +1,22 @@
 import { Navbar } from "@/app/layouts/dashboard/navbar";
+import { NavbarDVT } from "@/app/layouts/dashboard/navbar-dvt";
+import { AssetWithdrawalModal } from "@/components/modals/bapp/asset-withdrawal-modal";
+import { AssetsDelegationModal } from "@/components/modals/bapp/assets-delegation-modal";
+import { MultisigTransactionModal } from "@/components/ui/multisig-transaction-modal";
+import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 import { TransactionModal } from "@/components/ui/transaction-modal";
+import { useAccount } from "@/hooks/account/use-account";
+import { useAccountState } from "@/hooks/account/use-account-state.ts";
+import { useMaintenance } from "@/hooks/app/use-maintenance";
+import { useAppVersion } from "@/hooks/temp-delete-after-merge/use-app-version";
 import { useBlockNavigationOnPendingTx } from "@/hooks/use-block-navigation-on-pending-tx";
+import { useIdentify } from "@/lib/analytics/mixpanel/useIdentify";
+import { useTrackPageViews } from "@/lib/analytics/mixpanel/useTrackPageViews";
 import { cn } from "@/lib/utils/tw";
 import { useIsRestoring } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ComponentPropsWithRef, FC } from "react";
-import { useAccount } from "@/hooks/account/use-account";
-import { useMaintenance } from "@/hooks/app/use-maintenance";
 import { Navigate } from "react-router";
-import { MultisigTransactionModal } from "@/components/ui/multisig-transaction-modal";
-import { useIdentify } from "@/lib/analytics/mixpanel/useIdentify";
-import { useTrackPageViews } from "@/lib/analytics/mixpanel/useTrackPageViews";
-import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
-import { useAccountState } from "@/hooks/account/use-account-state.ts";
 
 export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
   children,
@@ -27,6 +31,7 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
 
   const { isMaintenancePage } = useMaintenance();
   const { isLoadingClusters, isLoadingOperators } = useAccountState();
+  const app = useAppVersion();
   if (isMaintenancePage) {
     return <Navigate to="/maintenance" replace />;
   }
@@ -58,19 +63,20 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
             exit={{ opacity: 0 }}
             key="content"
           >
-            <Navbar />
-            <main
-              className={cn(className, "flex-1 overflow-auto")}
-              style={{
-                scrollbarGutter: "stable",
-              }}
-            >
+            {app.isDvtOnly ? (
+              <NavbarDVT className="px-5" />
+            ) : (
+              <Navbar className="px-5" />
+            )}
+            <main className={cn(className, "flex-1 overflow-auto")}>
               {children}
             </main>
           </motion.div>
         )}
       </AnimatePresence>
       <TransactionModal />
+      <AssetsDelegationModal />
+      <AssetWithdrawalModal />
       <MultisigTransactionModal />
     </>
   );

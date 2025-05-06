@@ -42,7 +42,7 @@ export const links = {
   SSV_DOCUMENTATION: "https://docs.ssv.network/learn/introduction",
   DKG_DOCKER_INSTALL_URL: "https://docs.docker.com/engine/install/",
   PERMISSIONED_OPERATORS:
-    "https://docs.ssv.network/learn/operators/permissioned-operators",
+    "https://docs.ssv.network/operators/operator-onboarding/permissioned-operators/",
   MORE_ON_CLUSTERS: "https://docs.ssv.network/learn/stakers/clusters",
   SSV_KEYS_RELEASES_URL: "https://github.com/ssvlabs/ssv-keys/releases",
   SSV_UPDATE_FEE_DOCS: "https://docs.ssv.network/learn/operators/update-fee",
@@ -54,7 +54,7 @@ export const links = {
   REACTIVATION_LINK:
     "https://docs.ssv.network/learn/stakers/clusters/reactivation",
   UPDATE_OPERATORS_LINK:
-    "https://docs.ssv.network/learn/stakers/validators/update-operators",
+    "https://docs.ssv.network/stakers/validators/update-operators",
   MORE_ABOUT_UPDATE_FEES:
     "https://docs.ssv.network/learn/operators/update-fee#_nn1qsdauoghf",
   MORE_ON_FEES:

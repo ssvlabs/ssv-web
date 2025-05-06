@@ -10,7 +10,6 @@ import type {
   ExtractAbiFunction,
   ExtractAbiFunctionNames,
 } from "abitype";
-import { isUndefined } from "lodash-es";
 
 export type AbiInputsToParams<T extends readonly AbiParameter[]> = {
   [K in T[number] as K["name"] extends string
@@ -31,12 +30,15 @@ export const paramsToArray = <
   return stringifyBigints(
     abiFunction.inputs.reduce(
       (acc, param) => {
-        if (param.name && !isUndefined(params[param.name])) {
-          return [...acc, params[param.name]] as AbiParametersToPrimitiveTypes<
-            Fn["inputs"]
-          >;
-        } else {
-          console.error(`Missing argument for ${param}`);
+        if (param.name) {
+          const value = params[param.name];
+          if (Number.isNaN(value)) {
+            console.warn(`Passed NaN for the [${param.name}] parameter`);
+            return [...acc, undefined] as AbiParametersToPrimitiveTypes<
+              Fn["inputs"]
+            >;
+          }
+          return [...acc, value] as AbiParametersToPrimitiveTypes<Fn["inputs"]>;
         }
         return acc;
       },

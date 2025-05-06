@@ -118,7 +118,7 @@ const SignatureStep = ({
                         content={
                           <Button
                             as="a"
-                            href="https://docs.ssv.network/~/changes/jp5KZr2yy7T6b0RmeOmN/developers/tools/ssv-dkg-client/update-owner-nonce-in-key-shares"
+                            href="https://docs.ssv.network/developers/tools/ssv-dkg-client/update-owner-nonce-in-key-shares"
                             variant="link"
                             target="_blank"
                           >

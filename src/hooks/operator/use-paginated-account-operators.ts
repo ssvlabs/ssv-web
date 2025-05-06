@@ -23,7 +23,7 @@ export const getPaginatedAccountOperatorsQueryOptions = (
 ) =>
   queryOptions({
     queryKey: [
-      "paginated-account-operators",
+      "paginated-my-account-operators",
       address?.toLowerCase(),
       page,
       perPage,

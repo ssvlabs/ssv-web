@@ -2,6 +2,7 @@
 import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import { ms } from "@/lib/utils/number";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
+import { hashFn } from "@wagmi/core/query";
 import type {
   dataTagSymbol,
   DefaultOptions,
@@ -30,6 +31,7 @@ export const queryConfig = {
   queries: {
     staleTime: ms(1, "minutes"),
     gcTime: ms(24, "hours"),
+    queryKeyHashFn: hashFn,
   },
 } satisfies DefaultOptions;
 

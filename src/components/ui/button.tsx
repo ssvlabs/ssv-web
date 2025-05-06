@@ -12,7 +12,7 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 ",
+          "bg-primary-500 text-[#ffffff] hover:bg-primary-600 active:bg-primary-700 ",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
@@ -36,7 +36,7 @@ export const buttonVariants = cva(
         default: "h-10 px-4 py-2 font-medium text-md rounded-lg",
         sm: "h-9 px-3 font-medium text-sm rounded-lg",
         lg: "h-12 px-6 font-medium text-md rounded-lg",
-        xl: "h-[60px] px-6 font-medium text-md rounded-lg",
+        xl: "h-[60px] px-6 font-medium text-base rounded-lg",
         icon: "size-7 rounded-lg",
         network: "h-12 pl-3 pr-4 font-medium text-md rounded-lg",
         wallet: "h-12 px-4 font-medium text-md rounded-lg",
@@ -107,7 +107,7 @@ export const Button: ButtonFC = React.forwardRef<
     const _loadingText = loadingText ?? "Waiting for Wallet Confirmation...";
     return (
       <Comp
-        className={cn(
+        className={`text-[14px] ${cn(
           buttonVariants({
             variant: disabled ? "disabled" : variant,
             size,
@@ -118,7 +118,7 @@ export const Button: ButtonFC = React.forwardRef<
           {
             "opacity-50": isLoading,
           },
-        )}
+        )}`}
         aria-disabled={disabled}
         disabled={disabled}
         type={type}

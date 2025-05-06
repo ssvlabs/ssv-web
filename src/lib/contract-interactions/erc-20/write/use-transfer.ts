@@ -3,7 +3,6 @@
 // ------------------------------------------------
 
 import { useWriteContract } from "wagmi";
-import { useSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import type {
   MainnetEvent,
   MutationOptions,
@@ -24,13 +23,14 @@ const abiFunction = extractAbiFunction(TokenABI, "transfer");
 // type State = "idle" | "confirming" | "mining" | "mined" | "error";
 
 export const useTransfer = () => {
-  const { tokenAddress } = useSSVNetworkDetails();
-
-  const wait = useWaitForTransactionReceipt(["useTransfer", tokenAddress]);
+  const wait = useWaitForTransactionReceipt<MainnetEvent>(["useTransfer"]);
   const mutation = useWriteContract();
 
   const write = (
-    params: AbiInputsToParams<Fn["inputs"]>,
+    {
+      tokenAddress,
+      ...params
+    }: AbiInputsToParams<Fn["inputs"]> & { tokenAddress: `0x${string}` },
     options: MutationOptions<MainnetEvent> = {},
   ) => {
     options.onInitiated?.();

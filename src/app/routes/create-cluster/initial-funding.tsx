@@ -32,7 +32,7 @@ import { useNavigate } from "react-router";
 import { ClusterFundingSummary } from "@/components/cluster/cluster-funding-summary";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { NumberInput } from "@/components/ui/number-input";
+import { BigNumberInput } from "@/components/ui/number-input";
 import { cn } from "@/lib/utils/tw";
 import { Spacer } from "@/components/ui/spacer";
 import { formatSSV } from "@/lib/utils/number";
@@ -191,7 +191,7 @@ export const InitialFunding: FCProps = ({ ...props }) => {
                             render={({ field }) => (
                               <FormItem>
                                 <FormControl>
-                                  <NumberInput
+                                  <BigNumberInput
                                     className="text-gray-800"
                                     value={BigInt(field.value)}
                                     onChange={(value) =>

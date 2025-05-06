@@ -10,7 +10,7 @@
 
   const mainnetAbi = require("../src/lib/abi/mainnet/v4/setter.json");
 
-  const holeskyAbi = require("../src/lib/abi/holesky/v4/setter.json").filter(
+  const testnetAbi = require("../src/lib/abi/testnet/v4/setter.json").filter(
     (item) => {
       const mainnetItem = mainnetAbi.find((f) => f?.name === item?.name);
       return !isEqual(mainnetItem, item);
@@ -31,7 +31,7 @@
     fs.unlinkSync(path.join(folder, file));
   });
 
-  const writeFns = holeskyAbi.filter(
+  const writeFns = testnetAbi.filter(
     (item) =>
       item.type === "function" &&
       item.stateMutability !== "view" &&
@@ -54,11 +54,11 @@
 
     const args = item.inputs;
 
-    const networkName = isTestnet ? "holesky" : "mainnet";
+    const networkName = isTestnet ? "testnet" : "mainnet";
 
     const isPayable = item.stateMutability === "payable";
 
-    const abiName = isTestnet ? "HoleskyV4SetterABI" : "MainnetV4SetterABI";
+    const abiName = isTestnet ? "TestnetV4SetterABI" : "MainnetV4SetterABI";
 
     const eventTypeName = isTestnet ? "TestnetEvent" : "MainnetEvent";
 
@@ -98,7 +98,7 @@ ${hasInputs ? `const abiFunction = extractAbiFunction(${abiName},"${functionName
 export const ${hookName} = () => {
   const { setterContractAddress } = useSSVNetworkDetails()
 
-  const wait = ${useWaitForTxHookName}(["${hookName}", setterContractAddress]);
+  const wait = ${useWaitForTxHookName}<${eventTypeName}>(["${hookName}", setterContractAddress]);
   const mutation = useWriteContract();
 
   const write = (${hasInputs ? 'params: AbiInputsToParams<Fn["inputs"]>,' : ""}${isPayable ? "value?: bigint," : ""}options: MutationOptions<${eventTypeName}> = {}) => {

@@ -1,5 +1,18 @@
 import { formatUnits } from "viem";
 
+export const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  notation: "compact",
+  maximumFractionDigits: 0,
+  compactDisplay: "short",
+});
+
+export const compactFormatter = new Intl.NumberFormat("en-US", {
+  notation: "compact",
+  maximumFractionDigits: 0,
+  compactDisplay: "short",
+});
 export const numberFormatter = new Intl.NumberFormat("en-US", {
   useGrouping: true,
   maximumFractionDigits: 2,
@@ -16,6 +29,9 @@ export const percentageFormatter = {
     return _percentageFormatter.format(value / 100);
   },
 };
+
+export const convertToPercentage = (value: string | number) =>
+  Number((parseInt(`${value}`, 10) / 100).toFixed(2));
 
 export const bigintFormatter = new Intl.NumberFormat("en-US", {
   useGrouping: false,

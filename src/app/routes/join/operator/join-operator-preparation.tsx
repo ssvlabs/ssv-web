@@ -32,7 +32,7 @@ export const JoinOperatorPreparation: FC<ComponentPropsWithoutRef<"div">> = ({
               className="w-full"
               as="a"
               target="_blank"
-              href="https://docs.ssv.network/operator-user-guides/operator-node/installation"
+              href="https://docs.ssv.network/operators/operator-node/"
             >
               Run SSV Node
             </Button>

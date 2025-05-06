@@ -11,7 +11,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { NumberInput } from "@/components/ui/number-input";
+import { BigNumberInput } from "@/components/ui/number-input";
 import { EstimatedOperationalRunway } from "@/components/cluster/estimated-operational-runway";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { Button } from "@/components/ui/button";
@@ -88,7 +88,7 @@ export const DepositClusterBalance: FC = () => {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <NumberInput
+                  <BigNumberInput
                     placeholder="0"
                     value={field.value}
                     onChange={field.onChange}

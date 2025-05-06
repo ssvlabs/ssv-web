@@ -26,12 +26,12 @@ const Fee = () => {
           <div className="flex flex-col gap-3">
             <Text variant="body-1-bold">Set Strategy Fee</Text>
             <Text>
-              Strategies can set their fee rate on Service rewards. There is no
+              Strategies can set their fee rate on bApp rewards. There is no
               default fee, a Strategy can set this to any amount from 0% to 100%
-              of Service rewards.
+              of bApp rewards.
             </Text>
             <Text>
-              Please note that you could always change this fee (according to
+              Please note that you can always change this fee (according to
               limitations) to align with market dynamics.
             </Text>
           </div>

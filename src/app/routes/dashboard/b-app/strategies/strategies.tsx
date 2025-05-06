@@ -79,6 +79,25 @@ export const Strategies: FC = () => {
         isLoading={isStrategiesLoading}
         showDepositButtonOnHover={(tokensFilter.value?.length || 0) > 0}
         onDepositClick={onDepositClick}
+        emptyState={
+          tokensFilter.value ? (
+            <div className="flex flex-col items-center gap-4">
+              <Text variant="body-3-medium" className="text-gray-600">
+                No strategies currently support this asset
+              </Text>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="px-5 h-10"
+                onClick={() => {
+                  tokensFilter.set(null);
+                }}
+              >
+                Clear Filter
+              </Button>
+            </div>
+          ) : null
+        }
       />
     </Container>
   );

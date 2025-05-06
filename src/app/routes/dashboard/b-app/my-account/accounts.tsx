@@ -9,7 +9,7 @@ import { AccountsTable } from "@/components/based-apps/accounts-table/accounts-t
 import { useBAppAccounts } from "@/hooks/b-app/use-b-app-accounts.ts";
 import { parseAsString, useQueryState } from "nuqs";
 import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
-import { formatGwei, isAddress } from "viem";
+import { formatUnits, isAddress } from "viem";
 import { useDelegateContext } from "@/components/context/delegate-context.tsx";
 import type { AccountMetadata, BAppAccount } from "@/api/b-app.ts";
 
@@ -74,7 +74,9 @@ const Accounts = () => {
             </div>
           </div>
           <AccountsTable
-            effectiveBalance={Number(formatGwei(data?.effectiveBalance || 0n))}
+            effectiveBalance={Number(
+              formatUnits(data?.effectiveBalance || 0n, 18),
+            )}
             accountDelegations={data?.delegations}
             pagination={pagination}
             isLoading={isLoading}

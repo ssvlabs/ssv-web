@@ -15,7 +15,7 @@ import { useDepositETH } from "@/lib/contract-interactions/b-app/write/use-depos
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { formatSSV } from "@/lib/utils/number";
 import { getStrategyName } from "@/lib/utils/strategy";
-import { useAssetsDelegationModal } from "@/signals/modal";
+import { useAssetDepositModal } from "@/signals/modal";
 import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { useEffect } from "react";
@@ -32,12 +32,16 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export const AssetsDelegationModal = () => {
-  const { meta, isOpen, onOpenChange } = useAssetsDelegationModal();
+export const AssetsDepositModal = () => {
+  const { meta, isOpen, onOpenChange } = useAssetDepositModal();
   const { bAppContractAddress } = useSSVNetworkDetails();
   const { address } = useAccount();
   const navigate = useNavigate();
-  const { strategy, invalidate } = useStrategy(meta.strategyId);
+  const { strategy, invalidate, strategyQuery } = useStrategy(meta.strategyId);
+
+  const isAssetUtilized = strategy?.depositsPerToken?.some(
+    (deposit) => deposit.token.toString() === meta.asset?.toLowerCase(),
+  );
 
   const asset = useAsset(meta.asset);
   const delegated = useDelegatedAsset({
@@ -134,9 +138,7 @@ export const AssetsDelegationModal = () => {
                 </Text>
               </div>
             </div>
-            {!(strategy.depositsPerToken || []).some(
-              ({ token }) => token.toString() === meta.asset?.toLowerCase(),
-            ) && (
+            {strategyQuery.isSuccess && !isAssetUtilized && (
               <Alert variant="warning">
                 This Strategy is not currently utilizing this asset
               </Alert>
@@ -250,4 +252,4 @@ export const AssetsDelegationModal = () => {
   );
 };
 
-AssetsDelegationModal.displayName = "AssetsDelegationModal";
+AssetsDepositModal.displayName = "AssetsDelegationModal";

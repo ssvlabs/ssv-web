@@ -1,7 +1,7 @@
 import { Navbar } from "@/app/layouts/dashboard/navbar";
 import { NavbarDVT } from "@/app/layouts/dashboard/navbar-dvt";
 import { AssetWithdrawalModal } from "@/components/modals/bapp/asset-withdrawal-modal";
-import { AssetsDelegationModal } from "@/components/modals/bapp/assets-delegation-modal";
+import { AssetsDepositModal } from "@/components/modals/bapp/assets-deposit-modal";
 import { MultisigTransactionModal } from "@/components/ui/multisig-transaction-modal";
 import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 import { TransactionModal } from "@/components/ui/transaction-modal";
@@ -75,7 +75,7 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
         )}
       </AnimatePresence>
       <TransactionModal />
-      <AssetsDelegationModal />
+      <AssetsDepositModal />
       <AssetWithdrawalModal />
       <MultisigTransactionModal />
     </>

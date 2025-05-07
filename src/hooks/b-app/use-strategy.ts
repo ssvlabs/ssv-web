@@ -78,6 +78,7 @@ export const useStrategy = (_strategyId?: string) => {
         ...bAppsMetadata[bApp.bAppId],
       })),
     } as Strategy & StrategyMetadata,
+    strategyQuery,
     isLoading:
       strategyQuery.isLoading ||
       accountQuery.isLoading ||

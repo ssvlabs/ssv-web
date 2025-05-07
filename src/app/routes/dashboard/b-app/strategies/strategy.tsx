@@ -26,7 +26,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils/tw.ts";
 import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
-import { useAssetsDelegationModal } from "@/signals/modal";
+import { useAssetDepositModal } from "@/signals/modal";
 import DescriptionCard from "@/components/ui/description-card.tsx";
 import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
 import { getStrategyName } from "@/lib/utils/strategy";
@@ -271,7 +271,7 @@ const Strategy = () => {
         <div className="w-full flex flex-col gap-6">
           <StrategyAssetsTable
             onDepositClick={(asset) => {
-              useAssetsDelegationModal.state.open({
+              useAssetDepositModal.state.open({
                 asset: asset.token,
                 strategyId: strategy.id,
               });

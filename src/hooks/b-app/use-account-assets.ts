@@ -4,7 +4,7 @@ import type { SlashableAsset, StrategyMetadata } from "@/api/b-app";
 import type { Address } from "abitype";
 import { useBalances } from "@/hooks/account/use-balances";
 import { normalizeTokenAddress } from "@/lib/utils/token";
-import { useStrategyMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
+import { useStrategiesMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
 
 export type AccountAsset = {
   slashableAsset?: SlashableAsset;
@@ -71,7 +71,7 @@ export const useAccountAssets = () => {
     [],
   );
   const { data: strategiesMetadata, isLoading: strategiesMetadataIsLoading } =
-    useStrategyMetadata(metadatas || []);
+    useStrategiesMetadata(metadatas || []);
 
   const accountAssets = filteredAssets.map((a) => {
     const addr = normalizeTokenAddress(a.token).toLocaleLowerCase();
@@ -82,7 +82,7 @@ export const useAccountAssets = () => {
         ...delegations,
         deposits: (delegations?.deposits || []).map((deposit) => ({
           ...deposit,
-          ...strategiesMetadata[deposit.strategyId],
+          ...strategiesMetadata?.[deposit.strategyId],
         })) as ({
           strategyId: string;
           depositAmount: string;

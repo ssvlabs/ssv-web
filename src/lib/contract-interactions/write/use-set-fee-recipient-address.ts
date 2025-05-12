@@ -38,6 +38,24 @@ export const useSetFeeRecipientAddress = () => {
   ]);
   const mutation = useWriteContract();
 
+  const send = (
+    params: AbiInputsToParams<Fn["inputs"]>,
+    options: MutationOptions<MainnetEvent> = {},
+  ) => {
+    return mutation.writeContractAsync(
+      {
+        abi: MainnetV4SetterABI,
+        address: setterContractAddress,
+        functionName: "setFeeRecipientAddress",
+        args: paramsToArray({ params, abiFunction }),
+      },
+      {
+        onSuccess: (hash) => options.onConfirmed?.(hash),
+        onError: (error) => options.onError?.(error as WriteContractErrorType),
+      },
+    );
+  };
+
   const write = (
     params: AbiInputsToParams<Fn["inputs"]>,
     options: MutationOptions<MainnetEvent> = {},
@@ -74,6 +92,7 @@ export const useSetFeeRecipientAddress = () => {
     isPending,
     mutation,
     write,
+    send,
     wait,
   };
 };

@@ -26,6 +26,27 @@ export const useApprove = () => {
   const wait = useWaitForTransactionReceipt<MainnetEvent>(["useApprove"]);
   const mutation = useWriteContract();
 
+  const send = (
+    {
+      tokenAddress,
+      ...params
+    }: AbiInputsToParams<Fn["inputs"]> & { tokenAddress: `0x${string}` },
+    options: MutationOptions<MainnetEvent> = {},
+  ) => {
+    return mutation.writeContractAsync(
+      {
+        abi: TokenABI,
+        address: tokenAddress,
+        functionName: "approve",
+        args: paramsToArray({ params, abiFunction }),
+      },
+      {
+        onSuccess: (hash) => options.onConfirmed?.(hash),
+        onError: (error) => options.onError?.(error as WriteContractErrorType),
+      },
+    );
+  };
+
   const write = (
     {
       tokenAddress,
@@ -65,6 +86,7 @@ export const useApprove = () => {
     isPending,
     mutation,
     write,
+    send,
     wait,
   };
 };

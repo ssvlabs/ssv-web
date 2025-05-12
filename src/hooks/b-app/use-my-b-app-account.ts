@@ -1,10 +1,6 @@
 import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { formatUnits, isAddress } from "viem";
-import type {
-  AccountMetadata,
-  BApp,
-  StrategiesByOwnerResponse,
-} from "@/api/b-app.ts";
+import type { BApp, StrategiesByOwnerResponse } from "@/api/b-app.ts";
 import { getMyAccount } from "@/api/b-app.ts";
 import { getBAppsByOwnerAddress } from "@/api/b-app.ts";
 import {
@@ -16,8 +12,8 @@ import { convertToPercentage } from "@/lib/utils/number.ts";
 import { useSearchParams } from "react-router-dom";
 import { useOrdering } from "@/hooks/use-ordering.ts";
 import { usePaginationQuery } from "@/lib/query-states/use-pagination.ts";
-import { useAccountMetadata } from "@/hooks/b-app/use-account-metadata.ts";
-import { useStrategyMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
+import { useAccountsMetadata } from "@/hooks/b-app/use-account-metadata.ts";
+import { useStrategiesMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
 import { useBAppMetadata } from "@/hooks/b-app/use-b-app-metadata.ts";
 
 export const useMyBAppAccount = () => {
@@ -55,21 +51,19 @@ export const useMyBAppAccount = () => {
     enabled: address && isAddress(address),
   });
 
-  const { data: receiversMetadata, isLoading: receiversMetadataIsLoading } =
-    useAccountMetadata(
-      (reactQueryData.data?.delegations || []).map((delegation) => ({
-        id: delegation.receiver.id,
-        url: delegation.receiver.metadataURI || "",
-      })),
-    );
+  const receiversMetadata = useAccountsMetadata(
+    (reactQueryData.data?.delegations || []).map((delegation) => ({
+      id: delegation.receiver.id,
+      url: delegation.receiver.metadataURI || "",
+    })),
+  );
 
-  const { data: strategiesMetadata, isLoading: strategiesMetadataIsLoading } =
-    useStrategyMetadata(
-      myStrategies.data?.strategies.map(({ id, metadataURI }) => ({
-        id,
-        url: metadataURI || "",
-      })) || [],
-    );
+  const strategiesMetadata = useStrategiesMetadata(
+    myStrategies.data?.strategies.map(({ id, metadataURI }) => ({
+      id,
+      url: metadataURI || "",
+    })) || [],
+  );
 
   const myAccountQuery = useChainedQuery({
     queryKey: ["my_account", address],
@@ -78,12 +72,12 @@ export const useMyBAppAccount = () => {
   });
 
   const account = myAccountQuery.data?.data[0];
-  const { data: accountMetadataItem, isLoading: accountMetadataIsLoading } =
-    useAccountMetadata([
-      { id: account?.id || "", url: account?.metadataURI || "" },
-    ]);
 
-  const accountMetadata = accountMetadataItem && accountMetadataItem[0]?.data;
+  const accountsMetadata = useAccountsMetadata([
+    { id: account?.id || "", url: account?.metadataURI || "" },
+  ]);
+
+  const accountMetadata = accountsMetadata.data?.[account?.id || ""];
 
   const myBApps = useChainedQuery({
     queryKey: ["get_my_b_apps", page, perPage, address],
@@ -115,12 +109,6 @@ export const useMyBAppAccount = () => {
       Number(reactQueryData?.data?.effectiveBalance || 0n),
   );
 
-  const mappedReceiversMetadata: Record<string, AccountMetadata> = (
-    receiversMetadata || []
-  ).reduce((acc, metadataItem) => {
-    return { ...acc, [metadataItem.id]: metadataItem.data };
-  }, {});
-
   const restBalancePercentage =
     Math.round((100 - (totalPercentage || 0)) * 100) / 100;
   return {
@@ -132,20 +120,21 @@ export const useMyBAppAccount = () => {
           ...delegation,
           receiver: {
             ...delegation.receiver,
-            ...mappedReceiversMetadata[delegation.receiver.id],
+            ...receiversMetadata.data?.[delegation.receiver.id],
           },
         }),
       ),
     },
-    myStrategies:
-      {
-        ...myStrategies.data,
-        strategies: myStrategies.data?.strategies.map((strategy) => ({
-          ...strategy,
-          ...strategiesMetadata[strategy.id],
-          ownerAddressMetadata: accountMetadata,
-        })),
-      } || ({} as StrategiesByOwnerResponse),
+    myStrategies: myStrategies.data
+      ? {
+          ...myStrategies.data,
+          strategies: myStrategies.data.strategies.map((strategy) => ({
+            ...strategy,
+            ...strategiesMetadata.data?.[strategy.id],
+            ownerAddressMetadata: accountMetadata,
+          })),
+        }
+      : ({} as StrategiesByOwnerResponse),
     myBApps: {
       pagination: myBApps.data?.pagination,
       data: (myBApps.data?.data || []).map((bApp: BApp) => ({
@@ -158,11 +147,11 @@ export const useMyBAppAccount = () => {
       reactQueryData.isLoading ||
       myStrategies.isLoading ||
       myBApps.isLoading ||
-      accountMetadataIsLoading ||
+      accountsMetadata.isLoading ||
       bAppsMetadataIsLoading ||
-      strategiesMetadataIsLoading ||
+      strategiesMetadata.isLoading ||
       myAccountQuery.isLoading ||
-      receiversMetadataIsLoading,
+      receiversMetadata.isLoading,
     totalPercentage,
     restBalancePercentage,
     effectiveBalance: reactQueryData.data?.effectiveBalance,

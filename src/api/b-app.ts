@@ -273,10 +273,7 @@ export const validateMetadata = <T>(url: string) =>
     });
 
 export const getMetadata = <T>(urls: { id: string; url: string }[]) =>
-  api.post<T>(endpoint("basedApp", "fetchMetadataUrl"), urls).then((res) => {
-    return res;
-  });
-
+  api.post<T>(endpoint("basedApp", "fetchMetadataUrl"), urls);
 export const getAccountsMetadata = getMetadata<
   {
     id: string;

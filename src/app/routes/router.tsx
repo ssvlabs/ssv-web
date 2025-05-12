@@ -15,15 +15,18 @@ import { Maintenance } from "@/app/routes/maintenance";
 import { Compliance } from "@/app/routes/compliance";
 import { NotFound } from "./not-found";
 import { accountRoutes } from "@/app/routes/router/route-definitions/account-routes.tsx";
+import { BatchTransactionProvider } from "@/lib/machines/batch-transactions/context";
 
 const routes = [
   {
     path: "",
     element: (
       <ProtectedRoute>
-        <DashboardLayout>
-          <Outlet />
-        </DashboardLayout>
+        <BatchTransactionProvider>
+          <DashboardLayout>
+            <Outlet />
+          </DashboardLayout>
+        </BatchTransactionProvider>
       </ProtectedRoute>
     ),
     children: [

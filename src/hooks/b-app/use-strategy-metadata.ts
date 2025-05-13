@@ -21,7 +21,7 @@ export const getStrategiesMetadataQueryOptions = (urls: URLS) =>
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     queryFn: () => getStrategiesMetadata(urls),
-    select: (data) => createMap(data),
+    select: (data) => ({ list: data, map: createMap(data) }),
     enabled: Boolean(urls.length),
   });
 

@@ -77,7 +77,7 @@ export const useMyBAppAccount = () => {
     { id: account?.id || "", url: account?.metadataURI || "" },
   ]);
 
-  const accountMetadata = accountsMetadata.data?.[account?.id || ""];
+  const accountMetadata = accountsMetadata.data?.list.at(0)?.data;
 
   const myBApps = useChainedQuery({
     queryKey: ["get_my_b_apps", page, perPage, address],
@@ -120,7 +120,7 @@ export const useMyBAppAccount = () => {
           ...delegation,
           receiver: {
             ...delegation.receiver,
-            ...receiversMetadata.data?.[delegation.receiver.id],
+            ...receiversMetadata.data?.map[delegation.receiver.id],
           },
         }),
       ),
@@ -130,7 +130,7 @@ export const useMyBAppAccount = () => {
           ...myStrategies.data,
           strategies: myStrategies.data.strategies.map((strategy) => ({
             ...strategy,
-            ...strategiesMetadata.data?.[strategy.id],
+            ...strategiesMetadata.data?.map[strategy.id],
             ownerAddressMetadata: accountMetadata,
           })),
         }

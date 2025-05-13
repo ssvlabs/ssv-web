@@ -82,7 +82,7 @@ export const useAccountAssets = () => {
         ...delegations,
         deposits: (delegations?.deposits || []).map((deposit) => ({
           ...deposit,
-          ...strategiesMetadata?.[deposit.strategyId],
+          ...strategiesMetadata?.map[deposit.strategyId],
         })) as ({
           strategyId: string;
           depositAmount: string;

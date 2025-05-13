@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { config } from "@/wagmi/config";
 import type {
   DefaultError,

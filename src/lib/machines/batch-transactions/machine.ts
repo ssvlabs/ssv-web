@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { toast } from "@/components/ui/use-toast";
 import { queryClient } from "@/lib/react-query";
 import { getErrorMessage } from "@/lib/utils/wagmi";

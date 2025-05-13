@@ -24,6 +24,20 @@ export const useAcceptOwnership = () => {
   ]);
   const mutation = useWriteContract();
 
+  const send = (options: MutationOptions<MainnetEvent> = {}) => {
+    return mutation.writeContractAsync(
+      {
+        abi: MainnetV4SetterABI,
+        address: setterContractAddress,
+        functionName: "acceptOwnership",
+      },
+      {
+        onSuccess: (hash) => options.onConfirmed?.(hash),
+        onError: (error) => options.onError?.(error as WriteContractErrorType),
+      },
+    );
+  };
+
   const write = (options: MutationOptions<MainnetEvent> = {}) => {
     options.onInitiated?.();
     return mutation
@@ -56,6 +70,7 @@ export const useAcceptOwnership = () => {
     isPending,
     mutation,
     write,
+    send,
     wait,
   };
 };

@@ -4,7 +4,7 @@ import { getAccounts } from "@/api/b-app.ts";
 import { useSearchParams } from "react-router-dom";
 import { createDefaultPagination } from "@/lib/utils/api.ts";
 import { usePaginationQuery } from "@/lib/query-states/use-pagination.ts";
-import { useAccountMetadata } from "@/hooks/b-app/use-account-metadata.ts";
+import { useAccountsMetadata } from "@/hooks/b-app/use-account-metadata.ts";
 import { parseAsString, useQueryState } from "nuqs";
 
 export const useBAppAccounts = () => {
@@ -27,15 +27,15 @@ export const useBAppAccounts = () => {
   const hasPrev = page > 1;
 
   const accounts = query.data?.data || [];
-  const { data: accountsMetadata, isLoading: accountsMetadataIsLoading } =
-    useAccountMetadata(
-      accounts.map(({ id, metadataURI }) => ({
-        id,
-        url: metadataURI || "",
-      })) || [],
-    );
+  const accountsMetadata = useAccountsMetadata(
+    accounts.map(({ id, metadataURI }) => ({
+      id,
+      url: metadataURI || "",
+    })) || [],
+  );
+  console.log("accountsMetadata:", accountsMetadata);
 
-  const isLoading = query.isLoading || accountsMetadataIsLoading;
+  const isLoading = query.isLoading || accountsMetadata.isLoading;
   const next = () => {
     hasNext &&
       setSearchParams((prev) => ({
@@ -52,17 +52,11 @@ export const useBAppAccounts = () => {
       }));
   };
 
-  const mappedMetadata: Record<string, AccountMetadata> = (
-    accountsMetadata || []
-  ).reduce((acc, metadataItem) => {
-    return { ...acc, [metadataItem.id]: metadataItem.data };
-  }, {});
-
   return {
     query,
     accounts: accounts.map((account: BAppAccount) => ({
       ...account,
-      ...mappedMetadata[account.id],
+      ...accountsMetadata.data?.map[account.id],
     })) as (BAppAccount & AccountMetadata)[],
     pagination,
     hasNext,

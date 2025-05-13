@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { toast } from "@/components/ui/use-toast";
 import { queryClient } from "@/lib/react-query";
 import type { DecodedReceipt } from "@/lib/utils/viem";
-import { getErrorMessage } from "@/lib/utils/wagmi";
 import { config } from "@/wagmi/config";
 import { getPublicClient } from "@wagmi/core";
 import type { ReactNode } from "react";
@@ -10,11 +8,15 @@ import type { Hash } from "viem";
 import { setup, fromPromise, assign } from "xstate";
 import { addDecodedEventsToReceipt } from "@/lib/utils/viem";
 import { set } from "lodash-es";
+import type {
+  AllEvents,
+  MutationOptions,
+} from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 
 type Writer = {
   name: string;
   write: () => Promise<Hash>;
-};
+} & MutationOptions<AllEvents>;
 
 type WriterInput = { input: { index: number; writer: Writer } };
 type WaiterInput = { input: { hash: Hash } };
@@ -63,16 +65,6 @@ export const machine = setup({
   },
   actions: {
     onDone: () => {},
-    onTaskFailed: ({ event }) => {
-      toast({
-        variant: "destructive",
-        title: "Transaction failed",
-        description:
-          "error" in event
-            ? getErrorMessage(event.error)
-            : "Something went wrong",
-      });
-    },
     increment: assign({
       i: ({ context }) => context.i + 1,
     }),
@@ -117,6 +109,9 @@ export const machine = setup({
               output: [],
               i: 0,
             })),
+            ({ context }) => {
+              context.writers[context.i].onInitiated?.();
+            },
           ],
         },
       },
@@ -139,11 +134,13 @@ export const machine = setup({
                 { hash: event.output },
               ],
             }),
+            ({ context, event }) => {
+              context.writers[context.i].onConfirmed?.(event.output);
+            },
           ],
         },
         onError: {
           target: "failed",
-          actions: "onTaskFailed",
         },
       },
     },
@@ -158,15 +155,20 @@ export const machine = setup({
         src: "waiter",
         onDone: [
           {
-            actions: assign({
-              output: ({ context, event }) => {
-                return set(
-                  context.output,
-                  `[${context.i}].receipt`,
-                  event.output,
-                );
+            actions: [
+              assign({
+                output: ({ context, event }) => {
+                  return set(
+                    context.output,
+                    `[${context.i}].receipt`,
+                    event.output,
+                  );
+                },
+              }),
+              ({ context, event }) => {
+                context.writers[context.i].onMined?.(event.output);
               },
-            }),
+            ],
           },
           {
             target: "finished",

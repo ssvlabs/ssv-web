@@ -7,7 +7,6 @@ import { useMutation } from "@tanstack/react-query";
 import type {
   Address,
   DecodeEventLogReturnType,
-  TransactionReceipt,
   WaitForTransactionReceiptErrorType,
 } from "viem";
 import { useChainId, usePublicClient } from "wagmi";
@@ -26,6 +25,7 @@ import { getErrorMessage } from "@/lib/utils/wagmi";
 import { Span } from "@/components/ui/text";
 import { mainnet_private_rpc_client } from "@/wagmi/config";
 import { isContractWallet } from "@/hooks/account/use-account";
+import type { DecodedReceipt } from "@/lib/utils/viem";
 import { addDecodedEventsToReceipt } from "@/lib/utils/viem";
 
 export type MainnetEvent = DecodeEventLogReturnType<typeof MainnetV4SetterABI>;
@@ -38,7 +38,7 @@ export type MutationOptions<T extends AllEvents> = {
   onInitiated?: () => MaybePromise<unknown | (() => unknown)>;
   onConfirmed?: (hash: Address) => MaybePromise<unknown | (() => unknown)>;
   onMined?: (
-    receipt: TransactionReceipt & { events: T[]; topics?: T[] },
+    receipt: DecodedReceipt<T>,
   ) => MaybePromise<unknown | (() => unknown)>;
   onError?: (
     error: WriteContractErrorType | WaitForTransactionReceiptErrorType,

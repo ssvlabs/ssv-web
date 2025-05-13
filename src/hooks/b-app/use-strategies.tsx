@@ -92,8 +92,8 @@ export const useStrategies = (_strategyId?: string, _bAppId?: string) => {
     strategies: strategies.map((strategy) => ({
       description: "",
       ...strategy,
-      ...strategiesMetadata?.[strategy.id],
-      ownerAddressMetadata: accountsMetadata.data?.[strategy.ownerAddress],
+      ...strategiesMetadata?.map[strategy.id],
+      ownerAddressMetadata: accountsMetadata.data?.map[strategy.ownerAddress],
     })) satisfies (Strategy &
       StrategyMetadata & {
         ownerAddressMetadata?: AccountMetadata;

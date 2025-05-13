@@ -21,7 +21,7 @@ export const getAccountsMetadataQueryOptions = (data: AccountURLs) =>
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     queryFn: () => getAccountsMetadata(data),
-    select: createMap,
+    select: (list) => ({ list, map: createMap(list) }),
     enabled: Boolean(data.length),
   });
 

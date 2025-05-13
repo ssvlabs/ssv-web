@@ -34,7 +34,7 @@ export const useStrategy = (_strategyId?: string) => {
       (bAppsURIS || [{ id: "", url: "" }]) as { id: string; url: string }[],
     );
 
-  const strategyMetadata = strategiesMetadata.data?.[`${strategy?.id}`];
+  const strategyMetadata = strategiesMetadata.data?.map[`${strategy?.id}`];
 
   const accountQuery = useChainedQuery({
     queryKey: ["Account", strategyQuery.data?.ownerAddress],
@@ -53,11 +53,12 @@ export const useStrategy = (_strategyId?: string) => {
 
   const account = accountQuery.data?.data[0];
 
-  const accountId = account?.id || "unknown";
   const { data: accountMetadataItem, isLoading: accountMetadataIsLoading } =
-    useAccountsMetadata([{ id: accountId, url: account?.metadataURI || "" }]);
+    useAccountsMetadata([
+      { id: account?.id || "", url: account?.metadataURI || "" },
+    ]);
 
-  const accountMetadata = accountMetadataItem?.[accountId];
+  const accountMetadata = accountMetadataItem?.list.at(0)?.data;
 
   const invalidate = async () => {
     await Promise.all([strategyQuery.invalidate(), accountQuery.invalidate()]);

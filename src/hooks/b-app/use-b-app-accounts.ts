@@ -56,7 +56,7 @@ export const useBAppAccounts = () => {
     query,
     accounts: accounts.map((account: BAppAccount) => ({
       ...account,
-      ...accountsMetadata.data?.[account.id],
+      ...accountsMetadata.data?.map[account.id],
     })) as (BAppAccount & AccountMetadata)[],
     pagination,
     hasNext,

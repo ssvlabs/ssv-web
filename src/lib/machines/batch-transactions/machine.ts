@@ -1,16 +1,21 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { toast } from "@/components/ui/use-toast";
 import { queryClient } from "@/lib/react-query";
+import type { DecodedReceipt } from "@/lib/utils/viem";
 import { getErrorMessage } from "@/lib/utils/wagmi";
 import { config } from "@/wagmi/config";
 import { getPublicClient } from "@wagmi/core";
 import type { ReactNode } from "react";
-import type { Hash, TransactionReceipt } from "viem";
+import type { Hash } from "viem";
 import { setup, fromPromise, assign } from "xstate";
+import { addDecodedEventsToReceipt } from "@/lib/utils/viem";
+import { set } from "lodash-es";
 
 type Writer = {
   name: string;
   write: () => Promise<Hash>;
 };
+
 type WriterInput = { input: { index: number; writer: Writer } };
 type WaiterInput = { input: { hash: Hash } };
 
@@ -27,7 +32,10 @@ const waiterActor = fromPromise(async ({ input }: WaiterInput) => {
   const mutationCache = queryClient.getMutationCache();
   const mutation = mutationCache.build(queryClient, {
     mutationKey: ["waitForTransactionReceipt"],
-    mutationFn: () => client.waitForTransactionReceipt({ hash: input.hash }),
+    mutationFn: () =>
+      client
+        .waitForTransactionReceipt({ hash: input.hash })
+        .then(addDecodedEventsToReceipt),
   });
   return await mutation.execute({});
 });
@@ -37,14 +45,18 @@ export const machine = setup({
     context: {} as {
       writers: Writer[];
       i: number;
-      output: { hash: Hash; receipt?: TransactionReceipt }[];
+      output: { hash: Hash; receipt?: DecodedReceipt }[];
       header: ReactNode;
+      onDone?: () => void;
     },
     events: {} as
       | { type: "retry" | "restart" }
-      | { type: "write"; writers: Writer[]; header: ReactNode }
-      | { type: "done.invoke.writer"; output: Hash }
-      | { type: "done.invoke.waiter"; output: TransactionReceipt }
+      | {
+          type: "write";
+          writers: Writer[];
+          header: ReactNode;
+          onDone?: () => void;
+        }
       | { type: "error.invoke.writer"; error: Error }
       | { type: "error.invoke.waiter"; error: Error }
       | { type: "cancel" },
@@ -63,15 +75,6 @@ export const machine = setup({
     },
     increment: assign({
       i: ({ context }) => context.i + 1,
-    }),
-    addHash: assign({
-      output: ({ context, event }) => {
-        if ("output" in event) {
-          return [...context.output, { hash: event.output as Hash }];
-        }
-
-        return context.output;
-      },
     }),
     reset: assign({
       i: 0,
@@ -107,12 +110,13 @@ export const machine = setup({
             return event.writers.length > 0;
           },
           actions: [
-            assign({
-              writers: ({ event }) => event.writers,
-              header: ({ event }) => event.header,
+            assign(({ event }) => ({
+              writers: event.writers,
+              header: event.header,
+              onDone: event.onDone,
               output: [],
               i: 0,
-            }),
+            })),
           ],
         },
       },
@@ -128,7 +132,14 @@ export const machine = setup({
         src: "writer",
         onDone: {
           target: "wait",
-          actions: "addHash",
+          actions: [
+            assign({
+              output: ({ context, event }) => [
+                ...context.output,
+                { hash: event.output },
+              ],
+            }),
+          ],
         },
         onError: {
           target: "failed",
@@ -139,13 +150,24 @@ export const machine = setup({
     wait: {
       invoke: {
         input: ({ event }) => {
-          if ("output" in event) {
-            return { hash: event.output as Hash };
+          if (!("output" in event)) {
+            throw new Error("Invalid event type for waiter input");
           }
-          throw new Error("Invalid event type for waiter input");
+          return { hash: event.output as Hash };
         },
         src: "waiter",
         onDone: [
+          {
+            actions: assign({
+              output: ({ context, event }) => {
+                return set(
+                  context.output,
+                  `[${context.i}].receipt`,
+                  event.output,
+                );
+              },
+            }),
+          },
           {
             target: "finished",
             guard: "isFinished",
@@ -163,6 +185,9 @@ export const machine = setup({
       after: {
         1000: {
           target: "idle",
+          actions: ({ context }) => {
+            context.onDone?.();
+          },
         },
       },
     },

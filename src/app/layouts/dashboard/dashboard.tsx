@@ -1,5 +1,6 @@
 import { Navbar } from "@/app/layouts/dashboard/navbar";
 import { NavbarDVT } from "@/app/layouts/dashboard/navbar-dvt";
+import { MetadataEditorModal } from "@/app/routes/dashboard/b-app/strategies/metadata-editor/metadata-editor-modal";
 import { AssetWithdrawalModal } from "@/components/modals/bapp/asset-withdrawal-modal";
 import { AssetsDepositModal } from "@/components/modals/bapp/assets-deposit-modal";
 import { BatchTransactionModal } from "@/components/modals/batch-transaction-modal";
@@ -18,7 +19,7 @@ import { cn } from "@/lib/utils/tw";
 import { useIsRestoring } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ComponentPropsWithRef, FC } from "react";
-import { Navigate } from "react-router";
+import { Navigate, useParams } from "react-router";
 
 export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
   children,
@@ -30,6 +31,8 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
 
   const isRestoring = useIsRestoring();
   const account = useAccount();
+
+  const pageParams = useParams();
 
   const { isMaintenancePage } = useMaintenance();
   const { isLoadingClusters, isLoadingOperators } = useAccountState();
@@ -80,6 +83,7 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
         <TransactionModal />
         <AssetsDepositModal />
         <AssetWithdrawalModal />
+        <MetadataEditorModal key={pageParams.strategyId} />
         <MultisigTransactionModal />
         <BatchTransactionModal />
       </BatchTransactionProvider>

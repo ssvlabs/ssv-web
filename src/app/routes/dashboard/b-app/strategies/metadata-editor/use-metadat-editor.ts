@@ -2,6 +2,7 @@ import { useFetchAccountsMetadata } from "@/hooks/b-app/use-account-metadata";
 import { useFetchStrategiesMetadata } from "@/hooks/b-app/use-strategy-metadata";
 import { metadataURISchema } from "@/lib/zod/strategy";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -13,25 +14,24 @@ type MetadataEditorFormValues = {
 type MetadataEditorProps = {
   strategyId: string;
   defaultValues?: MetadataEditorFormValues;
-  onSubmit: (values: MetadataEditorFormValues) => void;
 };
 
 export const useMetadataEditor = ({
   strategyId,
   defaultValues,
-  onSubmit,
 }: MetadataEditorProps) => {
   const fetchStrategiesMetadata = useFetchStrategiesMetadata();
-  const isFetchingStrategiesMetadata = fetchStrategiesMetadata.isPending;
-
   const fetchAccountsMetadata = useFetchAccountsMetadata();
-  const isFetchingAccountsMetadata = fetchAccountsMetadata.isPending;
 
   const schema = z.object({
     strategyMetadataURI: z.union([
       z.literal(""),
-      metadataURISchema.superRefine(async (url, ctx) => {
-        const [, error] = await fetchStrategiesMetadata
+      metadataURISchema.refine(async (url) => {
+        if (metadataURISchema.safeParse(url).error) {
+          fetchStrategiesMetadata.reset();
+          return false;
+        }
+        const [data] = await fetchStrategiesMetadata
           .mutateAsync([
             {
               id: strategyId,
@@ -39,24 +39,23 @@ export const useMetadataEditor = ({
             },
           ])
           .then((data) => {
-            if (!data[strategyId]) {
+            if (!data.list.at(0)) {
               throw new Error("No metadata found");
             }
-            return [data[strategyId], null];
+            return [data.list.at(0), null];
           })
           .catch((err) => [null, err]);
-        if (error) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: error.message,
-          });
-        }
-      }),
+        return Boolean(data);
+      }, "No metadata found"),
     ]),
     accountMetadataURI: z.union([
       z.literal(""),
-      metadataURISchema.superRefine(async (url, ctx) => {
-        const [, error] = await fetchAccountsMetadata
+      metadataURISchema.refine(async (url) => {
+        if (metadataURISchema.safeParse(url).error) {
+          fetchAccountsMetadata.reset();
+          return false;
+        }
+        const [data] = await fetchAccountsMetadata
           .mutateAsync([
             {
               id: strategyId,
@@ -64,34 +63,45 @@ export const useMetadataEditor = ({
             },
           ])
           .then((data) => {
-            if (!data.length) {
-              throw new Error("No metadata found");
+            if (!data.list.at(0)) {
+              throw new Error();
             }
-            return [data[0], null];
+            return [data.list.at(0), null];
           })
           .catch((err) => [null, err]);
-        if (error) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: error.message,
-          });
-        }
-      }),
+        return Boolean(data);
+      }, "No metadata found"),
     ]),
   });
 
   const form = useForm<MetadataEditorFormValues>({
     mode: "all",
     defaultValues,
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema, {}),
   });
 
-  const submit = form.handleSubmit(onSubmit);
+  useEffect(() => {
+    form.setValue(
+      "accountMetadataURI",
+      defaultValues?.accountMetadataURI || "",
+      { shouldValidate: true },
+    );
+
+    form.setValue(
+      "strategyMetadataURI",
+      defaultValues?.strategyMetadataURI || "",
+      { shouldValidate: true },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    defaultValues?.accountMetadataURI,
+    defaultValues?.strategyMetadataURI,
+    form.setValue,
+  ]);
 
   return {
     form,
-    submit,
-    isFetchingStrategiesMetadata,
-    isFetchingAccountsMetadata,
+    fetchAccountsMetadata,
+    fetchStrategiesMetadata,
   };
 };

@@ -1,9 +1,9 @@
-import { useChainedQuery } from "@/hooks/react-query/use-chained-query.ts";
 import type { StrategyMetadata } from "@/api/b-app.ts";
 import { getStrategiesMetadata } from "@/api/b-app.ts";
 import { chainedQueryOptions } from "@/hooks/react-query/chained-query-options";
 import { queryClient } from "@/lib/react-query";
-import { useMutation } from "@tanstack/react-query";
+import { ms } from "@/lib/utils/number";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 type URLS = { id: string; url: string }[];
 
@@ -16,8 +16,7 @@ const createMap = (data: Awaited<ReturnType<typeof getStrategiesMetadata>>) =>
 export const getStrategiesMetadataQueryOptions = (urls: URLS) =>
   chainedQueryOptions({
     queryKey: ["strategy_metadata", urls],
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: ms(30, "seconds"),
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     queryFn: () => getStrategiesMetadata(urls),
@@ -29,11 +28,15 @@ export const queryFetchStrategiesMetadata = async (urls: URLS) => {
   return queryClient.fetchQuery(getStrategiesMetadataQueryOptions(urls));
 };
 export const useStrategiesMetadata = (urls: URLS) => {
-  return useChainedQuery(getStrategiesMetadataQueryOptions(urls));
+  return useQuery(getStrategiesMetadataQueryOptions(urls));
 };
 
 export const useFetchStrategiesMetadata = () => {
   return useMutation({
-    mutationFn: (urls: URLS) => getStrategiesMetadata(urls).then(createMap),
+    mutationFn: (urls: URLS) =>
+      queryFetchStrategiesMetadata(urls).then((list) => ({
+        list,
+        map: createMap(list),
+      })),
   });
 };

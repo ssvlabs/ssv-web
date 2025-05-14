@@ -12,6 +12,9 @@ import type {
   AllEvents,
   MutationOptions,
 } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
+import { toast } from "@/components/ui/use-toast";
+import { getErrorMessage } from "@/lib/utils/wagmi";
+import { Span } from "@/components/ui/text";
 
 type Writer = {
   name: string;
@@ -198,6 +201,20 @@ export const machine = setup({
         retry: "write",
         cancel: "idle",
       },
+      entry: [
+        ({ event }) => {
+          "error" in event &&
+            toast({
+              title: "Transaction failed",
+              description: (
+                <Span className="whitespace-pre-wrap">
+                  {getErrorMessage(event.error)}
+                </Span>
+              ),
+              variant: "destructive",
+            });
+        },
+      ],
     },
   },
 });

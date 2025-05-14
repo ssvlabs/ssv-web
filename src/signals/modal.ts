@@ -48,7 +48,7 @@ export const useTransactionModal = createModalSignal<{
 
 export const usePastingLimitExceededModal = createModalSignal();
 export const useMultisigTransactionModal = createModalSignal();
-export const useAssetsDelegationModal = createModalSignal<{
+export const useAssetDepositModal = createModalSignal<{
   strategyId: string;
   asset: Address;
 }>();
@@ -56,4 +56,8 @@ export const useAssetsDelegationModal = createModalSignal<{
 export const useAssetWithdrawalModal = createModalSignal<{
   strategyId: string;
   asset: Address;
+}>();
+
+export const useMetadataEditorModal = createModalSignal<{
+  strategyId: string;
 }>();

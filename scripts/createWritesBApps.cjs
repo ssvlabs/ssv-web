@@ -83,6 +83,22 @@ export const ${hookName} = () => {
   const wait = ${useWaitForTxHookName}<${eventTypeName}>(["${hookName}", bAppContractAddress]);
   const mutation = useWriteContract();
 
+  const send = (${hasInputs ? 'params: AbiInputsToParams<Fn["inputs"]>,' : ""}${isPayable ? "value?: bigint," : ""}options: MutationOptions<${eventTypeName}> = {}) => {
+    return mutation.writeContractAsync(
+      {
+      ${isPayable ? "value," : ""}
+        abi: ${abiName},
+        address: bAppContractAddress,
+        functionName: "${functionName}",
+        ${hasInputs ? "args: paramsToArray({ params, abiFunction })" : ""}
+      },
+      {
+        onSuccess: (hash) => options.onConfirmed?.(hash),
+        onError: (error) => options.onError?.(error as WriteContractErrorType),
+      },
+    );
+  };
+
   const write = (${hasInputs ? 'params: AbiInputsToParams<Fn["inputs"]>,' : ""}${isPayable ? "value?: bigint," : ""}options: MutationOptions<${eventTypeName}> = {}) => {
     options.onInitiated?.();
     return mutation.writeContractAsync({
@@ -114,6 +130,7 @@ export const ${hookName} = () => {
     isPending,
     mutation,
     write,
+    send,
     wait
   };
 };

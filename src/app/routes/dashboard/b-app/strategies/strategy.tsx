@@ -26,17 +26,27 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils/tw.ts";
 import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
-import { useAssetsDelegationModal } from "@/signals/modal";
+import { useAssetDepositModal } from "@/signals/modal";
 import DescriptionCard from "@/components/ui/description-card.tsx";
 import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
 import { getStrategyName } from "@/lib/utils/strategy";
-import { isAddress } from "viem";
+import { isAddress, isAddressEqual } from "viem";
 import { useGetAsset } from "@/hooks/b-app/use-get-asset.tsx";
 import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 import { useDelegateContext } from "@/components/context/delegate-context.tsx";
+import { useAccount } from "@/hooks/account/use-account";
+import { tryCatch } from "@/lib/utils/tryCatch";
+import { EditStrategyMenu } from "@/app/routes/dashboard/b-app/strategies/metadata-editor/edit-strategy-menu";
 
 const Strategy = () => {
+  const { address } = useAccount();
   const { strategy, account, isLoading: isStrategyLoading } = useStrategy();
+
+  const isStrategyOwner = tryCatch(
+    () => isAddressEqual(strategy.ownerAddress, address!),
+    false,
+  );
+
   const [bAppSearchValue, setBAppSearchValue] = useState("");
   const [isOpenDelegateModal, setIsOpenDelegateModal] = useState(false);
   const { setDelegationData } = useDelegateContext();
@@ -160,8 +170,9 @@ const Strategy = () => {
           {">"} {getStrategyName(strategy)}
         </Text>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 justify-between w-full">
         <Text variant="body-1-semibold">{getStrategyName(strategy)}</Text>
+        {isStrategyOwner && <EditStrategyMenu />}
       </div>
       <div className="w-full flex flex-col gap-6 rounded-[16px] bg-white p-6">
         <div className="w-full flex items-center ">
@@ -271,7 +282,7 @@ const Strategy = () => {
         <div className="w-full flex flex-col gap-6">
           <StrategyAssetsTable
             onDepositClick={(asset) => {
-              useAssetsDelegationModal.state.open({
+              useAssetDepositModal.state.open({
                 asset: asset.token,
                 strategyId: strategy.id,
               });

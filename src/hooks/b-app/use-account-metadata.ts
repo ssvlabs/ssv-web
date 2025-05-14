@@ -4,6 +4,7 @@ import { getAccountsMetadata } from "@/api/b-app.ts";
 import { chainedQueryOptions } from "@/hooks/react-query/chained-query-options";
 import { queryClient } from "@/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
+import { ms } from "@/lib/utils/number";
 
 type AccountURLs = { id: string; url: string }[];
 
@@ -16,8 +17,7 @@ const createMap = (data: Awaited<ReturnType<typeof getAccountsMetadata>>) =>
 export const getAccountsMetadataQueryOptions = (data: AccountURLs) =>
   chainedQueryOptions({
     queryKey: ["account_metadata", data],
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: ms(30, "seconds"),
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     queryFn: () => getAccountsMetadata(data),
@@ -36,6 +36,9 @@ export const useAccountsMetadata = (data: AccountURLs) => {
 export const useFetchAccountsMetadata = () => {
   return useMutation({
     mutationFn: (data: AccountURLs) =>
-      getAccountsMetadata(data).then(createMap),
+      queryFetchAccountsMetadata(data).then((list) => ({
+        list,
+        map: createMap(list),
+      })),
   });
 };

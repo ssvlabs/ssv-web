@@ -33,7 +33,6 @@ export const useBAppAccounts = () => {
       url: metadataURI || "",
     })) || [],
   );
-  console.log("accountsMetadata:", accountsMetadata);
 
   const isLoading = query.isLoading || accountsMetadata.isLoading;
   const next = () => {

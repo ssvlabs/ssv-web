@@ -156,8 +156,6 @@ const Obligations = () => {
                                 className="h-8 rounded-[5px]"
                                 onClick={(ev) => {
                                   ev.preventDefault();
-
-                                  console.log("clicked");
                                   return setIsEditing(true);
                                 }}
                               >

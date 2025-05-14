@@ -35,7 +35,6 @@ type FCProps = FC<
 export const NavbarDVT: FCProps = ({ className, ...props }) => {
   const links = useLinks();
   const { dvtRoutePath } = useAccountState();
-  console.log("dvtRoutePath:", dvtRoutePath);
   return (
     <div
       className={cn(

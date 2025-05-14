@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { queryClient } from "@/lib/react-query";
 import type { DecodedReceipt } from "@/lib/utils/viem";
 import { config } from "@/wagmi/config";

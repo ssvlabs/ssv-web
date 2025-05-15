@@ -227,8 +227,6 @@ export const getBApps = ({
   );
 // ?test?
 // ?test?
-// ?test?
-// ?gpg
 export const getBAppByID = ({ id }: { id?: Address }) =>
   api
     .get<{

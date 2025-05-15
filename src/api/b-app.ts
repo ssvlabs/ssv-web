@@ -225,7 +225,7 @@ export const getBApps = ({
       `getBApps?${id ? `id=${id}&perPage=${perPage}&page=${page}` : `perPage=${perPage}&page=${page}`}`,
     ),
   );
-
+// ?test?
 export const getBAppByID = ({ id }: { id?: Address }) =>
   api
     .get<{

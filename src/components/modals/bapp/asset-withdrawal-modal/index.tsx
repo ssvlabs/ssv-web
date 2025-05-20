@@ -31,6 +31,7 @@ import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitF
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils/tw";
 import { Alert } from "@/components/ui/alert";
+import { track } from "@/lib/analytics/mixpanel";
 
 const formSchema = z.object({
   amount: z.bigint().min(BigInt(1), "Amount must be greater than 0"),
@@ -97,6 +98,7 @@ export const AssetWithdrawalModal = () => {
       assetWithdrawalRequest.invalidate();
       setTimeout(strategyQuery.invalidate, 2000);
       form.reset({ amount: BigInt(0) });
+      track("Strategy withdraw");
       return () => {
         navigate(`/account`);
       };

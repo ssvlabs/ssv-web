@@ -20,6 +20,7 @@ import { NumericFormat } from "react-number-format";
 import { Input } from "@/components/ui/input";
 import { percentageMaxHandler } from "@/lib/utils/number-input";
 import { useDelegateContext } from "@/components/context/delegate-context.tsx";
+import { track } from "@/lib/analytics/mixpanel";
 
 const Delegate = ({
   closeDelegatePopUp,
@@ -83,6 +84,7 @@ const Delegate = ({
         await queryClient.refetchQueries({
           queryKey: ["non-slashable-assets", account.address],
         });
+        track("Delegate balance");
         closeDelegatePopUp();
         setTimeout(() => {
           navigate(`/account/my-delegations`);

@@ -47,7 +47,7 @@ const Strategy = () => {
   const { strategy, account, isLoading: isStrategyLoading } = useStrategy();
 
   const isStrategyOwner = tryCatch(
-    () => true || isAddressEqual(strategy.ownerAddress, address!),
+    () => isAddressEqual(strategy.ownerAddress, address!),
     false,
   );
 

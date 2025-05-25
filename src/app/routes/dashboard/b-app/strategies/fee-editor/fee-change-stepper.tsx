@@ -1,20 +1,13 @@
 import { Text } from "@/components/ui/text";
 import { Stepper } from "@/components/ui/stepper";
 import { formatDistance } from "date-fns";
-import type { useStrategyAssetWithdrawalRequest } from "@/hooks/b-app/use-asset-withdrawal-request";
 import type { FC } from "react";
+import type { useStrategyFeeChangeRequestStatus } from "@/hooks/b-app/strategy/use-strategy-fee-change-request";
 
-type WithdrawalRequest = ReturnType<typeof useStrategyAssetWithdrawalRequest>;
+type FeeChangeRequest = ReturnType<typeof useStrategyFeeChangeRequestStatus>;
 
-export const WithdrawalStepper: FC<{
-  request: Pick<
-    WithdrawalRequest,
-    | "hasRequested"
-    | "inPendingPeriod"
-    | "inExecutionPeriod"
-    | "isExpired"
-    | "periods"
-  >;
+export const FeeChangeStepper: FC<{
+  request: FeeChangeRequest;
 }> = ({ request }) => {
   const stepperIndex = !request.hasRequested
     ? 0
@@ -39,9 +32,9 @@ export const WithdrawalStepper: FC<{
           ),
         },
         {
-          label: request.isExpired ? "Withdraw" : "Withdrawable",
+          label: "Change",
           variant: request.isExpired
-            ? "error"
+            ? "gray"
             : request.inExecutionPeriod
               ? "withdrawable"
               : undefined,
@@ -53,7 +46,7 @@ export const WithdrawalStepper: FC<{
               })}
             </Text>
           ) : request.isExpired ? (
-            <Text variant="caption-medium" className="text-error-500">
+            <Text variant="caption-medium" className="text-gray-500">
               Expired
             </Text>
           ) : null,

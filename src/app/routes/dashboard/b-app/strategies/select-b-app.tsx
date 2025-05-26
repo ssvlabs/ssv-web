@@ -48,7 +48,7 @@ const SelectBApp = ({ isNotWizard }: { isNotWizard?: boolean }) => {
           <BAppsTable
             isCreateFlow
             isLoading={isBAppsLoading}
-            bApps={[...bApps, ...bApps]}
+            bApps={bApps}
             pagination={pagination}
           />
         </Container>

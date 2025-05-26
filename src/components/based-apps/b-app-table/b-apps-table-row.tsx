@@ -42,7 +42,9 @@ const BAppsTableRow = ({
       <TableCell
         className={textVariants({
           variant: "body-3-medium",
-          className: `flex items-center h-[52px] gap-2 ${isUsedBApp && "text-gray-400"}`,
+          className: cn("flex items-center h-[52px] gap-2", {
+            "text-gray-400": isUsedBApp,
+          }),
         })}
       >
         <img
@@ -76,7 +78,7 @@ const BAppsTableRow = ({
       <TableCell
         className={textVariants({
           variant: "body-3-medium",
-          className: `${isUsedBApp && "text-gray-400"} h-[52px] text-right`,
+          className: cn(`h-[52px] text-right`, { "text-gray-400": isUsedBApp }),
         })}
       >
         {bApp.totalDelegators}
@@ -84,7 +86,7 @@ const BAppsTableRow = ({
       <TableCell
         className={textVariants({
           variant: "body-3-medium",
-          className: `${isUsedBApp && "text-gray-400"} h-[52px] text-right`,
+          className: cn(`h-[52px] text-right`, { "text-gray-400": isUsedBApp }),
         })}
       >
         {bApp.totalDepositors}
@@ -92,7 +94,7 @@ const BAppsTableRow = ({
       <TableCell
         className={textVariants({
           variant: "body-3-medium",
-          className: `${isUsedBApp && "text-gray-400"} h-[52px] text-right`,
+          className: cn(`h-[52px] text-right`, { "text-gray-400": isUsedBApp }),
         })}
       >
         {currencyFormatter.format(Number(bApp.totalBAppAssetsFiat) || 0)}

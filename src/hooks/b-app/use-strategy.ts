@@ -16,10 +16,6 @@ export const useStrategy = (_strategyId?: string) => {
   const strategyQuery = useChainedQuery({
     queryKey: ["get_strategy_by_id", strategyId],
     queryFn: () => getStrategyById(strategyId || 0),
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
     enabled: Boolean(strategyId),
   });
 

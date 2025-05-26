@@ -42,7 +42,7 @@ const BAppsTableRow = ({
       <TableCell
         className={textVariants({
           variant: "body-3-medium",
-          className: `flex items-center h-[52px] gap-2 ${isUsedBApp && "text-gray-400"}\``,
+          className: `flex items-center h-[52px] gap-2 ${isUsedBApp && "text-gray-400"}`,
         })}
       >
         <img

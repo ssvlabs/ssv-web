@@ -28,7 +28,8 @@ const STEPS = {
 
 export const OptInModal: FC<OptInModalProps> = () => {
   const modal = useOptInModal();
-  const { strategy } = useStrategy(modal.meta.strategyId);
+  const strategyData = useStrategy(modal.meta.strategyId);
+  const { strategy } = strategyData;
   const { bApp, selectedObligations } = useCreateStrategyContext();
   const [currentStep, setCurrentStep] = useState<
     CreateSteps.SelectBApp | CreateSteps.SetObligations
@@ -67,6 +68,7 @@ export const OptInModal: FC<OptInModalProps> = () => {
               })
               .catch(() => false),
           );
+          await strategyData.invalidate();
           toast({
             title: "Transaction confirmed",
             description: new Date().toLocaleString(),

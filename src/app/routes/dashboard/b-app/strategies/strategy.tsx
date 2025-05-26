@@ -38,6 +38,7 @@ import { useAccount } from "@/hooks/account/use-account";
 import { tryCatch } from "@/lib/utils/tryCatch";
 import { EditStrategyMenu } from "@/app/routes/dashboard/b-app/strategies/metadata-editor/edit-strategy-menu";
 import { OptInBtn } from "@/app/routes/dashboard/b-app/strategies/opt-in/opt-in-btn.tsx";
+import { OptInModal } from "@/app/routes/dashboard/b-app/strategies/opt-in/opt-in-modal.tsx";
 
 const Strategy = () => {
   const { address } = useAccount();
@@ -329,6 +330,7 @@ const Strategy = () => {
           closeDelegatePopUp={() => setIsOpenDelegateModal(false)}
         />
       )}
+      <OptInModal key={strategy.id} />
     </Container>
   );
 };

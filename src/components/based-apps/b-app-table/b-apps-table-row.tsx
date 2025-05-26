@@ -40,7 +40,10 @@ const BAppsTableRow = ({
       onClick={isClickable ? onRowClick : undefined}
     >
       <TableCell
-        className={`${textVariants({ variant: "body-3-medium" })} flex items-center h-[52px] gap-2 ${isUsedBApp && "text-gray-400"}`}
+        className={textVariants({
+          variant: "body-3-medium",
+          className: `flex items-center h-[52px] gap-2 ${isUsedBApp && "text-gray-400"}\``,
+        })}
       >
         <img
           className="rounded-[8px] size-7 border-gray-400 border"
@@ -71,17 +74,26 @@ const BAppsTableRow = ({
         </div>
       </TableCell>
       <TableCell
-        className={`${textVariants({ variant: "body-3-medium" })} ${isUsedBApp && "text-gray-400"} h-[52px] text-right`}
+        className={textVariants({
+          variant: "body-3-medium",
+          className: `${isUsedBApp && "text-gray-400"} h-[52px] text-right`,
+        })}
       >
         {bApp.totalDelegators}
       </TableCell>
       <TableCell
-        className={`${textVariants({ variant: "body-3-medium" })} ${isUsedBApp && "text-gray-400"} h-[52px] text-right`}
+        className={textVariants({
+          variant: "body-3-medium",
+          className: `${isUsedBApp && "text-gray-400"} h-[52px] text-right`,
+        })}
       >
         {bApp.totalDepositors}
       </TableCell>
       <TableCell
-        className={`${textVariants({ variant: "body-3-medium" })} ${isUsedBApp && "text-gray-400"} h-[52px] text-right`}
+        className={textVariants({
+          variant: "body-3-medium",
+          className: `${isUsedBApp && "text-gray-400"} h-[52px] text-right`,
+        })}
       >
         {currencyFormatter.format(Number(bApp.totalBAppAssetsFiat) || 0)}
       </TableCell>

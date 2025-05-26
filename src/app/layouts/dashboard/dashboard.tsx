@@ -20,7 +20,6 @@ import { useIsRestoring } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ComponentPropsWithRef, FC } from "react";
 import { Navigate, useParams } from "react-router";
-import { OptInModal } from "@/app/routes/dashboard/b-app/strategies/opt-in/opt-in-modal.tsx";
 
 export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
   children,
@@ -85,7 +84,6 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
         <AssetsDepositModal />
         <AssetWithdrawalModal />
         <MetadataEditorModal key={pageParams.strategyId} />
-        <OptInModal key={pageParams.strategyId} />
         <MultisigTransactionModal />
         <BatchTransactionModal />
       </BatchTransactionProvider>

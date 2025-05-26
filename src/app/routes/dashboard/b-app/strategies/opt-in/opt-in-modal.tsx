@@ -34,7 +34,6 @@ export const OptInModal: FC<OptInModalProps> = () => {
     CreateSteps.SelectBApp | CreateSteps.SetObligations
   >(CreateSteps.SelectBApp);
   const optInToBApp = useOptInToBApp();
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (Object.keys(bApp).length !== 0) {
@@ -48,7 +47,6 @@ export const OptInModal: FC<OptInModalProps> = () => {
     tokens.forEach((token) => {
       obligationPercentages.push(Math.round(selectedObligations[token] * 100));
     });
-    setIsLoading(true);
     await optInToBApp.write(
       {
         strategyId: Number(strategy.id),
@@ -58,9 +56,6 @@ export const OptInModal: FC<OptInModalProps> = () => {
         data: useCreateStrategyContext.state.registerData || "0x00",
       },
       withTransactionModal({
-        onError: () => {
-          setIsLoading(false);
-        },
         onMined: async () => {
           await retryPromiseUntilSuccess(() =>
             getStrategyById(strategy.id)
@@ -81,7 +76,6 @@ export const OptInModal: FC<OptInModalProps> = () => {
         },
       }),
     );
-    setIsLoading(false);
   };
 
   const components: Record<
@@ -92,7 +86,6 @@ export const OptInModal: FC<OptInModalProps> = () => {
     [CreateSteps.SetObligations]: Obligations,
   };
   const closeModal = () => {
-    setIsLoading(false);
     modal.close();
     setCurrentStep(CreateSteps.SelectBApp);
     useCreateStrategyContext.state.bApp = {} as BApp;
@@ -151,7 +144,7 @@ export const OptInModal: FC<OptInModalProps> = () => {
           </div>
           <div className="fixed w-full bottom-0 flex justify-between items-center pl-8 pr-7 h-20 bg-gray-100">
             <Button
-              disabled={isLoading}
+              disabled={optInToBApp.isPending}
               onClick={() => {
                 if (currentStep === CreateSteps.SelectBApp) {
                   closeModal();
@@ -166,7 +159,7 @@ export const OptInModal: FC<OptInModalProps> = () => {
               {currentStep === CreateSteps.SelectBApp ? "Cancel" : "Back"}
             </Button>
             {currentStep === CreateSteps.SetObligations && (
-              <Button isLoading={isLoading} onClick={optIn}>
+              <Button isLoading={optInToBApp.isPending} onClick={optIn}>
                 Continue
               </Button>
             )}

@@ -34,7 +34,7 @@ const schema = z.object({
   }, "Hash must start with 0x and contain only hexadecimal characters, or be empty"),
 });
 
-const Obligations = () => {
+const Obligations = ({ isNotWizard }: { isNotWizard?: boolean }) => {
   const navigate = useNavigate();
   const context = useCreateStrategyContext();
   const form = useForm({
@@ -62,6 +62,7 @@ const Obligations = () => {
 
   return (
     <Wizard
+      isNotWizard={isNotWizard}
       onNext={() => navigate("../fee")}
       isNextDisabled={!!form.formState.errors["registerData"]}
       title={"Create Strategy"}

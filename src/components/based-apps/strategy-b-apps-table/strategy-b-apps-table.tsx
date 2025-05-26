@@ -4,8 +4,7 @@ import { cn } from "@/lib/utils/tw";
 import { StrategyBAppsTableRow } from "@/components/based-apps/strategy-b-apps-table/strategy-b-apps-table-row.tsx";
 import type { BAppsMetaData, StrategyBApp } from "@/api/b-app.ts";
 import { Text } from "@/components/ui/text.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { Link } from "react-router-dom";
+import { OptInBtn } from "@/app/routes/dashboard/b-app/strategies/opt-in/opt-in-btn.tsx";
 
 export type BAppsTableProps = {
   bApps: (StrategyBApp & BAppsMetaData)[];
@@ -49,9 +48,7 @@ export const StrategyBAppsTable: FCProps = ({
           <Text variant="body-3-medium">
             This strategy has not yet opted-in to a bApp
           </Text>
-          <Button className="text-[14px]" as={Link} to={"/account/bApps"}>
-            Explore bApps
-          </Button>
+          <OptInBtn variant={"default"} />
         </div>
       )}
     </div>

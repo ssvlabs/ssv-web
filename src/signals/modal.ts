@@ -61,3 +61,7 @@ export const useAssetWithdrawalModal = createModalSignal<{
 export const useMetadataEditorModal = createModalSignal<{
   strategyId: string;
 }>();
+
+export const useOptInModal = createModalSignal<{
+  strategyId: string;
+}>();

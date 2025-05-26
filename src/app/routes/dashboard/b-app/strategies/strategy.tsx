@@ -37,6 +37,7 @@ import { useDelegateContext } from "@/components/context/delegate-context.tsx";
 import { useAccount } from "@/hooks/account/use-account";
 import { tryCatch } from "@/lib/utils/tryCatch";
 import { EditStrategyMenu } from "@/app/routes/dashboard/b-app/strategies/metadata-editor/edit-strategy-menu";
+import { OptInBtn } from "@/app/routes/dashboard/b-app/strategies/opt-in/opt-in-btn.tsx";
 
 const Strategy = () => {
   const { address } = useAccount();
@@ -295,20 +296,24 @@ const Strategy = () => {
         </div>
       )}
       <div className="w-full flex flex-col gap-6">
-        <div className="flex justify-between w-full items-center">
+        <div className="flex w-full justify-between items-center">
           <Text variant="body-1-semibold">Supported bApps</Text>
-          {!!strategy.bAppsList?.length && (
-            <SearchInput
-              onChange={(e) => setBAppSearchValue(e.target.value)}
-              placeholder="Search"
-              iconPlacement="left"
-              className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
-              inputProps={{
-                className: "bg-gray-50",
-                placeholder: "Search bApp...",
-              }}
-            />
-          )}
+          <div className="flex gap-2 items-center">
+            {!!strategy.bAppsList?.length && (
+              <SearchInput
+                onChange={(e) => setBAppSearchValue(e.target.value)}
+                placeholder="Search"
+                iconPlacement="left"
+                className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
+                inputProps={{
+                  className: "bg-gray-50",
+                  placeholder: "Search bApp...",
+                }}
+              />
+            )}
+            {strategy.ownerAddress.toLowerCase() === address?.toLowerCase() &&
+              (strategy.bAppsList || []).length > 0 && <OptInBtn />}
+          </div>
         </div>
         {strategy.bAppsList && (
           <StrategyBAppsTable

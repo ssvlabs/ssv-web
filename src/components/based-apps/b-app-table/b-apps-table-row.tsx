@@ -40,7 +40,12 @@ const BAppsTableRow = ({
       onClick={isClickable ? onRowClick : undefined}
     >
       <TableCell
-        className={`${textVariants({ variant: "body-3-medium" })} flex items-center gap-2 ${isUsedBApp && "text-gray-400"}`}
+        className={textVariants({
+          variant: "body-3-medium",
+          className: cn("flex items-center h-[52px] gap-2", {
+            "text-gray-400": isUsedBApp,
+          }),
+        })}
       >
         <img
           className="rounded-[8px] size-7 border-gray-400 border"
@@ -50,15 +55,15 @@ const BAppsTableRow = ({
               "/images/operator_default_background/light.svg";
           }}
         />
-        {bApp.name || shortenAddress(bApp.id)}
+        {bApp?.name || shortenAddress(bApp?.id || "0x")}
       </TableCell>
-      <TableCell>
+      <TableCell className="h-[52px] ">
         <AddressDisplay address={bApp.id} copyable />
       </TableCell>
-      <TableCell>
+      <TableCell className="h-[52px]">
         <AssetsDisplay max={3} addresses={bApp.supportedAssets} />
       </TableCell>
-      <TableCell className="flex flex-row-reverse">
+      <TableCell className="h-[52px] flex flex-row-reverse">
         <div
           className={cn(
             "w-7 h-6 rounded-[4px] flex items-center justify-center text-[10px] border ml-auto",
@@ -71,22 +76,31 @@ const BAppsTableRow = ({
         </div>
       </TableCell>
       <TableCell
-        className={`${textVariants({ variant: "body-3-medium" })} ${isUsedBApp && "text-gray-400"} text-right`}
+        className={textVariants({
+          variant: "body-3-medium",
+          className: cn(`h-[52px] text-right`, { "text-gray-400": isUsedBApp }),
+        })}
       >
         {bApp.totalDelegators}
       </TableCell>
       <TableCell
-        className={`${textVariants({ variant: "body-3-medium" })} ${isUsedBApp && "text-gray-400"} text-right`}
+        className={textVariants({
+          variant: "body-3-medium",
+          className: cn(`h-[52px] text-right`, { "text-gray-400": isUsedBApp }),
+        })}
       >
         {bApp.totalDepositors}
       </TableCell>
       <TableCell
-        className={`${textVariants({ variant: "body-3-medium" })} ${isUsedBApp && "text-gray-400"} text-right`}
+        className={textVariants({
+          variant: "body-3-medium",
+          className: cn(`h-[52px] text-right`, { "text-gray-400": isUsedBApp }),
+        })}
       >
         {currencyFormatter.format(Number(bApp.totalBAppAssetsFiat) || 0)}
       </TableCell>
       {isCreateFlow && (
-        <TableCell className="p-0">
+        <TableCell className="p-0 h-[52px]">
           <Button
             disabled={isUsedBApp}
             onClick={() => {

@@ -6,7 +6,6 @@ import { useFeeEditorModal } from "@/signals/modal";
 import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { z } from "zod";
@@ -29,6 +28,7 @@ import { Explainer } from "@/app/routes/dashboard/b-app/strategies/fee-editor/ex
 import { useArrowIncrement } from "@/hooks/utils/use-arrows-increment";
 import { cn } from "@/lib/utils/tw";
 import { FeeChangeStepper } from "@/app/routes/dashboard/b-app/strategies/fee-editor/fee-change-stepper";
+import { wait } from "@/lib/utils/promise";
 
 const formSchema = z.object({
   percentage: z.number(),
@@ -37,8 +37,6 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export const StrategyFeeEditorModal = () => {
-  const navigate = useNavigate();
-
   const [isUpdatingRequest, setIsUpdatingRequest] = useState(false);
   const { meta, isOpen, onOpenChange } = useFeeEditorModal();
 
@@ -89,7 +87,11 @@ export const StrategyFeeEditorModal = () => {
 
   useArrowIncrement(ref, {
     value: percentage,
-    onChange: (value) => form.setValue("percentage", value),
+    onChange: (value) =>
+      form.setValue("percentage", value, {
+        shouldDirty: true,
+        shouldValidate: true,
+      }),
     min: 0,
     max: maxAllowedFee,
     step: 0.01,
@@ -106,9 +108,9 @@ export const StrategyFeeEditorModal = () => {
     },
     onMined: async () => {
       changeRequest.invalidate();
-      setTimeout(strategyQuery.invalidate, 2000);
+      await wait(2000); // let the server catch up with the changes
+      strategyQuery.invalidate();
       form.reset({ percentage: 0 });
-      navigate(`/account`);
     },
   });
 

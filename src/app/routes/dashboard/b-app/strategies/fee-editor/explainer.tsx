@@ -3,16 +3,26 @@ import { cn } from "@/lib/utils/tw";
 import type { RequestStatus } from "@/hooks/b-app/strategy/use-strategy-fee-change-request";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import { Tooltip } from "@/components/ui/tooltip";
+import { ms } from "@/lib/utils/number";
+import { generateGoogleCalendarUrl } from "@/lib/utils/google";
 
 export type ExplainerProps = {
   status: RequestStatus;
+  expireTimestamp: number;
 };
 
 type ExplainerFC = FC<
   Omit<ComponentPropsWithoutRef<"div">, keyof ExplainerProps> & ExplainerProps
 >;
 
-export const Explainer: ExplainerFC = ({ className, status, ...props }) => {
+export const Explainer: ExplainerFC = ({
+  className,
+  status,
+  expireTimestamp,
+  ...props
+}) => {
   return (
     <div className={cn(className)} {...props}>
       {status === "none" && (
@@ -31,11 +41,31 @@ export const Explainer: ExplainerFC = ({ className, status, ...props }) => {
           </Text>
         </div>
       )}
-      {status === "pending" && (
+      {status === "executable" && (
         <Text variant="body-3-medium" className="text-gray-700">
           You have requested a fee change. Keep in mind that if you do not
-          execute your new fee by 25 May, your request will expire and you will
-          have to start the process anew.
+          execute your new fee by{" "}
+          <Tooltip content="Add to calendar">
+            <Button
+              as="a"
+              variant="link"
+              className="p-0 h-auto font-medium underline"
+              href={generateGoogleCalendarUrl({
+                title: "Fee Change Deadline",
+                dates: {
+                  start: expireTimestamp - ms(1, "hours"),
+                  end: expireTimestamp,
+                },
+                description: `Execute your strategy fee change before this date or the request will expire.`,
+                isAllDay: false,
+              })}
+              target="_blank"
+            >
+              <b>{format(expireTimestamp, "MMM d")}</b>
+            </Button>
+          </Tooltip>
+          , your request will expire and you will have to start the process
+          anew.
         </Text>
       )}
       {status === "executable" && (

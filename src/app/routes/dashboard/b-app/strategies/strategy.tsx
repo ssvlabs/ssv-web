@@ -120,9 +120,8 @@ const Strategy = () => {
               "cursor-pointer": feeChangeRequest.hasRequested,
             })}
             onClick={() => {
-              useFeeEditorModal.state.open({
-                strategyId: strategy.id,
-              });
+              if (!feeChangeRequest.hasRequested) return;
+              useFeeEditorModal.state.open({ strategyId: strategy.id });
             }}
           >
             <Text

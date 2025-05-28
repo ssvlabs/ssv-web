@@ -78,7 +78,7 @@ export const StrategyFeeEditorModal = () => {
   const isChanged = form.formState.isDirty;
   const isReducingFee = percentage < currentFee;
   const canInputAmount = !changeRequest.hasRequested || isUpdatingRequest;
-  const canSubmitNewRequest = isUpdatingRequest && percentage > 0 && isChanged;
+  const canSubmitNewRequest = isUpdatingRequest && isChanged;
 
   useEffect(() => {
     form.reset({ percentage: displayPercentage });
@@ -166,7 +166,10 @@ export const StrategyFeeEditorModal = () => {
               <FeeChangeStepper request={changeRequest} />
             </div>
 
-            <Explainer status={changeRequest.status} />
+            <Explainer
+              status={changeRequest.status}
+              expireTimestamp={changeRequest.periods.execution.end}
+            />
 
             <div className="w-full flex items-center justify-between gap-4">
               <NumericFormat

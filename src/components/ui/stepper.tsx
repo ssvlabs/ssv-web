@@ -25,6 +25,7 @@ export const stepperDotVariants = cva(
         done: "bg-primary-400 border-2 border-primary-500 text-[#fff]",
         withdrawable: "bg-success-700 text-[#fff] border-2 border-success-500",
         error: "bg-error-500 text-white",
+        gray: "bg-gray-300",
       },
     },
     defaultVariants: {
@@ -57,6 +58,7 @@ export const StepperDot: StepperDotFC = ({
       case "done":
         return <Check className="size-3" strokeWidth="4" />;
       case "error":
+      case "gray":
         return <X className="size-3" strokeWidth="4" />;
       case "warning":
         return <RiMoreFill className="size-4" strokeWidth="1" />;

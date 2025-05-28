@@ -58,6 +58,14 @@ export const useAssetWithdrawalModal = createModalSignal<{
   asset: Address;
 }>();
 
+export const useFeeEditorModal = createModalSignal<{
+  strategyId: string;
+}>();
+
 export const useMetadataEditorModal = createModalSignal<{
+  strategyId: string;
+}>();
+
+export const useOptInModal = createModalSignal<{
   strategyId: string;
 }>();

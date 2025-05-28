@@ -182,7 +182,6 @@ export const MetadataEditorModal: FC<MetadataEditorModalProps> = () => {
                               </Text>
                             </div>
                           </div>
-                          <div className="flex flex-col gap-3"></div>
                         </div>
                       </FormControl>
                     </FormItem>
@@ -252,7 +251,6 @@ export const MetadataEditorModal: FC<MetadataEditorModalProps> = () => {
                               </Text>
                             </div>
                           </div>
-                          <div className="flex flex-col gap-3"></div>
                         </div>
                       </FormControl>
                     </FormItem>

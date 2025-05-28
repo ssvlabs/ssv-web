@@ -1,6 +1,6 @@
 import { Text } from "@/components/ui/text.tsx";
 import { Divider } from "@/components/ui/divider.tsx";
-import Slider from "@/components/ui/slider.tsx";
+import Slider from "@/components/ui/custom-slider";
 import { Button } from "@/components/ui/button.tsx";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -18,8 +18,9 @@ import { useAccount } from "@/hooks/account/use-account.ts";
 import { getNonSlashableAssets } from "@/api/b-app.ts";
 import { NumericFormat } from "react-number-format";
 import { Input } from "@/components/ui/input";
-import { percentageMaxHandler } from "@/lib/utils/number-input";
+import { numberFormatLimiter } from "@/lib/utils/number-input";
 import { useDelegateContext } from "@/components/context/delegate-context.tsx";
+import { track } from "@/lib/analytics/mixpanel";
 
 const Delegate = ({
   closeDelegatePopUp,
@@ -83,6 +84,7 @@ const Delegate = ({
         await queryClient.refetchQueries({
           queryKey: ["non-slashable-assets", account.address],
         });
+        track("Delegate balance");
         closeDelegatePopUp();
         setTimeout(() => {
           navigate(`/account/my-delegations`);
@@ -190,7 +192,7 @@ const Delegate = ({
                   value={delegatePercent}
                   decimalScale={2}
                   allowLeadingZeros={false}
-                  isAllowed={percentageMaxHandler({
+                  isAllowed={numberFormatLimiter({
                     setter: setDelegatePercent,
                     maxValue,
                   })}

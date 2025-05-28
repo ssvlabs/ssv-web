@@ -25,6 +25,7 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert } from "@/components/ui/alert.tsx";
+import { track } from "@/lib/analytics/mixpanel";
 
 const formSchema = z.object({
   amount: z.bigint().min(BigInt(1), "Amount must be greater than 0"),
@@ -79,6 +80,7 @@ export const AssetsDepositModal = () => {
           invalidate();
         }, 2000); // wait for the api to catch up and then invalidate the query
         form.reset({ amount: BigInt(0) });
+        track("Strategy deposit");
         return () => {
           navigate(`/account`);
         };

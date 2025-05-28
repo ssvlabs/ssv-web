@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMetadataEditorModal } from "@/signals/modal";
+import { useFeeEditorModal, useMetadataEditorModal } from "@/signals/modal";
 import { useParams } from "react-router";
 
 export type EditStrategyMenuProps = {
@@ -27,6 +27,7 @@ export const EditStrategyMenu: EditStrategyMenuFC = ({
   ...props
 }) => {
   const metadataEditorModal = useMetadataEditorModal();
+  const feeEditorModal = useFeeEditorModal();
   const id = useParams().strategyId || strategyId;
   return (
     <DropdownMenu>
@@ -36,6 +37,15 @@ export const EditStrategyMenu: EditStrategyMenuFC = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
+        <DropdownMenuItem
+          onClick={() => {
+            feeEditorModal.open({
+              strategyId: id || "",
+            });
+          }}
+        >
+          Change Fee
+        </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
             metadataEditorModal.open({

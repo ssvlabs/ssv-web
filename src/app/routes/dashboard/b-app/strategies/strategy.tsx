@@ -37,10 +37,13 @@ import { useDelegateContext } from "@/components/context/delegate-context.tsx";
 import { useAccount } from "@/hooks/account/use-account";
 import { tryCatch } from "@/lib/utils/tryCatch";
 import { EditStrategyMenu } from "@/app/routes/dashboard/b-app/strategies/metadata-editor/edit-strategy-menu";
+import { OptInBtn } from "@/app/routes/dashboard/b-app/strategies/opt-in/opt-in-btn.tsx";
+import { OptInModal } from "@/app/routes/dashboard/b-app/strategies/opt-in/opt-in-modal.tsx";
 import { MetadataEditorModal } from "@/app/routes/dashboard/b-app/strategies/metadata-editor/metadata-editor-modal";
 import { StrategyFeeEditorModal } from "@/app/routes/dashboard/b-app/strategies/fee-editor/fee-editor-modal";
 import { StrategyFeeChangeRequestStatusIcon } from "@/components/ui/strategy-fee-change-request-status-icon";
 import { useStrategyFeeChangeRequestStatus } from "@/hooks/b-app/strategy/use-strategy-fee-change-request";
+import { BiRightArrowAlt } from "react-icons/bi";
 
 const Strategy = () => {
   const { address } = useAccount();
@@ -53,6 +56,7 @@ const Strategy = () => {
 
   const feeChangeRequest = useStrategyFeeChangeRequestStatus({
     strategyId: strategy.id,
+    enableTimeTracking: true,
   });
 
   const [bAppSearchValue, setBAppSearchValue] = useState("");
@@ -113,33 +117,41 @@ const Strategy = () => {
   const strategyData = [
     {
       label: "Fee",
-      value:
-        (isStrategyOwner && (
-          <div
-            className={cn("flex items-center gap-2", {
-              "cursor-pointer": feeChangeRequest.hasRequested,
-            })}
-            onClick={() => {
-              if (!feeChangeRequest.hasRequested) return;
-              useFeeEditorModal.state.open({ strategyId: strategy.id });
-            }}
-          >
-            <Text
-              variant="body-1-medium"
-              className={cn({
-                "text-orange-500": feeChangeRequest.hasRequested,
-                "text-gray-500": feeChangeRequest.isExpired,
-                "text-green-500": feeChangeRequest.inExecutionPeriod,
-              })}
-            >
-              {feeChangeRequest.hasRequested
-                ? `${convertToPercentage(feeChangeRequest.request.percentage)}%`
-                : `${convertToPercentage(strategy.fee)}%`}
-            </Text>
-            <StrategyFeeChangeRequestStatusIcon strategyId={strategy.id} />
-          </div>
-        )) ||
-        `${convertToPercentage(strategy.fee)}%`,
+      value: (
+        <div
+          className={cn("flex items-center gap-1", {
+            "cursor-pointer": feeChangeRequest.hasRequested,
+          })}
+          onClick={() => {
+            if (!feeChangeRequest.hasRequested) return;
+            useFeeEditorModal.state.open({ strategyId: strategy.id });
+          }}
+        >
+          <Text variant="body-1-medium">
+            {convertToPercentage(strategy.fee)}%
+          </Text>
+          {isStrategyOwner && feeChangeRequest.hasRequested && (
+            <>
+              <BiRightArrowAlt className="size-3 text-gray-500" />
+              <div className="flex items-center gap-1">
+                <Text
+                  variant="body-3-medium"
+                  className={cn({
+                    "text-orange-500": feeChangeRequest.inPendingPeriod,
+                    "text-gray-500": feeChangeRequest.isExpired,
+                    "text-green-500": feeChangeRequest.inExecutionPeriod,
+                  })}
+                >
+                  {feeChangeRequest.hasRequested
+                    ? `${convertToPercentage(feeChangeRequest.request.percentage)}%`
+                    : `${convertToPercentage(strategy.fee)}%`}
+                </Text>
+                <StrategyFeeChangeRequestStatusIcon strategyId={strategy.id} />
+              </div>
+            </>
+          )}
+        </div>
+      ),
     },
     {
       label: "Delegators",
@@ -333,20 +345,24 @@ const Strategy = () => {
           </div>
         )}
         <div className="w-full flex flex-col gap-6">
-          <div className="flex justify-between w-full items-center">
+          <div className="flex w-full justify-between items-center">
             <Text variant="body-1-semibold">Supported bApps</Text>
-            {!!strategy.bAppsList?.length && (
-              <SearchInput
-                onChange={(e) => setBAppSearchValue(e.target.value)}
-                placeholder="Search"
-                iconPlacement="left"
-                className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
-                inputProps={{
-                  className: "bg-gray-50",
-                  placeholder: "Search bApp...",
-                }}
-              />
-            )}
+            <div className="flex gap-2 items-center">
+              {!!strategy.bAppsList?.length && (
+                <SearchInput
+                  onChange={(e) => setBAppSearchValue(e.target.value)}
+                  placeholder="Search"
+                  iconPlacement="left"
+                  className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
+                  inputProps={{
+                    className: "bg-gray-50",
+                    placeholder: "Search bApp...",
+                  }}
+                />
+              )}
+              {strategy.ownerAddress.toLowerCase() === address?.toLowerCase() &&
+                (strategy.bAppsList || []).length > 0 && <OptInBtn />}
+            </div>
           </div>
           {strategy.bAppsList && (
             <StrategyBAppsTable
@@ -362,6 +378,7 @@ const Strategy = () => {
             closeDelegatePopUp={() => setIsOpenDelegateModal(false)}
           />
         )}
+        <OptInModal key={strategy.id} />
       </Container>
     </>
   );

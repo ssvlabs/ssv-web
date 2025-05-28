@@ -13,6 +13,7 @@ export const Wizard = ({
   onNext,
   isLoading,
   isNextDisabled,
+  isNotWizard,
 }: {
   title: string;
   onClose: () => void;
@@ -22,6 +23,7 @@ export const Wizard = ({
   currentStepNumber?: number;
   steps?: string[];
   isNextDisabled?: boolean;
+  isNotWizard?: boolean;
   isLoading?: boolean;
 }) => {
   const bApp = useCreateStrategyContext();
@@ -31,6 +33,10 @@ export const Wizard = ({
     currentStepNumber === 0
   ) {
     onNext();
+  }
+
+  if (isNotWizard) {
+    return children;
   }
 
   return (

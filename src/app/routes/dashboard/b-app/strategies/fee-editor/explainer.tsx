@@ -41,7 +41,7 @@ export const Explainer: ExplainerFC = ({
           </Text>
         </div>
       )}
-      {status === "executable" && (
+      {status === "pending" && (
         <Text variant="body-3-medium" className="text-gray-700">
           You have requested a fee change. Keep in mind that if you do not
           execute your new fee by{" "}
@@ -51,7 +51,7 @@ export const Explainer: ExplainerFC = ({
               variant="link"
               className="p-0 h-auto font-medium underline"
               href={generateGoogleCalendarUrl({
-                title: "Fee Change Deadline",
+                title: `Fee Change Deadline`,
                 dates: {
                   start: expireTimestamp - ms(1, "hours"),
                   end: expireTimestamp,

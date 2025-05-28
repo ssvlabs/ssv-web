@@ -46,7 +46,7 @@ export const useStrategyFeeChangeRequestStatus = ({
 
   const clearRequestQueryData = () => {
     queryClient.setQueryData(requestQuery.queryKey, () => {
-      return [0n, 0];
+      return [0, 0];
     });
   };
 

@@ -31,7 +31,7 @@ import { cn } from "@/lib/utils/tw";
 import { FeeChangeStepper } from "@/app/routes/dashboard/b-app/strategies/fee-editor/fee-change-stepper";
 
 const formSchema = z.object({
-  percentage: z.number().min(0.01, "Percentage must be greater than 0"),
+  percentage: z.number(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -114,6 +114,7 @@ export const StrategyFeeEditorModal = () => {
 
   const submit = form.handleSubmit((values) => {
     const writer = isReducingFee ? reduceFee : proposeFeeUpdate;
+    if (isReducingFee) changeRequest.clearRequestQueryData();
     return writer.write(
       {
         strategyId: Number(meta.strategyId),

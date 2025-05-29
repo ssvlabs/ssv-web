@@ -141,7 +141,7 @@ export const OptInModal: FC<OptInModalProps> = () => {
               </IconButton>
             </div>
           </div>
-          <div className="mt-[80px] mb-[80px] overflow-scroll">
+          <div className="mt-[80px] mb-[80px] overflow-auto">
             <Component isNotWizard />
           </div>
           <div className="fixed w-full bottom-0 flex justify-between items-center pl-8 pr-7 h-20 bg-gray-100">

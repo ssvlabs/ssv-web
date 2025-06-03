@@ -46,10 +46,20 @@ const Delegate = ({
     removeDelegatedBalance.isPending;
   const navigate = useNavigate();
   const contractInteractionsToMap = {
-    ["delegate"]: delegateBalance,
-    ["update"]: updateDelegatedBalance,
-    ["remove"]: removeDelegatedBalance,
+    ["delegate"]: {
+      func: delegateBalance,
+      event: "Delegate Validator Balance",
+    },
+    ["update"]: {
+      func: updateDelegatedBalance,
+      event: "Update delegation",
+    },
+    ["remove"]: {
+      func: removeDelegatedBalance,
+      event: "Remove delegation",
+    },
   };
+
   const account = useAccount();
   const delegate = async () => {
     const cleanedNumber = Math.round(delegatePercent * 100);
@@ -84,14 +94,14 @@ const Delegate = ({
         await queryClient.refetchQueries({
           queryKey: ["non-slashable-assets", account.address],
         });
-        track("Delegate balance");
+        track(contractInteraction.event);
         closeDelegatePopUp();
         setTimeout(() => {
           navigate(`/account/my-delegations`);
         }, 100);
       },
     });
-    await contractInteraction.write(
+    await contractInteraction.func.write(
       {
         receiver: delegateAddress as `0x${string}`,
         percentage: cleanedNumber,

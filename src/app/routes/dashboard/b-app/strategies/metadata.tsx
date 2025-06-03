@@ -297,7 +297,7 @@ const Metadata = () => {
               title: "Transaction confirmed",
               description: new Date().toLocaleString(),
             });
-            track("Opt_In_to_BApp");
+            track("Opt-in to bApp");
             setTxStatus([
               {
                 label: "Register Strategy",

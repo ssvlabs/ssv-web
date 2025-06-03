@@ -49,7 +49,7 @@ export const useStrategyAssetWithdrawer = (
           options,
         )
         .then((args) => {
-          track("Asset withdrawal request");
+          track("Request withdrawal");
           return args;
         });
     },
@@ -74,7 +74,7 @@ export const useStrategyAssetWithdrawer = (
           options,
         )
         .then((args) => {
-          track("Asset withdrawal finalize");
+          track("Execute withdrawal");
           return args;
         });
     },

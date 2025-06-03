@@ -80,7 +80,7 @@ export const AssetsDepositModal = () => {
           invalidate();
         }, 2000); // wait for the api to catch up and then invalidate the query
         form.reset({ amount: BigInt(0) });
-        track("Strategy deposit");
+        track("Deposit token");
         return () => {
           navigate(`/account`);
         };

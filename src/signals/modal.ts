@@ -69,3 +69,13 @@ export const useMetadataEditorModal = createModalSignal<{
 export const useOptInModal = createModalSignal<{
   strategyId: string;
 }>();
+
+export const useManageObligationsModal = createModalSignal<{
+  bAppId: Address;
+  strategyId: string;
+}>();
+
+export const useObligateModal = createModalSignal<{
+  token: Address;
+  bAppId: Address;
+}>();

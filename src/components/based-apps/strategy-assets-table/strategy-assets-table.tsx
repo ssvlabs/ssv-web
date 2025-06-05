@@ -24,6 +24,7 @@ export const StrategyAssetsTable: FCProps = ({
   onDepositClick,
   ...props
 }) => {
+  console.log(assets);
   return (
     <Table
       className={cn(

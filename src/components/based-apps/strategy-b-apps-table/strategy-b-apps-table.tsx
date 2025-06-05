@@ -9,6 +9,7 @@ import { OptInBtn } from "@/app/routes/dashboard/b-app/strategies/opt-in/opt-in-
 export type BAppsTableProps = {
   bApps: (StrategyBApp & BAppsMetaData)[];
   searchValue?: string;
+  strategyId?: string;
   isLoading?: boolean;
 };
 
@@ -21,6 +22,7 @@ export const StrategyBAppsTable: FCProps = ({
   bApps,
   searchValue,
   isLoading,
+  strategyId,
   className,
   ...props
 }) => {
@@ -35,11 +37,15 @@ export const StrategyBAppsTable: FCProps = ({
       >
         <TableHeader>
           <TableHead>bApps</TableHead>
-          <TableHead>Asset</TableHead>
+          <TableHead className="text-right">Asset</TableHead>
         </TableHeader>
         {bApps.map((bApp) => {
           return (
-            <StrategyBAppsTableRow searchValue={searchValue} bApp={bApp} />
+            <StrategyBAppsTableRow
+              searchValue={searchValue}
+              bApp={bApp}
+              strategyId={strategyId}
+            />
           );
         })}
       </Table>

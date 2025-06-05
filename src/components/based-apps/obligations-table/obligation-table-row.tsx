@@ -9,8 +9,15 @@ import { Text } from "@/components/ui/text.tsx";
 import AssetName from "@/components/ui/asset-name.tsx";
 import { useLinks } from "@/hooks/use-links.ts";
 import { AddressDisplay } from "@/components/ui/address";
+import { ObligateBtn } from "@/app/routes/dashboard/b-app/strategies/manage-obligations/obligate-btn.tsx";
 
-const ObligationTableRow = ({ obligation }: { obligation: `0x${string}` }) => {
+const ObligationTableRow = ({
+  obligation,
+  isObligationManage,
+}: {
+  obligation: `0x${string}`;
+  isObligationManage?: boolean;
+}) => {
   const { state } = useCreateStrategyContext;
   const { selectedObligations } = useCreateStrategyContext();
   const { etherscan } = useLinks();
@@ -34,55 +41,73 @@ const ObligationTableRow = ({ obligation }: { obligation: `0x${string}` }) => {
           }}
         />
       </TableCell>
+      {isObligationManage && (
+        <TableCell className={"text-right"}>
+          {selectedObligations[obligation]
+            ? `${selectedObligations[obligation]}%`
+            : "-"}
+        </TableCell>
+      )}
       <TableCell
         className={`${textVariants({ variant: "body-3-medium" })} py-0`}
       >
-        <div className="w-full flex justify-end items-center">
-          {Object.keys(selectedObligations).includes(obligation) ? (
-            <div className="flex gap-1">
-              <Input
-                type={"number"}
-                onChange={(e) => {
-                  let value = Number(e.target.value.replace("%", ""));
-                  if (!value) {
-                    value = 0;
-                  }
-                  if (value < 0 || value > 100) {
-                    value = selectedObligations[obligation];
-                  }
-                  state.selectedObligations[obligation] = value;
-                }}
-                value={`${selectedObligations[obligation]}`}
-                className="w-20 h-8"
-                rightSlot={<Text className="ml--4">%</Text>}
-              />
-              <div className="size-8 bg-error-50 hover:bg-error-50 flex items-center justify-center">
-                <FaRegTrashCan
-                  onClick={() => {
-                    state.selectedObligations = Object.fromEntries(
-                      Object.entries(selectedObligations).filter(
-                        ([key]) => key !== obligation,
-                      ),
-                    );
+        {isObligationManage ? (
+          <div className="w-full flex justify-end items-center">
+            <ObligateBtn
+              token={obligation}
+              isObligated={Object.keys(selectedObligations).includes(
+                obligation,
+              )}
+            />
+          </div>
+        ) : (
+          <div className="w-full flex justify-end items-center">
+            {Object.keys(selectedObligations).includes(obligation) ? (
+              <div className="flex gap-1">
+                <Input
+                  type={"number"}
+                  onChange={(e) => {
+                    let value = Number(e.target.value.replace("%", ""));
+                    if (!value) {
+                      value = 0;
+                    }
+                    if (value < 0 || value > 100) {
+                      value = selectedObligations[obligation];
+                    }
+                    state.selectedObligations[obligation] = value;
                   }}
-                  className="size-4 text-error-500"
+                  value={`${selectedObligations[obligation]}`}
+                  className="w-20 h-8"
+                  rightSlot={<Text className="ml--4">%</Text>}
                 />
+                <div className="size-8 bg-error-50 hover:bg-error-50 flex items-center justify-center">
+                  <FaRegTrashCan
+                    onClick={() => {
+                      state.selectedObligations = Object.fromEntries(
+                        Object.entries(selectedObligations).filter(
+                          ([key]) => key !== obligation,
+                        ),
+                      );
+                    }}
+                    className="size-4 text-error-500"
+                  />
+                </div>
               </div>
-            </div>
-          ) : (
-            <Button
-              onClick={() => {
-                state.selectedObligations = {
-                  ...state.selectedObligations,
-                  [obligation]: 0,
-                };
-              }}
-              className={`${textVariants({ variant: "body-3-medium" })} text-[#ffffff] w-[116px] h-[32px]`}
-            >
-              Add
-            </Button>
-          )}
-        </div>
+            ) : (
+              <Button
+                onClick={() => {
+                  state.selectedObligations = {
+                    ...state.selectedObligations,
+                    [obligation]: 0,
+                  };
+                }}
+                className={`${textVariants({ variant: "body-3-medium" })} text-[#ffffff] w-[116px] h-[32px]`}
+              >
+                Add
+              </Button>
+            )}
+          </div>
+        )}
       </TableCell>
     </TableRow>
   );

@@ -15,9 +15,11 @@ import ExpandButton from "@/components/ui/expand-button.tsx";
 import { shortenAddress } from "@/lib/utils/strings.ts";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { ManageObligationsBtn } from "@/app/routes/dashboard/b-app/strategies/manage-obligations/manage-obligations-btn.tsx";
 export type BAppTableRowProps = {
   bApp: StrategyBApp & BAppsMetaData;
   searchValue?: string;
+  strategyId?: string;
 };
 
 type FCProps = FC<
@@ -28,11 +30,13 @@ type FCProps = FC<
 export const StrategyBAppsTableRow: FCProps = ({
   bApp,
   searchValue,
+  strategyId,
   className,
   ...props
 }) => {
   const { etherscan } = useLinks();
   const [isInnerOpen, setIsInnerOpen] = useState(false);
+  const [onRowHover, setOnRowHover] = useState(false);
   if (
     searchValue &&
     ((bApp.name &&
@@ -43,7 +47,12 @@ export const StrategyBAppsTableRow: FCProps = ({
   }
   return (
     <TableBody>
-      <TableRow className={cn("cursor-pointer max-h-7", className)} {...props}>
+      <TableRow
+        onMouseEnter={() => setOnRowHover(true)}
+        onMouseLeave={() => setOnRowHover(false)}
+        className={cn("cursor-pointer max-h-7", className)}
+        {...props}
+      >
         <TableCell className={textVariants({ variant: "body-3-medium" })}>
           <Link
             to={`/account/bApps/${bApp.bAppId}`}
@@ -64,11 +73,18 @@ export const StrategyBAppsTableRow: FCProps = ({
             </Button>
           </Link>
         </TableCell>
-        <TableCell className="flex items-center justify-between">
-          <AssetsDisplay
-            max={3}
-            addresses={bApp.tokens.map((s) => s) as Address[]}
-          />
+        <TableCell className="flex justify-end items-center ">
+          {onRowHover ? (
+            <ManageObligationsBtn
+              strategyId={strategyId || ""}
+              bAppId={bApp.bAppId}
+            />
+          ) : (
+            <AssetsDisplay
+              max={3}
+              addresses={bApp.tokens.map((s) => s) as Address[]}
+            />
+          )}
           {/*will use in future*/}
           {false && Boolean(bApp.assets.length) && (
             <ExpandButton setIsOpen={setIsInnerOpen} isOpen={isInnerOpen} />

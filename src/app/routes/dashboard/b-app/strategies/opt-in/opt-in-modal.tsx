@@ -37,7 +37,7 @@ export const OptInModal: FC<OptInModalProps> = () => {
   const optInToBApp = useOptInToBApp();
 
   useEffect(() => {
-    if (Object.keys(bApp).length !== 0) {
+    if (modal.isOpen && Object.keys(bApp).length !== 0) {
       setCurrentStep(CreateSteps.SetObligations);
     }
   }, [Object.keys(bApp).length]);

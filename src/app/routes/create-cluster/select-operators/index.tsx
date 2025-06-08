@@ -132,10 +132,9 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
     {
       account: account.address!,
       operatorIds: selectedOperatorsIds,
-      additionalValidators: clusterSize - selectedOperatorsIds.length,
     },
     {
-      enabled: !!address,
+      enabled: !!address && selectedOperatorsIds.length > 0,
     },
   );
 
@@ -256,13 +255,6 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
               <AlertDescription>
                 You have selected one or more operators that have reached the
                 maximum number of validators.
-              </AlertDescription>
-            </Alert>
-          )}
-          {operatorsUsability.data?.hasDeletedOperators && (
-            <Alert variant="error">
-              <AlertDescription>
-                You have selected one or more operators that have been deleted.
               </AlertDescription>
             </Alert>
           )}

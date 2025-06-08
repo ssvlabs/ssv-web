@@ -23,7 +23,8 @@ export const getOperatorQueryOptions = (
     queryKey: ["operator", id?.toString(), chainId],
     queryFn: () =>
       getOperator(id!).catch((err) => {
-        return isAxiosError(err) && err.response?.status === 404
+        return isAxiosError(err) &&
+          [404, 500].includes(err.response?.status ?? 0)
           ? createDefaultOperator({
               id: Number(id),
               is_deleted: true,

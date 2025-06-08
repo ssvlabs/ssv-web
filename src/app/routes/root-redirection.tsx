@@ -50,13 +50,15 @@ export const Redirector = () => {
 
   if (app.isDvtOnly) {
     if (operatorMatch && hasOperators)
-      return <Navigate to={referral} replace />;
+      return <Navigate to={"/operators"} replace />;
 
     if (hasClusters) return <Navigate to={"/clusters"} replace />;
     if (hasOperators) return <Navigate to={"/operators"} replace />;
 
     return <Navigate to="/join" replace />;
   }
+
+  if (referral !== "/") return <Navigate to={referral} replace />;
 
   return <Navigate to="/account/my-delegations" />;
 };

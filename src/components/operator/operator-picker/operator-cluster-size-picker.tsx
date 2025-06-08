@@ -33,7 +33,7 @@ export const OperatorClusterSizePicker: OperatorClusterSizePickerFC = ({
           <Button
             key={size}
             variant={value === size ? "secondary" : "outline"}
-            className={cn({
+            className={cn("border border-gray-300", {
               "border border-primary-300": value === size,
             })}
             onClick={() => onChange(size)}

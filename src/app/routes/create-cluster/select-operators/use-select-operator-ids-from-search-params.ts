@@ -41,6 +41,5 @@ export const useSelectOperatorIdsFromSearchParams = () => {
       }
       setSearchIds(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [operators.data, searchIds?.length, setSearchIds]);
 };

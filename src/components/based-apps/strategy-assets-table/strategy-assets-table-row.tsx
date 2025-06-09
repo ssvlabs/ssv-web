@@ -15,7 +15,8 @@ import { cn } from "@/lib/utils/tw";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useState } from "react";
 import ExpandButton from "@/components/ui/expand-button.tsx";
-import { AddressDisplay } from "@/components/ui/address";
+import { getObligationData } from "@/lib/utils/manage-obligation.ts";
+import InnerTableRow from "@/components/based-apps/strategy-assets-table/inner-table-row.tsx";
 
 export type AssetsTableRowProps = {
   searchValue?: string;
@@ -46,7 +47,7 @@ export const StrategyAssetsTableRow: FCProps = ({
   const isAssetIncludeInStrategy = (strategy.depositsPerToken || []).some(
     ({ token }) => token.toString() === asset.token.toLowerCase(),
   );
-
+  // const updateCount = getPendingObligationsCount({obligations: strategy.depositsPerToken, })
   return (
     <TableBody>
       <TableRow
@@ -128,46 +129,32 @@ export const StrategyAssetsTableRow: FCProps = ({
       )}
       {Boolean((asset?.obligations || []).length) &&
         isInnerOpen &&
-        (asset?.obligations || []).map(({ bAppId, percentage }) => {
+        (asset?.obligations || []).map(({ bAppId }) => {
           const bApp =
             strategy.bAppsList?.find(
               (bApp: StrategyBApp & BAppsMetaData) => bApp.bAppId === bAppId,
             ) || ({} as StrategyBApp & BAppsMetaData);
+          const obligationData = getObligationData(
+            strategy.depositsPerToken || [],
+            asset.token,
+            bAppId,
+          );
+
           return (
-            <TableRow
-              key={bAppId}
-              className={cn(
-                "cursor-pointer max-h-7 w-full bg-gray-100 hover:bg-gray-100",
-                className,
-              )}
-              {...props}
-            >
-              <TableCell className={textVariants({ variant: "body-3-medium" })}>
-                <div className="flex items-center gap-2">
-                  <img
-                    className="rounded-[8px] size-7 border-gray-400 border"
-                    src={
-                      bApp?.logo ||
-                      "/images/operator_default_background/light.svg"
-                    }
-                    onError={(e) => {
-                      e.currentTarget.src =
-                        "/images/operator_default_background/light.svg";
-                    }}
-                  />
-                  {bApp?.name || (
-                    <AddressDisplay address={bApp.bAppId} copyable />
-                  )}
-                </div>
-              </TableCell>
-              <TableCell />
-              <TableCell />
-              <TableCell
-                className={`${textVariants({ variant: "body-3-medium" })} flex items-center justify-end`}
-              >
-                {convertToPercentage(percentage)}%
-              </TableCell>
-            </TableRow>
+            <InnerTableRow
+              strategyId={strategy.id}
+              bApp={bApp}
+              token={asset.token}
+              obligation={
+                obligationData ||
+                ({} as {
+                  bAppId: `0x${string}`;
+                  percentage: string;
+                  percentageProposed: string;
+                  percentageProposedTimestamp: string;
+                })
+              }
+            />
           );
         })}
     </TableBody>

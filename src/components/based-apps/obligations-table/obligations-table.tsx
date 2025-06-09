@@ -8,12 +8,13 @@ import ObligationTableRow from "@/components/based-apps/obligations-table/obliga
 
 const ObligationsTable = ({
   obligations,
+  strategyId,
   isObligationManage,
 }: {
   obligations: `0x${string}`[];
+  strategyId: string;
   isObligationManage?: boolean;
 }) => {
-  console.log(obligations);
   return (
     <div className="flex flex-col w-full">
       <Table className={"w-full rounded-xl overflow-hidden"}>
@@ -30,6 +31,7 @@ const ObligationsTable = ({
         <TableBody>
           {obligations?.map((obligation: `0x${string}`) => (
             <ObligationTableRow
+              strategyId={strategyId}
               obligation={obligation}
               isObligationManage={isObligationManage}
             />

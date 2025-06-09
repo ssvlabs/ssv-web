@@ -36,9 +36,11 @@ const schema = z.object({
 
 const Obligations = ({
   isNotWizard,
+  strategyId,
   isObligationManage,
 }: {
   isNotWizard?: boolean;
+  strategyId?: string;
   isObligationManage?: boolean;
 }) => {
   const navigate = useNavigate();
@@ -184,6 +186,7 @@ const Obligations = ({
               />
             </Card>
             <ObligationsTable
+              strategyId={strategyId || ""}
               isObligationManage={isObligationManage}
               obligations={useCreateStrategyContext().bApp.supportedAssets}
             />

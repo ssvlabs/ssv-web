@@ -9,7 +9,15 @@ import type { Address } from "abitype";
 
 export type ObligateBtnProps = {
   token: Address;
-  isObligated: boolean;
+  strategyId: string;
+  obligationUpdateData: {
+    isObligated: boolean;
+    isPending: boolean;
+    isPendingEnd: number;
+    isExpired: boolean;
+    isWaiting: boolean;
+    isFinalizeEnd: number;
+  };
 };
 
 type ObligateBtnFC = FC<
@@ -20,27 +28,30 @@ type ObligateBtnFC = FC<
 
 export const ObligateBtn: ObligateBtnFC = ({
   className,
-  isObligated,
+  strategyId,
   token,
+  obligationUpdateData,
   ...props
 }) => {
   const modal = useManageObligationsModal();
 
   const obligationsModal = useObligateModal();
-
+  const { isObligated } = obligationUpdateData;
   return (
     <Button
       onClick={() => {
         obligationsModal.open({
+          strategyId,
           token,
           bAppId: modal.meta.bAppId || "0x",
+          obligationUpdateData,
         });
       }}
       variant={isObligated ? "secondary" : "default"}
       className={`flex items-center gap-1 ${className}`}
       {...props}
     >
-      {isObligated ? "Edit" : "Obligate"}
+      {isObligated ? "Edit" : "Add"}
     </Button>
   );
 };

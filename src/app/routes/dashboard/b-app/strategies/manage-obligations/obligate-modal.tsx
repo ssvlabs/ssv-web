@@ -1,11 +1,9 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { type FC } from "react";
+import { type FC, useEffect, useState } from "react";
 import { useObligateModal } from "@/signals/modal.ts";
-// import { useBApp } from "@/hooks/b-app/use-b-app.ts";
 import { Text } from "@/components/ui/text.tsx";
 import { Button, IconButton } from "@/components/ui/button.tsx";
 import { X } from "lucide-react";
-import { Stepper } from "@/components/ui/stepper.tsx";
 import { AssetLogo } from "@/components/ui/asset-logo.tsx";
 import type { Address } from "abitype";
 import AssetName from "@/components/ui/asset-name.tsx";
@@ -14,75 +12,281 @@ import { shortenAddress } from "@/lib/utils/strings.ts";
 import Slider from "@/components/ui/custom-slider.tsx";
 import { NumericFormat } from "react-number-format";
 import { Input } from "@/components/ui/input.tsx";
-// import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
+import { useCreateObligation } from "@/lib/contract-interactions/b-app/write/use-create-obligation.ts";
+import { useProposeUpdateObligation } from "@/lib/contract-interactions/b-app/write/use-propose-update-obligation.ts";
+import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt.tsx";
+import { toast } from "@/components/ui/use-toast.ts";
+import { useStrategy } from "@/hooks/b-app/use-strategy.ts";
+import type { BAppAsset } from "@/api/b-app.ts";
+import { getStrategyById } from "@/api/b-app.ts";
+import { Link } from "react-router-dom";
+import { FaCircleInfo } from "react-icons/fa6";
+import { Tooltip } from "@/components/ui/tooltip.tsx";
+import { Stepper } from "@/components/ui/stepper.tsx";
+import { convertToPercentage } from "@/lib/utils/number.ts";
+import { retryPromiseUntilSuccess } from "@/lib/utils/promise.ts";
+import { useFinalizeUpdateObligation } from "@/lib/contract-interactions/b-app/write/use-finalize-update-obligation.ts";
+import { cn } from "@/lib/utils/tw.ts";
+import { Alert, AlertDescription } from "@/components/ui/alert.tsx";
+import { formatDistance } from "date-fns";
+import { useManageObligation } from "@/app/routes/dashboard/b-app/strategies/manage-obligations/use-manage-obligation.ts";
+import { getObligationData } from "@/lib/utils/manage-obligation.ts";
 
 export type ObligateModalProps = {
-  // TODO: Add props or remove this type
+  //   TODO:
 };
 
 export const ObligateModal: FC<ObligateModalProps> = () => {
   const modal = useObligateModal();
+
   const { bApp } = useBApp(modal.meta.bAppId);
-  console.log(bApp);
-  // if (modal.isOpen && !bApp.isLoading) {
-  // console.log(bApp);
-  //   useCreateStrategyContext.state.bApp = bApp.bApp;
-  // }
-  // console.log(useCreateStrategyContext.state);
+  const strategyData = useStrategy(modal.meta.strategyId);
+  const { strategy } = strategyData;
+
+  const {
+    isPending,
+    isPendingEnd,
+    isFinalizeEnd,
+    isWaiting,
+    isExpired,
+    isObligated,
+  } = useManageObligation(
+    modal.meta.strategyId || "",
+    modal.meta.bAppId || "",
+    modal.meta.token || "0x",
+  );
+
+  const obligations = (strategy.depositsPerToken || []).filter(
+    (bAppAsset: BAppAsset) =>
+      (bAppAsset.obligations || []).some(
+        ({ bAppId }) =>
+          bAppId.toLowerCase() === modal.meta.bAppId?.toLowerCase(),
+      ),
+  );
+
+  const obligationData = getObligationData(
+    obligations,
+    modal.meta.token || "0x",
+    modal.meta.bAppId || "0x",
+  );
+
+  const [obligation, setObligation] = useState(
+    convertToPercentage(
+      isWaiting || isPending
+        ? obligationData?.percentageProposed || 0
+        : obligationData?.percentage || 0,
+    ),
+  );
+  const [reUpdateNewObligation, setReUpdateNewObligation] = useState(false);
+
+  const createObligation = useCreateObligation();
+  const updateObligation = useProposeUpdateObligation();
+  const finalizeUpdateObligation = useFinalizeUpdateObligation();
+
+  const submitObligation = async () => {
+    const method = isObligated ? updateObligation : createObligation;
+
+    const options = withTransactionModal({
+      onMined: async () => {
+        await retryPromiseUntilSuccess(() =>
+          getStrategyById(strategy.id)
+            .then((strategy) => {
+              const obligations = (strategy.depositsPerToken || []).filter(
+                (bAppAsset: BAppAsset) =>
+                  (bAppAsset.obligations || []).some(
+                    ({ bAppId }) =>
+                      bAppId.toLowerCase() === modal.meta.bAppId?.toLowerCase(),
+                  ),
+              );
+
+              const newObl = getObligationData(
+                obligations,
+                modal.meta.token || "0x",
+                modal.meta.bAppId || "",
+              );
+
+              return (
+                obligationData?.percentageProposed.toString() !==
+                  newObl?.percentageProposed.toString() ||
+                obligationData?.percentageProposedTimestamp.toString() !==
+                  newObl?.percentageProposedTimestamp.toString()
+              );
+            })
+            .catch(() => false),
+        );
+        await strategyData.invalidate();
+        toast({
+          title: "Transaction confirmed",
+          description: new Date().toLocaleString(),
+        });
+        setReUpdateNewObligation(false);
+        modal.close();
+      },
+    });
+
+    const params = {
+      strategyId: Number(strategy.id),
+      bApp: bApp.id,
+      token: modal.meta.token || "0x",
+    };
+
+    if (isWaiting) {
+      await finalizeUpdateObligation.write(params, options);
+    } else {
+      await method.write(
+        { ...params, obligationPercentage: Math.round(obligation * 100) },
+        options,
+      );
+    }
+  };
+
+  useEffect(() => {
+    setObligation(
+      convertToPercentage(
+        isWaiting || isPending
+          ? obligationData?.percentageProposed || 0
+          : obligationData?.percentage || 0,
+      ),
+    );
+  }, [modal.isOpen]);
+
   return (
     <Dialog {...modal}>
-      <DialogContent asChild className="max-w-[648px] h-[764px] bg-white p-6">
+      <DialogContent asChild className="max-w-[648px] max-h-[95%] bg-white p-6">
         <div className="w-full h-full flex flex-col gap-8">
           <div className="flex justify-between items-center">
-            <Text variant={"body-1-bold"}>Change Obligation</Text>
-
+            <div className="flex gap-1">
+              <Text variant={"body-1-bold"}>
+                {isObligated ? "Change" : "Add"} Obligation
+              </Text>
+              <Tooltip
+                asChild
+                content={
+                  <Text>
+                    Learn more about&nbsp;
+                    <Link
+                      target={"_blank"}
+                      className={"text-primary-500"}
+                      to={
+                        isObligated
+                          ? "https://docs.ssv.network/based-applications/user-guides/strategy-features/manage-obligations/change-obligation/"
+                          : "https://docs.ssv.network/based-applications/user-guides/strategy-features/manage-obligations/add-obligation/"
+                      }
+                    >
+                      {isObligated ? "Changing" : "Adding"}&nbsp; Obligations
+                    </Link>
+                  </Text>
+                }
+              >
+                <div className="flex items-center justify-center">
+                  <FaCircleInfo className="text-gray-500" />
+                </div>
+              </Tooltip>
+            </div>
             <div className="flex justify-between items-center gap-8">
               <IconButton
                 variant="ghost"
-                onClick={() => modal.close()}
+                onClick={async (ev) => {
+                  setReUpdateNewObligation(false);
+                  ev.preventDefault();
+                  modal.close();
+                }}
                 className="text-gray-900 flex items-center justify-center right-0 top-0"
               >
                 <X className="text-gray-900 size-5" />
               </IconButton>
             </div>
           </div>
-          <div>
-            <Stepper
-              stepIndex={0}
-              steps={[
-                {
-                  label: "Request",
-                  addon: <Text className="text-xs font-bold">Request</Text>,
-                },
-                {
-                  label: "Pending",
-                  addon: (
-                    <Text className="text-xs font-bold text-primary-500">
-                      Pending
-                    </Text>
-                  ),
-                },
-                {
-                  label: "Change",
-                  addon: (
-                    <Text className="text-xs font-bold text-primary-500">
-                      Change
-                    </Text>
-                  ),
-                },
-              ]}
-              // className={cn(className)}
-            />
-          </div>
-          <div className="w-full h-full flex flex-col gap-2">
-            <Text>Changing an obligation takes effect in multiple steps:</Text>
-            <Text>
-              The process starts by requesting a new obligation percentage,
-              which is followed by pending period. Once the pending period has
-              elapsed, you can finalize the new obligation by executing it.
-              Percentage change limits apply. Learn more
-            </Text>
-          </div>
+          {isObligated && (
+            <div>
+              <Stepper
+                withoutStepNumber
+                stepIndex={0}
+                steps={[
+                  {
+                    label: "Request",
+                    variant:
+                      (isPending || isWaiting || isExpired) &&
+                      !reUpdateNewObligation
+                        ? "done"
+                        : "active",
+                  },
+                  {
+                    label: "Pending",
+                    variant:
+                      isPending && !reUpdateNewObligation
+                        ? "warning"
+                        : isWaiting || (isExpired && !reUpdateNewObligation)
+                          ? "done"
+                          : "default",
+                    addon: isPending && !reUpdateNewObligation && (
+                      <Text className="text-xs text-[#FDB25C]">
+                        {formatDistance(isPendingEnd || 0, Date.now(), {
+                          addSuffix: false,
+                        })}{" "}
+                        left
+                      </Text>
+                    ),
+                  },
+                  {
+                    label: "Change",
+                    variant:
+                      isWaiting && !reUpdateNewObligation
+                        ? "withdrawable"
+                        : isExpired && !reUpdateNewObligation
+                          ? "gray"
+                          : "default",
+                    addon: isWaiting && !reUpdateNewObligation && (
+                      <Text className="text-xs text-success-500">
+                        Expires in{" "}
+                        {formatDistance(isFinalizeEnd || 0, Date.now(), {
+                          addSuffix: false,
+                        })}
+                      </Text>
+                    ),
+                  },
+                ]}
+              />
+            </div>
+          )}
+          {isObligated ? (
+            <div className="w-full h-full flex flex-col gap-2">
+              <Text variant={"body-3-medium"}>
+                Changing an obligation takes effect in multiple steps:
+              </Text>
+              <Text variant={"body-3-medium"}>
+                The process starts by requesting a new obligation percentage,
+                which is followed by pending period. Once the pending period has
+                elapsed, you can finalize the new obligation by executing it.
+                Percentage change limits apply.&nbsp;
+                <Link
+                  target={"_blank"}
+                  className="text-primary-500 underline"
+                  to={
+                    "https://docs.ssv.network/based-applications/user-guides/strategy-features/manage-obligations/change-obligation/"
+                  }
+                >
+                  Learn more
+                </Link>
+              </Text>
+            </div>
+          ) : (
+            <div className="w-full h-full flex flex-col gap-2">
+              <Text variant={"body-3-medium"}>
+                Adding an obligation for this asset will take immediate
+                effect.&nbsp;
+                <Link
+                  target={"_blank"}
+                  className="text-primary-500 underline"
+                  to={
+                    "https://docs.ssv.network/based-applications/user-guides/strategy-features/manage-obligations/add-obligation/"
+                  }
+                >
+                  Learn more
+                </Link>
+              </Text>
+            </div>
+          )}
           <div>
             <Text variant="caption-medium" className="text-gray-500">
               Selected bApp
@@ -98,7 +302,9 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
                     "/images/operator_default_background/light.svg";
                 }}
               />
-              {bApp?.name || shortenAddress(bApp?.id || "0x")}
+              <Text variant={"body-3-medium"}>
+                {bApp?.name || shortenAddress(bApp?.id || "0x")}
+              </Text>
             </div>
           </div>
           <div>
@@ -108,7 +314,7 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
             <div className="flex gap-2 items-center px-6 w-full h-[52px] bg-gray-100 rounded-[12px]">
               <AssetLogo address={modal.meta.token as Address} />
               <AssetName
-                className="font-[14px]"
+                className="font-[14px] "
                 address={modal.meta.token as Address}
               />
             </div>
@@ -117,17 +323,22 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-center gap-2">
               <NumericFormat
-                className="w-[140px] text-center h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px] overflow-hidden [&>input]:text-center"
-                value={1}
+                className={cn(
+                  "w-[140px] text-center h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px] overflow-hidden [&>input]:text-center",
+                  {
+                    "text-gray-400":
+                      (isPending || isWaiting) && !reUpdateNewObligation,
+                    "border-gray-400":
+                      (isPending || isWaiting) && !reUpdateNewObligation,
+                  },
+                )}
+                value={obligation}
                 decimalScale={2}
                 allowLeadingZeros={false}
-                // isAllowed={numberFormatLimiter({
-                //   setter: setDelegatePercent,
-                //   100,
-                // })}
-                // onValueChange={(values) =>
-                //   setDelegatePercent(values.floatValue || 0)
-                // }
+                onValueChange={(values) =>
+                  setObligation(values.floatValue || 0)
+                }
+                disabled={(isPending || isWaiting) && !reUpdateNewObligation}
                 customInput={Input}
                 suffix="%"
               />
@@ -135,17 +346,56 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
                 Delegate
               </Text>
             </div>
-            <Slider maxValue={100} setValue={() => null} value={1} />
+            <Slider
+              disable={(isPending || isWaiting) && !reUpdateNewObligation}
+              maxValue={100}
+              setValue={(value) => {
+                setObligation(value);
+              }}
+              value={obligation}
+            />
             <div className="flex flex-col items-center gap-2">
               <div className="w-[140px] h-[80px] text-[28px] text-gray-5004 flex items-center justify-center bg-gray-100 rounded-[12px] text-gray-500">
-                {((100 * 100 + 100 * 100) / 100).toFixed(2)}%
+                100%
               </div>
               <Text variant={"caption-medium"} className="text-gray-500">
                 Available
               </Text>
             </div>
           </div>
-          <Button>Request Obligation Change</Button>
+          {reUpdateNewObligation && (
+            <Alert variant="warning" className="flex gap-4 items-center">
+              <AlertDescription>
+                New request will replace the current one and reset the pending
+                period.
+              </AlertDescription>
+            </Alert>
+          )}
+          <div className={"flex flex-col gap-3"}>
+            <Button
+              className={"h-[60px]"}
+              disabled={!reUpdateNewObligation && isPending}
+              isLoading={
+                createObligation.isPending || updateObligation.isPending
+              }
+              onClick={submitObligation}
+            >
+              {isWaiting
+                ? "Change"
+                : isPending && !reUpdateNewObligation
+                  ? `Pending ${obligation}% Obligation Change `
+                  : "Request Obligation Change "}
+            </Button>
+            {isPending && !reUpdateNewObligation && (
+              <Button
+                className={"h-[60px]"}
+                variant={"secondary"}
+                onClick={() => setReUpdateNewObligation(true)}
+              >
+                Update request
+              </Button>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

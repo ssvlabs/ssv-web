@@ -9,9 +9,8 @@ import { Text } from "@/components/ui/text.tsx";
 import { IconButton } from "@/components/ui/button.tsx";
 import { X } from "lucide-react";
 import { useStrategy } from "@/hooks/b-app/use-strategy.ts";
-import type { BApp, BAppAsset } from "@/api/b-app.ts";
+import type { BApp } from "@/api/b-app.ts";
 import { ObligateModal } from "@/app/routes/dashboard/b-app/strategies/manage-obligations/obligate-modal.tsx";
-import { convertToPercentage } from "@/lib/utils/number.ts";
 
 export type ManageObligationsModalProps = {
   // TODO: Add props or remove this type
@@ -20,32 +19,14 @@ export type ManageObligationsModalProps = {
 export const ManageObligationsModal: FC<ManageObligationsModalProps> = () => {
   const modal = useManageObligationsModal();
   const bApp = useBApp(modal.meta.bAppId);
-  const { strategy } = useStrategy(modal.meta.strategyId);
-
+  const strategyData = useStrategy(modal.meta.strategyId);
+  const { strategy } = strategyData;
   const closeModal = () => {
     useCreateStrategyContext.state.bApp = {} as BApp;
-    useCreateStrategyContext.state.selectedObligations = {};
     modal.close();
   };
   if (modal.isOpen && !bApp.isLoading) {
-    const obligations = (strategy.depositsPerToken || []).filter(
-      (bAppAsset: BAppAsset) =>
-        (bAppAsset.obligations || []).some(
-          ({ bAppId }) =>
-            bAppId.toLowerCase() === modal.meta.bAppId?.toLowerCase(),
-        ),
-    );
-    const obligationsToMap = obligations.reduce(
-      (acc: Record<`0x${string}`, number>, obligation) => {
-        acc[obligation.token] = convertToPercentage(
-          obligation.totalObligatedPercentage || "",
-        );
-        return acc;
-      },
-      {},
-    );
     useCreateStrategyContext.state.bApp = bApp.bApp;
-    useCreateStrategyContext.state.selectedObligations = obligationsToMap;
   }
 
   return (
@@ -72,9 +53,15 @@ export const ManageObligationsModal: FC<ManageObligationsModalProps> = () => {
           {modal.isOpen && (
             <div className="mt-[80px] mb-[80px] overflow-auto">
               {bApp.isLoading ? (
-                <Spinner />
+                <div className="size-full flex items-center justify-center">
+                  <Spinner />
+                </div>
               ) : (
-                <Obligations isNotWizard isObligationManage />
+                <Obligations
+                  isNotWizard
+                  isObligationManage
+                  strategyId={strategy.id}
+                />
               )}
             </div>
           )}

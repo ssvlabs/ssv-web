@@ -16,8 +16,22 @@ import { shortenAddress } from "@/lib/utils/strings.ts";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ManageObligationsBtn } from "@/app/routes/dashboard/b-app/strategies/manage-obligations/manage-obligations-btn.tsx";
+import { getPendingObligationsCount } from "@/lib/utils/manage-obligation.ts";
+import { useObligationTimelockPeriod } from "@/lib/contract-interactions/b-app/read/use-obligation-timelock-period.ts";
+import { useObligationExpireTime } from "@/lib/contract-interactions/b-app/read/use-obligation-expire-time.ts";
+import { Tooltip } from "@/components/ui/tooltip.tsx";
+
 export type BAppTableRowProps = {
   bApp: StrategyBApp & BAppsMetaData;
+  obligations: Record<
+    `0x${string}`,
+    {
+      bAppId: `0x${string}`;
+      percentage: string;
+      percentageProposed: string;
+      percentageProposedTimestamp: string;
+    }
+  >;
   searchValue?: string;
   strategyId?: string;
 };
@@ -29,6 +43,7 @@ type FCProps = FC<
 
 export const StrategyBAppsTableRow: FCProps = ({
   bApp,
+  obligations,
   searchValue,
   strategyId,
   className,
@@ -37,6 +52,8 @@ export const StrategyBAppsTableRow: FCProps = ({
   const { etherscan } = useLinks();
   const [isInnerOpen, setIsInnerOpen] = useState(false);
   const [onRowHover, setOnRowHover] = useState(false);
+  const obligationTimelockPeriod = useObligationTimelockPeriod();
+  const obligationExpiredPeriod = useObligationExpireTime();
   if (
     searchValue &&
     ((bApp.name &&
@@ -45,6 +62,12 @@ export const StrategyBAppsTableRow: FCProps = ({
   ) {
     return;
   }
+
+  const count = getPendingObligationsCount({
+    obligations: Object.values(obligations) || [],
+    timeLockPeriod: obligationTimelockPeriod.data || 0,
+    expiredPeriod: obligationExpiredPeriod.data || 0,
+  });
   return (
     <TableBody>
       <TableRow
@@ -76,6 +99,7 @@ export const StrategyBAppsTableRow: FCProps = ({
         <TableCell className="flex justify-end items-center ">
           {onRowHover ? (
             <ManageObligationsBtn
+              obligations={obligations}
               strategyId={strategyId || ""}
               bAppId={bApp.bAppId}
             />
@@ -88,6 +112,23 @@ export const StrategyBAppsTableRow: FCProps = ({
           {/*will use in future*/}
           {false && Boolean(bApp.assets.length) && (
             <ExpandButton setIsOpen={setIsInnerOpen} isOpen={isInnerOpen} />
+          )}
+        </TableCell>
+        <TableCell>
+          {count > 0 && (
+            <Tooltip
+              asChild
+              content={`Pending ${count} changes`}
+              children={
+                <div
+                  className={
+                    "size-6 bg-primary-400 border-[2px] border-primary-500 p-[6px] flex items-center justify-center text-white rounded-[4px] text-xs"
+                  }
+                >
+                  {count}
+                </div>
+              }
+            />
           )}
         </TableCell>
       </TableRow>

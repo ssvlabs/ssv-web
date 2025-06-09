@@ -21,7 +21,7 @@ export const stepperDotVariants = cva(
       variant: {
         default: "bg-gray-300",
         active: "border-2 border-primary-500",
-        warning: "border-2 border-orange-500 text-orange-400 bg-orange-500/10",
+        warning: "border-2 border-[#FDB25C] text-[#FDB25C] bg-warning-200",
         done: "bg-primary-400 border-2 border-primary-500 text-[#fff]",
         withdrawable: "bg-success-700 text-[#fff] border-2 border-success-500",
         error: "bg-error-500 text-white",
@@ -36,6 +36,7 @@ export const stepperDotVariants = cva(
 
 type StepperDotProps = VariantProps<typeof stepperDotVariants> & {
   step?: number;
+  withoutStepNumber?: boolean;
 };
 
 type StepperDotFC = FC<
@@ -49,12 +50,13 @@ export const StepperDot: StepperDotFC = ({
   className,
   variant,
   step,
+  withoutStepNumber,
   ...props
 }) => {
   const children = useMemo(() => {
     switch (variant) {
       case "default":
-        return step;
+        return withoutStepNumber ? "" : step;
       case "done":
         return <Check className="size-3" strokeWidth="4" />;
       case "error":
@@ -84,6 +86,7 @@ export type StepperStep = {
 export type StepperProps = {
   steps: StepperStep[];
   stepIndex?: number;
+  withoutStepNumber?: boolean;
 };
 
 type StepperFC = FC<
@@ -95,6 +98,7 @@ export const Stepper: StepperFC = ({
   className,
   steps,
   stepIndex,
+  withoutStepNumber,
   ...props
 }) => {
   const getVariant = (index: number) => {
@@ -105,7 +109,7 @@ export const Stepper: StepperFC = ({
   };
   return (
     <div className={cn(className, "flex flex-col gap-2")} {...props}>
-      <div className="flex items-center gap-8 justify-between">
+      <div className="flex items-center gap-8 justify-between mx-4">
         {steps.map((step, index) => (
           <Fragment key={index}>
             <StepperDot
@@ -115,6 +119,7 @@ export const Stepper: StepperFC = ({
                 "opacity-30": step.disabled,
               })}
               step={index + 1}
+              withoutStepNumber={withoutStepNumber}
             />
             {index < steps.length - 1 && (
               <div
@@ -131,7 +136,7 @@ export const Stepper: StepperFC = ({
           </Fragment>
         ))}
       </div>
-      <div className="flex gap-2 justify-evenly">
+      <div className="flex gap-2 justify-center">
         {steps.map((step, index) => (
           <div
             key={`${index}-label`}

@@ -73,9 +73,28 @@ export const useOptInModal = createModalSignal<{
 export const useManageObligationsModal = createModalSignal<{
   bAppId: Address;
   strategyId: string;
+  // obligations: Record<
+  //   `0x${string}`,
+  //   | {
+  //       bAppId: `0x${string}`;
+  //       percentage: string;
+  //       percentageProposed: string;
+  //       percentageProposedTimestamp: string;
+  //     }
+  //   | undefined
+  // >;
 }>();
 
 export const useObligateModal = createModalSignal<{
   token: Address;
   bAppId: Address;
+  strategyId: string;
+  obligationUpdateData: {
+    isObligated: boolean;
+    isPending: boolean;
+    isPendingEnd: number;
+    isExpired: boolean;
+    isWaiting: boolean;
+    isFinalizeEnd: number;
+  };
 }>();

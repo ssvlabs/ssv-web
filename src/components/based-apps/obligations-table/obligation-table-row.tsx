@@ -10,17 +10,54 @@ import AssetName from "@/components/ui/asset-name.tsx";
 import { useLinks } from "@/hooks/use-links.ts";
 import { AddressDisplay } from "@/components/ui/address";
 import { ObligateBtn } from "@/app/routes/dashboard/b-app/strategies/manage-obligations/obligate-btn.tsx";
+import { IoMdCloseCircle } from "react-icons/io";
+import { PiDotsThreeCircleDuotone } from "react-icons/pi";
+import { FaArrowCircleUp } from "react-icons/fa";
+import { Tooltip } from "@/components/ui/tooltip.tsx";
+import { useManageObligationsModal } from "@/signals/modal.ts";
+import { convertToPercentage } from "@/lib/utils/number.ts";
+import { formatDistance } from "date-fns";
+import { useStrategy } from "@/hooks/b-app/use-strategy.ts";
+import type { BAppAsset } from "@/api/b-app.ts";
+import { cn } from "@/lib/utils/tw.ts";
+import { useManageObligation } from "@/app/routes/dashboard/b-app/strategies/manage-obligations/use-manage-obligation.ts";
+import { getObligationData } from "@/lib/utils/manage-obligation.ts";
 
 const ObligationTableRow = ({
   obligation,
+  strategyId,
   isObligationManage,
 }: {
   obligation: `0x${string}`;
+  strategyId: string;
   isObligationManage?: boolean;
 }) => {
   const { state } = useCreateStrategyContext;
   const { selectedObligations } = useCreateStrategyContext();
   const { etherscan } = useLinks();
+  const modal = useManageObligationsModal();
+  const strategyData = useStrategy(modal.meta.strategyId);
+  const { strategy } = strategyData;
+
+  const obligations = (strategy.depositsPerToken || []).filter(
+    (bAppAsset: BAppAsset) =>
+      (bAppAsset.obligations || []).some(
+        ({ bAppId }) =>
+          bAppId.toLowerCase() === modal.meta.bAppId?.toLowerCase(),
+      ),
+  );
+
+  const { isPending, isPendingEnd, isFinalizeEnd, isWaiting, isExpired } =
+    useManageObligation(
+      modal.meta.strategyId || "",
+      modal.meta.bAppId || "",
+      obligation,
+    );
+  const tokenObligation = getObligationData(
+    obligations,
+    obligation,
+    modal.meta.bAppId || "0x",
+  );
 
   return (
     <TableRow key={obligation} className={"max-h-7"}>
@@ -42,9 +79,14 @@ const ObligationTableRow = ({
         />
       </TableCell>
       {isObligationManage && (
-        <TableCell className={"text-right"}>
-          {selectedObligations[obligation]
-            ? `${selectedObligations[obligation]}%`
+        <TableCell
+          className={cn("text-right", {
+            "text-[#FDB25C]": isPending,
+            "text-success-500": isWaiting,
+          })}
+        >
+          {tokenObligation?.percentage
+            ? `${convertToPercentage(isWaiting || isPending ? tokenObligation?.percentageProposed : tokenObligation?.percentage)}%`
             : "-"}
         </TableCell>
       )}
@@ -52,13 +94,72 @@ const ObligationTableRow = ({
         className={`${textVariants({ variant: "body-3-medium" })} py-0`}
       >
         {isObligationManage ? (
-          <div className="w-full flex justify-end items-center">
+          <div className="w-full flex flex-row-reverse justify-between items-center">
             <ObligateBtn
+              strategyId={strategyId}
               token={obligation}
-              isObligated={Object.keys(selectedObligations).includes(
-                obligation,
-              )}
+              obligationUpdateData={{
+                isObligated: Number(tokenObligation?.percentage || 0) > 0,
+                isPending,
+                isPendingEnd,
+                isExpired,
+                isFinalizeEnd,
+                isWaiting,
+              }}
             />
+            {isExpired && (
+              <Tooltip content={"Obligation change request expired"}>
+                <IoMdCloseCircle className="size-5 text-gray-500" />
+              </Tooltip>
+            )}
+            {isPending && (
+              <Tooltip
+                content={
+                  <div>
+                    <Text>
+                      Pending change obligation to{" "}
+                      {convertToPercentage(
+                        tokenObligation?.percentageProposed || 0,
+                      )}
+                      %
+                    </Text>
+                    <Text>
+                      Remaining time:{" "}
+                      {formatDistance(isPendingEnd, Date.now(), {
+                        addSuffix: false,
+                      })}
+                      .
+                    </Text>
+                  </div>
+                }
+              >
+                <PiDotsThreeCircleDuotone className="size-5 text-[#FD9D2F]" />
+              </Tooltip>
+            )}
+            {isWaiting && (
+              <Tooltip
+                content={
+                  <div>
+                    <Text>
+                      Obligation change to{" "}
+                      {convertToPercentage(
+                        tokenObligation?.percentageProposed || 0,
+                      )}
+                      % is executable.
+                    </Text>
+                    <Text>
+                      Expiring in:{" "}
+                      {formatDistance(isFinalizeEnd, Date.now(), {
+                        addSuffix: false,
+                      })}
+                      .
+                    </Text>
+                  </div>
+                }
+              >
+                <FaArrowCircleUp className="size-5 text-success-500" />
+              </Tooltip>
+            )}
           </div>
         ) : (
           <div className="w-full flex justify-end items-center">

@@ -48,7 +48,8 @@ import { ManageObligationsModal } from "@/app/routes/dashboard/b-app/strategies/
 
 const Strategy = () => {
   const { address } = useAccount();
-  const { strategy, account, isLoading: isStrategyLoading } = useStrategy();
+  const strategyQueryData = useStrategy();
+  const { strategy, account, isLoading: isStrategyLoading } = strategyQueryData;
 
   const isStrategyOwner = tryCatch(
     () => isAddressEqual(strategy.ownerAddress, address!),
@@ -367,6 +368,7 @@ const Strategy = () => {
           </div>
           {strategy.bAppsList && (
             <StrategyBAppsTable
+              bAppsObligations={strategy.depositsPerToken || []}
               strategyId={strategy.id}
               isLoading={isStrategyLoading}
               searchValue={bAppSearchValue}

@@ -26,9 +26,9 @@ import { useAccount } from "@/hooks/account/use-account.ts";
 export type BAppTableRowProps = {
   bApp: StrategyBApp & BAppsMetaData;
   obligations: Record<
-    `0x${string}`,
+    Address,
     {
-      bAppId: `0x${string}`;
+      bAppId: Address;
       percentage: string;
       percentageProposed: string;
       percentageProposedTimestamp: string;

@@ -5,6 +5,7 @@ import { StrategyBAppsTableRow } from "@/components/based-apps/strategy-b-apps-t
 import type { BAppAsset, BAppsMetaData, StrategyBApp } from "@/api/b-app.ts";
 import { Text } from "@/components/ui/text.tsx";
 import { OptInBtn } from "@/app/routes/dashboard/b-app/strategies/opt-in/opt-in-btn.tsx";
+import type { Address } from "abitype";
 
 export type BAppsTableProps = {
   bApps: (StrategyBApp & BAppsMetaData)[];
@@ -52,9 +53,9 @@ export const StrategyBAppsTable: FCProps = ({
           const obligationsToMap = obligations.reduce(
             (
               acc: Record<
-                `0x${string}`,
+                Address,
                 {
-                  bAppId: `0x${string}`;
+                  bAppId: Address;
                   percentage: string;
                   percentageProposed: string;
                   percentageProposedTimestamp: string;
@@ -65,14 +66,14 @@ export const StrategyBAppsTable: FCProps = ({
               acc[obligation.token] =
                 (obligation.obligations || []).find(
                   (obl: {
-                    bAppId: `0x${string}`;
+                    bAppId: Address;
                     percentage: string;
                     percentageProposed: string;
                     percentageProposedTimestamp: string;
                   }) => obl.bAppId.toLowerCase() === bApp.bAppId?.toLowerCase(),
                 ) ||
                 ({} as {
-                  bAppId: `0x${string}`;
+                  bAppId: Address;
                   percentage: string;
                   percentageProposed: string;
                   percentageProposedTimestamp: string;

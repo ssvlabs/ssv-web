@@ -8,9 +8,9 @@ export type EditStrategyMenuProps = {
   strategyId: string;
   bAppId: Address;
   obligations: Record<
-    `0x${string}`,
+    Address,
     {
-      bAppId: `0x${string}`;
+      bAppId: Address;
       percentage: string;
       percentageProposed: string;
       percentageProposedTimestamp: string;

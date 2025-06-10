@@ -15,9 +15,27 @@ import ExpandButton from "@/components/ui/expand-button.tsx";
 import { shortenAddress } from "@/lib/utils/strings.ts";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { ManageObligationsBtn } from "@/app/routes/dashboard/b-app/strategies/manage-obligations/manage-obligations-btn.tsx";
+import { getPendingObligationsCount } from "@/lib/utils/manage-obligation.ts";
+import { useObligationTimelockPeriod } from "@/lib/contract-interactions/b-app/read/use-obligation-timelock-period.ts";
+import { useObligationExpireTime } from "@/lib/contract-interactions/b-app/read/use-obligation-expire-time.ts";
+import { Tooltip } from "@/components/ui/tooltip.tsx";
+import { useStrategy } from "@/hooks/b-app/use-strategy.ts";
+import { useAccount } from "@/hooks/account/use-account.ts";
+
 export type BAppTableRowProps = {
   bApp: StrategyBApp & BAppsMetaData;
+  obligations: Record<
+    Address,
+    {
+      bAppId: Address;
+      percentage: string;
+      percentageProposed: string;
+      percentageProposedTimestamp: string;
+    }
+  >;
   searchValue?: string;
+  strategyId?: string;
 };
 
 type FCProps = FC<
@@ -27,12 +45,21 @@ type FCProps = FC<
 
 export const StrategyBAppsTableRow: FCProps = ({
   bApp,
+  obligations,
   searchValue,
+  strategyId,
   className,
   ...props
 }) => {
   const { etherscan } = useLinks();
   const [isInnerOpen, setIsInnerOpen] = useState(false);
+  const [onRowHover, setOnRowHover] = useState(false);
+  const obligationTimelockPeriod = useObligationTimelockPeriod();
+  const obligationExpiredPeriod = useObligationExpireTime();
+  const { strategy } = useStrategy(strategyId);
+  const { address } = useAccount();
+  const isOwner =
+    address?.toLowerCase() === strategy.ownerAddress?.toLowerCase();
   if (
     searchValue &&
     ((bApp.name &&
@@ -41,9 +68,21 @@ export const StrategyBAppsTableRow: FCProps = ({
   ) {
     return;
   }
+
+  const count = getPendingObligationsCount({
+    obligations: Object.values(obligations) || [],
+    timeLockPeriod: obligationTimelockPeriod.data || 0,
+    expiredPeriod: obligationExpiredPeriod.data || 0,
+  });
+
   return (
     <TableBody>
-      <TableRow className={cn("cursor-pointer max-h-7", className)} {...props}>
+      <TableRow
+        onMouseEnter={() => setOnRowHover(true)}
+        onMouseLeave={() => setOnRowHover(false)}
+        className={cn("cursor-pointer max-h-7", className)}
+        {...props}
+      >
         <TableCell className={textVariants({ variant: "body-3-medium" })}>
           <Link
             to={`/account/bApps/${bApp.bAppId}`}
@@ -64,14 +103,39 @@ export const StrategyBAppsTableRow: FCProps = ({
             </Button>
           </Link>
         </TableCell>
-        <TableCell className="flex items-center justify-between">
-          <AssetsDisplay
-            max={3}
-            addresses={bApp.tokens.map((s) => s) as Address[]}
-          />
+        <TableCell className="flex justify-end items-center ">
+          {onRowHover && isOwner ? (
+            <ManageObligationsBtn
+              obligations={obligations}
+              strategyId={strategyId || ""}
+              bAppId={bApp.bAppId}
+            />
+          ) : (
+            <AssetsDisplay
+              max={3}
+              addresses={bApp.tokens.map((s) => s) as Address[]}
+            />
+          )}
           {/*will use in future*/}
           {false && Boolean(bApp.assets.length) && (
             <ExpandButton setIsOpen={setIsInnerOpen} isOpen={isInnerOpen} />
+          )}
+        </TableCell>
+        <TableCell>
+          {count > 0 && isOwner && (
+            <Tooltip
+              asChild
+              content={`Pending ${count} changes`}
+              children={
+                <div
+                  className={
+                    "size-6 bg-primary-400 border-[2px] border-primary-500 p-[6px] flex items-center justify-center text-white rounded-[4px] text-xs"
+                  }
+                >
+                  {count}
+                </div>
+              }
+            />
           )}
         </TableCell>
       </TableRow>

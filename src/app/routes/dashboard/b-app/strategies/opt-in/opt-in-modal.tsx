@@ -16,6 +16,7 @@ import { track } from "@/lib/analytics/mixpanel";
 import { useOptInToBApp } from "@/lib/contract-interactions/b-app/write/use-opt-in-to-b-app.ts";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt.tsx";
 import { retryPromiseUntilSuccess } from "@/lib/utils/promise.ts";
+import { Spinner } from "@/components/ui/spinner.tsx";
 
 export type OptInModalProps = {
   // TODO: Add props or remove this type
@@ -37,7 +38,7 @@ export const OptInModal: FC<OptInModalProps> = () => {
   const optInToBApp = useOptInToBApp();
 
   useEffect(() => {
-    if (Object.keys(bApp).length !== 0) {
+    if (modal.isOpen && Object.keys(bApp).length !== 0) {
       setCurrentStep(CreateSteps.SetObligations);
     }
   }, [Object.keys(bApp).length]);
@@ -142,6 +143,7 @@ export const OptInModal: FC<OptInModalProps> = () => {
             </div>
           </div>
           <div className="mt-[80px] mb-[80px] overflow-auto">
+            {modal.isOpen ? <Component isNotWizard /> : <Spinner />}
             <Component isNotWizard />
           </div>
           <div className="fixed w-full bottom-0 flex justify-between items-center pl-8 pr-7 h-20 bg-gray-100">

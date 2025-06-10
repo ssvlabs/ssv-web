@@ -2,13 +2,16 @@ import type { FC, ComponentPropsWithoutRef } from "react";
 import { TableHeader, TableHead, Table } from "@/components/ui/table";
 import { cn } from "@/lib/utils/tw";
 import { StrategyBAppsTableRow } from "@/components/based-apps/strategy-b-apps-table/strategy-b-apps-table-row.tsx";
-import type { BAppsMetaData, StrategyBApp } from "@/api/b-app.ts";
+import type { BAppAsset, BAppsMetaData, StrategyBApp } from "@/api/b-app.ts";
 import { Text } from "@/components/ui/text.tsx";
 import { OptInBtn } from "@/app/routes/dashboard/b-app/strategies/opt-in/opt-in-btn.tsx";
+import type { Address } from "abitype";
 
 export type BAppsTableProps = {
   bApps: (StrategyBApp & BAppsMetaData)[];
+  bAppsObligations: BAppAsset[];
   searchValue?: string;
+  strategyId?: string;
   isLoading?: boolean;
 };
 
@@ -19,8 +22,10 @@ type FCProps = FC<
 
 export const StrategyBAppsTable: FCProps = ({
   bApps,
+  bAppsObligations,
   searchValue,
   isLoading,
+  strategyId,
   className,
   ...props
 }) => {
@@ -35,11 +40,55 @@ export const StrategyBAppsTable: FCProps = ({
       >
         <TableHeader>
           <TableHead>bApps</TableHead>
-          <TableHead>Asset</TableHead>
+          <TableHead className="text-right">Asset</TableHead>
+          <TableHead className="w-[10px] text-right"></TableHead>
         </TableHeader>
         {bApps.map((bApp) => {
+          const obligations = bAppsObligations.filter((bAppAsset: BAppAsset) =>
+            (bAppAsset.obligations || []).some(
+              ({ bAppId }) =>
+                bAppId.toLowerCase() === bApp.bAppId?.toLowerCase(),
+            ),
+          );
+          const obligationsToMap = obligations.reduce(
+            (
+              acc: Record<
+                Address,
+                {
+                  bAppId: Address;
+                  percentage: string;
+                  percentageProposed: string;
+                  percentageProposedTimestamp: string;
+                }
+              >,
+              obligation,
+            ) => {
+              acc[obligation.token] =
+                (obligation.obligations || []).find(
+                  (obl: {
+                    bAppId: Address;
+                    percentage: string;
+                    percentageProposed: string;
+                    percentageProposedTimestamp: string;
+                  }) => obl.bAppId.toLowerCase() === bApp.bAppId?.toLowerCase(),
+                ) ||
+                ({} as {
+                  bAppId: Address;
+                  percentage: string;
+                  percentageProposed: string;
+                  percentageProposedTimestamp: string;
+                });
+              return acc;
+            },
+            {},
+          );
           return (
-            <StrategyBAppsTableRow searchValue={searchValue} bApp={bApp} />
+            <StrategyBAppsTableRow
+              obligations={obligationsToMap}
+              searchValue={searchValue}
+              bApp={bApp}
+              strategyId={strategyId}
+            />
           );
         })}
       </Table>

@@ -44,10 +44,12 @@ import { StrategyFeeEditorModal } from "@/app/routes/dashboard/b-app/strategies/
 import { StrategyFeeChangeRequestStatusIcon } from "@/components/ui/strategy-fee-change-request-status-icon";
 import { useStrategyFeeChangeRequestStatus } from "@/hooks/b-app/strategy/use-strategy-fee-change-request";
 import { BiRightArrowAlt } from "react-icons/bi";
+import { ManageObligationsModal } from "@/app/routes/dashboard/b-app/strategies/manage-obligations/manage-obligations-modal.tsx";
 
 const Strategy = () => {
   const { address } = useAccount();
-  const { strategy, account, isLoading: isStrategyLoading } = useStrategy();
+  const strategyQueryData = useStrategy();
+  const { strategy, account, isLoading: isStrategyLoading } = strategyQueryData;
 
   const isStrategyOwner = tryCatch(
     () => isAddressEqual(strategy.ownerAddress, address!),
@@ -366,6 +368,8 @@ const Strategy = () => {
           </div>
           {strategy.bAppsList && (
             <StrategyBAppsTable
+              bAppsObligations={strategy.depositsPerToken || []}
+              strategyId={strategy.id}
               isLoading={isStrategyLoading}
               searchValue={bAppSearchValue}
               bApps={strategy.bAppsList}
@@ -379,6 +383,7 @@ const Strategy = () => {
           />
         )}
         <OptInModal key={strategy.id} />
+        <ManageObligationsModal />
       </Container>
     </>
   );

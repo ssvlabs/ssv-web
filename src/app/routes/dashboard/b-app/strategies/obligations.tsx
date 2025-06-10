@@ -34,7 +34,15 @@ const schema = z.object({
   }, "Hash must start with 0x and contain only hexadecimal characters, or be empty"),
 });
 
-const Obligations = ({ isNotWizard }: { isNotWizard?: boolean }) => {
+const Obligations = ({
+  isNotWizard,
+  strategyId,
+  isObligationManage,
+}: {
+  isNotWizard?: boolean;
+  strategyId?: string;
+  isObligationManage?: boolean;
+}) => {
   const navigate = useNavigate();
   const context = useCreateStrategyContext();
   const form = useForm({
@@ -178,6 +186,8 @@ const Obligations = ({ isNotWizard }: { isNotWizard?: boolean }) => {
               />
             </Card>
             <ObligationsTable
+              strategyId={strategyId || ""}
+              isObligationManage={isObligationManage}
               obligations={useCreateStrategyContext().bApp.supportedAssets}
             />
           </Form>

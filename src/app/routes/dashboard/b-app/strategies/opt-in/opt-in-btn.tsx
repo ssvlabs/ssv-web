@@ -10,13 +10,13 @@ export type EditStrategyMenuProps = {
   strategyId?: string;
 };
 
-type EditStrategyMenuFC = FC<
+type OptInBtnFC = FC<
   Omit<ComponentPropsWithoutRef<"div">, keyof EditStrategyMenuProps> &
     EditStrategyMenuProps &
     ButtonProps
 >;
 
-export const OptInBtn: EditStrategyMenuFC = ({
+export const OptInBtn: OptInBtnFC = ({
   className,
   strategyId,
   variant,

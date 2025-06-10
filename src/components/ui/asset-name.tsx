@@ -17,7 +17,7 @@ const AssetName: AssetNameFC = ({ address, className }) => {
   const asset = useAsset(address);
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <Text>{asset.name}</Text>
+      <Text variant="body-3-medium">{asset.name}</Text>
       <Text className="text-gray-500 font-medium">{asset.symbol}</Text>
     </div>
   );

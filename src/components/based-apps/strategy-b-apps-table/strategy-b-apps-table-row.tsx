@@ -20,6 +20,8 @@ import { getPendingObligationsCount } from "@/lib/utils/manage-obligation.ts";
 import { useObligationTimelockPeriod } from "@/lib/contract-interactions/b-app/read/use-obligation-timelock-period.ts";
 import { useObligationExpireTime } from "@/lib/contract-interactions/b-app/read/use-obligation-expire-time.ts";
 import { Tooltip } from "@/components/ui/tooltip.tsx";
+import { useStrategy } from "@/hooks/b-app/use-strategy.ts";
+import { useAccount } from "@/hooks/account/use-account.ts";
 
 export type BAppTableRowProps = {
   bApp: StrategyBApp & BAppsMetaData;
@@ -54,6 +56,10 @@ export const StrategyBAppsTableRow: FCProps = ({
   const [onRowHover, setOnRowHover] = useState(false);
   const obligationTimelockPeriod = useObligationTimelockPeriod();
   const obligationExpiredPeriod = useObligationExpireTime();
+  const { strategy } = useStrategy(strategyId);
+  const { address } = useAccount();
+  const isOwner =
+    address?.toLowerCase() === strategy.ownerAddress?.toLowerCase();
   if (
     searchValue &&
     ((bApp.name &&
@@ -68,6 +74,7 @@ export const StrategyBAppsTableRow: FCProps = ({
     timeLockPeriod: obligationTimelockPeriod.data || 0,
     expiredPeriod: obligationExpiredPeriod.data || 0,
   });
+
   return (
     <TableBody>
       <TableRow
@@ -97,7 +104,7 @@ export const StrategyBAppsTableRow: FCProps = ({
           </Link>
         </TableCell>
         <TableCell className="flex justify-end items-center ">
-          {onRowHover ? (
+          {onRowHover && isOwner ? (
             <ManageObligationsBtn
               obligations={obligations}
               strategyId={strategyId || ""}
@@ -115,7 +122,7 @@ export const StrategyBAppsTableRow: FCProps = ({
           )}
         </TableCell>
         <TableCell>
-          {count > 0 && (
+          {count > 0 && isOwner && (
             <Tooltip
               asChild
               content={`Pending ${count} changes`}

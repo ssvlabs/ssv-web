@@ -46,7 +46,6 @@ const ObligationTableRow = ({
           bAppId.toLowerCase() === modal.meta.bAppId?.toLowerCase(),
       ),
   );
-
   const { isPending, isPendingEnd, isFinalizeEnd, isWaiting, isExpired } =
     useManageObligation(
       modal.meta.strategyId || "",
@@ -81,7 +80,7 @@ const ObligationTableRow = ({
       {isObligationManage && (
         <TableCell
           className={cn("text-right", {
-            "text-[#FDB25C]": isPending,
+            "text-secondary-sunshineLight": isPending,
             "text-success-500": isWaiting,
           })}
         >
@@ -96,6 +95,7 @@ const ObligationTableRow = ({
         {isObligationManage ? (
           <div className="w-full flex flex-row-reverse justify-between items-center">
             <ObligateBtn
+              className={`w-[116px] h-[32px]`}
               strategyId={strategyId}
               token={obligation}
               obligationUpdateData={{

@@ -220,7 +220,7 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
                           ? "done"
                           : "default",
                     addon: isPending && !reUpdateNewObligation && (
-                      <Text className="text-xs text-[#FDB25C]">
+                      <Text className="text-xs text-secondary-sunshineLight">
                         {formatDistance(isPendingEnd || 0, Date.now(), {
                           addSuffix: false,
                         })}{" "}
@@ -374,7 +374,11 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
           <div className={"flex flex-col gap-3"}>
             <Button
               className={"h-[60px]"}
-              disabled={!reUpdateNewObligation && isPending}
+              disabled={
+                (!reUpdateNewObligation && isPending) ||
+                obligation ===
+                  convertToPercentage(obligationData?.percentage || 0)
+              }
               isLoading={
                 createObligation.isPending || updateObligation.isPending
               }

@@ -5,6 +5,7 @@ import { AddressDisplay } from "@/components/ui/address.tsx";
 import { convertToPercentage } from "@/lib/utils/number.ts";
 import type { BAppsMetaData, StrategyBApp } from "@/api/b-app.ts";
 import { useManageObligation } from "@/app/routes/dashboard/b-app/strategies/manage-obligations/use-manage-obligation.ts";
+import { Tooltip } from "@/components/ui/tooltip.tsx";
 
 const InnerTableRow = ({
   bApp,
@@ -34,13 +35,12 @@ const InnerTableRow = ({
       className={cn(
         "cursor-pointer max-h-7 w-full bg-gray-100 hover:bg-gray-100",
         {
-          "bg-[#FD9D2F0A]": isPending,
-          "bg-success-100": isWaiting,
+          "bg-[#FD9D2F0A]": isPending || isWaiting,
         },
       )}
     >
       <TableCell className={textVariants({ variant: "body-3-medium" })}>
-        <div className="flex items-center gap-2">
+        <div className={cn("flex items-center gap-2 ", {})}>
           <img
             className="rounded-[8px] size-7 border-gray-400 border"
             src={bApp?.logo || "/images/operator_default_background/light.svg"}
@@ -55,9 +55,17 @@ const InnerTableRow = ({
       <TableCell />
       <TableCell />
       <TableCell
-        className={`${textVariants({ variant: "body-3-medium" })} flex items-center justify-end`}
+        className={cn(
+          `${textVariants({ variant: "body-3-medium" })} flex items-center justify-end`,
+          {
+            "text-[#FD9D2F]": isPending || isWaiting,
+          },
+        )}
       >
-        {convertToPercentage(obligation.percentage)}%
+        <Tooltip
+          children={`${convertToPercentage(obligation.percentage)}%`}
+          content={`Pending obligation change to ${convertToPercentage(obligation.percentageProposed)}%.`}
+        />
       </TableCell>
     </TableRow>
   );

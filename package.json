@@ -98,7 +98,7 @@
     "react-router-dom": "^6.24.1",
     "react-use": "^17.5.1",
     "sonner": "^1.5.0",
-    "ssv-keys": "https://github.com/ssvlabs/ssv-keys.git#9ed1a36bc9a0c79ed25ff5e7cdda61a5b53d3869",
+    "ssv-keys": "https://github.com/ssvlabs/ssv-keys.git#d454108e4e34193e80fff1150576beae8bae1252",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "url-join": "^5.0.0",

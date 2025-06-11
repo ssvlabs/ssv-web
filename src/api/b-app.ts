@@ -25,7 +25,7 @@ export type Delegation = {
 export type BAppAccount = {
   bApps: number;
   delegators: number;
-  id: `0x${string}`;
+  id: Address;
   metadataURI: string;
   strategies: number;
   totalDelegators: number;
@@ -35,18 +35,18 @@ export type BAppAccount = {
 };
 
 export type StrategyBApp = {
-  assets: { token: `0x${string}`; beta: string }[];
-  bAppId: `0x${string}`;
+  assets: { token: Address; beta: string }[];
+  bAppId: Address;
   metadataURI?: string;
-  tokens: `0x${string}`[];
+  tokens: Address[];
 };
 
 export interface Strategy {
   id: string;
   name: string;
-  ownerAddress: `0x${string}`;
+  ownerAddress: Address;
   bApps: number;
-  depositedAssets: `0x${string}`[];
+  depositedAssets: Address[];
   fee: string;
   metadataURI: string;
   ownerAddressMetadataURI: string;
@@ -58,8 +58,8 @@ export interface Strategy {
   depositsPerToken?: BAppAsset[];
   deposits?: [
     {
-      id: `0x${string}`;
-      tokens: `0x${string}`[];
+      id: Address;
+      tokens: Address[];
       depositFiatAmount: string;
     },
   ];
@@ -101,22 +101,22 @@ export type AccountMetadata = {
 };
 
 export type DepositedToken = {
-  token: `0x${string}`;
+  token: Address;
   totalDepositsValue: bigint;
   totalDepositsFiat: string;
   depositedStrategies: number;
 };
 
 export type BApp = {
-  id: `0x${string}`;
+  id: Address;
   beta: string[];
   delegators: number;
   delegatedAccounts: number;
   strategies: number;
   metadataURI: string;
-  ownerAddress: `0x${string}`;
-  supportedAssets: `0x${string}`[];
-  strategyOwners: `0x${string}`[];
+  ownerAddress: Address;
+  supportedAssets: Address[];
+  strategyOwners: Address[];
   totalDelegatedValue: bigint;
   totalDelegatedFiat: string;
   totalDepositedValue: bigint;
@@ -146,7 +146,7 @@ export const getNonSlashableAssets = (ownerAddress: string) =>
     )
     .then((res) => res);
 
-export const getMyAccount = (address: `0x${string}`) =>
+export const getMyAccount = (address: Address) =>
   api
     .get<{
       data: BAppAccount[];
@@ -187,7 +187,7 @@ export const getStrategiesByOwnerAddress = ({
   ownerAddress,
 }: {
   id?: string | number;
-  ownerAddress: `0x${string}`;
+  ownerAddress: Address;
   page: number;
   perPage: number;
 }) =>
@@ -301,7 +301,12 @@ export type BAppAsset = {
   depositedStrategies?: number;
   totalFiat?: string;
   totalTokens?: bigint;
-  obligations?: { bAppId: `0x${string}`; percentage: string }[];
+  obligations?: {
+    bAppId: Address;
+    percentage: string;
+    percentageProposed: string;
+    percentageProposedTimestamp: string;
+  }[];
   obligationsCount: number;
 };
 
@@ -321,11 +326,7 @@ export const getBAppsAssets = async ({
   );
 };
 
-export const getBAppsAssetByToken = async ({
-  token,
-}: {
-  token: `0x${string}`;
-}) => {
+export const getBAppsAssetByToken = async ({ token }: { token: Address }) => {
   return api.get<BAppAsset[]>(endpoint("basedApp", `getAssets?token=${token}`));
 };
 
@@ -351,8 +352,8 @@ export const getSlashableAssets = async (ownerAddress: string) => {
 };
 
 export type GetDelegatedAssetParams = {
-  token: `0x${string}`;
-  contributor: `0x${string}`;
+  token: Address;
+  contributor: Address;
   strategyId: number;
 };
 export const getDelegatedAsset = ({

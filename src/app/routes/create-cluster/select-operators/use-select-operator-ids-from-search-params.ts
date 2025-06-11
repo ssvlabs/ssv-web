@@ -1,7 +1,8 @@
 import { globals } from "@/config";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard";
 import { useOperators } from "@/hooks/operator/use-operators";
-import { parseAsArrayOf, parseAsInteger, useQueryState } from "nuqs";
+import { parseAsUniqueArrayOf } from "@/lib/utils/parsers";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { useEffect } from "react";
 
 const { state } = useRegisterValidatorContext;
@@ -10,7 +11,7 @@ const { QUAD_CLUSTER, SEPT_CLUSTER, DECA_CLUSTER, TRISKAIDEKA_CLUSTER } =
 export const useSelectOperatorIdsFromSearchParams = () => {
   const [searchIds, setSearchIds] = useQueryState(
     "id",
-    parseAsArrayOf(parseAsInteger).withOptions({
+    parseAsUniqueArrayOf(parseAsInteger).withOptions({
       history: "replace",
     }),
   );

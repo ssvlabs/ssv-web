@@ -15,7 +15,13 @@ import { cn } from "@/lib/utils/tw";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useState } from "react";
 import ExpandButton from "@/components/ui/expand-button.tsx";
-import { AddressDisplay } from "@/components/ui/address";
+import {
+  getObligationData,
+  getPendingObligationsCount,
+} from "@/lib/utils/manage-obligation.ts";
+import InnerTableRow from "@/components/based-apps/strategy-assets-table/inner-table-row.tsx";
+import { useObligationTimelockPeriod } from "@/lib/contract-interactions/b-app/read/use-obligation-timelock-period.ts";
+import { useObligationExpireTime } from "@/lib/contract-interactions/b-app/read/use-obligation-expire-time.ts";
 
 export type AssetsTableRowProps = {
   searchValue?: string;
@@ -39,6 +45,8 @@ export const StrategyAssetsTableRow: FCProps = ({
 }) => {
   const [isInnerOpen, setIsInnerOpen] = useState(false);
   const { strategy } = useStrategy();
+  const obligationTimelockPeriod = useObligationTimelockPeriod();
+  const obligationExpiredPeriod = useObligationExpireTime();
   const { name, symbol } = useAsset(asset?.token || "");
   if (searchValue && !name.toLowerCase().includes(searchValue?.toLowerCase())) {
     return;
@@ -47,6 +55,14 @@ export const StrategyAssetsTableRow: FCProps = ({
     ({ token }) => token.toString() === asset.token.toLowerCase(),
   );
 
+  const obligations = asset.obligations || [];
+  const count = getPendingObligationsCount({
+    obligations,
+    expiredPeriod: obligationExpiredPeriod.data || 0,
+    timeLockPeriod: obligationTimelockPeriod.data || 0,
+  });
+  const hasPendings = count > 0;
+  // console.log(count > 0);
   return (
     <TableBody>
       <TableRow
@@ -75,13 +91,16 @@ export const StrategyAssetsTableRow: FCProps = ({
           className={`w-[100%] ${Number(convertToPercentage(asset?.totalObligatedPercentage || 0)) > 100 && "text-error-500"} flex items-center justify-between relative`}
         >
           <Text
-            className={cn({
+            className={cn("flex items-center gap-[10px]", {
               "group-hover:opacity-0": showDepositButtonOnHover,
             })}
           >
             {asset?.totalObligatedPercentage && isAssetIncludeInStrategy
               ? `${convertToPercentage(asset?.totalObligatedPercentage || "")}%`
               : "0%"}
+            {hasPendings && (
+              <div className="size-2 rounded-full bg-[#FD9D2F]" />
+            )}
           </Text>
           {showDepositButtonOnHover && (
             <Button
@@ -128,46 +147,32 @@ export const StrategyAssetsTableRow: FCProps = ({
       )}
       {Boolean((asset?.obligations || []).length) &&
         isInnerOpen &&
-        (asset?.obligations || []).map(({ bAppId, percentage }) => {
+        (asset?.obligations || []).map(({ bAppId }) => {
           const bApp =
             strategy.bAppsList?.find(
               (bApp: StrategyBApp & BAppsMetaData) => bApp.bAppId === bAppId,
             ) || ({} as StrategyBApp & BAppsMetaData);
+          const obligationData = getObligationData(
+            strategy.depositsPerToken || [],
+            asset.token,
+            bAppId,
+          );
+
           return (
-            <TableRow
-              key={bAppId}
-              className={cn(
-                "cursor-pointer max-h-7 w-full bg-gray-100 hover:bg-gray-100",
-                className,
-              )}
-              {...props}
-            >
-              <TableCell className={textVariants({ variant: "body-3-medium" })}>
-                <div className="flex items-center gap-2">
-                  <img
-                    className="rounded-[8px] size-7 border-gray-400 border"
-                    src={
-                      bApp?.logo ||
-                      "/images/operator_default_background/light.svg"
-                    }
-                    onError={(e) => {
-                      e.currentTarget.src =
-                        "/images/operator_default_background/light.svg";
-                    }}
-                  />
-                  {bApp?.name || (
-                    <AddressDisplay address={bApp.bAppId} copyable />
-                  )}
-                </div>
-              </TableCell>
-              <TableCell />
-              <TableCell />
-              <TableCell
-                className={`${textVariants({ variant: "body-3-medium" })} flex items-center justify-end`}
-              >
-                {convertToPercentage(percentage)}%
-              </TableCell>
-            </TableRow>
+            <InnerTableRow
+              strategyId={strategy.id}
+              bApp={bApp}
+              token={asset.token}
+              obligation={
+                obligationData ||
+                ({} as {
+                  bAppId: `0x${string}`;
+                  percentage: string;
+                  percentageProposed: string;
+                  percentageProposedTimestamp: string;
+                })
+              }
+            />
           );
         })}
     </TableBody>

@@ -6,14 +6,16 @@ import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 import { motion } from "framer-motion";
 import { useAppVersion } from "@/hooks/temp-delete-after-merge/use-app-version";
 
+const REDIRECT_EXCLUSIONS = ["/", "/connect"];
 export const Redirector = () => {
   const { isLoadingClusters, isLoadingOperators, hasClusters, hasOperators } =
     useAccountState();
 
-  const referral =
+  const landingPage =
     locationState.previous.pathname + locationState.previous.search;
-  const clusterMatch = referral.match(/clusters/);
-  const operatorMatch = referral.match(/operators/);
+
+  const landedOnClusterPage = landingPage.match(/clusters/);
+  const landedOnOperatorsPage = landingPage.match(/operators/);
 
   const app = useAppVersion();
 
@@ -31,7 +33,8 @@ export const Redirector = () => {
         <SsvLoader className={"size-[160px]"} />
       </motion.div>
     );
-  if (clusterMatch && hasClusters) return <Navigate to={referral} replace />;
+  if (landedOnClusterPage && hasClusters)
+    return <Navigate to="/clusters" replace />;
 
   if (isLoadingOperators)
     return (
@@ -48,17 +51,15 @@ export const Redirector = () => {
       </motion.div>
     );
 
+  if (landedOnOperatorsPage && hasOperators)
+    return <Navigate to={"/operators"} replace />;
+
   if (app.isDvtOnly) {
-    if (operatorMatch && hasOperators)
-      return <Navigate to={"/operators"} replace />;
-
-    if (hasClusters) return <Navigate to={"/clusters"} replace />;
-    if (hasOperators) return <Navigate to={"/operators"} replace />;
-
     return <Navigate to="/join" replace />;
   }
 
-  if (referral !== "/") return <Navigate to={referral} replace />;
+  if (!REDIRECT_EXCLUSIONS.includes(landingPage))
+    return <Navigate to={landingPage} replace />;
 
   return <Navigate to="/account/my-delegations" />;
 };

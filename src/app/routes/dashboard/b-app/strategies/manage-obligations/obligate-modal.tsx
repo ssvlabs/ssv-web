@@ -150,6 +150,13 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
     );
   }, [modal.isOpen]);
 
+  const stepperIndex =
+    (!isWaiting && !isPending && !isExpired) || reUpdateNewObligation
+      ? 0
+      : isPending && !reUpdateNewObligation
+        ? 1
+        : 2;
+
   return (
     <Dialog {...modal}>
       <DialogContent asChild className="max-w-[648px] max-h-[95%] bg-white p-6">
@@ -201,7 +208,7 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
             <div>
               <Stepper
                 withoutStepNumber
-                stepIndex={0}
+                stepIndex={stepperIndex}
                 steps={[
                   {
                     label: "Request",
@@ -380,7 +387,9 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
                   convertToPercentage(obligationData?.percentage || 0)
               }
               isLoading={
-                createObligation.isPending || updateObligation.isPending
+                createObligation.isPending ||
+                updateObligation.isPending ||
+                finalizeUpdateObligation.isPending
               }
               onClick={submitObligation}
             >

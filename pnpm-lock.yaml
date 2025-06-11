@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   '@deepsignal/core@4.0.0':
-    hash: u5mjnqzmrr5f7dli65berlktte
+    hash: a6b3221a8b620f21b40a1ec014afdc2bba932336994d557a2aa3e539ef9e7ebc
     path: patches/@deepsignal__core@4.0.0.patch
 
 importers:
@@ -18,7 +18,7 @@ importers:
         version: 0.18.0
       '@deepsignal/core':
         specifier: ^4.0.0
-        version: 4.0.0(patch_hash=u5mjnqzmrr5f7dli65berlktte)(@preact/signals-core@1.7.0)
+        version: 4.0.0(patch_hash=a6b3221a8b620f21b40a1ec014afdc2bba932336994d557a2aa3e539ef9e7ebc)(@preact/signals-core@1.7.0)
       '@deepsignal/react':
         specifier: ^4.0.0
         version: 4.0.0(@preact/signals-core@1.7.0)(@preact/signals-react@2.1.0(react@18.3.1))
@@ -3224,6 +3224,7 @@ packages:
 
   '@walletconnect/ethereum-provider@2.17.0':
     resolution: {integrity: sha512-b+KTAXOb6JjoxkwpgYQQKPUcTwENGmdEdZoIDLeRicUmZTn/IQKfkMoC2frClB4YxkyoVMtj1oMV2JAax+yu9A==}
+    deprecated: 'Reliability and performance improvements. See: https://github.com/WalletConnect/walletconnect-monorepo/releases'
 
   '@walletconnect/events@1.0.1':
     resolution: {integrity: sha512-NPTqaoi0oPBVNuLv7qPaJazmGHs5JGyO8eEAk5VGKmJzDR7AHzD4k6ilox5kxk1iwiOnFopBOOMLs86Oa76HpQ==}
@@ -3265,6 +3266,7 @@ packages:
 
   '@walletconnect/modal@2.7.0':
     resolution: {integrity: sha512-RQVt58oJ+rwqnPcIvRFeMGKuXb9qkgSmwz4noF8JZGUym3gUAzVs+uW2NQ1Owm9XOJAV+sANrtJ+VoVq1ftElw==}
+    deprecated: Please follow the migration guide on https://docs.reown.com/appkit/upgrade/wcm
 
   '@walletconnect/relay-api@1.0.11':
     resolution: {integrity: sha512-tLPErkze/HmC9aCmdZOhtVmYZq1wKfWTJtygQHoWtgg722Jd4homo54Cs4ak2RUFUZIGO2RsOpIcWipaua5D5Q==}
@@ -3277,6 +3279,7 @@ packages:
 
   '@walletconnect/sign-client@2.17.0':
     resolution: {integrity: sha512-sErYwvSSHQolNXni47L3Bm10ptJc1s1YoJvJd34s5E9h9+d3rj7PrhbiW9X82deN+Dm5oA8X9tC4xty1yIBrVg==}
+    deprecated: 'Reliability and performance improvements. See: https://github.com/WalletConnect/walletconnect-monorepo/releases'
 
   '@walletconnect/time@1.0.2':
     resolution: {integrity: sha512-uzdd9woDcJ1AaBZRhqy5rNC9laqWGErfc4dxA9a87mPdKOgWMD85mcFo9dIYIts/Jwocfwn07EC6EzclKubk/g==}
@@ -4231,6 +4234,7 @@ packages:
 
   eciesjs@0.3.19:
     resolution: {integrity: sha512-b+PkRDZ3ym7HEcnbxc22CMVCpgsnr8+gGgST3U5PtgeX1luvINgfXW7efOyUtmn/jFtA/lg5ywBi/Uazf4oeaA==}
+    deprecated: Please upgrade to v0.4+
 
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
@@ -4379,6 +4383,7 @@ packages:
   eslint@8.57.0:
     resolution: {integrity: sha512-dZ6+mexnaTIbSBZWgou51U6OmzIhYM2VcNdtiTtI7qPNZm35Akpr0f6vtw3w1Kmn5PYo+tZVfh13WrhpS6oLqQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   espree@9.6.1:
@@ -4446,6 +4451,7 @@ packages:
 
   ethereumjs-wallet@1.0.2:
     resolution: {integrity: sha512-CCWV4RESJgRdHIvFciVQFnCHfqyhXWchTPlkfp28Qc53ufs+doi5I/cV2+xeK9+qEo25XCWfP9MiL+WEPAZfdA==}
+    deprecated: 'New package name format for new versions: @ethereumjs/wallet. Please update.'
 
   event-target-shim@5.0.1:
     resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
@@ -5450,6 +5456,7 @@ packages:
 
   lodash.isequal@4.5.0:
     resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
+    deprecated: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
 
   lodash.isplainobject@4.0.6:
     resolution: {integrity: sha512-oSXzaWypCMHkPC3NvBEaPHf0KsA5mvPrOPgQWDsbg8n7orZ290M0BmC/jgRZ4vcJ6DTAhjrsSYgdsW/F+MFOBA==}
@@ -9037,13 +9044,13 @@ snapshots:
       '@types/conventional-commits-parser': 5.0.0
       chalk: 5.3.0
 
-  '@deepsignal/core@4.0.0(patch_hash=u5mjnqzmrr5f7dli65berlktte)(@preact/signals-core@1.7.0)':
+  '@deepsignal/core@4.0.0(patch_hash=a6b3221a8b620f21b40a1ec014afdc2bba932336994d557a2aa3e539ef9e7ebc)(@preact/signals-core@1.7.0)':
     dependencies:
       '@preact/signals-core': 1.7.0
 
   '@deepsignal/react@4.0.0(@preact/signals-core@1.7.0)(@preact/signals-react@2.1.0(react@18.3.1))':
     dependencies:
-      '@deepsignal/core': 4.0.0(patch_hash=u5mjnqzmrr5f7dli65berlktte)(@preact/signals-core@1.7.0)
+      '@deepsignal/core': 4.0.0(patch_hash=a6b3221a8b620f21b40a1ec014afdc2bba932336994d557a2aa3e539ef9e7ebc)(@preact/signals-core@1.7.0)
       '@preact/signals-react': 2.1.0(react@18.3.1)
     transitivePeerDependencies:
       - '@preact/signals-core'

@@ -117,7 +117,7 @@ jobs:
 
       - name: Deploy stage webapp
         if: github.ref == 'refs/heads/pre-stage'
-        uses: jakejarvis/s3-sync-action@v0.5.0
+        uses: jakejarvis/s3-sync-action@be0c4ab89158cac4278689ebedd8407dd5f35a83 # v0.5.1
         with:
           args: --acl public-read --follow-symlinks --delete
         env:
@@ -148,7 +148,7 @@ jobs:
 
       - name: Deploy stage webapp
         if: github.ref == 'refs/heads/stage'
-        uses: jakejarvis/s3-sync-action@v0.5.0
+        uses: jakejarvis/s3-sync-action@be0c4ab89158cac4278689ebedd8407dd5f35a83 # v0.5.1
         with:
           args: --acl public-read --follow-symlinks --delete
         env:
@@ -181,7 +181,7 @@ jobs:
 
       - name: Deploy prod webapp
         if: github.ref == 'refs/heads/main'
-        uses: jakejarvis/s3-sync-action@v0.5.0
+        uses: jakejarvis/s3-sync-action@be0c4ab89158cac4278689ebedd8407dd5f35a83 # v0.5.1
         with:
           args: --acl public-read --follow-symlinks --delete
         env:
@@ -214,7 +214,7 @@ jobs:
 
       - name: Deploy prod ba-app webapp
         if: github.ref == 'refs/heads/bapps-prod'
-        uses: jakejarvis/s3-sync-action@v0.5.0
+        uses: jakejarvis/s3-sync-action@be0c4ab89158cac4278689ebedd8407dd5f35a83 # v0.5.1
         with:
           args: --acl public-read --follow-symlinks --delete
         env:

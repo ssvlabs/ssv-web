@@ -84,13 +84,13 @@ export const useMetadataEditor = ({
     form.setValue(
       "accountMetadataURI",
       defaultValues?.accountMetadataURI || "",
-      { shouldValidate: true },
+      { shouldDirty: false },
     );
 
     form.setValue(
       "strategyMetadataURI",
       defaultValues?.strategyMetadataURI || "",
-      { shouldValidate: true },
+      { shouldDirty: false },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [

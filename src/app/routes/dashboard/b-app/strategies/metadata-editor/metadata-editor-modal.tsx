@@ -57,16 +57,18 @@ export const MetadataEditorModal: FC<MetadataEditorModalProps> = () => {
     const hasAccountURIChanged =
       data.accountMetadataURI !== strategy.account.metadataURI;
 
-    const didBothChange = hasStrategyURIChanged && hasAccountURIChanged;
+    const didStrategyAndAccountURIChange =
+      hasStrategyURIChanged && hasAccountURIChanged;
 
     const onDone = () => {
+      strategy.invalidate();
       modal.close();
       form.reset();
     };
 
     const options = withTransactionModal({ onMined: onDone });
 
-    if (didBothChange)
+    if (didStrategyAndAccountURIChange)
       return batchMachineSend({
         type: "write",
         header: "Edit Metadata",

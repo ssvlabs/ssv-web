@@ -1,6 +1,6 @@
 import { Text } from "@/components/ui/text";
 import { Stepper } from "@/components/ui/stepper";
-import { formatDistance } from "date-fns";
+import { formatDistance, formatDistanceStrict } from "date-fns";
 import type { FC } from "react";
 import type { useStrategyFeeChangeRequestStatus } from "@/hooks/b-app/strategy/use-strategy-fee-change-request";
 
@@ -39,11 +39,12 @@ export const FeeChangeStepper: FC<{
               ? "withdrawable"
               : undefined,
           addon: request.inExecutionPeriod ? (
-            <Text variant="caption-medium" className="text-orange-500">
+            <Text variant="caption-medium" className="text-green-500">
               Expires in{" "}
-              {formatDistance(request.periods.execution.end, Date.now(), {
-                addSuffix: false,
-              })}
+              {formatDistanceStrict(
+                request.periods.execution.end,
+                Date.now(),
+              )}
             </Text>
           ) : request.isExpired ? (
             <Text variant="caption-medium" className="text-gray-500">

@@ -159,7 +159,10 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
 
   return (
     <Dialog {...modal}>
-      <DialogContent asChild className="max-w-[648px] max-h-[95%] bg-white p-6">
+      <DialogContent
+        asChild
+        className="max-w-[648px] max-h-[764px] bg-white p-6"
+      >
         <div className="w-full h-full flex flex-col gap-8">
           <div className="flex justify-between items-center">
             <div className="flex gap-1">

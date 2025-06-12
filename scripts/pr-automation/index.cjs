@@ -22,16 +22,20 @@ async function runPRAutomation() {
     console.log("Starting PR automation workflow...");
     console.log(`Repository: ${process.env.GITHUB_REPOSITORY}`);
 
-    const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+    const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
 
     // Check for existing PR from pre-stage to stage
     console.log("Checking for existing PRs from pre-stage to stage...");
-    
-    const existingPRs = await githubAPI(`/repos/${owner}/${repo}/pulls?head=${owner}:pre-stage&base=stage&state=open`);
+
+    const existingPRs = await githubAPI(
+      `/repos/${owner}/${repo}/pulls?head=${owner}:pre-stage&base=stage&state=open`,
+    );
 
     if (existingPRs.length > 0) {
       const existingPR = existingPRs[0];
-      console.log(`Found existing PR: #${existingPR.number} - ${existingPR.title}`);
+      console.log(
+        `Found existing PR: #${existingPR.number} - ${existingPR.title}`,
+      );
       console.log(`✅ Skipping - PR already exists: ${existingPR.html_url}`);
       return;
     }
@@ -39,12 +43,12 @@ async function runPRAutomation() {
     console.log("No existing PR found. Creating new PR...");
 
     // Create new PR
-    const newPR = await githubAPI(`/repos/${owner}/${repo}/pulls`, 'POST', {
-      title: 'Pre-Stage to Stage',
-      head: 'pre-stage',
-      base: 'stage',
+    const newPR = await githubAPI(`/repos/${owner}/${repo}/pulls`, "POST", {
+      title: "Pre-Stage to Stage",
+      head: "pre-stage",
+      base: "stage",
       body: generatePRBody(),
-      draft: false
+      draft: false,
     });
 
     console.log(`Created PR: #${newPR.number} - ${newPR.title}`);
@@ -54,7 +58,6 @@ async function runPRAutomation() {
 
     console.log(`✅ New PR created successfully: ${newPR.html_url}`);
     console.log("👥 Added reviewers to the PR");
-
   } catch (error) {
     console.error("Error running PR automation:", error);
     process.exit(1);
@@ -82,26 +85,28 @@ _This PR was automatically created by GitHub Actions._`;
 /**
  * GitHub API helper function
  */
-async function githubAPI(endpoint, method = 'GET', body = null) {
+async function githubAPI(endpoint, method = "GET", body = null) {
   const url = `https://api.github.com${endpoint}`;
   const options = {
     method,
     headers: {
-      'Authorization': `token ${process.env.GITHUB_TOKEN}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': 'GitHub-Actions'
-    }
+      Authorization: `token ${process.env.GITHUB_TOKEN}`,
+      Accept: "application/vnd.github.v3+json",
+      "User-Agent": "GitHub-Actions",
+    },
   };
 
   if (body) {
-    options.headers['Content-Type'] = 'application/json';
+    options.headers["Content-Type"] = "application/json";
     options.body = JSON.stringify(body);
   }
 
   const response = await fetch(url, options);
-  
+
   if (!response.ok) {
-    throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `GitHub API error: ${response.status} ${response.statusText}`,
+    );
   }
 
   return await response.json();
@@ -112,20 +117,27 @@ async function githubAPI(endpoint, method = 'GET', body = null) {
  */
 async function addReviewers(owner, repo, prNumber) {
   try {
-    await githubAPI(`/repos/${owner}/${repo}/pulls/${prNumber}/requested_reviewers`, 'POST', {
-      reviewers: [
-        'IlyaVi',
-        'axelrod-blox',
-        'nir-ssvlabs',
-        'sumbat-ssvlabs'
-      ]
-    });
-    console.log('Successfully added reviewers to PR');
+    await githubAPI(
+      `/repos/${owner}/${repo}/pulls/${prNumber}/requested_reviewers`,
+      "POST",
+      {
+        reviewers: [
+          "IlyaVi",
+          "axelrod-blox",
+          "nir-ssvlabs",
+          "sumbat-ssvlabs",
+          "stefan-ssv-labs",
+        ],
+      },
+    );
+    console.log("Successfully added reviewers to PR");
   } catch (error) {
-    console.log('Note: Some reviewers may not exist or may not have access to this repository');
-    console.log('Error details:', error.message);
+    console.log(
+      "Note: Some reviewers may not exist or may not have access to this repository",
+    );
+    console.log("Error details:", error.message);
   }
 }
 
 // Run the automation
-runPRAutomation(); 
+runPRAutomation();

@@ -22,9 +22,6 @@ jobs:
         with:
           node-version: 20.12.2
 
-      - name: Install dependencies
-        run: npm install @octokit/rest
-
       - name: Run PR automation
         run: node scripts/pr-automation/index.cjs
         env:

@@ -82,7 +82,7 @@ export const machine = setup({
     isFinished: ({ context }) => context.i === context.writers.length - 1,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QCECGAXAxgCwCoCdUA7WVTdASwHsiBZM7CosAOgogBswBiAd3wrowAbQAMAXUSgADlViDqRKSAAeiAMwBGAEwttANgAs+-etGGA7OYMAaEAE9Em-bsOXjADm0WAnDqOGAL6BdmhYeIQkZJQ09DhMrPyCPBA0rEwAblQA1qxhOATEpOSKcYzMLElCCJlUmBiKYuJNyrLyMUpIqogWWiwArG6aPv39vqLak3aOCOr6Fizzvv2TPtqaWtpBISD5EUXRpQwJlQJC3GD4+FT4LNIcGABmNwC2LHuFUSWxxxVVYDUiFl6h0mi0um0FDRlGpZqJNCwLP19B51B5DJphhN9NMNKJ1HpRKjNETfFYNsFQhgCpFih0yideKhBNxUhVarl3tT9l96b9Esz0IDgQ0aGCJK05FDOqBYSSfD5Ef1NBZNMqfHMiepcbMfKIWOoFWZjNpREjMZTdtzPnSjvE-oLWWk2ECcnlrbTDj97QLBMK6qKiGDNJIIVKOjCeoYCRYTG51QrBj4dabDCwPPoNcrvH5fIZ+paPp7vnR+SxHkwKLBsJBuCpYOgMKxUI8hPgABQk0SiACU3CLBxLDIqFaIVZrEHBMnDikjCExmZYhh8Fg8E2R-Q8wwsOosrnUhgmok3+Mza0LHsHfJ95eZXAg3HwYHQ+HsU5AkIjXVhyIJ+ZVxj9Oovioh4OpuLo6jaOiPgeMqB5EvoBY7AOvJ2uUrCPHetb1EQmBgBw76frO36INocyIgYowalu2gjBm4GGJB0HLnBGyHhmyE7EQVAQHAyioba3oYZK7QkbKTgeB4lFIf0NE6PROIOIgAC0mhplJUk+Jm+gbAYwwXuENpeqWN7sFwonSnO3j6t2FixlYFjLvMoy7tJHgjIa6hAaqHhOchVJGcW14YacySWV+EkICs+gsOYPiHiYCX2UpMympB0Z0XRQHqMB6iGTSV7oYygoReJ3QIHqf7kRxJKmHGOpzP0LBqpofluBi8xwQVPJCaZoWjuOkBldCpHzm1tmYjRky5cM2g6iquj9KISFmua6zoj1xlDmWWEUPeI0yhVGILOseprExHljOpjEIrBCp6mMmbaMi+jBMEQA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QCECGAXAxgCwCoCdUA7WVTdASwHsiBZM7CosAOgogBswBiAd3wrowAbQAMAXUSgADlViDqRKSAAeiAMwBGAEwttANgAs+-etGGA7OYMAaEAE9Em-bsOXjADm0WAnDqOGAL6BdmhYeIQkZJQ09DhMrPyCPBA0rEwAblQA1qxhOATEpOSKcYzMLElCCJlUmBiKYuJNyrLyMUpIqogWWiwArG6aPv39vqLak3aOCOr6Fizzvv2TPtqaWtpBISD5EUXRpQwJlQJC3GD4+FT4LNIcGABmNwC2LHuFUSWxxxVVYDUiFl6h0mi0um0FDRlGpZqJNCwLP19B51B5DJphhN9NMNKJ1HpRKjNETfFYNsFQhgCpFih0yideKhBNxUhVarl3tT9l96b9Esz0IDgQ0aGCJK05FDOqBYSSfD5Ef1NBZNMqfHMiepcbMfKIWOoFWZjNpREjMZTdtzPnSjvE-oLWWk2ECcnlrbTDj97QLBMK6qKiGDNJIIVKOjCeoYCRYTG51QrBj4dabDCwPPoNcrvH5fIZ+paPp7vnR+ZVHWz0q7OUWDiWGQ6-bUQY0JMJtKGZOHFJGEJiUen+qIh84dJN+h4dSsCYaNeYXGblZpCx663yfSxHkwKLBsJBuCpYOgMKxUI8hPgABQk0SiACU3FrvLt5VYW6IO73EHBXfaPa6crOIqhg+BYHgTMiE7DBYOoWK46iGBMw7gXMCraCu4Q2l6pYbo8zJcBA3D4GA6D4PYP4gJCEYAYgyIEvmKrGP06i+Kik4OIgbi6Oo2joj4HjKghRL6AWOxPra3qvpu+H7vURCYGAHAUVR-6yog2hzIiBijBqHg6CMGY6lxBq8SBAkbIhGaiTsRBUBAcDKOJ2ENmAkp-tCNF9h4HhaSJ-S6fpE44hxCAALSaGmvQGIYGlInqFhweoGE0muL4nOwXBudKvbePqt4JfMZogfMoywT5HgjIa6jMaqHgWPmyU8hJOFSf8WXUWpCArPoLDmD4iEmP1BUphMBrRtoayVeoLFJWJq7PpJjKCu1qndAger0RplkkqYcY6nM-QsGqmh1W4GLzAJjVYfWZbvp+kArR5nWYuBvWYrpkzTcM2g6iquhDiJZrmus6JXcW65SXhFAEY9MprRiCzrHqawxRVYwRUZGIsPxCp6mMmbaMi+jBMEQA */
   context: {
     i: 0,
     writers: [],
@@ -157,6 +157,8 @@ export const machine = setup({
         src: "waiter",
         onDone: [
           {
+            target: "finished",
+            guard: "isFinished",
             actions: [
               assign({
                 output: ({ context, event }) => {
@@ -171,10 +173,6 @@ export const machine = setup({
                 context.writers[context.i].onMined?.(event.output);
               },
             ],
-          },
-          {
-            target: "finished",
-            guard: "isFinished",
           },
           {
             target: "write",

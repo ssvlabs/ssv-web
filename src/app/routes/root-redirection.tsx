@@ -14,8 +14,8 @@ export const Redirector = () => {
   const landingPage =
     locationState.previous.pathname + locationState.previous.search;
 
-  const landedOnClusterPage = landingPage.match(/clusters/);
-  const landedOnOperatorsPage = landingPage.match(/operators/);
+  const landedOnClusterPage = landingPage.startsWith("/clusters");
+  const landedOnOperatorsPage = landingPage.startsWith("/operators");
 
   const app = useAppVersion();
 
@@ -34,7 +34,7 @@ export const Redirector = () => {
       </motion.div>
     );
   if (landedOnClusterPage && hasClusters)
-    return <Navigate to="/clusters" replace />;
+    return <Navigate to={landingPage} replace />;
 
   if (isLoadingOperators)
     return (
@@ -52,7 +52,7 @@ export const Redirector = () => {
     );
 
   if (landedOnOperatorsPage && hasOperators)
-    return <Navigate to={"/operators"} replace />;
+    return <Navigate to={landingPage} replace />;
 
   if (app.isDvtOnly) {
     return <Navigate to="/join" replace />;

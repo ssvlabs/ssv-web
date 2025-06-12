@@ -137,15 +137,15 @@ export const StrategyFeeEditorModal = () => {
                 className="max-w-max"
                 content={
                   <Text className="whitespace-nowrap">
-                    Asset withdrawal takes 7 days to complete.{" "}
+                    Learn more about{" "}
                     <Button
                       as="a"
                       variant="link"
-                      href="#"
+                      href="https://docs.ssv.network/based-applications/user-guides/strategy-features/change-strategy-fee/"
                       target="_blank"
                       className="inline"
                     >
-                      Learn more about waiting period.
+                      Changing your Strategy's Fee
                     </Button>
                   </Text>
                 }
@@ -270,7 +270,7 @@ export const StrategyFeeEditorModal = () => {
                   }
                   isLoading={isPending}
                 >
-                  Change Fee
+                  Execute Fee Change
                 </Button>
               )}
               {changeRequest.inPendingPeriod && !isUpdatingRequest && (

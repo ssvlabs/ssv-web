@@ -50,7 +50,7 @@ export const RegisterOperatorSuccess: FC<
           <Button
             variant="link"
             as={Link}
-            to="https://docs.ssv.network/operator-user-guides/operator-node/configuring-mev"
+            to="https://docs.ssv.network/operators/operator-node/node-setup/configuring-mev/"
             target="_blank"
           >
             Enable MEV

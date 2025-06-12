@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils/tw";
 import type { RequestStatus } from "@/hooks/b-app/strategy/use-strategy-fee-change-request";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
+import { format, formatDistanceStrict } from "date-fns";
 import { Tooltip } from "@/components/ui/tooltip";
 import { ms } from "@/lib/utils/number";
 import { generateGoogleCalendarUrl } from "@/lib/utils/google";
@@ -69,10 +69,17 @@ export const Explainer: ExplainerFC = ({
         </Text>
       )}
       {status === "executable" && (
-        <Text variant="body-3-medium" className="text-gray-700">
-          Execute your new fee in order to finalize the fee update process. Your
-          new fee will take effect immediately.
-        </Text>
+        <div className="flex flex-col gap-1.5">
+          <Text variant="body-3-medium" className="text-gray-700">
+            Execute your new fee in order to finalize the fee update process.
+            Your new fee will take effect immediately.
+          </Text>
+          <Text variant="body-3-medium" className="text-gray-700">
+            Keep in mind that if you do not execute this change within{" "}
+            <b>{formatDistanceStrict(expireTimestamp, new Date())}</b>, your request
+            will expire and you will have to start the process anew.
+          </Text>
+        </div>
       )}
       {status === "expired" && (
         <Text variant="body-3-medium" className="text-gray-700">

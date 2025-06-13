@@ -96,7 +96,7 @@ jobs:
         run: npx semantic-release
 
       - name: Configure AWS credentials
-        if: github.ref == 'refs/heads/pre-stage-update-ci' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/bapps-prod'
+        if: github.ref == 'refs/heads/pre-stage' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/bapps-prod'
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ secrets.SSV_WEB_AWS_IAM_ROLE }}
@@ -104,7 +104,7 @@ jobs:
 
       # <app-pre.stage.ssv.network> pre-stage
       - name: Run stage webapp build
-        if: github.ref == 'refs/heads/pre-stage-update-ci'
+        if: github.ref == 'refs/heads/pre-stage'
         run: >
           GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
@@ -121,7 +121,7 @@ jobs:
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
 
       - name: Upload files to S3
-        if: github.ref == 'refs/heads/pre-stage-update-ci'
+        if: github.ref == 'refs/heads/pre-stage'
         run: |
           aws s3 cp ./build s3://${{ secrets.SSV_WEB_PRE_STAGE_AWS_S3_BUCKET }} --recursive
       # </app-pre.stage.ssv.network>

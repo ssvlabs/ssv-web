@@ -26,51 +26,35 @@ export const useMetadataEditor = ({
   const schema = z.object({
     strategyMetadataURI: z.union([
       z.literal(""),
-      metadataURISchema.refine(async (url) => {
+      metadataURISchema.refine((url) => {
         if (metadataURISchema.safeParse(url).error) {
           fetchStrategiesMetadata.reset();
           return false;
         }
-        const [data] = await fetchStrategiesMetadata
-          .mutateAsync([
-            {
-              id: strategyId,
-              url,
-            },
-          ])
-          .then((data) => {
-            if (!data.list.at(0)) {
-              throw new Error("No metadata found");
-            }
-            return [data.list.at(0), null];
-          })
-          .catch((err) => [null, err]);
-        return Boolean(data);
-      }, "No metadata found"),
+        fetchStrategiesMetadata.mutateAsync([
+          {
+            id: strategyId,
+            url,
+          },
+        ]);
+        return true;
+      }, "Invalid metadata URI"),
     ]),
     accountMetadataURI: z.union([
       z.literal(""),
-      metadataURISchema.refine(async (url) => {
+      metadataURISchema.refine((url) => {
         if (metadataURISchema.safeParse(url).error) {
           fetchAccountsMetadata.reset();
           return false;
         }
-        const [data] = await fetchAccountsMetadata
-          .mutateAsync([
-            {
-              id: strategyId,
-              url,
-            },
-          ])
-          .then((data) => {
-            if (!data.list.at(0)) {
-              throw new Error();
-            }
-            return [data.list.at(0), null];
-          })
-          .catch((err) => [null, err]);
-        return Boolean(data);
-      }, "No metadata found"),
+        fetchAccountsMetadata.mutateAsync([
+          {
+            id: strategyId,
+            url,
+          },
+        ]);
+        return true;
+      }, "Invalid metadata URI"),
     ]),
   });
 
@@ -81,23 +65,9 @@ export const useMetadataEditor = ({
   });
 
   useEffect(() => {
-    form.setValue(
-      "accountMetadataURI",
-      defaultValues?.accountMetadataURI || "",
-      { shouldDirty: false },
-    );
-
-    form.setValue(
-      "strategyMetadataURI",
-      defaultValues?.strategyMetadataURI || "",
-      { shouldDirty: false },
-    );
+    form.reset(defaultValues);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    defaultValues?.accountMetadataURI,
-    defaultValues?.strategyMetadataURI,
-    form.setValue,
-  ]);
+  }, [defaultValues?.accountMetadataURI, defaultValues?.strategyMetadataURI]);
 
   return {
     form,

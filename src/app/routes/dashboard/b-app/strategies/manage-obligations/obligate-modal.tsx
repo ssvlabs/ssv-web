@@ -31,6 +31,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert.tsx";
 import { formatDistance } from "date-fns";
 import { useManageObligation } from "@/app/routes/dashboard/b-app/strategies/manage-obligations/use-manage-obligation.ts";
 import { getObligationData } from "@/lib/utils/manage-obligation.ts";
+import ObligateModalDescription from "@/app/routes/dashboard/b-app/strategies/manage-obligations/obligate-modal-description.tsx";
 
 export type ObligateModalProps = {
   //   TODO:
@@ -183,7 +184,7 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
                           : "https://docs.ssv.network/based-applications/user-guides/strategy-features/manage-obligations/add-obligation/"
                       }
                     >
-                      {isObligated ? "Changing" : "Adding"}&nbsp; Obligations
+                      {isObligated ? "Changing" : "Adding"}&nbsp;Obligations
                     </Link>
                   </Text>
                 }
@@ -259,44 +260,15 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
               />
             </div>
           )}
-          {isObligated ? (
-            <div className="w-full h-full flex flex-col gap-2">
-              <Text variant={"body-3-medium"}>
-                Changing an obligation takes effect in multiple steps:
-              </Text>
-              <Text variant={"body-3-medium"}>
-                The process starts by requesting a new obligation percentage,
-                which is followed by pending period. Once the pending period has
-                elapsed, you can finalize the new obligation by executing it.
-                Percentage change limits apply.&nbsp;
-                <Link
-                  target={"_blank"}
-                  className="text-primary-500 underline"
-                  to={
-                    "https://docs.ssv.network/based-applications/user-guides/strategy-features/manage-obligations/change-obligation/"
-                  }
-                >
-                  Learn more
-                </Link>
-              </Text>
-            </div>
-          ) : (
-            <div className="w-full h-full flex flex-col gap-2">
-              <Text variant={"body-3-medium"}>
-                Adding an obligation for this asset will take immediate
-                effect.&nbsp;
-                <Link
-                  target={"_blank"}
-                  className="text-primary-500 underline"
-                  to={
-                    "https://docs.ssv.network/based-applications/user-guides/strategy-features/manage-obligations/add-obligation/"
-                  }
-                >
-                  Learn more
-                </Link>
-              </Text>
-            </div>
-          )}
+          <ObligateModalDescription
+            isObligated={isObligated}
+            isPending={isPending}
+            isWaiting={isWaiting}
+            isExpired={isExpired}
+            endTime={formatDistance(isPendingEnd || 0, Date.now(), {
+              addSuffix: false,
+            })}
+          />
           <div>
             <Text variant="caption-medium" className="text-gray-500">
               Selected bApp
@@ -387,7 +359,9 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
               disabled={
                 (!reUpdateNewObligation && isPending) ||
                 obligation ===
-                  convertToPercentage(obligationData?.percentage || 0)
+                  convertToPercentage(obligationData?.percentage || 0) ||
+                obligation ===
+                  convertToPercentage(obligationData?.percentageProposed || 0)
               }
               isLoading={
                 createObligation.isPending ||

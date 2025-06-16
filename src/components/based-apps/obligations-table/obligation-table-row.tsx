@@ -85,7 +85,7 @@ const ObligationTableRow = ({
           })}
         >
           {tokenObligation?.percentage
-            ? `${convertToPercentage(isWaiting || isPending ? tokenObligation?.percentageProposed : tokenObligation?.percentage)}%`
+            ? `${convertToPercentage(tokenObligation?.percentage || "")}%`
             : "-"}
         </TableCell>
       )}

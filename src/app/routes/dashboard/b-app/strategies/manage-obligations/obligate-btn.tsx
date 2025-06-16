@@ -36,7 +36,7 @@ export const ObligateBtn: ObligateBtnFC = ({
   const modal = useManageObligationsModal();
 
   const obligationsModal = useObligateModal();
-  const { isObligated } = obligationUpdateData;
+  const { isObligated, isWaiting } = obligationUpdateData;
   return (
     <Button
       onClick={() => {
@@ -51,7 +51,7 @@ export const ObligateBtn: ObligateBtnFC = ({
       className={`flex items-center gap-1 ${className}`}
       {...props}
     >
-      {isObligated ? "Edit" : "Add"}
+      {isWaiting ? "Execute" : isObligated ? "Edit" : "Add"}
     </Button>
   );
 };

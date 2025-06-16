@@ -157,6 +157,18 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
       : isPending && !reUpdateNewObligation
         ? 1
         : 2;
+  const percentage = convertToPercentage(obligationData?.percentage || 0);
+  const proposedPercentage = convertToPercentage(
+    obligationData?.percentageProposed || 0,
+  );
+
+  const isSameAsPercentage = obligation === percentage;
+  const isSameAsProposed = obligation === proposedPercentage;
+
+  const isDisabled =
+    (!reUpdateNewObligation && isPending) ||
+    ((isSameAsPercentage || isSameAsProposed) &&
+      (isPending || reUpdateNewObligation));
 
   return (
     <Dialog {...modal}>
@@ -262,9 +274,9 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
           )}
           <ObligateModalDescription
             isObligated={isObligated}
-            isPending={isPending}
+            isPending={isPending && !reUpdateNewObligation}
             isWaiting={isWaiting}
-            isExpired={isExpired}
+            isExpired={isExpired && !reUpdateNewObligation}
             endTime={formatDistance(isPendingEnd || 0, Date.now(), {
               addSuffix: false,
             })}
@@ -309,9 +321,11 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
                   "w-[140px] text-center h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px] overflow-hidden [&>input]:text-center",
                   {
                     "text-gray-400":
-                      (isPending || isWaiting) && !reUpdateNewObligation,
+                      (isPending || isWaiting || isExpired) &&
+                      !reUpdateNewObligation,
                     "border-gray-400":
-                      (isPending || isWaiting) && !reUpdateNewObligation,
+                      (isPending || isWaiting || isExpired) &&
+                      !reUpdateNewObligation,
                   },
                 )}
                 value={obligation}
@@ -320,7 +334,10 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
                 onValueChange={(values) =>
                   setObligation(values.floatValue || 0)
                 }
-                disabled={(isPending || isWaiting) && !reUpdateNewObligation}
+                disabled={
+                  (isPending || isWaiting || isExpired) &&
+                  !reUpdateNewObligation
+                }
                 customInput={Input}
                 suffix="%"
               />
@@ -329,7 +346,9 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
               </Text>
             </div>
             <Slider
-              disable={(isPending || isWaiting) && !reUpdateNewObligation}
+              disable={
+                (isPending || isWaiting || isExpired) && !reUpdateNewObligation
+              }
               maxValue={100}
               setValue={(value) => {
                 setObligation(value);
@@ -345,7 +364,7 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
               </Text>
             </div>
           </div>
-          {reUpdateNewObligation && (
+          {reUpdateNewObligation && !isExpired && (
             <Alert variant="warning" className="flex gap-4 items-center">
               <AlertDescription>
                 New request will replace the current one and reset the pending
@@ -356,25 +375,36 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
           <div className={"flex flex-col gap-3"}>
             <Button
               className={"h-[60px]"}
-              disabled={
-                (!reUpdateNewObligation && isPending) ||
-                obligation ===
-                  convertToPercentage(obligationData?.percentage || 0) ||
-                obligation ===
-                  convertToPercentage(obligationData?.percentageProposed || 0)
-              }
+              disabled={isDisabled}
+              // disabled={
+              //   (!reUpdateNewObligation && isPending) ||
+              //   ((obligation ===
+              //     convertToPercentage(obligationData?.percentage || 0) ||
+              //     (obligation ===
+              //       convertToPercentage(
+              //         obligationData?.percentageProposed || 0,
+              //       ) &&
+              //       !reUpdateNewObligation)) &&
+              //     (isPending || reUpdateNewObligation))
+              // }
               isLoading={
                 createObligation.isPending ||
                 updateObligation.isPending ||
                 finalizeUpdateObligation.isPending
               }
-              onClick={submitObligation}
+              onClick={
+                isExpired && !reUpdateNewObligation
+                  ? () => setReUpdateNewObligation(true)
+                  : submitObligation
+              }
             >
               {isWaiting
                 ? "Change"
                 : isPending && !reUpdateNewObligation
                   ? `Pending ${obligation}% Obligation Change `
-                  : "Request Obligation Change "}
+                  : isExpired && !reUpdateNewObligation
+                    ? "Request new Obligation Change"
+                    : "Request Obligation Change"}
             </Button>
             {isPending && !reUpdateNewObligation && (
               <Button

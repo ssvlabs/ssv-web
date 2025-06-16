@@ -376,17 +376,6 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
             <Button
               className={"h-[60px]"}
               disabled={isDisabled}
-              // disabled={
-              //   (!reUpdateNewObligation && isPending) ||
-              //   ((obligation ===
-              //     convertToPercentage(obligationData?.percentage || 0) ||
-              //     (obligation ===
-              //       convertToPercentage(
-              //         obligationData?.percentageProposed || 0,
-              //       ) &&
-              //       !reUpdateNewObligation)) &&
-              //     (isPending || reUpdateNewObligation))
-              // }
               isLoading={
                 createObligation.isPending ||
                 updateObligation.isPending ||

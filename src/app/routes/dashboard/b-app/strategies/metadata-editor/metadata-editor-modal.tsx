@@ -16,7 +16,7 @@ import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitF
 import { useBatchTransactionMachine } from "@/lib/machines/batch-transactions/context";
 import { useMetadataEditorModal } from "@/signals/modal";
 import { X } from "lucide-react";
-import { useEffect, type FC } from "react";
+import { useEffect, useMemo, type FC } from "react";
 
 export type MetadataEditorModalProps = {
   // TODO: Add props or remove this type
@@ -27,19 +27,24 @@ export const MetadataEditorModal: FC<MetadataEditorModalProps> = () => {
   const strategy = useStrategy(modal.meta.strategyId);
   const [batchMachineState, batchMachineSend] = useBatchTransactionMachine();
 
+  const defaultValues = useMemo(
+    () => ({
+      accountMetadataURI: strategy.account.metadataURI || "",
+      strategyMetadataURI: strategy.strategy.metadataURI || "",
+    }),
+    [strategy.account.metadataURI, strategy.strategy.metadataURI],
+  );
+
   const { form, fetchAccountsMetadata, fetchStrategiesMetadata } =
     useMetadataEditor({
       strategyId: modal.meta.strategyId || "",
-      defaultValues: {
-        accountMetadataURI: strategy.account.metadataURI || "",
-        strategyMetadataURI: strategy.strategy.metadataURI || "",
-      },
+      defaultValues,
     });
 
+  const canSubmit = form.formState.isValid && form.formState.isDirty;
+
   useEffect(() => {
-    if (!modal.isOpen) {
-      form.reset();
-    }
+    if (!modal.isOpen) form.reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modal.isOpen, form.reset]);
 
@@ -53,10 +58,9 @@ export const MetadataEditorModal: FC<MetadataEditorModalProps> = () => {
 
   const submit = form.handleSubmit((data) => {
     const hasStrategyURIChanged =
-      data.strategyMetadataURI !== strategy.strategy.metadataURI;
+      data.strategyMetadataURI !== defaultValues.strategyMetadataURI;
     const hasAccountURIChanged =
-      data.accountMetadataURI !== strategy.account.metadataURI;
-
+      data.accountMetadataURI !== defaultValues.accountMetadataURI;
     const didStrategyAndAccountURIChange =
       hasStrategyURIChanged && hasAccountURIChanged;
 
@@ -276,7 +280,7 @@ export const MetadataEditorModal: FC<MetadataEditorModalProps> = () => {
               type="submit"
               className="w-[160px]"
               isLoading={isWriting}
-              disabled={!form.formState.isDirty || !form.formState.isValid}
+              disabled={!canSubmit}
             >
               Update
             </Button>

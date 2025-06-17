@@ -35,7 +35,12 @@ export const Explainer: ExplainerFC = ({
             The process starts by declaring a new fee, which is followed by
             pending period. Once the pending period has elapsed, you can
             finalize your new fee by executing it. Fee increase limits apply.{" "}
-            <Button as="a" variant="link" href="#" target="_blank">
+            <Button
+              as="a"
+              variant="link"
+              href="https://docs.ssv.network/based-applications/user-guides/strategy-features/change-strategy-fee/"
+              target="_blank"
+            >
               Learn more
             </Button>
           </Text>
@@ -76,8 +81,8 @@ export const Explainer: ExplainerFC = ({
           </Text>
           <Text variant="body-3-medium" className="text-gray-700">
             Keep in mind that if you do not execute this change within{" "}
-            <b>{formatDistanceStrict(expireTimestamp, new Date())}</b>, your request
-            will expire and you will have to start the process anew.
+            <b>{formatDistanceStrict(expireTimestamp, new Date())}</b>, your
+            request will expire and you will have to start the process anew.
           </Text>
         </div>
       )}

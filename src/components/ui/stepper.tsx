@@ -68,7 +68,7 @@ export const StepperDot: StepperDotFC = ({
       case "withdrawable":
         return <FaArrowUp className="size-3" strokeWidth="1" />;
     }
-  }, [step, variant]);
+  }, [step, variant, withoutStepNumber]);
 
   return (
     <div className={cn(stepperDotVariants({ variant }), className)} {...props}>

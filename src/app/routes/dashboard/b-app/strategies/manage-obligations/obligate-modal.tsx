@@ -32,6 +32,7 @@ import { formatDistance } from "date-fns";
 import { useManageObligation } from "@/app/routes/dashboard/b-app/strategies/manage-obligations/use-manage-obligation.ts";
 import { getObligationData } from "@/lib/utils/manage-obligation.ts";
 import ObligateModalDescription from "@/app/routes/dashboard/b-app/strategies/manage-obligations/obligate-modal-description.tsx";
+import { numberFormatLimiter } from "@/lib/utils/number-input.ts";
 
 export type ObligateModalProps = {
   //   TODO:
@@ -167,7 +168,7 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
 
   const isDisabled =
     (!reUpdateNewObligation && isPending) ||
-    ((isSameAsPercentage || isSameAsProposed) &&
+    ((isSameAsPercentage || (isSameAsProposed && !isExpired)) &&
       (isPending || reUpdateNewObligation));
 
   return (
@@ -328,12 +329,18 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
                       !reUpdateNewObligation,
                   },
                 )}
+                isAllowed={numberFormatLimiter({
+                  setter: setObligation,
+                  maxValue: 100,
+                })}
                 value={obligation}
                 decimalScale={2}
                 allowLeadingZeros={false}
-                onValueChange={(values) =>
-                  setObligation(values.floatValue || 0)
-                }
+                onValueChange={(values) => {
+                  if ((values.floatValue || 0) <= 100) {
+                    setObligation(values.floatValue || 0);
+                  }
+                }}
                 disabled={
                   (isPending || isWaiting || isExpired) &&
                   !reUpdateNewObligation

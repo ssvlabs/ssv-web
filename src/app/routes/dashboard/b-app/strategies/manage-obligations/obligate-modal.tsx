@@ -402,7 +402,7 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
               }
             >
               {isWaiting
-                ? "Change"
+                ? "Execute"
                 : isPending && !reUpdateNewObligation
                   ? `Pending ${obligation}% Obligation Change `
                   : isExpired && !reUpdateNewObligation

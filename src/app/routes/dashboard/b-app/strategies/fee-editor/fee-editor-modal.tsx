@@ -174,10 +174,17 @@ export const StrategyFeeEditorModal = () => {
               expireTimestamp={changeRequest.periods.execution.end}
             />
 
-            <div className="w-full flex items-center justify-between gap-4">
+            <div
+              className={cn("w-full flex items-center justify-between gap-4")}
+            >
               <NumericFormat
                 getInputRef={ref}
-                className="w-[140px] text-center h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px] overflow-hidden [&>input]:text-center"
+                className={cn(
+                  "w-[140px] text-center h-[80px] text-[28px] flex items-center justify-center bg-gray-100 border border-primary-500 rounded-[12px] overflow-hidden [&>input]:text-center",
+                  {
+                    "border-gray-200": !canInputAmount,
+                  },
+                )}
                 value={percentage}
                 decimalScale={2}
                 allowLeadingZeros={false}

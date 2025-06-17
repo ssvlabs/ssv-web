@@ -33,6 +33,7 @@ import { useManageObligation } from "@/app/routes/dashboard/b-app/strategies/man
 import { getObligationData } from "@/lib/utils/manage-obligation.ts";
 import ObligateModalDescription from "@/app/routes/dashboard/b-app/strategies/manage-obligations/obligate-modal-description.tsx";
 import { numberFormatLimiter } from "@/lib/utils/number-input.ts";
+import { useKeyPressEvent } from "react-use";
 
 export type ObligateModalProps = {
   //   TODO:
@@ -152,8 +153,10 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
     );
   }, [modal.isOpen]);
 
+  const isNewToEdit = !isWaiting && !isPending && !isExpired;
+
   const stepperIndex =
-    (!isWaiting && !isPending && !isExpired) || reUpdateNewObligation
+    isNewToEdit || reUpdateNewObligation
       ? 0
       : isPending && !reUpdateNewObligation
         ? 1
@@ -162,14 +165,18 @@ export const ObligateModal: FC<ObligateModalProps> = () => {
   const proposedPercentage = convertToPercentage(
     obligationData?.percentageProposed || 0,
   );
-
   const isSameAsPercentage = obligation === percentage;
   const isSameAsProposed = obligation === proposedPercentage;
 
   const isDisabled =
     (!reUpdateNewObligation && isPending) ||
     ((isSameAsPercentage || (isSameAsProposed && !isExpired)) &&
-      (isPending || reUpdateNewObligation));
+      (isPending || reUpdateNewObligation || isNewToEdit));
+
+  useKeyPressEvent("Escape", (ev) => {
+    ev.preventDefault();
+    setReUpdateNewObligation(false);
+  });
 
   return (
     <Dialog {...modal}>

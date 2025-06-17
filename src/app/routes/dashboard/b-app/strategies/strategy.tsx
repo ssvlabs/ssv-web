@@ -203,7 +203,7 @@ const Strategy = () => {
 
   return (
     <>
-      <MetadataEditorModal key={account.metadataURI + strategy.metadataURI} />
+      <MetadataEditorModal />
       <StrategyFeeEditorModal />
       <Container variant="vertical" size="xl" className="py-6">
         <div className="flex items-center gap-2 text-gray-500">

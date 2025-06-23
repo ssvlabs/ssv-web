@@ -2,14 +2,20 @@ import { Text } from "@/components/ui/text";
 import { Stepper } from "@/components/ui/stepper";
 import { formatDistance } from "date-fns";
 import type { useStrategyAssetWithdrawalRequest } from "@/hooks/b-app/use-asset-withdrawal-request";
+import type { FC } from "react";
 
 type WithdrawalRequest = ReturnType<typeof useStrategyAssetWithdrawalRequest>;
 
-export const WithdrawalStepper = ({
-  request,
-}: {
-  request: WithdrawalRequest;
-}) => {
+export const WithdrawalStepper: FC<{
+  request: Pick<
+    WithdrawalRequest,
+    | "hasRequested"
+    | "inPendingPeriod"
+    | "inExecutionPeriod"
+    | "isExpired"
+    | "periods"
+  >;
+}> = ({ request }) => {
   const stepperIndex = !request.hasRequested
     ? 0
     : request.inPendingPeriod

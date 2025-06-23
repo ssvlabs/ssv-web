@@ -1,7 +1,27 @@
 import type { ExtendedColumnSort } from "@/types/data-table";
 import { type Row } from "@tanstack/react-table";
+import { type Parser } from "node_modules/nuqs/dist/_tsup-dts-rollup";
 import { createParser, parseAsStringLiteral } from "nuqs/server";
 import { z } from "zod";
+
+export function safeParse<T>(
+  parser: Parser<T>["parse"],
+  value: string,
+  key?: string,
+) {
+  try {
+    return parser(value);
+  } catch (error) {
+    console.warn(
+      "[nuqs] Error while parsing value `%s`: %O" +
+        (key ? " (for key `%s`)" : ""),
+      value,
+      error,
+      key,
+    );
+    return null;
+  }
+}
 
 export const sortingItemSchema = z.object({
   id: z.string(),
@@ -86,6 +106,51 @@ export const parseAsNumberEnum = <T extends [number, ...number[]]>(
     eq: (a, b) => a === b,
   });
 };
+
+export function parseAsUniqueArrayOf<ItemType>(
+  itemParser: Parser<ItemType>,
+  separator = ",",
+) {
+  const itemEq = itemParser.eq ?? ((a: ItemType, b: ItemType) => a === b);
+  const encodedSeparator = encodeURIComponent(separator);
+
+  return createParser({
+    parse: (query) => {
+      if (query === "") return [] as ItemType[];
+
+      const parsed = query
+        .split(separator)
+        .map((item, index) =>
+          safeParse(
+            itemParser.parse,
+            item.replaceAll(encodedSeparator, separator),
+            `[${index}]`,
+          ),
+        )
+        .filter((value) => value !== null && value !== undefined);
+
+      return [...new Set(parsed)] as ItemType[];
+    },
+    serialize: (values) =>
+      values
+        .map<string>((value) => {
+          const str = itemParser.serialize
+            ? itemParser.serialize(value)
+            : String(value);
+          return str.replaceAll(separator, encodedSeparator);
+        })
+        .join(separator),
+    eq(a, b) {
+      if (a === b) {
+        return true; // Referentially stable
+      }
+      if (a.length !== b.length) {
+        return false;
+      }
+      return a.every((value, index) => itemEq(value, b[index]!));
+    },
+  });
+}
 
 export const parseAsSorter = <T extends string>(sortableFields: T[]) => {
   const orders = ["asc", "desc"] as const;

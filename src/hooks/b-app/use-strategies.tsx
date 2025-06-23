@@ -1,12 +1,17 @@
-import { type AccountMetadata, getStrategies } from "@/api/b-app.ts";
+import type {
+  AccountMetadata,
+  Strategy,
+  StrategyMetadata,
+} from "@/api/b-app.ts";
+import { getStrategies } from "@/api/b-app.ts";
 import { useStrategiesFilters } from "@/hooks/b-app/filters/use-strategies-filters";
 import { useOrdering } from "@/hooks/use-ordering.ts";
 import { createDefaultPagination } from "@/lib/utils/api.ts";
 import { getTokenMetadata } from "@/lib/utils/tokens-helper.ts";
 import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
 import { useParams } from "react-router";
-import { useStrategyMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
-import { useAccountMetadata } from "@/hooks/b-app/use-account-metadata.ts";
+import { useStrategiesMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
+import { useAccountsMetadata } from "@/hooks/b-app/use-account-metadata.ts";
 
 export const useStrategies = (_strategyId?: string, _bAppId?: string) => {
   const params = useParams();
@@ -49,17 +54,14 @@ export const useStrategies = (_strategyId?: string, _bAppId?: string) => {
   const strategies = query.data?.data || [];
 
   const { data: strategiesMetadata, isLoading: strategiesMetadataIsLoading } =
-    useStrategyMetadata(
+    useStrategiesMetadata(
       strategies.map(({ id, metadataURI }) => ({
         id,
         url: metadataURI || "",
       })) || [],
     );
 
-  const {
-    data: strategiesAccountsMetadata,
-    isLoading: strategiesAccountsMetadataIsLoading,
-  } = useAccountMetadata(
+  const accountsMetadata = useAccountsMetadata(
     strategies.map(({ ownerAddress, ownerAddressMetadataURI }) => ({
       id: ownerAddress,
       url: ownerAddressMetadataURI || "",
@@ -77,12 +79,6 @@ export const useStrategies = (_strategyId?: string, _bAppId?: string) => {
     enabled: true,
   });
 
-  const mappedOwnerAddressesMetadata: Record<string, AccountMetadata> = (
-    strategiesAccountsMetadata || []
-  ).reduce((acc, metadataItem) => {
-    return { ...acc, [metadataItem.id]: metadataItem.data };
-  }, {});
-
   const assetsData =
     assetsQuery.data ||
     ({} as Record<string, { symbol: string; name: string }>);
@@ -94,17 +90,21 @@ export const useStrategies = (_strategyId?: string, _bAppId?: string) => {
     query,
     pagination,
     strategies: strategies.map((strategy) => ({
+      description: "",
       ...strategy,
-      ...strategiesMetadata[strategy.id],
-      ownerAddressMetadata: mappedOwnerAddressesMetadata[strategy.ownerAddress],
-    })),
+      ...strategiesMetadata?.map[strategy.id],
+      ownerAddressMetadata: accountsMetadata.data?.map[strategy.ownerAddress],
+    })) satisfies (Strategy &
+      StrategyMetadata & {
+        ownerAddressMetadata?: AccountMetadata;
+      })[],
     assetsData,
     strategy,
     strategyId,
     isStrategiesLoading:
       strategiesMetadataIsLoading ||
       isStrategiesLoading ||
-      strategiesAccountsMetadataIsLoading,
+      accountsMetadata.isLoading,
     orderBy,
     sort,
   };

@@ -18,6 +18,23 @@ export const useInitialize = () => {
   const wait = useWaitForTransactionReceipt<MainnetEvent>(["useInitialize"]);
   const mutation = useWriteContract();
 
+  const send = (
+    { tokenAddress }: { tokenAddress: `0x${string}` },
+    options: MutationOptions<MainnetEvent> = {},
+  ) => {
+    return mutation.writeContractAsync(
+      {
+        abi: TokenABI,
+        address: tokenAddress,
+        functionName: "initialize",
+      },
+      {
+        onSuccess: (hash) => options.onConfirmed?.(hash),
+        onError: (error) => options.onError?.(error as WriteContractErrorType),
+      },
+    );
+  };
+
   const write = (
     { tokenAddress }: { tokenAddress: `0x${string}` },
     options: MutationOptions<MainnetEvent> = {},
@@ -53,6 +70,7 @@ export const useInitialize = () => {
     isPending,
     mutation,
     write,
+    send,
     wait,
   };
 };

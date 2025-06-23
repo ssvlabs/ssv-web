@@ -1,16 +1,14 @@
-import { TestnetV4SetterABI } from "@/lib/abi/testnet/v4/setter";
-import { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
-import { BAppABI } from "@/lib/abi/b-app/b-app";
+import type { TestnetV4SetterABI } from "@/lib/abi/testnet/v4/setter";
+import type { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
+import type { BAppABI } from "@/lib/abi/b-app/b-app";
 
 import type { MutationKey } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 import type {
   Address,
   DecodeEventLogReturnType,
-  TransactionReceipt,
   WaitForTransactionReceiptErrorType,
 } from "viem";
-import { decodeEventLog } from "viem";
 import { useChainId, usePublicClient } from "wagmi";
 
 import type { WriteContractErrorType } from "@wagmi/core";
@@ -27,7 +25,8 @@ import { getErrorMessage } from "@/lib/utils/wagmi";
 import { Span } from "@/components/ui/text";
 import { mainnet_private_rpc_client } from "@/wagmi/config";
 import { isContractWallet } from "@/hooks/account/use-account";
-import { tryCatch } from "@/lib/utils/tryCatch";
+import type { DecodedReceipt } from "@/lib/utils/viem";
+import { addDecodedEventsToReceipt } from "@/lib/utils/viem";
 
 export type MainnetEvent = DecodeEventLogReturnType<typeof MainnetV4SetterABI>;
 export type BAppEvent = DecodeEventLogReturnType<typeof BAppABI>;
@@ -39,7 +38,7 @@ export type MutationOptions<T extends AllEvents> = {
   onInitiated?: () => MaybePromise<unknown | (() => unknown)>;
   onConfirmed?: (hash: Address) => MaybePromise<unknown | (() => unknown)>;
   onMined?: (
-    receipt: TransactionReceipt & { events: T[]; topics?: T[] },
+    receipt: DecodedReceipt<T>,
   ) => MaybePromise<unknown | (() => unknown)>;
   onError?: (
     error: WriteContractErrorType | WaitForTransactionReceiptErrorType,
@@ -132,26 +131,9 @@ export const useWaitForTransactionReceipt = <T extends AllEvents>(
       if (!client) {
         throw new Error("Public client not found");
       }
-      return client?.waitForTransactionReceipt({ hash }).then((receipt) => ({
-        ...receipt,
-        events: receipt.logs.reduce((acc, log) => {
-          try {
-            for (const eventAbi of [MainnetV4SetterABI, BAppABI]) {
-              tryCatch(() => {
-                const event = decodeEventLog({
-                  abi: eventAbi,
-                  data: log.data,
-                  topics: log.topics,
-                });
-                acc.push(event as T);
-              }, undefined);
-            }
-          } catch (e) {
-            console.error(e);
-          }
-          return acc;
-        }, [] as T[]),
-      }));
+      return client
+        ?.waitForTransactionReceipt({ hash })
+        .then(addDecodedEventsToReceipt<T>);
     },
   });
 };
@@ -165,23 +147,9 @@ export const useWaitForTransactionReceipt_Testnet = () => {
       if (!client) {
         throw new Error("Public client not found");
       }
-      return client?.waitForTransactionReceipt({ hash }).then((receipt) => ({
-        ...receipt,
-        events: receipt.logs.reduce((acc, log) => {
-          try {
-            acc.push(
-              decodeEventLog({
-                abi: TestnetV4SetterABI,
-                data: log.data,
-                topics: log.topics,
-              }),
-            );
-          } catch (e) {
-            console.error(e);
-          }
-          return acc;
-        }, [] as TestnetEvent[]),
-      }));
+      return client
+        ?.waitForTransactionReceipt({ hash })
+        .then(addDecodedEventsToReceipt<TestnetEvent>);
     },
   });
 };

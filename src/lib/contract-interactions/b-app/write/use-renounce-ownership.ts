@@ -24,6 +24,20 @@ export const useRenounceOwnership = () => {
   ]);
   const mutation = useWriteContract();
 
+  const send = (options: MutationOptions<BAppEvent> = {}) => {
+    return mutation.writeContractAsync(
+      {
+        abi: BAppABI,
+        address: bAppContractAddress,
+        functionName: "renounceOwnership",
+      },
+      {
+        onSuccess: (hash) => options.onConfirmed?.(hash),
+        onError: (error) => options.onError?.(error as WriteContractErrorType),
+      },
+    );
+  };
+
   const write = (options: MutationOptions<BAppEvent> = {}) => {
     options.onInitiated?.();
     return mutation
@@ -56,6 +70,7 @@ export const useRenounceOwnership = () => {
     isPending,
     mutation,
     write,
+    send,
     wait,
   };
 };

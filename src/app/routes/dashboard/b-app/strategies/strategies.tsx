@@ -11,7 +11,7 @@ import { useTokensFilter } from "@/hooks/b-app/filters/use-tokens-filter";
 import { AssetLogo } from "@/components/ui/asset-logo";
 import { X } from "lucide-react";
 import type { Strategy } from "@/api/b-app";
-import { useAssetsDelegationModal } from "@/signals/modal";
+import { useAssetDepositModal } from "@/signals/modal";
 import type { Address } from "abitype";
 
 export const Strategies: FC = () => {
@@ -29,7 +29,7 @@ export const Strategies: FC = () => {
   };
 
   const onDepositClick = (strategy: Strategy) => {
-    useAssetsDelegationModal.state.open({
+    useAssetDepositModal.state.open({
       strategyId: strategy.id,
       asset: tokensFilter.value?.[0] as Address,
     });

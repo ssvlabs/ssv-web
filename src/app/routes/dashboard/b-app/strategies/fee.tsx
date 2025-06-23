@@ -1,13 +1,13 @@
 import { Container } from "@/components/ui/container.tsx";
 import { Text } from "@/components/ui/text.tsx";
-import Slider from "@/components/ui/slider.tsx";
+import Slider from "@/components/ui/custom-slider";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 import { useNavigate } from "react-router-dom";
 import { Wizard } from "@/components/ui/wizard.tsx";
 import { CreateSteps, STEPS_LABELS } from "@/types/b-app.ts";
 import { NumericFormat } from "react-number-format";
 import { Input } from "@/components/ui/input";
-import { percentageMaxHandler } from "@/lib/utils/number-input";
+import { numberFormatLimiter } from "@/lib/utils/number-input";
 
 const Fee = () => {
   const selectedValue = useCreateStrategyContext().selectedFee;
@@ -42,7 +42,7 @@ const Fee = () => {
               value={selectedValue}
               decimalScale={2}
               allowLeadingZeros={false}
-              isAllowed={percentageMaxHandler({
+              isAllowed={numberFormatLimiter({
                 setter: (value) =>
                   (useCreateStrategyContext.state.selectedFee = value),
                 maxValue: 100,

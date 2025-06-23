@@ -34,7 +34,15 @@ const schema = z.object({
   }, "Hash must start with 0x and contain only hexadecimal characters, or be empty"),
 });
 
-const Obligations = () => {
+const Obligations = ({
+  isNotWizard,
+  strategyId,
+  isObligationManage,
+}: {
+  isNotWizard?: boolean;
+  strategyId?: string;
+  isObligationManage?: boolean;
+}) => {
   const navigate = useNavigate();
   const context = useCreateStrategyContext();
   const form = useForm({
@@ -62,6 +70,7 @@ const Obligations = () => {
 
   return (
     <Wizard
+      isNotWizard={isNotWizard}
       onNext={() => navigate("../fee")}
       isNextDisabled={!!form.formState.errors["registerData"]}
       title={"Create Strategy"}
@@ -156,8 +165,6 @@ const Obligations = () => {
                                 className="h-8 rounded-[5px]"
                                 onClick={(ev) => {
                                   ev.preventDefault();
-
-                                  console.log("clicked");
                                   return setIsEditing(true);
                                 }}
                               >
@@ -179,6 +186,8 @@ const Obligations = () => {
               />
             </Card>
             <ObligationsTable
+              strategyId={strategyId || ""}
+              isObligationManage={isObligationManage}
               obligations={useCreateStrategyContext().bApp.supportedAssets}
             />
           </Form>

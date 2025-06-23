@@ -45,6 +45,7 @@ module.exports = {
           800: "var(--gray-800)",
           900: "var(--gray-900)",
           1000: "var(--gray-1000)",
+          modal: "var(--gray-modal)",
         },
         success: {
           100: "var(--success-100)",
@@ -71,6 +72,7 @@ module.exports = {
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+          sunshineLight: "var(--secondary-sunshade-light)",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",

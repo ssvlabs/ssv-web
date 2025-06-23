@@ -1,20 +1,20 @@
-import { proxy, useSnapshot } from "valtio";
 import { DashboardLayout } from "@/app/layouts/dashboard/dashboard";
 import { ConnectWallet } from "@/app/routes/connect-wallet/connect-wallet";
 import { FeeRecipientAddress } from "@/app/routes/dashboard/clusters/fee-recipient-address";
 import { ProtectedRoute } from "@/app/routes/protected-route";
 import { Redirector } from "@/app/routes/root-redirection";
+import { proxy, useSnapshot } from "valtio";
 
+import { Compliance } from "@/app/routes/compliance";
+import { Maintenance } from "@/app/routes/maintenance";
+import { accountRoutes } from "@/app/routes/router/route-definitions/account-routes.tsx";
 import type { RouteObject } from "react-router-dom";
 import { createBrowserRouter, Outlet } from "react-router-dom";
-import { joinRoutes } from "./router/route-definitions/join-routes";
+import { NotFound } from "./not-found";
 import { clustersRoutes } from "./router/route-definitions/clusters-routes";
+import { joinRoutes } from "./router/route-definitions/join-routes";
 import { operatorsRoutes } from "./router/route-definitions/operators-routes";
 import type { RoutePaths, WritableRoutePaths } from "./router/route-types";
-import { Maintenance } from "@/app/routes/maintenance";
-import { Compliance } from "@/app/routes/compliance";
-import { NotFound } from "./not-found";
-import { accountRoutes } from "@/app/routes/router/route-definitions/account-routes.tsx";
 
 const routes = [
   {

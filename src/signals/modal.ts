@@ -48,7 +48,7 @@ export const useTransactionModal = createModalSignal<{
 
 export const usePastingLimitExceededModal = createModalSignal();
 export const useMultisigTransactionModal = createModalSignal();
-export const useAssetsDelegationModal = createModalSignal<{
+export const useAssetDepositModal = createModalSignal<{
   strategyId: string;
   asset: Address;
 }>();
@@ -56,4 +56,35 @@ export const useAssetsDelegationModal = createModalSignal<{
 export const useAssetWithdrawalModal = createModalSignal<{
   strategyId: string;
   asset: Address;
+}>();
+
+export const useFeeEditorModal = createModalSignal<{
+  strategyId: string;
+}>();
+
+export const useMetadataEditorModal = createModalSignal<{
+  strategyId: string;
+}>();
+
+export const useOptInModal = createModalSignal<{
+  strategyId: string;
+}>();
+
+export const useManageObligationsModal = createModalSignal<{
+  bAppId: Address;
+  strategyId: string;
+}>();
+
+export const useObligateModal = createModalSignal<{
+  token: Address;
+  bAppId: Address;
+  strategyId: string;
+  obligationUpdateData: {
+    isObligated: boolean;
+    isPending: boolean;
+    isPendingEnd: number;
+    isExpired: boolean;
+    isWaiting: boolean;
+    isFinalizeEnd: number;
+  };
 }>();

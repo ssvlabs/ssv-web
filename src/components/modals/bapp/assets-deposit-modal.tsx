@@ -15,7 +15,7 @@ import { useDepositETH } from "@/lib/contract-interactions/b-app/write/use-depos
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { formatSSV } from "@/lib/utils/number";
 import { getStrategyName } from "@/lib/utils/strategy";
-import { useAssetsDelegationModal } from "@/signals/modal";
+import { useAssetDepositModal } from "@/signals/modal";
 import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { useEffect } from "react";
@@ -25,6 +25,7 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert } from "@/components/ui/alert.tsx";
+import { track } from "@/lib/analytics/mixpanel";
 
 const formSchema = z.object({
   amount: z.bigint().min(BigInt(1), "Amount must be greater than 0"),
@@ -32,12 +33,16 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export const AssetsDelegationModal = () => {
-  const { meta, isOpen, onOpenChange } = useAssetsDelegationModal();
+export const AssetsDepositModal = () => {
+  const { meta, isOpen, onOpenChange } = useAssetDepositModal();
   const { bAppContractAddress } = useSSVNetworkDetails();
   const { address } = useAccount();
   const navigate = useNavigate();
-  const { strategy, invalidate } = useStrategy(meta.strategyId);
+  const { strategy, invalidate, strategyQuery } = useStrategy(meta.strategyId);
+
+  const isAssetUtilized = strategy?.depositsPerToken?.some(
+    (deposit) => deposit.token.toString() === meta.asset?.toLowerCase(),
+  );
 
   const asset = useAsset(meta.asset);
   const delegated = useDelegatedAsset({
@@ -75,6 +80,7 @@ export const AssetsDelegationModal = () => {
           invalidate();
         }, 2000); // wait for the api to catch up and then invalidate the query
         form.reset({ amount: BigInt(0) });
+        track("Deposit token");
         return () => {
           navigate(`/account`);
         };
@@ -134,9 +140,7 @@ export const AssetsDelegationModal = () => {
                 </Text>
               </div>
             </div>
-            {!(strategy.depositsPerToken || []).some(
-              ({ token }) => token.toString() === meta.asset?.toLowerCase(),
-            ) && (
+            {strategyQuery.isSuccess && !isAssetUtilized && (
               <Alert variant="warning">
                 This Strategy is not currently utilizing this asset
               </Alert>
@@ -250,4 +254,4 @@ export const AssetsDelegationModal = () => {
   );
 };
 
-AssetsDelegationModal.displayName = "AssetsDelegationModal";
+AssetsDepositModal.displayName = "AssetsDelegationModal";

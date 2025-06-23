@@ -7,9 +7,7 @@ export const ProtectedRoute: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
 }) => {
   const location = useLocation();
-
   const account = useAccount();
-
   const compliance = useCompliance();
 
   if (!account.isConnected) return <Navigate to="/connect" replace />;

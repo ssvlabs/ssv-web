@@ -32,6 +32,26 @@ export const useUpgradeToAndCall = () => {
   ]);
   const mutation = useWriteContract();
 
+  const send = (
+    params: AbiInputsToParams<Fn["inputs"]>,
+    value?: bigint,
+    options: MutationOptions<BAppEvent> = {},
+  ) => {
+    return mutation.writeContractAsync(
+      {
+        value,
+        abi: BAppABI,
+        address: bAppContractAddress,
+        functionName: "upgradeToAndCall",
+        args: paramsToArray({ params, abiFunction }),
+      },
+      {
+        onSuccess: (hash) => options.onConfirmed?.(hash),
+        onError: (error) => options.onError?.(error as WriteContractErrorType),
+      },
+    );
+  };
+
   const write = (
     params: AbiInputsToParams<Fn["inputs"]>,
     value?: bigint,
@@ -70,6 +90,7 @@ export const useUpgradeToAndCall = () => {
     isPending,
     mutation,
     write,
+    send,
     wait,
   };
 };

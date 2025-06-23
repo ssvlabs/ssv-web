@@ -26,6 +26,8 @@ import { useOrdering } from "@/hooks/use-ordering.ts";
 import { useReshareDkg } from "@/hooks/use-reshare-dkg.ts";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params.ts";
+import { useSelectOperatorIdsFromSearchParams } from "@/app/routes/create-cluster/select-operators/use-select-operator-ids-from-search-params";
+import { useOperatorsUsability } from "@/hooks/keyshares/use-operators-usability";
 
 export type SelectOperatorsProps = {
   // TODO: Add props or remove this type
@@ -43,6 +45,8 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
   const { clusterSize, selectedOperatorsIds } = useRegisterValidatorContext();
   const { orderBy, sort, ordering, handleOrdering } = useOrdering();
   const reshareFlow = useReshareDkg();
+
+  useSelectOperatorIdsFromSearchParams();
 
   const [search, setSearch, searchDebounced] = useSearchParamsState<string>({
     key: "search",
@@ -122,6 +126,17 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
     useRegisterValidatorContext.resetState();
     useBulkActionContext.state.dkgReshareState.proofFiles.files = [];
   };
+
+  const account = useAccount();
+  const operatorsUsability = useOperatorsUsability(
+    {
+      account: account.address!,
+      operatorIds: selectedOperatorsIds,
+    },
+    {
+      enabled: !!address && selectedOperatorsIds.length > 0,
+    },
+  );
 
   return (
     <Container
@@ -227,11 +242,33 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
               </AlertDescription>
             </Alert>
           )}
+          {operatorsUsability.data?.hasPermissionedOperators && (
+            <Alert variant="error">
+              <AlertDescription>
+                You have selected one or more operators that are private and
+                cannot be used.
+              </AlertDescription>
+            </Alert>
+          )}
+          {operatorsUsability.data?.hasExceededValidatorsLimit && (
+            <Alert variant="error">
+              <AlertDescription>
+                You have selected one or more operators that have reached the
+                maximum number of validators.
+              </AlertDescription>
+            </Alert>
+          )}
           <Button
             size="xl"
             as={Link}
-            isLoading={cluster.isLoading}
-            disabled={!isClusterSizeMet || isClusterExists}
+            isLoading={cluster.isLoading || operatorsUsability.isLoading}
+            disabled={
+              !isClusterSizeMet ||
+              isClusterExists ||
+              operatorsUsability.data?.hasPermissionedOperators ||
+              operatorsUsability.data?.hasExceededValidatorsLimit ||
+              operatorsUsability.data?.hasDeletedOperators
+            }
             onClick={nextStep}
           >
             Next

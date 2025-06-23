@@ -83,7 +83,7 @@ export const WithdrawalRequestStatusIcon: WithdrawalRequestStatusIconFC = ({
       <Tooltip asChild content="Your withdrawal period has expired">
         <div
           className={cn(
-            "flex items-center justify-center text-base size-[1em]  text-white bg-error-500 rounded-full",
+            "flex items-center justify-center text-base size-[1em]  text-white bg-gray-500 rounded-full",
             className,
           )}
           {...props}

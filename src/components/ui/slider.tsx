@@ -1,42 +1,45 @@
-import type { ChangeEvent } from "react";
+import * as React from "react";
+import * as SliderPrimitive from "@radix-ui/react-slider";
 
-const Slider = ({
-  value,
-  setValue,
-  maxValue = 100,
-}: {
-  value: number;
-  setValue: (value: number) => void;
-  maxValue: number;
-}) => {
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseFloat(Number(e.target.value).toFixed(2));
-    setValue(newValue);
-  };
+import { cn } from "@/lib/utils/tw";
 
-  return (
-    <div className="relative w-[280px] h-1.5 bg-primary-100 rounded-full">
-      <div
-        className="absolute top-0 left-0 h-full bg-primary-500 rounded-full"
-        style={{ width: `${(value / maxValue) * 100}%` }}
-      ></div>
-      <input
-        type="range"
-        min="0"
-        max={maxValue}
-        step="0.01"
-        value={value}
-        onChange={handleChange}
-        className="absolute w-full h-full appearance-none bg-transparent cursor-pointer"
-        style={{
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-        }}
+const Slider = React.forwardRef<
+  React.ElementRef<typeof SliderPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
+>(({ className, ...props }, ref) => (
+  <SliderPrimitive.Root
+    ref={ref}
+    className={cn(
+      "relative flex w-full touch-none select-none items-center",
+      className,
+    )}
+    {...props}
+  >
+    <SliderPrimitive.Track
+      className={cn(
+        "relative h-2 w-full grow overflow-hidden rounded-full bg-primary-100",
+        {
+          "bg-gray-100": props.disabled,
+        },
+      )}
+    >
+      <SliderPrimitive.Range
+        className={cn("absolute h-full bg-primary-500", {
+          "bg-gray-500": props.disabled,
+        })}
       />
-    </div>
-  );
-};
+    </SliderPrimitive.Track>
+    <SliderPrimitive.Thumb
+      className={cn(
+        "block size-5 rounded-full shadow-md border-4 border-white bg-primary-500 ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+        {
+          "cursor-pointer": !props.disabled,
+          "bg-gray-500": props.disabled,
+        },
+      )}
+    />
+  </SliderPrimitive.Root>
+));
+Slider.displayName = SliderPrimitive.Root.displayName;
 
-export default Slider;
+export { Slider };

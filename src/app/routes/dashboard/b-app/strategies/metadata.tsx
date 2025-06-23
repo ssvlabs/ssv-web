@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/form.tsx";
 import { useRequestMetadataByURI } from "@/hooks/b-app/use-request-metadata-by-uri.ts";
 import { useUpdateAccountMetadataURI } from "@/lib/contract-interactions/b-app/write/use-update-account-metadata-uri.ts";
+import { track } from "@/lib/analytics/mixpanel";
 
 const Metadata = () => {
   const navigate = useNavigate();
@@ -203,6 +204,7 @@ const Metadata = () => {
               title: "Transaction confirmed",
               description: new Date().toLocaleString(),
             });
+            track("Create strategy");
             createdId = parseInt(`${receipt.logs[0].topics[1]}`);
             useCreateStrategyContext.state.createdStrategyId = parseInt(
               `${receipt.logs[0].topics[1]}`,
@@ -295,6 +297,7 @@ const Metadata = () => {
               title: "Transaction confirmed",
               description: new Date().toLocaleString(),
             });
+            track("Opt-in to bApp");
             setTxStatus([
               {
                 label: "Register Strategy",
@@ -353,6 +356,7 @@ const Metadata = () => {
               title: "Transaction confirmed",
               description: new Date().toLocaleString(),
             });
+            track("Account metadata");
             setAccountMetadataTxState({
               label: "Register Account Metadata",
               status: "success",

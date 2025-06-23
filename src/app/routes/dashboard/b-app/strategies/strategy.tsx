@@ -26,17 +26,41 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils/tw.ts";
 import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
-import { useAssetsDelegationModal } from "@/signals/modal";
+import { useAssetDepositModal, useFeeEditorModal } from "@/signals/modal";
 import DescriptionCard from "@/components/ui/description-card.tsx";
 import Delegate from "@/app/routes/dashboard/b-app/my-account/delegate.tsx";
 import { getStrategyName } from "@/lib/utils/strategy";
-import { isAddress } from "viem";
+import { isAddress, isAddressEqual } from "viem";
 import { useGetAsset } from "@/hooks/b-app/use-get-asset.tsx";
 import { CopyBtn } from "@/components/ui/copy-btn.tsx";
 import { useDelegateContext } from "@/components/context/delegate-context.tsx";
+import { useAccount } from "@/hooks/account/use-account";
+import { tryCatch } from "@/lib/utils/tryCatch";
+import { EditStrategyMenu } from "@/app/routes/dashboard/b-app/strategies/metadata-editor/edit-strategy-menu";
+import { OptInBtn } from "@/app/routes/dashboard/b-app/strategies/opt-in/opt-in-btn.tsx";
+import { OptInModal } from "@/app/routes/dashboard/b-app/strategies/opt-in/opt-in-modal.tsx";
+import { MetadataEditorModal } from "@/app/routes/dashboard/b-app/strategies/metadata-editor/metadata-editor-modal";
+import { StrategyFeeEditorModal } from "@/app/routes/dashboard/b-app/strategies/fee-editor/fee-editor-modal";
+import { StrategyFeeChangeRequestStatusIcon } from "@/components/ui/strategy-fee-change-request-status-icon";
+import { useStrategyFeeChangeRequestStatus } from "@/hooks/b-app/strategy/use-strategy-fee-change-request";
+import { BiRightArrowAlt } from "react-icons/bi";
+import { ManageObligationsModal } from "@/app/routes/dashboard/b-app/strategies/manage-obligations/manage-obligations-modal.tsx";
 
 const Strategy = () => {
-  const { strategy, account, isLoading: isStrategyLoading } = useStrategy();
+  const { address } = useAccount();
+  const strategyQueryData = useStrategy();
+  const { strategy, account, isLoading: isStrategyLoading } = strategyQueryData;
+
+  const isStrategyOwner = tryCatch(
+    () => isAddressEqual(strategy.ownerAddress, address!),
+    false,
+  );
+
+  const feeChangeRequest = useStrategyFeeChangeRequestStatus({
+    strategyId: strategy.id,
+    enableTimeTracking: true,
+  });
+
   const [bAppSearchValue, setBAppSearchValue] = useState("");
   const [isOpenDelegateModal, setIsOpenDelegateModal] = useState(false);
   const { setDelegationData } = useDelegateContext();
@@ -69,6 +93,7 @@ const Strategy = () => {
     }
     setIsOpenDelegateModal(true);
   };
+
   const onSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
@@ -94,7 +119,41 @@ const Strategy = () => {
   const strategyData = [
     {
       label: "Fee",
-      value: `${convertToPercentage(strategy.fee)}%`,
+      value: (
+        <div
+          className={cn("flex items-center gap-1", {
+            "cursor-pointer": feeChangeRequest.hasRequested,
+          })}
+          onClick={() => {
+            if (!feeChangeRequest.hasRequested) return;
+            useFeeEditorModal.state.open({ strategyId: strategy.id });
+          }}
+        >
+          <Text variant="body-1-medium">
+            {convertToPercentage(strategy.fee)}%
+          </Text>
+          {isStrategyOwner && feeChangeRequest.hasRequested && (
+            <>
+              <BiRightArrowAlt className="size-3 text-gray-500" />
+              <div className="flex items-center gap-1">
+                <Text
+                  variant="body-3-medium"
+                  className={cn({
+                    "text-orange-500": feeChangeRequest.inPendingPeriod,
+                    "text-gray-500": feeChangeRequest.isExpired,
+                    "text-green-500": feeChangeRequest.inExecutionPeriod,
+                  })}
+                >
+                  {feeChangeRequest.hasRequested
+                    ? `${convertToPercentage(feeChangeRequest.request.percentage)}%`
+                    : `${convertToPercentage(strategy.fee)}%`}
+                </Text>
+                <StrategyFeeChangeRequestStatusIcon strategyId={strategy.id} />
+              </div>
+            </>
+          )}
+        </div>
+      ),
     },
     {
       label: "Delegators",
@@ -143,177 +202,190 @@ const Strategy = () => {
   ];
 
   return (
-    <Container variant="vertical" size="xl" className="py-6">
-      <div className="flex items-center gap-2 text-gray-500">
-        <Text
-          onClick={() =>
-            location.pathname.includes("my-strategies")
-              ? navigate("/account/my-strategies")
-              : navigate("/account/strategies")
-          }
-          className="text-gray-500 cursor-pointer"
-          variant="body-3-medium"
-        >
-          {location.pathname.includes("my-strategies")
-            ? "My Account"
-            : "Strategies"}{" "}
-          {">"} {getStrategyName(strategy)}
-        </Text>
-      </div>
-      <div className="flex items-center gap-2">
-        <Text variant="body-1-semibold">{getStrategyName(strategy)}</Text>
-      </div>
-      <div className="w-full flex flex-col gap-6 rounded-[16px] bg-white p-6">
-        <div className="w-full flex items-center ">
-          {strategyData.map(({ label, value, tooltipText }) => (
-            <div className="w-full flex flex-col gap-1">
-              <Text
-                className="text-gray-500 flex items-center gap-2"
-                variant={"caption-medium"}
-              >
-                {label}
-                {tooltipText && (
-                  <Tooltip content={tooltipText}>
-                    <FaCircleInfo className="size-3 text-gray-500" />
-                  </Tooltip>
-                )}
-              </Text>
-              <Text variant={"body-1-medium"}>{value as string}</Text>
-            </div>
-          ))}
-        </div>
-        {strategy.description && (
-          <DescriptionCard description={strategy.description} />
-        )}
-      </div>
-      <div className="flex justify-between w-full items-center">
-        <Text variant="body-1-semibold">Assets</Text>
-        <SearchInput
-          onChange={onSearchChange}
-          value={searchedValue || ""}
-          placeholder="Search"
-          iconPlacement="left"
-          className={`h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full ${
-            searchedValue &&
-            !isAddress(searchedValue || "0x") &&
-            !searchAssets.length &&
-            "border-error-500 focus-within:border-error-500"
-          }`}
-          inputProps={{
-            className: "bg-gray-50",
-            placeholder: "Search Asset Address...",
-          }}
-        />
-      </div>
-      {searchedValue && !searchAssets.length && (
-        <div className="w-full h-[104px] bg-white flex justify-center items-center rounded-[16px]">
-          <Text variant="body-3-medium" className="text-gray-600">
-            {isAddress(searchedValue || "0x")
-              ? "Asset was not found"
-              : "Invalid address format"}
+    <>
+      <MetadataEditorModal />
+      <StrategyFeeEditorModal />
+      <Container variant="vertical" size="xl" className="py-6">
+        <div className="flex items-center gap-2 text-gray-500">
+          <Text
+            onClick={() =>
+              location.pathname.includes("my-strategies")
+                ? navigate("/account/my-strategies")
+                : navigate("/account/strategies")
+            }
+            className="text-gray-500 cursor-pointer"
+            variant="body-3-medium"
+          >
+            {location.pathname.includes("my-strategies")
+              ? "My Account"
+              : "Strategies"}{" "}
+            {">"} {getStrategyName(strategy)}
           </Text>
         </div>
-      )}
-      {!searchedValue && (
-        <div className="w-full rounded-b-[16px]">
-          <Table
-            className={"w-full rounded-t-xl overflow-hidden rounded-b-[16px]"}
-          >
-            <TableHeader>
-              <TableHead className="size-[28%]">Delegatable Asset</TableHead>
-              <TableHead className="size-[15%]"></TableHead>
-              <TableHead className="size-[15%]"></TableHead>
-              <TableHead className=" flex items-center gap-1">
-                Total Delegated
-                <Tooltip
-                  content={
-                    "Total effective balance (ETH) delegated to the owner of this strategy"
-                  }
-                >
-                  <FaCircleInfo className="text-gray-500" />
-                </Tooltip>
-              </TableHead>
-              <TableHead className="size-[19%]">
-                Total Delegated Value
-              </TableHead>
-            </TableHeader>
-            <TableBody>
-              <TableRow onClick={openDelegate}>
-                <TableCell className="size-[28%]">
-                  <div className="flex gap-2 w-[c320px]">
-                    <img
-                      className={"h-[24px] w-[15px]"}
-                      src={`/images/balance-validator/balance-validator.svg`}
-                    />
-                    Validator Balance
-                    <Text className="text-gray-500 font-medium">ETH</Text>
-                  </div>
-                </TableCell>
-                <TableCell className="size-[15%]"></TableCell>
-                <TableCell className="size-[15%]"></TableCell>
-                <TableCell>
-                  {formatSSV(strategy.totalDelegatedValue || 0n)} ETH
-                </TableCell>
-                <TableCell>
-                  {currencyFormatter.format(
-                    Number(strategy.totalDelegatedFiat) || 0,
-                  )}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+        <div className="flex items-center gap-2 justify-between w-full">
+          <Text variant="body-1-semibold">{getStrategyName(strategy)}</Text>
+          {isStrategyOwner && <EditStrategyMenu />}
         </div>
-      )}
-
-      {(searchedValue
-        ? Boolean(searchAssets.length)
-        : Boolean(strategy.depositsPerToken?.length)) && (
-        <div className="w-full flex flex-col gap-6">
-          <StrategyAssetsTable
-            onDepositClick={(asset) => {
-              useAssetsDelegationModal.state.open({
-                asset: asset.token,
-                strategyId: strategy.id,
-              });
+        <div className="w-full flex flex-col gap-6 rounded-[16px] bg-white p-6">
+          <div className="w-full flex items-center ">
+            {strategyData.map(({ label, value, tooltipText }) => (
+              <div className="w-full flex flex-col gap-1">
+                <Text
+                  className="text-gray-500 flex items-center gap-2"
+                  variant={"caption-medium"}
+                >
+                  {label}
+                  {tooltipText && (
+                    <Tooltip content={tooltipText}>
+                      <FaCircleInfo className="size-3 text-gray-500" />
+                    </Tooltip>
+                  )}
+                </Text>
+                <Text variant={"body-1-medium"}>{value as string}</Text>
+              </div>
+            ))}
+          </div>
+          {strategy.description && (
+            <DescriptionCard description={strategy.description} />
+          )}
+        </div>
+        <div className="flex justify-between w-full items-center">
+          <Text variant="body-1-semibold">Assets</Text>
+          <SearchInput
+            onChange={onSearchChange}
+            value={searchedValue || ""}
+            placeholder="Search"
+            iconPlacement="left"
+            className={`h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full ${
+              searchedValue &&
+              !isAddress(searchedValue || "0x") &&
+              !searchAssets.length &&
+              "border-error-500 focus-within:border-error-500"
+            }`}
+            inputProps={{
+              className: "bg-gray-50",
+              placeholder: "Search Asset Address...",
             }}
-            showDepositButtonOnHover
-            assets={
-              searchedValue ? searchAssets : strategy.depositsPerToken || []
-            }
           />
         </div>
-      )}
-      <div className="w-full flex flex-col gap-6">
-        <div className="flex justify-between w-full items-center">
-          <Text variant="body-1-semibold">Supported bApps</Text>
-          {!!strategy.bAppsList?.length && (
-            <SearchInput
-              onChange={(e) => setBAppSearchValue(e.target.value)}
-              placeholder="Search"
-              iconPlacement="left"
-              className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
-              inputProps={{
-                className: "bg-gray-50",
-                placeholder: "Search bApp...",
+        {searchedValue && !searchAssets.length && (
+          <div className="w-full h-[104px] bg-white flex justify-center items-center rounded-[16px]">
+            <Text variant="body-3-medium" className="text-gray-600">
+              {isAddress(searchedValue || "0x")
+                ? "Asset was not found"
+                : "Invalid address format"}
+            </Text>
+          </div>
+        )}
+        {!searchedValue && (
+          <div className="w-full rounded-b-[16px]">
+            <Table
+              className={"w-full rounded-t-xl overflow-hidden rounded-b-[16px]"}
+            >
+              <TableHeader>
+                <TableHead className="size-[28%]">Delegatable Asset</TableHead>
+                <TableHead className="size-[15%]"></TableHead>
+                <TableHead className="size-[15%]"></TableHead>
+                <TableHead className=" flex items-center gap-1">
+                  Total Delegated
+                  <Tooltip
+                    content={
+                      "Total effective balance (ETH) delegated to the owner of this strategy"
+                    }
+                  >
+                    <FaCircleInfo className="text-gray-500" />
+                  </Tooltip>
+                </TableHead>
+                <TableHead className="size-[19%]">
+                  Total Delegated Value
+                </TableHead>
+              </TableHeader>
+              <TableBody>
+                <TableRow onClick={openDelegate}>
+                  <TableCell className="size-[28%]">
+                    <div className="flex gap-2 w-[c320px]">
+                      <img
+                        className={"h-[24px] w-[15px]"}
+                        src={`/images/balance-validator/balance-validator.svg`}
+                      />
+                      Validator Balance
+                      <Text className="text-gray-500 font-medium">ETH</Text>
+                    </div>
+                  </TableCell>
+                  <TableCell className="size-[15%]"></TableCell>
+                  <TableCell className="size-[15%]"></TableCell>
+                  <TableCell>
+                    {formatSSV(strategy.totalDelegatedValue || 0n)} ETH
+                  </TableCell>
+                  <TableCell>
+                    {currencyFormatter.format(
+                      Number(strategy.totalDelegatedFiat) || 0,
+                    )}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+        )}
+
+        {(searchedValue
+          ? Boolean(searchAssets.length)
+          : Boolean(strategy.depositsPerToken?.length)) && (
+          <div className="w-full flex flex-col gap-6">
+            <StrategyAssetsTable
+              onDepositClick={(asset) => {
+                useAssetDepositModal.state.open({
+                  asset: asset.token,
+                  strategyId: strategy.id,
+                });
               }}
+              showDepositButtonOnHover
+              assets={
+                searchedValue ? searchAssets : strategy.depositsPerToken || []
+              }
+            />
+          </div>
+        )}
+        <div className="w-full flex flex-col gap-6">
+          <div className="flex w-full justify-between items-center">
+            <Text variant="body-1-semibold">Supported bApps</Text>
+            <div className="flex gap-2 items-center">
+              {!!strategy.bAppsList?.length && (
+                <SearchInput
+                  onChange={(e) => setBAppSearchValue(e.target.value)}
+                  placeholder="Search"
+                  iconPlacement="left"
+                  className="h-10 rounded-xl bg-gray-50 text-sm w-[536px] max-w-full"
+                  inputProps={{
+                    className: "bg-gray-50",
+                    placeholder: "Search bApp...",
+                  }}
+                />
+              )}
+              {strategy.ownerAddress.toLowerCase() === address?.toLowerCase() &&
+                (strategy.bAppsList || []).length > 0 && <OptInBtn />}
+            </div>
+          </div>
+          {strategy.bAppsList && (
+            <StrategyBAppsTable
+              bAppsObligations={strategy.depositsPerToken || []}
+              strategyId={strategy.id}
+              isLoading={isStrategyLoading}
+              searchValue={bAppSearchValue}
+              bApps={strategy.bAppsList}
             />
           )}
         </div>
-        {strategy.bAppsList && (
-          <StrategyBAppsTable
-            isLoading={isStrategyLoading}
-            searchValue={bAppSearchValue}
-            bApps={strategy.bAppsList}
+        {isOpenDelegateModal && (
+          <Delegate
+            isUpdateFlow={!!receiver}
+            closeDelegatePopUp={() => setIsOpenDelegateModal(false)}
           />
         )}
-      </div>
-      {isOpenDelegateModal && (
-        <Delegate
-          isUpdateFlow={!!receiver}
-          closeDelegatePopUp={() => setIsOpenDelegateModal(false)}
-        />
-      )}
-    </Container>
+        <OptInModal key={strategy.id} />
+        <ManageObligationsModal />
+      </Container>
+    </>
   );
 };
 

@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { Address } from "abitype";
 import { useChainId } from "wagmi";
 import { useLocalStorage } from "react-use";
+import { useMemo } from "react";
 
 type Props = {
   account: Address;
@@ -69,53 +70,62 @@ export const useOperatorsUsability = (
   });
 
   const queryStatus = combineQueryStatus(canUse, operators);
+  const data = useMemo(
+    () =>
+      operators.data?.reduce(
+        (acc, operator) => {
+          const hasExceededValidatorsLimit =
+            !skipValidation && operator?.validators_count >= maxValidators;
+          const isUsable = canUse.data?.[operator.id] ?? false;
+
+          const willExceedValidatorsLimit =
+            !skipValidation &&
+            operator.validators_count + additionalValidators >= maxValidators;
+
+          acc.operators.push({
+            operator,
+            isUsable:
+              isUsable &&
+              !hasExceededValidatorsLimit &&
+              !operator.is_deleted &&
+              !willExceedValidatorsLimit,
+            status: hasExceededValidatorsLimit
+              ? "exceeded_validators_limit"
+              : !isUsable
+                ? "is_permissioned"
+                : willExceedValidatorsLimit
+                  ? "will_exceed_validators_limit"
+                  : "usable",
+          });
+
+          acc.hasPermissionedOperators ||= !isUsable;
+          acc.hasExceededValidatorsLimit ||= hasExceededValidatorsLimit;
+          acc.hasDeletedOperators ||= operator.is_deleted;
+          acc.maxAddableValidators = Math.min(
+            acc.maxAddableValidators,
+            maxValidators - operator.validators_count,
+          );
+          return acc;
+        },
+        {
+          operators: [],
+          hasPermissionedOperators: false,
+          hasExceededValidatorsLimit: false,
+          maxAddableValidators: Infinity,
+          hasDeletedOperators: false,
+        } as Result,
+      ),
+    [
+      additionalValidators,
+      canUse.data,
+      maxValidators,
+      operators.data,
+      skipValidation,
+    ],
+  );
 
   return {
     ...queryStatus,
-    data: queryStatus.isSuccess
-      ? operators.data?.reduce(
-          (acc, operator) => {
-            const hasExceededValidatorsLimit =
-              !skipValidation && operator?.validators_count >= maxValidators;
-            const isUsable = canUse.data?.[operator.id] ?? false;
-
-            const willExceedValidatorsLimit =
-              !skipValidation &&
-              operator.validators_count + additionalValidators >= maxValidators;
-
-            acc.operators.push({
-              operator,
-              isUsable:
-                isUsable &&
-                !hasExceededValidatorsLimit &&
-                !operator.is_deleted &&
-                !willExceedValidatorsLimit,
-              status: hasExceededValidatorsLimit
-                ? "exceeded_validators_limit"
-                : !isUsable
-                  ? "is_permissioned"
-                  : willExceedValidatorsLimit
-                    ? "will_exceed_validators_limit"
-                    : "usable",
-            });
-
-            acc.hasPermissionedOperators ||= !isUsable;
-            acc.hasExceededValidatorsLimit ||= hasExceededValidatorsLimit;
-            acc.hasDeletedOperators ||= operator.is_deleted;
-            acc.maxAddableValidators = Math.min(
-              acc.maxAddableValidators,
-              maxValidators - operator.validators_count,
-            );
-            return acc;
-          },
-          {
-            operators: [],
-            hasPermissionedOperators: false,
-            hasExceededValidatorsLimit: false,
-            maxAddableValidators: Infinity,
-            hasDeletedOperators: false,
-          } as Result,
-        )
-      : undefined,
+    data: queryStatus.isSuccess ? data : undefined,
   };
 };

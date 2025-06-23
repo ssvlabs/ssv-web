@@ -8,7 +8,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { CreateSteps, STEPS_LABELS } from "@/types/b-app.ts";
 import { useCreateStrategyContext } from "@/guard/create-strategy-context.ts";
 
-const SelectBApp = () => {
+const SelectBApp = ({ isNotWizard }: { isNotWizard?: boolean }) => {
   const { bApps, pagination, isBAppsLoading } = useBApps();
   const navigate = useNavigate();
 
@@ -24,7 +24,8 @@ const SelectBApp = () => {
 
   return (
     <Wizard
-      onNext={() => navigate("../obligations")}
+      isNotWizard={isNotWizard}
+      onNext={() => !isNotWizard && navigate("../obligations")}
       title={"Create Strategy"}
       steps={Object.values(STEPS_LABELS)}
       children={

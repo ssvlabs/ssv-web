@@ -168,10 +168,10 @@ export const IconButton: ButtonFC = React.forwardRef<
         return React.cloneElement(children, {
           ...props,
           // @ts-expect-error className is not a valid prop
-          className: cn(children.props.className, className, "size-[65%]"),
+          className: cn("size-[65%]", children.props.className),
         });
       }
-    }, [children, className, props]);
+    }, [children, props]);
 
     return (
       <Comp

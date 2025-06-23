@@ -32,6 +32,24 @@ export const useOptInToBApp = () => {
   ]);
   const mutation = useWriteContract();
 
+  const send = (
+    params: AbiInputsToParams<Fn["inputs"]>,
+    options: MutationOptions<BAppEvent> = {},
+  ) => {
+    return mutation.writeContractAsync(
+      {
+        abi: BAppABI,
+        address: bAppContractAddress,
+        functionName: "optInToBApp",
+        args: paramsToArray({ params, abiFunction }),
+      },
+      {
+        onSuccess: (hash) => options.onConfirmed?.(hash),
+        onError: (error) => options.onError?.(error as WriteContractErrorType),
+      },
+    );
+  };
+
   const write = (
     params: AbiInputsToParams<Fn["inputs"]>,
     options: MutationOptions<BAppEvent> = {},
@@ -68,6 +86,7 @@ export const useOptInToBApp = () => {
     isPending,
     mutation,
     write,
+    send,
     wait,
   };
 };

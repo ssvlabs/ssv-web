@@ -5,7 +5,7 @@ type PercentageHandlerProps = {
   maxValue?: number;
 };
 
-export const percentageMaxHandler = ({
+export const numberFormatLimiter = ({
   setter,
   maxValue = 100,
 }: PercentageHandlerProps) => {

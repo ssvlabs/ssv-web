@@ -347,7 +347,7 @@ export const AssetWithdrawalModal = () => {
               {assetWithdrawalRequest.inExecutionPeriod && (
                 <Button
                   size="xl"
-                  type="submit"
+                  type="button"
                   className="w-full"
                   onClick={() => finalizeWithdraw()}
                   isLoading={isPending}

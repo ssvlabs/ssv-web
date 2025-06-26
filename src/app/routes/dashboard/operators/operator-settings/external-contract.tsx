@@ -162,7 +162,7 @@ export const ExternalContract: FC = () => {
                     <div>
                       Learn how to set an{" "}
                       <a
-                        href="https://docs.ssv.network/operator-user-guides/operator-management/configuring-a-permissioned-operator#adding-an-external-contract"
+                        href="https://docs.ssv.network/operators/operator-management/configuring-a-permissioned-operator#adding-an-external-contract"
                         className="link text-primary-500"
                         target="_blank"
                       >

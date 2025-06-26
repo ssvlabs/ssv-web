@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Link, Navigate } from "react-router-dom";
 import { useSearchParam } from "react-use";
 import { createClusterHash } from "@/lib/utils/cluster";
+import { links } from "@/config";
 
 export const RegisterValidatorSuccess: FC = () => {
   const { address } = useAccount();
@@ -41,7 +42,7 @@ export const RegisterValidatorSuccess: FC = () => {
               validators.{" "}
               <Button
                 as={Link}
-                to="https://docs.ssv.network/learn/stakers/clusters"
+                to={links.MORE_ON_CLUSTERS}
                 target="_blank"
                 variant="link"
               >

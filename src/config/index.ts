@@ -43,7 +43,7 @@ export const links = {
   DKG_DOCKER_INSTALL_URL: "https://docs.docker.com/engine/install/",
   PERMISSIONED_OPERATORS:
     "https://docs.ssv.network/operators/operator-onboarding/permissioned-operators/",
-  MORE_ON_CLUSTERS: "https://docs.ssv.network/learn/stakers/clusters",
+  MORE_ON_CLUSTERS: "https://docs.ssv.network/stakers/clusters/",
   SSV_KEYS_RELEASES_URL: "https://github.com/ssvlabs/ssv-keys/releases",
   SSV_UPDATE_FEE_DOCS: "https://docs.ssv.network/learn/operators/update-fee",
   TOOL_TIP_KEY_LINK: "https://docs.ssv.network/operators/install-instructions",

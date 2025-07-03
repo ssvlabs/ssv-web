@@ -25,10 +25,14 @@ export const hoodi = {
   },
   rpcUrls: {
     default: {
-      http: ["https://rpc.hoodi.ethpandaops.io"],
+      http: [
+        "https://ethereum-hoodi-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
+      ],
     },
     public: {
-      http: ["https://rpc.hoodi.ethpandaops.io"],
+      http: [
+        "https://ethereum-hoodi-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
+      ],
     },
   },
   blockExplorers: {

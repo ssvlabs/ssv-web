@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Loading } from "@/components/ui/Loading";
 import LogoIcon from "@/assets/images/logo-icon.svg?react";
+import { links } from "@/config";
 
 export type ClusterTableProps = {
   clusters: Cluster[];
@@ -56,7 +57,7 @@ export const ClusterTable: FCProps = ({
                   validators.{" "}
                   <Button
                     as={Link}
-                    to="https://docs.ssv.network/learn/stakers/clusters"
+                    to={links.MORE_ON_CLUSTERS}
                     target="_blank"
                     variant="link"
                   >

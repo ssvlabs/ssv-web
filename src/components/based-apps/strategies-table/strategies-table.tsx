@@ -20,7 +20,7 @@ import { Text } from "@/components/ui/text";
 
 export type OperatorsTableProps = {
   strategies: (Strategy &
-    StrategyMetadata & { ownerAddressMetadata: AccountMetadata })[];
+    StrategyMetadata & { ownerAddressMetadata?: AccountMetadata })[];
   pagination?: IPagination;
   isLoading?: boolean;
   showDepositButtonOnHover?: boolean;

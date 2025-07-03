@@ -4,8 +4,8 @@ import type { Strategy, StrategyMetadata } from "@/api/b-app.ts";
 import { getNonSlashableAssets } from "@/api/b-app.ts";
 import { getMyAccount } from "@/api/b-app.ts";
 import { getStrategyById } from "@/api/b-app.ts";
-import { useAccountMetadata } from "@/hooks/b-app/use-account-metadata.ts";
-import { useStrategyMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
+import { useAccountsMetadata } from "@/hooks/b-app/use-account-metadata.ts";
+import { useStrategiesMetadata } from "@/hooks/b-app/use-strategy-metadata.ts";
 import { useBAppMetadata } from "@/hooks/b-app/use-b-app-metadata.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
 
@@ -21,10 +21,10 @@ export const useStrategy = (_strategyId?: string) => {
 
   const strategy = strategyQuery.data;
 
-  const { data: strategyMetadataItem, isLoading: strategyMetadataIsLoading } =
-    useStrategyMetadata([
-      { id: strategy?.id || "", url: strategy?.metadataURI || "" },
-    ]);
+  const strategiesMetadata = useStrategiesMetadata([
+    { id: strategy?.id || "", url: strategy?.metadataURI || "" },
+  ]);
+
   const bAppsURIS = strategy?.bAppsList?.map((bApp) => ({
     id: bApp.bAppId,
     url: bApp.metadataURI,
@@ -34,7 +34,7 @@ export const useStrategy = (_strategyId?: string) => {
       (bAppsURIS || [{ id: "", url: "" }]) as { id: string; url: string }[],
     );
 
-  const strategyMetadata = strategyMetadataItem[`${strategy?.id}`];
+  const strategyMetadata = strategiesMetadata.data?.map[`${strategy?.id}`];
 
   const accountQuery = useChainedQuery({
     queryKey: ["Account", strategyQuery.data?.ownerAddress],
@@ -52,12 +52,13 @@ export const useStrategy = (_strategyId?: string) => {
   });
 
   const account = accountQuery.data?.data[0];
+
   const { data: accountMetadataItem, isLoading: accountMetadataIsLoading } =
-    useAccountMetadata([
+    useAccountsMetadata([
       { id: account?.id || "", url: account?.metadataURI || "" },
     ]);
 
-  const accountMetadata = accountMetadataItem && accountMetadataItem[0]?.data;
+  const accountMetadata = accountMetadataItem?.list.at(0)?.data;
 
   const invalidate = async () => {
     await Promise.all([strategyQuery.invalidate(), accountQuery.invalidate()]);
@@ -78,11 +79,12 @@ export const useStrategy = (_strategyId?: string) => {
         ...bAppsMetadata[bApp.bAppId],
       })),
     } as Strategy & StrategyMetadata,
+    strategyQuery,
     isLoading:
       strategyQuery.isLoading ||
       accountQuery.isLoading ||
       bAppsMetadataIsLoading ||
-      strategyMetadataIsLoading ||
+      strategiesMetadata.isLoading ||
       accountMetadataIsLoading,
     invalidate,
   };

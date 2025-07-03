@@ -22,7 +22,7 @@ import { getStrategyName } from "@/lib/utils/strategy";
 
 export type StrategyTableRowProps = {
   strategy: Strategy &
-    StrategyMetadata & { ownerAddressMetadata: AccountMetadata };
+    StrategyMetadata & { ownerAddressMetadata?: AccountMetadata };
   showDepositButtonOnHover?: boolean;
   onDepositClick?: (strategy: Strategy) => void;
   onRowClick?: (strategy: Strategy) => void;

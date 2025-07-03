@@ -29,6 +29,8 @@
     --gray-1000: 207 95% 8%;
     --black: 207 95% 8%;
 
+    --gray-modal: #0B2A3C29;
+
     --success-100: rgba(8, 200, 88, 0.16);
     --success-300: rgba(8, 200, 88, 0.32);
     --success-500: rgba(8, 200, 88, 1);
@@ -42,6 +44,8 @@
 
     --warning-200: rgba(255, 210, 10, 0.2);
     --warning-500: rgba(255, 210, 10, 1);
+
+    --secondary-sunshade-light: #FDB25C;
 
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -98,6 +102,8 @@
     --gray-800: #f4f7fa;
     --gray-900: #f9fbfc;
     --gray-1000: #fdfefe;
+
+    --gray-modal: #FDFEFE29;
 
     /* --black: var(--gray-800); */
 

@@ -86,7 +86,7 @@ export const Cluster: FC = () => {
                   "text-error-500": runway?.isAtRisk,
                 })}
               >
-                {formatSSV(balance.data || 0n)}
+                {formatSSV(balance.data || 0n)} SSV
               </Text>
             )}
           </div>

@@ -41,7 +41,7 @@ export const getPaginatedAccountClusters = ({
           perPage: perPage.toString(),
           withFee: "true",
           ordering: "id:asc",
-          operatorDetails: "operatorDetails",
+          operatorDetails: "true",
         }).toString()}`,
       ),
     )

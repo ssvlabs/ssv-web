@@ -9,6 +9,7 @@ import type {
 } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useMutation } from "@tanstack/react-query";
 import type { Address } from "abitype";
+import { track } from "@/lib/analytics/mixpanel";
 
 type StrategyAssetWithdrawerProps = {
   strategyId: string;
@@ -38,14 +39,19 @@ export const useStrategyAssetWithdrawer = (
         ? proposeWithdrawETH
         : proposeWithdrawERC20;
 
-      return proposer.write(
-        {
-          strategyId: Number(params.strategyId),
-          token: params.asset,
-          amount: amount || BigInt(0),
-        },
-        options,
-      );
+      return proposer
+        .write(
+          {
+            strategyId: Number(params.strategyId),
+            token: params.asset,
+            amount: amount || BigInt(0),
+          },
+          options,
+        )
+        .then((args) => {
+          track("Request withdrawal");
+          return args;
+        });
     },
   });
 
@@ -59,13 +65,18 @@ export const useStrategyAssetWithdrawer = (
         ? finalizeWithdrawalETH
         : finalizeWithdrawalERC20;
 
-      return finalizer.write(
-        {
-          strategyId: Number(params.strategyId),
-          token: params.asset,
-        },
-        options,
-      );
+      return finalizer
+        .write(
+          {
+            strategyId: Number(params.strategyId),
+            token: params.asset,
+          },
+          options,
+        )
+        .then((args) => {
+          track("Execute withdrawal");
+          return args;
+        });
     },
   });
 

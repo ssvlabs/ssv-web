@@ -27,6 +27,8 @@ export const MevRelaysDisplay: MevRelaysDisplayFC = ({
         const isSelected = mevRelays.includes(mev);
         return (
           <Tooltip
+            asChild
+            key={mev}
             content={
               <div className="flex gap-3 items-center">
                 <img

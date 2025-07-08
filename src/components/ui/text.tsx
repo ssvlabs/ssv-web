@@ -7,7 +7,7 @@ import { forwardRef } from "react";
 export const textVariants = cva("", {
   variants: {
     variant: {
-      title: "text-[40px] font-extrabold text-gray-800",
+      title: "text-[40px] font-extrabold text-gray-900",
       headline1: "text-[32px] font-bold text-gray-800",
       headline2: "text-[28px] font-bold text-gray-800",
       headline3: "text-2xl font-bold text-gray-800",

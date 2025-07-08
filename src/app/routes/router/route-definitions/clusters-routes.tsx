@@ -11,7 +11,7 @@ import { RemoveValidatorsConfirmation } from "@/app/routes/dashboard/clusters/cl
 import { ExitValidatorsConfirmation } from "@/app/routes/dashboard/clusters/cluster/exit-validators-confirmation";
 import { ExitValidatorsSuccess } from "@/app/routes/dashboard/clusters/cluster/exit-validators-success";
 import UploadProofs from "@/app/routes/reshare-dkg/upload-proofs.tsx";
-import { SelectOperators } from "@/app/routes/create-cluster/select-operators.tsx";
+import { SelectOperators } from "@/app/routes/create-cluster/select-operators";
 import Reshare from "@/app/routes/reshare-dkg/reshare.tsx";
 
 export const clustersRoutes = {

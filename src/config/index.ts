@@ -64,7 +64,7 @@ export const links = {
   MONITOR_YOUR_NODE_URL:
     "https://docs.ssv.network/operators/operator-node/setup-sidecars/configuring-mev",
   INCORRECT_OWNER_NONCE_LINK:
-    "https://docs.ssv.network/developers/tools/cluster-scanner#_x7nzjlwu00d0",
+    "https://docs.ssv.network/stakers/tools/cluster-scanner-cli#nonce-arguments",
   DKG_TROUBLESHOOTING_LINK:
     "https://docs.ssv.network/developers/tools/ssv-dkg-client/generate-key-shares#troubleshooting",
 };

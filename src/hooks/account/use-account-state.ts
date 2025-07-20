@@ -4,6 +4,7 @@ import { useCreatedOptimisticOperators } from "@/hooks/operator/use-created-opti
 import { getPaginatedAccountOperatorsQueryOptions } from "@/hooks/operator/use-paginated-account-operators";
 import { useQuery } from "@tanstack/react-query";
 import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
+import { useAppVersion } from "@/hooks/temp-delete-after-merge/use-app-version";
 
 export const useAccountState = () => {
   const account = useAccount();
@@ -19,6 +20,8 @@ export const useAccountState = () => {
   const myBAppAccount = useMyBAppAccount();
 
   const createdOptimisticOperators = useCreatedOptimisticOperators();
+
+  const app = useAppVersion();
 
   const isLoading =
     clusters.isLoading || operators.isLoading || myBAppAccount.isLoading;
@@ -40,7 +43,9 @@ export const useAccountState = () => {
     ? "/connect"
     : isLoading
       ? undefined
-      : "/account/my-delegations";
+      : app.isDvtOnly
+        ? dvtRoutePath
+        : "/account/my-delegations";
 
   return {
     isLoading,

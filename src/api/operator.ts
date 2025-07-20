@@ -17,8 +17,8 @@ export const getOperator = (id: number | string | bigint) => {
 export type OrderBy =
   | "name"
   | "id"
-  | "validators_count"
-  | "performance.30d"
+  | "validatorsCount"
+  | "performance30d"
   | "fee"
   | "delegators"
   | "strategyId"

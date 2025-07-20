@@ -26,7 +26,7 @@ import { useEffect, type ComponentPropsWithoutRef, type FC } from "react";
 import { useNavigate } from "react-router";
 import { ref } from "valtio";
 import { Tooltip } from "@/components/ui/tooltip";
-import { globals } from "@/config";
+import { globals, links } from "@/config";
 import type { ClusterSize } from "@/components/operator/operator-picker/operator-cluster-size-picker.tsx";
 
 export type GenerateKeySharesOfflineProps = {
@@ -264,7 +264,7 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
                     as="a"
                     variant="link"
                     target="_blank"
-                    href="https://docs.ssv.network/developers/tools/cluster-scanner#_x7nzjlwu00d0"
+                    href={links.INCORRECT_OWNER_NONCE_LINK}
                   >
                     registration nonce
                   </Button>

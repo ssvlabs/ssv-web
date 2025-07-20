@@ -37,8 +37,8 @@ export const OperatorPicker: FCProps = ({
 
   const headers: { type?: OrderBy; title: string }[] = [
     { type: "name", title: "Name" },
-    { type: "validators_count", title: "Validators" },
-    { type: "performance.30d", title: "30D Performance" },
+    { type: "validatorsCount", title: "Validators" },
+    { type: "performance30d", title: "30D Performance" },
     { type: "fee", title: "Yearly Fee" },
     { type: "mev", title: "MEV Relays" },
   ];

@@ -5,7 +5,7 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 
 import { createPublicClient, http } from "viem";
-import { createConfig, custom } from "wagmi";
+import { createConfig } from "wagmi";
 import { mainnet as mainnetBase } from "wagmi/chains";
 
 const mainnet: Chain = {
@@ -38,7 +38,7 @@ export const hoodi = {
   blockExplorers: {
     default: {
       name: "Explorer",
-      url: "https://hoodi.cloud.blockscout.com",
+      url: "https://hoodi.etherscan.io/",
     },
   },
   iconBackground: "none",
@@ -80,6 +80,8 @@ export const config = createConfig({
     [mainnet.id]: http(
       "https://ethereum-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
     ),
-    [hoodi.id]: custom(window.ethereum),
+    [hoodi.id]: http(
+      "https://ethereum-hoodi-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
+    ),
   },
 });

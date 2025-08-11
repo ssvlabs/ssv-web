@@ -33,7 +33,8 @@ export const SsvExplorerBtn: SsvExplorerBtnFC = ({ className, ...props }) => {
   const clearedProps = omit(props, ["operatorId", "validatorId"]);
   const href = urlJoin(
     network.explorerUrl,
-    isOperator ? "operators" : "validators",
+    network.apiNetwork.toLowerCase(),
+    isOperator ? "operator" : "validator",
     id.toString(),
   );
 

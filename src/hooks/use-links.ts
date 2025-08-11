@@ -7,13 +7,13 @@ export const useLinks = () => {
   const { chain } = useAccount();
   return useMemo(() => {
     const prefix = chain?.testnet ? `${chain.name.toLowerCase()}.` : "";
-    const ssvPrefix = isProduction ? "" : `.stage`;
+    const explorerEnv = isProduction ? "" : `.stage`;
     return {
       beaconcha: `https://${prefix}beaconcha.in`,
       launchpad: `https://${prefix}launchpad.ethereum.org`,
       etherscan: `https://${prefix}etherscan.io`,
       ssv: {
-        explorer: `https://${isProduction ? prefix : ""}explorer${ssvPrefix}.ssv.network`,
+        explorer: `https://explorer${explorerEnv}.ssv.network/`,
         docs: `https://docs.ssv.network`,
         forum: `https://forum.ssv.network/`,
         governanceForum: `https://forum.ssv.network/`,

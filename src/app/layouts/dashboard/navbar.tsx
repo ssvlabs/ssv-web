@@ -23,6 +23,8 @@ import { useLinks } from "@/hooks/use-links";
 import { useAccountState } from "@/hooks/account/use-account-state";
 import { textVariants } from "@/components/ui/text";
 import { DropdownMenuGroup } from "@radix-ui/react-dropdown-menu";
+import { useSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
+import urlJoin from "url-join";
 
 export type NavbarProps = {
   // TODO: Add props or remove this type
@@ -36,6 +38,11 @@ export const Navbar: FCProps = ({ className, ...props }) => {
   const links = useLinks();
   const { accountRoutePath, dvtRoutePath } = useAccountState();
   const pathname = useLocation().pathname;
+  const ssvNetworkDetails = useSSVNetworkDetails();
+  const explorerUrl = urlJoin(
+    links.ssv.explorer,
+    ssvNetworkDetails.apiNetwork.toLowerCase(),
+  );
 
   return (
     <div
@@ -119,7 +126,7 @@ export const Navbar: FCProps = ({ className, ...props }) => {
             DVT
           </NavLink>
           <NavLink
-            to={links.ssv.explorer}
+            to={explorerUrl}
             target="_blank"
             className={textVariants({
               variant: "body-3-medium",
@@ -229,7 +236,7 @@ export const Navbar: FCProps = ({ className, ...props }) => {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="h-[52px]" asChild>
-                <NavLink to={links.ssv.explorer} target="_blank">
+                <NavLink to={explorerUrl} target="_blank">
                   Explorer <HiOutlineExternalLink className="text-gray-600" />
                 </NavLink>
               </DropdownMenuItem>

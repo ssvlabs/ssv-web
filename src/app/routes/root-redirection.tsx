@@ -6,7 +6,7 @@ import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 import { motion } from "framer-motion";
 import { useAppVersion } from "@/hooks/temp-delete-after-merge/use-app-version";
 
-const REDIRECT_EXCLUSIONS = ["/", "/connect"];
+const REDIRECT_EXCLUSIONS = ["/", "/connect", "/compliance"];
 export const Redirector = () => {
   const { isLoadingClusters, isLoadingOperators, hasClusters, hasOperators } =
     useAccountState();

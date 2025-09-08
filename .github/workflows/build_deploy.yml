@@ -110,13 +110,11 @@ jobs:
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
-          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
-          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
 
@@ -134,13 +132,11 @@ jobs:
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
-          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
-          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
       
@@ -158,14 +154,12 @@ jobs:
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
           MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
-          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY" 
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
-          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_PROD }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -184,14 +178,12 @@ jobs:
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.BAPPS_PROD_SSV_NETWORKS }}"
           MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
-          BLOCKNATIVE_KEY="$BLOCKNATIVE_KEY"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
-          BLOCKNATIVE_KEY: ${{ secrets.BLOCKNATIVE_KEY }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_PROD }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

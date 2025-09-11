@@ -139,7 +139,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
-      
+
       - name: Upload files to S3
         if: github.ref == 'refs/heads/stage'
         run: |

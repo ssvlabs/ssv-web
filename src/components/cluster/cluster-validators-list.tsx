@@ -62,7 +62,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
             <CopyBtn variant="subtle" text={item.public_key} />
           </TableCell>
           <TableCell>
-            <ValidatorStatusBadge size="sm" status={item.status} />
+            <ValidatorStatusBadge size="sm" status={item.displayedStatus} />
           </TableCell>
           <TableCell className="flex gap-0.5 justify-end">
             <SsvExplorerBtn validatorId={item.public_key} />

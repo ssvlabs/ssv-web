@@ -1,5 +1,6 @@
 import { endpoint } from "@/api";
 import { api } from "@/lib/api-client";
+import { mapBeaconChainStatus } from "@/lib/utils/validator-status-mapping";
 import type {
   Country,
   GetOperatorByPublicKeyResponse,
@@ -100,6 +101,14 @@ export const getPaginatedOperatorValidators = ({
     )
     .then((response) => ({
       ...response,
+      validators: response.validators.map((validator) => ({
+        ...validator,
+        displayedStatus: mapBeaconChainStatus({
+          beaconStatus: validator.validator_info.status,
+          validatorStatus: validator.status,
+          isValid: validator.is_valid,
+        }),
+      })),
       pagination: {
         ...response.pagination,
         page: response.pagination.page || 1,

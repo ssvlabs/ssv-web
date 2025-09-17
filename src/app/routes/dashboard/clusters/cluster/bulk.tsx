@@ -125,7 +125,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
                 <CopyBtn variant="subtle" text={item.public_key} />
               </TableCell>
               <TableCell>
-                <ValidatorStatusBadge size="sm" status={item.status} />
+                <ValidatorStatusBadge size="sm" status={item.displayedStatus} />
               </TableCell>
               <TableCell className="flex gap-1 justify-end">
                 <SsvExplorerBtn validatorId={item.public_key} />

@@ -1,4 +1,10 @@
 import type { Prettify } from "@/types/ts-utils";
+import type {
+  BeaconChainStatus,
+  ValidatorStatus,
+} from "@/lib/utils/validator-status-mapping";
+
+export type { BeaconChainStatus, ValidatorStatus };
 
 export type Pagination = {
   total: number;
@@ -69,7 +75,7 @@ export interface Validator {
   public_key: string;
   cluster: string;
   owner_address: string;
-  status: string;
+  status: "Active" | "Inactive";
   is_valid: boolean;
   is_deleted: boolean;
   is_public_key_valid: boolean;
@@ -79,6 +85,15 @@ export interface Validator {
   version: string;
   network: string;
   updated_at?: string;
+  validator_info: ValidatorInfo;
+  displayedStatus: ValidatorStatus;
+}
+
+export interface ValidatorInfo {
+  index: number;
+  effective_balance: number;
+  status: BeaconChainStatus;
+  activation_epoch: number;
 }
 
 export type PaginatedValidatorsResponse = {

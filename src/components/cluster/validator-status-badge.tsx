@@ -1,21 +1,18 @@
 import type { FC } from "react";
 import { cn } from "@/lib/utils/tw";
-import type { Validator } from "@/types/api";
 import type { BadgeProps } from "@/components/ui/badge";
 import { Badge, type BadgeVariants } from "@/components/ui/badge";
-import { VALIDATOR_STATUS } from "@/lib/utils/validator-status-mapping.ts";
-
-type ValidatorStatus = Validator["displayedStatus"];
+import { ValidatorStatus } from "@/lib/utils/validator-status-mapping.ts";
 
 const variants: Record<ValidatorStatus, BadgeVariants["variant"]> = {
-  [VALIDATOR_STATUS.NOT_DEPOSITED]: "secondary",
-  [VALIDATOR_STATUS.PENDING]: "warning",
-  [VALIDATOR_STATUS.ACTIVE]: "success",
-  [VALIDATOR_STATUS.INACTIVE]: "error",
-  [VALIDATOR_STATUS.EXITING]: "primary",
-  [VALIDATOR_STATUS.SLASHED]: "error",
-  [VALIDATOR_STATUS.EXITED]: "purple",
-  [VALIDATOR_STATUS.INVALID]: "warning",
+  [ValidatorStatus.NOT_DEPOSITED]: "secondary",
+  [ValidatorStatus.PENDING]: "warning",
+  [ValidatorStatus.ACTIVE]: "success",
+  [ValidatorStatus.INACTIVE]: "error",
+  [ValidatorStatus.EXITING]: "primary",
+  [ValidatorStatus.SLASHED]: "error",
+  [ValidatorStatus.EXITED]: "purple",
+  [ValidatorStatus.INVALID]: "warning",
 };
 
 export type ValidatorStatusBadgeProps = {

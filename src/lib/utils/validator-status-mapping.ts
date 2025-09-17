@@ -1,50 +1,26 @@
-// Beacon Chain Status Constants
-export const BEACON_CHAIN_STATUS = {
-  EMPTY: "" as const,
-  PENDING_INITIALIZED: "pending_initialized" as const,
-  PENDING_QUEUED: "pending_queued" as const,
-  ACTIVE_ONGOING: "active_ongoing" as const,
-  ACTIVE_EXITING: "active_exiting" as const,
-  ACTIVE_SLASHED: "active_slashed" as const,
-  EXITED_UNSLASHED: "exited_unslashed" as const,
-  EXITED_SLASHED: "exited_slashed" as const,
-  WITHDRAWAL_POSSIBLE: "withdrawal_possible" as const,
-  WITHDRAWAL_DONE: "withdrawal_done" as const,
-} as const;
+export enum BeaconChainStatus {
+  EMPTY = "",
+  PENDING_INITIALIZED = "pending_initialized",
+  PENDING_QUEUED = "pending_queued",
+  ACTIVE_ONGOING = "active_ongoing",
+  ACTIVE_EXITING = "active_exiting",
+  ACTIVE_SLASHED = "active_slashed",
+  EXITED_UNSLASHED = "exited_unslashed",
+  EXITED_SLASHED = "exited_slashed",
+  WITHDRAWAL_POSSIBLE = "withdrawal_possible",
+  WITHDRAWAL_DONE = "withdrawal_done",
+}
 
-// Validator Status Constants
-export const VALIDATOR_STATUS = {
-  NOT_DEPOSITED: "Not Deposited" as const,
-  PENDING: "Pending" as const,
-  ACTIVE: "Active" as const,
-  INACTIVE: "Inactive" as const,
-  EXITING: "Exiting" as const,
-  SLASHED: "Slashed" as const,
-  EXITED: "Exited" as const,
-  INVALID: "Invalid" as const,
-} as const;
-
-export type BeaconChainStatus =
-  | typeof BEACON_CHAIN_STATUS.EMPTY
-  | typeof BEACON_CHAIN_STATUS.PENDING_INITIALIZED
-  | typeof BEACON_CHAIN_STATUS.PENDING_QUEUED
-  | typeof BEACON_CHAIN_STATUS.ACTIVE_ONGOING
-  | typeof BEACON_CHAIN_STATUS.ACTIVE_EXITING
-  | typeof BEACON_CHAIN_STATUS.ACTIVE_SLASHED
-  | typeof BEACON_CHAIN_STATUS.EXITED_UNSLASHED
-  | typeof BEACON_CHAIN_STATUS.EXITED_SLASHED
-  | typeof BEACON_CHAIN_STATUS.WITHDRAWAL_POSSIBLE
-  | typeof BEACON_CHAIN_STATUS.WITHDRAWAL_DONE;
-
-export type ValidatorStatus =
-  | typeof VALIDATOR_STATUS.NOT_DEPOSITED
-  | typeof VALIDATOR_STATUS.PENDING
-  | typeof VALIDATOR_STATUS.ACTIVE
-  | typeof VALIDATOR_STATUS.INACTIVE
-  | typeof VALIDATOR_STATUS.EXITING
-  | typeof VALIDATOR_STATUS.SLASHED
-  | typeof VALIDATOR_STATUS.INVALID
-  | typeof VALIDATOR_STATUS.EXITED;
+export enum ValidatorStatus {
+  NOT_DEPOSITED = "Not Deposited",
+  PENDING = "Pending",
+  ACTIVE = "Active",
+  INACTIVE = "Inactive",
+  EXITING = "Exiting",
+  SLASHED = "Slashed",
+  EXITED = "Exited",
+  INVALID = "Invalid",
+}
 
 export const mapBeaconChainStatus = ({
   beaconStatus,
@@ -56,39 +32,39 @@ export const mapBeaconChainStatus = ({
   isValid: boolean;
 }): ValidatorStatus => {
   if (!isValid) {
-    return VALIDATOR_STATUS.INVALID;
+    return ValidatorStatus.INVALID;
   }
   switch (beaconStatus) {
-    case BEACON_CHAIN_STATUS.EMPTY:
+    case BeaconChainStatus.EMPTY:
     case null:
     case undefined:
-      return VALIDATOR_STATUS.NOT_DEPOSITED;
+      return ValidatorStatus.NOT_DEPOSITED;
 
-    case BEACON_CHAIN_STATUS.PENDING_INITIALIZED:
-    case BEACON_CHAIN_STATUS.PENDING_QUEUED:
-      return VALIDATOR_STATUS.PENDING;
+    case BeaconChainStatus.PENDING_INITIALIZED:
+    case BeaconChainStatus.PENDING_QUEUED:
+      return ValidatorStatus.PENDING;
 
-    case BEACON_CHAIN_STATUS.ACTIVE_ONGOING:
+    case BeaconChainStatus.ACTIVE_ONGOING:
       return validatorStatus === "Active"
-        ? VALIDATOR_STATUS.ACTIVE
-        : VALIDATOR_STATUS.INACTIVE;
+        ? ValidatorStatus.ACTIVE
+        : ValidatorStatus.INACTIVE;
 
-    case BEACON_CHAIN_STATUS.ACTIVE_EXITING:
-      return VALIDATOR_STATUS.EXITING;
+    case BeaconChainStatus.ACTIVE_EXITING:
+      return ValidatorStatus.EXITING;
 
-    case BEACON_CHAIN_STATUS.ACTIVE_SLASHED:
-      return VALIDATOR_STATUS.SLASHED;
+    case BeaconChainStatus.ACTIVE_SLASHED:
+      return ValidatorStatus.SLASHED;
 
-    case BEACON_CHAIN_STATUS.EXITED_UNSLASHED:
-    case BEACON_CHAIN_STATUS.WITHDRAWAL_POSSIBLE:
-    case BEACON_CHAIN_STATUS.WITHDRAWAL_DONE:
-      return VALIDATOR_STATUS.EXITED;
+    case BeaconChainStatus.EXITED_UNSLASHED:
+    case BeaconChainStatus.WITHDRAWAL_POSSIBLE:
+    case BeaconChainStatus.WITHDRAWAL_DONE:
+      return ValidatorStatus.EXITED;
 
-    case BEACON_CHAIN_STATUS.EXITED_SLASHED:
-      return VALIDATOR_STATUS.SLASHED;
+    case BeaconChainStatus.EXITED_SLASHED:
+      return ValidatorStatus.SLASHED;
 
     default:
       console.warn(`Unknown beacon chain status`);
-      return VALIDATOR_STATUS.ACTIVE;
+      return ValidatorStatus.ACTIVE;
   }
 };

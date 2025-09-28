@@ -33,7 +33,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
   const externalValidators = params.publicKeys?.split(",");
   const { infiniteQuery, validators, total } = useInfiniteClusterValidators(
     clusterHash,
-    100,
+    1000,
     externalValidators,
   );
 

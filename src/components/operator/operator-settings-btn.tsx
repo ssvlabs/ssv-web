@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils/tw";
 import type { FC } from "react";
-import { LuMoreVertical } from "react-icons/lu";
+import { LuEllipsisVertical } from "react-icons/lu";
 import { TbAdjustments, TbEdit, TbTrash } from "react-icons/tb";
 import { useNavigate } from "react-router";
 
@@ -26,7 +26,7 @@ export const OperatorSettingsBtn: FC<ButtonProps> = ({
           variant="subtle"
           className={cn(className, "rounded-full size-10")}
         >
-          <LuMoreVertical className="size-5" />
+          <LuEllipsisVertical className="size-5" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="text-gray-700">

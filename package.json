@@ -34,11 +34,6 @@
       "prepare-commit-msg": "exec < /dev/tty && npx cz --hook || true"
     }
   },
-  "pnpm": {
-    "patchedDependencies": {
-      "@deepsignal/core@4.0.0": "patches/@deepsignal__core@4.0.0.patch"
-    }
-  },
   "dependencies": {
     "@chainsafe/ssz": "^0.18.0",
     "@deepsignal/core": "^4.0.0",

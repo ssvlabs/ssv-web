@@ -1,8 +1,6 @@
 import { useLocalStorage } from "react-use";
-import { useChainId } from "wagmi";
 
 export const useMaintenance = () => {
-  const chainId = useChainId();
 
   const [isMaintenancePage] = useLocalStorage("isMaintenancePage", false, {
     raw: false,
@@ -10,5 +8,5 @@ export const useMaintenance = () => {
     serializer: (value) => String(value),
   });
 
-  return { isMaintenancePage: chainId !== 1 || isMaintenancePage };
+  return { isMaintenancePage: isMaintenancePage };
 };

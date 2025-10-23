@@ -8,7 +8,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "@/components/ui/form";
 import { Input, inputVariants } from "@/components/ui/input";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
@@ -22,7 +22,7 @@ import { useOperator } from "@/hooks/operator/use-operator";
 import {
   getMevRelaysOptions,
   SORTED_OPERATOR_METADATA_FIELDS,
-  type OperatorMetadataFields,
+  type OperatorMetadataFields
 } from "@/lib/utils/operator";
 import { cn } from "@/lib/utils/tw";
 import { dgkURLSchema, httpsURLSchema } from "@/lib/zod";
@@ -40,7 +40,7 @@ import { operatorLogoSchema } from "@/lib/zod/operator.ts";
 import ImgCropUpload from "@/components/ui/ImgCropUpload.tsx";
 
 const sanitizedString = z.string().regex(/^[a-zA-Z0-9_!$#’|\s]*$/, {
-  message: "Only letters, numbers, and special characters are allowed.",
+  message: "Only letters, numbers, and special characters are allowed."
 });
 
 export const metadataScheme = z.object({
@@ -50,6 +50,7 @@ export const metadataScheme = z.object({
     .min(3, "Operator name must be at least 3 characters")
     .max(30, "Operator name must be at most 30 characters"),
   description: z.string().optional().default(""),
+  ssv_client: sanitizedString.optional().default(""),
   eth1_node_client: sanitizedString.optional().default(""),
   eth2_node_client: sanitizedString.optional().default(""),
   location: z.string().optional().default(""),
@@ -58,13 +59,13 @@ export const metadataScheme = z.object({
   twitter_url: z.union([z.literal(""), httpsURLSchema]),
   website_url: z.union([z.literal(""), httpsURLSchema]),
   linkedin_url: z.union([z.literal(""), httpsURLSchema]),
-  dkg_address: z.union([z.literal(""), dgkURLSchema]),
+  dkg_address: z.union([z.literal(""), dgkURLSchema])
 }) satisfies z.ZodObject<Record<OperatorMetadataFields, z.ZodTypeAny>>;
 
 export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
-  className,
-  ...props
-}) => {
+                                                                        className,
+                                                                        ...props
+                                                                      }) => {
   const navigate = useNavigate();
   const sign = useSignOperatorMetadata();
 
@@ -78,7 +79,7 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
       operator?.mev_relays
         ?.split(",")
         .map((val) => val.trim())
-        .filter(Boolean) ?? [],
+        .filter(Boolean) ?? []
   };
 
   const form = useForm<
@@ -86,7 +87,7 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
   >({
     mode: "all",
     defaultValues: defaults,
-    resolver: zodResolver(metadataScheme),
+    resolver: zodResolver(metadataScheme)
   });
 
   const isChange = !isEqual(defaults, form.getValues());
@@ -107,7 +108,7 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
     sign
       .submit(operator!.id.toString(), {
         message,
-        metadata,
+        metadata
       })
       .then(() => {
         navigate("..");
@@ -214,8 +215,33 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
                     placeholder="Select your server geolocation"
                     options={(operatorLocations.data || []).map((country) => ({
                       value: country.name,
-                      label: `${country.name} (${country["alpha-3"]})`,
+                      label: `${country.name} (${country["alpha-3"]})`
                     }))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="ssv_client"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>SSV Client</FormLabel>
+                <FormControl>
+                  <Combobox
+                    value={field.value}
+                    onChange={(value) => field.onChange(value)}
+                    placeholder="Add your SSV Client"
+                    options={["SSV Node", "Anchor"].map(
+                      (node) => ({
+                        value: node,
+                        label: node
+                      })
+                    )}
+                    className={inputVariants({ className: "text-base" })}
                   />
                 </FormControl>
                 <FormMessage />
@@ -237,8 +263,8 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
                     options={["Erigon", "Besu", "Nethermind", "Geth"].map(
                       (node) => ({
                         value: node,
-                        label: node,
-                      }),
+                        label: node
+                      })
                     )}
                     className={inputVariants({ className: "text-base" })}
                   />
@@ -263,10 +289,10 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
                       "Nimbus",
                       "Teku",
                       "Lighthouse",
-                      "Prysm",
+                      "Prysm"
                     ].map((node) => ({
                       value: node,
-                      label: node,
+                      label: node
                     }))}
                     className={inputVariants({ className: "text-base" })}
                   />

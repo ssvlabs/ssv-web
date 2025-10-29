@@ -74,7 +74,7 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 9.0.6
+          version: 10.20.0
 
       - uses: actions/cache@v3
         with:
@@ -84,7 +84,7 @@ jobs:
             ${{ runner.os }}-pnpm-
 
       - name: Install dependencies
-        run: pnpm install 
+        run: pnpm install
 
       - name: Run lint
         run: pnpm lint
@@ -139,7 +139,7 @@ jobs:
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
-      
+
       - name: Upload files to S3
         if: github.ref == 'refs/heads/stage'
         run: |

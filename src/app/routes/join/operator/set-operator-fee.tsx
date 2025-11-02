@@ -95,7 +95,7 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
             Please note that you could always change your fee (according to the{" "}
             <Button
               as="a"
-              href="https://docs.ssv.network/learn/operators/update-fee"
+              href="https://docs.ssv.network/operators/operator-onboarding/update-fee"
               target="_blank"
               variant="link"
             >
@@ -123,6 +123,7 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
                         <img
                           src="/images/ssvIcons/logo.svg"
                           className="size-5"
+                          alt="logo"
                         />
                         <Text variant="body-2-bold">SSV</Text>
                       </div>

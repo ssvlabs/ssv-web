@@ -113,7 +113,7 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                         variant="link"
                         size="xl"
                         target="_blank"
-                        href="https://docs.ssv.network/learn/operators/update-fee#_nn1qsdauoghf"
+                        href="https://docs.ssv.network/operators/operator-onboarding/update-fee"
                       >
                         Read more on operator fees
                       </Button>

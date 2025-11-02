@@ -69,7 +69,7 @@ export const DecreaseOperatorFee: FC = () => {
               <Button
                 as="a"
                 variant="link"
-                href="https://docs.ssv.network/learn/operators/update-fee"
+                href="https://docs.ssv.network/operators/operator-onboarding/update-fee"
                 target="_blank"
               >
                 Read more on fee changes
@@ -85,7 +85,7 @@ export const DecreaseOperatorFee: FC = () => {
               <Button
                 as="a"
                 variant="link"
-                href="https://docs.ssv.network/learn/operators/update-fee"
+                href="https://docs.ssv.network/operators/operator-onboarding/update-fee"
                 target="_blank"
               >
                 Read more on fee changes

@@ -4,9 +4,7 @@ import { Navigate } from "react-router";
 import { cn } from "@/lib/utils/tw.ts";
 import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 import { motion } from "framer-motion";
-import { useAppVersion } from "@/hooks/temp-delete-after-merge/use-app-version";
 
-const REDIRECT_EXCLUSIONS = ["/", "/connect", "/compliance"];
 export const Redirector = () => {
   const { isLoadingClusters, isLoadingOperators, hasClusters, hasOperators } =
     useAccountState();
@@ -16,8 +14,6 @@ export const Redirector = () => {
 
   const landedOnClusterPage = landingPage.startsWith("/clusters");
   const landedOnOperatorsPage = landingPage.startsWith("/operators");
-
-  const app = useAppVersion();
 
   if (isLoadingClusters)
     return (
@@ -54,12 +50,5 @@ export const Redirector = () => {
   if (landedOnOperatorsPage && hasOperators)
     return <Navigate to={landingPage} replace />;
 
-  if (app.isDvtOnly) {
-    return <Navigate to="/join" replace />;
-  }
-
-  if (!REDIRECT_EXCLUSIONS.includes(landingPage))
-    return <Navigate to={landingPage} replace />;
-
-  return <Navigate to="/account/my-delegations" />;
+  return <Navigate to="/join" replace />;
 };

@@ -123,9 +123,10 @@ async function addReviewers(owner, repo, prNumber) {
       {
         reviewers: [
           "IlyaVi",
+          "sumbat-ssvlabs",
+          "Chris-ssvlabs",
           "axelrod-blox",
           "nir-ssvlabs",
-          "sumbat-ssvlabs",
           "stefan-ssv-labs",
         ],
       },

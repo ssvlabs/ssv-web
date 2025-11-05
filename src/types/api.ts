@@ -89,6 +89,33 @@ export interface Validator {
   displayedStatus: ValidatorStatus;
 }
 
+export interface SearchValidator<T extends Operator | string = string> {
+  block: number;
+  cluster: string;
+  created_at: string;
+  id: number;
+  is_deleted: boolean;
+  is_liquidated: boolean;
+  is_operators_valid: boolean;
+  is_public_key_valid: boolean;
+  is_shares_valid: boolean;
+  is_valid: boolean;
+  network: string;
+  operators: T[];
+  owner_address: string;
+  public_key: string;
+  status: "Active" | "Inactive";
+  displayedStatus: ValidatorStatus;
+
+  updated_at: string;
+  validator_info: ValidatorInfo;
+  version: string;
+}
+
+export type PaginatedSearchValidatorsResponse = WithInfinitePagination<{
+  validators: SearchValidator<Operator>[];
+}>;
+
 export interface ValidatorInfo {
   index: number;
   effective_balance: number;

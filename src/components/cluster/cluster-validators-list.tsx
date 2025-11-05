@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { useCluster } from "@/hooks/cluster/use-cluster";
-import { TbExternalLink, TbRefresh, TbRefreshDot } from "react-icons/tb";
+import { TbExternalLink, TbRefresh } from "react-icons/tb";
 import { useBulkActionContext } from "@/guard/bulk-action-guard";
 import { Spacer } from "@/components/ui/spacer";
 import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge";
@@ -120,16 +120,6 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                     <span>Exit Validator</span>
                   </DropdownMenuItem>
                 </Tooltip>
-                <>
-                  <div className="w-full h-[1px] bg-gray-300" />
-                  <div className="h-9 flex items-center text-gray-500 text-xs	font-semibold pl-[16px]">
-                    DKG
-                  </div>
-                  <DropdownMenuItem onClick={() => navigate("reshare")}>
-                    <TbRefreshDot className="size-4" />
-                    <span>Reshare</span>
-                  </DropdownMenuItem>
-                </>
               </DropdownMenuContent>
             </DropdownMenu>
           </TableCell>

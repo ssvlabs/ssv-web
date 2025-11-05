@@ -21,6 +21,9 @@ import { PlusIcon } from "lucide-react";
 import type { FC } from "react";
 import { Link } from "react-router-dom";
 import { useAccount } from "@/hooks/account/use-account";
+import { SearchInput } from "@/components/ui/search-input";
+import { useQueryState } from "nuqs";
+import { validatorsSearchFilters } from "@/lib/search-parsers/validators-search-parsers";
 
 export const Cluster: FC = () => {
   const account = useAccount();
@@ -50,6 +53,10 @@ export const Cluster: FC = () => {
   };
 
   const { data: runway } = useClusterRunway(clusterHash!);
+  const [publicKey, setPublicKeys] = useQueryState(
+    "publicKey",
+    validatorsSearchFilters.publicKey,
+  );
 
   return (
     <Container
@@ -150,6 +157,10 @@ export const Cluster: FC = () => {
               </Button>
             </Tooltip>
           </div>
+          <SearchInput
+            value={publicKey?.[0] ?? ""}
+            onChange={(e) => setPublicKeys([e.target.value as `0x${string}`])}
+          />
           <ClusterValidatorsList className="min-h-96" />
         </Card>
       </div>

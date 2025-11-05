@@ -1,11 +1,15 @@
 import { endpoint } from "@/api";
 import { api } from "@/lib/api-client";
+import {
+  validatorsSearchParamsSerializer,
+  type ValidatorsSearchSchema,
+} from "@/lib/search-parsers/validators-search-parsers";
 import { formatClusterData, getDefaultClusterData } from "@/lib/utils/cluster";
 import { mapBeaconChainStatus } from "@/lib/utils/validator-status-mapping";
 import type {
   GetClusterResponse,
   GetPaginatedClustersResponse,
-  PaginatedValidatorsResponse,
+  PaginatedSearchValidatorsResponse,
 } from "@/types/api";
 import type { Address } from "abitype";
 
@@ -56,27 +60,17 @@ export const getPaginatedAccountClusters = ({
     }));
 };
 
-export type GetPaginatedClusterValidators = {
-  hash: string;
-  page?: number;
-  perPage?: number;
-};
+export type GetPaginatedClusterValidators = Partial<ValidatorsSearchSchema>;
 
-export const getPaginatedClusterValidators = ({
-  hash,
-  page = 1,
-  perPage = 10,
-}: GetPaginatedClusterValidators) => {
+export const getPaginatedClusterValidators = (
+  params: GetPaginatedClusterValidators,
+) => {
+  const searchParams = validatorsSearchParamsSerializer(params);
+  console.log("searchParams:", searchParams);
+
   return api
-    .get<PaginatedValidatorsResponse>(
-      endpoint(
-        "clusters/hash",
-        hash,
-        `?${new URLSearchParams({
-          page: page.toString(),
-          perPage: perPage.toString(),
-        }).toString()}`,
-      ),
+    .get<PaginatedSearchValidatorsResponse>(
+      endpoint("validators", `?${searchParams}`),
     )
     .then((response) => ({
       ...response,
@@ -88,10 +82,6 @@ export const getPaginatedClusterValidators = ({
           isValid: validator.is_valid,
         }),
       })),
-      pagination: {
-        ...response.pagination,
-        page: response.pagination.page || 1,
-        pages: response.pagination.pages || 1,
-      },
+      pagination: response.pagination,
     }));
 };

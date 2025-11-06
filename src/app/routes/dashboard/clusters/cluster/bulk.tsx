@@ -22,6 +22,7 @@ import { useBulkActionContext } from "@/guard/bulk-action-guard";
 import { Link } from "react-router-dom";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge.tsx";
+import { ValidatorsSearchAndFilters } from "@/components/cluster/validators-search-and-filters";
 import { useParams } from "react-router";
 import type { Validator } from "@/types/api.ts";
 
@@ -55,8 +56,8 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
   // TODO: fetch validators to get status
   return (
     <Container variant="vertical" size="lg" className="py-6 h-full">
-      <NavigateBackBtn to={`/clusters/${clusterHash}`} />
-      <Card className="w-full flex-1">
+      <NavigateBackBtn to={`/clusters/${clusterHash}`} persistSearch />
+      <Card className="w-full flex-1 flex flex-col gap-4">
         <div className="flex justify-between">
           <Text variant="headline4">
             {type === "remove"
@@ -67,6 +68,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
             {selectedPublicKeys.length} of {totalValidators} selected
           </Badge>
         </div>
+        <ValidatorsSearchAndFilters />
         <VirtualizedInfinityTable
           gridTemplateColumns="40px 220px minmax(200px, auto) 120px"
           query={infiniteQuery}

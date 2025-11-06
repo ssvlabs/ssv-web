@@ -150,6 +150,7 @@ export const Cluster: FC = () => {
               </Button>
             </Tooltip>
           </div>
+
           <ClusterValidatorsList className="min-h-96" />
         </Card>
       </div>

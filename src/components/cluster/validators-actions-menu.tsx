@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { ButtonProps } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Text } from "@/components/ui/text";
 import { ChevronDown } from "lucide-react";
 import { LuTrash2, LuLogOut } from "react-icons/lu";
@@ -29,11 +29,12 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
   isLiquidated = true,
   ...props
 }) => {
+  const location = useLocation();
   const navigate = useNavigate();
 
   const onActionClickHandler = (action: ActionType) => {
     useBulkActionContext.resetState();
-    navigate(action);
+    navigate(`${action}${location.search}`);
   };
 
   return (

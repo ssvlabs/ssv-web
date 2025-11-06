@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { getPaginatedClusterValidators } from "@/api/cluster";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { useRemovedOptimisticValidators } from "@/hooks/cluster/use-removed-optimistic-validators";
@@ -11,7 +11,7 @@ import type {
   Validator,
 } from "@/types/api.ts";
 import { add0x } from "@/lib/utils/strings";
-import { useQueryState } from "nuqs";
+import { useQueryStates } from "nuqs";
 import { validatorsSearchFilters } from "@/lib/search-parsers/validators-search-parsers";
 
 export const useInfiniteClusterValidators = (
@@ -25,32 +25,29 @@ export const useInfiniteClusterValidators = (
   const removedOptimisticValidators = useRemovedOptimisticValidators();
   const chainId = useChainId();
 
-  const [publicKey] = useQueryState(
-    "publicKey",
-    validatorsSearchFilters.publicKey,
+  const [filters, setFilters] = useQueryStates(validatorsSearchFilters);
+  const activeFiltersCount = useMemo(
+    () =>
+      Object.values(filters).filter(
+        (value) => !!value && (Array.isArray(value) ? value.length > 0 : true),
+      ).length,
+    [filters],
   );
 
   const infiniteQuery = useInfiniteQuery<PaginatedSearchValidatorsResponse>({
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      console.log("lastPage:", lastPage);
       const { page, pages, current_last } = lastPage.pagination;
       return page < pages ? { lastId: current_last, page: page + 1 } : null;
     },
-    queryKey: [
-      "paginated-cluster-validators",
-      hash,
-      perPage,
-      chainId,
-      publicKey,
-    ],
+    queryKey: ["paginated-cluster-validators", hash, perPage, chainId, filters],
     queryFn: ({ pageParam }) => {
       const pageParams = pageParam as { lastId: string; page: number } | null;
       return getPaginatedClusterValidators({
         page: pageParams?.page,
         pageDirection: "next",
         perPage,
-        publicKey,
+        ...filters,
         cluster: [add0x(hash!)],
       });
     },
@@ -89,6 +86,9 @@ export const useInfiniteClusterValidators = (
   );
 
   return {
+    filters,
+    setFilters,
+    activeFiltersCount,
     validators: activeValidators,
     infiniteQuery,
     total,

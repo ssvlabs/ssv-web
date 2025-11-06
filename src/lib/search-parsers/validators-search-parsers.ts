@@ -23,6 +23,19 @@ export const enhancementParsers = {
   fullOperatorData: parseAsBoolean.withDefault(true),
 };
 
+export const VALIDATOR_STATUS_FILTER_KEYS = [
+  "active",
+  "inactive",
+  "not_deposited",
+  "pending",
+  "slashed",
+  "exiting",
+  "exited",
+] as const;
+
+export type ValidatorStatusFilterKey =
+  (typeof VALIDATOR_STATUS_FILTER_KEYS)[number];
+
 export const validatorsSearchFilters = {
   search: parseAsString.withOptions(defaultSearchOptions),
   publicKey: publicKeysParser,
@@ -31,6 +44,15 @@ export const validatorsSearchFilters = {
   operator: parseAsArrayOf(z.number({ coerce: true })).withOptions(
     defaultSearchOptions,
   ),
+  status: parseAsArrayOf(
+    z
+      .string()
+      .refine((value) =>
+        VALIDATOR_STATUS_FILTER_KEYS.includes(
+          value as (typeof VALIDATOR_STATUS_FILTER_KEYS)[number],
+        ),
+      ),
+  ).withOptions(defaultSearchOptions),
 };
 
 export type ValidatorSearchFilterKeys = keyof typeof validatorsSearchFilters;

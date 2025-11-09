@@ -5,7 +5,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent } from "@/components/ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { VALIDATOR_STATUS_FILTER_KEYS } from "@/lib/search-parsers/validators-search-parsers";
-import { validatorsSearchFilters } from "@/lib/search-parsers/validators-search-parsers";
 import { startCase, xor } from "lodash-es";
 import { getValidatorsStatusCounts } from "@/api/validators";
 import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
@@ -15,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { Spacer } from "@/components/ui/spacer";
 import { extractValidatorsPublicKeys } from "@/lib/utils/strings";
-import { useQueryStates } from "nuqs";
+import { useValidatorsSearchFilters } from "@/hooks/cluster/use-validators-search-filters";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 
 export type ValidatorsSearchAndFiltersProps = {
@@ -29,9 +28,7 @@ export const ValidatorsSearchAndFilters: FC<
   clusterHash: externalClusterHash,
   statusCounts: externalStatusCounts,
 }) => {
-  const [filters, setFilters] = useQueryStates(validatorsSearchFilters, {
-    history: "replace",
-  });
+  const [filters, setFilters] = useValidatorsSearchFilters();
   const { clusterHash: routeClusterHash } = useClusterPageParams();
   const clusterHash = externalClusterHash || routeClusterHash;
 

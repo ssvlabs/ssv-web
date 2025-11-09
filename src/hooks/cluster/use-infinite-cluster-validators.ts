@@ -11,8 +11,7 @@ import type {
   Validator,
 } from "@/types/api.ts";
 import { add0x } from "@/lib/utils/strings";
-import { useQueryStates } from "nuqs";
-import { validatorsSearchFilters } from "@/lib/search-parsers/validators-search-parsers";
+import { useValidatorsSearchFilters } from "@/hooks/cluster/use-validators-search-filters";
 
 export const useInfiniteClusterValidators = (
   clusterHash?: string,
@@ -25,7 +24,7 @@ export const useInfiniteClusterValidators = (
   const removedOptimisticValidators = useRemovedOptimisticValidators();
   const chainId = useChainId();
 
-  const [filters, setFilters] = useQueryStates(validatorsSearchFilters);
+  const [filters, setFilters] = useValidatorsSearchFilters();
   const activeFiltersCount = useMemo(
     () =>
       Object.values(filters).filter(

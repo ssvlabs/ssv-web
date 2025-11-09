@@ -24,7 +24,7 @@ export type VirtualizedInfinityTableProps<
   emptyMessage?: ReactNode;
 } & TableProps;
 
-const Trigger: FC<{
+const FetchTrigger: FC<{
   onRequestNextPage: () => void;
   isFetchingNextPage: boolean;
   hasNextPage: boolean;
@@ -80,7 +80,7 @@ export const VirtualizedInfinityTable = <T,>({
               ) : undefined}
             </div>
           )}
-          <Trigger
+          <FetchTrigger
             hasNextPage={query.hasNextPage}
             isFetchingNextPage={query.isFetchingNextPage}
             onRequestNextPage={query.fetchNextPage}

@@ -26,7 +26,7 @@ export const enhancementParsers = {
 export const VALIDATOR_STATUS_FILTER_KEYS = [
   "active",
   "inactive",
-  "not_deposited",
+  "notDeposited",
   "pending",
   "slashed",
   "exiting",

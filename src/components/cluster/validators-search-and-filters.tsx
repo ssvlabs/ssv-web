@@ -57,6 +57,7 @@ export const ValidatorsSearchAndFilters: FC<
         className="h-10 bg-gray-100"
         value={search}
         onChange={(e) => handleSearch(e.target.value)}
+        tooltip="Enter multiple keys, separated by commas or whitespaces"
       />
       <Popover open={isStatusesOpen} onOpenChange={setIsStatusesOpen}>
         <PopoverTrigger asChild>

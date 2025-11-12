@@ -60,12 +60,16 @@ async function runPRAutomation() {
 
     console.log("No existing PR found. Creating new PR...");
 
+    // Get commits between branch and pre-stage
+    const commits = await getCommits(owner, repo, headBranch, "pre-stage");
+    console.log(`Found ${commits.length} commit(s) to include in PR`);
+
     // Create new PR from branch to pre-stage
     const newPR = await githubAPI(`/repos/${owner}/${repo}/pulls`, "POST", {
       title: `${headBranch} to Pre-Stage`,
       head: headBranch,
       base: "pre-stage",
-      body: generatePRBody(headBranch),
+      body: generatePRBody(headBranch, commits),
       draft: false,
     });
 
@@ -83,21 +87,64 @@ async function runPRAutomation() {
 }
 
 /**
- * Generate PR body content
+ * Get commits between two branches
  */
-function generatePRBody(branchName) {
-  return `## Automated PR: ${branchName} to Pre-Stage
+async function getCommits(owner, repo, headBranch, baseBranch) {
+  try {
+    // Get the compare endpoint which shows commits between branches
+    const compare = await githubAPI(
+      `/repos/${owner}/${repo}/compare/${baseBranch}...${headBranch}`,
+    );
+    
+    if (compare.commits && compare.commits.length > 0) {
+      return compare.commits.map((commit) => ({
+        sha: commit.sha.substring(0, 7),
+        message: commit.commit.message.split("\n")[0], // First line only
+        author: commit.commit.author.name,
+        date: commit.commit.author.date,
+        url: commit.html_url,
+      }));
+    }
+    
+    return [];
+  } catch (error) {
+    console.log("Error fetching commits:", error.message);
+    return [];
+  }
+}
+
+/**
+ * Generate PR body content with commit list
+ */
+function generatePRBody(branchName, commits) {
+  let body = `## Automated PR: ${branchName} to Pre-Stage
 
 This PR was automatically created to merge changes from \`${branchName}\` to \`pre-stage\`.
 
-### Changes
-- Contains all commits from the \`${branchName}\` branch
+### Changes`;
 
-### Review Required
+  if (commits.length > 0) {
+    body += `\n\nThis PR contains **${commits.length} commit(s)**:\n\n`;
+    
+    commits.forEach((commit) => {
+      const date = new Date(commit.date).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+      body += `- [\`${commit.sha}\`](${commit.url}) ${commit.message} - _${commit.author}_ (${date})\n`;
+    });
+  } else {
+    body += `\n\n- Contains all commits from the \`${branchName}\` branch`;
+  }
+
+  body += `\n### Review Required
 Please review the changes before merging to \`pre-stage\`.
 
 ---
 _This PR was automatically created by GitHub Actions._`;
+
+  return body;
 }
 
 /**

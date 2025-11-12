@@ -11,7 +11,7 @@ const variants: Record<ValidatorStatus, BadgeVariants["variant"]> = {
   [ValidatorStatus.INACTIVE]: "error",
   [ValidatorStatus.EXITING]: "primary",
   [ValidatorStatus.SLASHED]: "error",
-  [ValidatorStatus.EXITED]: "purple",
+  [ValidatorStatus.EXITED]: "secondary",
   [ValidatorStatus.INVALID]: "warning",
 };
 

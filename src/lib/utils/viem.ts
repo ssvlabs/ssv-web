@@ -2,7 +2,7 @@ import { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
 import { tryCatch } from "@/lib/utils/tryCatch";
 import { decodeEventLog, type TransactionReceipt } from "viem";
 
-export const decodeSSVEventLogs = <T = any>(
+export const decodeSSVEventLogs = <T>(
   receipt: TransactionReceipt,
 ) =>
   receipt.logs.reduce((acc, log) => {
@@ -23,11 +23,11 @@ export const decodeSSVEventLogs = <T = any>(
     return acc;
   }, [] as T[]);
 
-export type DecodedReceipt<T = any> = TransactionReceipt & {
+export type DecodedReceipt<T> = TransactionReceipt & {
   events: T[];
 };
 
-export const addDecodedEventsToReceipt = <T extends AllEvents>(
+export const addDecodedEventsToReceipt = <T>(
   receipt: TransactionReceipt,
 ) =>
   ({

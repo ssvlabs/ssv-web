@@ -70,21 +70,3 @@ export const useOptInModal = createModalSignal<{
   strategyId: string;
 }>();
 
-export const useManageObligationsModal = createModalSignal<{
-  bAppId: Address;
-  strategyId: string;
-}>();
-
-export const useObligateModal = createModalSignal<{
-  token: Address;
-  bAppId: Address;
-  strategyId: string;
-  obligationUpdateData: {
-    isObligated: boolean;
-    isPending: boolean;
-    isPendingEnd: number;
-    isExpired: boolean;
-    isWaiting: boolean;
-    isFinalizeEnd: number;
-  };
-}>();

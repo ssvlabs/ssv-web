@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { createContext, useState, useContext } from "react";
-import type { AccountMetadata } from "@/api/b-app.ts";
 
 interface DelegateContextProps {
   name?: string;
@@ -14,7 +13,9 @@ interface DelegateContextProps {
     percentage,
     delegateAddress,
     delegatedValue,
-  }: AccountMetadata & {
+  }: {
+    name?: string;
+    logo?: string;
     percentage?: string;
     delegateAddress?: string;
     delegatedValue?: string;
@@ -43,7 +44,9 @@ export const DelegateProvider = ({ children }: { children: ReactNode }) => {
     percentage,
     delegateAddress,
     delegatedValue,
-  }: AccountMetadata & {
+  }: {
+    name?: string;
+    logo?: string;
     percentage?: string;
     delegateAddress?: string;
     delegatedValue?: string;

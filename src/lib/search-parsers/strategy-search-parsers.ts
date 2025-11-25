@@ -9,7 +9,6 @@ export const strategiesSearchFilters = {
   id: parseAsString,
   ordering: parseAsString,
   token: parseAsArrayOf(z.string().refine(isAddress)),
-  bappId: parseAsString,
 };
 
 export const strategiesSearchParsers = {

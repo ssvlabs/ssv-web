@@ -68,7 +68,6 @@ export const Navbar: FCProps = ({ className, ...props }) => {
                   matchPath("/account", pathname) ||
                   matchPath("/account/my-delegations", pathname) ||
                   matchPath("/account/my-strategies", pathname) ||
-                  matchPath("/account/my-bApps", pathname) ||
                   matchPath("/account/accounts", pathname),
               }),
             })}
@@ -99,17 +98,6 @@ export const Navbar: FCProps = ({ className, ...props }) => {
             })}
           >
             Strategies
-          </NavLink>
-          <NavLink
-            to="/account/bApps"
-            className={textVariants({
-              variant: "body-3-medium",
-              className: cn({
-                "text-primary-500": matchPath("/account/bApps/*", pathname),
-              }),
-            })}
-          >
-            bApps
           </NavLink>
           <NavLink
             to={dvtRoutePath}
@@ -159,8 +147,7 @@ export const Navbar: FCProps = ({ className, ...props }) => {
                         matchPath("/account", pathname) ||
                         matchPath("/account/my-delegations", pathname) ||
                         matchPath("/account/my-strategies", pathname) ||
-                        matchPath("/account/my-bApps", pathname) ||
-                        matchPath("/account/accounts", pathname),
+                              matchPath("/account/accounts", pathname),
                     }),
                   })}
                 >
@@ -203,22 +190,6 @@ export const Navbar: FCProps = ({ className, ...props }) => {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem className="h-[52px]" asChild>
-                <NavLink
-                  to="/account/bApps"
-                  className={textVariants({
-                    className: cn({
-                      "text-primary-500": matchPath(
-                        "/account/bApps/*",
-                        pathname,
-                      ),
-                    }),
-                  })}
-                >
-                  bApps
-                </NavLink>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem className="h-[52px]" asChild>
                 <NavLink
                   to={dvtRoutePath}

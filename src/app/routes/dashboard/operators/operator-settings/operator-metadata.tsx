@@ -260,7 +260,7 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
                     value={field.value}
                     onChange={(value) => field.onChange(value)}
                     placeholder="Geth, Nethermind, Besu..."
-                    options={["Erigon", "Besu", "Nethermind", "Geth"].map(
+                    options={["Erigon", "Besu", "Nethermind", "Geth", "Reth"].map(
                       (node) => ({
                         value: node,
                         label: node

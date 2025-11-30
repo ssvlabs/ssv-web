@@ -52,7 +52,6 @@ export function createContractHook<
         )
         .then((result) =>
           wait.mutateAsync(result, {
-            // @ts-expect-error - this is a workaround to avoid the error
             onSuccess: (receipt) => options.onMined?.(receipt),
             onError: (error) =>
               options.onError?.(error as WaitForTransactionReceiptErrorType),

@@ -10,7 +10,6 @@ interface ImportMetaEnv {
     insufficientBalanceUrl: string;
     googleTagSecret?: string;
     tokenAddress: `0x${string}`;
-    bAppContractAddress: `0x${string}`;
     setterContractAddress: `0x${string}`;
     getterContractAddress: `0x${string}`;
   }[];

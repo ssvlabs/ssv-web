@@ -67,6 +67,7 @@ export type OperatorMetadataKeys = Extract<
   | "setup_provider"
   | "mev_relays"
   | "location"
+  | "ssv_client"
   | "eth1_node_client"
   | "eth2_node_client"
   | "website_url"
@@ -82,6 +83,7 @@ export enum OperatorMetadataFields {
   SetupProvider = "setup_provider",
   MevRelays = "mev_relays",
   Location = "location",
+  SSVClient = "ssv_client",
   ExecutionClient = "eth1_node_client",
   ConsensusClient = "eth2_node_client",
   WebsiteUrl = "website_url",
@@ -90,10 +92,11 @@ export enum OperatorMetadataFields {
   DkgAddress = "dkg_address",
 }
 
-export const SORTED_OPERATOR_METADATA_FIELDS: OperatorMetadataKeys[] = [
+export const SORTED_OPERATOR_METADATA_FIELDS = [
   OperatorMetadataFields.OperatorName,
   OperatorMetadataFields.Description,
   OperatorMetadataFields.Location,
+  OperatorMetadataFields.SSVClient,
   OperatorMetadataFields.SetupProvider,
   OperatorMetadataFields.ExecutionClient,
   OperatorMetadataFields.ConsensusClient,

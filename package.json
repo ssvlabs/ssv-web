@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:prod": "vite --mode prod",
     "watch": "vite build --watch",
     "build": "node --max_old_space_size=9192 ./node_modules/vite/bin/vite.js build --mode production",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 10",
@@ -31,11 +32,6 @@
   "husky": {
     "hooks": {
       "prepare-commit-msg": "exec < /dev/tty && npx cz --hook || true"
-    }
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "@deepsignal/core@4.0.0": "patches/@deepsignal__core@4.0.0.patch"
     }
   },
   "dependencies": {

@@ -60,46 +60,6 @@ export const Navbar: FCProps = ({ className, ...props }) => {
         </div>
         <div className="gap-6 items-center hidden min-[1140px]:flex">
           <NavLink
-            to={accountRoutePath ?? "/"}
-            className={textVariants({
-              variant: "body-3-medium",
-              className: cn({
-                "text-primary-500":
-                  matchPath("/account", pathname) ||
-                  matchPath("/account/my-delegations", pathname) ||
-                  matchPath("/account/my-strategies", pathname) ||
-                  matchPath("/account/accounts", pathname),
-              }),
-            })}
-          >
-            My Account
-          </NavLink>
-          <NavLink
-            to="/account/assets"
-            className={textVariants({
-              variant: "body-3-medium",
-              className: cn({
-                "text-primary-500": matchPath("/account/assets/*", pathname),
-              }),
-            })}
-          >
-            Assets
-          </NavLink>
-          <NavLink
-            to="/account/strategies"
-            className={textVariants({
-              variant: "body-3-medium",
-              className: cn({
-                "text-primary-500": matchPath(
-                  "/account/strategies/*",
-                  pathname,
-                ),
-              }),
-            })}
-          >
-            Strategies
-          </NavLink>
-          <NavLink
             to={dvtRoutePath}
             className={textVariants({
               variant: "body-3-medium",
@@ -138,58 +98,6 @@ export const Navbar: FCProps = ({ className, ...props }) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuGroup className="min-[1140px]:hidden">
-              <DropdownMenuItem className="h-[52px]" asChild>
-                <NavLink
-                  to={accountRoutePath ?? "/"}
-                  className={textVariants({
-                    className: cn({
-                      "text-primary-500":
-                        matchPath("/account", pathname) ||
-                        matchPath("/account/my-delegations", pathname) ||
-                        matchPath("/account/my-strategies", pathname) ||
-                              matchPath("/account/accounts", pathname),
-                    }),
-                  })}
-                >
-                  My Account
-                </NavLink>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-
-              <DropdownMenuItem className="h-[52px]" asChild>
-                <NavLink
-                  to="/account/assets"
-                  className={textVariants({
-                    className: cn({
-                      "text-primary-500": matchPath(
-                        "/account/assets/*",
-                        pathname,
-                      ),
-                    }),
-                  })}
-                >
-                  Assets
-                </NavLink>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-
-              <DropdownMenuItem className="h-[52px]" asChild>
-                <NavLink
-                  to="/account/strategies"
-                  className={textVariants({
-                    className: cn({
-                      "text-primary-500": matchPath(
-                        "/account/strategies/*",
-                        pathname,
-                      ),
-                    }),
-                  })}
-                >
-                  Strategies
-                </NavLink>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-
               <DropdownMenuItem className="h-[52px]" asChild>
                 <NavLink
                   to={dvtRoutePath}

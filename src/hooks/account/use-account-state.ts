@@ -3,7 +3,6 @@ import { getPaginatedAccountClustersQueryOptions } from "@/hooks/cluster/use-pag
 import { useCreatedOptimisticOperators } from "@/hooks/operator/use-created-optimistic-operators";
 import { getPaginatedAccountOperatorsQueryOptions } from "@/hooks/operator/use-paginated-account-operators";
 import { useQuery } from "@tanstack/react-query";
-import { useMyBAppAccount } from "@/hooks/b-app/use-my-b-app-account.ts";
 
 export const useAccountState = () => {
   const account = useAccount();
@@ -16,12 +15,10 @@ export const useAccountState = () => {
     getPaginatedAccountOperatorsQueryOptions(account.address),
   );
 
-  const myBAppAccount = useMyBAppAccount();
-
   const createdOptimisticOperators = useCreatedOptimisticOperators();
 
   const isLoading =
-    clusters.isLoading || operators.isLoading || myBAppAccount.isLoading;
+    clusters.isLoading || operators.isLoading;
 
   const hasClusters = (clusters.data?.pagination.total ?? 0) > 0;
   const hasOperators =

@@ -7,7 +7,6 @@ import { proxy, useSnapshot } from "valtio";
 
 import { Compliance } from "@/app/routes/compliance";
 import { Maintenance } from "@/app/routes/maintenance";
-import { accountRoutes } from "@/app/routes/router/route-definitions/account-routes.tsx";
 import type { RouteObject } from "react-router-dom";
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import { NotFound } from "./not-found";
@@ -36,7 +35,6 @@ const routes = [
         element: <FeeRecipientAddress />,
       },
       joinRoutes,
-      accountRoutes,
       clustersRoutes,
       operatorsRoutes,
     ],

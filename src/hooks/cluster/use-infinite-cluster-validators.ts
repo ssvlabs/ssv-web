@@ -1,17 +1,21 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { getPaginatedClusterValidators } from "@/api/cluster";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { useRemovedOptimisticValidators } from "@/hooks/cluster/use-removed-optimistic-validators";
 import { filterOutRemovedValidators } from "@/lib/utils/cluster";
-import { getNextPageParam } from "@/lib/utils/infinite-query";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useChainId } from "wagmi";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
-import type { Validator } from "@/types/api.ts";
+import type {
+  PaginatedSearchValidatorsResponse,
+  Validator,
+} from "@/types/api.ts";
+import { add0x } from "@/lib/utils/strings";
+import { useValidatorsSearchFilters } from "@/hooks/cluster/use-validators-search-filters";
 
 export const useInfiniteClusterValidators = (
   clusterHash?: string,
-  perPage = 10,
+  perPage = 50,
   externalValidators?: string[],
 ) => {
   const params = useClusterPageParams();
@@ -20,17 +24,32 @@ export const useInfiniteClusterValidators = (
   const removedOptimisticValidators = useRemovedOptimisticValidators();
   const chainId = useChainId();
 
-  const infiniteQuery = useInfiniteQuery({
-    initialPageParam: 1,
-    getNextPageParam,
-    queryKey: ["paginated-cluster-validators", hash, perPage, chainId],
-    queryFn: ({ pageParam = 1 }) =>
-      getPaginatedClusterValidators({
-        hash: hash!,
-        page: pageParam,
-        perPage,
-      }),
+  const [filters, setFilters] = useValidatorsSearchFilters();
+  const activeFiltersCount = useMemo(
+    () =>
+      Object.values(filters).filter(
+        (value) => !!value && (Array.isArray(value) ? value.length > 0 : true),
+      ).length,
+    [filters],
+  );
 
+  const infiniteQuery = useInfiniteQuery<PaginatedSearchValidatorsResponse>({
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const { page, pages, current_last } = lastPage.pagination;
+      return page < pages ? { lastId: current_last, page: page + 1 } : null;
+    },
+    queryKey: ["paginated-cluster-validators", hash, perPage, chainId, filters],
+    queryFn: ({ pageParam }) => {
+      const pageParams = pageParam as { lastId: string; page: number } | null;
+      return getPaginatedClusterValidators({
+        page: pageParams?.page,
+        pageDirection: "next",
+        perPage,
+        ...filters,
+        cluster: [add0x(hash!)],
+      });
+    },
     enabled: Boolean(hash),
   });
 
@@ -66,6 +85,9 @@ export const useInfiniteClusterValidators = (
   );
 
   return {
+    filters,
+    setFilters,
+    activeFiltersCount,
     validators: activeValidators,
     infiniteQuery,
     total,

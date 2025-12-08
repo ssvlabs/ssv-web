@@ -46,7 +46,7 @@ export const OperatorValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
             <CopyBtn variant="subtle" text={item.public_key} />
           </TableCell>
           <TableCell>
-            <ValidatorStatusBadge status={item.status} />
+            <ValidatorStatusBadge status={item.displayedStatus} />
           </TableCell>
           <TableCell className="flex gap-1 justify-end">
             <SsvExplorerBtn validatorId={item.public_key} />

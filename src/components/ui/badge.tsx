@@ -18,6 +18,8 @@ const badgeVariants = cva(
         primary: "bg-primary-50 text-primary-500",
         unstyled: "text-gray-500",
         "multi-select": "bg-gray-300",
+        purple: "bg-violeta-light/30 text-violeta-regular",
+        secondary: "bg-gray-300 text-gray-600",
       },
       size: {
         xs: "text-xs",
@@ -43,7 +45,10 @@ export const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
     return (
       <div
         ref={ref}
-        className={cn(badgeVariants({ variant, size }), className)}
+        className={cn(
+          badgeVariants({ variant, size }),
+          `${className} text-nowrap`,
+        )}
         {...props}
       />
     );

@@ -18,6 +18,7 @@ const variants: Record<OperatorStatus, BadgeVariants["variant"]> = {
   active: "success",
   removed: "uncoloredError",
   "no validators": "info",
+  "pending validators": "info",
 };
 
 const getBadgeVariant = (status: OperatorStatus) => {

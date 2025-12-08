@@ -1,4 +1,3 @@
-import { BAppABI } from "@/lib/abi/b-app/b-app";
 import { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
 import type { AllEvents } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { tryCatch } from "@/lib/utils/tryCatch";
@@ -9,7 +8,7 @@ export const decodeSSVEventLogs = <T extends AllEvents>(
 ) =>
   receipt.logs.reduce((acc, log) => {
     try {
-      for (const eventAbi of [MainnetV4SetterABI, BAppABI]) {
+      for (const eventAbi of [MainnetV4SetterABI]) {
         tryCatch(() => {
           const event = decodeEventLog({
             abi: eventAbi,
@@ -25,9 +24,10 @@ export const decodeSSVEventLogs = <T extends AllEvents>(
     return acc;
   }, [] as T[]);
 
-export type DecodedReceipt<T extends AllEvents = AllEvents> = TransactionReceipt & {
-  events: T[];
-};
+export type DecodedReceipt<T extends AllEvents = AllEvents> =
+  TransactionReceipt & {
+    events: T[];
+  };
 
 export const addDecodedEventsToReceipt = <T extends AllEvents>(
   receipt: TransactionReceipt,

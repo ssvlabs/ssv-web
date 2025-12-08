@@ -86,17 +86,27 @@ export const OperatorStatCard: OperatorStatCardFC = ({
           <OperatorStatusBadge size="sm" status={operator.status} />
         </div>
         <div className="flex flex-col gap-1">
-          <Text variant="caption-medium" className="text-gray-500">
-            30D Perform.
-          </Text>
+          <Tooltip content="Operator performance calculated by the percentage of attended duties over the last 30 days.">
+            <div className="flex items-center gap-2">
+              <Text variant="caption-medium" className="text-gray-500">
+                30D
+              </Text>
+              <FaCircleInfo className="text-gray-400 size-3" />
+            </div>
+          </Tooltip>
           <Text variant="body-2-medium" className="text-gray-800">
             {percentageFormatter.format(operator.performance["30d"])}
           </Text>
         </div>
         <div className="flex flex-col justify-end gap-1 text-end">
-          <Text variant="caption-medium" className="text-gray-500">
-            Yearly Fee
-          </Text>
+          <Tooltip content="Annualized fee in SSV.">
+            <div className="flex items-center gap-2">
+              <Text variant="caption-medium" className="text-gray-500">
+                1Y Fee
+              </Text>
+              <FaCircleInfo className="text-gray-400 size-3" />
+            </div>
+          </Tooltip>
           <Text variant="body-2-medium" className="text-gray-800">
             {formatSSV(fee.yearly)} SSV
           </Text>

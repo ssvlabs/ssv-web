@@ -1,6 +1,5 @@
 import type { TestnetV4SetterABI } from "@/lib/abi/testnet/v4/setter";
 import type { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
-import type { BAppABI } from "@/lib/abi/b-app/b-app";
 
 import type { MutationKey } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
@@ -29,10 +28,9 @@ import type { DecodedReceipt } from "@/lib/utils/viem";
 import { addDecodedEventsToReceipt } from "@/lib/utils/viem";
 
 export type MainnetEvent = DecodeEventLogReturnType<typeof MainnetV4SetterABI>;
-export type BAppEvent = DecodeEventLogReturnType<typeof BAppABI>;
 export type TestnetEvent = DecodeEventLogReturnType<typeof TestnetV4SetterABI>;
 
-export type AllEvents = MainnetEvent | TestnetEvent | BAppEvent;
+export type AllEvents = MainnetEvent | TestnetEvent;
 
 export type MutationOptions<T extends AllEvents> = {
   onInitiated?: () => MaybePromise<unknown | (() => unknown)>;

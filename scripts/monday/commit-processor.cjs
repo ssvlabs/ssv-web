@@ -5,7 +5,7 @@
  * @typedef {import('./types.cjs').CommitRoot} CommitRoot
  */
 
-const ticketIdReg = /\b\d{10}\b/;
+const ticketIdReg = /\b\d{11}\b/;
 
 /**
  * Process commits and group them by ticket ID

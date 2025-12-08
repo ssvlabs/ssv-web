@@ -1,5 +1,6 @@
 import { endpoint } from "@/api";
 import { api } from "@/lib/api-client";
+import type { ValidatorStatusFilterKey } from "@/lib/search-parsers/validators-search-parsers";
 import { add0x } from "@/lib/utils/strings";
 import type { Address } from "abitype";
 
@@ -49,6 +50,15 @@ export const getIsRegisteredValidator = async (publicKey: string) => {
   return await api.get<IsRegisteredValidatorResponse>(
     endpoint("validators/isRegisteredValidator", add0x(publicKey)),
   );
+};
+
+export const getValidatorsStatusCounts = async (clusterHash: string) => {
+  return await api
+    .get<{
+      cluster: string;
+      data: Record<ValidatorStatusFilterKey, number>;
+    }>(endpoint(`validators/statusCount?clusterHash=${add0x(clusterHash)}`))
+    .then((response) => response.data);
 };
 
 export const getAllValidators = async (clusterHash: string | Address) => {

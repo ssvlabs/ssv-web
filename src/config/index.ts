@@ -45,7 +45,7 @@ export const links = {
     "https://docs.ssv.network/operators/operator-onboarding/permissioned-operators/",
   MORE_ON_CLUSTERS: "https://docs.ssv.network/stakers/clusters/",
   SSV_KEYS_RELEASES_URL: "https://github.com/ssvlabs/ssv-keys/releases",
-  SSV_UPDATE_FEE_DOCS: "https://docs.ssv.network/learn/operators/update-fee",
+  SSV_UPDATE_FEE_DOCS: "https://docs.ssv.network/operators/operator-onboarding/update-fee",
   TOOL_TIP_KEY_LINK: "https://docs.ssv.network/operators/install-instructions",
   GASNOW_API_URL:
     "https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network",
@@ -56,7 +56,7 @@ export const links = {
   UPDATE_OPERATORS_LINK:
     "https://docs.ssv.network/stakers/validators/update-operators",
   MORE_ABOUT_UPDATE_FEES:
-    "https://docs.ssv.network/learn/operators/update-fee#_nn1qsdauoghf",
+    "https://docs.ssv.network/operators/operator-onboarding/update-fee",
   MORE_ON_FEES:
     "https://docs.ssv.network/learn/protocol-overview/tokenomics/fees#_k4tw9to38r3v",
   MORE_ON_LIQUIDATION_LINK:

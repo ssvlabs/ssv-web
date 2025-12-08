@@ -1,7 +1,7 @@
 import type { ExtendedColumnSort } from "@/types/data-table";
 import { type Row } from "@tanstack/react-table";
 import { type Parser } from "node_modules/nuqs/dist/_tsup-dts-rollup";
-import { createParser, parseAsStringLiteral } from "nuqs/server";
+import { createParser, parseAsStringLiteral } from "nuqs";
 import { z } from "zod";
 
 export function safeParse<T>(
@@ -73,24 +73,31 @@ export const getSortingStateParser = <TData>(
       ),
   });
 };
-export const parseAsTuple = <T extends [z.ZodTypeAny, ...z.ZodTypeAny[]]>(
+
+type TupleParserOptions<T extends z.ZodTuple> = {
+  postParse?: (values: z.infer<T>) => z.infer<T>;
+  preSerialize?: (values: z.infer<T>) => z.infer<T>;
+};
+export const parseAsTuple = <T extends z.ZodTuple>(
   tuple: T,
-  preParse: (values: string[]) => string[] = (values) => values,
+  { postParse, preSerialize }: TupleParserOptions<T> = {},
 ) => {
-  return createParser({
+  return createParser<z.infer<T>>({
     parse: (value) => {
       try {
-        const values = preParse(value.split(",").slice(0, tuple.length));
-        return z.tuple(tuple).parse(values);
+        const converted = value.split(",");
+        const values = tuple.parse(converted);
+        return postParse?.(values) ?? values;
       } catch {
         return null;
       }
     },
-    serialize: (value) => value.join(","),
-    eq: (a, b) => JSON.stringify(a) === JSON.stringify(b),
+    serialize: (values: z.infer<T>) => {
+      return (preSerialize?.(values) || values).join(",");
+    },
+    eq: (a, b) => a[0] === b[0] && a[1] === b[1],
   });
 };
-
 export const parseAsNumberEnum = <T extends [number, ...number[]]>(
   enumValues: T,
 ) => {

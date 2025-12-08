@@ -1,0 +1,61 @@
+name: Auto PR - Branch to Pre-Stage
+
+on:
+  push:
+    branches-ignore:
+      - pre-stage
+      - stage
+      - main
+
+jobs:
+  create_pr:
+    name: Create PR from Branch to Pre-Stage
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if branch is based on pre-stage
+        id: check_base
+        run: |
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          echo "Checking if $BRANCH_NAME is based on pre-stage..."
+          
+          # Fetch pre-stage branch
+          git fetch origin pre-stage 2>/dev/null || true
+          
+          # Get the merge base between pre-stage and current branch
+          MERGE_BASE=$(git merge-base origin/pre-stage HEAD 2>/dev/null || echo "")
+          PRESTAGE_HEAD=$(git rev-parse origin/pre-stage 2>/dev/null || echo "")
+          
+          # Check if pre-stage is an ancestor and if merge-base equals pre-stage HEAD
+          # This means the branch diverged directly from pre-stage
+          if [ -n "$MERGE_BASE" ] && [ -n "$PRESTAGE_HEAD" ] && [ "$MERGE_BASE" = "$PRESTAGE_HEAD" ]; then
+            echo "is_based_on_prestage=true" >> $GITHUB_OUTPUT
+            echo "✅ Branch $BRANCH_NAME is based on pre-stage"
+          else
+            echo "is_based_on_prestage=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ Branch $BRANCH_NAME is not directly based on pre-stage, skipping"
+          fi
+
+      - name: Setup Node.js
+        if: steps.check_base.outputs.is_based_on_prestage == 'true'
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
+        with:
+          node-version: 20.12.2
+
+      - name: Run PR automation
+        if: steps.check_base.outputs.is_based_on_prestage == 'true'
+        run: node scripts/pr-automation/to-prestage.cjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN || github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+

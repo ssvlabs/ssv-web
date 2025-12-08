@@ -135,7 +135,7 @@
     "cz-conventional-changelog": "3.3.0",
     "eslint": "8.57.0",
     "eslint-plugin-react-hooks": "4.6.2",
-    "eslint-plugin-react-refresh": "0.4.7",
+    "eslint-plugin-react-refresh": "0.4.24",
     "eslint-plugin-unused-imports": "4.0.1",
     "glob": "^11.0.1",
     "husky": "9.0.11",

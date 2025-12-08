@@ -138,7 +138,7 @@
     "commitizen": "4.3.0",
     "cross-env": "7.0.3",
     "cz-conventional-changelog": "3.3.0",
-    "eslint": "8.57.0",
+    "eslint": "8.57.1",
     "eslint-plugin-react-hooks": "4.6.2",
     "eslint-plugin-react-refresh": "0.4.7",
     "eslint-plugin-unused-imports": "4.0.1",

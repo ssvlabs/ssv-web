@@ -46,9 +46,29 @@ export const OperatorTableRow: FCProps = ({
       <TableCell>
         {percentageFormatter.format(operator.performance["30d"])}
       </TableCell>
-      <TableCell>{formatSSV(balance.data ?? 0n)} SSV</TableCell>
       <TableCell>
-        {getYearlyFee(BigInt(fee.data ?? 0n), { format: true })}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 text-gray-800 font-medium">
+            <img src="/images/networks/dark.svg" className="size-5" /> 0.9384
+          </div>
+          <span className="text-gray-300">|</span>
+          <div className="flex items-center gap-1 text-gray-800 font-medium">
+            <img src="/images/ssvIcons/icon.svg" className="size-5" />{" "}
+            {formatSSV(balance.data ?? 0n)}
+          </div>
+        </div>
+      </TableCell>
+      <TableCell>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 text-gray-800 font-medium">
+            <img src="/images/networks/dark.svg" className="size-5" /> 0.0123
+          </div>
+          <span className="text-gray-300">|</span>
+          <div className="flex items-center gap-1 text-gray-800 font-medium">
+            <img src="/images/ssvIcons/icon.svg" className="size-5" />{" "}
+            {formatSSV(getYearlyFee(BigInt(fee.data ?? 0n)))}
+          </div>
+        </div>
       </TableCell>
       <TableCell>{operator.validators_count}</TableCell>
     </TableRow>

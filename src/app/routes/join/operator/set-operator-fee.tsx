@@ -75,24 +75,23 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
         <Card as="form" onSubmit={submit}>
           <CardHeader
             title="Set Operator Fee"
-            description="The ssv network utilizes the SSV token to facilitate payments between stakers to operators for maintaining their validators."
+            description="The SSV network now supports operator fees denominated in ETH. This allows stakers to fund their clusters in ETH and pay operators directly in the network’s native asset."
           />
           <Text variant="body-2-medium">
-            Operators set their own fees, denominated in SSV tokens, to be
-            charged per each validator that selects them as one of their
-            operators.
+            Operators set their own fees, denominated in ETH, to be charged per
+            validator that selects them as one of their operators. This rate
+            represents the cost for a standard 32 ETH validator. Actual fees are
+            calculated dynamically based on the Effective Balance of the
+            validators you manage. Fees are presented as annual payments, but in
+            practice are streamed continuously as an ongoing process - per each
+            passed block.
           </Text>
           <Text variant="body-2-medium">
-            Fees are presented as annual payments, but in practice are paid to
-            operators continuously as an ongoing process - per each passed
-            block.
-          </Text>
-          <Text variant="body-2-medium">
-            Your earnings are paid to your ssv operator balance, and can be
+            Your earnings are paid to your operator ETH balance, and can be
             withdrawn to your wallet at any time.
           </Text>
           <Text variant="body-2-medium">
-            Please note that you could always change your fee (according to the{" "}
+            Please note that you can adjust your fee later (according to the{" "}
             <Button
               as="a"
               href="https://docs.ssv.network/operators/operator-onboarding/update-fee"
@@ -101,8 +100,8 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
             >
               limitations
             </Button>
-            ) to align with market dynamics, such as competitiveness and SSV
-            price fluctuations.
+            ) to align with market dynamics, competitiveness, or changes in ETH
+            pricing.
           </Text>
 
           <FormField
@@ -121,15 +120,18 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
                     rightSlot={
                       <div className="flex items-center gap-1 px-3">
                         <img
-                          src="/images/ssvIcons/logo.svg"
+                          src="/images/networks/dark.svg"
                           className="size-5"
-                          alt="logo"
+                          alt="ETH"
                         />
-                        <Text variant="body-2-bold">SSV</Text>
+                        <Text variant="body-2-bold">ETH</Text>
                       </div>
                     }
                   />
                 </FormControl>
+                <Text variant="body-3-medium" className="text-gray-500">
+                  ~$757.5
+                </Text>
                 {fieldState.error?.message && (
                   <Alert variant="error">
                     <AlertDescription>

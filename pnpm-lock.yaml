@@ -13,7 +13,7 @@ importers:
         version: 0.18.0
       '@deepsignal/core':
         specifier: ^4.0.0
-        version: 4.0.0(@preact/signals-core@1.7.0)
+        version: 4.1.0(@preact/signals-core@1.7.0)
       '@deepsignal/react':
         specifier: ^4.0.0
         version: 4.0.0(@preact/signals-core@1.7.0)(@preact/signals-react@2.1.0(react@18.3.1))
@@ -1223,6 +1223,11 @@ packages:
 
   '@deepsignal/core@4.0.0':
     resolution: {integrity: sha512-SvtsjPv1BzORW9u5VMMFKzXW57me2oyQnTg791GmchOSNP19rQOTt4fdWts0WFSGqBRb0zHXStx0kIi4E6dBqA==}
+    peerDependencies:
+      '@preact/signals-core': 1.x.x
+
+  '@deepsignal/core@4.1.0':
+    resolution: {integrity: sha512-JzN2XYybK5voeJ5SG439fKnJBvjRNHUO50h9xpYVQGIP9N7fAzSXsYl6rBdG9cdxVotnZ32PWSQQAiLUpOD44Q==}
     peerDependencies:
       '@preact/signals-core': 1.x.x
 
@@ -9393,6 +9398,10 @@ snapshots:
       chalk: 5.3.0
 
   '@deepsignal/core@4.0.0(@preact/signals-core@1.7.0)':
+    dependencies:
+      '@preact/signals-core': 1.7.0
+
+  '@deepsignal/core@4.1.0(@preact/signals-core@1.7.0)':
     dependencies:
       '@preact/signals-core': 1.7.0
 

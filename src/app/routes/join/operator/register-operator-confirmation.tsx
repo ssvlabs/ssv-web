@@ -136,8 +136,12 @@ export const RegisterOperatorConfirmation: FC = () => {
               Fee
             </Text>
             <div className="flex flex-col gap-0">
-              <Text variant="body-2-bold">
-                {formatBigintInput(yearlyFee)} SSV{" "}
+              <Text variant="body-2-bold" className="flex gap-1 items-center">
+                <img
+                  src="/images/eth/ethereum.svg"
+                  className="size-5"
+                  alt="logo"
+                />{formatBigintInput(yearlyFee)} ETH{" "}
                 <Span variant="body-3-semibold" className="text-gray-500">
                   / year
                 </Span>

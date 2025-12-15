@@ -16,6 +16,7 @@ import { operatorsRoutes } from "./router/route-definitions/operators-routes";
 import { SwitchWizardStepOneRoute } from "./switch-wizard/switch-wizard-step-one";
 import { SwitchWizardStepTwoRoute } from "./switch-wizard/switch-wizard-step-two";
 import { SwitchWizardStepThreeRoute } from "./switch-wizard/switch-wizard-step-three";
+import { SwitchWizardStepFourRoute } from "./switch-wizard/switch-wizard-step-four";
 import type { RoutePaths, WritableRoutePaths } from "./router/route-types";
 
 const routes = [
@@ -48,6 +49,10 @@ const routes = [
       {
         path: "switch-wizard/step-three",
         element: <SwitchWizardStepThreeRoute />,
+      },
+      {
+        path: "switch-wizard/step-four",
+        element: <SwitchWizardStepFourRoute />,
       },
       joinRoutes,
       clustersRoutes,

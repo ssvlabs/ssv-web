@@ -36,8 +36,7 @@ export const SwitchWizardStepThreeRoute = () => {
   return (
     <SwitchWizardStepThree
       onNext={() => {
-        console.log("Switch completed");
-        // TODO: Navigate to success page or handle completion
+        navigate("/switch-wizard/step-four");
       }}
       onBack={() => {
         navigate("/switch-wizard/step-two");

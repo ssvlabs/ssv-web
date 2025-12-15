@@ -13,6 +13,9 @@ import { NotFound } from "./not-found";
 import { clustersRoutes } from "./router/route-definitions/clusters-routes";
 import { joinRoutes } from "./router/route-definitions/join-routes";
 import { operatorsRoutes } from "./router/route-definitions/operators-routes";
+import { SwitchWizardStepOneRoute } from "./switch-wizard/switch-wizard-step-one";
+import { SwitchWizardStepTwoRoute } from "./switch-wizard/switch-wizard-step-two";
+import { SwitchWizardStepThreeRoute } from "./switch-wizard/switch-wizard-step-three";
 import type { RoutePaths, WritableRoutePaths } from "./router/route-types";
 
 const routes = [
@@ -33,6 +36,18 @@ const routes = [
       {
         path: "fee-recipient",
         element: <FeeRecipientAddress />,
+      },
+      {
+        path: "switch-wizard",
+        element: <SwitchWizardStepOneRoute />,
+      },
+      {
+        path: "switch-wizard/step-two",
+        element: <SwitchWizardStepTwoRoute />,
+      },
+      {
+        path: "switch-wizard/step-three",
+        element: <SwitchWizardStepThreeRoute />,
       },
       joinRoutes,
       clustersRoutes,

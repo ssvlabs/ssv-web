@@ -12,11 +12,11 @@ export const variants = cva("object-cover", {
       circle: "rounded-full",
       square: "rounded-sm",
     },
-
     size: {
       sm: "size-6",
       md: "size-8",
-      lg: "size-12",
+      lg: "size-10",
+      xl: "size-12",
     },
   },
   defaultVariants: {

@@ -106,10 +106,10 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@babel/generator": "7.26.9",
-    "@babel/parser": "7.26.9",
-    "@babel/traverse": "7.26.9",
-    "@babel/types": "7.26.9",
+    "@babel/generator": "7.28.5",
+    "@babel/parser": "7.28.5",
+    "@babel/traverse": "7.28.5",
+    "@babel/types": "7.28.5",
     "@commitlint/cli": "19.5.0",
     "@commitlint/config-conventional": "19.5.0",
     "@preact/signals-react-transform": "0.3.2",
@@ -140,7 +140,7 @@
     "glob": "^11.0.1",
     "husky": "9.0.11",
     "lint-staged": "15.2.7",
-    "only-allow": "1.2.1",
+    "only-allow": "1.2.2",
     "postcss": "8.4.39",
     "prettier": "3.3.2",
     "semantic-release": "24.0.0",

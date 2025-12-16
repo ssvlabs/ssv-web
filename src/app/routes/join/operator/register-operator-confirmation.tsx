@@ -92,13 +92,13 @@ export const RegisterOperatorConfirmation: FC = () => {
         id="register-operator-confirmation"
         as="form"
         className="w-full"
-        onKeyDown={(ev) => {
+        onKeyDown={(ev: React.KeyboardEvent) => {
           if (ev.key === "Enter") {
             ev.preventDefault();
             submit();
           }
         }}
-        onSubmit={(ev) => {
+        onSubmit={(ev: React.FormEvent) => {
           ev.preventDefault();
           submit();
         }}
@@ -128,20 +128,21 @@ export const RegisterOperatorConfirmation: FC = () => {
             </Text>
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center">
             <Text
               variant="body-2-medium"
               className="font-semibold text-sm text-gray-500"
             >
               Fee
             </Text>
-            <div className="flex flex-col gap-0">
-              <Text variant="body-2-bold" className="flex gap-1 items-center">
-                <img
-                  src="/images/eth/ethereum.svg"
-                  className="size-5"
-                  alt="logo"
-                />{formatBigintInput(yearlyFee)} ETH{" "}
+            <div className="flex items-center gap-1">
+              <img
+                src="/images/networks/dark.svg"
+                className="size-5"
+                alt="ETH"
+              />
+              <Text variant="body-2-bold" className="flex items-center gap-1">
+                {formatBigintInput(yearlyFee)} ETH
                 <Span variant="body-3-semibold" className="text-gray-500">
                   / year
                 </Span>

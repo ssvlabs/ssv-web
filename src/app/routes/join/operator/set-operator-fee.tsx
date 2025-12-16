@@ -6,7 +6,7 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel
+  FormLabel,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -32,7 +32,7 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
   const form = useForm({
     mode: "all",
     defaultValues: {
-      yearlyFee: useRegisterOperatorContext.state.yearlyFee ?? ""
+      yearlyFee: useRegisterOperatorContext.state.yearlyFee ?? "",
     },
     resolver: zodResolver(
       z.object({
@@ -40,7 +40,7 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
           if (value > parseEther("200")) {
             return ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: "Fee must be lower than 200 SSV"
+              message: "Fee must be lower than 200 ETH",
             });
           }
           if (isPrivate && value === parseEther("0")) return;
@@ -48,17 +48,17 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
           if (value === parseEther("0"))
             return ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: `Fee cannot be set to 0 while operator status is set to public. To set the fee to 0, switch the operator status to private in the previous step.`
+              message: `Fee cannot be set to 0 while operator status is set to public. To set the fee to 0, switch the operator status to private in the previous step.`,
             });
 
           if (value >= parseEther("0") && value < minimumFee)
             return ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: `Fee must be greater than ${formatUnits(minimumFee, 18)} SSV`
+              message: `Fee must be greater than ${formatUnits(minimumFee, 18)} ETH`,
             });
-        })
-      })
-    )
+        }),
+      }),
+    ),
   });
 
   const submit = form.handleSubmit((values) => {
@@ -75,26 +75,33 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
         <Card as="form" onSubmit={submit}>
           <CardHeader
             title="Set Operator Fee"
-            description="The SSV network now supports operator fees denominated in ETH. This allows stakers to fund their clusters in ETH and pay operators directly in the network's native asset."
+            description="The SSV network now supports operator fees denominated in ETH. This allows stakers to fund their clusters in ETH and pay operators directly in the network’s native asset."
           />
           <Text variant="body-2-medium">
-            Operators set their own fees, denominated in ETH, to be charged per validator that selects them as one of
-            their operators. This rate represents the cost for a standard 32 ETH validator. Actual fees are calculated
-            dynamically based on the Effective Balance of the validators you manage. Fees are presented as annual
-            payments, but in practice are streamed continuously as an ongoing process - per each passed block.
+            Operators set their own fees, denominated in ETH, to be charged per
+            validator that selects them as one of their operators. This rate
+            represents the cost for a standard 32 ETH validator. Actual fees are
+            calculated dynamically based on the Effective Balance of the
+            validators you manage. Fees are presented as annual payments, but in
+            practice are streamed continuously as an ongoing process - per each
+            passed block.
           </Text>
           <Text variant="body-2-medium">
-            Your earnings are paid to your operator ETH balance, and can be withdrawn to your wallet at any time.
+            Your earnings are paid to your operator ETH balance, and can be
+            withdrawn to your wallet at any time.
           </Text>
           <Text variant="body-2-medium">
-            Please note that you can adjust your fee later (according to the   <Button
-            as="a"
-            href="https://docs.ssv.network/operators/operator-onboarding/update-fee"
-            target="_blank"
-            variant="link"
-          >
-            limitations
-          </Button>) to align with market dynamics, competitiveness, or changes in ETH pricing.
+            Please note that you can adjust your fee later (according to the{" "}
+            <Button
+              as="a"
+              href="https://docs.ssv.network/operators/operator-onboarding/update-fee"
+              target="_blank"
+              variant="link"
+            >
+              limitations
+            </Button>
+            ) to align with market dynamics, competitiveness, or changes in ETH
+            pricing.
           </Text>
 
           <FormField
@@ -113,15 +120,18 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
                     rightSlot={
                       <div className="flex items-center gap-1 px-3">
                         <img
-                          src="/images/eth/ethereum.svg"
+                          src="/images/networks/dark.svg"
                           className="size-5"
-                          alt="logo"
+                          alt="ETH"
                         />
                         <Text variant="body-2-bold">ETH</Text>
                       </div>
                     }
                   />
                 </FormControl>
+                <Text variant="body-3-medium" className="text-gray-500">
+                  ~$757.5
+                </Text>
                 {fieldState.error?.message && (
                   <Alert variant="error">
                     <AlertDescription>

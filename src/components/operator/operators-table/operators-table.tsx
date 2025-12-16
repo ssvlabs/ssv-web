@@ -41,8 +41,8 @@ export const OperatorsTable: FCProps = ({
           <TableHead>Operator name</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>30D Performance</TableHead>
-          <TableHead>Balance</TableHead>
-          <TableHead>Yearly Fee</TableHead>
+          <TableHead>Balance (ETH | SSV)</TableHead>
+          <TableHead>Yearly Fee (ETH | SSV)</TableHead>
           <TableHead>Validators</TableHead>
         </TableHeader>
         <TableBody>

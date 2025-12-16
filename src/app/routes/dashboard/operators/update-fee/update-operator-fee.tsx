@@ -55,7 +55,7 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
           minimum: min,
           type: "bigint",
           inclusive: true,
-          message: `Fee must be at least ${formatUnits(min, 18)} SSV`,
+          message: `Fee must be at least ${formatUnits(min, 18)} ETH`,
         });
       }
       if (value > max) {
@@ -64,7 +64,7 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
           maximum: max,
           type: "bigint",
           inclusive: true,
-          message: `You can only increase your fee up to ${formatUnits(max, 18)} SSV`,
+          message: `You can only increase your fee up to ${formatUnits(max, 18)} ETH`,
         });
       }
     }),
@@ -129,7 +129,7 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
                           >
                             MAX
                           </Button>
-                          <span className="text-[28px] font-medium">SSV</span>
+                          <span className="text-[28px] font-medium">ETH</span>
                         </div>
                         <Divider />
                         <div className="flex justify-end">
@@ -154,7 +154,7 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
                                 variant="body-2-medium"
                                 className="text-gray-500"
                               >
-                                Max Fee:{formatBigintInput(max)} SSV{" "}
+                                Max Fee: {formatBigintInput(max)} ETH{" "}
                               </Text>
                               <FaCircleInfo className="inline-block" />
                             </div>

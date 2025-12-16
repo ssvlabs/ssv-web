@@ -74,7 +74,10 @@ export const ClusterTable: FCProps = ({
           </TableHead>
           <TableHead>Operators</TableHead>
           <TableHead>Validators</TableHead>
-          <TableHead>Est Operational Runway</TableHead>
+          <TableHead>Effective Balance</TableHead>
+          <TableHead>Balance</TableHead>
+          <TableHead>Runway</TableHead>
+          <TableHead />
           <TableHead />
         </TableHeader>
         <TableBody>

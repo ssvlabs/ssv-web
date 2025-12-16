@@ -1,4 +1,5 @@
 import { NavbarDVT } from "@/app/layouts/dashboard/navbar-dvt";
+import { EthFeesBanner } from "@/components/banners/eth-fees-banner";
 import { BatchTransactionModal } from "@/components/modals/batch-transaction-modal";
 import { MultisigTransactionModal } from "@/components/ui/multisig-transaction-modal";
 import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
@@ -61,6 +62,7 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
               exit={{ opacity: 0 }}
               key="content"
             >
+              <EthFeesBanner />
               <NavbarDVT className="px-5" />
               <main className={cn(className, "flex-1 overflow-auto")}>
                 {children}

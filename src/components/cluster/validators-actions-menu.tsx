@@ -14,9 +14,11 @@ import { LuTrash2, LuLogOut } from "react-icons/lu";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TbRefreshDot } from "react-icons/tb";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
+import { SwitchToEthMenuOptionTooltip } from "@/components/cluster/switch-to-eth-menu-option-tooltip";
 
 type Props = {
   isLiquidated: boolean;
+  isSSVCluster?: boolean;
 };
 
 enum ActionType {
@@ -27,6 +29,7 @@ enum ActionType {
 export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
   className,
   isLiquidated = true,
+  isSSVCluster,
   ...props
 }) => {
   const location = useLocation();
@@ -45,12 +48,15 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem
-          onClick={() => onActionClickHandler(ActionType.Remove)}
-        >
-          <LuTrash2 className="size-4" />
-          <span>Remove Validators</span>
-        </DropdownMenuItem>
+        <SwitchToEthMenuOptionTooltip enabled={isSSVCluster}>
+          <DropdownMenuItem
+            disabled={isSSVCluster}
+            onClick={() => onActionClickHandler(ActionType.Remove)}
+          >
+            <LuTrash2 className="size-4" />
+            <span>Remove Validators</span>
+          </DropdownMenuItem>
+        </SwitchToEthMenuOptionTooltip>
 
         <Tooltip
           side="bottom"

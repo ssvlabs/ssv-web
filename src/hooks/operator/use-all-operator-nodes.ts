@@ -14,13 +14,26 @@ export const useAllOperatorNodes = () => {
 export const useOperatorNodeClients = () => {
   const { data, ...rest } = useAllOperatorNodes();
 
+  const parseNodeData = (nodeData: string | string[]): string[] => {
+    if (Array.isArray(nodeData)) return nodeData;
+    try {
+      return JSON.parse(nodeData) as string[];
+    } catch {
+      return [];
+    }
+  };
+
   const nodeClients = data
     ? {
-        eth1_node_client: data.ETH1_NODE,
-        eth2_node_client: data.ETH2_NODE,
-        ssv_client: data.SSV_NODE,
+        eth1_node_client: parseNodeData(data.ETH1_NODE),
+        eth2_node_client: parseNodeData(data.ETH2_NODE),
+        ssv_client: parseNodeData(data.SSV_NODE),
       }
-    : undefined;
+    : {
+        eth1_node_client: [],
+        eth2_node_client: [],
+        ssv_client: [],
+      };
 
   return {
     ...rest,

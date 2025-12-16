@@ -40,7 +40,7 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
           if (value > parseEther("200")) {
             return ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: "Fee must be lower than 200 SSV",
+              message: "Fee must be lower than 200 ETH",
             });
           }
           if (isPrivate && value === parseEther("0")) return;
@@ -54,7 +54,7 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
           if (value >= parseEther("0") && value < minimumFee)
             return ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: `Fee must be greater than ${formatUnits(minimumFee, 18)} SSV`,
+              message: `Fee must be greater than ${formatUnits(minimumFee, 18)} ETH`,
             });
         }),
       }),

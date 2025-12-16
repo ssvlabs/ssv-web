@@ -60,7 +60,7 @@ export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
           Available Balance
         </Text>
         <div className="flex flex-col gap-4">
-          <BalanceDisplay amount="2.7532" token="ETH" />
+          <BalanceDisplay amount={1000000000000000n} token="ETH" />
           <BalanceDisplay amount={balance} token="SSV" />
         </div>
         <Button

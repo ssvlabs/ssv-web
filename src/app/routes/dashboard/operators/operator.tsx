@@ -90,7 +90,7 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                 Balance
               </Text>
               <div className="flex flex-col gap-4">
-                <BalanceDisplay amount="0" token="ETH" />
+                <BalanceDisplay amount={0n} token="ETH" />
                 <BalanceDisplay amount={balance} token="SSV" />
               </div>
               <Button as={Link} to="withdraw" variant="default" size="xl">
@@ -105,7 +105,7 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                 <IncreaseOperatorFeeStatusBadge />
               </div>
               <div className="flex flex-col gap-4">
-                <BalanceDisplay amount="0.2753" token="ETH" />
+                <BalanceDisplay amount={1000000000000000n} token="ETH" />
                 <BalanceDisplay amount={yearlyFee} token="SSV" />
               </div>
               <Tooltip

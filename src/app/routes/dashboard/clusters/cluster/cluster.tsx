@@ -12,15 +12,14 @@ import { Spacer } from "@/components/ui/spacer";
 import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
-import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
 import { useClusterState } from "@/hooks/cluster/use-cluster-state";
 import { useOperatorsUsability } from "@/hooks/keyshares/use-operators-usability";
-import { formatSSV } from "@/lib/utils/number";
-import { cn } from "@/lib/utils/tw";
 import { PlusIcon } from "lucide-react";
 import type { FC } from "react";
 import { Link } from "react-router-dom";
 import { useAccount } from "@/hooks/account/use-account";
+import { BalanceDisplay } from "@/components/ui/balance-display";
+import { SwitchToEthMenuOptionTooltip } from "@/components/cluster/switch-to-eth-menu-option-tooltip";
 
 export const Cluster: FC = () => {
   const account = useAccount();
@@ -30,6 +29,8 @@ export const Cluster: FC = () => {
     balance: { watch: true },
     isLiquidated: { watch: true },
   });
+
+  const isSSVCluster = cluster.data?.type === "ssv";
 
   const operatorsUsability = useOperatorsUsability({
     account: account.address!,
@@ -47,9 +48,8 @@ export const Cluster: FC = () => {
       return "One of your chosen operators has shifted to a permissioned status. To onboard validators, you'll need to select a new cluster.";
     if (operatorsUsability.data?.hasExceededValidatorsLimit)
       return "One of your operators has reached their maximum number of validators";
+    if (isSSVCluster) return "Switch to ETH to enable this option";
   };
-
-  const { data: runway } = useClusterRunway(clusterHash!);
 
   return (
     <Container
@@ -80,14 +80,10 @@ export const Cluster: FC = () => {
             {balance.isLoading ? (
               <Skeleton className="h-10 w-24 my-1" />
             ) : (
-              <Text
-                variant="headline2"
-                className={cn({
-                  "text-error-500": runway?.isAtRisk,
-                })}
-              >
-                {formatSSV(balance.data || 0n)} SSV
-              </Text>
+              <BalanceDisplay
+                amount={balance.data || 0n}
+                token={cluster.data?.type === "ssv" ? "SSV" : "ETH"}
+              />
             )}
           </div>
           {Boolean(cluster.data?.validatorCount) && (
@@ -110,13 +106,32 @@ export const Cluster: FC = () => {
               Reactivate Cluster
             </Button>
           ) : (
-            <div className="flex gap-3 [&>*]:flex-1">
-              <Button as={Link} to="deposit" size="xl">
-                Deposit
-              </Button>
-              <Button as={Link} to="withdraw" size="xl" variant="secondary">
-                Withdraw
-              </Button>
+            <div className="flex flex-col gap-6">
+              <div className="flex gap-6 [&>*]:flex-1">
+                <SwitchToEthMenuOptionTooltip asChild enabled={isSSVCluster}>
+                  <Button
+                    as={Link}
+                    to="deposit"
+                    size="xl"
+                    disabled={isSSVCluster}
+                  >
+                    Deposit
+                  </Button>
+                </SwitchToEthMenuOptionTooltip>
+                <Button as={Link} to="withdraw" size="xl" variant="secondary">
+                  Withdraw
+                </Button>
+              </div>
+              {isSSVCluster && (
+                <Button
+                  as={Link}
+                  to="/switch-wizard"
+                  size="xl"
+                  variant="default"
+                >
+                  Switch to ETH
+                </Button>
+              )}
             </div>
           )}
         </Card>
@@ -129,7 +144,10 @@ export const Cluster: FC = () => {
               {cluster.data?.validatorCount}
             </Badge>
             <Spacer />
-            <ValidatorsActionsMenu isLiquidated={Boolean(isLiquidated.data)} />
+            <ValidatorsActionsMenu
+              isLiquidated={Boolean(isLiquidated.data)}
+              isSSVCluster={isSSVCluster}
+            />
             <Tooltip content={getTooltipContent()}>
               <Button
                 disabled={

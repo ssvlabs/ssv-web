@@ -1,10 +1,12 @@
 import { Text } from "@/components/ui/text";
-import { formatSSV } from "@/lib/utils/number";
+import { useRates } from "@/hooks/use-rates";
+import { currencyFormatter, formatSSV } from "@/lib/utils/number";
 import { cn } from "@/lib/utils/tw";
 import type { ComponentPropsWithoutRef, FC } from "react";
+import { formatEther } from "viem";
 
 export type BalanceDisplayProps = {
-  amount: string | bigint;
+  amount: bigint;
   token: "ETH" | "SSV";
 } & ComponentPropsWithoutRef<"div">;
 
@@ -22,17 +24,17 @@ const formatAmount = (amount: string | bigint) => {
   return amount;
 };
 
-const getUsdPlaceholder = () => {
-  // Placeholder USD calculation - will be replaced with actual calculation later
-  return "~$0.0";
-};
-
 export const BalanceDisplay: FC<BalanceDisplayProps> = ({
   amount,
   token,
   className,
   ...props
 }) => {
+  const rates = useRates();
+  const formattedAmount = formatEther(BigInt(amount));
+  const usd = currencyFormatter.format(
+    (rates.data?.ssv ?? 0) * +formattedAmount,
+  );
   return (
     <div className={cn("flex items-start gap-2", className)} {...props}>
       <img src={getTokenIcon(token)} className="size-7" alt={token} />
@@ -41,7 +43,7 @@ export const BalanceDisplay: FC<BalanceDisplayProps> = ({
           {formatAmount(amount)} {token}
         </Text>
         <Text variant="body-3-medium" className="text-gray-500">
-          {getUsdPlaceholder()}
+          {usd}
         </Text>
       </div>
     </div>

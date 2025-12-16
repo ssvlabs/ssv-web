@@ -123,21 +123,23 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
         )}
       </TableCell>
       <TableCell>
-        <Button
-          as={Link}
-          to="/switch-wizard"
-          onClick={(ev) => {
-            ev.stopPropagation();
-          }}
-          variant="outline"
-          colorScheme="primary"
-          className="px-5"
-          size="sm"
-        >
-          <Span variant="body-3-semibold" className="text-primary-500">
-            Switch to {nativeCurrency?.symbol}
-          </Span>
-        </Button>
+        {apiCluster.data?.type === "ssv" && (
+          <Button
+            as={Link}
+            to="/switch-wizard"
+            onClick={(ev) => {
+              ev.stopPropagation();
+            }}
+            variant="outline"
+            colorScheme="primary"
+            className="px-5"
+            size="sm"
+          >
+            <Span variant="body-3-semibold" className="text-primary-500">
+              Switch to {nativeCurrency?.symbol}
+            </Span>
+          </Button>
+        )}
       </TableCell>
     </TableRow>
   );

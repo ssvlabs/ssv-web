@@ -159,6 +159,7 @@ export type Cluster<
     blockNumber: number;
     createdAt: string;
     updatedAt: string;
+    type: string;
   } & T
 >;
 

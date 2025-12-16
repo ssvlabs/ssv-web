@@ -12,11 +12,12 @@ import type {
   PaginatedSearchValidatorsResponse,
 } from "@/types/api";
 import type { Address } from "abitype";
+import { merge } from "lodash-es";
 
 export const getCluster = (hash: string) =>
   api
     .get<GetClusterResponse>(endpoint("clusters", hash))
-    .then((res) => res.cluster);
+    .then((res) => merge(res.cluster, { type: "ssv" }));
 
 export const getClusterData = (hash: string) =>
   getCluster(hash)

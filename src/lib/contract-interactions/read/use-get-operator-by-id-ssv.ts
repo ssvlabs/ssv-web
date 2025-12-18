@@ -3,7 +3,7 @@
 // ------------------------------------------------
 
 import type { UseReadContractParameters } from "wagmi";
-import { useBlockNumber, useReadContract } from "wagmi";
+import { useReadContract, useBlockNumber } from "wagmi";
 
 import { isUndefined } from "lodash-es";
 
@@ -14,8 +14,8 @@ import {
 import { MainnetV4GetterABI } from "@/lib/abi/mainnet/v4/getter";
 import type { AbiInputsToParams } from "@/lib/contract-interactions/utils";
 import {
-  extractAbiFunction,
   paramsToArray,
+  extractAbiFunction,
 } from "@/lib/contract-interactions/utils";
 import type { ExtractAbiFunction } from "abitype";
 import { readContractQueryOptions } from "wagmi/query";
@@ -23,29 +23,33 @@ import { getChainId } from "@wagmi/core";
 import { config } from "@/wagmi/config";
 import { queryClient } from "@/lib/react-query";
 
-type Fn = ExtractAbiFunction<typeof MainnetV4GetterABI, "getBalance">;
-const abiFunction = extractAbiFunction(MainnetV4GetterABI, "getBalance");
+type Fn = ExtractAbiFunction<typeof MainnetV4GetterABI, "getOperatorByIdSSV">;
+const abiFunction = extractAbiFunction(
+  MainnetV4GetterABI,
+  "getOperatorByIdSSV",
+);
 
-export const getGetBalanceQueryOptions = (
+export const getGetOperatorByIdSSVQueryOptions = (
   params: AbiInputsToParams<Fn["inputs"]>,
 ) =>
   readContractQueryOptions(config, {
     abi: MainnetV4GetterABI,
     chainId: getChainId(config),
     address: getSSVNetworkDetails().getterContractAddress,
-    functionName: "getBalance",
+    functionName: "getOperatorByIdSSV",
     args: paramsToArray({ params, abiFunction }),
   });
 
 type QueryOptions = UseReadContractParameters<
   typeof MainnetV4GetterABI,
-  "getBalance"
+  "getOperatorByIdSSV"
 >["query"];
 
-export const fetchGetBalance = (params: AbiInputsToParams<Fn["inputs"]>) =>
-  queryClient.fetchQuery(getGetBalanceQueryOptions(params));
+export const fetchGetOperatorByIdSSV = (
+  params: AbiInputsToParams<Fn["inputs"]>,
+) => queryClient.fetchQuery(getGetOperatorByIdSSVQueryOptions(params));
 
-export const useGetBalance = (
+export const useGetOperatorByIdSSV = (
   params: AbiInputsToParams<Fn["inputs"]>,
   options: QueryOptions & { watch?: boolean } = { enabled: true },
 ) => {
@@ -56,15 +60,12 @@ export const useGetBalance = (
   return useReadContract({
     abi: MainnetV4GetterABI,
     address: getterContractAddress,
-    functionName: "getBalance",
+    functionName: "getOperatorByIdSSV",
     args,
     blockNumber: options.watch ? blockNumber.data : undefined,
     query: {
       ...options,
       enabled: options?.enabled && args.every((arg) => !isUndefined(arg)),
-
-      // FIXME (Chris): temp solution to handle additional effective balance
-      select: ([balance]) => balance,
     },
   });
 };

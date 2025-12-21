@@ -13,27 +13,27 @@ import { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
 import type { ExtractAbiFunction } from "abitype";
 import type { AbiInputsToParams } from "@/lib/contract-interactions/utils";
 import {
-  paramsToArray,
   extractAbiFunction,
+  paramsToArray,
 } from "@/lib/contract-interactions/utils";
 import type { WriteContractErrorType } from "@wagmi/core";
 import type { WaitForTransactionReceiptErrorType } from "viem";
 
 type Fn = ExtractAbiFunction<
   typeof MainnetV4SetterABI,
-  "withdrawOperatorEarnings"
+  "withdrawAllVersionOperatorEarnings"
 >;
 const abiFunction = extractAbiFunction(
   MainnetV4SetterABI,
-  "withdrawOperatorEarnings",
+  "withdrawAllVersionOperatorEarnings",
 );
 // type State = "idle" | "confirming" | "mining" | "mined" | "error";
 
-export const useWithdrawOperatorEarnings = () => {
+export const useWithdrawAllVersionOperatorEarnings = () => {
   const { setterContractAddress } = useSSVNetworkDetails();
 
   const wait = useWaitForTransactionReceipt<MainnetEvent>([
-    "useWithdrawOperatorEarnings",
+    "useWithdrawAllVersionOperatorEarnings",
     setterContractAddress,
   ]);
   const mutation = useWriteContract();
@@ -46,7 +46,7 @@ export const useWithdrawOperatorEarnings = () => {
       {
         abi: MainnetV4SetterABI,
         address: setterContractAddress,
-        functionName: "withdrawOperatorEarnings",
+        functionName: "withdrawAllVersionOperatorEarnings",
         args: paramsToArray({ params, abiFunction }),
       },
       {
@@ -66,7 +66,7 @@ export const useWithdrawOperatorEarnings = () => {
         {
           abi: MainnetV4SetterABI,
           address: setterContractAddress,
-          functionName: "withdrawOperatorEarnings",
+          functionName: "withdrawAllVersionOperatorEarnings",
           args: paramsToArray({ params, abiFunction }),
         },
         {

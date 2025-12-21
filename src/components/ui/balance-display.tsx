@@ -33,7 +33,9 @@ export const BalanceDisplay: FC<BalanceDisplayProps> = ({
   const rates = useRates();
   const formattedAmount = formatEther(BigInt(amount));
   const usd = currencyFormatter.format(
-    (rates.data?.ssv ?? 0) * +formattedAmount,
+    (rates.data?.[
+      token.toLowerCase() as Lowercase<BalanceDisplayProps["token"]>
+    ] ?? 0) * +formattedAmount,
   );
   return (
     <div className={cn("flex items-start gap-2", className)} {...props}>

@@ -23,7 +23,8 @@ export type OrderBy =
   | "fee"
   | "delegators"
   | "strategyId"
-  | "mev";
+  | "mev"
+  | "effectiveBalance";
 export type Sort = "asc" | "desc";
 
 export type SearchOperatorsParams = {
@@ -47,12 +48,14 @@ type GetAccountOperatorsParams = {
   address: string;
   page?: number;
   perPage?: number;
+  ordering?: `${OrderBy}:${Sort}`;
 };
 
 export const getPaginatedAccountOperators = ({
   address,
   page = 1,
   perPage = 10,
+  ordering = "id:asc",
 }: GetAccountOperatorsParams) => {
   return api
     .get<OperatorsSearchResponse>(
@@ -63,7 +66,7 @@ export const getPaginatedAccountOperators = ({
           page: page.toString(),
           perPage: perPage.toString(),
           withFee: "true",
-          ordering: "id:asc",
+          ordering,
         })}`,
       ),
     )

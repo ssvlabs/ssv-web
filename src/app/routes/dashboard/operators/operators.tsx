@@ -27,6 +27,8 @@ export const Operators: FC<ComponentPropsWithoutRef<"div">> = () => {
         <OperatorsTable
           operators={accountOperators.operators}
           pagination={accountOperators.pagination}
+          orderBy={accountOperators.orderBy}
+          onOrderByChange={accountOperators.setOrderBy}
           onOperatorClick={(operator) => {
             navigate(operator.id.toString());
           }}

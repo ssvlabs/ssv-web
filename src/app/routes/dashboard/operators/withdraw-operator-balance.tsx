@@ -9,11 +9,12 @@ import { useOperator } from "@/hooks/operator/use-operator";
 import { useOperatorPageParams } from "@/hooks/operator/use-operator-page-params";
 import { useGetOperatorEarnings } from "@/lib/contract-interactions/read/use-get-operator-earnings";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useWithdrawOperatorEarnings } from "@/lib/contract-interactions/write/use-withdraw-operator-earnings";
+import { useWithdrawAllVersionOperatorEarnings } from "@/lib/contract-interactions/write/use-withdraw-all-version-operator-earnings.ts";
 import { cn } from "@/lib/utils/tw";
 import { type ComponentPropsWithoutRef, type FC } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router";
+import { useGetOperatorEarningsSSV } from "@/lib/contract-interactions/read/use-get-operator-earnings-ssv.ts";
 
 export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
   className,
@@ -23,26 +24,31 @@ export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
   const { operatorId } = useOperatorPageParams();
 
   const { data: operator } = useOperator();
-  const operatorEarnings = useGetOperatorEarnings({
+  const operatorEarningsEth = useGetOperatorEarnings({
+    id: BigInt(operatorId!),
+  });
+  const operatorEarningsSSV = useGetOperatorEarningsSSV({
     id: BigInt(operatorId!),
   });
 
-  const balance = operatorEarnings.data ?? 0n;
-  const hasBalance = balance > 0n;
+  const balanceEth = operatorEarningsEth.data ?? 0n;
+  const balanceSSV = operatorEarningsSSV.data ?? 0n;
+  const hasBalance = balanceEth > 0n || balanceSSV > 0n;
 
-  const withdraw = useWithdrawOperatorEarnings();
+  const withdraw = useWithdrawAllVersionOperatorEarnings();
 
   const handleWithdrawAll = () => {
     if (!hasBalance) return;
 
     return withdraw.write(
-      { operatorId: BigInt(operatorId!), amount: balance },
+      { operatorId: BigInt(operatorId!) },
       withTransactionModal({
         onMined: () => {
           toast({
             title: "Withdrawal Successful",
           });
-          operatorEarnings.refetch();
+          operatorEarningsEth.refetch();
+          operatorEarningsSSV.refetch();
           return () => navigate("..");
         },
       }),
@@ -60,8 +66,8 @@ export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
           Available Balance
         </Text>
         <div className="flex flex-col gap-4">
-          <BalanceDisplay amount={1000000000000000n} token="ETH" />
-          <BalanceDisplay amount={balance} token="SSV" />
+          <BalanceDisplay amount={balanceEth} token="ETH" />
+          <BalanceDisplay amount={balanceSSV} token="SSV" />
         </div>
         <Button
           disabled={!hasBalance}

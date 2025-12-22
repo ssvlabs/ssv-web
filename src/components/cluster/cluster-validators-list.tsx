@@ -27,6 +27,7 @@ import { useBulkActionContext } from "@/guard/bulk-action-guard";
 import { Spacer } from "@/components/ui/spacer";
 import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge";
 import { ValidatorsSearchAndFilters } from "@/components/cluster/validators-search-and-filters";
+import { SwitchToEthMenuOptionTooltip } from "@/components/cluster/switch-to-eth-menu-option-tooltip";
 
 export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
@@ -89,17 +90,22 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                       <TbExternalLink className="size-3" />
                     </DropdownMenuItem>
                   </a>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      useBulkActionContext.state.selectedPublicKeys = [
-                        item.public_key,
-                      ];
-                      navigate("remove/confirmation");
-                    }}
+                  <SwitchToEthMenuOptionTooltip
+                    enabled={cluster.data?.type === "ssv"}
                   >
-                    <LuTrash2 className="size-4" />
-                    <span>Remove Validator</span>
-                  </DropdownMenuItem>
+                    <DropdownMenuItem
+                      disabled={cluster.data?.type === "ssv"}
+                      onClick={() => {
+                        useBulkActionContext.state.selectedPublicKeys = [
+                          item.public_key,
+                        ];
+                        navigate("remove/confirmation");
+                      }}
+                    >
+                      <LuTrash2 className="size-4" />
+                      <span>Remove Validator</span>
+                    </DropdownMenuItem>
+                  </SwitchToEthMenuOptionTooltip>
                   <Tooltip
                     side="bottom"
                     delayDuration={350}

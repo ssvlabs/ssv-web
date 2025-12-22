@@ -1,6 +1,7 @@
 import { OperatorDetails } from "@/components/operator/operator-details";
 import { OperatorSettingsBtn } from "@/components/operator/operator-settings-btn";
 import { Button } from "@/components/ui/button";
+import { BalanceDisplay } from "@/components/ui/balance-display";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
@@ -10,7 +11,7 @@ import { useOperator } from "@/hooks/operator/use-operator";
 import { useOperatorPageParams } from "@/hooks/operator/use-operator-page-params";
 import { useGetOperatorEarnings } from "@/lib/contract-interactions/read/use-get-operator-earnings";
 import { useGetOperatorFee } from "@/lib/contract-interactions/read/use-get-operator-fee";
-import { formatSSV, percentageFormatter } from "@/lib/utils/number";
+import { percentageFormatter } from "@/lib/utils/number";
 import { getYearlyFee } from "@/lib/utils/operator";
 import { type ComponentPropsWithoutRef, type FC } from "react";
 import { Helmet } from "react-helmet";
@@ -20,17 +21,23 @@ import { Link } from "react-router-dom";
 import { IncreaseOperatorFeeStatusBadge } from "@/components/operator/increase-operator-fee/increase-operator-fee-status-badge";
 import { OperatorValidatorsList } from "@/components/operator/operator-validators-list";
 import { OperatorStatusBadge } from "@/components/operator/operator-status-badge";
+import { useGetOperatorEarningsSSV } from "@/lib/contract-interactions/read/use-get-operator-earnings-ssv.ts";
+import { useGetOperatorFeeSSV } from "@/lib/contract-interactions/read/use-get-operator-fee-ssv.ts";
 
 export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
   const params = useOperatorPageParams();
   const operatorId = BigInt(params.operatorId!);
   const operator = useOperator(operatorId!);
 
-  const earnings = useGetOperatorEarnings({ id: operatorId });
+  const earningsEth = useGetOperatorEarnings({ id: operatorId });
+  const earningsSSV = useGetOperatorEarningsSSV({ id: operatorId });
 
-  const fee = useGetOperatorFee({ operatorId });
-  const yearlyFee = getYearlyFee(fee.data ?? 0n);
-  const balance = earnings.data ?? 0n;
+  const feeEth = useGetOperatorFee({ operatorId });
+  const feeSSV = useGetOperatorFeeSSV({ operatorId });
+  const yearlyFeeEth = getYearlyFee(feeEth.data ?? 0n);
+  const yearlyFeeSSV = getYearlyFee(feeSSV.data ?? 0n);
+  const balanceEth = earningsEth.data ?? 0n;
+  const balanceSSV = earningsSSV.data ?? 0n;
   if (!operator.data) return null;
 
   return (
@@ -88,8 +95,12 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
               <Text variant="headline4" className="text-gray-500">
                 Balance
               </Text>
-              <Text variant="headline3">{formatSSV(balance)} SSV</Text>
-
+              <div className="flex flex-col gap-4">
+                <BalanceDisplay amount={balanceEth} token="ETH" />
+                {balanceSSV > 0 && (
+                  <BalanceDisplay amount={balanceSSV} token="SSV" />
+                )}
+              </div>
               <Button as={Link} to="withdraw" variant="default" size="xl">
                 Withdraw
               </Button>
@@ -101,11 +112,16 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                 </Text>
                 <IncreaseOperatorFeeStatusBadge />
               </div>
-              <Text variant="headline3">{formatSSV(yearlyFee)} SSV</Text>
+              <div className="flex flex-col gap-4">
+                <BalanceDisplay amount={yearlyFeeEth} token="ETH" />
+                {yearlyFeeSSV > 0 && (
+                  <BalanceDisplay amount={yearlyFeeSSV} token="SSV" />
+                )}
+              </div>
               <Tooltip
                 asChild
                 content={
-                  fee.data === 0n ? (
+                  feeEth.data === 0n ? (
                     <Text variant="body-2-medium">
                       Operators with a fee of 0 cannot change their fee.{" "}
                       <Button
@@ -123,7 +139,7 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
               >
                 <Button
                   as={Link}
-                  disabled={fee.isLoading || fee.data === 0n}
+                  disabled={feeEth.isLoading || feeEth.data === 0n}
                   to="fee/update"
                   variant="secondary"
                   size="xl"

@@ -79,6 +79,16 @@ export const MainnetV4GetterABI = [
   },
   {
     inputs: [],
+    name: "EBExceedsMaximum",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ETHTransferFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "EmptyPublicKeysList",
     type: "error",
   },
@@ -126,7 +136,28 @@ export const MainnetV4GetterABI = [
   },
   {
     inputs: [],
+    name: "FutureBlockNumber",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "IncorrectClusterState",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "IncorrectClusterVersion",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint8",
+        name: "operatorVersion",
+        type: "uint8",
+      },
+    ],
+    name: "IncorrectOperatorVersion",
     type: "error",
   },
   {
@@ -158,6 +189,11 @@ export const MainnetV4GetterABI = [
   {
     inputs: [],
     name: "InvalidOperatorIdsLength",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidProof",
     type: "error",
   },
   {
@@ -203,6 +239,11 @@ export const MainnetV4GetterABI = [
   },
   {
     inputs: [],
+    name: "NotAuthorizedOracle",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "OperatorAlreadyExists",
     type: "error",
   },
@@ -223,7 +264,22 @@ export const MainnetV4GetterABI = [
   },
   {
     inputs: [],
+    name: "RootNotFound",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "SameFeeChangeNotAllowed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "StaleBlockNumber",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "StaleUpdate",
     type: "error",
   },
   {
@@ -254,6 +310,11 @@ export const MainnetV4GetterABI = [
   },
   {
     inputs: [],
+    name: "UpdateTooFrequent",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "ValidatorAlreadyExists",
     type: "error",
   },
@@ -276,6 +337,11 @@ export const MainnetV4GetterABI = [
   {
     inputs: [],
     name: "ZeroAddressNotAllowed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ZeroInterval",
     type: "error",
   },
   {
@@ -433,6 +499,67 @@ export const MainnetV4GetterABI = [
         name: "",
         type: "uint256",
       },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "clusterOwner",
+        type: "address",
+      },
+      {
+        internalType: "uint64[]",
+        name: "operatorIds",
+        type: "uint64[]",
+      },
+      {
+        components: [
+          {
+            internalType: "uint32",
+            name: "validatorCount",
+            type: "uint32",
+          },
+          {
+            internalType: "uint64",
+            name: "networkFeeIndex",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "index",
+            type: "uint64",
+          },
+          {
+            internalType: "bool",
+            name: "active",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "balance",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct ISSVNetworkCore.Cluster",
+        name: "cluster",
+        type: "tuple",
+      },
+    ],
+    name: "getBalanceSSV",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
     ],
     stateMutability: "view",
     type: "function",
@@ -494,6 +621,86 @@ export const MainnetV4GetterABI = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "clusterOwner",
+        type: "address",
+      },
+      {
+        internalType: "uint64[]",
+        name: "operatorIds",
+        type: "uint64[]",
+      },
+      {
+        components: [
+          {
+            internalType: "uint32",
+            name: "validatorCount",
+            type: "uint32",
+          },
+          {
+            internalType: "uint64",
+            name: "networkFeeIndex",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "index",
+            type: "uint64",
+          },
+          {
+            internalType: "bool",
+            name: "active",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "balance",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct ISSVNetworkCore.Cluster",
+        name: "cluster",
+        type: "tuple",
+      },
+    ],
+    name: "getBurnRateSSV",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+      {
+        internalType: "uint64[]",
+        name: "operatorIds",
+        type: "uint64[]",
+      },
+    ],
+    name: "getClusterVersion",
+    outputs: [
+      {
+        internalType: "uint8",
+        name: "",
+        type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "getLiquidationThresholdPeriod",
     outputs: [
@@ -547,7 +754,33 @@ export const MainnetV4GetterABI = [
   },
   {
     inputs: [],
+    name: "getNetworkEarningsSSV",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "getNetworkFee",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getNetworkFeeSSV",
     outputs: [
       {
         internalType: "uint256",
@@ -580,6 +813,50 @@ export const MainnetV4GetterABI = [
       },
     ],
     name: "getOperatorById",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+      {
+        internalType: "uint32",
+        name: "",
+        type: "uint32",
+      },
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint64",
+        name: "operatorId",
+        type: "uint64",
+      },
+    ],
+    name: "getOperatorByIdSSV",
     outputs: [
       {
         internalType: "address",
@@ -672,6 +949,25 @@ export const MainnetV4GetterABI = [
     inputs: [
       {
         internalType: "uint64",
+        name: "id",
+        type: "uint64",
+      },
+    ],
+    name: "getOperatorEarningsSSV",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint64",
         name: "operatorId",
         type: "uint64",
       },
@@ -713,6 +1009,25 @@ export const MainnetV4GetterABI = [
         internalType: "uint64",
         name: "",
         type: "uint64",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint64",
+        name: "operatorId",
+        type: "uint64",
+      },
+    ],
+    name: "getOperatorFeeSSV",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -880,6 +1195,62 @@ export const MainnetV4GetterABI = [
       },
     ],
     name: "isLiquidatable",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "clusterOwner",
+        type: "address",
+      },
+      {
+        internalType: "uint64[]",
+        name: "operatorIds",
+        type: "uint64[]",
+      },
+      {
+        components: [
+          {
+            internalType: "uint32",
+            name: "validatorCount",
+            type: "uint32",
+          },
+          {
+            internalType: "uint64",
+            name: "networkFeeIndex",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "index",
+            type: "uint64",
+          },
+          {
+            internalType: "bool",
+            name: "active",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "balance",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct ISSVNetworkCore.Cluster",
+        name: "cluster",
+        type: "tuple",
+      },
+    ],
+    name: "isLiquidatableSSV",
     outputs: [
       {
         internalType: "bool",

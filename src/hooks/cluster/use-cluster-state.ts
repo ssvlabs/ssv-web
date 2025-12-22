@@ -41,7 +41,8 @@ export const useClusterState = (
     retry: isLiquidated.data ? false : undefined,
     refetchOnWindowFocus: false,
     placeholderData: (prev) =>
-      isLiquidated.data ? 0n : keepPreviousData(prev),
+      // FIXME (Chris): temp solution to handle additional effective balance
+      isLiquidated.data ? ([0n, 0n] as const) : keepPreviousData(prev),
     enabled: Boolean(
       account.address &&
         cluster.data &&

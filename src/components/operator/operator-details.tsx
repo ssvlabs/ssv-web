@@ -52,7 +52,7 @@ export const OperatorDetails: FCProps = ({
       {...props}
     >
       <OperatorAvatar
-        size="lg"
+        size="xl"
         src={operator.logo}
         isPrivate={operator.is_private}
       />

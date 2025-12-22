@@ -125,6 +125,16 @@ export const getOperatorNodes = (layer: number) => {
   return api.get<string[]>(endpoint("operators/nodes", layer));
 };
 
+export type AllOperatorNodesResponse = {
+  ETH1_NODE: string[];
+  ETH2_NODE: string[];
+  SSV_NODE: string[];
+};
+
+export const getAllOperatorNodes = () => {
+  return api.get<AllOperatorNodesResponse>(endpoint("operators/nodes/all"));
+};
+
 export const checkOperatorDKGHealth = (
   dkgAddresses: { id: string; address: string }[],
 ) => {

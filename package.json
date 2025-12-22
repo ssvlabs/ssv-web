@@ -112,7 +112,7 @@
     "@babel/types": "7.28.5",
     "@commitlint/cli": "19.5.0",
     "@commitlint/config-conventional": "19.5.0",
-    "@preact/signals-react-transform": "0.3.2",
+    "@preact/signals-react-transform": "0.6.0",
     "@semantic-release/commit-analyzer": "13.0.0",
     "@semantic-release/git": "10.0.1",
     "@semantic-release/github": "10.1.3",

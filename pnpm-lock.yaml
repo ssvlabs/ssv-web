@@ -13,10 +13,10 @@ importers:
         version: 0.18.0
       '@deepsignal/core':
         specifier: ^4.0.0
-        version: 4.1.0(@preact/signals-core@1.7.0)
+        version: 4.1.0(@preact/signals-core@1.12.1)
       '@deepsignal/react':
         specifier: ^4.0.0
-        version: 4.0.0(@preact/signals-core@1.7.0)(@preact/signals-react@2.1.0(react@18.3.1))
+        version: 4.0.0(@preact/signals-core@1.12.1)(@preact/signals-react@2.1.0(react@18.3.1))
       '@fontsource/manrope':
         specifier: ^5.0.20
         version: 5.0.20
@@ -235,8 +235,8 @@ importers:
         specifier: 19.5.0
         version: 19.5.0
       '@preact/signals-react-transform':
-        specifier: 0.3.2
-        version: 0.3.2(@babel/core@7.24.7)(react@18.3.1)
+        specifier: 0.6.0
+        version: 0.6.0(@babel/core@7.24.7)(react@18.3.1)
       '@semantic-release/commit-analyzer':
         specifier: 13.0.0
         version: 13.0.0(semantic-release@24.0.0(typescript@5.5.3))
@@ -421,10 +421,6 @@ packages:
 
   '@babel/helper-member-expression-to-functions@7.28.5':
     resolution: {integrity: sha512-cwM7SBRZcPCLgl8a7cY0soT1SptSzAlMH39vwiRpOQkJlh53r5hdHwLSCZpQdVLT39sZt+CRpNwYG4Y2v77atg==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/helper-module-imports@7.24.7':
-    resolution: {integrity: sha512-8AyH3C+74cgCVVXow/myrynrAGv+nTVg5vKu2nZph9x7RcRwzmh0VFallJuFTZ9mx6u4eSdXZfcOzSqTUm0HCA==}
     engines: {node: '>=6.9.0'}
 
   '@babel/helper-module-imports@7.27.1':
@@ -1820,19 +1816,27 @@ packages:
     resolution: {integrity: sha512-UA91GwWPhFExt3IizW6bOeY/pQ0BkuNwKjk9iQW9KqxluGCrg4VenZ0/L+2Y0+ZOtme72EVvg6v0zo3AMQRCeA==}
     engines: {node: '>=12'}
 
+  '@preact/signals-core@1.12.1':
+    resolution: {integrity: sha512-BwbTXpj+9QutoZLQvbttRg5x3l5468qaV2kufh+51yha1c53ep5dY4kTuZR35+3pAZxpfQerGJiQqg34ZNZ6uA==}
+
   '@preact/signals-core@1.7.0':
     resolution: {integrity: sha512-bEZLgmJGSBVP5PUPDowhPW3bVdMmp9Tr5OEl+SQK+8Tv9T7UsIfyN905cfkmmeqw8z4xp8T6zrl4M1uj9+HAfg==}
 
-  '@preact/signals-react-transform@0.3.2':
-    resolution: {integrity: sha512-pWmcMwc/BKa70Py5j24FgO1/uZkYmmN0hUdK5xiQ867diSs/7mzGFCcW/Noq71YLBGVacLwPfMrWvALnuPWVFg==}
+  '@preact/signals-react-transform@0.6.0':
+    resolution: {integrity: sha512-m6swfrzHYZjNKbLGF+n2vI+PdJAjDvVJ1QH+gt5iew9tEybaZcEzXEqNIAZsAXFH38u8L91QK3Xm9C5TvJqYlg==}
     peerDependencies:
       '@babel/core': ^7.0.0
-      react: ^16.14.0 || 17.x || 18.x
+      react: ^16.14.0 || 17.x || 18.x || 19.x
 
   '@preact/signals-react@2.1.0':
     resolution: {integrity: sha512-jWq2ldDWXdbKpg+aMGuOZfj9tS5JkVlGJ5hGNzNe1Zfe7RLFfvldBEfNe6ZT7KZddecAxKhyoxSsEypgbfx/Gw==}
     peerDependencies:
       react: ^16.14.0 || 17.x || 18.x
+
+  '@preact/signals-react@3.6.1':
+    resolution: {integrity: sha512-paN0YP/SBiQa3ASljG+KlPkEKqPOtCjGFkF0AxK16RsJIvSVnh0Ckbx/1OkcVcnCNDbLnLws0wzMFLeDM9T1ZA==}
+    peerDependencies:
+      react: ^16.14.0 || 17.x || 18.x || 19.x
 
   '@radix-ui/number@1.1.1':
     resolution: {integrity: sha512-MkKCwxlXTgz6CFoJx3pCwn07GKp36+aZyu/u2Ln2VrA5DcdyCZkASEDBTd8x5whTQQL5CiYf4prXKLcgQdv29g==}
@@ -8392,13 +8396,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/helper-module-imports@7.24.7':
-    dependencies:
-      '@babel/traverse': 7.28.5
-      '@babel/types': 7.28.5
-    transitivePeerDependencies:
-      - supports-color
-
   '@babel/helper-module-imports@7.27.1':
     dependencies:
       '@babel/traverse': 7.28.5
@@ -8410,7 +8407,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.24.7
       '@babel/helper-environment-visitor': 7.24.7
-      '@babel/helper-module-imports': 7.24.7
+      '@babel/helper-module-imports': 7.27.1
       '@babel/helper-simple-access': 7.24.7
       '@babel/helper-split-export-declaration': 7.24.7
       '@babel/helper-validator-identifier': 7.28.5
@@ -9397,17 +9394,17 @@ snapshots:
       '@types/conventional-commits-parser': 5.0.0
       chalk: 5.3.0
 
-  '@deepsignal/core@4.0.0(@preact/signals-core@1.7.0)':
+  '@deepsignal/core@4.0.0(@preact/signals-core@1.12.1)':
     dependencies:
-      '@preact/signals-core': 1.7.0
+      '@preact/signals-core': 1.12.1
 
-  '@deepsignal/core@4.1.0(@preact/signals-core@1.7.0)':
+  '@deepsignal/core@4.1.0(@preact/signals-core@1.12.1)':
     dependencies:
-      '@preact/signals-core': 1.7.0
+      '@preact/signals-core': 1.12.1
 
-  '@deepsignal/react@4.0.0(@preact/signals-core@1.7.0)(@preact/signals-react@2.1.0(react@18.3.1))':
+  '@deepsignal/react@4.0.0(@preact/signals-core@1.12.1)(@preact/signals-react@2.1.0(react@18.3.1))':
     dependencies:
-      '@deepsignal/core': 4.0.0(@preact/signals-core@1.7.0)
+      '@deepsignal/core': 4.0.0(@preact/signals-core@1.12.1)
       '@preact/signals-react': 2.1.0(react@18.3.1)
     transitivePeerDependencies:
       - '@preact/signals-core'
@@ -10038,15 +10035,17 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
+  '@preact/signals-core@1.12.1': {}
+
   '@preact/signals-core@1.7.0': {}
 
-  '@preact/signals-react-transform@0.3.2(@babel/core@7.24.7)(react@18.3.1)':
+  '@preact/signals-react-transform@0.6.0(@babel/core@7.24.7)(react@18.3.1)':
     dependencies:
       '@babel/core': 7.24.7
-      '@babel/helper-module-imports': 7.24.7
-      '@babel/helper-plugin-utils': 7.24.7
-      '@preact/signals-react': 2.1.0(react@18.3.1)
-      debug: 4.3.5
+      '@babel/helper-module-imports': 7.27.1
+      '@babel/helper-plugin-utils': 7.27.1
+      '@preact/signals-react': 3.6.1(react@18.3.1)
+      debug: 4.4.3
       react: 18.3.1
       use-sync-external-store: 1.2.0(react@18.3.1)
     transitivePeerDependencies:
@@ -10055,6 +10054,12 @@ snapshots:
   '@preact/signals-react@2.1.0(react@18.3.1)':
     dependencies:
       '@preact/signals-core': 1.7.0
+      react: 18.3.1
+      use-sync-external-store: 1.2.0(react@18.3.1)
+
+  '@preact/signals-react@3.6.1(react@18.3.1)':
+    dependencies:
+      '@preact/signals-core': 1.12.1
       react: 18.3.1
       use-sync-external-store: 1.2.0(react@18.3.1)
 

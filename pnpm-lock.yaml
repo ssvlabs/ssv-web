@@ -16,7 +16,7 @@ importers:
         version: 4.1.0(@preact/signals-core@1.12.1)
       '@deepsignal/react':
         specifier: ^4.0.0
-        version: 4.1.0(@preact/signals-core@1.12.1)(@preact/signals-react@2.1.0(react@18.3.1))
+        version: 4.1.0(@preact/signals-core@1.12.1)(@preact/signals-react@2.3.0(react@18.3.1))
       '@fontsource/manrope':
         specifier: ^5.0.20
         version: 5.2.8
@@ -25,7 +25,7 @@ importers:
         version: 3.10.0(react-hook-form@7.52.1(react@18.3.1))
       '@preact/signals-react':
         specifier: ^2.1.0
-        version: 2.1.0(react@18.3.1)
+        version: 2.3.0(react@18.3.1)
       '@radix-ui/react-alert-dialog':
         specifier: ^1.1.1
         version: 1.1.15(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1890,19 +1890,16 @@ packages:
   '@preact/signals-core@1.12.1':
     resolution: {integrity: sha512-BwbTXpj+9QutoZLQvbttRg5x3l5468qaV2kufh+51yha1c53ep5dY4kTuZR35+3pAZxpfQerGJiQqg34ZNZ6uA==}
 
-  '@preact/signals-core@1.7.0':
-    resolution: {integrity: sha512-bEZLgmJGSBVP5PUPDowhPW3bVdMmp9Tr5OEl+SQK+8Tv9T7UsIfyN905cfkmmeqw8z4xp8T6zrl4M1uj9+HAfg==}
-
   '@preact/signals-react-transform@0.6.0':
     resolution: {integrity: sha512-m6swfrzHYZjNKbLGF+n2vI+PdJAjDvVJ1QH+gt5iew9tEybaZcEzXEqNIAZsAXFH38u8L91QK3Xm9C5TvJqYlg==}
     peerDependencies:
       '@babel/core': ^7.0.0
       react: ^16.14.0 || 17.x || 18.x || 19.x
 
-  '@preact/signals-react@2.1.0':
-    resolution: {integrity: sha512-jWq2ldDWXdbKpg+aMGuOZfj9tS5JkVlGJ5hGNzNe1Zfe7RLFfvldBEfNe6ZT7KZddecAxKhyoxSsEypgbfx/Gw==}
+  '@preact/signals-react@2.3.0':
+    resolution: {integrity: sha512-g77rc7gTuPaoS5Lr80wjbN9P0t2U+YqJ6NG2krF5KLWLIoGn4uiByOv4bcZSJ41E4Nj50JLuXvdQEGlpU6cOug==}
     peerDependencies:
-      react: ^16.14.0 || 17.x || 18.x
+      react: ^16.14.0 || 17.x || 18.x || 19.x
 
   '@preact/signals-react@3.6.1':
     resolution: {integrity: sha512-paN0YP/SBiQa3ASljG+KlPkEKqPOtCjGFkF0AxK16RsJIvSVnh0Ckbx/1OkcVcnCNDbLnLws0wzMFLeDM9T1ZA==}
@@ -9557,10 +9554,10 @@ snapshots:
     dependencies:
       '@preact/signals-core': 1.12.1
 
-  '@deepsignal/react@4.1.0(@preact/signals-core@1.12.1)(@preact/signals-react@2.1.0(react@18.3.1))':
+  '@deepsignal/react@4.1.0(@preact/signals-core@1.12.1)(@preact/signals-react@2.3.0(react@18.3.1))':
     dependencies:
       '@deepsignal/core': 4.1.0(@preact/signals-core@1.12.1)
-      '@preact/signals-react': 2.1.0(react@18.3.1)
+      '@preact/signals-react': 2.3.0(react@18.3.1)
     transitivePeerDependencies:
       - '@preact/signals-core'
 
@@ -10273,8 +10270,6 @@ snapshots:
 
   '@preact/signals-core@1.12.1': {}
 
-  '@preact/signals-core@1.7.0': {}
-
   '@preact/signals-react-transform@0.6.0(@babel/core@7.24.7)(react@18.3.1)':
     dependencies:
       '@babel/core': 7.24.7
@@ -10287,11 +10282,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@preact/signals-react@2.1.0(react@18.3.1)':
+  '@preact/signals-react@2.3.0(react@18.3.1)':
     dependencies:
-      '@preact/signals-core': 1.7.0
+      '@preact/signals-core': 1.12.1
       react: 18.3.1
-      use-sync-external-store: 1.2.0(react@18.3.1)
+      use-sync-external-store: 1.6.0(react@18.3.1)
 
   '@preact/signals-react@3.6.1(react@18.3.1)':
     dependencies:

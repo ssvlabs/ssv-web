@@ -1,6 +1,7 @@
 import { OperatorAvatar } from "@/components/operator/operator-avatar";
 import { OperatorDetails } from "@/components/operator/operator-details";
 import { Badge } from "@/components/ui/badge";
+import { BalanceDisplay } from "@/components/ui/balance-display";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableCell, TableRow } from "@/components/ui/table";
@@ -9,8 +10,6 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
 import { useOptimisticOrProvidedOperator } from "@/hooks/operator/use-optimistic-operator";
-import { useNativeCurrency } from "@/hooks/use-native-currency";
-import { formatSSV } from "@/lib/utils/number";
 import { shortenClusterId } from "@/lib/utils/strings";
 import { cn } from "@/lib/utils/tw";
 import type { Cluster } from "@/types/api";
@@ -31,7 +30,6 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
   const runway = useClusterRunway(cluster.clusterId);
   const isLiquidated = apiCluster.data?.isLiquidated;
   const isLoadingRunway = !isLiquidated && runway.isLoading;
-  const nativeCurrency = useNativeCurrency();
 
   return (
     <TableRow
@@ -82,21 +80,17 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
       </TableCell>
       <TableCell>{cluster.validatorCount}</TableCell>
       <TableCell>
-        <div className="flex items-center gap-1">
-          <img src="/images/networks/dark.svg" className="size-5" />{" "}
-          <Span variant="body-2-medium">
-            {cluster.validatorCount * 32} {nativeCurrency?.symbol}{" "}
-          </Span>
-        </div>
+        <BalanceDisplay amount={BigInt(cluster.effectiveBalance)} token="ETH" />
       </TableCell>
       <TableCell>
-        <div className="flex items-center gap-1">
-          <img src="/images/ssvIcons/icon.svg" className="size-5" />{" "}
-          <Span variant="body-2-medium">
-            {" "}
-            {formatSSV(BigInt(cluster.balance))} SSV
-          </Span>
-        </div>
+        <BalanceDisplay
+          amount={
+            BigInt(
+              cluster.isSSVCluster ? cluster.balance : cluster.ethBalance,
+            ) || 0n
+          }
+          token={cluster.isSSVCluster ? "SSV" : "ETH"}
+        />
       </TableCell>
       <TableCell>
         {isLoadingRunway ? (
@@ -123,7 +117,7 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
         )}
       </TableCell>
       <TableCell>
-        {apiCluster.data?.type === "ssv" && (
+        {apiCluster.data?.isSSVCluster && (
           <Button
             as={Link}
             to="/switch-wizard"
@@ -136,7 +130,7 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
             size="sm"
           >
             <Span variant="body-3-semibold" className="text-primary-500">
-              Switch to {nativeCurrency?.symbol}
+              Switch to ETH
             </Span>
           </Button>
         )}

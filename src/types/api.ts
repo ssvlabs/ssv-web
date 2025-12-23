@@ -153,13 +153,15 @@ export type Cluster<
     validatorCount: number;
     networkFeeIndex: string;
     index: string;
-    balance: string;
+    balance: string; // balance in SSV
+    ethBalance: string;
+    effectiveBalance: string;
     active: boolean;
     isLiquidated: boolean;
     blockNumber: number;
     createdAt: string;
     updatedAt: string;
-    type: string;
+    isSSVCluster: boolean;
   } & T
 >;
 

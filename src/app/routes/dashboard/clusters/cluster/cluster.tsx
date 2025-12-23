@@ -25,12 +25,17 @@ export const Cluster: FC = () => {
   const account = useAccount();
   const { clusterHash } = useClusterPageParams();
 
-  const { cluster, isLiquidated, balance } = useClusterState(clusterHash!, {
-    balance: { watch: true },
-    isLiquidated: { watch: true },
-  });
+  const { cluster, isLiquidated, balanceSSV, balanceETH } = useClusterState(
+    clusterHash!,
+    {
+      balance: { watch: true },
+      isLiquidated: { watch: true },
+    },
+  );
 
-  const isSSVCluster = cluster.data?.type === "ssv";
+  const isSSVCluster = cluster.data?.isSSVCluster;
+
+  const isLoadingBalance = balanceSSV.isLoading || balanceETH.isLoading;
 
   const operatorsUsability = useOperatorsUsability({
     account: account.address!,
@@ -77,19 +82,21 @@ export const Cluster: FC = () => {
               </Text>
               {isLiquidated.data && <Badge variant="error">Liquidated</Badge>}
             </div>
-            {balance.isLoading ? (
+            {isLoadingBalance ? (
               <Skeleton className="h-10 w-24 my-1" />
             ) : (
               <BalanceDisplay
-                amount={balance.data || 0n}
-                token={cluster.data?.type === "ssv" ? "SSV" : "ETH"}
+                amount={BigInt(
+                  isSSVCluster ? balanceSSV.data || 0n : balanceETH.data || 0n,
+                )}
+                token={isSSVCluster ? "SSV" : "ETH"}
               />
             )}
           </div>
           {Boolean(cluster.data?.validatorCount) && (
             <>
               <Divider />
-              {balance.isLoading ? (
+              {isLoadingBalance ? (
                 <div className="space-y-1">
                   <Skeleton className="h-6 w-[208px] " />
                   <Skeleton className="h-7 w-24 " />

@@ -1,9 +1,9 @@
 import { sortNumbers } from "@/lib/utils/number";
 import { add0x } from "@/lib/utils/strings";
 import type {
-  SolidityCluster,
-  Operator,
   Cluster,
+  Operator,
+  SolidityCluster,
   Validator,
 } from "@/types/api";
 import type { Address } from "abitype";
@@ -47,6 +47,8 @@ export const formatClusterData = (
 ) => ({
   active: cluster?.active ?? true,
   balance: BigInt(cluster?.balance ?? 0),
+  ethBalance: BigInt(cluster?.ethBalance ?? 0),
+  effectiveBalance: BigInt(cluster?.effectiveBalance ?? 0),
   index: BigInt(cluster?.index ?? 0),
   networkFeeIndex: BigInt(cluster?.networkFeeIndex ?? 0),
   validatorCount: cluster?.validatorCount ?? 0,

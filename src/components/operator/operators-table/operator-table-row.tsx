@@ -71,6 +71,14 @@ export const OperatorTableRow: FCProps = ({
         </div>
       </TableCell>
       <TableCell>{operator.validators_count}</TableCell>
+      <TableCell>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 text-gray-800 font-medium">
+            <img src="/images/networks/dark.svg"
+                 className="size-5" /> {formatSSV(BigInt(operator.effective_balance), 9)}
+          </div>
+        </div>
+      </TableCell>
     </TableRow>
   );
 };

@@ -14,10 +14,18 @@ import type {
 import type { Address } from "abitype";
 import { merge } from "lodash-es";
 
-export const getCluster = (hash: string) =>
-  api
-    .get<GetClusterResponse>(endpoint("clusters", hash))
-    .then((res) => merge(res.cluster, { type: "ssv" }));
+export const getCluster = (hash: string) => {
+  return api.get<GetClusterResponse>(endpoint("clusters", hash)).then((res) => {
+    return res.cluster
+      ? merge(res.cluster, {
+          // TODO(Chris): refine this logic
+          isSSVCluster: ![undefined, null, "0", 0].includes(
+            res.cluster?.balance,
+          ),
+        })
+      : res.cluster;
+  });
+};
 
 export const getClusterData = (hash: string) =>
   getCluster(hash)
@@ -67,7 +75,6 @@ export const getPaginatedClusterValidators = (
   params: GetPaginatedClusterValidators,
 ) => {
   const searchParams = validatorsSearchParamsSerializer(params);
-  console.log("searchParams:", searchParams);
 
   return api
     .get<PaginatedSearchValidatorsResponse>(

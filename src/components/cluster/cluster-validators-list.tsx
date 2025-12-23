@@ -1,6 +1,6 @@
-import type { FC, ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef, FC } from "react";
 import { CopyBtn } from "@/components/ui/copy-btn";
-import { TableRow, TableCell } from "@/components/ui/grid-table";
+import { TableCell, TableRow } from "@/components/ui/grid-table";
 import {
   BeaconchainBtn,
   SsvExplorerBtn,
@@ -91,10 +91,10 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                     </DropdownMenuItem>
                   </a>
                   <SwitchToEthMenuOptionTooltip
-                    enabled={cluster.data?.type === "ssv"}
+                    enabled={cluster.data?.isSSVCluster}
                   >
                     <DropdownMenuItem
-                      disabled={cluster.data?.type === "ssv"}
+                      disabled={cluster.data?.isSSVCluster}
                       onClick={() => {
                         useBulkActionContext.state.selectedPublicKeys = [
                           item.public_key,

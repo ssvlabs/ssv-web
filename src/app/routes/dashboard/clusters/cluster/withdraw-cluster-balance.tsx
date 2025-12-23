@@ -25,7 +25,7 @@ import { setOptimisticData } from "@/lib/react-query";
 import { isBigIntChanged, stringifyBigints } from "@/lib/utils/bigint";
 import { formatSSV } from "@/lib/utils/number";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, type FC } from "react";
+import { type FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -41,12 +41,11 @@ export const WithdrawClusterBalance: FC = () => {
   const withdraw = useWithdrawClusterBalance(params.clusterHash!);
   const liquidate = useLiquidateCluster(params.clusterHash!);
 
-  const { balance: clusterBalance, cluster } = useClusterState(
-    params.clusterHash!,
-    {
-      balance: { watch: true },
-    },
-  );
+  const { balanceETH, cluster } = useClusterState(params.clusterHash!, {
+    balance: { watch: true },
+  });
+
+  const clusterBalance = balanceETH.data || 0n;
 
   const [hasAgreed, setHasAgreed] = useState(false);
 
@@ -109,9 +108,7 @@ export const WithdrawClusterBalance: FC = () => {
         <Text variant="headline4" className="text-gray-500">
           Available Balance
         </Text>
-        <Text variant="headline1">
-          {formatSSV(clusterBalance.data ?? 0n)} SSV
-        </Text>
+        <Text variant="headline1">{formatSSV(clusterBalance)} SSV</Text>
       </Card>
       <Form {...form}>
         <Card as="form" className="w-full" onSubmit={submit}>
@@ -126,7 +123,7 @@ export const WithdrawClusterBalance: FC = () => {
                 <FormControl>
                   <BigNumberInput
                     placeholder="0"
-                    max={clusterBalance.data ?? 0n}
+                    max={clusterBalance}
                     value={field.value}
                     onChange={field.onChange}
                     render={(props, ref) => (
@@ -143,13 +140,9 @@ export const WithdrawClusterBalance: FC = () => {
                             variant="secondary"
                             className="font-semibold px-4"
                             onClick={() =>
-                              form.setValue(
-                                "amount",
-                                clusterBalance.data ?? 0n,
-                                {
-                                  shouldValidate: true,
-                                },
-                              )
+                              form.setValue("amount", clusterBalance, {
+                                shouldValidate: true,
+                              })
                             }
                           >
                             MAX

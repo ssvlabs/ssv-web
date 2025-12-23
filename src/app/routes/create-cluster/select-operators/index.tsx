@@ -99,6 +99,8 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
   });
   const { clusterHash } = useClusterPageParams();
 
+  console.log(cluster.data);
+
   const isClusterExists =
     reshareFlow.operators.length === 0 &&
     isClusterSizeMet &&

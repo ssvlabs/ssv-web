@@ -16,7 +16,7 @@ importers:
         version: 4.1.0(@preact/signals-core@1.12.1)
       '@deepsignal/react':
         specifier: ^4.0.0
-        version: 4.0.0(@preact/signals-core@1.12.1)(@preact/signals-react@2.1.0(react@18.3.1))
+        version: 4.1.0(@preact/signals-core@1.12.1)(@preact/signals-react@2.1.0(react@18.3.1))
       '@fontsource/manrope':
         specifier: ^5.0.20
         version: 5.0.20
@@ -1223,18 +1223,13 @@ packages:
     resolution: {integrity: sha512-DSHae2obMSMkAtTBSOulg5X7/z+rGLxcXQIkg3OmWvY6wifojge5uVMydfhUvs7yQj+V7jNmRZ2Xzl8GJyqRgg==}
     engines: {node: '>=v18'}
 
-  '@deepsignal/core@4.0.0':
-    resolution: {integrity: sha512-SvtsjPv1BzORW9u5VMMFKzXW57me2oyQnTg791GmchOSNP19rQOTt4fdWts0WFSGqBRb0zHXStx0kIi4E6dBqA==}
-    peerDependencies:
-      '@preact/signals-core': 1.x.x
-
   '@deepsignal/core@4.1.0':
     resolution: {integrity: sha512-JzN2XYybK5voeJ5SG439fKnJBvjRNHUO50h9xpYVQGIP9N7fAzSXsYl6rBdG9cdxVotnZ32PWSQQAiLUpOD44Q==}
     peerDependencies:
       '@preact/signals-core': 1.x.x
 
-  '@deepsignal/react@4.0.0':
-    resolution: {integrity: sha512-0DZr9L7ivSxLYz3NhgkNt/IfChgG3txh374EYkfM/KqPgT1UPBf+ocjvq6KL901jmQt8ApR0I/yx3Ol2u8b5VA==}
+  '@deepsignal/react@4.1.0':
+    resolution: {integrity: sha512-0lXYbFSBDca0zvbXxQYZBTRahjoDVi7f/nXFVMNsO8rcHuaGlrXdw8ha1Pa1LkxyG01qiT6bYKww3aj1JaWNhg==}
     peerDependencies:
       '@preact/signals-react': 1.x.x
 
@@ -9502,17 +9497,13 @@ snapshots:
       '@types/conventional-commits-parser': 5.0.0
       chalk: 5.3.0
 
-  '@deepsignal/core@4.0.0(@preact/signals-core@1.12.1)':
-    dependencies:
-      '@preact/signals-core': 1.12.1
-
   '@deepsignal/core@4.1.0(@preact/signals-core@1.12.1)':
     dependencies:
       '@preact/signals-core': 1.12.1
 
-  '@deepsignal/react@4.0.0(@preact/signals-core@1.12.1)(@preact/signals-react@2.1.0(react@18.3.1))':
+  '@deepsignal/react@4.1.0(@preact/signals-core@1.12.1)(@preact/signals-react@2.1.0(react@18.3.1))':
     dependencies:
-      '@deepsignal/core': 4.0.0(@preact/signals-core@1.12.1)
+      '@deepsignal/core': 4.1.0(@preact/signals-core@1.12.1)
       '@preact/signals-react': 2.1.0(react@18.3.1)
     transitivePeerDependencies:
       - '@preact/signals-core'

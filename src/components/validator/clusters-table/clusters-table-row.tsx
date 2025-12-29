@@ -120,7 +120,7 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
         {apiCluster.data?.isSSVCluster && (
           <Button
             as={Link}
-            to="/switch-wizard"
+            to={`/switch-wizard/${cluster.clusterId}`}
             onClick={(ev) => {
               ev.stopPropagation();
             }}

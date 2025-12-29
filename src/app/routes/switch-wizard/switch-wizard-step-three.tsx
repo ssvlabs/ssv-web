@@ -1,50 +1,32 @@
 import { SwitchWizardStepThree } from "@/components/wizard";
+import { useClusterState } from "@/hooks/cluster/use-cluster-state";
+import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
+import { useOperators } from "@/hooks/operator/use-operators";
 import { useNavigate } from "react-router-dom";
-import type { Operator } from "@/types/api";
-
-// Mock operators for demonstration
-const mockOperators: Pick<Operator, "id" | "name" | "logo" | "fee">[] = [
-  {
-    id: 1001,
-    name: "Operator Alpha",
-    fee: "23700000000000000",
-    logo: "",
-  },
-  {
-    id: 1002,
-    name: "Operator Beta",
-    fee: "22800000000000000",
-    logo: "",
-  },
-  {
-    id: 1003,
-    name: "Operator Gamma",
-    fee: "22200000000000000",
-    logo: "",
-  },
-  {
-    id: 1004,
-    name: "Operator Delta",
-    fee: "21200000000000000",
-    logo: "",
-  },
-];
+import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway.ts";
 
 export const SwitchWizardStepThreeRoute = () => {
   const navigate = useNavigate();
+  const { clusterHash } = useClusterPageParams();
+  const { cluster } = useClusterState(clusterHash!, {
+    isLiquidated: { enabled: false },
+    balance: { enabled: false },
+  });
+  const operatorsQuery = useOperators(cluster.data?.operators ?? []);
+  const operators = operatorsQuery.data ?? [];
+  const basePath = `/switch-wizard/${clusterHash}`;
+
+  const { data: clusterRunway } = useClusterRunway(clusterHash);
 
   return (
     <SwitchWizardStepThree
       onNext={() => {
-        navigate("/switch-wizard/step-four");
-      }}
-      onBack={() => {
-        navigate("/switch-wizard/step-two");
+        navigate(`${basePath}/step-four`);
       }}
       backButtonLabel="Back"
-      navigateRoutePath="/switch-wizard/step-two"
-      operators={mockOperators}
-      fundingDays={182}
+      navigateRoutePath={`${basePath}/step-two`}
+      operators={operators}
+      fundingDays={Number(clusterRunway?.runway) || 0}
     />
   );
 };

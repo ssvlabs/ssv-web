@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { ChevronDown, ArrowRight } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils/tw.ts";
 import { OperatorAvatar } from "@/components/operator/operator-avatar.tsx";
 import { Divider } from "@/components/ui/divider.tsx";
@@ -7,29 +7,45 @@ import { Text } from "@/components/ui/text.tsx";
 import { Collapse } from "react-collapse";
 import type { Operator } from "@/types/api.ts";
 import { getYearlyFee } from "@/lib/utils/operator.ts";
-import { formatSSV } from "@/lib/utils/number.ts";
+import { currencyFormatter, formatETH, formatSSV } from "@/lib/utils/number.ts";
+import { useRates } from "@/hooks/use-rates.ts";
+import { formatUnits } from "viem";
 
 type OperatorFeeComparisonProps = {
-  operators: Pick<Operator, "id" | "name" | "logo" | "fee">[];
+  operators: Pick<Operator, "id" | "name" | "logo" | "fee" | "eth_fee">[];
 };
+
+const formatUsd = (value: bigint, rate: number) =>
+  `~${currencyFormatter.format(rate * +formatUnits(value, 18))}`;
 
 export const OperatorFeeComparison = ({
   operators,
 }: OperatorFeeComparisonProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const rates = useRates();
+  const ssvRate = rates.data?.ssv ?? 0;
+  const ethRate = rates.data?.eth ?? 0;
 
   // Calculate totals from operators
   const totals = useMemo(() => {
     const totalYearlyFeeSSV = operators.reduce(
-      (sum, op) => sum + getYearlyFee(BigInt(op.fee)),
+      (sum, op) => sum + getYearlyFee(BigInt(op.fee || "0")),
+      0n,
+    );
+    const totalYearlyFeeETH = operators.reduce(
+      (sum, op) => sum + getYearlyFee(BigInt(op.eth_fee || "0")),
       0n,
     );
     const totalSSVFormatted = `${formatSSV(totalYearlyFeeSSV)} SSV`;
+    const totalETHFormatted = `${formatETH(totalYearlyFeeETH)} ETH`;
 
     return {
       totalSSVFormatted,
+      totalSSVUsd: formatUsd(totalYearlyFeeSSV, ssvRate),
+      totalETHFormatted,
+      totalETHUsd: formatUsd(totalYearlyFeeETH, ethRate),
     };
-  }, [operators]);
+  }, [operators, ssvRate, ethRate]);
 
   return (
     <div
@@ -70,7 +86,10 @@ export const OperatorFeeComparison = ({
 
           {/* Operator Rows */}
           {operators.map((operator) => {
-            const yearlyFeeSSV = formatSSV(getYearlyFee(BigInt(operator.fee)));
+            const yearlyFeeSSV = getYearlyFee(BigInt(operator.fee || "0"));
+            const yearlyFeeETH = getYearlyFee(BigInt(operator.eth_fee || "0"));
+            const yearlyFeeSSVFormatted = formatSSV(yearlyFeeSSV);
+            const yearlyFeeETHFormatted = formatETH(yearlyFeeETH);
 
             return (
               <div key={operator.id} className="contents">
@@ -96,10 +115,10 @@ export const OperatorFeeComparison = ({
                     variant="body-2-medium"
                     className="text-gray-800 text-right font-mono tracking-tight"
                   >
-                    {yearlyFeeSSV} SSV
+                    {yearlyFeeSSVFormatted} SSV
                   </Text>
                   <Text variant="caption-medium" className="text-gray-500">
-                    ~$0
+                    {formatUsd(yearlyFeeSSV, ssvRate)}
                   </Text>
                 </div>
 
@@ -112,10 +131,10 @@ export const OperatorFeeComparison = ({
                     variant="body-2-medium"
                     className="text-gray-800 text-right font-mono tracking-tight"
                   >
-                    0 ETH
+                    {yearlyFeeETHFormatted} ETH
                   </Text>
                   <Text variant="caption-medium" className="text-gray-500">
-                    ~$0
+                    {formatUsd(yearlyFeeETH, ethRate)}
                   </Text>
                 </div>
               </div>
@@ -141,7 +160,7 @@ export const OperatorFeeComparison = ({
               {totals.totalSSVFormatted}
             </Text>
             <Text variant="body-3-medium" className="text-gray-500">
-              ~$0
+              {totals.totalSSVUsd}
             </Text>
           </div>
           <div className="flex items-center justify-center">
@@ -152,10 +171,10 @@ export const OperatorFeeComparison = ({
               variant="headline4"
               className="text-gray-800 text-right font-mono tracking-tight"
             >
-              0 ETH
+              {totals.totalETHFormatted}
             </Text>
             <Text variant="body-3-medium" className="text-gray-500">
-              ~$0
+              {totals.totalETHUsd}
             </Text>
           </div>
         </div>

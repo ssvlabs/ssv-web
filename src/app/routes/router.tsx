@@ -39,19 +39,19 @@ const routes = [
         element: <FeeRecipientAddress />,
       },
       {
-        path: "switch-wizard",
+        path: "switch-wizard/:clusterHash",
         element: <SwitchWizardStepOneRoute />,
       },
       {
-        path: "switch-wizard/step-two",
+        path: "switch-wizard/:clusterHash/step-two",
         element: <SwitchWizardStepTwoRoute />,
       },
       {
-        path: "switch-wizard/step-three",
+        path: "switch-wizard/:clusterHash/step-three",
         element: <SwitchWizardStepThreeRoute />,
       },
       {
-        path: "switch-wizard/step-four",
+        path: "switch-wizard/:clusterHash/step-four",
         element: <SwitchWizardStepFourRoute />,
       },
       joinRoutes,

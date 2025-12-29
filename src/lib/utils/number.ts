@@ -46,6 +46,8 @@ export const ethFormatter = new Intl.NumberFormat("en-US", {
 export const formatSSV = (num: bigint, decimals = 18) =>
   ethFormatter.format(+formatUnits(num, decimals));
 
+export const formatETH = formatSSV;
+
 export const formatBigintInput = (num: bigint, decimals = 18) =>
   bigintFormatter.format(+formatUnits(num, decimals));
 

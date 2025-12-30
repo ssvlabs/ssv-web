@@ -19,47 +19,130 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/tw";
 import { Spacer } from "@/components/ui/spacer";
 import type { Operator } from "@/types/api";
-import { numberFormatter } from "@/lib/utils/number";
+import { currencyFormatter, ethFormatter } from "@/lib/utils/number";
+import { useRates } from "@/hooks/use-rates";
+import {
+  computeDailyAmount,
+  computeLiquidationCollateralCostPerValidator,
+} from "@/lib/utils/keystore";
+import { useSsvNetworkFee } from "@/hooks/use-ssv-network-fee";
+import { formatUnits } from "viem";
 
 type SwitchWizardStepTwoProps = {
-  onNext: () => void;
+  onNext: (totalDeposit: number) => void;
   onBack?: () => void;
   backButtonLabel?: string;
   navigateRoutePath?: string;
-  operators?: Pick<Operator, "id" | "name" | "logo" | "fee">[];
+  operators?: Pick<Operator, "id" | "name" | "logo" | "fee" | "eth_fee">[];
   validatorsAmount?: number;
   effectiveBalance?: number;
+  currentRunwayDays?: number;
 };
 
 const schema = z.object({
-  selected: z.enum(["current-balance", "year", "custom"]),
+  selected: z.enum(["current", "half-year", "year", "custom"]),
   custom: z.coerce.number().positive().min(1),
 });
+
+const periods: Record<
+  Exclude<z.infer<typeof schema>["selected"], "custom">,
+  number
+> = {
+  current: 0,
+  "half-year": 182,
+  year: 365,
+};
 
 export const SwitchWizardStepTwo = ({
   onNext,
   onBack,
   backButtonLabel = "Back",
   navigateRoutePath,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  operators: _operators = [],
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  validatorsAmount: _validatorsAmount = 1,
+  operators = [],
+  validatorsAmount = 1,
   effectiveBalance,
+  currentRunwayDays = 0,
 }: SwitchWizardStepTwoProps) => {
+  const rates = useRates();
+  const networkFees = useSsvNetworkFee();
+
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
       custom: 182,
-      selected: "current-balance",
+      selected: "current",
     },
     resolver: zodResolver(schema),
   });
 
   const values = form.watch();
+  const selectedDays =
+    values.selected === "custom"
+      ? values.custom
+      : values.selected === "current"
+        ? currentRunwayDays
+        : periods[values.selected];
+
+  const operatorsFee = operators.reduce(
+    (sum, operator) => sum + BigInt(operator.eth_fee || "0"),
+    0n,
+  );
+
+  const effectiveBalanceValue = effectiveBalance ?? 0;
+  const ethRate = rates.data?.eth ?? 0;
+
+  const getCostsForDays = (days: number) => {
+    if (!networkFees.isSuccess || days <= 0) return null;
+    const networkFee = networkFees.ssvNetworkFee.data ?? 0n;
+    const liquidationThreshold =
+      networkFees.liquidationThresholdPeriod.data ?? 0n;
+    const minimumLiquidationCollateral =
+      networkFees.minimumLiquidationCollateral.data ?? 0n;
+
+    const operatorsCost = computeDailyAmount(operatorsFee, days);
+    const networkCost = computeDailyAmount(networkFee, days);
+    const liquidationCost = computeLiquidationCollateralCostPerValidator({
+      networkFee,
+      operatorsFee,
+      liquidationCollateralPeriod: liquidationThreshold,
+      minimumLiquidationCollateral,
+      validators: BigInt(validatorsAmount || 1),
+    });
+
+    const operatorsPerEth = Number(formatUnits(operatorsCost, 18)) / 32;
+    const networkPerEth = Number(formatUnits(networkCost, 18)) / 32;
+    const liquidationPerEth = Number(formatUnits(liquidationCost, 18)) / 32;
+
+    const operatorsSubtotal = operatorsPerEth * effectiveBalanceValue;
+    const networkSubtotal = networkPerEth * effectiveBalanceValue;
+    const liquidationSubtotal = liquidationPerEth * effectiveBalanceValue;
+    const totalDeposit =
+      operatorsSubtotal + networkSubtotal + liquidationSubtotal;
+
+    return {
+      operatorsPerEth,
+      networkPerEth,
+      liquidationPerEth,
+      operatorsSubtotal,
+      networkSubtotal,
+      liquidationSubtotal,
+      totalDeposit,
+    };
+  };
+
+  const selectedCosts = getCostsForDays(selectedDays);
+  const currentCosts = getCostsForDays(currentRunwayDays);
+  const halfYearCosts = getCostsForDays(periods["half-year"]);
+  const yearCosts = getCostsForDays(periods.year);
+  const customCosts = getCostsForDays(values.custom);
+
+  const formatEth = (value?: number) =>
+    value !== undefined ? `${ethFormatter.format(value)} ETH` : "-";
+
+  const formatUsd = (value?: number) =>
+    value !== undefined ? `~${currencyFormatter.format(ethRate * value)}` : "";
 
   const submit = form.handleSubmit(() => {
-    // TODO: Handle form submission
-    onNext();
+    onNext(selectedCosts?.totalDeposit ?? 0);
   });
 
   return (
@@ -86,17 +169,6 @@ export const SwitchWizardStepTwo = ({
               operational runway (You can always manage it later by withdrawing
               or depositing more funds).
             </Text>
-            {typeof effectiveBalance === "number" && effectiveBalance > 0 && (
-              <div className="flex items-center gap-2 rounded-lg border border-gray-300 bg-gray-50 px-3 py-2">
-                <Text variant="body-3-medium" className="text-gray-500">
-                  Total Effective Balance
-                </Text>
-                <Spacer />
-                <Text variant="body-3-semibold" className="text-gray-800">
-                  {numberFormatter.format(effectiveBalance)} ETH
-                </Text>
-              </div>
-            )}
           </div>
 
           <FormField
@@ -109,21 +181,40 @@ export const SwitchWizardStepTwo = ({
                   onValueChange={field.onChange}
                   className="flex flex-col gap-2 [&>*]:w-full"
                 >
-                  <FormLabel htmlFor="current-balance">
+                  <FormLabel htmlFor="current">
                     <div className="flex items-center gap-3 border border-gray-400 rounded-lg py-[18px] px-6 outline outline-[4px] outline-none outline-offset-0 has-[input:checked]:border-primary-500 has-[input:checked]:outline-primary-100">
-                      <RadioGroupItem
-                        value="current-balance"
-                        id="current-balance"
-                      />
-                      <Text variant="body-2-semibold">Use Current Balance</Text>
-                      <Text variant="body-3-medium" className="text-gray-500">
-                        (~40 Days)
-                      </Text>
+                      <RadioGroupItem value="current" id="current" />
+                      <div className="flex flex-col gap-1">
+                        <Text variant="body-2-semibold">Current Period</Text>
+                        <Text variant="body-3-medium" className="text-gray-500">
+                          {currentRunwayDays > 0
+                            ? `${currentRunwayDays} Days`
+                            : "-"}
+                        </Text>
+                      </div>
                       <Spacer />
                       <div className="flex flex-col items-end">
-                        <Text variant="body-1-bold">0 ETH</Text>
+                        <Text variant="body-1-bold">
+                          {formatEth(currentCosts?.totalDeposit)}
+                        </Text>
                         <Text variant="body-3-medium" className="text-gray-500">
-                          $0.0
+                          {formatUsd(currentCosts?.totalDeposit)}
+                        </Text>
+                      </div>
+                    </div>
+                  </FormLabel>
+
+                  <FormLabel htmlFor="half-year">
+                    <div className="flex items-center gap-3 border border-gray-400 rounded-lg py-[18px] px-6 outline outline-[4px] outline-none outline-offset-0 has-[input:checked]:border-primary-500 has-[input:checked]:outline-primary-100">
+                      <RadioGroupItem value="half-year" id="half-year" />
+                      <Text variant="body-2-semibold">6 Months</Text>
+                      <Spacer />
+                      <div className="flex flex-col items-end">
+                        <Text variant="body-1-bold">
+                          {formatEth(halfYearCosts?.totalDeposit)}
+                        </Text>
+                        <Text variant="body-3-medium" className="text-gray-500">
+                          {formatUsd(halfYearCosts?.totalDeposit)}
                         </Text>
                       </div>
                     </div>
@@ -135,9 +226,11 @@ export const SwitchWizardStepTwo = ({
                       <Text variant="body-2-semibold">1 Year</Text>
                       <Spacer />
                       <div className="flex flex-col items-end">
-                        <Text variant="body-1-bold">3.642 ETH</Text>
+                        <Text variant="body-1-bold">
+                          {formatEth(yearCosts?.totalDeposit)}
+                        </Text>
                         <Text variant="body-3-medium" className="text-gray-500">
-                          ~$10,611.03
+                          {formatUsd(yearCosts?.totalDeposit)}
                         </Text>
                       </div>
                     </div>
@@ -151,13 +244,17 @@ export const SwitchWizardStepTwo = ({
                         <Spacer />
                         <div className="flex flex-col items-end">
                           <Text variant="body-1-bold">
-                            {values.selected === "custom" ? "7.2812 ETH" : "-"}
+                            {values.selected === "custom"
+                              ? formatEth(customCosts?.totalDeposit)
+                              : "-"}
                           </Text>
                           <Text
                             variant="body-3-medium"
                             className="text-gray-500"
                           >
-                            {values.selected === "custom" ? "~$21,150.32" : ""}
+                            {values.selected === "custom"
+                              ? formatUsd(customCosts?.totalDeposit)
+                              : ""}
                           </Text>
                         </div>
                       </div>
@@ -199,7 +296,6 @@ export const SwitchWizardStepTwo = ({
             )}
           />
 
-          {/* Funding Summary - placeholder ETH values */}
           <div className="flex flex-col gap-2">
             <div
               className="grid gap-2 gap-x-8"
@@ -212,7 +308,7 @@ export const SwitchWizardStepTwo = ({
                 variant="body-3-semibold"
                 className="text-gray-500 text-right"
               >
-                Fee (182 Days)
+                Fee ({selectedDays} Days)
               </Text>
               <Text
                 variant="body-3-semibold"
@@ -229,24 +325,36 @@ export const SwitchWizardStepTwo = ({
 
               <Text variant="body-2-medium">Operators fee</Text>
               <Text variant="body-2-medium" className="text-right">
-                0.0416 ETH
+                {selectedCosts
+                  ? `${ethFormatter.format(selectedCosts.operatorsPerEth)} ETH`
+                  : "-"}
               </Text>
               <Text variant="body-2-medium" className="text-right">
-                32 ETH
+                {effectiveBalanceValue
+                  ? `${ethFormatter.format(effectiveBalanceValue)} ETH`
+                  : "-"}
               </Text>
               <Text variant="body-2-medium" className="text-right">
-                1.3312 ETH
+                {selectedCosts
+                  ? `${ethFormatter.format(selectedCosts.operatorsSubtotal)} ETH`
+                  : "-"}
               </Text>
 
               <Text variant="body-2-medium">Network fee</Text>
               <Text variant="body-2-medium" className="text-right">
-                0.0203 ETH
+                {selectedCosts
+                  ? `${ethFormatter.format(selectedCosts.networkPerEth)} ETH`
+                  : "-"}
               </Text>
               <Text variant="body-2-medium" className="text-right">
-                32 ETH
+                {effectiveBalanceValue
+                  ? `${ethFormatter.format(effectiveBalanceValue)} ETH`
+                  : "-"}
               </Text>
               <Text variant="body-2-medium" className="text-right">
-                0.6496 ETH
+                {selectedCosts
+                  ? `${ethFormatter.format(selectedCosts.networkSubtotal)} ETH`
+                  : "-"}
               </Text>
 
               <div className="flex gap-2 items-center">
@@ -254,13 +362,21 @@ export const SwitchWizardStepTwo = ({
                 {/* Info icon placeholder */}
               </div>
               <Text variant="body-2-medium" className="text-right">
-                0.0015 ETH
+                {selectedCosts
+                  ? `${ethFormatter.format(selectedCosts.liquidationPerEth)} ETH`
+                  : "-"}
               </Text>
               <Text variant="body-2-medium" className="text-right">
-                32 ETH
+                {effectiveBalanceValue
+                  ? `${ethFormatter.format(effectiveBalanceValue)} ETH`
+                  : "-"}
               </Text>
               <Text variant="body-2-medium" className="text-right">
-                0.0048 ETH
+                {selectedCosts
+                  ? `${ethFormatter.format(
+                      selectedCosts.liquidationSubtotal,
+                    )} ETH`
+                  : "-"}
               </Text>
             </div>
 
@@ -269,9 +385,17 @@ export const SwitchWizardStepTwo = ({
             <div className="flex items-start justify-between">
               <Text variant="body-2-medium">Total</Text>
               <div className="flex flex-col items-end">
-                <Text variant="headline4">14.6625 ETH</Text>
+                <Text variant="headline4">
+                  {selectedCosts
+                    ? `${ethFormatter.format(selectedCosts.totalDeposit)} ETH`
+                    : "-"}
+                </Text>
                 <Text variant="body-3-medium" className="text-gray-500">
-                  ~$46,468.65
+                  {selectedCosts
+                    ? `~${currencyFormatter.format(
+                        ethRate * selectedCosts.totalDeposit,
+                      )}`
+                    : ""}
                 </Text>
               </div>
             </div>

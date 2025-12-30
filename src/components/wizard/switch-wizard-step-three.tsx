@@ -21,6 +21,7 @@ type SwitchWizardStepThreeProps = {
   navigateRoutePath?: string;
   operators: Pick<Operator, "id" | "name" | "logo" | "eth_fee">[];
   fundingDays: number;
+  totalDeposit?: number;
 };
 
 // Mock data - will be replaced with real calculations
@@ -45,6 +46,7 @@ export const SwitchWizardStepThree = ({
   navigateRoutePath,
   operators,
   fundingDays,
+  totalDeposit,
 }: SwitchWizardStepThreeProps) => {
   const [isAcknowledged, setIsAcknowledged] = useState(false);
   const rates = useRates();
@@ -177,9 +179,9 @@ export const SwitchWizardStepThree = ({
           <div className="flex items-start justify-between">
             <Text variant="body-2-medium">Total Deposit</Text>
             <div className="flex flex-col items-end">
-              <Text variant="headline4">{mockFundingSummary.totalDeposit}</Text>
+              <Text variant="headline4">{totalDeposit ?? "-"}</Text>
               <Text variant="body-3-medium" className="text-gray-500">
-                {mockFundingSummary.totalDepositUSD}
+                {totalDeposit ?? ""}
               </Text>
             </div>
           </div>

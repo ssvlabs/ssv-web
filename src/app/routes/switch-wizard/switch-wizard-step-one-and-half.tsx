@@ -47,8 +47,12 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
 
   return (
     <SwitchWizardStepOneAndHalf
-      onNext={() => {
-        navigate(`${basePath}/step-two`);
+      onNext={(effectiveBalance) => {
+        navigate(`${basePath}/step-two`, {
+          state: {
+            effectiveBalance,
+          },
+        });
       }}
       backButtonLabel="Back"
       navigateRoutePath={basePath}

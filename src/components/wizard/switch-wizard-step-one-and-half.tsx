@@ -29,7 +29,7 @@ type ValidatorRow = {
 };
 
 type SwitchWizardStepOneAndHalfProps = {
-  onNext: () => void;
+  onNext: (effectiveBalance: number) => void;
   onBack?: () => void;
   backButtonLabel?: string;
   navigateRoutePath?: string;
@@ -198,7 +198,7 @@ export const SwitchWizardStepOneAndHalf = ({
           size="xl"
           width="full"
           className="font-semibold"
-          onClick={onNext}
+          onClick={() => onNext(numericBalance)}
           disabled={!isConfirmed || numericBalance <= 0}
         >
           Next

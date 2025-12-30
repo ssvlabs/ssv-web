@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/tw";
 import { Spacer } from "@/components/ui/spacer";
 import type { Operator } from "@/types/api";
+import { numberFormatter } from "@/lib/utils/number";
 
 type SwitchWizardStepTwoProps = {
   onNext: () => void;
@@ -27,6 +28,7 @@ type SwitchWizardStepTwoProps = {
   navigateRoutePath?: string;
   operators?: Pick<Operator, "id" | "name" | "logo" | "fee">[];
   validatorsAmount?: number;
+  effectiveBalance?: number;
 };
 
 const schema = z.object({
@@ -43,6 +45,7 @@ export const SwitchWizardStepTwo = ({
   operators: _operators = [],
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   validatorsAmount: _validatorsAmount = 1,
+  effectiveBalance,
 }: SwitchWizardStepTwoProps) => {
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
@@ -83,6 +86,17 @@ export const SwitchWizardStepTwo = ({
               operational runway (You can always manage it later by withdrawing
               or depositing more funds).
             </Text>
+            {typeof effectiveBalance === "number" && effectiveBalance > 0 && (
+              <div className="flex items-center gap-2 rounded-lg border border-gray-300 bg-gray-50 px-3 py-2">
+                <Text variant="body-3-medium" className="text-gray-500">
+                  Total Effective Balance
+                </Text>
+                <Spacer />
+                <Text variant="body-3-semibold" className="text-gray-800">
+                  {numberFormatter.format(effectiveBalance)} ETH
+                </Text>
+              </div>
+            )}
           </div>
 
           <FormField

@@ -9,14 +9,18 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip } from "@/components/ui/tooltip";
 import { FaCircleInfo } from "react-icons/fa6";
 import type { Operator } from "@/types/api";
+import { getYearlyFee } from "@/lib/utils/operator";
+import { currencyFormatter, ethFormatter } from "@/lib/utils/number";
+import { formatUnits } from "viem";
+import { useRates } from "@/hooks/use-rates";
 
 type SwitchWizardStepThreeProps = {
   onNext: () => void;
   onBack?: () => void;
   backButtonLabel?: string;
   navigateRoutePath?: string;
-  operators?: Pick<Operator, "id" | "name" | "logo" | "fee">[];
-  fundingDays?: number;
+  operators: Pick<Operator, "id" | "name" | "logo" | "eth_fee">[];
+  fundingDays: number;
 };
 
 // Mock data - will be replaced with real calculations
@@ -39,22 +43,17 @@ export const SwitchWizardStepThree = ({
   onBack,
   backButtonLabel = "Back",
   navigateRoutePath,
-  operators = [],
-  fundingDays = 182,
+  operators,
+  fundingDays,
 }: SwitchWizardStepThreeProps) => {
   const [isAcknowledged, setIsAcknowledged] = useState(false);
+  const rates = useRates();
+  const ethRate = rates.data?.eth ?? 0;
 
-  // Placeholder ETH amounts per year for operators
-  const getOperatorETHPerYear = (operatorId: number) => {
-    // Mock values - will be replaced with real calculations
-    const mockValues: Record<number, string> = {
-      1001: "0.1084 ETH",
-      1002: "0.1046 ETH",
-      1003: "0.1014 ETH",
-      1004: "0.971 ETH",
-    };
-    return mockValues[operatorId] || "0 ETH";
-  };
+  const formatETH = (value: bigint) =>
+    `${ethFormatter.format(+formatUnits(value, 18))} ETH`;
+  const formatUsd = (value: bigint) =>
+    `~${currencyFormatter.format(ethRate * +formatUnits(value, 18))}`;
 
   const handleSubmit = () => {
     if (!isAcknowledged) return;
@@ -81,22 +80,27 @@ export const SwitchWizardStepThree = ({
           <Text variant="body-3-semibold" className="text-gray-500">
             Selected Operators
           </Text>
-          {operators.map((operator) => (
-            <div
-              className="flex justify-between items-center"
-              key={operator.id}
-            >
-              <OperatorDetails operator={operator} isShowExplorerLink={false} />
-              <div className="text-end space-y-1">
-                <Text variant="body-2-medium">
-                  {getOperatorETHPerYear(operator.id)}
-                </Text>
-                <Text variant="body-3-medium" className="text-gray-500">
-                  /year
-                </Text>
+          {operators.map((operator) => {
+            const yearlyEthFee = getYearlyFee(BigInt(operator.eth_fee || "0"));
+
+            return (
+              <div
+                className="flex justify-between items-center"
+                key={operator.id}
+              >
+                <OperatorDetails
+                  operator={operator}
+                  isShowExplorerLink={false}
+                />
+                <div className="text-end space-y-1">
+                  <Text variant="body-2-medium">{formatETH(yearlyEthFee)}</Text>
+                  <Text variant="body-3-medium" className="text-gray-500">
+                    {formatUsd(yearlyEthFee)} /year
+                  </Text>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <Divider />

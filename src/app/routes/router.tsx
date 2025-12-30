@@ -14,6 +14,7 @@ import { clustersRoutes } from "./router/route-definitions/clusters-routes";
 import { joinRoutes } from "./router/route-definitions/join-routes";
 import { operatorsRoutes } from "./router/route-definitions/operators-routes";
 import { SwitchWizardStepOneRoute } from "./switch-wizard/switch-wizard-step-one";
+import { SwitchWizardStepOneAndHalfRoute } from "./switch-wizard/switch-wizard-step-one-and-half";
 import { SwitchWizardStepTwoRoute } from "./switch-wizard/switch-wizard-step-two";
 import { SwitchWizardStepThreeRoute } from "./switch-wizard/switch-wizard-step-three";
 import { SwitchWizardStepFourRoute } from "./switch-wizard/switch-wizard-step-four";
@@ -41,6 +42,10 @@ const routes = [
       {
         path: "switch-wizard/:clusterHash",
         element: <SwitchWizardStepOneRoute />,
+      },
+      {
+        path: "switch-wizard/:clusterHash/step-one",
+        element: <SwitchWizardStepOneAndHalfRoute />,
       },
       {
         path: "switch-wizard/:clusterHash/step-two",

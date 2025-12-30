@@ -21,7 +21,7 @@ export const SwitchWizardStepTwoRoute = () => {
         navigate(`${basePath}/step-three`);
       }}
       backButtonLabel="Back"
-      navigateRoutePath={basePath}
+      navigateRoutePath={`${basePath}/step-one`}
       operators={operators}
       validatorsAmount={cluster.data?.validatorCount ?? 1}
     />

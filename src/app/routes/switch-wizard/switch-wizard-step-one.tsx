@@ -19,7 +19,7 @@ export const SwitchWizardStepOneRoute = () => {
   return (
     <SwitchWizardStepOne
       onNext={() => {
-        navigate(`${basePath}/step-two`);
+        navigate(`${basePath}/step-one`);
       }}
       backButtonLabel="Back"
       navigateRoutePath={clusterPath}

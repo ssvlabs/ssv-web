@@ -61,7 +61,7 @@ export const SwitchWizardStepOne = ({
           onClick={onNext}
           className="font-semibold"
         >
-          Choose Your Period
+          Next
         </Button>
       </Card>
     </Container>

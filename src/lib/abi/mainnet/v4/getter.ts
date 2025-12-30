@@ -17,6 +17,11 @@ export const MainnetV4GetterABI = [
   },
   {
     inputs: [],
+    name: "AlreadyVoted",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "ApprovalNotWithinTimeframe",
     type: "error",
   },
@@ -75,6 +80,21 @@ export const MainnetV4GetterABI = [
   {
     inputs: [],
     name: "ClusterNotLiquidatable",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "CooldownActive",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "CooldownNotFinished",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "EBBelowMinimum",
     type: "error",
   },
   {
@@ -203,6 +223,11 @@ export const MainnetV4GetterABI = [
   },
   {
     inputs: [],
+    name: "InvalidToken",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "InvalidWhitelistAddressesLength",
     type: "error",
   },
@@ -244,6 +269,26 @@ export const MainnetV4GetterABI = [
   },
   {
     inputs: [],
+    name: "NotCSSV",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "NotOracle",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "NothingToClaim",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "NothingToWithdraw",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "OperatorAlreadyExists",
     type: "error",
   },
@@ -259,6 +304,11 @@ export const MainnetV4GetterABI = [
   },
   {
     inputs: [],
+    name: "OracleAlreadyAssigned",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "PublicKeysSharesLengthMismatch",
     type: "error",
   },
@@ -270,6 +320,11 @@ export const MainnetV4GetterABI = [
   {
     inputs: [],
     name: "SameFeeChangeNotAllowed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "StakeTooLow",
     type: "error",
   },
   {
@@ -310,6 +365,11 @@ export const MainnetV4GetterABI = [
   },
   {
     inputs: [],
+    name: "UnstakeAmountExceedsBalance",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "UpdateTooFrequent",
     type: "error",
   },
@@ -336,7 +396,17 @@ export const MainnetV4GetterABI = [
   },
   {
     inputs: [],
+    name: "ZeroAddress",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "ZeroAddressNotAllowed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ZeroAmount",
     type: "error",
   },
   {
@@ -442,9 +512,35 @@ export const MainnetV4GetterABI = [
   },
   {
     inputs: [],
+    name: "accEthPerShare",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "acceptOwnership",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "cooldownDuration",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -496,12 +592,7 @@ export const MainnetV4GetterABI = [
     outputs: [
       {
         internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "",
+        name: "balance",
         type: "uint256",
       },
     ],
@@ -557,7 +648,7 @@ export const MainnetV4GetterABI = [
     outputs: [
       {
         internalType: "uint256",
-        name: "",
+        name: "balance",
         type: "uint256",
       },
     ],
@@ -695,6 +786,75 @@ export const MainnetV4GetterABI = [
         internalType: "uint8",
         name: "",
         type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getDefaultOracleIds",
+    outputs: [
+      {
+        internalType: "uint32[4]",
+        name: "",
+        type: "uint32[4]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "clusterOwner",
+        type: "address",
+      },
+      {
+        internalType: "uint64[]",
+        name: "operatorIds",
+        type: "uint64[]",
+      },
+      {
+        components: [
+          {
+            internalType: "uint32",
+            name: "validatorCount",
+            type: "uint32",
+          },
+          {
+            internalType: "uint64",
+            name: "networkFeeIndex",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "index",
+            type: "uint64",
+          },
+          {
+            internalType: "bool",
+            name: "active",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "balance",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct ISSVNetworkCore.Cluster",
+        name: "cluster",
+        type: "tuple",
+      },
+    ],
+    name: "getEffectiveBalance",
+    outputs: [
+      {
+        internalType: "uint32",
+        name: "effectiveBalance",
+        type: "uint32",
       },
     ],
     stateMutability: "view",
@@ -1036,6 +1196,81 @@ export const MainnetV4GetterABI = [
   {
     inputs: [
       {
+        internalType: "uint32",
+        name: "oracleId",
+        type: "uint32",
+      },
+    ],
+    name: "getOracle",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint32",
+        name: "oracleId",
+        type: "uint32",
+      },
+    ],
+    name: "getOracleWeight",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getQuorumBps",
+    outputs: [
+      {
+        internalType: "uint16",
+        name: "",
+        type: "uint16",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+    ],
+    name: "getUserDelegation",
+    outputs: [
+      {
+        internalType: "uint32[4]",
+        name: "oracleIds",
+        type: "uint32[4]",
+      },
+      {
+        internalType: "uint256[4]",
+        name: "amounts",
+        type: "uint256[4]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "clusterOwner",
         type: "address",
@@ -1363,6 +1598,49 @@ export const MainnetV4GetterABI = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+    ],
+    name: "pendingUnstake",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "unlockTime",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+    ],
+    name: "previewClaimableEth",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "proxiableUUID",
     outputs: [
@@ -1390,6 +1668,51 @@ export const MainnetV4GetterABI = [
         internalType: "contract ISSVViews",
         name: "",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+    ],
+    name: "stakedBalanceOf",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "stakingEthPoolBalance",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "totalStaked",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",

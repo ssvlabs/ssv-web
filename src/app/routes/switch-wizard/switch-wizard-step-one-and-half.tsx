@@ -21,7 +21,7 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
             publicKey: validator.public_key,
             status:
               validator.displayedStatus === ValidatorStatus.NOT_DEPOSITED
-                ? "Undeposited"
+                ? "Not Deposited"
                 : "Deposited",
             effectiveBalance: BigInt(
               validator.validator_info?.effective_balance ?? 0,
@@ -33,15 +33,12 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
 
   const totalEffectiveBalance = useMemo(
     () =>
-      Number(
-        formatUnits(
-          validatorRows.reduce(
-            (total, validator) => total + validator.effectiveBalance,
-            0n,
-          ),
-          9,
-        ),
-      ),
+      validatorRows.reduce((total, validator) => {
+        if (validator.status === "Not Deposited") {
+          return total + 32;
+        }
+        return total + Number(formatUnits(validator.effectiveBalance, 9));
+      }, 0),
     [validatorRows],
   );
 

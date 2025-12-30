@@ -24,7 +24,7 @@ import { formatUnits } from "viem";
 
 type ValidatorRow = {
   publicKey: string;
-  status: "Deposited" | "Undeposited";
+  status: "Deposited" | "Not Deposited";
   effectiveBalance: bigint;
 };
 
@@ -40,7 +40,7 @@ type SwitchWizardStepOneAndHalfProps = {
 const tabLabels = {
   all: "All",
   deposited: "Deposited",
-  undeposited: "Undeposited",
+  notDeposited: "Not Deposited",
 } as const;
 
 type TabKey = keyof typeof tabLabels;
@@ -73,21 +73,23 @@ export const SwitchWizardStepOneAndHalf = ({
     const deposited = validators.filter(
       (validator) => validator.status === "Deposited",
     ).length;
-    const undeposited = validators.filter(
-      (validator) => validator.status === "Undeposited",
+    const notDeposited = validators.filter(
+      (validator) => validator.status === "Not Deposited",
     ).length;
     return {
       all: validators.length,
       deposited,
-      undeposited,
+      notDeposited,
     };
   }, [validators]);
 
   const filteredValidators = useMemo(() => {
     if (selectedTab === "all") return validators;
+    if (selectedTab === "deposited") {
+      return validators.filter((validator) => validator.status === "Deposited");
+    }
     return validators.filter(
-      (validator) =>
-        validator.status.toLowerCase() === selectedTab.toLowerCase(),
+      (validator) => validator.status === "Not Deposited",
     );
   }, [selectedTab, validators]);
 
@@ -105,6 +107,16 @@ export const SwitchWizardStepOneAndHalf = ({
   const formatEthBalance = (value: bigint) =>
     ethFormatter.format(Number(formatUnits(value, 9)));
 
+  const estimatedEffectiveBalance = totalEffectiveBalance;
+  const maxEffectiveBalance = validators.length * 2048;
+  const isLowBalance =
+    numericBalance > 0 &&
+    estimatedEffectiveBalance > 0 &&
+    numericBalance < estimatedEffectiveBalance;
+  const isHighBalance =
+    maxEffectiveBalance > 0 && numericBalance > maxEffectiveBalance;
+  const isInvalidBalance = isLowBalance || isHighBalance;
+
   return (
     <Container
       variant="horizontal"
@@ -120,15 +132,16 @@ export const SwitchWizardStepOneAndHalf = ({
       >
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2">
-            <Text variant="headline4">Enter Total Effective Balance</Text>
+            <Text variant="headline4">Cluster Total Effective Balance</Text>
             <Tooltip content="Total effective balance across all validators.">
               <FaCircleInfo className="size-3.5 text-gray-400" />
             </Tooltip>
           </div>
           <Text variant="body-2-medium" className="text-gray-600">
-            To accurately estimate your cluster's fees and runway, please enter
-            the total effective balance (in ETH) of all validators you are
-            onboarding.
+            In order for us to properly calculate the cluster runway, we need
+            your estimated Total Effective Balance (ETH) for the registered
+            validators. Using this figure, we will accurately calculate the
+            operational fees, liquidation collateral, and the Network fee.
           </Text>
         </div>
 
@@ -174,12 +187,32 @@ export const SwitchWizardStepOneAndHalf = ({
 
         <Alert variant="warning" className="rounded-lg text-gray-700">
           <AlertDescription className="text-sm font-medium">
-            Once onboarded, your validators' effective balance is continuously
-            updated by network oracles. If the actual balance exceeds the value
-            you enter, your fees will be higher than estimated, which could
-            shorten your runway and put your cluster at risk of liquidation.
+            <span className="font-semibold">Cluster Liquidation Warning</span>
+            <br />
+            If the actual Effective Balance reported by Oracles is higher than
+            the amount set here, your operational burn rate will increase. This
+            risks an insufficient runway and possible cluster liquidation.
           </AlertDescription>
         </Alert>
+
+        {isLowBalance && (
+          <Alert variant="error" className="rounded-lg">
+            <AlertDescription className="text-sm font-medium">
+              The entered total projected balance is lower than our estimation.
+              This may lead to an insufficient runway. Please double-check the
+              balance entered.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {isHighBalance && (
+          <Alert variant="error" className="rounded-lg">
+            <AlertDescription className="text-sm font-medium">
+              The entered total projected balance is higher then the max EB per
+              validator. Please double-check the balance entered.
+            </AlertDescription>
+          </Alert>
+        )}
 
         <div className="flex items-start gap-3">
           <Checkbox
@@ -199,7 +232,7 @@ export const SwitchWizardStepOneAndHalf = ({
           width="full"
           className="font-semibold"
           onClick={() => onNext(numericBalance)}
-          disabled={!isConfirmed || numericBalance <= 0}
+          disabled={!isConfirmed || numericBalance <= 0 || isInvalidBalance}
         >
           Next
         </Button>
@@ -234,12 +267,12 @@ export const SwitchWizardStepOneAndHalf = ({
               </Badge>
             </TabsTrigger>
             <TabsTrigger
-              value="undeposited"
+              value="notDeposited"
               className="flex items-center gap-2"
             >
-              <Text variant="body-3-medium">{tabLabels.undeposited}</Text>
+              <Text variant="body-3-medium">{tabLabels.notDeposited}</Text>
               <Badge variant="warning" size="xs" className="rounded-md">
-                {counts.undeposited}
+                {counts.notDeposited}
               </Badge>
             </TabsTrigger>
           </TabsList>
@@ -251,7 +284,7 @@ export const SwitchWizardStepOneAndHalf = ({
           </Text>
           <div className="flex items-center gap-2">
             <Text variant="body-2-semibold" className="text-gray-800">
-              {numberFormatter.format(balanceInput ? numericBalance : 0)}
+              {numberFormatter.format(estimatedEffectiveBalance)}
             </Text>
             <img src="/images/networks/dark.svg" alt="ETH" className="size-4" />
             <Text variant="body-3-medium" className="text-gray-500">
@@ -270,7 +303,10 @@ export const SwitchWizardStepOneAndHalf = ({
             <TableCell className="justify-end">Effective Balance</TableCell>
           </TableHeader>
           {filteredValidators.map((validator) => {
-            const isUndeposited = validator.status === "Undeposited";
+            const isNotDeposited = validator.status === "Not Deposited";
+            const displayBalance = isNotDeposited
+              ? ethFormatter.format(32)
+              : formatEthBalance(validator.effectiveBalance);
             return (
               <TableRow key={validator.publicKey} className="bg-white">
                 <TableCell className="flex items-center gap-2">
@@ -282,7 +318,7 @@ export const SwitchWizardStepOneAndHalf = ({
                 </TableCell>
                 <TableCell>
                   <Badge
-                    variant={isUndeposited ? "warning" : "success"}
+                    variant={isNotDeposited ? "warning" : "success"}
                     size="xs"
                     className="rounded-md"
                   >
@@ -293,10 +329,10 @@ export const SwitchWizardStepOneAndHalf = ({
                   <Text
                     variant="body-3-medium"
                     className={
-                      isUndeposited ? "text-warning-500" : "text-gray-800"
+                      isNotDeposited ? "text-warning-500" : "text-gray-800"
                     }
                   >
-                    {formatEthBalance(validator.effectiveBalance)}
+                    {displayBalance}
                   </Text>
                   <img
                     src="/images/networks/dark.svg"
@@ -306,7 +342,7 @@ export const SwitchWizardStepOneAndHalf = ({
                   <Text
                     variant="body-3-medium"
                     className={
-                      isUndeposited ? "text-warning-500" : "text-gray-500"
+                      isNotDeposited ? "text-warning-500" : "text-gray-500"
                     }
                   >
                     ETH

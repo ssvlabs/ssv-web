@@ -5,6 +5,7 @@ import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
 import { useOperators } from "@/hooks/operator/use-operators";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import type { SwitchWizardStepThreeState } from "@/components/wizard/switch-wizard-types";
 
 export const SwitchWizardStepTwoRoute = () => {
   const navigate = useNavigate();
@@ -31,11 +32,9 @@ export const SwitchWizardStepTwoRoute = () => {
 
   return (
     <SwitchWizardStepTwo
-      onNext={(totalDeposit) => {
+      onNext={(nextState: SwitchWizardStepThreeState) => {
         navigate(`${basePath}/step-three`, {
-          state: {
-            totalDeposit,
-          },
+          state: nextState,
         });
       }}
       backButtonLabel="Back"

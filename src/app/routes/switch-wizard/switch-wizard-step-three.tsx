@@ -4,28 +4,30 @@ import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { useOperators } from "@/hooks/operator/use-operators";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway.ts";
+import type { SwitchWizardStepThreeState } from "@/components/wizard/switch-wizard-types";
 
 export const SwitchWizardStepThreeRoute = () => {
   const navigate = useNavigate();
   const { clusterHash } = useClusterPageParams();
-  const { cluster } = useClusterState(clusterHash!, {
+  const { cluster, balanceSSV } = useClusterState(clusterHash!, {
     isLiquidated: { enabled: false },
-    balance: { enabled: false },
   });
   const operatorsQuery = useOperators(cluster.data?.operators ?? []);
   const operators = operatorsQuery.data ?? [];
   const basePath = `/switch-wizard/${clusterHash}`;
   const location = useLocation();
-  const totalDeposit = (location.state as { totalDeposit?: number } | null)
-    ?.totalDeposit;
-
-  const { data: clusterRunway } = useClusterRunway(clusterHash);
+  const stepState = location.state as SwitchWizardStepThreeState | null;
+  const effectiveBalance = stepState?.effectiveBalance;
+  const fundingDays = stepState?.fundingDays ?? 0;
+  const fundingSummary = stepState?.fundingSummary;
+  const totalDeposit = stepState?.totalDeposit;
+  const hasRequiredState =
+    typeof effectiveBalance === "number" && typeof fundingDays === "number";
   useEffect(() => {
-    if (totalDeposit === undefined) {
+    if (!hasRequiredState) {
       navigate(`${basePath}/step-two`, { replace: true });
     }
-  }, [basePath, navigate, totalDeposit]);
+  }, [basePath, hasRequiredState, navigate]);
 
   return (
     <SwitchWizardStepThree
@@ -35,8 +37,12 @@ export const SwitchWizardStepThreeRoute = () => {
       backButtonLabel="Back"
       navigateRoutePath={`${basePath}/step-two`}
       operators={operators}
-      fundingDays={Number(clusterRunway?.runway) || 0}
+      fundingDays={fundingDays}
+      fundingSummary={fundingSummary}
+      effectiveBalance={effectiveBalance}
       totalDeposit={totalDeposit}
+      validatorsAmount={cluster.data?.validatorCount ?? 1}
+      withdrawSsvBalance={balanceSSV.data}
     />
   );
 };

@@ -27,9 +27,10 @@ import {
 } from "@/lib/utils/keystore";
 import { useSsvNetworkFee } from "@/hooks/use-ssv-network-fee";
 import { formatUnits } from "viem";
+import type { SwitchWizardStepThreeState } from "./switch-wizard-types";
 
 type SwitchWizardStepTwoProps = {
-  onNext: (totalDeposit: number) => void;
+  onNext: (state: SwitchWizardStepThreeState) => void;
   onBack?: () => void;
   backButtonLabel?: string;
   navigateRoutePath?: string;
@@ -142,7 +143,21 @@ export const SwitchWizardStepTwo = ({
     value !== undefined ? `~${currencyFormatter.format(ethRate * value)}` : "";
 
   const submit = form.handleSubmit(() => {
-    onNext(selectedCosts?.totalDeposit ?? 0);
+    onNext({
+      fundingDays: selectedDays,
+      effectiveBalance: effectiveBalanceValue,
+      fundingSummary: selectedCosts
+        ? {
+            operatorsPerEth: selectedCosts.operatorsPerEth,
+            networkPerEth: selectedCosts.networkPerEth,
+            liquidationPerEth: selectedCosts.liquidationPerEth,
+            operatorsSubtotal: selectedCosts.operatorsSubtotal,
+            networkSubtotal: selectedCosts.networkSubtotal,
+            liquidationSubtotal: selectedCosts.liquidationSubtotal,
+          }
+        : undefined,
+      totalDeposit: selectedCosts?.totalDeposit,
+    });
   });
 
   return (

@@ -1,15 +1,15 @@
 export type SwitchWizardFundingSummary = {
-  operatorsPerEth: number;
-  networkPerEth: number;
-  liquidationPerEth: number;
-  operatorsSubtotal: number;
-  networkSubtotal: number;
-  liquidationSubtotal: number;
+  operatorsPerEth: bigint;
+  networkPerEth: bigint;
+  liquidationPerEth: bigint;
+  operatorsSubtotal: bigint;
+  networkSubtotal: bigint;
+  liquidationSubtotal: bigint;
 };
 
 export type SwitchWizardStepThreeState = {
   fundingDays: number;
-  effectiveBalance: number;
+  effectiveBalance: bigint;
   fundingSummary?: SwitchWizardFundingSummary;
-  totalDeposit?: number;
+  totalDeposit?: bigint;
 };

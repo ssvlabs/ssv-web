@@ -16,7 +16,7 @@ export const SwitchWizardStepTwoRoute = () => {
   });
   const location = useLocation();
   const effectiveBalance = (
-    location.state as { effectiveBalance?: number } | null
+    location.state as { effectiveBalance?: bigint } | null
   )?.effectiveBalance;
   const { data: clusterRunway } = useClusterRunway(clusterHash);
 

@@ -4,7 +4,7 @@ import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { ValidatorStatus } from "@/lib/utils/validator-status-mapping";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { formatUnits } from "viem";
+import { formatUnits, parseEther } from "viem";
 
 export const SwitchWizardStepOneAndHalfRoute = () => {
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
       onNext={(effectiveBalance) => {
         navigate(`${basePath}/step-two`, {
           state: {
-            effectiveBalance,
+            effectiveBalance: parseEther(effectiveBalance.toString()),
           },
         });
       }}

@@ -22,11 +22,13 @@ type SwitchWizardStepThreeProps = {
   navigateRoutePath?: string;
   operators: Pick<Operator, "id" | "name" | "logo" | "eth_fee">[];
   fundingDays: number;
-  totalDeposit?: number;
-  effectiveBalance?: number;
+  totalDeposit?: bigint;
+  effectiveBalance?: bigint;
   fundingSummary?: SwitchWizardFundingSummary;
   validatorsAmount?: number;
   withdrawSsvBalance?: bigint;
+  isSubmitting?: boolean;
+  isSubmitDisabled?: boolean;
 };
 
 export const SwitchWizardStepThree = ({
@@ -41,6 +43,8 @@ export const SwitchWizardStepThree = ({
   fundingSummary,
   validatorsAmount,
   withdrawSsvBalance,
+  isSubmitting = false,
+  isSubmitDisabled = false,
 }: SwitchWizardStepThreeProps) => {
   const [isAcknowledged, setIsAcknowledged] = useState(false);
   const rates = useRates();
@@ -53,24 +57,16 @@ export const SwitchWizardStepThree = ({
     `${ethFormatter.format(+formatUnits(value, 18))} ETH`;
   const formatUsd = (value: bigint) =>
     `~${currencyFormatter.format(ethRate * +formatUnits(value, 18))}`;
-  const formatEthValue = (value?: number) =>
-    typeof value === "number" ? `${ethFormatter.format(value)} ETH` : "-";
-  const formatUsdValue = (value?: number) =>
-    typeof value === "number"
-      ? `~${currencyFormatter.format(ethRate * value)}`
-      : "";
+  const formatEthValue = (value?: bigint) =>
+    value !== undefined ? formatETH(value) : "-";
 
   const effectiveBalanceDisplay =
-    typeof effectiveBalance === "number"
-      ? `${ethFormatter.format(effectiveBalance)} ETH`
-      : "-";
-  const totalDepositValue =
-    totalDeposit ??
-    (fundingSummary
-      ? fundingSummary.operatorsSubtotal +
-        fundingSummary.networkSubtotal +
-        fundingSummary.liquidationSubtotal
-      : undefined);
+    effectiveBalance !== undefined ? formatETH(effectiveBalance) : "-";
+  const totalDepositFallback = fundingSummary
+    ? fundingSummary.operatorsSubtotal +
+      fundingSummary.networkSubtotal +
+      fundingSummary.liquidationSubtotal
+    : undefined;
   const withdrawSsvDisplay =
     withdrawSsvBalance !== undefined
       ? `${formatSSV(withdrawSsvBalance)} SSV`
@@ -83,7 +79,7 @@ export const SwitchWizardStepThree = ({
       : "";
 
   const handleSubmit = () => {
-    if (!isAcknowledged) return;
+    if (!isAcknowledged || isSubmitting || isSubmitDisabled) return;
     onNext();
   };
 
@@ -213,10 +209,16 @@ export const SwitchWizardStepThree = ({
             <Text variant="body-2-medium">Total Deposit</Text>
             <div className="flex flex-col items-end">
               <Text variant="headline4">
-                {formatEthValue(totalDepositValue)}
+                {totalDeposit !== undefined
+                  ? formatETH(totalDeposit)
+                  : formatEthValue(totalDepositFallback)}
               </Text>
               <Text variant="body-3-medium" className="text-gray-500">
-                {formatUsdValue(totalDepositValue)}
+                {totalDeposit !== undefined
+                  ? formatUsd(totalDeposit)
+                  : totalDepositFallback !== undefined
+                    ? formatUsd(totalDepositFallback)
+                    : ""}
               </Text>
             </div>
           </div>
@@ -257,7 +259,8 @@ export const SwitchWizardStepThree = ({
           size="xl"
           width="full"
           onClick={handleSubmit}
-          disabled={!isAcknowledged}
+          disabled={!isAcknowledged || isSubmitting || isSubmitDisabled}
+          isLoading={isSubmitting}
           className="font-semibold"
         >
           Switch Cluster to ETH

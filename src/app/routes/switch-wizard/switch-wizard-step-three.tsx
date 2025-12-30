@@ -5,6 +5,9 @@ import { useOperators } from "@/hooks/operator/use-operators";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { SwitchWizardStepThreeState } from "@/components/wizard/switch-wizard-types";
+import { useMigrateClusterToETH } from "@/lib/contract-interactions/write/use-migrate-cluster-to-eth";
+import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
+import { formatClusterData } from "@/lib/utils/cluster";
 
 export const SwitchWizardStepThreeRoute = () => {
   const navigate = useNavigate();
@@ -12,6 +15,7 @@ export const SwitchWizardStepThreeRoute = () => {
   const { cluster, balanceSSV } = useClusterState(clusterHash!, {
     isLiquidated: { enabled: false },
   });
+  const migrate = useMigrateClusterToETH();
   const operatorsQuery = useOperators(cluster.data?.operators ?? []);
   const operators = operatorsQuery.data ?? [];
   const basePath = `/switch-wizard/${clusterHash}`;
@@ -22,7 +26,8 @@ export const SwitchWizardStepThreeRoute = () => {
   const fundingSummary = stepState?.fundingSummary;
   const totalDeposit = stepState?.totalDeposit;
   const hasRequiredState =
-    typeof effectiveBalance === "number" && typeof fundingDays === "number";
+    typeof effectiveBalance === "bigint" && typeof fundingDays === "number";
+  const canSubmit = Boolean(cluster.data && totalDeposit !== undefined);
   useEffect(() => {
     if (!hasRequiredState) {
       navigate(`${basePath}/step-two`, { replace: true });
@@ -32,7 +37,19 @@ export const SwitchWizardStepThreeRoute = () => {
   return (
     <SwitchWizardStepThree
       onNext={() => {
-        navigate(`${basePath}/step-four`);
+        if (!cluster.data || totalDeposit === undefined) return;
+        migrate.write(
+          {
+            operatorIds: cluster.data?.operators.map((id) => BigInt(id)) ?? [],
+            cluster: formatClusterData(cluster.data),
+          },
+          totalDeposit,
+          withTransactionModal({
+            onMined: () => {
+              return () => navigate(`${basePath}/step-four`);
+            },
+          }),
+        );
       }}
       backButtonLabel="Back"
       navigateRoutePath={`${basePath}/step-two`}
@@ -43,6 +60,8 @@ export const SwitchWizardStepThreeRoute = () => {
       totalDeposit={totalDeposit}
       validatorsAmount={cluster.data?.validatorCount ?? 1}
       withdrawSsvBalance={balanceSSV.data}
+      isSubmitting={migrate.isPending}
+      isSubmitDisabled={!canSubmit}
     />
   );
 };

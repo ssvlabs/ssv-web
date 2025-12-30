@@ -36,7 +36,7 @@ type SwitchWizardStepTwoProps = {
   navigateRoutePath?: string;
   operators?: Pick<Operator, "id" | "name" | "logo" | "fee" | "eth_fee">[];
   validatorsAmount?: number;
-  effectiveBalance?: number;
+  effectiveBalance?: bigint;
   currentRunwayDays?: number;
 };
 
@@ -88,8 +88,10 @@ export const SwitchWizardStepTwo = ({
     0n,
   );
 
-  const effectiveBalanceValue = effectiveBalance ?? 0;
+  const effectiveBalanceWei = effectiveBalance ?? 0n;
   const ethRate = rates.data?.eth ?? 0;
+  const weiPerEth = 10n ** 18n;
+  const perValidatorBalance = 32n * weiPerEth;
 
   const getCostsForDays = (days: number) => {
     if (!networkFees.isSuccess || days <= 0) return null;
@@ -109,13 +111,16 @@ export const SwitchWizardStepTwo = ({
       validators: BigInt(validatorsAmount || 1),
     });
 
-    const operatorsPerEth = Number(formatUnits(operatorsCost, 18)) / 32;
-    const networkPerEth = Number(formatUnits(networkCost, 18)) / 32;
-    const liquidationPerEth = Number(formatUnits(liquidationCost, 18)) / 32;
+    const operatorsPerEth = operatorsCost / 32n;
+    const networkPerEth = networkCost / 32n;
+    const liquidationPerEth = liquidationCost / 32n;
 
-    const operatorsSubtotal = operatorsPerEth * effectiveBalanceValue;
-    const networkSubtotal = networkPerEth * effectiveBalanceValue;
-    const liquidationSubtotal = liquidationPerEth * effectiveBalanceValue;
+    const operatorsSubtotal =
+      (operatorsCost * effectiveBalanceWei) / perValidatorBalance;
+    const networkSubtotal =
+      (networkCost * effectiveBalanceWei) / perValidatorBalance;
+    const liquidationSubtotal =
+      (liquidationCost * effectiveBalanceWei) / perValidatorBalance;
     const totalDeposit =
       operatorsSubtotal + networkSubtotal + liquidationSubtotal;
 
@@ -136,16 +141,20 @@ export const SwitchWizardStepTwo = ({
   const yearCosts = getCostsForDays(periods.year);
   const customCosts = getCostsForDays(values.custom);
 
-  const formatEth = (value?: number) =>
-    value !== undefined ? `${ethFormatter.format(value)} ETH` : "-";
+  const formatEth = (value?: bigint) =>
+    value !== undefined
+      ? `${ethFormatter.format(+formatUnits(value, 18))} ETH`
+      : "-";
 
-  const formatUsd = (value?: number) =>
-    value !== undefined ? `~${currencyFormatter.format(ethRate * value)}` : "";
+  const formatUsd = (value?: bigint) =>
+    value !== undefined
+      ? `~${currencyFormatter.format(ethRate * Number(formatUnits(value, 18)))}`
+      : "";
 
   const submit = form.handleSubmit(() => {
     onNext({
       fundingDays: selectedDays,
-      effectiveBalance: effectiveBalanceValue,
+      effectiveBalance: effectiveBalanceWei,
       fundingSummary: selectedCosts
         ? {
             operatorsPerEth: selectedCosts.operatorsPerEth,
@@ -340,36 +349,30 @@ export const SwitchWizardStepTwo = ({
 
               <Text variant="body-2-medium">Operators fee</Text>
               <Text variant="body-2-medium" className="text-right">
-                {selectedCosts
-                  ? `${ethFormatter.format(selectedCosts.operatorsPerEth)} ETH`
-                  : "-"}
+                {selectedCosts ? formatEth(selectedCosts.operatorsPerEth) : "-"}
               </Text>
               <Text variant="body-2-medium" className="text-right">
-                {effectiveBalanceValue
-                  ? `${ethFormatter.format(effectiveBalanceValue)} ETH`
+                {effectiveBalanceWei > 0n
+                  ? formatEth(effectiveBalanceWei)
                   : "-"}
               </Text>
               <Text variant="body-2-medium" className="text-right">
                 {selectedCosts
-                  ? `${ethFormatter.format(selectedCosts.operatorsSubtotal)} ETH`
+                  ? formatEth(selectedCosts.operatorsSubtotal)
                   : "-"}
               </Text>
 
               <Text variant="body-2-medium">Network fee</Text>
               <Text variant="body-2-medium" className="text-right">
-                {selectedCosts
-                  ? `${ethFormatter.format(selectedCosts.networkPerEth)} ETH`
+                {selectedCosts ? formatEth(selectedCosts.networkPerEth) : "-"}
+              </Text>
+              <Text variant="body-2-medium" className="text-right">
+                {effectiveBalanceWei > 0n
+                  ? formatEth(effectiveBalanceWei)
                   : "-"}
               </Text>
               <Text variant="body-2-medium" className="text-right">
-                {effectiveBalanceValue
-                  ? `${ethFormatter.format(effectiveBalanceValue)} ETH`
-                  : "-"}
-              </Text>
-              <Text variant="body-2-medium" className="text-right">
-                {selectedCosts
-                  ? `${ethFormatter.format(selectedCosts.networkSubtotal)} ETH`
-                  : "-"}
+                {selectedCosts ? formatEth(selectedCosts.networkSubtotal) : "-"}
               </Text>
 
               <div className="flex gap-2 items-center">
@@ -378,19 +381,17 @@ export const SwitchWizardStepTwo = ({
               </div>
               <Text variant="body-2-medium" className="text-right">
                 {selectedCosts
-                  ? `${ethFormatter.format(selectedCosts.liquidationPerEth)} ETH`
+                  ? formatEth(selectedCosts.liquidationPerEth)
                   : "-"}
               </Text>
               <Text variant="body-2-medium" className="text-right">
-                {effectiveBalanceValue
-                  ? `${ethFormatter.format(effectiveBalanceValue)} ETH`
+                {effectiveBalanceWei > 0n
+                  ? formatEth(effectiveBalanceWei)
                   : "-"}
               </Text>
               <Text variant="body-2-medium" className="text-right">
                 {selectedCosts
-                  ? `${ethFormatter.format(
-                      selectedCosts.liquidationSubtotal,
-                    )} ETH`
+                  ? formatEth(selectedCosts.liquidationSubtotal)
                   : "-"}
               </Text>
             </div>
@@ -401,16 +402,10 @@ export const SwitchWizardStepTwo = ({
               <Text variant="body-2-medium">Total</Text>
               <div className="flex flex-col items-end">
                 <Text variant="headline4">
-                  {selectedCosts
-                    ? `${ethFormatter.format(selectedCosts.totalDeposit)} ETH`
-                    : "-"}
+                  {selectedCosts ? formatEth(selectedCosts.totalDeposit) : "-"}
                 </Text>
                 <Text variant="body-3-medium" className="text-gray-500">
-                  {selectedCosts
-                    ? `~${currencyFormatter.format(
-                        ethRate * selectedCosts.totalDeposit,
-                      )}`
-                    : ""}
+                  {selectedCosts ? formatUsd(selectedCosts.totalDeposit) : ""}
                 </Text>
               </div>
             </div>

@@ -3,8 +3,8 @@ import type { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
 import { fetchIsAddressWhitelistedInWhitelistingContract } from "@/lib/contract-interactions/read/use-is-address-whitelisted-in-whitelisting-contract";
 import { ethFormatter, sortNumbers } from "@/lib/utils/number";
 import type { Operator } from "@/types/api";
+import type { Operator as KeysharesOperator } from "@/types/keyshares";
 import { difference } from "lodash-es";
-import type { IOperator } from "ssv-keys/dist/tsc/src/lib/KeyShares/KeySharesData/IOperator";
 import type { Address, DecodeEventLogReturnType } from "viem";
 import { formatUnits, isAddressEqual } from "viem";
 
@@ -112,7 +112,9 @@ export const sortOperators = <T extends { id: number }[]>(operators: T) => {
   return [...operators].sort((a, b) => a.id - b.id);
 };
 
-export const prepareOperatorsForShares = (operators: Operator[]): IOperator[] =>
+export const prepareOperatorsForShares = (
+  operators: Operator[],
+): KeysharesOperator[] =>
   sortOperators(operators).map((operator) => ({
     id: operator.id,
     operatorKey: operator.public_key,
@@ -186,6 +188,7 @@ export const createDefaultOperator = (
   whitelist_addresses: [],
   updated_at: 0,
   ...operator,
+  effective_balance: operator.effective_balance ?? "0",
 });
 
 export type MainnetEvent = DecodeEventLogReturnType<typeof MainnetV4SetterABI>;

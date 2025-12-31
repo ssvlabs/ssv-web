@@ -5,10 +5,13 @@
   "timezone": "UTC",
   "separateMajorMinor": false,
   "separateMultipleMajor": false,
+  "minimumReleaseAge": "7 days",
   "prConcurrentLimit": 1,
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": ["every week"]
+    "schedule": ["every week"],
+    "automerge": true,
+    "automergeType": "pr"
   },
   "packageRules": [
     {

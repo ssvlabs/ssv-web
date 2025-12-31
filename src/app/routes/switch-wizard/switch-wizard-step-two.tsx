@@ -33,7 +33,7 @@ export const SwitchWizardStepTwoRoute = () => {
   return (
     <SwitchWizardStepTwo
       onNext={(nextState: SwitchWizardStepThreeState) => {
-        navigate(`${basePath}/step-three`, {
+        navigate(`${basePath}/step-two-and-half`, {
           state: nextState,
         });
       }}

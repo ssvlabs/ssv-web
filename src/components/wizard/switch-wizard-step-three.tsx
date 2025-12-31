@@ -14,12 +14,14 @@ import { currencyFormatter, ethFormatter, formatSSV } from "@/lib/utils/number";
 import { formatUnits } from "viem";
 import { useRates } from "@/hooks/use-rates";
 import type { SwitchWizardFundingSummary } from "./switch-wizard-types";
+import type { NavigateOptions } from "react-router-dom";
 
 type SwitchWizardStepThreeProps = {
   onNext: () => void;
   onBack?: () => void;
   backButtonLabel?: string;
   navigateRoutePath?: string;
+  navigateRouteOptions?: NavigateOptions;
   operators: Pick<Operator, "id" | "name" | "logo" | "eth_fee">[];
   fundingDays: number;
   totalDeposit?: bigint;
@@ -36,6 +38,7 @@ export const SwitchWizardStepThree = ({
   onBack,
   backButtonLabel = "Back",
   navigateRoutePath,
+  navigateRouteOptions,
   operators,
   fundingDays,
   totalDeposit,
@@ -89,6 +92,7 @@ export const SwitchWizardStepThree = ({
       className="py-6"
       backButtonLabel={backButtonLabel}
       navigateRoutePath={navigateRoutePath}
+      navigateRouteOptions={navigateRouteOptions}
       onBackButtonClick={onBack}
     >
       <Card

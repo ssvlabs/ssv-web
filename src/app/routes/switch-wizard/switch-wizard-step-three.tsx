@@ -52,7 +52,11 @@ export const SwitchWizardStepThreeRoute = () => {
         );
       }}
       backButtonLabel="Back"
-      navigateRoutePath={`${basePath}/step-two`}
+      navigateRoutePath={`${basePath}/step-two-and-half`}
+      navigateRouteOptions={{
+        replace: true,
+        state: stepState ?? undefined,
+      }}
       operators={operators}
       fundingDays={fundingDays}
       fundingSummary={fundingSummary}

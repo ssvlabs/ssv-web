@@ -19,34 +19,33 @@ import {
 import type { WriteContractErrorType } from "@wagmi/core";
 import type { WaitForTransactionReceiptErrorType } from "viem";
 
-type Fn = ExtractAbiFunction<
-  typeof MainnetV4SetterABI,
-  "withdrawNetworkEarnings"
->;
+type Fn = ExtractAbiFunction<typeof MainnetV4SetterABI, "migrateClusterToETH">;
 const abiFunction = extractAbiFunction(
   MainnetV4SetterABI,
-  "withdrawNetworkEarnings",
+  "migrateClusterToETH",
 );
 // type State = "idle" | "confirming" | "mining" | "mined" | "error";
 
-export const useWithdrawNetworkEarnings = () => {
+export const useMigrateClusterToETH = () => {
   const { setterContractAddress } = useSSVNetworkDetails();
 
   const wait = useWaitForTransactionReceipt<MainnetEvent>([
-    "useWithdrawNetworkEarnings",
+    "useMigrateClusterToETH",
     setterContractAddress,
   ]);
   const mutation = useWriteContract();
 
   const send = (
     params: AbiInputsToParams<Fn["inputs"]>,
+    value?: bigint,
     options: MutationOptions<MainnetEvent> = {},
   ) => {
     return mutation.writeContractAsync(
       {
+        value,
         abi: MainnetV4SetterABI,
         address: setterContractAddress,
-        functionName: "withdrawNetworkEarnings",
+        functionName: "migrateClusterToETH",
         args: paramsToArray({ params, abiFunction }),
       },
       {
@@ -58,15 +57,17 @@ export const useWithdrawNetworkEarnings = () => {
 
   const write = (
     params: AbiInputsToParams<Fn["inputs"]>,
+    value?: bigint,
     options: MutationOptions<MainnetEvent> = {},
   ) => {
     options.onInitiated?.();
     return mutation
       .writeContractAsync(
         {
+          value,
           abi: MainnetV4SetterABI,
           address: setterContractAddress,
-          functionName: "withdrawNetworkEarnings",
+          functionName: "migrateClusterToETH",
           args: paramsToArray({ params, abiFunction }),
         },
         {

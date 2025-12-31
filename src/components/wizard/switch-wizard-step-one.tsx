@@ -11,43 +11,15 @@ type SwitchWizardStepOneProps = {
   onBack?: () => void;
   backButtonLabel?: string;
   navigateRoutePath?: string;
-  operators?: Pick<Operator, "id" | "name" | "logo" | "fee">[];
+  operators: Pick<Operator, "id" | "name" | "logo" | "fee" | "eth_fee">[];
 };
-
-// Mock operators with only required fields
-const mockOperators: Pick<Operator, "id" | "name" | "logo" | "fee">[] = [
-  {
-    id: 1001,
-    name: "Operator Alpha",
-    fee: "23700000000000000", // ~85.43 SSV yearly
-    logo: "",
-  },
-  {
-    id: 1002,
-    name: "Operator Beta",
-    fee: "22800000000000000", // ~82.10 SSV yearly
-    logo: "",
-  },
-  {
-    id: 1003,
-    name: "Operator Gamma",
-    fee: "22200000000000000", // ~79.92 SSV yearly
-    logo: "",
-  },
-  {
-    id: 1004,
-    name: "Operator Delta",
-    fee: "21200000000000000", // ~76.49 SSV yearly
-    logo: "",
-  },
-];
 
 export const SwitchWizardStepOne = ({
   onNext,
   onBack,
   backButtonLabel = "Back",
   navigateRoutePath,
-  operators = mockOperators,
+  operators,
 }: SwitchWizardStepOneProps) => {
   return (
     <Container
@@ -89,7 +61,7 @@ export const SwitchWizardStepOne = ({
           onClick={onNext}
           className="font-semibold"
         >
-          Choose Your Period
+          Next
         </Button>
       </Card>
     </Container>

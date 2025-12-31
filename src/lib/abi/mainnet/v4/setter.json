@@ -1,10 +1,5 @@
 [
   {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -13,6 +8,11 @@
       }
     ],
     "name": "AddressIsWhitelistingContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyVoted",
     "type": "error"
   },
   {
@@ -75,6 +75,21 @@
   {
     "inputs": [],
     "name": "ClusterNotLiquidatable",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CooldownActive",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CooldownNotFinished",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "EBBelowMinimum",
     "type": "error"
   },
   {
@@ -203,6 +218,11 @@
   },
   {
     "inputs": [],
+    "name": "InvalidToken",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InvalidWhitelistAddressesLength",
     "type": "error"
   },
@@ -244,6 +264,26 @@
   },
   {
     "inputs": [],
+    "name": "NotCSSV",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOracle",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NothingToClaim",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NothingToWithdraw",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "OperatorAlreadyExists",
     "type": "error"
   },
@@ -259,6 +299,11 @@
   },
   {
     "inputs": [],
+    "name": "OracleAlreadyAssigned",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "PublicKeysSharesLengthMismatch",
     "type": "error"
   },
@@ -270,6 +315,11 @@
   {
     "inputs": [],
     "name": "SameFeeChangeNotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StakeTooLow",
     "type": "error"
   },
   {
@@ -310,6 +360,11 @@
   },
   {
     "inputs": [],
+    "name": "UnstakeAmountExceedsBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "UpdateTooFrequent",
     "type": "error"
   },
@@ -336,7 +391,17 @@
   },
   {
     "inputs": [],
+    "name": "ZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "ZeroAddressNotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroAmount",
     "type": "error"
   },
   {
@@ -399,15 +464,9 @@
       },
       {
         "indexed": false,
-        "internalType": "uint256",
+        "internalType": "uint32",
         "name": "effectiveBalance",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint64",
-        "name": "vUnits",
-        "type": "uint64"
+        "type": "uint32"
       },
       {
         "components": [
@@ -584,6 +643,12 @@
         "type": "uint256"
       },
       {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "effectiveBalance",
+        "type": "uint32"
+      },
+      {
         "components": [
           {
             "internalType": "uint32",
@@ -736,11 +801,74 @@
       {
         "indexed": false,
         "internalType": "uint64",
+        "name": "newCooldownDuration",
+        "type": "uint64"
+      }
+    ],
+    "name": "CooldownDurationUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint64",
         "name": "value",
         "type": "uint64"
       }
     ],
     "name": "DeclareOperatorFeePeriodUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32[4]",
+        "name": "oracleIds",
+        "type": "uint32[4]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[4]",
+        "name": "amounts",
+        "type": "uint256[4]"
+      }
+    ],
+    "name": "DelegationUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "ERC20Rescued",
     "type": "event"
   },
   {
@@ -773,6 +901,25 @@
       }
     ],
     "name": "FeeRecipientAddressUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newFeesWei",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "accEthPerShare",
+        "type": "uint256"
+      }
+    ],
+    "name": "FeesSynced",
     "type": "event"
   },
   {
@@ -1013,31 +1160,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "uint64",
-        "name": "operatorId",
-        "type": "uint64"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint64",
-        "name": "ethFee",
-        "type": "uint64"
-      }
-    ],
-    "name": "OperatorMigratedToETH",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": false,
         "internalType": "uint64[]",
         "name": "operatorIds",
@@ -1108,6 +1230,25 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "operatorId",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "whitelisted",
+        "type": "address"
+      }
+    ],
+    "name": "OperatorWhitelistUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": false,
         "internalType": "uint64[]",
         "name": "operatorIds",
@@ -1153,6 +1294,31 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "uint32",
+        "name": "oracleId",
+        "type": "uint32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "oldOracle",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOracle",
+        "type": "address"
+      }
+    ],
+    "name": "OracleReplaced",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
         "type": "address"
@@ -1184,6 +1350,69 @@
       }
     ],
     "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "newQuorum",
+        "type": "uint16"
+      }
+    ],
+    "name": "QuorumUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardsClaimed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "pending",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "accrued",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "userIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardsSettled",
     "type": "event"
   },
   {
@@ -1222,6 +1451,69 @@
       }
     ],
     "name": "RootProposed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "Staked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "unlockTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "UnstakeRequested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "UnstakedWithdrawn",
     "type": "event"
   },
   {
@@ -1385,6 +1677,37 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "merkleRoot",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "blockNum",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "accumulatedWeight",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "quorum",
+        "type": "uint256"
+      }
+    ],
+    "name": "WeightedRootProposed",
+    "type": "event"
+  },
+  {
     "stateMutability": "nonpayable",
     "type": "fallback"
   },
@@ -1532,6 +1855,13 @@
       }
     ],
     "name": "cancelDeclaredOperatorFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "claimEthRewards",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1699,37 +2029,72 @@
         "type": "address"
       },
       {
-        "internalType": "uint64",
-        "name": "minimumBlocksBeforeLiquidation_",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint256",
-        "name": "minimumLiquidationCollateral_",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint32",
-        "name": "validatorsPerOperatorLimit_",
-        "type": "uint32"
-      },
-      {
-        "internalType": "uint64",
-        "name": "declareOperatorFeePeriod_",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint64",
-        "name": "executeOperatorFeePeriod_",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint64",
-        "name": "operatorMaxFeeIncrease_",
-        "type": "uint64"
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "minimumBlocksBeforeLiquidation",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minimumLiquidationCollateral",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint32",
+            "name": "validatorsPerOperatorLimit",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "declareOperatorFeePeriod",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "executeOperatorFeePeriod",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "operatorMaxFeeIncrease",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint32[4]",
+            "name": "defaultOracleIds",
+            "type": "uint32[4]"
+          },
+          {
+            "internalType": "uint16",
+            "name": "quorumBps",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct ISSVNetwork.NetworkInitParams",
+        "name": "params",
+        "type": "tuple"
       }
     ],
     "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "cssv_",
+        "type": "address"
+      },
+      {
+        "internalType": "uint64",
+        "name": "cooldownDuration_",
+        "type": "uint64"
+      }
+    ],
+    "name": "initializeSSVStaking",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1882,12 +2247,22 @@
   {
     "inputs": [
       {
-        "internalType": "uint64",
-        "name": "operatorId",
-        "type": "uint64"
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
       }
     ],
-    "name": "migrateOperatorToETH",
+    "name": "onCSSVTransfer",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -2192,6 +2567,60 @@
   {
     "inputs": [
       {
+        "internalType": "uint32",
+        "name": "oracleId",
+        "type": "uint32"
+      },
+      {
+        "internalType": "address",
+        "name": "newOracle",
+        "type": "address"
+      }
+    ],
+    "name": "replaceOracle",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "requestUnstake",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "rescueERC20",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "recipientAddress",
         "type": "address"
@@ -2295,6 +2724,52 @@
   {
     "inputs": [
       {
+        "internalType": "uint16",
+        "name": "quorum",
+        "type": "uint16"
+      }
+    ],
+    "name": "setQuorumBps",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "duration",
+        "type": "uint64"
+      }
+    ],
+    "name": "setUnstakeCooldownDuration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "stake",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "syncFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "newOwner",
         "type": "address"
@@ -2355,9 +2830,9 @@
         "type": "tuple"
       },
       {
-        "internalType": "uint256",
+        "internalType": "uint32",
         "name": "effectiveBalance",
-        "type": "uint256"
+        "type": "uint32"
       },
       {
         "internalType": "bytes32[]",
@@ -2620,19 +3095,6 @@
         "type": "uint256"
       }
     ],
-    "name": "withdrawNetworkEarnings",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
     "name": "withdrawNetworkSSVEarnings",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -2670,6 +3132,13 @@
       }
     ],
     "name": "withdrawOperatorEarningsSSV",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdrawUnlocked",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

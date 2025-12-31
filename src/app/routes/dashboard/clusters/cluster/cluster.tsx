@@ -132,7 +132,7 @@ export const Cluster: FC = () => {
               {isSSVCluster && (
                 <Button
                   as={Link}
-                  to="/switch-wizard"
+                  to={`/switch-wizard/${clusterHash}`}
                   size="xl"
                   variant="default"
                 >

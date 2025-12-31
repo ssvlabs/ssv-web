@@ -1,50 +1,71 @@
 import { SwitchWizardStepThree } from "@/components/wizard";
-import { useNavigate } from "react-router-dom";
-import type { Operator } from "@/types/api";
-
-// Mock operators for demonstration
-const mockOperators: Pick<Operator, "id" | "name" | "logo" | "fee">[] = [
-  {
-    id: 1001,
-    name: "Operator Alpha",
-    fee: "23700000000000000",
-    logo: "",
-  },
-  {
-    id: 1002,
-    name: "Operator Beta",
-    fee: "22800000000000000",
-    logo: "",
-  },
-  {
-    id: 1003,
-    name: "Operator Gamma",
-    fee: "22200000000000000",
-    logo: "",
-  },
-  {
-    id: 1004,
-    name: "Operator Delta",
-    fee: "21200000000000000",
-    logo: "",
-  },
-];
+import { useClusterState } from "@/hooks/cluster/use-cluster-state";
+import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
+import { useOperators } from "@/hooks/operator/use-operators";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import type { SwitchWizardStepThreeState } from "@/components/wizard/switch-wizard-types";
+import { useMigrateClusterToETH } from "@/lib/contract-interactions/write/use-migrate-cluster-to-eth";
+import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
+import { formatClusterData } from "@/lib/utils/cluster";
 
 export const SwitchWizardStepThreeRoute = () => {
   const navigate = useNavigate();
+  const { clusterHash } = useClusterPageParams();
+  const { cluster, balanceSSV } = useClusterState(clusterHash!, {
+    isLiquidated: { enabled: false },
+  });
+  const migrate = useMigrateClusterToETH();
+  const operatorsQuery = useOperators(cluster.data?.operators ?? []);
+  const operators = operatorsQuery.data ?? [];
+  const basePath = `/switch-wizard/${clusterHash}`;
+  const location = useLocation();
+  const stepState = location.state as SwitchWizardStepThreeState | null;
+  const effectiveBalance = stepState?.effectiveBalance;
+  const fundingDays = stepState?.fundingDays ?? 0;
+  const fundingSummary = stepState?.fundingSummary;
+  const totalDeposit = stepState?.totalDeposit;
+  const hasRequiredState =
+    typeof effectiveBalance === "bigint" && typeof fundingDays === "number";
+  const canSubmit = Boolean(cluster.data && totalDeposit !== undefined);
+  useEffect(() => {
+    if (!hasRequiredState) {
+      navigate(`${basePath}/step-two`, { replace: true });
+    }
+  }, [basePath, hasRequiredState, navigate]);
 
   return (
     <SwitchWizardStepThree
       onNext={() => {
-        navigate("/switch-wizard/step-four");
-      }}
-      onBack={() => {
-        navigate("/switch-wizard/step-two");
+        if (!cluster.data || totalDeposit === undefined) return;
+        migrate.write(
+          {
+            operatorIds: cluster.data?.operators.map((id) => BigInt(id)) ?? [],
+            cluster: formatClusterData(cluster.data),
+          },
+          totalDeposit,
+          withTransactionModal({
+            onMined: () => {
+              return () => navigate(`${basePath}/step-four`);
+            },
+          }),
+        );
       }}
       backButtonLabel="Back"
-      navigateRoutePath="/switch-wizard/step-two"
-      operators={mockOperators}
-      fundingDays={182}
+      navigateRoutePath={`${basePath}/step-two-and-half`}
+      navigateRouteOptions={{
+        replace: true,
+        state: stepState ?? undefined,
+      }}
+      operators={operators}
+      fundingDays={fundingDays}
+      fundingSummary={fundingSummary}
+      effectiveBalance={effectiveBalance}
+      totalDeposit={totalDeposit}
+      validatorsAmount={cluster.data?.validatorCount ?? 1}
+      withdrawSsvBalance={balanceSSV.data}
+      isSubmitting={migrate.isPending}
+      isSubmitDisabled={!canSubmit}
     />
   );
 };

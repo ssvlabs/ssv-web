@@ -62,9 +62,6 @@ export const useGetBalance = (
     query: {
       ...options,
       enabled: options?.enabled && args.every((arg) => !isUndefined(arg)),
-
-      // FIXME (Chris): temp solution to handle additional effective balance
-      select: ([balance]) => balance,
     },
   });
 };

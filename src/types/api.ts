@@ -33,6 +33,7 @@ export type Operator = {
   declared_fee: string;
   previous_fee: string;
   fee: string;
+  eth_fee: string;
   public_key: string;
   owner_address: string;
   address_whitelist: string;

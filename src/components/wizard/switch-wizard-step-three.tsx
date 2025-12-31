@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { OperatorDetails } from "@/components/operator/operator-details";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,29 +9,28 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip } from "@/components/ui/tooltip";
 import { FaCircleInfo } from "react-icons/fa6";
 import type { Operator } from "@/types/api";
+import { getYearlyFee } from "@/lib/utils/operator";
+import { currencyFormatter, ethFormatter, formatSSV } from "@/lib/utils/number";
+import { formatUnits } from "viem";
+import { useRates } from "@/hooks/use-rates";
+import type { SwitchWizardFundingSummary } from "./switch-wizard-types";
+import type { NavigateOptions } from "react-router-dom";
 
 type SwitchWizardStepThreeProps = {
   onNext: () => void;
   onBack?: () => void;
   backButtonLabel?: string;
   navigateRoutePath?: string;
-  operators?: Pick<Operator, "id" | "name" | "logo" | "fee">[];
-  fundingDays?: number;
-};
-
-// Mock data - will be replaced with real calculations
-const mockFundingSummary = {
-  operatorsFee: "0.0416 ETH",
-  networkFee: "0.0203 ETH",
-  liquidationCollateral: "0.0015 ETH",
-  effectiveBalance: "32 ETH",
-  operatorsSubtotal: "1.3312 ETH",
-  networkSubtotal: "0.6496 ETH",
-  liquidationSubtotal: "0.0048 ETH",
-  totalDeposit: "2.5502 ETH",
-  totalDepositUSD: "~$3,444.78",
-  withdrawSSV: "50 SSV",
-  withdrawSSVUSD: "~$344.78",
+  navigateRouteOptions?: NavigateOptions;
+  operators: Pick<Operator, "id" | "name" | "logo" | "eth_fee">[];
+  fundingDays: number;
+  totalDeposit?: bigint;
+  effectiveBalance?: bigint;
+  fundingSummary?: SwitchWizardFundingSummary;
+  validatorsAmount?: number;
+  withdrawSsvBalance?: bigint;
+  isSubmitting?: boolean;
+  isSubmitDisabled?: boolean;
 };
 
 export const SwitchWizardStepThree = ({
@@ -39,25 +38,52 @@ export const SwitchWizardStepThree = ({
   onBack,
   backButtonLabel = "Back",
   navigateRoutePath,
-  operators = [],
-  fundingDays = 182,
+  navigateRouteOptions,
+  operators,
+  fundingDays,
+  totalDeposit,
+  effectiveBalance,
+  fundingSummary,
+  validatorsAmount,
+  withdrawSsvBalance,
+  isSubmitting = false,
+  isSubmitDisabled = false,
 }: SwitchWizardStepThreeProps) => {
   const [isAcknowledged, setIsAcknowledged] = useState(false);
+  const acknowledgeId = useId();
+  const rates = useRates();
+  const ethRate = rates.data?.eth ?? 0;
+  const ssvRate = rates.data?.ssv ?? 0;
+  const validatorsCount = validatorsAmount ?? 1;
+  const isMultiValidator = validatorsCount > 1;
 
-  // Placeholder ETH amounts per year for operators
-  const getOperatorETHPerYear = (operatorId: number) => {
-    // Mock values - will be replaced with real calculations
-    const mockValues: Record<number, string> = {
-      1001: "0.1084 ETH",
-      1002: "0.1046 ETH",
-      1003: "0.1014 ETH",
-      1004: "0.971 ETH",
-    };
-    return mockValues[operatorId] || "0 ETH";
-  };
+  const formatETH = (value: bigint) =>
+    `${ethFormatter.format(+formatUnits(value, 18))} ETH`;
+  const formatUsd = (value: bigint) =>
+    `~${currencyFormatter.format(ethRate * +formatUnits(value, 18))}`;
+  const formatEthValue = (value?: bigint) =>
+    value !== undefined ? formatETH(value) : "-";
+
+  const effectiveBalanceDisplay =
+    effectiveBalance !== undefined ? formatETH(effectiveBalance) : "-";
+  const totalDepositFallback = fundingSummary
+    ? fundingSummary.operatorsSubtotal +
+      fundingSummary.networkSubtotal +
+      fundingSummary.liquidationSubtotal
+    : undefined;
+  const withdrawSsvDisplay =
+    withdrawSsvBalance !== undefined
+      ? `${formatSSV(withdrawSsvBalance)} SSV`
+      : "0 SSV";
+  const withdrawSsvUsd =
+    withdrawSsvBalance !== undefined
+      ? `~${currencyFormatter.format(
+          ssvRate * Number(formatUnits(withdrawSsvBalance, 18)),
+        )}`
+      : "";
 
   const handleSubmit = () => {
-    if (!isAcknowledged) return;
+    if (!isAcknowledged || isSubmitting || isSubmitDisabled) return;
     onNext();
   };
 
@@ -67,6 +93,7 @@ export const SwitchWizardStepThree = ({
       className="py-6"
       backButtonLabel={backButtonLabel}
       navigateRoutePath={navigateRoutePath}
+      navigateRouteOptions={navigateRouteOptions}
       onBackButtonClick={onBack}
     >
       <Card
@@ -81,22 +108,35 @@ export const SwitchWizardStepThree = ({
           <Text variant="body-3-semibold" className="text-gray-500">
             Selected Operators
           </Text>
-          {operators.map((operator) => (
-            <div
-              className="flex justify-between items-center"
-              key={operator.id}
-            >
-              <OperatorDetails operator={operator} isShowExplorerLink={false} />
-              <div className="text-end space-y-1">
-                <Text variant="body-2-medium">
-                  {getOperatorETHPerYear(operator.id)}
-                </Text>
-                <Text variant="body-3-medium" className="text-gray-500">
-                  /year
-                </Text>
+          {operators.map((operator) => {
+            const yearlyEthFee = getYearlyFee(BigInt(operator.eth_fee || "0"));
+            const yearlyEthFeeDisplay = isMultiValidator
+              ? yearlyEthFee * BigInt(validatorsCount)
+              : yearlyEthFee;
+            const yearlyFeeSuffix = isMultiValidator
+              ? ` (total for ${validatorsCount} validators)`
+              : "";
+
+            return (
+              <div
+                className="flex justify-between items-center"
+                key={operator.id}
+              >
+                <OperatorDetails
+                  operator={operator}
+                  isShowExplorerLink={false}
+                />
+                <div className="text-end space-y-1">
+                  <Text variant="body-2-medium">
+                    {formatETH(yearlyEthFeeDisplay)}
+                  </Text>
+                  <Text variant="body-3-medium" className="text-gray-500">
+                    {formatUsd(yearlyEthFeeDisplay)} /year{yearlyFeeSuffix}
+                  </Text>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <Divider />
@@ -131,24 +171,24 @@ export const SwitchWizardStepThree = ({
 
             <Text variant="body-2-medium">Operators fee</Text>
             <Text variant="body-2-medium" className="text-right">
-              {mockFundingSummary.operatorsFee}
+              {formatEthValue(fundingSummary?.operatorsPerEth)}
             </Text>
             <Text variant="body-2-medium" className="text-right">
-              {mockFundingSummary.effectiveBalance}
+              {effectiveBalanceDisplay}
             </Text>
             <Text variant="body-2-medium" className="text-right">
-              {mockFundingSummary.operatorsSubtotal}
+              {formatEthValue(fundingSummary?.operatorsSubtotal)}
             </Text>
 
             <Text variant="body-2-medium">Network fee</Text>
             <Text variant="body-2-medium" className="text-right">
-              {mockFundingSummary.networkFee}
+              {formatEthValue(fundingSummary?.networkPerEth)}
             </Text>
             <Text variant="body-2-medium" className="text-right">
-              {mockFundingSummary.effectiveBalance}
+              {effectiveBalanceDisplay}
             </Text>
             <Text variant="body-2-medium" className="text-right">
-              {mockFundingSummary.networkSubtotal}
+              {formatEthValue(fundingSummary?.networkSubtotal)}
             </Text>
 
             <div className="flex gap-2 items-center">
@@ -158,13 +198,13 @@ export const SwitchWizardStepThree = ({
               </Tooltip>
             </div>
             <Text variant="body-2-medium" className="text-right">
-              {mockFundingSummary.liquidationCollateral}
+              {formatEthValue(fundingSummary?.liquidationPerEth)}
             </Text>
             <Text variant="body-2-medium" className="text-right">
-              {mockFundingSummary.effectiveBalance}
+              {effectiveBalanceDisplay}
             </Text>
             <Text variant="body-2-medium" className="text-right">
-              {mockFundingSummary.liquidationSubtotal}
+              {formatEthValue(fundingSummary?.liquidationSubtotal)}
             </Text>
           </div>
 
@@ -173,9 +213,17 @@ export const SwitchWizardStepThree = ({
           <div className="flex items-start justify-between">
             <Text variant="body-2-medium">Total Deposit</Text>
             <div className="flex flex-col items-end">
-              <Text variant="headline4">{mockFundingSummary.totalDeposit}</Text>
+              <Text variant="headline4">
+                {totalDeposit !== undefined
+                  ? formatETH(totalDeposit)
+                  : formatEthValue(totalDepositFallback)}
+              </Text>
               <Text variant="body-3-medium" className="text-gray-500">
-                {mockFundingSummary.totalDepositUSD}
+                {totalDeposit !== undefined
+                  ? formatUsd(totalDeposit)
+                  : totalDepositFallback !== undefined
+                    ? formatUsd(totalDepositFallback)
+                    : ""}
               </Text>
             </div>
           </div>
@@ -190,32 +238,42 @@ export const SwitchWizardStepThree = ({
               </Tooltip>
             </div>
             <div className="flex flex-col items-end">
-              <Text variant="headline4">{mockFundingSummary.withdrawSSV}</Text>
+              <Text variant="headline4">{withdrawSsvDisplay}</Text>
               <Text variant="body-3-medium" className="text-gray-500">
-                {mockFundingSummary.withdrawSSVUSD}
+                {withdrawSsvUsd}
               </Text>
             </div>
           </div>
         </div>
 
-        <div className="flex gap-3 items-start">
+        <label
+          htmlFor={acknowledgeId}
+          className="flex gap-3 items-start cursor-pointer"
+        >
           <Checkbox
+            id={acknowledgeId}
             checked={isAcknowledged}
             onCheckedChange={(checked) => setIsAcknowledged(checked === true)}
             className="mt-0.5"
           />
-          <Text variant="body-3-medium" className="text-gray-700 flex-1">
-            I acknowledge that switching this cluster to ETH-based payments is a
-            permanent action and cannot be undone, and that all future operator
-            and network fees will be paid exclusively in ETH.
+          <Text
+            as="span"
+            variant="body-3-medium"
+            className="text-gray-700 flex-1"
+          >
+            By checking this box, I acknowledge and agree that after my first
+            ETH deposit, my cluster runway will be calculated in ETH only, my
+            SSV balance will be withdrawn to my wallet, and this process is
+            irreversible.
           </Text>
-        </div>
+        </label>
 
         <Button
           size="xl"
           width="full"
           onClick={handleSubmit}
-          disabled={!isAcknowledged}
+          disabled={!isAcknowledged || isSubmitting || isSubmitDisabled}
+          isLoading={isSubmitting}
           className="font-semibold"
         >
           Switch Cluster to ETH

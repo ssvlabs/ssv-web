@@ -156,6 +156,7 @@ export const createDefaultOperator = (
   declared_fee: "0",
   previous_fee: "0",
   fee: "0",
+  eth_fee: "0",
   public_key: "",
   owner_address: "",
   address_whitelist: "",

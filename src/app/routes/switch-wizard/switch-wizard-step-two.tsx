@@ -1,50 +1,48 @@
 import { SwitchWizardStepTwo } from "@/components/wizard";
-import { useNavigate } from "react-router-dom";
-import type { Operator } from "@/types/api";
-
-// Mock operators for demonstration
-const mockOperators: Pick<Operator, "id" | "name" | "logo" | "fee">[] = [
-  {
-    id: 1001,
-    name: "Operator Alpha",
-    fee: "23700000000000000",
-    logo: "",
-  },
-  {
-    id: 1002,
-    name: "Operator Beta",
-    fee: "22800000000000000",
-    logo: "",
-  },
-  {
-    id: 1003,
-    name: "Operator Gamma",
-    fee: "22200000000000000",
-    logo: "",
-  },
-  {
-    id: 1004,
-    name: "Operator Delta",
-    fee: "21200000000000000",
-    logo: "",
-  },
-];
+import { useClusterState } from "@/hooks/cluster/use-cluster-state";
+import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
+import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
+import { useOperators } from "@/hooks/operator/use-operators";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import type { SwitchWizardStepThreeState } from "@/components/wizard/switch-wizard-types";
 
 export const SwitchWizardStepTwoRoute = () => {
   const navigate = useNavigate();
+  const { clusterHash } = useClusterPageParams();
+  const { cluster } = useClusterState(clusterHash!, {
+    isLiquidated: { enabled: false },
+    balance: { enabled: false },
+  });
+  const location = useLocation();
+  const effectiveBalance = (
+    location.state as { effectiveBalance?: bigint } | null
+  )?.effectiveBalance;
+  const { data: clusterRunway } = useClusterRunway(clusterHash);
+
+  const operatorsQuery = useOperators(cluster.data?.operators ?? []);
+  const operators = operatorsQuery.data ?? [];
+  const basePath = `/switch-wizard/${clusterHash}`;
+
+  useEffect(() => {
+    if (effectiveBalance === undefined) {
+      navigate(`${basePath}/step-one`, { replace: true });
+    }
+  }, [basePath, effectiveBalance, navigate]);
 
   return (
     <SwitchWizardStepTwo
-      onNext={() => {
-        navigate("/switch-wizard/step-three");
-      }}
-      onBack={() => {
-        navigate("/switch-wizard");
+      onNext={(nextState: SwitchWizardStepThreeState) => {
+        navigate(`${basePath}/step-two-and-half`, {
+          state: nextState,
+        });
       }}
       backButtonLabel="Back"
-      navigateRoutePath="/switch-wizard"
-      operators={mockOperators}
-      validatorsAmount={1}
+      navigateRoutePath={`${basePath}/step-one`}
+      operators={operators}
+      validatorsAmount={cluster.data?.validatorCount ?? 1}
+      effectiveBalance={effectiveBalance}
+      currentRunwayDays={Number(clusterRunway?.runway) || 0}
     />
   );
 };

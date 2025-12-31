@@ -10,9 +10,9 @@ import type { SwitchWizardStepThreeState } from "@/components/wizard/switch-wiza
 export const SwitchWizardStepTwoRoute = () => {
   const navigate = useNavigate();
   const { clusterHash } = useClusterPageParams();
-  const { cluster } = useClusterState(clusterHash!, {
+  const { cluster, balanceSSV } = useClusterState(clusterHash!, {
     isLiquidated: { enabled: false },
-    balance: { enabled: false },
+    balance: { enabled: true },
   });
   const location = useLocation();
   const effectiveBalance = (
@@ -43,6 +43,7 @@ export const SwitchWizardStepTwoRoute = () => {
       validatorsAmount={cluster.data?.validatorCount ?? 1}
       effectiveBalance={effectiveBalance}
       currentRunwayDays={Number(clusterRunway?.runway) || 0}
+      ssvBalance={balanceSSV.data}
     />
   );
 };

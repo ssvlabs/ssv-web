@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { OperatorDetails } from "@/components/operator/operator-details";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -50,6 +50,7 @@ export const SwitchWizardStepThree = ({
   isSubmitDisabled = false,
 }: SwitchWizardStepThreeProps) => {
   const [isAcknowledged, setIsAcknowledged] = useState(false);
+  const acknowledgeId = useId();
   const rates = useRates();
   const ethRate = rates.data?.eth ?? 0;
   const ssvRate = rates.data?.ssv ?? 0;
@@ -245,19 +246,27 @@ export const SwitchWizardStepThree = ({
           </div>
         </div>
 
-        <div className="flex gap-3 items-start">
+        <label
+          htmlFor={acknowledgeId}
+          className="flex gap-3 items-start cursor-pointer"
+        >
           <Checkbox
+            id={acknowledgeId}
             checked={isAcknowledged}
             onCheckedChange={(checked) => setIsAcknowledged(checked === true)}
             className="mt-0.5"
           />
-          <Text variant="body-3-medium" className="text-gray-700 flex-1">
+          <Text
+            as="span"
+            variant="body-3-medium"
+            className="text-gray-700 flex-1"
+          >
             By checking this box, I acknowledge and agree that after my first
             ETH deposit, my cluster runway will be calculated in ETH only, my
             SSV balance will be withdrawn to my wallet, and this process is
             irreversible.
           </Text>
-        </div>
+        </label>
 
         <Button
           size="xl"

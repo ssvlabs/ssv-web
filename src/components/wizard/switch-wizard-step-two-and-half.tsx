@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -22,6 +22,8 @@ export const SwitchWizardStepTwoAndHalf = ({
   const [feesAcknowledged, setFeesAcknowledged] = useState(false);
   const [liquidationAcknowledged, setLiquidationAcknowledged] = useState(false);
   const canProceed = feesAcknowledged && liquidationAcknowledged;
+  const feesAcknowledgedId = useId();
+  const liquidationAcknowledgedId = useId();
 
   const handleNext = () => {
     if (!canProceed) return;
@@ -45,7 +47,8 @@ export const SwitchWizardStepTwoAndHalf = ({
           <Text variant="body-2-medium" className="text-gray-700">
             Your cluster's runway is determined by your deposited balance and
             the operator and network fees accrued over time. These fees scale
-            with your validators' <span className="font-semibold">effective balance</span>.
+            with your validators'{" "}
+            <span className="font-semibold">effective balance</span>.
           </Text>
           <Text variant="body-2-medium" className="text-gray-700">
             While displayed as annual amounts, fees are paid continuously as an
@@ -78,30 +81,46 @@ export const SwitchWizardStepTwoAndHalf = ({
         </Alert>
 
         <div className="flex flex-col gap-3">
-          <div className="flex gap-3 items-start">
+          <label
+            htmlFor={feesAcknowledgedId}
+            className="flex gap-3 items-start cursor-pointer"
+          >
             <Checkbox
+              id={feesAcknowledgedId}
               checked={feesAcknowledged}
               onCheckedChange={(checked) =>
                 setFeesAcknowledged(checked === true)
               }
               className="mt-0.5"
             />
-            <Text variant="body-2-medium" className="text-gray-700 flex-1">
+            <Text
+              as="span"
+              variant="body-2-medium"
+              className="text-gray-700 flex-1"
+            >
               I understand that fees might change according to market dynamics
             </Text>
-          </div>
-          <div className="flex gap-3 items-start">
+          </label>
+          <label
+            htmlFor={liquidationAcknowledgedId}
+            className="flex gap-3 items-start cursor-pointer"
+          >
             <Checkbox
+              id={liquidationAcknowledgedId}
               checked={liquidationAcknowledged}
               onCheckedChange={(checked) =>
                 setLiquidationAcknowledged(checked === true)
               }
               className="mt-0.5"
             />
-            <Text variant="body-2-medium" className="text-gray-700 flex-1">
+            <Text
+              as="span"
+              variant="body-2-medium"
+              className="text-gray-700 flex-1"
+            >
               I understand the risks of having my cluster liquidated
             </Text>
-          </div>
+          </label>
         </div>
 
         <Button

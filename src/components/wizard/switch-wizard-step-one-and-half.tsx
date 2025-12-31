@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
@@ -59,6 +59,7 @@ export const SwitchWizardStepOneAndHalf = ({
   );
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [selectedTab, setSelectedTab] = useState<TabKey>("all");
+  const confirmId = useId();
 
   const numericBalance = Number(balanceValue);
 
@@ -208,18 +209,22 @@ export const SwitchWizardStepOneAndHalf = ({
           </Alert>
         )}
 
-        <div className="flex items-start gap-3">
+        <label
+          htmlFor={confirmId}
+          className="flex items-start gap-3 cursor-pointer"
+        >
           <Checkbox
+            id={confirmId}
             checked={isConfirmed}
             onCheckedChange={(checked) => setIsConfirmed(checked === true)}
             className="mt-0.5"
           />
-          <Text variant="body-3-medium" className="text-gray-700">
+          <Text as="span" variant="body-3-medium" className="text-gray-700">
             I confirm that the total projected balance is accurate, and I
             understand that an insufficient funding balance based on this amount
             could lead to my cluster being liquidated.
           </Text>
-        </div>
+        </label>
 
         <Button
           size="xl"

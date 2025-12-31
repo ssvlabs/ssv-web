@@ -39,7 +39,6 @@ type SwitchWizardStepTwoProps = {
   validatorsAmount?: number;
   effectiveBalance?: bigint;
   currentRunwayDays?: number;
-  ssvBalance?: bigint;
 };
 
 const schema = z.object({
@@ -65,26 +64,19 @@ export const SwitchWizardStepTwo = ({
   validatorsAmount = 1,
   effectiveBalance,
   currentRunwayDays = 0,
-  ssvBalance,
 }: SwitchWizardStepTwoProps) => {
   const rates = useRates();
   const networkFees = useSsvNetworkFee();
-  const hasSsvBalance = (ssvBalance ?? 0n) > 0n;
 
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
       custom: 182,
-      selected: hasSsvBalance ? "current" : "half-year",
+      selected: "current",
     },
     resolver: zodResolver(schema),
   });
 
   const values = form.watch();
-  useEffect(() => {
-    if (!hasSsvBalance && values.selected === "current") {
-      form.setValue("selected", "half-year");
-    }
-  }, [form, hasSsvBalance, values.selected]);
   const selectedDays =
     values.selected === "custom"
       ? values.custom
@@ -214,36 +206,28 @@ export const SwitchWizardStepTwo = ({
                   onValueChange={field.onChange}
                   className="flex flex-col gap-2 [&>*]:w-full"
                 >
-                  {hasSsvBalance ? (
-                    <FormLabel htmlFor="current">
-                      <div className="flex items-center gap-3 border border-gray-400 rounded-lg py-[18px] px-6 outline outline-[4px] outline-none outline-offset-0 has-[input:checked]:border-primary-500 has-[input:checked]:outline-primary-100">
-                        <RadioGroupItem value="current" id="current" />
-                        <div className="flex flex-col gap-1">
-                          <Text variant="body-2-semibold">Current Period</Text>
-                          <Text
-                            variant="body-3-medium"
-                            className="text-gray-500"
-                          >
-                            {currentRunwayDays > 0
-                              ? `${currentRunwayDays} Days`
-                              : "-"}
-                          </Text>
-                        </div>
-                        <Spacer />
-                        <div className="flex flex-col items-end">
-                          <Text variant="body-1-bold">
-                            {formatEth(currentCosts?.totalDeposit)}
-                          </Text>
-                          <Text
-                            variant="body-3-medium"
-                            className="text-gray-500"
-                          >
-                            {formatUsd(currentCosts?.totalDeposit)}
-                          </Text>
-                        </div>
+                  <FormLabel htmlFor="current">
+                    <div className="flex items-center gap-3 border border-gray-400 rounded-lg py-[18px] px-6 outline outline-[4px] outline-none outline-offset-0 has-[input:checked]:border-primary-500 has-[input:checked]:outline-primary-100">
+                      <RadioGroupItem value="current" id="current" />
+                      <div className="flex flex-col gap-1">
+                        <Text variant="body-2-semibold">Current Period</Text>
+                        <Text variant="body-3-medium" className="text-gray-500">
+                          {currentRunwayDays > 0
+                            ? `${currentRunwayDays} Days`
+                            : "-"}
+                        </Text>
                       </div>
-                    </FormLabel>
-                  ) : null}
+                      <Spacer />
+                      <div className="flex flex-col items-end">
+                        <Text variant="body-1-bold">
+                          {formatEth(currentCosts?.totalDeposit)}
+                        </Text>
+                        <Text variant="body-3-medium" className="text-gray-500">
+                          {formatUsd(currentCosts?.totalDeposit)}
+                        </Text>
+                      </div>
+                    </div>
+                  </FormLabel>
 
                   <FormLabel htmlFor="half-year">
                     <div className="flex items-center gap-3 border border-gray-400 rounded-lg py-[18px] px-6 outline outline-[4px] outline-none outline-offset-0 has-[input:checked]:border-primary-500 has-[input:checked]:outline-primary-100">

@@ -112,7 +112,7 @@ export const locationState = proxy({
 });
 
 router.subscribe((state) => {
-  locationState.previous = JSON.parse(JSON.stringify(locationState.current));
+  locationState.previous = locationState.current;
   locationState.current = state.location;
 
   if (state.historyAction === "PUSH") {

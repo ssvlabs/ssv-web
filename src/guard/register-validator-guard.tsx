@@ -5,10 +5,12 @@ import { useMemo } from "react";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { sortNumbers } from "@/lib/utils/number";
 import { useKeysharesSchemaValidation } from "@/hooks/keyshares/use-keyshares-schema-validation";
-import type { KeySharesPayload } from "ssv-keys/dist/tsc/src/lib/KeyShares/KeySharesData/KeySharesPayload";
+import type { KeySharesItem } from "@ssv-labs/ssv-sdk/keys";
 import { getOSName } from "@/lib/utils/os";
 import { createFileSetter } from "@/lib/utils/valtio";
 import { isFrom } from "@/lib/utils/router.ts";
+
+type KeySharesPayload = KeySharesItem["payload"];
 
 const startingRoutes = ["online", "offline", "keyshares", "select-operators"];
 

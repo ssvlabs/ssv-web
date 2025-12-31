@@ -1,8 +1,8 @@
-import { type ChangeEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
-import { Input } from "@/components/ui/input";
+import { BigNumberInput } from "@/components/ui/number-input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -54,18 +54,17 @@ export const SwitchWizardStepOneAndHalf = ({
   totalEffectiveBalance = 0,
 }: SwitchWizardStepOneAndHalfProps) => {
   const [hasEdited, setHasEdited] = useState(false);
-  const [balanceInput, setBalanceInput] = useState(() =>
-    numberFormatter.format(totalEffectiveBalance),
+  const [balanceValue, setBalanceValue] = useState(() =>
+    BigInt(Math.trunc(totalEffectiveBalance)),
   );
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [selectedTab, setSelectedTab] = useState<TabKey>("all");
 
-  const normalizedBalance = balanceInput.replace(/,/g, "");
-  const numericBalance = normalizedBalance ? Number(normalizedBalance) : 0;
+  const numericBalance = Number(balanceValue);
 
   useEffect(() => {
     if (!hasEdited) {
-      setBalanceInput(numberFormatter.format(totalEffectiveBalance));
+      setBalanceValue(BigInt(Math.trunc(totalEffectiveBalance)));
     }
   }, [hasEdited, totalEffectiveBalance]);
 
@@ -93,15 +92,9 @@ export const SwitchWizardStepOneAndHalf = ({
     );
   }, [selectedTab, validators]);
 
-  const handleBalanceChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const nextValue = event.target.value.replace(/[^\d]/g, "");
-    if (!nextValue) {
-      setHasEdited(true);
-      setBalanceInput("");
-      return;
-    }
+  const handleBalanceChange = (value: bigint) => {
     setHasEdited(true);
-    setBalanceInput(numberFormatter.format(Number(nextValue)));
+    setBalanceValue(value);
   };
 
   const formatEthBalance = (value: bigint) =>
@@ -159,11 +152,10 @@ export const SwitchWizardStepOneAndHalf = ({
               <FaCircleInfo className="size-3 text-gray-400" />
             </Tooltip>
           </div>
-          <Input
+          <BigNumberInput
             id="total-effective-balance"
-            value={balanceInput}
+            value={balanceValue}
             onChange={handleBalanceChange}
-            inputMode="numeric"
             className="h-[64px] border-primary-200 bg-white focus-within:border-primary-500"
             placeholder="0"
             rightSlot={
@@ -182,6 +174,8 @@ export const SwitchWizardStepOneAndHalf = ({
               className:
                 "text-2xl font-semibold text-gray-800 placeholder:text-gray-400",
             }}
+            decimals={0}
+            displayDecimals={0}
           />
         </div>
 

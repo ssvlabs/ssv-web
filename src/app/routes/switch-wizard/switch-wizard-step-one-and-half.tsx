@@ -11,7 +11,6 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
   const { clusterHash } = useClusterPageParams();
   const basePath = `/switch-wizard/${clusterHash}`;
   const { validators } = useInfiniteClusterValidators(clusterHash);
-  console.log(validators);
 
   const validatorRows = useMemo(
     () =>

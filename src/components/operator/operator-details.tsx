@@ -20,6 +20,7 @@ export type OperatorDetailsProps = {
       >
     >;
   isShowExplorerLink?: boolean;
+  operatorAvatarProps?: ComponentPropsWithoutRef<typeof OperatorAvatar>;
 };
 
 type FCProps = FC<
@@ -31,6 +32,7 @@ export const OperatorDetails: FCProps = ({
   operator,
   className,
   isShowExplorerLink = true,
+  operatorAvatarProps,
   ...props
 }) => {
   const { ref, isInsideTooltip } = useIsInsideTooltip();
@@ -53,6 +55,7 @@ export const OperatorDetails: FCProps = ({
     >
       <OperatorAvatar
         size="xl"
+        {...operatorAvatarProps}
         src={operator.logo}
         isPrivate={operator.is_private}
       />

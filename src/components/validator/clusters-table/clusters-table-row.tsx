@@ -48,7 +48,7 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
     >
       <TableCell>{shortenClusterId(cluster.clusterId)}</TableCell>
       <TableCell>
-        <div className="flex -space-x-[8px] ">
+        <div className="flex gap-[2px]">
           {cluster.operators.map((o) => {
             const Cmp: FC = () => {
               const operator = useOptimisticOrProvidedOperator(o);
@@ -66,10 +66,10 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
                   <OperatorAvatar
                     src={operator.logo}
                     isPrivate={operator.is_private}
-                    size="lg"
-                    variant="circle"
+                    size="xs"
+                    variant="square"
                     className={cn(
-                      "bg-white border border-gray-300 shadow p-[4px]",
+                      "bg-white border border-gray-300 rounded-[7px] overflow-hidden",
                       {
                         "border-red-400 [&_img]:opacity-40 [&_svg]:opacity-40":
                           operator.is_deleted,

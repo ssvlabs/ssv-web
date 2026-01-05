@@ -219,7 +219,9 @@ export const SwitchWizardStepTwo = ({
                       <div className="flex items-center gap-3 border border-gray-400 rounded-lg py-[18px] px-6 outline outline-[4px] outline-none outline-offset-0 has-[input:checked]:border-primary-500 has-[input:checked]:outline-primary-100">
                         <RadioGroupItem value="current" id="current" />
                         <div className="flex flex-col gap-1">
-                          <Text variant="body-2-semibold">Current Period</Text>
+                          <Text variant="body-2-semibold">
+                            Use Current Runway
+                          </Text>
                           <Text
                             variant="body-3-medium"
                             className="text-gray-500"

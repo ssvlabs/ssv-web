@@ -20,7 +20,7 @@ import {
 import { CopyBtn } from "@/components/ui/copy-btn";
 import { SsvExplorerBtn } from "@/components/ui/ssv-explorer-btn";
 import { Tooltip } from "@/components/ui/tooltip";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { ethFormatter, numberFormatter } from "@/lib/utils/number";
 import { add0x, shortenAddress } from "@/lib/utils/strings";
 import { FaCircleInfo } from "react-icons/fa6";
@@ -89,6 +89,15 @@ export const SwitchWizardStepOneAndHalf = ({
     resolver: zodResolver(schema),
     mode: "onChange",
   });
+
+  const isFormValid = useMemo(
+    () =>
+      Object.keys(form.formState.errors).length === 0 && form.formState.isDirty,
+    [form.formState.errors, form.formState.isDirty],
+  );
+
+  // console.log("errors", form.formState.errors);
+  // console.log("isValid", form.formState.isValid);
 
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [selectedTab, setSelectedTab] = useState<TabKey>("all");
@@ -177,43 +186,37 @@ export const SwitchWizardStepOneAndHalf = ({
                 <FaCircleInfo className="size-3 text-gray-400" />
               </Tooltip>
             </div>
-            <FormField
-              control={form.control}
-              name="totalEffectiveBalance"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <BigNumberInput
-                      id="total-effective-balance"
-                      value={BigInt(field.value)}
-                      onChange={(value) => field.onChange(Number(value))}
-                      className="h-[64px] border-primary-200 bg-white focus-within:border-primary-500"
-                      placeholder="0"
-                      rightSlot={
-                        <div className="flex items-center gap-2 pr-1 text-gray-500">
-                          <img
-                            src="/images/networks/dark.svg"
-                            alt="ETH"
-                            className="size-4"
-                          />
-                          <Text
-                            variant="body-2-medium"
-                            className="text-gray-500"
-                          >
-                            ETH
-                          </Text>
-                        </div>
-                      }
-                      inputProps={{
-                        className:
-                          "text-2xl font-semibold text-gray-800 placeholder:text-gray-400",
-                      }}
-                      decimals={0}
-                      displayDecimals={0}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
+            <BigNumberInput
+              id="total-effective-balance"
+              value={BigInt(balanceValue)}
+              onChange={(value) => {
+                form.setValue("totalEffectiveBalance", Number(value), {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                  shouldTouch: true,
+                });
+                form.trigger();
+              }}
+              className="h-[64px] border-primary-200 bg-white focus-within:border-primary-500"
+              placeholder="0"
+              rightSlot={
+                <div className="flex items-center gap-2 pr-1 text-gray-500">
+                  <img
+                    src="/images/networks/dark.svg"
+                    alt="ETH"
+                    className="size-4"
+                  />
+                  <Text variant="body-2-medium" className="text-gray-500">
+                    ETH
+                  </Text>
+                </div>
+              }
+              inputProps={{
+                className:
+                  "text-2xl font-semibold text-gray-800 placeholder:text-gray-400",
+              }}
+              decimals={0}
+              displayDecimals={0}
             />
           </div>
         </Form>
@@ -270,12 +273,11 @@ export const SwitchWizardStepOneAndHalf = ({
           width="full"
           className="font-semibold"
           onClick={() => onNext(numericBalance)}
-          disabled={!isConfirmed || !form.formState.isValid}
+          disabled={!isConfirmed || !isFormValid}
         >
           Next
         </Button>
       </Card>
-
       <Card
         variant="unstyled"
         className="flex-1 flex min-h-0 flex-col gap-4 p-6 bg-white rounded-2xl"

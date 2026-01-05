@@ -13,6 +13,7 @@ export const variants = cva("object-cover", {
       square: "rounded-sm",
     },
     size: {
+      xs: "size-[22px]",
       sm: "size-6",
       md: "size-8",
       lg: "size-10",

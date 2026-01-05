@@ -50,10 +50,10 @@ export const computeFundingCost = (args: ComputeFundingCostArgs) => {
   });
 
   // Subtotal = base cost × effective balance × validators
-  const networkCostSubtotal = networkCost * effectiveBalance * validators;
-  const operatorsCostSubtotal = operatorsCost * effectiveBalance * validators;
+  const networkCostSubtotal = networkCost * (effectiveBalance / 32n);
+  const operatorsCostSubtotal = operatorsCost * (effectiveBalance / 32n);
   const liquidationCollateralSubtotal =
-    liquidationCollateral * effectiveBalance * validators;
+    liquidationCollateral * (effectiveBalance / 32n);
 
   const total =
     networkCostSubtotal + operatorsCostSubtotal + liquidationCollateralSubtotal;

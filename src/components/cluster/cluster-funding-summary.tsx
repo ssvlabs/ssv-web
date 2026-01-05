@@ -19,14 +19,16 @@ export const ClusterFundingSummary: ClusterFundingSummaryFC = ({
   validatorsAmount,
   fundingDays,
   operators,
+  effectiveBalance,
   className,
   ...props
 }) => {
-  const isBulk = validatorsAmount > 1;
+  // const isBulk = validatorsAmount > 1;
   const cost = useFundingCost({
     operators,
     validatorsAmount,
     fundingDays,
+    effectiveBalance,
   });
 
   if (cost.isLoading) {
@@ -37,32 +39,32 @@ export const ClusterFundingSummary: ClusterFundingSummaryFC = ({
     );
   }
 
-  const renderSingular = () => (
-    <div className={cn("space-y-2")}>
-      <Text variant="body-3-semibold" className="text-gray-500">
-        Funding Summary{" "}
-        {fundingDays > 1 ? `(${humanizeFundingDuration(fundingDays)})` : ""}
-      </Text>
-      <div className="flex justify-between">
-        <Text variant="body-2-medium">Operators Fee</Text>
-        <Text variant="body-2-medium">
-          {formatSSV(cost.data?.subtotal.operatorsCost ?? 0n)} SSV
-        </Text>
-      </div>
-      <div className="flex justify-between">
-        <Text variant="body-2-medium">Network Fee</Text>
-        <Text variant="body-2-medium">
-          {formatSSV(cost.data?.subtotal.networkCost ?? 0n)} SSV
-        </Text>
-      </div>
-      <div className="flex justify-between">
-        <Text variant="body-2-medium">Liquidation Collateral</Text>
-        <Text variant="body-2-medium">
-          {formatSSV(cost.data?.subtotal.liquidationCollateral ?? 0n)} SSV
-        </Text>
-      </div>
-    </div>
-  );
+  // const renderSingular = () => (
+  //   <div className={cn("space-y-2")}>
+  //     <Text variant="body-3-semibold" className="text-gray-500">
+  //       Funding Summary{" "}
+  //       {fundingDays > 1 ? `(${humanizeFundingDuration(fundingDays)})` : ""}
+  //     </Text>
+  //     <div className="flex justify-between">
+  //       <Text variant="body-2-medium">Operators Fee</Text>
+  //       <Text variant="body-2-medium">
+  //         {formatSSV(cost.data?.subtotal.operatorsCost ?? 0n)} ETH
+  //       </Text>
+  //     </div>
+  //     <div className="flex justify-between">
+  //       <Text variant="body-2-medium">Network Fee</Text>
+  //       <Text variant="body-2-medium">
+  //         {formatSSV(cost.data?.subtotal.networkCost ?? 0n)} ETH
+  //       </Text>
+  //     </div>
+  //     <div className="flex justify-between">
+  //       <Text variant="body-2-medium">Liquidation Collateral</Text>
+  //       <Text variant="body-2-medium">
+  //         {formatSSV(cost.data?.subtotal.liquidationCollateral ?? 0n)} ETH
+  //       </Text>
+  //     </div>
+  //   </div>
+  // );
 
   const renderBulk = () => (
     <div
@@ -76,40 +78,40 @@ export const ClusterFundingSummary: ClusterFundingSummaryFC = ({
         Fee {fundingDays > 1 ? `(${humanizeFundingDuration(fundingDays)})` : ""}
       </Text>
       <Text variant="body-3-semibold" className="text-gray-500 text-end">
-        Validator
+        Effective Balance
       </Text>
       <Text variant="body-3-semibold" className="text-gray-500 text-end">
         Subtotal
       </Text>
       <Text variant="body-2-medium">Operators Fee</Text>
       <Text variant="body-2-medium" className="text-end">
-        {formatSSV(cost.data?.perValidator.operatorsCost ?? 0n)} SSV
+        {formatSSV(cost.data?.perValidator.operatorsCost ?? 0n)} ETH
       </Text>
       <Text variant="body-2-medium" className="text-end">
-        {validatorsAmount}
+        {effectiveBalance ? Number(effectiveBalance) : '-'}
       </Text>
       <Text variant="body-2-medium" className="text-end">
-        {formatSSV(cost.data?.subtotal.operatorsCost ?? 0n)} SSV
+        {formatSSV(cost.data?.subtotal.operatorsCost ?? 0n)} ETH
       </Text>
       <Text variant="body-2-medium">Network Fee</Text>
       <Text variant="body-2-medium" className="text-end">
-        {formatSSV(cost.data?.perValidator.networkCost ?? 0n)} SSV
+        {formatSSV(cost.data?.perValidator.networkCost ?? 0n)} ETH
       </Text>
       <Text variant="body-2-medium" className="text-end">
-        {validatorsAmount}
+        {effectiveBalance ? Number(effectiveBalance) : '-'}
       </Text>
       <Text variant="body-2-medium" className="text-end">
-        {formatSSV(cost.data?.subtotal.networkCost ?? 0n)} SSV
+        {formatSSV(cost.data?.subtotal.networkCost ?? 0n)} ETH
       </Text>
       <Text variant="body-2-medium">Liquidation Collateral</Text>
       <Text variant="body-2-medium" className="text-end">
-        {formatSSV(cost.data?.perValidator.liquidationCollateral ?? 0n)} SSV
+        {formatSSV(cost.data?.perValidator.liquidationCollateral ?? 0n)} ETH
       </Text>
       <Text variant="body-2-medium" className="text-end">
-        {validatorsAmount}
+        {effectiveBalance ? Number(effectiveBalance) : '-'}
       </Text>
       <Text variant="body-2-medium" className="text-end">
-        {formatSSV(cost.data?.subtotal.liquidationCollateral ?? 0n)} SSV
+        {formatSSV(cost.data?.subtotal.liquidationCollateral ?? 0n)} ETH
       </Text>
     </div>
   );
@@ -117,13 +119,13 @@ export const ClusterFundingSummary: ClusterFundingSummaryFC = ({
   return (
     <>
       <div className={cn(className, "font-medium")} {...props}>
-        {isBulk ? renderBulk() : renderSingular()}
+        {renderBulk()}
       </div>
       <Divider />
       <div className="flex justify-between">
         <Text variant="body-2-medium">Total</Text>
         <Text variant="body-2-medium">
-          {formatSSV(cost.data?.total ?? 0n)} SSV
+          {formatSSV(cost.data?.total ?? 0n)} ETH
         </Text>
       </div>
     </>

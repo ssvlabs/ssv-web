@@ -61,7 +61,8 @@ export const useRegisterValidator = () => {
           abi: MainnetV4SetterABI,
           address: setterContractAddress,
           functionName: "registerValidator",
-          args: paramsToArray({ params, abiFunction }),
+          args: paramsToArray({ params: { ...params, amount: 0 }, abiFunction }),
+          value: params.amount
         },
         {
           onSuccess: (hash) => options.onConfirmed?.(hash),

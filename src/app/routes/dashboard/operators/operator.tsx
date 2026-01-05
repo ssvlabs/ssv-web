@@ -9,10 +9,7 @@ import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useOperator } from "@/hooks/operator/use-operator";
 import { useOperatorPageParams } from "@/hooks/operator/use-operator-page-params";
-import { useGetOperatorEarnings } from "@/lib/contract-interactions/read/use-get-operator-earnings";
-import { useGetOperatorFee } from "@/lib/contract-interactions/read/use-get-operator-fee";
 import { percentageFormatter } from "@/lib/utils/number";
-import { getYearlyFee } from "@/lib/utils/operator";
 import { type ComponentPropsWithoutRef, type FC } from "react";
 import { Helmet } from "react-helmet";
 import { FaCircleInfo } from "react-icons/fa6";
@@ -21,23 +18,16 @@ import { Link } from "react-router-dom";
 import { IncreaseOperatorFeeStatusBadge } from "@/components/operator/increase-operator-fee/increase-operator-fee-status-badge";
 import { OperatorValidatorsList } from "@/components/operator/operator-validators-list";
 import { OperatorStatusBadge } from "@/components/operator/operator-status-badge";
-import { useGetOperatorEarningsSSV } from "@/lib/contract-interactions/read/use-get-operator-earnings-ssv.ts";
-import { useGetOperatorFeeSSV } from "@/lib/contract-interactions/read/use-get-operator-fee-ssv.ts";
+import { useOperatorEarningsAndFees } from "@/hooks/operator/use-operator-earnings-and-fees";
 
 export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
   const params = useOperatorPageParams();
   const operatorId = BigInt(params.operatorId!);
   const operator = useOperator(operatorId!);
 
-  const earningsEth = useGetOperatorEarnings({ id: operatorId });
-  const earningsSSV = useGetOperatorEarningsSSV({ id: operatorId });
+  const { feeEth, yearlyFeeEth, yearlyFeeSSV, balanceEth, balanceSSV } =
+    useOperatorEarningsAndFees(operatorId);
 
-  const feeEth = useGetOperatorFee({ operatorId });
-  const feeSSV = useGetOperatorFeeSSV({ operatorId });
-  const yearlyFeeEth = getYearlyFee(feeEth.data ?? 0n);
-  const yearlyFeeSSV = getYearlyFee(feeSSV.data ?? 0n);
-  const balanceEth = earningsEth.data ?? 0n;
-  const balanceSSV = earningsSSV.data ?? 0n;
   if (!operator.data) return null;
 
   return (

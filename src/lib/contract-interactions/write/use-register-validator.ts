@@ -34,10 +34,12 @@ export const useRegisterValidator = () => {
 
   const send = (
     params: AbiInputsToParams<Fn["inputs"]>,
+    value?: bigint,
     options: MutationOptions<MainnetEvent> = {},
   ) => {
     return mutation.writeContractAsync(
       {
+        value,
         abi: MainnetV4SetterABI,
         address: setterContractAddress,
         functionName: "registerValidator",
@@ -52,20 +54,18 @@ export const useRegisterValidator = () => {
 
   const write = (
     params: AbiInputsToParams<Fn["inputs"]>,
+    value?: bigint,
     options: MutationOptions<MainnetEvent> = {},
   ) => {
     options.onInitiated?.();
     return mutation
       .writeContractAsync(
         {
+          value,
           abi: MainnetV4SetterABI,
           address: setterContractAddress,
           functionName: "registerValidator",
-          args: paramsToArray({
-            params: { ...params, amount: 0 },
-            abiFunction,
-          }),
-          value: params.amount,
+          args: paramsToArray({ params, abiFunction }),
         },
         {
           onSuccess: (hash) => options.onConfirmed?.(hash),

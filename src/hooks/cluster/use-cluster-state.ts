@@ -19,7 +19,7 @@ export const useClusterState = (
   const account = useAccount();
   const cluster = useCluster(hash);
 
-  const data = useMemo(
+  const clusterSnapshot = useMemo(
     () => ({
       clusterOwner: account.address!,
       cluster: formatClusterData(cluster.data),
@@ -28,7 +28,7 @@ export const useClusterState = (
     [account.address, cluster.data],
   );
 
-  const isLiquidated = useIsLiquidated(data, {
+  const isLiquidated = useIsLiquidated(clusterSnapshot, {
     watch: opts.isLiquidated?.watch,
     refetchOnWindowFocus: false,
     placeholderData: keepPreviousData,
@@ -37,7 +37,7 @@ export const useClusterState = (
     ),
   });
 
-  const balanceETH = useGetBalance(data, {
+  const balanceETH = useGetBalance(clusterSnapshot, {
     watch: isLiquidated.data ? false : opts.balance?.watch,
     retry: isLiquidated.data ? false : undefined,
     refetchOnWindowFocus: false,
@@ -53,7 +53,9 @@ export const useClusterState = (
     ),
   });
 
-  const balanceSSV = useGetBalanceSSV(data, {
+  console.log("balanceETH.error:", balanceETH.error);
+
+  const balanceSSV = useGetBalanceSSV(clusterSnapshot, {
     watch: isLiquidated.data ? false : opts.balance?.watch,
     retry: isLiquidated.data ? false : undefined,
     refetchOnWindowFocus: false,

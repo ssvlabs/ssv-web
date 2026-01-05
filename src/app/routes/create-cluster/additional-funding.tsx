@@ -12,7 +12,6 @@ import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { EstimatedOperationalRunwayAlert } from "@/components/cluster/estimated-operational-runway-alert";
 import { UnmountClosed } from "react-collapse";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard";
-import { useSSVBalance } from "@/hooks/use-ssv-balance";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -26,6 +25,8 @@ import {
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils/tw";
 import { useNavigate } from "react-router";
+import { useBalance } from "wagmi";
+import { useAccount } from "@/hooks/account/use-account";
 
 const schema = z.object({
   depositAmount: z.bigint().min(0n),
@@ -34,8 +35,11 @@ const schema = z.object({
 
 export const AdditionalFunding: FC = () => {
   const navigate = useNavigate();
+  const account = useAccount();
   const params = useClusterPageParams();
-  const { data: ssvBalance } = useSSVBalance();
+  const { data: balance } = useBalance({
+    address: account.address!,
+  });
 
   const context = useRegisterValidatorContext();
   const deltaValidators = BigInt(context.shares.length);
@@ -136,7 +140,7 @@ export const AdditionalFunding: FC = () => {
                               <FormControl>
                                 <BigNumberInput
                                   value={field.value}
-                                  max={ssvBalance?.value ?? 0n}
+                                  max={balance?.value ?? 0n}
                                   onChange={field.onChange}
                                   rightSlot={
                                     <div className="flex items-center gap-2">
@@ -147,13 +151,13 @@ export const AdditionalFunding: FC = () => {
                                         onClick={() =>
                                           form.setValue(
                                             "depositAmount",
-                                            ssvBalance?.value ?? 0n,
+                                            balance?.value ?? 0n,
                                           )
                                         }
                                       >
                                         Max
                                       </Button>
-                                      <Text variant="body-1-bold">SSV</Text>
+                                      <Text variant="body-1-bold">ETH</Text>
                                     </div>
                                   }
                                 />

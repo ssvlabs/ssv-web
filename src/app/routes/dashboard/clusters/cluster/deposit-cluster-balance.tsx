@@ -23,25 +23,28 @@ import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitF
 import { setOptimisticData } from "@/lib/react-query";
 import { useDepositClusterBalance } from "@/hooks/cluster/use-deposit-cluster-balance";
 import { useNavigate } from "react-router-dom";
-import { useSSVBalance } from "@/hooks/use-ssv-balance";
 import {
   getClusterQueryOptions,
   useCluster,
 } from "@/hooks/cluster/use-cluster";
-import { WithAllowance } from "@/components/with-allowance/with-allowance";
 import { merge } from "lodash-es";
 import { formatSSV } from "@/lib/utils/number";
+import { useBalance } from "wagmi";
+import { useAccount } from "@/hooks/account/use-account";
 
 const schema = z.object({
   value: z.bigint().positive(),
 });
 
 export const DepositClusterBalance: FC = () => {
+  const account = useAccount();
   const params = useClusterPageParams();
   const deposit = useDepositClusterBalance(params.clusterHash!);
   const navigate = useNavigate();
 
-  const { data: ssvBalance } = useSSVBalance();
+  const { data: balance } = useBalance({
+    address: account.address!,
+  });
   const { data: cluster } = useCluster(params.clusterHash!);
 
   const form = useForm({
@@ -92,7 +95,7 @@ export const DepositClusterBalance: FC = () => {
                     placeholder="0"
                     value={field.value}
                     onChange={field.onChange}
-                    max={ssvBalance?.value}
+                    max={balance?.value}
                     className="h-20"
                     // rightSlot={
                     //   <div className="flex flex-col items-end gap-1 px-2">
@@ -129,14 +132,14 @@ export const DepositClusterBalance: FC = () => {
                             variant="secondary"
                             className="font-semibold px-4"
                             onClick={() =>
-                              form.setValue("value", ssvBalance?.value ?? 0n, {
+                              form.setValue("value", balance?.value ?? 0n, {
                                 shouldValidate: true,
                               })
                             }
                           >
                             MAX
                           </Button>
-                          <span className="text-[28px] font-medium">SSV</span>
+                          <span className="text-[28px] font-medium">ETH</span>
                         </div>
                         <Divider />
                         <div className="flex justify-end">
@@ -144,8 +147,8 @@ export const DepositClusterBalance: FC = () => {
                             variant="body-2-medium"
                             className="text-gray-500"
                           >
-                            Wallet Balance: {formatSSV(ssvBalance?.value ?? 0n)}{" "}
-                            SSV
+                            Wallet Balance: {formatSSV(balance?.value ?? 0n)}{" "}
+                            ETH
                           </Text>
                         </div>
                       </div>
@@ -164,16 +167,14 @@ export const DepositClusterBalance: FC = () => {
             </>
           )}
 
-          <WithAllowance size="xl" amount={value ?? 0n}>
-            <Button
-              type="submit"
-              size="xl"
-              disabled={!isChanged}
-              isLoading={deposit.isPending}
-            >
-              Deposit
-            </Button>
-          </WithAllowance>
+          <Button
+            type="submit"
+            size="xl"
+            disabled={!isChanged}
+            isLoading={deposit.isPending}
+          >
+            Deposit
+          </Button>
         </Card>
       </Form>
     </Container>

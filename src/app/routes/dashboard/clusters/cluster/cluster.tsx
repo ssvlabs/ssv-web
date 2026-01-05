@@ -33,11 +33,11 @@ export const Cluster: FC = () => {
     },
   );
 
-  const isSSVCluster = cluster.data?.isSSVCluster;
+  const isMigrated = cluster.data?.migrated;
 
-  const isLoadingBalance = isSSVCluster
-    ? balanceSSV.isLoading
-    : balanceETH.isLoading;
+  const isLoadingBalance = isMigrated
+    ? balanceETH.isLoading
+    : balanceSSV.isLoading;
 
   const operatorsUsability = useOperatorsUsability({
     account: account.address!,
@@ -55,7 +55,7 @@ export const Cluster: FC = () => {
       return "One of your chosen operators has shifted to a permissioned status. To onboard validators, you'll need to select a new cluster.";
     if (operatorsUsability.data?.hasExceededValidatorsLimit)
       return "One of your operators has reached their maximum number of validators";
-    if (isSSVCluster) return "Switch to ETH to enable this option";
+    if (!isMigrated) return "Switch to ETH to enable this option";
   };
 
   return (
@@ -89,9 +89,9 @@ export const Cluster: FC = () => {
             ) : (
               <BalanceDisplay
                 amount={BigInt(
-                  isSSVCluster ? balanceSSV.data || 0n : balanceETH.data || 0n,
+                  isMigrated ? balanceETH.data || 0n : balanceSSV.data || 0n,
                 )}
-                token={isSSVCluster ? "SSV" : "ETH"}
+                token={isMigrated ? "ETH" : "SSV"}
               />
             )}
           </div>
@@ -117,21 +117,29 @@ export const Cluster: FC = () => {
           ) : (
             <div className="flex flex-col gap-6">
               <div className="flex gap-6 [&>*]:flex-1">
-                <SwitchToEthMenuOptionTooltip asChild enabled={isSSVCluster}>
+                <SwitchToEthMenuOptionTooltip asChild enabled={!isMigrated}>
                   <Button
                     as={Link}
                     to="deposit"
                     size="xl"
-                    disabled={isSSVCluster}
+                    disabled={!isMigrated}
                   >
                     Deposit
                   </Button>
                 </SwitchToEthMenuOptionTooltip>
-                <Button as={Link} to="withdraw" size="xl" variant="secondary">
-                  Withdraw
-                </Button>
+                <SwitchToEthMenuOptionTooltip asChild enabled={!isMigrated}>
+                  <Button
+                    as={Link}
+                    to="withdraw"
+                    size="xl"
+                    variant="secondary"
+                    disabled={!isMigrated}
+                  >
+                    Withdraw
+                  </Button>
+                </SwitchToEthMenuOptionTooltip>
               </div>
-              {isSSVCluster && (
+              {!isMigrated && (
                 <Button
                   as={Link}
                   to={`/switch-wizard/${clusterHash}`}
@@ -155,7 +163,7 @@ export const Cluster: FC = () => {
             <Spacer />
             <ValidatorsActionsMenu
               isLiquidated={Boolean(isLiquidated.data)}
-              isSSVCluster={isSSVCluster}
+              isSSVCluster={!isMigrated}
             />
             <Tooltip content={getTooltipContent()}>
               <Button

@@ -145,6 +145,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
         operatorIds: bigintifyNumbers(operatorIds),
         cluster: formatClusterData(cluster.data),
       },
+      amount.total,
       withTransactionModal({
         onMined: ({ events }) => {
           const event = events.find(

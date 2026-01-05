@@ -14,7 +14,7 @@ export const useDepositClusterBalance = (hash: string) => {
     ...deposit,
     write: (
       params: Pick<WriteParams[0], "amount">,
-      options?: WriteParams[1],
+      options?: WriteParams[2],
     ) => {
       return deposit.write(
         {
@@ -24,6 +24,7 @@ export const useDepositClusterBalance = (hash: string) => {
             cluster.data?.operators.map((id) => BigInt(id)) ?? ([] as bigint[]),
           cluster: formatClusterData(cluster.data),
         },
+        params.amount,
         options,
       );
     },

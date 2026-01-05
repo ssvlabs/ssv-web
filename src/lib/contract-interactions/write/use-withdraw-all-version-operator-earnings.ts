@@ -13,8 +13,8 @@ import { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
 import type { ExtractAbiFunction } from "abitype";
 import type { AbiInputsToParams } from "@/lib/contract-interactions/utils";
 import {
-  extractAbiFunction,
   paramsToArray,
+  extractAbiFunction,
 } from "@/lib/contract-interactions/utils";
 import type { WriteContractErrorType } from "@wagmi/core";
 import type { WaitForTransactionReceiptErrorType } from "viem";

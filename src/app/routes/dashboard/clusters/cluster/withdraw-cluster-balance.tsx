@@ -41,11 +41,18 @@ export const WithdrawClusterBalance: FC = () => {
   const withdraw = useWithdrawClusterBalance(params.clusterHash!);
   const liquidate = useLiquidateCluster(params.clusterHash!);
 
-  const { balanceETH, cluster } = useClusterState(params.clusterHash!, {
-    balance: { watch: true },
-  });
+  const { balanceETH, balanceSSV, cluster } = useClusterState(
+    params.clusterHash!,
+    {
+      balance: { watch: true },
+    },
+  );
 
-  const clusterBalance = balanceETH.data || 0n;
+  const isMigrated = cluster.data?.migrated;
+  const symbol = isMigrated ? "ETH" : "SSV";
+  const clusterBalance = isMigrated
+    ? balanceETH.data ?? 0n
+    : balanceSSV.data ?? 0n;
 
   const [hasAgreed, setHasAgreed] = useState(false);
 
@@ -108,7 +115,9 @@ export const WithdrawClusterBalance: FC = () => {
         <Text variant="headline4" className="text-gray-500">
           Available Balance
         </Text>
-        <Text variant="headline1">{formatSSV(clusterBalance)} SSV</Text>
+        <Text variant="headline1">
+          {formatSSV(clusterBalance)} {symbol}
+        </Text>
       </Card>
       <Form {...form}>
         <Card as="form" className="w-full" onSubmit={submit}>
@@ -147,7 +156,10 @@ export const WithdrawClusterBalance: FC = () => {
                           >
                             MAX
                           </Button>
-                          <span className="text-[28px] font-medium">SSV</span>
+                          <span className="text-[28px] font-medium">
+                            {" "}
+                            {symbol}
+                          </span>
                         </div>
                       </div>
                     )}

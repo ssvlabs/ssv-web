@@ -38,7 +38,6 @@ export const OperatorFeeComparison = ({
       0n,
     );
     const totalYearlyFeeETH = operators.reduce((sum, op) => {
-      console.log("op.eth_fee:", op.eth_fee);
       const hasEthFee = ![undefined, null, "0", 0].includes(op.eth_fee);
       if (hasEthFee) {
         return sum + getYearlyFee(BigInt(op.eth_fee));

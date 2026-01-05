@@ -96,9 +96,6 @@ export const SwitchWizardStepOneAndHalf = ({
     [form.formState.errors, form.formState.isDirty],
   );
 
-  // console.log("errors", form.formState.errors);
-  // console.log("isValid", form.formState.isValid);
-
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [selectedTab, setSelectedTab] = useState<TabKey>("all");
   const confirmId = useId();

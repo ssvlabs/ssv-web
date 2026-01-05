@@ -43,7 +43,6 @@ export const Cluster: FC = () => {
     account: account.address!,
     operatorIds: cluster.data?.operators ?? [],
   });
-  console.log("operatorsUsability.isLoading:", operatorsUsability.isLoading);
 
   const getTooltipContent = () => {
     if (isLiquidated.data)

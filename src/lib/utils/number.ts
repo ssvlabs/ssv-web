@@ -47,6 +47,8 @@ export const formatSSV = (num: bigint, decimals = 18) =>
   ethFormatter.format(+formatUnits(num, decimals));
 
 export const formatETH = formatSSV;
+export const formatEffectiveBalance = (num: bigint) =>
+  ethFormatter.format(+formatUnits(num, 9));
 
 export const formatBigintInput = (num: bigint, decimals = 18) =>
   bigintFormatter.format(+formatUnits(num, decimals));

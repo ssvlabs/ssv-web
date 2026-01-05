@@ -16,12 +16,17 @@ import { merge } from "lodash-es";
 
 export const getCluster = (hash: string) => {
   return api.get<GetClusterResponse>(endpoint("clusters", hash)).then((res) => {
+    const hasSSVBalance =
+      ![undefined, null, "0", 0].includes(res.cluster?.balance) &&
+      BigInt(res.cluster?.balance || 0) > 0;
+
+    const hasEthBalance =
+      ![undefined, null, "0", 0].includes(res.cluster?.ethBalance) &&
+      BigInt(res.cluster?.ethBalance || 0) > 0;
+
     return res.cluster
       ? merge(res.cluster, {
-          // TODO(Chris): refine this logic
-          isSSVCluster: ![undefined, null, "0", 0].includes(
-            res.cluster?.balance,
-          ),
+          isSSVCluster: hasSSVBalance && !hasEthBalance,
         })
       : res.cluster;
   });

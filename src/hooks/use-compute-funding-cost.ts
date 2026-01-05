@@ -21,7 +21,12 @@ export const useComputeFundingCost = () => {
   } = useSsvNetworkFee();
 
   return useMutation({
-    mutationFn: async ({ fundingDays, validators, operatorsFee, effectiveBalance }: Args) => {
+    mutationFn: async ({
+      fundingDays,
+      validators,
+      operatorsFee,
+      effectiveBalance,
+    }: Args) => {
       if (!isSuccess) {
         throw new Error("Something went wrong, please try again later.");
       }
@@ -56,7 +61,7 @@ export const useFundingCost = ({
     isLoading,
     liquidationThresholdPeriod,
     minimumLiquidationCollateral,
-    ssvNetworkFee ,
+    ssvNetworkFee,
   } = useSsvNetworkFee();
 
   const costQuery = useQuery({

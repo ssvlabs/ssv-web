@@ -46,9 +46,7 @@ export const formatClusterData = (
   cluster?: Partial<Cluster<{ operators: number[] }>> | null,
 ) => ({
   active: cluster?.active ?? true,
-  balance: BigInt(cluster?.ethBalance ?? 0),
-  // ethBalance: BigInt(cluster?.ethBalance ?? 0),
-  effectiveBalance: BigInt(cluster?.effectiveBalance ?? 0),
+  balance: BigInt(cluster?.ethBalance ?? 0) || BigInt(cluster?.balance ?? 0),
   index: BigInt(cluster?.index ?? 0),
   networkFeeIndex: BigInt(cluster?.networkFeeIndex ?? 0),
   validatorCount: cluster?.validatorCount ?? 0,

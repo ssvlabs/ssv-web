@@ -122,9 +122,15 @@ export const prepareOperatorsForShares = (
   }));
 
 export const sumOperatorsFee = (operators: Pick<Operator, "eth_fee">[]) => {
-  const res = operators.reduce((acc, operator) => acc + BigInt(operator.eth_fee), 0n)
+  const res = operators.reduce(
+    (acc, operator) => acc + BigInt(operator.eth_fee),
+    0n,
+  );
   console.log(res);
-  return operators.reduce((acc, operator) => acc + BigInt(operator.eth_fee), 0n);
+  return operators.reduce(
+    (acc, operator) => acc + BigInt(operator.eth_fee),
+    0n,
+  );
 };
 
 export const getOperatorIds = <T extends { id: number }[]>(operators: T) => {

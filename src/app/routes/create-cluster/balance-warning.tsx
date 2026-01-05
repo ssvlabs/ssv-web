@@ -20,7 +20,11 @@ export const BalanceWarning: FC = () => {
           title="Cluster Balances and Fees"
           description="Your cluster’s runway is determined by your deposited balance and the operator and network fees accrued over time. These fees scale with your validators’ effective balance."
         />
-        <Text variant="body-2-medium">While displayed as annual amounts, fees are paid continuously as an on-going process - so any changes in operator pricing or network conditions can impact your fee and shorten or extend your runway.</Text>
+        <Text variant="body-2-medium">
+          While displayed as annual amounts, fees are paid continuously as an
+          on-going process - so any changes in operator pricing or network
+          conditions can impact your fee and shorten or extend your runway.
+        </Text>
         <Alert variant="error">
           <AlertDescription>
             Clusters with insufficient balance are at risk of being{" "}

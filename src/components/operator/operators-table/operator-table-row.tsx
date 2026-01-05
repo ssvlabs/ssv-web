@@ -46,33 +46,39 @@ export const OperatorTableRow: FCProps = ({
       <TableCell>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 text-gray-800 font-medium">
-            <img src="/images/networks/dark.svg" className="size-5" /> {formatSSV(balanceEth)}
+            <img src="/images/networks/dark.svg" className="size-5" />{" "}
+            {formatSSV(balanceEth)}
           </div>
-          {balanceSSV > 0 && <div className="flex items-center gap-1 text-gray-800 font-medium">
-            <span className="text-gray-300">|</span>
-            <img src="/images/ssvIcons/icon.svg" className="size-5" />{" "}
-            {formatSSV(balanceSSV)}
-          </div>}
+          {balanceSSV > 0 && (
+            <div className="flex items-center gap-1 text-gray-800 font-medium">
+              <span className="text-gray-300">|</span>
+              <img src="/images/ssvIcons/icon.svg" className="size-5" />{" "}
+              {formatSSV(balanceSSV)}
+            </div>
+          )}
         </div>
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 text-gray-800 font-medium">
-            <img src="/images/networks/dark.svg" className="size-5" /> {formatSSV(yearlyFeeEth)}
+            <img src="/images/networks/dark.svg" className="size-5" />{" "}
+            {formatSSV(yearlyFeeEth)}
           </div>
-          {yearlyFeeSSV > 0 && <div className="flex items-center gap-1 text-gray-800 font-medium">
-            <span className="text-gray-300">|</span>
-            <img src="/images/ssvIcons/icon.svg" className="size-5" />{" "}
-            {formatSSV(yearlyFeeSSV)}
-          </div>}
+          {yearlyFeeSSV > 0 && (
+            <div className="flex items-center gap-1 text-gray-800 font-medium">
+              <span className="text-gray-300">|</span>
+              <img src="/images/ssvIcons/icon.svg" className="size-5" />{" "}
+              {formatSSV(yearlyFeeSSV)}
+            </div>
+          )}
         </div>
       </TableCell>
       <TableCell>{operator.validators_count}</TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 text-gray-800 font-medium">
-            <img src="/images/networks/dark.svg"
-                 className="size-5" /> {formatSSV(BigInt(operator.effective_balance), 9)}
+            <img src="/images/networks/dark.svg" className="size-5" />{" "}
+            {formatSSV(BigInt(operator.effective_balance), 9)}
           </div>
         </div>
       </TableCell>

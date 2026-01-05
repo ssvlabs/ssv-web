@@ -42,7 +42,9 @@ export const useClusterState = (
     retry: isLiquidated.data ? false : undefined,
     refetchOnWindowFocus: false,
     placeholderData: (prev) =>
-      isLiquidated.data ? 0n : keepPreviousData(prev),
+      isLiquidated.data
+        ? 0n
+        : keepPreviousData(prev) || BigInt(cluster.data?.ethBalance || 0),
     enabled: Boolean(
       account.address &&
         cluster.data &&
@@ -56,7 +58,9 @@ export const useClusterState = (
     retry: isLiquidated.data ? false : undefined,
     refetchOnWindowFocus: false,
     placeholderData: (prev) =>
-      isLiquidated.data ? 0n : keepPreviousData(prev),
+      isLiquidated.data
+        ? 0n
+        : keepPreviousData(prev) || BigInt(cluster.data?.balance || 0),
     enabled: Boolean(
       account.address &&
         cluster.data &&

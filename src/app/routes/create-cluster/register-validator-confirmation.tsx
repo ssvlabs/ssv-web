@@ -48,7 +48,8 @@ export const RegisterValidatorConfirmation: FC = () => {
   const accountClusters = usePaginatedAccountClusters();
 
   const account = useAccount();
-  const { shares, depositAmount, fundingDays, effectiveBalance } = useRegisterValidatorContext();
+  const { shares, depositAmount, fundingDays, effectiveBalance } =
+    useRegisterValidatorContext();
   const isBulk = shares.length > 1;
 
   const operatorIds = useSelectedOperatorIds();
@@ -183,14 +184,14 @@ export const RegisterValidatorConfirmation: FC = () => {
           />
         )}
         {/*<WithAllowance size="xl" amount={depositAmount}>*/}
-          <Button
-            size="xl"
-            isLoading={isPending}
-            isActionBtn
-            onClick={handleRegisterValidator}
-          >
-            Register Validator
-          </Button>
+        <Button
+          size="xl"
+          isLoading={isPending}
+          isActionBtn
+          onClick={handleRegisterValidator}
+        >
+          Register Validator
+        </Button>
         {/*</WithAllowance>*/}
       </Card>
     </Container>

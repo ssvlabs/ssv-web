@@ -35,7 +35,9 @@ export const Cluster: FC = () => {
 
   const isSSVCluster = cluster.data?.isSSVCluster;
 
-  const isLoadingBalance = balanceSSV.isLoading || balanceETH.isLoading;
+  const isLoadingBalance = isSSVCluster
+    ? balanceSSV.isLoading
+    : balanceETH.isLoading;
 
   const operatorsUsability = useOperatorsUsability({
     account: account.address!,

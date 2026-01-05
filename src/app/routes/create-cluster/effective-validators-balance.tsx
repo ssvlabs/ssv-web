@@ -8,7 +8,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert.tsx";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
 import { useState, useMemo, useEffect } from "react";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard";
-import { Table, TableCell, TableHeader, TableRow } from "@/components/ui/grid-table";
+import {
+  Table,
+  TableCell,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/grid-table";
 import { CopyBtn } from "@/components/ui/copy-btn";
 import { SsvExplorerBtn } from "@/components/ui/ssv-explorer-btn";
 import { shortenAddress, add0x } from "@/lib/utils/strings";
@@ -21,21 +26,29 @@ import { getValidatorsEffectiveBalance } from "@/api/validators";
 const EffectiveValidatorsBalance = () => {
   const navigate = useNavigate();
   const { state } = useRegisterValidatorContext;
-  const { shares, effectiveBalance: savedEffectiveBalance } = useRegisterValidatorContext();
+  const { shares, effectiveBalance: savedEffectiveBalance } =
+    useRegisterValidatorContext();
 
   const validatorCount = useMemo(() => shares.length, [shares]);
 
-  const [validatorBalances, setValidatorBalances] = useState<Record<string, number>>({});
+  const [validatorBalances, setValidatorBalances] = useState<
+    Record<string, number>
+  >({});
   const [isLoadingBalances, setIsLoadingBalances] = useState(false);
 
   const estimatedTotalBalance = useMemo(() => {
-    const totalFromApi = Object.values(validatorBalances).reduce((sum, balance) => sum + balance, 0);
+    const totalFromApi = Object.values(validatorBalances).reduce(
+      (sum, balance) => sum + balance,
+      0,
+    );
     return totalFromApi > 0 ? totalFromApi : validatorCount * 32;
   }, [validatorBalances, validatorCount]);
 
   const [hasEdited, setHasEdited] = useState(false);
   const [balanceValue, setBalanceValue] = useState(() =>
-    savedEffectiveBalance > 0n ? savedEffectiveBalance : BigInt(estimatedTotalBalance)
+    savedEffectiveBalance > 0n
+      ? savedEffectiveBalance
+      : BigInt(estimatedTotalBalance),
   );
   const [isConfirmed, setIsConfirmed] = useState(false);
 
@@ -159,17 +172,18 @@ const EffectiveValidatorsBalance = () => {
               <span className="font-semibold">Cluster Liquidation Warning</span>
               <br />
               If the actual Effective Balance reported by Oracles is higher than
-              the amount set here, your operational burn rate will increase. This
-              risks an insufficient runway and possible cluster liquidation.
+              the amount set here, your operational burn rate will increase.
+              This risks an insufficient runway and possible cluster
+              liquidation.
             </AlertDescription>
           </Alert>
 
           {isLowBalance && (
             <Alert variant="error" className="rounded-lg">
               <AlertDescription className="text-sm font-medium">
-                The entered total projected balance is lower than our estimation.
-                This may lead to an insufficient runway. Please double-check the
-                balance entered.
+                The entered total projected balance is lower than our
+                estimation. This may lead to an insufficient runway. Please
+                double-check the balance entered.
               </AlertDescription>
             </Alert>
           )}
@@ -177,8 +191,8 @@ const EffectiveValidatorsBalance = () => {
           {isHighBalance && (
             <Alert variant="error" className="rounded-lg">
               <AlertDescription className="text-sm font-medium">
-                The entered total projected balance is higher than the max EB per
-                validator. Please double-check the balance entered.
+                The entered total projected balance is higher than the max EB
+                per validator. Please double-check the balance entered.
               </AlertDescription>
             </Alert>
           )}
@@ -191,8 +205,8 @@ const EffectiveValidatorsBalance = () => {
             />
             <Text variant="body-3-medium" className="text-gray-700">
               I confirm that the total projected balance is accurate, and I
-              understand that an insufficient funding balance based on this amount
-              could lead to my cluster being liquidated.
+              understand that an insufficient funding balance based on this
+              amount could lead to my cluster being liquidated.
             </Text>
           </div>
 
@@ -223,7 +237,11 @@ const EffectiveValidatorsBalance = () => {
               <Text variant="body-2-semibold" className="text-gray-800">
                 {estimatedTotalBalance}
               </Text>
-              <img src="/images/networks/dark.svg" alt="ETH" className="size-4" />
+              <img
+                src="/images/networks/dark.svg"
+                alt="ETH"
+                className="size-4"
+              />
               <Text variant="body-3-medium" className="text-gray-500">
                 ETH
               </Text>

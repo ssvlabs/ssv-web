@@ -7,9 +7,14 @@ import { Text } from "@/components/ui/text.tsx";
 import { Collapse } from "react-collapse";
 import type { Operator } from "@/types/api.ts";
 import { getYearlyFee } from "@/lib/utils/operator.ts";
-import { currencyFormatter, formatETH, formatSSV } from "@/lib/utils/number.ts";
+import {
+  bigintFormatter,
+  currencyFormatter,
+  formatETH,
+  formatSSV,
+} from "@/lib/utils/number.ts";
 import { useRates } from "@/hooks/use-rates.ts";
-import { formatUnits } from "viem";
+import { formatUnits, parseEther } from "viem";
 
 type OperatorFeeComparisonProps = {
   operators: Pick<Operator, "id" | "name" | "logo" | "fee" | "eth_fee">[];
@@ -32,10 +37,13 @@ export const OperatorFeeComparison = ({
       (sum, op) => sum + getYearlyFee(BigInt(op.fee || "0")),
       0n,
     );
-    const totalYearlyFeeETH = operators.reduce(
-      (sum, op) => sum + getYearlyFee(BigInt(op.eth_fee || "0")),
-      0n,
-    );
+    const totalYearlyFeeETH = operators.reduce((sum, op) => {
+      const hasEthFee = ![undefined, null, "0", 0].includes(op.eth_fee);
+      if (hasEthFee) {
+        return sum + getYearlyFee(BigInt(op.eth_fee));
+      }
+      return sum + parseEther("0.0005");
+    }, 0n);
     const totalSSVFormatted = `${formatSSV(totalYearlyFeeSSV)} SSV`;
     const totalETHFormatted = `${formatETH(totalYearlyFeeETH)} ETH`;
 
@@ -89,7 +97,9 @@ export const OperatorFeeComparison = ({
             const yearlyFeeSSV = getYearlyFee(BigInt(operator.fee || "0"));
             const yearlyFeeETH = getYearlyFee(BigInt(operator.eth_fee || "0"));
             const yearlyFeeSSVFormatted = formatSSV(yearlyFeeSSV);
-            const yearlyFeeETHFormatted = formatETH(yearlyFeeETH);
+            const yearlyFeeETHFormatted = `${bigintFormatter.format(
+              +formatUnits(yearlyFeeETH, 18),
+            )}  `;
 
             return (
               <div key={operator.id} className="contents">

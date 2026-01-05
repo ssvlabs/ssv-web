@@ -1,4 +1,7 @@
-import { useEffect, useId, useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Container } from "@/components/ui/container";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
@@ -17,6 +20,7 @@ import {
 import { CopyBtn } from "@/components/ui/copy-btn";
 import { SsvExplorerBtn } from "@/components/ui/ssv-explorer-btn";
 import { Tooltip } from "@/components/ui/tooltip";
+import { Form } from "@/components/ui/form";
 import { ethFormatter, numberFormatter } from "@/lib/utils/number";
 import { add0x, shortenAddress } from "@/lib/utils/strings";
 import { FaCircleInfo } from "react-icons/fa6";
@@ -45,6 +49,26 @@ const tabLabels = {
 
 type TabKey = keyof typeof tabLabels;
 
+const createSchema = (
+  validators: ValidatorRow[],
+  totalEffectiveBalance: number,
+) => {
+  const minBalance = Math.max(totalEffectiveBalance, validators.length * 32);
+  const maxBalance = validators.length * 2048;
+
+  return z.object({
+    totalEffectiveBalance: z
+      .number()
+      .positive({ message: "Balance must be greater than 0" })
+      .min(minBalance, {
+        message: `Balance must be at least ${minBalance} ETH`,
+      })
+      .max(maxBalance, {
+        message: `Balance cannot exceed ${maxBalance} ETH (max EB per validator)`,
+      }),
+  });
+};
+
 export const SwitchWizardStepOneAndHalf = ({
   onNext,
   onBack,
@@ -53,21 +77,31 @@ export const SwitchWizardStepOneAndHalf = ({
   validators = [],
   totalEffectiveBalance = 0,
 }: SwitchWizardStepOneAndHalfProps) => {
-  const [hasEdited, setHasEdited] = useState(false);
-  const [balanceValue, setBalanceValue] = useState(() =>
-    BigInt(Math.trunc(totalEffectiveBalance)),
+  const schema = useMemo(
+    () => createSchema(validators, totalEffectiveBalance),
+    [validators, totalEffectiveBalance],
   );
+
+  const form = useForm<z.infer<typeof schema>>({
+    defaultValues: {
+      totalEffectiveBalance: 0,
+    },
+    resolver: zodResolver(schema),
+    mode: "onChange",
+  });
+
+  const isFormValid = useMemo(
+    () =>
+      Object.keys(form.formState.errors).length === 0 && form.formState.isDirty,
+    [form.formState.errors, form.formState.isDirty],
+  );
+
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [selectedTab, setSelectedTab] = useState<TabKey>("all");
   const confirmId = useId();
 
+  const balanceValue = form.watch("totalEffectiveBalance");
   const numericBalance = Number(balanceValue);
-
-  useEffect(() => {
-    if (!hasEdited) {
-      setBalanceValue(BigInt(Math.trunc(totalEffectiveBalance)));
-    }
-  }, [hasEdited, totalEffectiveBalance]);
 
   const counts = useMemo(() => {
     const deposited = validators.filter(
@@ -93,23 +127,18 @@ export const SwitchWizardStepOneAndHalf = ({
     );
   }, [selectedTab, validators]);
 
-  const handleBalanceChange = (value: bigint) => {
-    setHasEdited(true);
-    setBalanceValue(value);
-  };
-
   const formatEthBalance = (value: bigint) =>
     ethFormatter.format(Number(formatUnits(value, 9)));
 
-  const estimatedEffectiveBalance = totalEffectiveBalance;
-  const maxEffectiveBalance = validators.length * 2048;
+  const estimatedEffectiveBalance = Math.max(
+    totalEffectiveBalance,
+    validators.length * 32,
+  );
+  const minBalance = estimatedEffectiveBalance;
+  const maxBalance = validators.length * 2048;
   const isLowBalance =
-    numericBalance > 0 &&
-    estimatedEffectiveBalance > 0 &&
-    numericBalance < estimatedEffectiveBalance;
-  const isHighBalance =
-    maxEffectiveBalance > 0 && numericBalance > maxEffectiveBalance;
-  const isInvalidBalance = isLowBalance || isHighBalance;
+    numericBalance > 0 && minBalance > 0 && numericBalance < minBalance;
+  const isHighBalance = maxBalance > 0 && numericBalance > maxBalance;
 
   return (
     <Container
@@ -139,46 +168,75 @@ export const SwitchWizardStepOneAndHalf = ({
           </Text>
         </div>
 
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2">
-            <Text
-              as="label"
-              htmlFor="total-effective-balance"
-              variant="body-3-semibold"
-              className="text-gray-500"
-            >
-              Total Effective Balance
-            </Text>
-            <Tooltip content="Sum of validator effective balances in ETH.">
-              <FaCircleInfo className="size-3 text-gray-400" />
-            </Tooltip>
+        <Form {...form}>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <Text
+                as="label"
+                htmlFor="total-effective-balance"
+                variant="body-3-semibold"
+                className="text-gray-500"
+              >
+                Total Effective Balance
+              </Text>
+              <Tooltip content="Sum of validator effective balances in ETH.">
+                <FaCircleInfo className="size-3 text-gray-400" />
+              </Tooltip>
+            </div>
+            <BigNumberInput
+              id="total-effective-balance"
+              value={BigInt(balanceValue)}
+              onChange={(value) => {
+                form.setValue("totalEffectiveBalance", Number(value), {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                  shouldTouch: true,
+                });
+                form.trigger();
+              }}
+              className="h-[64px] border-primary-200 bg-white focus-within:border-primary-500"
+              placeholder="0"
+              rightSlot={
+                <div className="flex items-center gap-2 pr-1 text-gray-500">
+                  <img
+                    src="/images/networks/dark.svg"
+                    alt="ETH"
+                    className="size-4"
+                  />
+                  <Text variant="body-2-medium" className="text-gray-500">
+                    ETH
+                  </Text>
+                </div>
+              }
+              inputProps={{
+                className:
+                  "text-2xl font-semibold text-gray-800 placeholder:text-gray-400",
+              }}
+              decimals={0}
+              displayDecimals={0}
+            />
           </div>
-          <BigNumberInput
-            id="total-effective-balance"
-            value={balanceValue}
-            onChange={handleBalanceChange}
-            className="h-[64px] border-primary-200 bg-white focus-within:border-primary-500"
-            placeholder="0"
-            rightSlot={
-              <div className="flex items-center gap-2 pr-1 text-gray-500">
-                <img
-                  src="/images/networks/dark.svg"
-                  alt="ETH"
-                  className="size-4"
-                />
-                <Text variant="body-2-medium" className="text-gray-500">
-                  ETH
-                </Text>
-              </div>
-            }
-            inputProps={{
-              className:
-                "text-2xl font-semibold text-gray-800 placeholder:text-gray-400",
-            }}
-            decimals={0}
-            displayDecimals={0}
-          />
-        </div>
+        </Form>
+
+        {isLowBalance && (
+          <Alert variant="error" className="rounded-lg">
+            <AlertDescription className="text-sm font-medium">
+              The entered total projected balance is lower than our estimation (
+              {numberFormatter.format(minBalance)} ETH). This may lead to an
+              insufficient runway. Please double-check the balance entered.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {isHighBalance && (
+          <Alert variant="error" className="rounded-lg">
+            <AlertDescription className="text-sm font-medium">
+              The entered total projected balance is higher than the max EB per
+              validator ({numberFormatter.format(maxBalance)} ETH). Please
+              double-check the balance entered.
+            </AlertDescription>
+          </Alert>
+        )}
 
         <Alert variant="warning" className="rounded-lg text-gray-700">
           <AlertDescription className="text-sm font-medium">
@@ -189,25 +247,6 @@ export const SwitchWizardStepOneAndHalf = ({
             risks an insufficient runway and possible cluster liquidation.
           </AlertDescription>
         </Alert>
-
-        {isLowBalance && (
-          <Alert variant="error" className="rounded-lg">
-            <AlertDescription className="text-sm font-medium">
-              The entered total projected balance is lower than our estimation.
-              This may lead to an insufficient runway. Please double-check the
-              balance entered.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {isHighBalance && (
-          <Alert variant="error" className="rounded-lg">
-            <AlertDescription className="text-sm font-medium">
-              The entered total projected balance is higher then the max EB per
-              validator. Please double-check the balance entered.
-            </AlertDescription>
-          </Alert>
-        )}
 
         <label
           htmlFor={confirmId}
@@ -231,12 +270,11 @@ export const SwitchWizardStepOneAndHalf = ({
           width="full"
           className="font-semibold"
           onClick={() => onNext(numericBalance)}
-          disabled={!isConfirmed || numericBalance <= 0 || isInvalidBalance}
+          disabled={!isConfirmed || !isFormValid}
         >
           Next
         </Button>
       </Card>
-
       <Card
         variant="unstyled"
         className="flex-1 flex min-h-0 flex-col gap-4 p-6 bg-white rounded-2xl"

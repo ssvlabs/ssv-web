@@ -88,7 +88,7 @@ export const ClusterFundingSummary: ClusterFundingSummaryFC = ({
         {formatSSV(cost.data?.perValidator.operatorsCost ?? 0n)} ETH
       </Text>
       <Text variant="body-2-medium" className="text-end">
-        {effectiveBalance ? Number(effectiveBalance) : '-'}
+        {effectiveBalance ? Number(effectiveBalance) : "-"}
       </Text>
       <Text variant="body-2-medium" className="text-end">
         {formatSSV(cost.data?.subtotal.operatorsCost ?? 0n)} ETH
@@ -98,7 +98,7 @@ export const ClusterFundingSummary: ClusterFundingSummaryFC = ({
         {formatSSV(cost.data?.perValidator.networkCost ?? 0n)} ETH
       </Text>
       <Text variant="body-2-medium" className="text-end">
-        {effectiveBalance ? Number(effectiveBalance) : '-'}
+        {effectiveBalance ? Number(effectiveBalance) : "-"}
       </Text>
       <Text variant="body-2-medium" className="text-end">
         {formatSSV(cost.data?.subtotal.networkCost ?? 0n)} ETH
@@ -108,7 +108,7 @@ export const ClusterFundingSummary: ClusterFundingSummaryFC = ({
         {formatSSV(cost.data?.perValidator.liquidationCollateral ?? 0n)} ETH
       </Text>
       <Text variant="body-2-medium" className="text-end">
-        {effectiveBalance ? Number(effectiveBalance) : '-'}
+        {effectiveBalance ? Number(effectiveBalance) : "-"}
       </Text>
       <Text variant="body-2-medium" className="text-end">
         {formatSSV(cost.data?.subtotal.liquidationCollateral ?? 0n)} ETH

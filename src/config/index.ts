@@ -46,7 +46,8 @@ export const links = {
     "https://docs.ssv.network/operators/operator-onboarding/permissioned-operators/",
   MORE_ON_CLUSTERS: "https://docs.ssv.network/stakers/clusters/",
   SSV_KEYS_RELEASES_URL: "https://github.com/ssvlabs/ssv-keys/releases",
-  SSV_UPDATE_FEE_DOCS: "https://docs.ssv.network/operators/operator-onboarding/update-fee",
+  SSV_UPDATE_FEE_DOCS:
+    "https://docs.ssv.network/operators/operator-onboarding/update-fee",
   TOOL_TIP_KEY_LINK: "https://docs.ssv.network/operators/install-instructions",
   GASNOW_API_URL:
     "https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network",

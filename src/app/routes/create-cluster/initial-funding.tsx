@@ -63,8 +63,12 @@ export const InitialFunding: FCProps = ({ ...props }) => {
   const navigate = useNavigate();
 
   const { state } = useRegisterValidatorContext;
-  const { shares, fundingDays, selectedInitialFundingPeriod, effectiveBalance } =
-    useRegisterValidatorContext();
+  const {
+    shares,
+    fundingDays,
+    selectedInitialFundingPeriod,
+    effectiveBalance,
+  } = useRegisterValidatorContext();
   const operatorIds = useSelectedOperatorIds();
 
   const operators = useOperators(operatorIds);
@@ -135,7 +139,9 @@ export const InitialFunding: FCProps = ({ ...props }) => {
         <Card as="form" onSubmit={submit} {...props}>
           <Text variant="headline4">Select your validator funding period</Text>
           <Text variant="body-2-medium">
-            The ETH amount you deposit will determine your validator operational runway (You can always manage it later by withdrawing or depositing more funds).
+            The ETH amount you deposit will determine your validator operational
+            runway (You can always manage it later by withdrawing or depositing
+            more funds).
           </Text>
           <FormField
             control={form.control}

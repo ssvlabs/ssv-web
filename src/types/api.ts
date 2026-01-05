@@ -164,6 +164,7 @@ export type Cluster<
     createdAt: string;
     updatedAt: string;
     isSSVCluster: boolean;
+    migrated?: boolean;
   } & T
 >;
 

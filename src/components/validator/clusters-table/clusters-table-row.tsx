@@ -33,6 +33,7 @@ type FCProps = FC<
 export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
   const { data: apiCluster } = useCluster(cluster.clusterId);
   const runway = useClusterRunway(cluster.clusterId);
+  console.log("runway:", runway);
   const isLiquidated = apiCluster?.isLiquidated;
   const isLoadingRunway = !isLiquidated && runway.isLoading;
 

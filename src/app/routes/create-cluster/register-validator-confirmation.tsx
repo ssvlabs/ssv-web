@@ -118,6 +118,7 @@ export const RegisterValidatorConfirmation: FC = () => {
           publicKey: share.publicKey as Address,
           sharesData: share.sharesData as Address,
         },
+        depositAmount,
         options,
       );
 
@@ -129,6 +130,7 @@ export const RegisterValidatorConfirmation: FC = () => {
         publicKeys: shares.map((share) => share.publicKey as Address),
         sharesData: shares.map((share) => share.sharesData as Address),
       },
+      depositAmount,
       options,
     );
   };

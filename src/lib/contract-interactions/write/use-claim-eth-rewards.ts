@@ -10,40 +10,26 @@ import type {
 } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useWaitForTransactionReceipt } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
-import type { ExtractAbiFunction } from "abitype";
-import type { AbiInputsToParams } from "@/lib/contract-interactions/utils";
-import {
-  paramsToArray,
-  extractAbiFunction,
-} from "@/lib/contract-interactions/utils";
 import type { WriteContractErrorType } from "@wagmi/core";
 import type { WaitForTransactionReceiptErrorType } from "viem";
 
-type Fn = ExtractAbiFunction<typeof MainnetV4SetterABI, "deposit">;
-const abiFunction = extractAbiFunction(MainnetV4SetterABI, "deposit");
 // type State = "idle" | "confirming" | "mining" | "mined" | "error";
 
-export const useDeposit = () => {
+export const useClaimEthRewards = () => {
   const { setterContractAddress } = useSSVNetworkDetails();
 
   const wait = useWaitForTransactionReceipt<MainnetEvent>([
-    "useDeposit",
+    "useClaimEthRewards",
     setterContractAddress,
   ]);
   const mutation = useWriteContract();
 
-  const send = (
-    params: AbiInputsToParams<Fn["inputs"]>,
-    value?: bigint,
-    options: MutationOptions<MainnetEvent> = {},
-  ) => {
+  const send = (options: MutationOptions<MainnetEvent> = {}) => {
     return mutation.writeContractAsync(
       {
-        value,
         abi: MainnetV4SetterABI,
         address: setterContractAddress,
-        functionName: "deposit",
-        args: paramsToArray({ params, abiFunction }),
+        functionName: "claimEthRewards",
       },
       {
         onSuccess: (hash) => options.onConfirmed?.(hash),
@@ -52,20 +38,14 @@ export const useDeposit = () => {
     );
   };
 
-  const write = (
-    params: AbiInputsToParams<Fn["inputs"]>,
-    value?: bigint,
-    options: MutationOptions<MainnetEvent> = {},
-  ) => {
+  const write = (options: MutationOptions<MainnetEvent> = {}) => {
     options.onInitiated?.();
     return mutation
       .writeContractAsync(
         {
-          value,
           abi: MainnetV4SetterABI,
           address: setterContractAddress,
-          functionName: "deposit",
-          args: paramsToArray({ params, abiFunction }),
+          functionName: "claimEthRewards",
         },
         {
           onSuccess: (hash) => options.onConfirmed?.(hash),

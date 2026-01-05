@@ -10,10 +10,9 @@ import type {
 } from "@/types/api";
 import { isUndefined, omitBy } from "lodash-es";
 import type { OperatorDKGHealthResponse } from "@/hooks/operator/use-operator-dkg-health.ts";
-import { normalizeOperatorFee } from "@/lib/utils/operator";
 
 export const getOperator = (id: number | string | bigint) => {
-  return api.get<Operator>(endpoint("operators", id.toString())).then(normalizeOperatorFee);
+  return api.get<Operator>(endpoint("operators", id.toString()));
 };
 
 export type OrderBy =

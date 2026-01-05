@@ -13,7 +13,6 @@ import type {
 } from "@/types/api";
 import type { Address } from "abitype";
 import { merge } from "lodash-es";
-import { normalizeOperatorsFees } from "@/lib/utils/operator";
 
 export const getCluster = (hash: string) => {
   return api.get<GetClusterResponse>(endpoint("clusters", hash)).then((res) => {
@@ -67,12 +66,7 @@ export const getPaginatedAccountClusters = ({
     )
     .then((response) => ({
       ...response,
-      clusters: response.clusters.map((cluster) => ({
-        ...cluster,
-        operators: Array.isArray(cluster.operators)
-          ? normalizeOperatorsFees(cluster.operators)
-          : cluster.operators,
-      })),
+      clusters: response.clusters,
       pagination: {
         ...response.pagination,
         page: response.pagination.page || 1,
@@ -96,9 +90,6 @@ export const getPaginatedClusterValidators = (
       ...response,
       validators: response.validators.map((validator) => ({
         ...validator,
-        operators: Array.isArray(validator.operators)
-          ? normalizeOperatorsFees(validator.operators)
-          : validator.operators,
         displayedStatus: mapBeaconChainStatus({
           beaconStatus: validator.validator_info.status,
           validatorStatus: validator.status,

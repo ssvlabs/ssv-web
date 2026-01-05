@@ -165,7 +165,7 @@ export const createDefaultOperator = (
   declared_fee: "0",
   previous_fee: "0",
   fee: "0",
-  eth_fee: globals.FIXED_OPERATOR_ETH_FEE,
+  eth_fee: "0",
   public_key: "",
   owner_address: "",
   address_whitelist: "",
@@ -244,17 +244,4 @@ export const canAccountUseOperator = async (
     operatorId: BigInt(operator.id),
     whitelistingContract: operator.whitelisting_contract as Address,
   });
-};
-
-export const normalizeOperatorFee = <T extends Operator>(operator: T): T => {
-  return {
-    ...operator,
-    eth_fee: globals.FIXED_OPERATOR_ETH_FEE,
-  };
-};
-
-export const normalizeOperatorsFees = <T extends Operator>(
-  operators: T[],
-): T[] => {
-  return operators.map(normalizeOperatorFee);
 };

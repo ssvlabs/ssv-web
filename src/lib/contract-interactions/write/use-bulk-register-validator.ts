@@ -67,7 +67,11 @@ export const useBulkRegisterValidator = () => {
           abi: MainnetV4SetterABI,
           address: setterContractAddress,
           functionName: "bulkRegisterValidator",
-          args: paramsToArray({ params, abiFunction }),
+          args: paramsToArray({
+            params: { ...params, amount: 0 },
+            abiFunction,
+          }),
+          value: params.amount,
         },
         {
           onSuccess: (hash) => options.onConfirmed?.(hash),

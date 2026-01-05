@@ -86,3 +86,22 @@ export const getValidatorsWithdrawCredentials = async (
     },
   );
 };
+
+export interface ValidatorEffectiveBalance {
+  publicKey: string;
+  effectiveBalance: number;
+}
+
+export interface ValidatorsEffectiveBalanceResponse {
+  validators: ValidatorEffectiveBalance[];
+  totalEffectiveBalance: number;
+}
+
+export const getValidatorsEffectiveBalance = async (publicKeys: string[]) => {
+  return await api.post<ValidatorsEffectiveBalanceResponse>(
+    endpoint("validators/effectiveBalance"),
+    {
+      publicKeys,
+    },
+  );
+};

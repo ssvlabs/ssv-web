@@ -28,6 +28,7 @@ export const globals = {
   MINIMUM_OPERATOR_FEE_PER_BLOCK: 1000000000n,
   MIN_VALIDATORS_COUNT_PER_BULK_REGISTRATION: 1,
   DEFAULT_ADDRESS_WHITELIST: "0x0000000000000000000000000000000000000000",
+  FIXED_OPERATOR_ETH_FEE: "1000000000",
 };
 
 export const links = {
@@ -45,7 +46,8 @@ export const links = {
     "https://docs.ssv.network/operators/operator-onboarding/permissioned-operators/",
   MORE_ON_CLUSTERS: "https://docs.ssv.network/stakers/clusters/",
   SSV_KEYS_RELEASES_URL: "https://github.com/ssvlabs/ssv-keys/releases",
-  SSV_UPDATE_FEE_DOCS: "https://docs.ssv.network/operators/operator-onboarding/update-fee",
+  SSV_UPDATE_FEE_DOCS:
+    "https://docs.ssv.network/operators/operator-onboarding/update-fee",
   TOOL_TIP_KEY_LINK: "https://docs.ssv.network/operators/install-instructions",
   GASNOW_API_URL:
     "https://www.gasnow.org/api/v3/gas/price?utm_source=ssv.network",

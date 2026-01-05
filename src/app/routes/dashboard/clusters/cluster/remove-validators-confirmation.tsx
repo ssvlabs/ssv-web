@@ -81,7 +81,7 @@ export const RemoveValidatorsConfirmation: FC = () => {
         options,
       );
     }
-
+    console.log(clusterData);
     bulkRemoveValidators.write(
       {
         cluster: clusterData,

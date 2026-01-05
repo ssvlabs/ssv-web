@@ -106,7 +106,7 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
 
     if (cluster.data)
       return navigate(`/join/validator/${cluster.data.clusterId}/funding`);
-    navigate("../funding");
+    navigate("../effective-balance");
   };
 
   const canProceed =

@@ -34,11 +34,14 @@ export const computeLiquidationCollateralCostPerValidator = ({
 type ComputeFundingCostArgs = Prettify<
   {
     fundingDays: number;
+    effectiveBalance?: bigint;
   } & LiquidationCollateralCostArgs
 >;
 
 export const computeFundingCost = (args: ComputeFundingCostArgs) => {
   const validators = BigInt(args.validators || 1);
+  const effectiveBalance = args.effectiveBalance || 0n;
+
   const networkCost = computeDailyAmount(args.networkFee, args.fundingDays);
   const operatorsCost = computeDailyAmount(args.operatorsFee, args.fundingDays);
   const liquidationCollateral = computeLiquidationCollateralCostPerValidator({
@@ -46,8 +49,14 @@ export const computeFundingCost = (args: ComputeFundingCostArgs) => {
     validators,
   });
 
+  // Subtotal = base cost × effective balance × validators
+  const networkCostSubtotal = networkCost * effectiveBalance * validators;
+  const operatorsCostSubtotal = operatorsCost * effectiveBalance * validators;
+  const liquidationCollateralSubtotal =
+    liquidationCollateral * effectiveBalance * validators;
+
   const total =
-    (networkCost + operatorsCost + liquidationCollateral) * validators;
+    networkCostSubtotal + operatorsCostSubtotal + liquidationCollateralSubtotal;
 
   return {
     perValidator: {
@@ -56,10 +65,11 @@ export const computeFundingCost = (args: ComputeFundingCostArgs) => {
       liquidationCollateral,
     },
     subtotal: {
-      networkCost: networkCost * validators,
-      operatorsCost: operatorsCost * validators,
-      liquidationCollateral: liquidationCollateral * validators,
+      networkCost: networkCostSubtotal,
+      operatorsCost: operatorsCostSubtotal,
+      liquidationCollateral: liquidationCollateralSubtotal,
     },
     total,
+    effectiveBalance,
   };
 };

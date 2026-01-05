@@ -18,8 +18,13 @@ export const BalanceWarning: FC = () => {
       <Card>
         <CardHeader
           title="Cluster Balances and Fees"
-          description="Fees are presented as annual payments but are paid to operators continuously as an on-going process. They are set by each operator and could change according to their decision."
+          description="Your cluster’s runway is determined by your deposited balance and the operator and network fees accrued over time. These fees scale with your validators’ effective balance."
         />
+        <Text variant="body-2-medium">
+          While displayed as annual amounts, fees are paid continuously as an
+          on-going process - so any changes in operator pricing or network
+          conditions can impact your fee and shorten or extend your runway.
+        </Text>
         <Alert variant="error">
           <AlertDescription>
             Clusters with insufficient balance are at risk of being{" "}

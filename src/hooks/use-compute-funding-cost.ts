@@ -9,6 +9,7 @@ type Args = {
   operatorsFee: bigint;
   validators: number;
   fundingDays: number;
+  effectiveBalance?: bigint;
 };
 
 export const useComputeFundingCost = () => {
@@ -20,7 +21,12 @@ export const useComputeFundingCost = () => {
   } = useSsvNetworkFee();
 
   return useMutation({
-    mutationFn: async ({ fundingDays, validators, operatorsFee }: Args) => {
+    mutationFn: async ({
+      fundingDays,
+      validators,
+      operatorsFee,
+      effectiveBalance,
+    }: Args) => {
       if (!isSuccess) {
         throw new Error("Something went wrong, please try again later.");
       }
@@ -31,21 +37,24 @@ export const useComputeFundingCost = () => {
         liquidationCollateralPeriod: liquidationThresholdPeriod.data!,
         minimumLiquidationCollateral: minimumLiquidationCollateral.data!,
         validators: BigInt(validators || 1),
+        effectiveBalance,
       });
     },
   });
 };
 
 export type UseFundingCostArgs = {
-  operators: Pick<Operator, "fee">[];
+  operators: Pick<Operator, "eth_fee">[];
   validatorsAmount: number;
   fundingDays: number;
+  effectiveBalance?: bigint;
 };
 
 export const useFundingCost = ({
   operators,
   validatorsAmount,
   fundingDays,
+  effectiveBalance,
 }: UseFundingCostArgs) => {
   const {
     isSuccess,
@@ -63,6 +72,7 @@ export const useFundingCost = ({
       operators,
       validatorsAmount,
       fundingDays,
+      effectiveBalance,
     ]),
     queryFn: async () =>
       computeFundingCost({
@@ -72,6 +82,7 @@ export const useFundingCost = ({
         liquidationCollateralPeriod: liquidationThresholdPeriod.data!,
         minimumLiquidationCollateral: minimumLiquidationCollateral.data!,
         validators: BigInt(validatorsAmount || 1),
+        effectiveBalance,
       }),
     placeholderData: keepPreviousData,
     enabled: isSuccess,

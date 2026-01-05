@@ -10,7 +10,7 @@ import { Divider } from "@/components/ui/divider";
 import { Input } from "@/components/ui/input";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { Text } from "@/components/ui/text";
-import { WithAllowance } from "@/components/with-allowance/with-allowance";
+// import { WithAllowance } from "@/components/with-allowance/with-allowance";
 import {
   useRegisterValidatorContext,
   useSelectedOperatorIds,
@@ -48,7 +48,8 @@ export const RegisterValidatorConfirmation: FC = () => {
   const accountClusters = usePaginatedAccountClusters();
 
   const account = useAccount();
-  const { shares, depositAmount, fundingDays } = useRegisterValidatorContext();
+  const { shares, depositAmount, fundingDays, effectiveBalance } =
+    useRegisterValidatorContext();
   const isBulk = shares.length > 1;
 
   const operatorIds = useSelectedOperatorIds();
@@ -160,9 +161,9 @@ export const RegisterValidatorConfirmation: FC = () => {
               <div className="text-end space-y-1">
                 <Text variant="body-2-medium">
                   {formatSSV(
-                    computeDailyAmount(BigInt(operator.fee), fundingDays),
+                    computeDailyAmount(BigInt(operator.eth_fee), fundingDays),
                   )}{" "}
-                  SSV
+                  ETH
                 </Text>
                 <Text variant="body-3-medium" className="text-gray-500">
                   /{fundingDays} days
@@ -179,18 +180,19 @@ export const RegisterValidatorConfirmation: FC = () => {
             operators={operators.data ?? []}
             validatorsAmount={shares.length}
             fundingDays={fundingDays}
+            effectiveBalance={effectiveBalance}
           />
         )}
-        <WithAllowance size="xl" amount={depositAmount}>
-          <Button
-            size="xl"
-            isLoading={isPending}
-            isActionBtn
-            onClick={handleRegisterValidator}
-          >
-            Register Validator
-          </Button>
-        </WithAllowance>
+        {/*<WithAllowance size="xl" amount={depositAmount}>*/}
+        <Button
+          size="xl"
+          isLoading={isPending}
+          isActionBtn
+          onClick={handleRegisterValidator}
+        >
+          Register Validator
+        </Button>
+        {/*</WithAllowance>*/}
       </Card>
     </Container>
   );

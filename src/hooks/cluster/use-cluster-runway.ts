@@ -22,6 +22,7 @@ export const useClusterRunway = (
   const burnRate = useClusterBurnRate(clusterHash!, {
     deltaValidators: opts.deltaValidators,
   });
+  console.log("burnRate:", burnRate);
 
   const isLoading =
     cluster.isLoading || balance.isLoading || burnRate.isLoading;

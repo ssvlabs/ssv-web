@@ -55,7 +55,7 @@ export const Cluster: FC = () => {
       return "One of your chosen operators has shifted to a permissioned status. To onboard validators, you'll need to select a new cluster.";
     if (operatorsUsability.data?.hasExceededValidatorsLimit)
       return "One of your operators has reached their maximum number of validators";
-    if (isMigrated) return "Switch to ETH to enable this option";
+    if (!isMigrated) return "Switch to ETH to enable this option";
   };
 
   return (
@@ -117,29 +117,29 @@ export const Cluster: FC = () => {
           ) : (
             <div className="flex flex-col gap-6">
               <div className="flex gap-6 [&>*]:flex-1">
-                <SwitchToEthMenuOptionTooltip asChild enabled={isMigrated}>
+                <SwitchToEthMenuOptionTooltip asChild enabled={!isMigrated}>
                   <Button
                     as={Link}
                     to="deposit"
                     size="xl"
-                    disabled={isMigrated}
+                    disabled={!isMigrated}
                   >
                     Deposit
                   </Button>
                 </SwitchToEthMenuOptionTooltip>
-                <SwitchToEthMenuOptionTooltip asChild enabled={isMigrated}>
+                <SwitchToEthMenuOptionTooltip asChild enabled={!isMigrated}>
                   <Button
                     as={Link}
                     to="withdraw"
                     size="xl"
                     variant="secondary"
-                    disabled={isMigrated}
+                    disabled={!isMigrated}
                   >
                     Withdraw
                   </Button>
                 </SwitchToEthMenuOptionTooltip>
               </div>
-              {isMigrated && (
+              {!isMigrated && (
                 <Button
                   as={Link}
                   to={`/switch-wizard/${clusterHash}`}
@@ -163,7 +163,7 @@ export const Cluster: FC = () => {
             <Spacer />
             <ValidatorsActionsMenu
               isLiquidated={Boolean(isLiquidated.data)}
-              isSSVCluster={isMigrated}
+              isSSVCluster={!isMigrated}
             />
             <Tooltip content={getTooltipContent()}>
               <Button

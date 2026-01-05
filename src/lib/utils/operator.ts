@@ -246,9 +246,3 @@ export const normalizeOperatorFee = <T extends Operator>(operator: T): T => {
     eth_fee: globals.FIXED_OPERATOR_ETH_FEE,
   };
 };
-
-export const normalizeOperatorsFees = <T extends Operator>(
-  operators: T[],
-): T[] => {
-  return operators.map(normalizeOperatorFee);
-};

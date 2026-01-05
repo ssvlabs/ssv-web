@@ -10,9 +10,10 @@ import type {
 } from "@/types/api";
 import { isUndefined, omitBy } from "lodash-es";
 import type { OperatorDKGHealthResponse } from "@/hooks/operator/use-operator-dkg-health.ts";
+import { normalizeOperatorFee, normalizeOperatorsFees } from "@/lib/utils/operator";
 
 export const getOperator = (id: number | string | bigint) => {
-  return api.get<Operator>(endpoint("operators", id.toString()));
+  return api.get<Operator>(endpoint("operators", id.toString())).then(normalizeOperatorFee);
 };
 
 export type OrderBy =
@@ -41,7 +42,10 @@ export const searchOperators = (params: SearchOperatorsParams) => {
   const searchParams = new URLSearchParams(filtered as Record<string, string>);
   return api.get<OperatorsSearchResponse>(
     endpoint("operators", `?${searchParams}`),
-  );
+  ).then((response) => ({
+    ...response,
+    operators: normalizeOperatorsFees(response.operators),
+  }));
 };
 
 type GetAccountOperatorsParams = {
@@ -72,6 +76,7 @@ export const getPaginatedAccountOperators = ({
     )
     .then((response) => ({
       ...response,
+      operators: normalizeOperatorsFees(response.operators),
       pagination: {
         ...response.pagination,
         page: response.pagination.page || 1,
@@ -106,6 +111,7 @@ export const getPaginatedOperatorValidators = ({
       ...response,
       validators: response.validators.map((validator) => ({
         ...validator,
+        operators: normalizeOperatorsFees(validator.operators),
         displayedStatus: mapBeaconChainStatus({
           beaconStatus: validator.validator_info.status,
           validatorStatus: validator.status,

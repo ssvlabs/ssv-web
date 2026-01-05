@@ -94,22 +94,29 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
     days && days < globals.CLUSTER_VALIDITY_PERIOD_MINIMUM,
   );
 
+  const effectiveBalance = cluster.data?.effectiveBalance
+    ? BigInt(cluster.data.effectiveBalance)
+    : 0n;
+
   const customFundingCost = useFundingCost({
     fundingDays: values.custom,
     operators: operators.data ?? [],
     validatorsAmount: cluster.data?.validatorCount ?? 1,
+    effectiveBalance,
   });
 
   const yearFundingCost = useFundingCost({
     fundingDays: periods.year,
     operators: operators.data ?? [],
     validatorsAmount: cluster.data?.validatorCount ?? 1,
+    effectiveBalance,
   });
 
   const halfYearFundingCost = useFundingCost({
     fundingDays: periods["half-year"],
     operators: operators.data ?? [],
     validatorsAmount: cluster.data?.validatorCount ?? 1,
+    effectiveBalance,
   });
 
   const computeFundingCost = useComputeFundingCost();
@@ -118,6 +125,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
     operators: operators.data ?? [],
     validatorsAmount: cluster.data?.validatorCount ?? 1,
     fundingDays: days,
+    effectiveBalance,
   });
 
   const reactive = useReactivate();
@@ -128,6 +136,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
       fundingDays: days,
       operatorsFee: sumOperatorsFee(operators.data ?? []),
       validators: cluster.data?.validatorCount ?? 1,
+      effectiveBalance,
     });
 
     return reactive.write(
@@ -301,6 +310,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
             operators={operators.data ?? []}
             validatorsAmount={cluster.data?.validatorCount ?? 1}
             fundingDays={days}
+            effectiveBalance={effectiveBalance}
           />
           <WithAllowance amount={fundingCost.data?.total ?? 0n} size="xl">
             <Button

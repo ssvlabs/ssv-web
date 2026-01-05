@@ -84,7 +84,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
     .filter(Boolean);
 
   const totalYearlyFee = selectedOperators.reduce(
-    (acc, operator) => acc + getYearlyFee(BigInt(operator.fee)),
+    (acc, operator) => acc + getYearlyFee(BigInt(operator.eth_fee)),
     0n,
   );
 
@@ -199,7 +199,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
           <Divider />
           <div className="flex justify-between">
             <Text variant="body-2-medium">Operators Yearly Fee</Text>
-            <Text variant="body-2-bold">{formatSSV(totalYearlyFee)} SSV</Text>
+            <Text variant="body-2-bold">{formatSSV(totalYearlyFee)} ETH</Text>
           </div>
           {hasUnverifiedOperators && (
             <Alert variant="warning">

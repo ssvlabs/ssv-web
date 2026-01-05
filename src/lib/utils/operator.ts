@@ -20,7 +20,8 @@ export function getYearlyFee(
 ): string | bigint {
   const yearlyFee = fee * BigInt(globals.BLOCKS_PER_YEAR);
   if (opts?.format)
-    return ethFormatter.format(+formatUnits(yearlyFee, 18)) + " SSV";
+    // return ethFormatter.format(+formatUnits(yearlyFee, 18)) + " SSV";
+    return ethFormatter.format(+formatUnits(yearlyFee, 18)) + " ETH";
   return yearlyFee;
 }
 
@@ -120,8 +121,10 @@ export const prepareOperatorsForShares = (
     operatorKey: operator.public_key,
   }));
 
-export const sumOperatorsFee = (operators: Pick<Operator, "fee">[]) => {
-  return operators.reduce((acc, operator) => acc + BigInt(operator.fee), 0n);
+export const sumOperatorsFee = (operators: Pick<Operator, "eth_fee">[]) => {
+  const res = operators.reduce((acc, operator) => acc + BigInt(operator.eth_fee), 0n)
+  console.log(res);
+  return operators.reduce((acc, operator) => acc + BigInt(operator.eth_fee), 0n);
 };
 
 export const getOperatorIds = <T extends { id: number }[]>(operators: T) => {
@@ -156,7 +159,7 @@ export const createDefaultOperator = (
   declared_fee: "0",
   previous_fee: "0",
   fee: "0",
-  eth_fee: "0",
+  eth_fee: globals.FIXED_OPERATOR_ETH_FEE,
   public_key: "",
   owner_address: "",
   address_whitelist: "",
@@ -206,7 +209,7 @@ export const createOperatorFromEvent = (
 };
 
 export const sumOperatorsFees = (operators: Operator[]) =>
-  operators.reduce((acc, operator) => acc + BigInt(operator.fee), 0n);
+  operators.reduce((acc, operator) => acc + BigInt(operator.eth_fee), 0n);
 
 export const canAccountUseOperator = async (
   account: Address,
@@ -235,4 +238,17 @@ export const canAccountUseOperator = async (
     operatorId: BigInt(operator.id),
     whitelistingContract: operator.whitelisting_contract as Address,
   });
+};
+
+export const normalizeOperatorFee = <T extends Operator>(operator: T): T => {
+  return {
+    ...operator,
+    eth_fee: globals.FIXED_OPERATOR_ETH_FEE,
+  };
+};
+
+export const normalizeOperatorsFees = <T extends Operator>(
+  operators: T[],
+): T[] => {
+  return operators.map(normalizeOperatorFee);
 };

@@ -2,13 +2,11 @@ import { OperatorDetails } from "@/components/operator/operator-details";
 import { OperatorStatusBadge } from "@/components/operator/operator-status-badge";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useOptimisticOrProvidedOperator } from "@/hooks/operator/use-optimistic-operator";
-import { useGetOperatorEarnings } from "@/lib/contract-interactions/read/use-get-operator-earnings";
-import { useGetOperatorFee } from "@/lib/contract-interactions/read/use-get-operator-fee";
 import { formatSSV, percentageFormatter } from "@/lib/utils/number";
-import { getYearlyFee } from "@/lib/utils/operator";
 import { cn } from "@/lib/utils/tw";
 import type { Operator } from "@/types/api";
 import type { ComponentPropsWithoutRef, FC } from "react";
+import { useOperatorEarningsAndFees } from "@/hooks/operator/use-operator-earnings-and-fees";
 
 export type OperatorTableRowProps = {
   operator: Operator;
@@ -25,11 +23,10 @@ export const OperatorTableRow: FCProps = ({
   ...props
 }) => {
   const operator = useOptimisticOrProvidedOperator(_operator);
-  const fee = useGetOperatorFee({ operatorId: BigInt(_operator.id) });
+  const operatorId = BigInt(operator.id!);
 
-  const balance = useGetOperatorEarnings({
-    id: BigInt(operator.id),
-  });
+  const { yearlyFeeEth, yearlyFeeSSV, balanceEth, balanceSSV } =
+    useOperatorEarningsAndFees(operatorId);
 
   return (
     <TableRow
@@ -49,25 +46,25 @@ export const OperatorTableRow: FCProps = ({
       <TableCell>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 text-gray-800 font-medium">
-            <img src="/images/networks/dark.svg" className="size-5" /> 0.9384
+            <img src="/images/networks/dark.svg" className="size-5" /> {formatSSV(balanceEth)}
           </div>
-          <span className="text-gray-300">|</span>
-          <div className="flex items-center gap-1 text-gray-800 font-medium">
+          {balanceSSV > 0 && <div className="flex items-center gap-1 text-gray-800 font-medium">
+            <span className="text-gray-300">|</span>
             <img src="/images/ssvIcons/icon.svg" className="size-5" />{" "}
-            {formatSSV(balance.data ?? 0n)}
-          </div>
+            {formatSSV(balanceSSV)}
+          </div>}
         </div>
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 text-gray-800 font-medium">
-            <img src="/images/networks/dark.svg" className="size-5" /> 0.0123
+            <img src="/images/networks/dark.svg" className="size-5" /> {formatSSV(yearlyFeeEth)}
           </div>
-          <span className="text-gray-300">|</span>
-          <div className="flex items-center gap-1 text-gray-800 font-medium">
+          {yearlyFeeSSV > 0 && <div className="flex items-center gap-1 text-gray-800 font-medium">
+            <span className="text-gray-300">|</span>
             <img src="/images/ssvIcons/icon.svg" className="size-5" />{" "}
-            {formatSSV(getYearlyFee(BigInt(fee.data ?? 0n)))}
-          </div>
+            {formatSSV(yearlyFeeSSV)}
+          </div>}
         </div>
       </TableCell>
       <TableCell>{operator.validators_count}</TableCell>

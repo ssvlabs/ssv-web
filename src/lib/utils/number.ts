@@ -4,7 +4,7 @@ export const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
   notation: "compact",
-  maximumFractionDigits: 2,
+  maximumFractionDigits: 0,
   compactDisplay: "short",
 });
 

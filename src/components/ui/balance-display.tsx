@@ -1,6 +1,6 @@
 import { Text } from "@/components/ui/text";
 import { useRates } from "@/hooks/use-rates";
-import { currencyFormatter, formatSSV } from "@/lib/utils/number";
+import { formatSSV } from "@/lib/utils/number";
 import { cn } from "@/lib/utils/tw";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { formatEther } from "viem";
@@ -30,6 +30,14 @@ const formatAmount = (amount: string | bigint) => {
   return amount;
 };
 
+const usdFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  notation: "compact",
+  maximumFractionDigits: 2,
+  compactDisplay: "short",
+});
+
 export const BalanceDisplay: FC<BalanceDisplayProps> = ({
   amount,
   token,
@@ -42,7 +50,7 @@ export const BalanceDisplay: FC<BalanceDisplayProps> = ({
     (rates.data?.[
       token.toLowerCase() as Lowercase<BalanceDisplayProps["token"]>
     ] ?? 0) * +formatEther(BigInt(amount));
-  const formattedUSD = currencyFormatter.format(usd);
+  const formattedUSD = usdFormatter.format(usd);
 
   if (custom)
     return custom({

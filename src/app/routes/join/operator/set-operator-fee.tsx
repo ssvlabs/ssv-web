@@ -21,6 +21,8 @@ import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { useFocus } from "@/hooks/use-focus";
 import { useRegisterOperatorContext } from "@/guard/register-operator-guards";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useRates } from "@/hooks/use-rates";
+import { currencyFormatter } from "@/lib/utils/number";
 
 const minimumFee =
   globals.BLOCKS_PER_YEAR * globals.MINIMUM_OPERATOR_FEE_PER_BLOCK;
@@ -28,6 +30,8 @@ const minimumFee =
 export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
   const navigate = useNavigate();
   const { isPrivate } = useRegisterOperatorContext();
+  const rates = useRates();
+  const ethRate = rates.data?.eth ?? 0;
 
   const form = useForm({
     mode: "all",
@@ -130,7 +134,9 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
                   />
                 </FormControl>
                 <Text variant="body-3-medium" className="text-gray-500">
-                  ~$757.5
+                  {field.value
+                    ? `~${currencyFormatter.format(ethRate * +formatUnits(field.value, 18))}`
+                    : "~$0.00"}
                 </Text>
                 {fieldState.error?.message && (
                   <Alert variant="error">

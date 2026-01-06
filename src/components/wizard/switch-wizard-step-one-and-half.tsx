@@ -77,6 +77,11 @@ export const SwitchWizardStepOneAndHalf = ({
   validators = [],
   totalEffectiveBalance = 0,
 }: SwitchWizardStepOneAndHalfProps) => {
+  const estimatedEffectiveBalance = Math.max(
+    totalEffectiveBalance,
+    validators.length * 32,
+  );
+
   const schema = useMemo(
     () => createSchema(validators, totalEffectiveBalance),
     [validators, totalEffectiveBalance],
@@ -84,17 +89,11 @@ export const SwitchWizardStepOneAndHalf = ({
 
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
-      totalEffectiveBalance: 0,
+      totalEffectiveBalance: estimatedEffectiveBalance,
     },
     resolver: zodResolver(schema),
-    mode: "onChange",
+    mode: "all",
   });
-
-  const isFormValid = useMemo(
-    () =>
-      Object.keys(form.formState.errors).length === 0 && form.formState.isDirty,
-    [form.formState.errors, form.formState.isDirty],
-  );
 
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [selectedTab, setSelectedTab] = useState<TabKey>("all");
@@ -130,10 +129,6 @@ export const SwitchWizardStepOneAndHalf = ({
   const formatEthBalance = (value: bigint) =>
     ethFormatter.format(Number(formatUnits(value, 9)));
 
-  const estimatedEffectiveBalance = Math.max(
-    totalEffectiveBalance,
-    validators.length * 32,
-  );
   const minBalance = estimatedEffectiveBalance;
   const maxBalance = validators.length * 2048;
   const isLowBalance =
@@ -192,7 +187,6 @@ export const SwitchWizardStepOneAndHalf = ({
                   shouldDirty: true,
                   shouldTouch: true,
                 });
-                form.trigger();
               }}
               className="h-[64px] border-primary-200 bg-white focus-within:border-primary-500"
               placeholder="0"
@@ -255,7 +249,10 @@ export const SwitchWizardStepOneAndHalf = ({
           <Checkbox
             id={confirmId}
             checked={isConfirmed}
-            onCheckedChange={(checked) => setIsConfirmed(checked === true)}
+            onCheckedChange={(checked) => {
+              form.trigger();
+              return setIsConfirmed(checked === true);
+            }}
             className="mt-0.5"
           />
           <Text as="span" variant="body-3-medium" className="text-gray-700">
@@ -270,7 +267,7 @@ export const SwitchWizardStepOneAndHalf = ({
           width="full"
           className="font-semibold"
           onClick={() => onNext(numericBalance)}
-          disabled={!isConfirmed || !isFormValid}
+          disabled={!isConfirmed || !form.formState.isValid}
         >
           Next
         </Button>

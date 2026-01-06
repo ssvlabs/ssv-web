@@ -43,9 +43,16 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="secondary" className={className} {...props}>
-          <Text>Actions</Text> <ChevronDown className="size-4" />
-        </Button>
+        <SwitchToEthMenuOptionTooltip enabled={isSSVCluster}>
+          <Button
+            variant="secondary"
+            className={className}
+            disabled={isSSVCluster}
+            {...props}
+          >
+            <Text>Actions</Text> <ChevronDown className="size-4" />
+          </Button>
+        </SwitchToEthMenuOptionTooltip>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <SwitchToEthMenuOptionTooltip enabled={isSSVCluster}>

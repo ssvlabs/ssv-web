@@ -172,7 +172,8 @@ export const Cluster: FC = () => {
                   operatorsUsability.data?.hasExceededValidatorsLimit ||
                   operatorsUsability.data?.hasPermissionedOperators ||
                   operatorsUsability.data?.hasDeletedOperators ||
-                  isLiquidated.data
+                  isLiquidated.data ||
+                  !isMigrated
                 }
                 isLoading={
                   operatorsUsability.isLoading || isLiquidated.isLoading

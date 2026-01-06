@@ -43,6 +43,11 @@ export const ethFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 4,
 });
 
+export const operatorETHFeeFormatter = new Intl.NumberFormat("en-US", {
+  useGrouping: true,
+  maximumFractionDigits: 5,
+});
+
 export const formatSSV = (num: bigint, decimals = 18) =>
   ethFormatter.format(+formatUnits(num, decimals));
 
@@ -52,6 +57,9 @@ export const formatEffectiveBalance = (num: bigint) =>
 
 export const formatBigintInput = (num: bigint, decimals = 18) =>
   bigintFormatter.format(+formatUnits(num, decimals));
+
+export const formatOperatorETHFee = (num: bigint) =>
+  operatorETHFeeFormatter.format(+formatUnits(num, 18));
 
 const units = {
   seconds: 1000,

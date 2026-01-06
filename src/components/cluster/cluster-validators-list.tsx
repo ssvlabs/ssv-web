@@ -72,65 +72,67 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
               <SsvExplorerBtn validatorId={item.public_key} />
               <BeaconchainBtn validatorId={item.public_key} />
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <IconButton>
-                    <HiOutlineCog />
-                  </IconButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <a
-                    href="https://docs.ssv.network/stakers/validators/update-operators"
-                    target="_blank"
-                  >
-                    <DropdownMenuItem>
-                      <TbRefresh className="size-4" />
-                      <span>Change Operators</span>
-                      <Spacer />
-                      <TbExternalLink className="size-3" />
-                    </DropdownMenuItem>
-                  </a>
-                  <SwitchToEthMenuOptionTooltip
-                    enabled={cluster.data?.isSSVCluster}
-                  >
-                    <DropdownMenuItem
-                      disabled={cluster.data?.isSSVCluster}
-                      onClick={() => {
-                        useBulkActionContext.state.selectedPublicKeys = [
-                          item.public_key,
-                        ];
-                        navigate("remove/confirmation");
-                      }}
+              {cluster.data?.migrated && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <IconButton>
+                      <HiOutlineCog />
+                    </IconButton>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <a
+                      href="https://docs.ssv.network/stakers/validators/update-operators"
+                      target="_blank"
                     >
-                      <LuTrash2 className="size-4" />
-                      <span>Remove Validator</span>
-                    </DropdownMenuItem>
-                  </SwitchToEthMenuOptionTooltip>
-                  <Tooltip
-                    side="bottom"
-                    delayDuration={350}
-                    asChild
-                    content={
-                      cluster.data?.isLiquidated
-                        ? "You cannot perform this operation when your cluster is liquidated. Please reactivate to proceed."
-                        : undefined
-                    }
-                  >
-                    <DropdownMenuItem
-                      disabled={cluster.data?.isLiquidated}
-                      onClick={() => {
-                        useBulkActionContext.state.selectedPublicKeys = [
-                          item.public_key,
-                        ];
-                        navigate("exit/confirmation");
-                      }}
+                      <DropdownMenuItem>
+                        <TbRefresh className="size-4" />
+                        <span>Change Operators</span>
+                        <Spacer />
+                        <TbExternalLink className="size-3" />
+                      </DropdownMenuItem>
+                    </a>
+                    <SwitchToEthMenuOptionTooltip
+                      enabled={cluster.data?.isSSVCluster}
                     >
-                      <LuLogOut className="size-4" />
-                      <span>Exit Validator</span>
-                    </DropdownMenuItem>
-                  </Tooltip>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                      <DropdownMenuItem
+                        disabled={cluster.data?.isSSVCluster}
+                        onClick={() => {
+                          useBulkActionContext.state.selectedPublicKeys = [
+                            item.public_key,
+                          ];
+                          navigate("remove/confirmation");
+                        }}
+                      >
+                        <LuTrash2 className="size-4" />
+                        <span>Remove Validator</span>
+                      </DropdownMenuItem>
+                    </SwitchToEthMenuOptionTooltip>
+                    <Tooltip
+                      side="bottom"
+                      delayDuration={350}
+                      asChild
+                      content={
+                        cluster.data?.isLiquidated
+                          ? "You cannot perform this operation when your cluster is liquidated. Please reactivate to proceed."
+                          : undefined
+                      }
+                    >
+                      <DropdownMenuItem
+                        disabled={cluster.data?.isLiquidated}
+                        onClick={() => {
+                          useBulkActionContext.state.selectedPublicKeys = [
+                            item.public_key,
+                          ];
+                          navigate("exit/confirmation");
+                        }}
+                      >
+                        <LuLogOut className="size-4" />
+                        <span>Exit Validator</span>
+                      </DropdownMenuItem>
+                    </Tooltip>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </TableCell>
           </TableRow>
         )}

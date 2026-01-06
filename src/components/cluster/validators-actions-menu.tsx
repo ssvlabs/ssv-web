@@ -42,28 +42,22 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <SwitchToEthMenuOptionTooltip enabled={isSSVCluster}>
-          <Button
-            variant="secondary"
-            className={className}
-            disabled={isSSVCluster}
-            {...props}
-          >
+      <SwitchToEthMenuOptionTooltip enabled={isSSVCluster}>
+        <DropdownMenuTrigger asChild disabled={isSSVCluster}>
+          <Button variant="secondary" className={className} {...props}>
             <Text>Actions</Text> <ChevronDown className="size-4" />
           </Button>
-        </SwitchToEthMenuOptionTooltip>
-      </DropdownMenuTrigger>
+        </DropdownMenuTrigger>
+      </SwitchToEthMenuOptionTooltip>
+
       <DropdownMenuContent>
-        <SwitchToEthMenuOptionTooltip enabled={isSSVCluster}>
-          <DropdownMenuItem
-            disabled={isSSVCluster}
-            onClick={() => onActionClickHandler(ActionType.Remove)}
-          >
-            <LuTrash2 className="size-4" />
-            <span>Remove Validators</span>
-          </DropdownMenuItem>
-        </SwitchToEthMenuOptionTooltip>
+        <DropdownMenuItem
+          disabled={isSSVCluster}
+          onClick={() => onActionClickHandler(ActionType.Remove)}
+        >
+          <LuTrash2 className="size-4" />
+          <span>Remove Validators</span>
+        </DropdownMenuItem>
 
         <Tooltip
           side="bottom"

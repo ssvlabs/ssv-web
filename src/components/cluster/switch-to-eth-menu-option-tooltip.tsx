@@ -16,6 +16,7 @@ export const SwitchToEthMenuOptionTooltip: FC<Props> = ({
 }) => {
   return (
     <Tooltip
+      asChild
       content={enabled ? SWITCH_TO_ETH_MENU_OPTION_TOOLTIP_TEXT : undefined}
       {...tooltipProps}
     >

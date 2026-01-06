@@ -74,7 +74,7 @@ export const OperatorStatCard: OperatorStatCardFC = ({
     >
       <OperatorDetails operator={operator} />
       <Divider />
-      <div className="grid grid-cols-[1fr_auto_auto] gap-1 gap-x-3 items-center">
+      <div className="grid grid-cols-[auto_auto_auto] gap-1 gap-x-3 items-center">
         <Tooltip content="Is the operator performing duties for the majority of its validators for the last 2 epochs.">
           <div className="flex items-center justify-start gap-1">
             <Text variant="caption-medium" className="text-gray-500">

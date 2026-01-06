@@ -91,7 +91,7 @@ export const OperatorStatCard: OperatorStatCardFC = ({
             <FaCircleInfo className="text-gray-400 size-3" />
           </div>
         </Tooltip>
-        <Tooltip content="Annualized fee in SSV.">
+        <Tooltip content="Annualized fee in ETH.">
           <div className="flex items-center justify-end gap-1">
             <Text variant="caption-medium" className="text-gray-500">
               1Y Fee

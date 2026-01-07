@@ -20,7 +20,6 @@ export function getYearlyFee(
 ): string | bigint {
   const yearlyFee = fee * BigInt(globals.BLOCKS_PER_YEAR);
   if (opts?.format)
-    // return ethFormatter.format(+formatUnits(yearlyFee, 18)) + " SSV";
     return ethFormatter.format(+formatUnits(yearlyFee, 18)) + " ETH";
   return yearlyFee;
 }

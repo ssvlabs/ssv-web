@@ -20,7 +20,7 @@ export type OrderBy =
   | "id"
   | "validatorsCount"
   | "performance30d"
-  | "fee"
+  | "ethFee"
   | "delegators"
   | "strategyId"
   | "mev"

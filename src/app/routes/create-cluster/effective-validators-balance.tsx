@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert.tsx";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
-import { useState, useMemo, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard";
 import {
   Table,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/grid-table";
 import { CopyBtn } from "@/components/ui/copy-btn";
 import { SsvExplorerBtn } from "@/components/ui/ssv-explorer-btn";
-import { shortenAddress, add0x } from "@/lib/utils/strings";
+import { add0x, shortenAddress } from "@/lib/utils/strings";
 import { Badge } from "@/components/ui/badge";
 import { BigNumberInput } from "@/components/ui/number-input";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -24,6 +24,7 @@ import { FaCircleInfo } from "react-icons/fa6";
 import { getValidatorsEffectiveBalance } from "@/api/validators";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { numberFormatter } from "@/lib/utils/number";
+import { globals } from "@/config";
 
 const EffectiveValidatorsBalance = () => {
   const navigate = useNavigate();
@@ -43,7 +44,9 @@ const EffectiveValidatorsBalance = () => {
       (sum, balance) => sum + balance,
       0,
     );
-    return totalFromApi > 0 ? totalFromApi : validatorCount * 32;
+    return totalFromApi > 0
+      ? totalFromApi
+      : validatorCount * globals.VALIDATOR_FULL_DEPOSIT_VALUE_IN_ETH;
   }, [validatorBalances, validatorCount]);
 
   const [hasEdited, setHasEdited] = useState(false);
@@ -67,8 +70,14 @@ const EffectiveValidatorsBalance = () => {
     () =>
       shares.map((share) => ({
         publicKey: share.publicKey,
-        status: "Deposited" as "Deposited" | "Not Deposited",
-        effectiveBalance: validatorBalances[share.publicKey] ?? 32,
+        status:
+          validatorBalances[share.publicKey] >=
+          globals.VALIDATOR_FULL_DEPOSIT_VALUE_IN_ETH
+            ? ("Deposited" as const)
+            : ("Not Deposited" as const),
+        effectiveBalance:
+          validatorBalances[share.publicKey] ??
+          globals.VALIDATOR_FULL_DEPOSIT_VALUE_IN_ETH,
       })),
     [shares, validatorBalances],
   );
@@ -287,7 +296,10 @@ const EffectiveValidatorsBalance = () => {
                   {counts.all}
                 </Badge>
               </TabsTrigger>
-              <TabsTrigger value="deposited" className="flex items-center gap-2">
+              <TabsTrigger
+                value="deposited"
+                className="flex items-center gap-2"
+              >
                 <Text variant="body-3-medium">{tabLabels.deposited}</Text>
                 <Badge variant="success" size="xs" className="rounded-md">
                   {counts.deposited}
@@ -313,7 +325,11 @@ const EffectiveValidatorsBalance = () => {
               <Text variant="body-2-semibold" className="text-gray-800">
                 {numberFormatter.format(estimatedTotalBalance)}
               </Text>
-              <img src="/images/networks/dark.svg" alt="ETH" className="size-4" />
+              <img
+                src="/images/networks/dark.svg"
+                alt="ETH"
+                className="size-4"
+              />
               <Text variant="body-3-medium" className="text-gray-500">
                 ETH
               </Text>

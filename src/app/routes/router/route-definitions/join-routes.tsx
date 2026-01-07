@@ -98,6 +98,10 @@ export const joinRoutes = {
               element: <UploadKeyshares />,
             },
             {
+              path: "effective-balance",
+              element: <EffectiveValidatorsBalance />,
+            },
+            {
               path: "funding",
               element: <AdditionalFunding />,
             },

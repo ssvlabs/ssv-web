@@ -22,6 +22,8 @@ import { BigNumberInput } from "@/components/ui/number-input";
 import { Tooltip } from "@/components/ui/tooltip";
 import { FaCircleInfo } from "react-icons/fa6";
 import { getValidatorsEffectiveBalance } from "@/api/validators";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { numberFormatter } from "@/lib/utils/number";
 
 const EffectiveValidatorsBalance = () => {
   const navigate = useNavigate();
@@ -51,6 +53,51 @@ const EffectiveValidatorsBalance = () => {
       : BigInt(estimatedTotalBalance),
   );
   const [isConfirmed, setIsConfirmed] = useState(false);
+
+  const tabLabels = {
+    all: "All",
+    deposited: "Deposited",
+    notDeposited: "Not Deposited",
+  } as const;
+
+  type TabKey = keyof typeof tabLabels;
+  const [selectedTab, setSelectedTab] = useState<TabKey>("all");
+
+  const validatorsWithStatus = useMemo(
+    () =>
+      shares.map((share) => ({
+        publicKey: share.publicKey,
+        status: "Deposited" as "Deposited" | "Not Deposited",
+        effectiveBalance: validatorBalances[share.publicKey] ?? 32,
+      })),
+    [shares, validatorBalances],
+  );
+
+  const counts = useMemo(() => {
+    const deposited = validatorsWithStatus.filter(
+      (validator) => validator.status === "Deposited",
+    ).length;
+    const notDeposited = validatorsWithStatus.filter(
+      (validator) => validator.status === "Not Deposited",
+    ).length;
+    return {
+      all: validatorsWithStatus.length,
+      deposited,
+      notDeposited,
+    };
+  }, [validatorsWithStatus]);
+
+  const filteredValidators = useMemo(() => {
+    if (selectedTab === "all") return validatorsWithStatus;
+    if (selectedTab === "deposited") {
+      return validatorsWithStatus.filter(
+        (validator) => validator.status === "Deposited",
+      );
+    }
+    return validatorsWithStatus.filter(
+      (validator) => validator.status === "Not Deposited",
+    );
+  }, [selectedTab, validatorsWithStatus]);
 
   const numericBalance = Number(balanceValue);
   const maxEffectiveBalance = validatorCount * 2048;
@@ -221,27 +268,52 @@ const EffectiveValidatorsBalance = () => {
           </Button>
         </Card>
 
-        <Card className="w-full flex-1 flex flex-col gap-4 min-h-0">
-          <div className="flex items-center justify-between">
+        <Card className="flex-1 flex min-h-0 flex-col gap-4 p-6 bg-white rounded-2xl">
+          <div className="flex items-center gap-2">
             <Text variant="headline4">Validator Breakdown</Text>
-            <Badge variant="primary" size="sm" className="rounded-md">
-              {validatorCount} Validators
-            </Badge>
+            <Tooltip content="Overview of validator statuses and balances.">
+              <FaCircleInfo className="size-3.5 text-gray-400" />
+            </Tooltip>
           </div>
+
+          <Tabs
+            value={selectedTab}
+            onValueChange={(value) => setSelectedTab(value as TabKey)}
+          >
+            <TabsList className="flex w-full [&>*]:flex-1">
+              <TabsTrigger value="all" className="flex items-center gap-2">
+                <Text variant="body-3-medium">{tabLabels.all}</Text>
+                <Badge variant="primary" size="xs" className="rounded-md">
+                  {counts.all}
+                </Badge>
+              </TabsTrigger>
+              <TabsTrigger value="deposited" className="flex items-center gap-2">
+                <Text variant="body-3-medium">{tabLabels.deposited}</Text>
+                <Badge variant="success" size="xs" className="rounded-md">
+                  {counts.deposited}
+                </Badge>
+              </TabsTrigger>
+              <TabsTrigger
+                value="notDeposited"
+                className="flex items-center gap-2"
+              >
+                <Text variant="body-3-medium">{tabLabels.notDeposited}</Text>
+                <Badge variant="warning" size="xs" className="rounded-md">
+                  {counts.notDeposited}
+                </Badge>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
 
           <div className="flex items-center justify-between rounded-lg border border-primary-200 bg-primary-50 px-4 py-3">
             <Text variant="body-3-medium" className="text-gray-600">
-              Estimated Total Balance
+              Estimated Effective Balance
             </Text>
             <div className="flex items-center gap-2">
               <Text variant="body-2-semibold" className="text-gray-800">
-                {estimatedTotalBalance}
+                {numberFormatter.format(estimatedTotalBalance)}
               </Text>
-              <img
-                src="/images/networks/dark.svg"
-                alt="ETH"
-                className="size-4"
-              />
+              <img src="/images/networks/dark.svg" alt="ETH" className="size-4" />
               <Text variant="body-3-medium" className="text-gray-500">
                 ETH
               </Text>
@@ -249,34 +321,57 @@ const EffectiveValidatorsBalance = () => {
           </div>
 
           <Table
-            gridTemplateColumns="minmax(200px, 1fr) 140px"
-            className="flex-1 min-h-0 max-h-[400px] bg-white"
+            gridTemplateColumns="minmax(200px, 1fr) 120px 140px"
+            className="flex-1 min-h-0 max-h-[360px] bg-white"
           >
             <TableHeader className="sticky top-0 z-10 bg-gray-100">
               <TableCell>Public Key</TableCell>
-              <TableCell className="justify-end">Expected Balance</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell className="justify-end">Effective Balance</TableCell>
             </TableHeader>
-            {shares.map((share) => {
-              const effectiveBalance = validatorBalances[share.publicKey] ?? 32;
+            {filteredValidators.map((validator) => {
+              const isNotDeposited = validator.status === "Not Deposited";
+              const displayBalance = isLoadingBalances
+                ? "..."
+                : validator.effectiveBalance;
               return (
-                <TableRow key={share.publicKey} className="bg-white">
+                <TableRow key={validator.publicKey} className="bg-white">
                   <TableCell className="flex items-center gap-2">
                     <Text variant="body-3-medium" className="text-gray-600">
-                      {shortenAddress(add0x(share.publicKey))}
+                      {shortenAddress(add0x(validator.publicKey))}
                     </Text>
-                    <CopyBtn text={share.publicKey} />
-                    <SsvExplorerBtn validatorId={share.publicKey} />
+                    <CopyBtn text={validator.publicKey} />
+                    <SsvExplorerBtn validatorId={validator.publicKey} />
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={isNotDeposited ? "warning" : "success"}
+                      size="xs"
+                      className="rounded-md"
+                    >
+                      {validator.status}
+                    </Badge>
                   </TableCell>
                   <TableCell className="flex items-center justify-end gap-1">
-                    <Text variant="body-3-medium" className="text-gray-800">
-                      {isLoadingBalances ? "..." : effectiveBalance}
+                    <Text
+                      variant="body-3-medium"
+                      className={
+                        isNotDeposited ? "text-warning-500" : "text-gray-800"
+                      }
+                    >
+                      {displayBalance}
                     </Text>
                     <img
                       src="/images/networks/dark.svg"
                       alt="ETH"
                       className="size-3.5"
                     />
-                    <Text variant="body-3-medium" className="text-gray-500">
+                    <Text
+                      variant="body-3-medium"
+                      className={
+                        isNotDeposited ? "text-warning-500" : "text-gray-500"
+                      }
+                    >
                       ETH
                     </Text>
                   </TableCell>

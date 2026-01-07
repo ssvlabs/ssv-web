@@ -5,6 +5,7 @@ import { combineQueryStatus } from "@/lib/react-query";
 import { sumOperatorsFee } from "@/lib/utils/operator";
 import { parseGwei } from "viem";
 import { tryCatch } from "@/lib/utils/tryCatch";
+import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
 
 type Options =
   | {
@@ -25,16 +26,16 @@ export const useClusterBurnRate = (hash: string, options: Options = {}) => {
   const networkFee = useGetNetworkFee();
   const operators = useOperators(cluster.data?.operators ?? []);
   const statuses = combineQueryStatus(networkFee, operators, cluster);
+  const { state } = useRegisterValidatorContext;
 
   const deltaValidators = getDeltaValidators(options);
 
   const hasEffectiveBalance = tryCatch(
-    () => BigInt(cluster.data?.effectiveBalance ?? 0) > 0n,
+    () => BigInt(cluster.data?.effectiveBalance ?? 0) + state.effectiveBalance > 0n,
     false,
   );
-
   const validators = hasEffectiveBalance
-    ? BigInt(cluster.data!.effectiveBalance) / parseGwei("32")
+    ? (BigInt(cluster.data?.effectiveBalance ?? 0) + state.effectiveBalance) / 32n
     : BigInt(cluster.data?.validatorCount ?? 0);
 
   const burnRatePerBlock =

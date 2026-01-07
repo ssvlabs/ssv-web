@@ -6,6 +6,8 @@ import {
   useClusterBurnRate,
 } from "@/hooks/cluster/use-cluster-burn-rate";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
+import { tryCatch } from "@/lib/utils/tryCatch.ts";
+import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
 
 type Options = {
   deltaBalance?: bigint;
@@ -29,6 +31,15 @@ export const useClusterRunway = (
   const cluster = useCluster(clusterHash);
   const balance = useClusterBalance(clusterHash!, { watch: opts.watch });
   const burnRate = useClusterBurnRate(clusterHash!, { deltaValidators });
+  const { state } = useRegisterValidatorContext;
+
+  const hasEffectiveBalance = tryCatch(
+    () => BigInt(cluster.data?.effectiveBalance ?? 0) + state.effectiveBalance > 0n,
+    false,
+  );
+  const validators = hasEffectiveBalance
+    ? (BigInt(cluster.data?.effectiveBalance ?? 0) + state.effectiveBalance) / 32n
+    : BigInt(cluster.data?.validatorCount ?? 0);
 
   const isLoading =
     cluster.isLoading || balance.isLoading || burnRate.isLoading;
@@ -36,7 +47,7 @@ export const useClusterRunway = (
   const runway = useRunway({
     balance: balance.data.eth ?? balance.data.ssv ?? 0n,
     burnRate: burnRate.data?.burnRatePerBlock ?? 0n,
-    validators: BigInt(cluster.data?.validatorCount ?? 0),
+    validators,
     deltaValidators: deltaValidators,
     deltaBalance: opts.deltaBalance,
   });

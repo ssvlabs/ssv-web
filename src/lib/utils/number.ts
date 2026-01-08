@@ -53,7 +53,7 @@ export const formatSSV = (num: bigint, decimals = 18) =>
 
 export const formatETH = formatSSV;
 export const formatEffectiveBalance = (num: bigint) =>
-  ethFormatter.format(+formatUnits(num, 9));
+  ethFormatter.format(+formatUnits(num, 0)); // assuming EB is in full ETH
 
 export const formatBigintInput = (num: bigint, decimals = 18) =>
   bigintFormatter.format(+formatUnits(num, decimals));

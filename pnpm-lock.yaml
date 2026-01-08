@@ -112,7 +112,7 @@ importers:
         version: 1.13.1
       bowser:
         specifier: ^2.11.0
-        version: 2.11.0
+        version: 2.13.1
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
@@ -3819,8 +3819,8 @@ packages:
   bottleneck@2.19.5:
     resolution: {integrity: sha512-VHiNCbI1lKdl44tGrhNfU3lup0Tj/ZBMJB5/2ZbNXRCPuRCO7ed2mgcK4r17y+KB2EfuYuRaVlwNbAeaWGSpbw==}
 
-  bowser@2.11.0:
-    resolution: {integrity: sha512-AlcaJBi/pqqJBIQ8U9Mcpc9i8Aqxn88Skv5d+xBX006BY5u8N3mGLHa5Lgppa7L/HfwgwLgZ6NYs+Ag6uUmJRA==}
+  bowser@2.13.1:
+    resolution: {integrity: sha512-OHawaAbjwx6rqICCKgSG0SAnT05bzd7ppyKLVUITZpANBaaMFBAsaNkto3LoQ31tyFP5kNujE8Cdx85G9VzOkw==}
 
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -6667,8 +6667,8 @@ packages:
   preact@10.22.1:
     resolution: {integrity: sha512-jRYbDDgMpIb5LHq3hkI0bbl+l/TQ9UnkdQ0ww+lp+4MMOdqaUYdFc5qeyP+IV8FAd/2Em7drVPeKdQxsiWCf/A==}
 
-  preact@10.28.0:
-    resolution: {integrity: sha512-rytDAoiXr3+t6OIP3WGlDd0ouCUG1iCWzkcY3++Nreuoi17y6T5i/zRhe6uYfoVcxq6YU+sBtJouuRDsq8vvqA==}
+  preact@10.28.2:
+    resolution: {integrity: sha512-lbteaWGzGHdlIuiJ0l2Jq454m6kcpI1zNje6d8MlGAFlYvP2GO4ibnat7P74Esfz4sPTdM6UxtTwh/d3pwM9JA==}
 
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
@@ -9269,7 +9269,7 @@ snapshots:
       eth-json-rpc-filters: 6.0.1
       eventemitter3: 5.0.1
       keccak: 3.0.4
-      preact: 10.28.0
+      preact: 10.28.2
       sha.js: 2.4.12
     transitivePeerDependencies:
       - supports-color
@@ -9732,7 +9732,7 @@ snapshots:
 
   '@metamask/onboarding@1.0.1':
     dependencies:
-      bowser: 2.11.0
+      bowser: 2.13.1
 
   '@metamask/providers@16.1.0':
     dependencies:
@@ -9803,7 +9803,7 @@ snapshots:
       '@metamask/sdk-install-modal-web': 0.28.1(i18next@23.11.5)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.3(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.27)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)
       '@types/dom-screen-wake-lock': 1.0.3
       '@types/uuid': 10.0.0
-      bowser: 2.11.0
+      bowser: 2.13.1
       cross-fetch: 4.0.0
       debug: 4.4.3
       eciesjs: 0.3.19
@@ -12712,7 +12712,7 @@ snapshots:
 
   bottleneck@2.19.5: {}
 
-  bowser@2.11.0: {}
+  bowser@2.13.1: {}
 
   brace-expansion@1.1.11:
     dependencies:
@@ -15725,7 +15725,7 @@ snapshots:
 
   preact@10.22.1: {}
 
-  preact@10.28.0: {}
+  preact@10.28.2: {}
 
   prelude-ls@1.2.1: {}
 

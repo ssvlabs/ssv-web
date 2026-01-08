@@ -8,6 +8,10 @@ import type { SwitchWizardStepThreeState } from "@/components/wizard/switch-wiza
 import { useMigrateClusterToETH } from "@/lib/contract-interactions/write/use-migrate-cluster-to-eth";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { formatClusterData } from "@/lib/utils/cluster";
+import { getCluster } from "@/api/cluster";
+import { retryPromiseUntilSuccess } from "@/lib/utils/promise";
+import { queryClient } from "@/lib/react-query";
+import { getClusterQueryOptions } from "@/hooks/cluster/use-cluster";
 
 export const SwitchWizardStepThreeRoute = () => {
   const navigate = useNavigate();
@@ -38,6 +42,7 @@ export const SwitchWizardStepThreeRoute = () => {
     <SwitchWizardStepThree
       onNext={() => {
         if (!cluster.data || totalDeposit === undefined) return;
+        const wasSSVCluster = cluster.data.isSSVCluster;
         migrate.write(
           {
             operatorIds: cluster.data?.operators.map((id) => BigInt(id)) ?? [],
@@ -45,7 +50,25 @@ export const SwitchWizardStepThreeRoute = () => {
           },
           totalDeposit,
           withTransactionModal({
-            onMined: () => {
+            variant: "2-step",
+            onMined: async () => {
+              // Wait until cluster is indexed and switched from SSV to ETH
+              await retryPromiseUntilSuccess(() =>
+                getCluster(clusterHash!)
+                  .then(
+                    (updatedCluster) =>
+                      updatedCluster &&
+                      wasSSVCluster &&
+                      !updatedCluster.isSSVCluster,
+                  )
+                  .catch(() => false),
+              );
+
+              // Refetch cluster data after migration
+              await queryClient.refetchQueries({
+                queryKey: getClusterQueryOptions(clusterHash!).queryKey,
+              });
+
               return () => navigate(`${basePath}/step-four`);
             },
           }),

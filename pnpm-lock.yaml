@@ -259,8 +259,8 @@ importers:
         specifier: 4.17.12
         version: 4.17.12
       '@types/mixpanel-browser':
-        specifier: 2.50.0
-        version: 2.50.0
+        specifier: 2.66.0
+        version: 2.66.0
       '@types/node':
         specifier: 20.14.9
         version: 20.14.9
@@ -3274,8 +3274,9 @@ packages:
   '@types/lodash@4.17.6':
     resolution: {integrity: sha512-OpXEVoCKSS3lQqjx9GGGOapBeuW5eUboYHRlHP9urXPX25IKZ6AnP5ZRxtVf63iieUbsHxLn8NQ5Nlftc6yzAA==}
 
-  '@types/mixpanel-browser@2.50.0':
-    resolution: {integrity: sha512-RkGTkkDUw3Tm/GEmcS/x8t2mNrt34jgrEWLVM6oSnoe/+bk/WQP1EWaHLk3pCDc3IaXHNoweoNMa1iWLLF0yFQ==}
+  '@types/mixpanel-browser@2.66.0':
+    resolution: {integrity: sha512-07zYZZ9ZVHc7R4ktM+3a2clZvKkj+EJcYZ/FevTs011Fr9tdp59lVgAskMf6ZQUp3lOHLqi7K3f+9QtmEsqh1w==}
+    deprecated: This is a stub types definition. mixpanel-browser provides its own type definitions, so you do not need this installed.
 
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
@@ -11877,7 +11878,9 @@ snapshots:
 
   '@types/lodash@4.17.6': {}
 
-  '@types/mixpanel-browser@2.50.0': {}
+  '@types/mixpanel-browser@2.66.0':
+    dependencies:
+      mixpanel-browser: 2.55.1
 
   '@types/ms@2.1.0': {}
 

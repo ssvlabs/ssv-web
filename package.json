@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "dev": "concurrently --raw --hide 1 \"vite\" \"pnpm generate:hooks:watch\"",
     "dev:prod": "vite --mode prod",
     "watch": "vite build --watch",
     "build": "node --max_old_space_size=9192 ./node_modules/vite/bin/vite.js build --mode production",
@@ -14,6 +16,8 @@
     "type-check": "tsc -b",
     "lint-staged": "pnpm run type-check && lint-staged && pnpm run log-todos",
     "generate-all": "node scripts/runAllScripts.cjs",
+    "generate:hooks": "node scripts/generate-hook-exports.cjs",
+    "generate:hooks:watch": "node scripts/generate-hook-exports.cjs --watch",
     "log-todos": "node scripts/log-todos.js",
     "commit": "cz"
   },
@@ -131,6 +135,7 @@
     "@vitejs/plugin-react": "4.3.1",
     "autoprefixer": "10.4.23",
     "commitizen": "4.3.0",
+    "concurrently": "^9.2.1",
     "cross-env": "7.0.3",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "8.57.0",
@@ -145,10 +150,12 @@
     "prettier": "3.3.2",
     "semantic-release": "24.2.9",
     "tailwindcss": "3.4.19",
+    "ts-morph": "^27.0.2",
     "tsc-files": "1.1.4",
     "typescript": "5.5.3",
     "vite": "5.4.21",
     "vite-plugin-node-polyfills": "0.22.0",
-    "vite-plugin-svgr": "4.2.0"
+    "vite-plugin-svgr": "4.2.0",
+    "vitest": "^4.0.16"
   }
 }

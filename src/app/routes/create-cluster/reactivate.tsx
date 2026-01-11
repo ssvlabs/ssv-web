@@ -17,7 +17,6 @@ import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { BigNumberInput } from "@/components/ui/number-input";
 import { Text } from "@/components/ui/text";
 import { toast } from "@/components/ui/use-toast";
-import { WithAllowance } from "@/components/with-allowance/with-allowance";
 import { globals } from "@/config";
 import { useSelectedOperatorIds } from "@/guard/register-validator-guard";
 import {
@@ -41,7 +40,7 @@ import { merge } from "lodash-es";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { Collapse } from "react-collapse";
 import { useForm } from "react-hook-form";
-import { Navigate, useNavigate } from "react-router";
+import { Navigate, useNavigate, useLocation } from "react-router";
 import { z } from "zod";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Spacer } from "@/components/ui/spacer";
@@ -72,11 +71,18 @@ const periods: Record<
 
 export const ReactivateCluster: FCProps = ({ ...props }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const params = useClusterPageParams();
 
   const cluster = useCluster();
   const operatorIds = useSelectedOperatorIds();
   const operators = useOperators(operatorIds);
+
+  // Get effectiveBalance from state (passed from previous step)
+  const effectiveBalanceFromState = location.state?.effectiveBalance as bigint | undefined;
+  const effectiveBalance = effectiveBalanceFromState ?? (cluster.data?.effectiveBalance
+    ? BigInt(cluster.data.effectiveBalance)
+    : 0n);
 
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
@@ -93,10 +99,6 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
   const showLiquidationWarning = Boolean(
     days && days < globals.CLUSTER_VALIDITY_PERIOD_MINIMUM,
   );
-
-  const effectiveBalance = cluster.data?.effectiveBalance
-    ? BigInt(cluster.data.effectiveBalance)
-    : 0n;
 
   const customFundingCost = useFundingCost({
     fundingDays: values.custom,
@@ -120,13 +122,6 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
   });
 
   const computeFundingCost = useComputeFundingCost();
-
-  const fundingCost = useFundingCost({
-    operators: operators.data ?? [],
-    validatorsAmount: cluster.data?.validatorCount ?? 1,
-    fundingDays: days,
-    effectiveBalance,
-  });
 
   const reactive = useReactivate();
 
@@ -172,7 +167,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
           });
           return () => navigate("..");
         },
-      }),
+      },),
     );
   });
 
@@ -313,7 +308,6 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
             fundingDays={days}
             effectiveBalance={effectiveBalance}
           />
-          <WithAllowance amount={fundingCost.data?.total ?? 0n} size="xl">
             <Button
               isActionBtn
               isLoading={reactive.isPending}
@@ -322,7 +316,6 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
             >
               Reactivate
             </Button>
-          </WithAllowance>
         </Card>
       </Form>
     </Container>

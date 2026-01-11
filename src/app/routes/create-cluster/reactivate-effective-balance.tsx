@@ -1,16 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { useRegisterValidatorContext } from "@/guard/register-validator-guard";
 import { formatPublicKey } from "@/lib/utils/strings";
 import { getValidatorsEffectiveBalance } from "@/api/validators";
 import { globals } from "@/config";
+import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
+import { useInfiniteClusterValidators } from "@/hooks/cluster/use-infinite-cluster-validators";
+import { Loading } from "@/components/ui/Loading";
 import { EffectiveBalanceForm } from "@/components/effective-balance/effective-balance-form";
 
-const EffectiveValidatorsBalance = () => {
+const ReactivateEffectiveBalance = () => {
   const navigate = useNavigate();
-  const registerValidatorContext = useRegisterValidatorContext;
-  const { shares, effectiveBalance: savedEffectiveBalance } =
-    useRegisterValidatorContext();
+  const { clusterHash } = useClusterPageParams();
+  const { validators, infiniteQuery } = useInfiniteClusterValidators(clusterHash);
 
   const [validatorBalances, setValidatorBalances] = useState<
     Record<string, number>
@@ -18,11 +19,11 @@ const EffectiveValidatorsBalance = () => {
 
   const validatorsWithStatus = useMemo(
     () =>
-      shares.map((share) => {
-        const formattedKey = formatPublicKey(share.publicKey);
+      validators.map((validator) => {
+        const formattedKey = formatPublicKey(validator.public_key);
         const balance = validatorBalances[formattedKey];
         return {
-          publicKey: share.publicKey,
+          publicKey: validator.public_key,
           status:
             balance >= globals.VALIDATOR_FULL_DEPOSIT_VALUE_IN_ETH
               ? ("Deposited" as const)
@@ -31,15 +32,15 @@ const EffectiveValidatorsBalance = () => {
             balance ?? globals.VALIDATOR_FULL_DEPOSIT_VALUE_IN_ETH,
         };
       }),
-    [shares, validatorBalances],
+    [validators, validatorBalances],
   );
 
   useEffect(() => {
     const fetchEffectiveBalances = async () => {
-      if (shares.length === 0) return;
+      if (validators.length === 0) return;
 
       try {
-        const publicKeys = shares.map((share) => share.publicKey);
+        const publicKeys = validators.map((validator) => validator.public_key);
         const response = await getValidatorsEffectiveBalance(publicKeys);
 
         const balanceMap: Record<string, number> = {};
@@ -67,22 +68,25 @@ const EffectiveValidatorsBalance = () => {
     };
 
     fetchEffectiveBalances();
-  }, [shares]);
+  }, [validators]);
 
   const handleNext = (effectiveBalance: bigint) => {
-    registerValidatorContext.state.effectiveBalance = effectiveBalance;
-    navigate("../funding");
+    navigate("../reactivate", {
+      state: {
+        effectiveBalance,
+      },
+    });
   };
+
+  if (infiniteQuery.isPending) return <Loading />;
 
   return (
     <EffectiveBalanceForm
       validators={validatorsWithStatus}
       onNext={handleNext}
-      initialBalance={savedEffectiveBalance}
-      backTo="/"
-      backPersistSearch
+      backTo=".."
     />
   );
 };
 
-export default EffectiveValidatorsBalance;
+export default ReactivateEffectiveBalance;

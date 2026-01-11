@@ -1,10 +1,11 @@
-import { SwitchWizardStepOneAndHalf } from "@/components/wizard";
 import { useInfiniteClusterValidators } from "@/hooks/cluster/use-infinite-cluster-validators";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { ValidatorStatus } from "@/lib/utils/validator-status-mapping";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatUnits, parseEther } from "viem";
+import { EffectiveBalanceForm } from "@/components/effective-balance/effective-balance-form";
+import { ethFormatter } from "@/lib/utils/number";
 
 export const SwitchWizardStepOneAndHalfRoute = () => {
   const navigate = useNavigate();
@@ -14,46 +15,46 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
 
   const validatorRows = useMemo(
     () =>
-      validators.map(
-        (validator) =>
-          ({
-            publicKey: validator.public_key,
-            status:
-              validator.displayedStatus === ValidatorStatus.NOT_DEPOSITED
-                ? "Not Deposited"
-                : "Deposited",
-            effectiveBalance: BigInt(
-              validator.validator_info?.effective_balance ?? 0,
-            ),
-          }) as const,
-      ),
+      validators.map((validator) => {
+        const effectiveBalanceBigInt = BigInt(
+          validator.validator_info?.effective_balance ?? 0,
+        );
+        return {
+          publicKey: validator.public_key,
+          status:
+            validator.displayedStatus === ValidatorStatus.NOT_DEPOSITED
+              ? ("Not Deposited" as const)
+              : ("Deposited" as const),
+          effectiveBalance:
+            validator.displayedStatus === ValidatorStatus.NOT_DEPOSITED
+              ? 32
+              : Number(formatUnits(effectiveBalanceBigInt, 9)),
+        };
+      }),
     [validators],
   );
 
-  const totalEffectiveBalance = useMemo(
-    () =>
-      validatorRows.reduce((total, validator) => {
-        if (validator.status === "Not Deposited") {
-          return total + 32;
-        }
-        return total + Number(formatUnits(validator.effectiveBalance, 9));
-      }, 0),
-    [validatorRows],
-  );
+  const handleNext = (effectiveBalance: bigint) => {
+    // Convert from ETH to Wei
+    const effectiveBalanceWei = parseEther(effectiveBalance.toString());
+    navigate(`${basePath}/step-two`, {
+      state: {
+        effectiveBalance: effectiveBalanceWei,
+      },
+    });
+  };
+
+  const formatBalance = (balance: number) => {
+    return ethFormatter.format(balance);
+  };
 
   return (
-    <SwitchWizardStepOneAndHalf
-      onNext={(effectiveBalance) => {
-        navigate(`${basePath}/step-two`, {
-          state: {
-            effectiveBalance: parseEther(effectiveBalance.toString()),
-          },
-        });
-      }}
-      backButtonLabel="Back"
-      navigateRoutePath={basePath}
+    <EffectiveBalanceForm
       validators={validatorRows}
-      totalEffectiveBalance={totalEffectiveBalance}
+      onNext={handleNext}
+      backTo={basePath}
+      formatBalance={formatBalance}
+      showDetailedErrors
     />
   );
 };

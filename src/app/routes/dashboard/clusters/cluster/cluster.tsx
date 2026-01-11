@@ -34,6 +34,7 @@ export const Cluster: FC = () => {
   );
 
   const isMigrated = cluster.data?.migrated;
+  const isSSVCluster = cluster.data?.isSSVCluster;
 
   const isLoadingBalance = isMigrated
     ? balanceETH.isLoading
@@ -111,9 +112,15 @@ export const Cluster: FC = () => {
           )}
 
           {isLiquidated.data ? (
-            <Button as={Link} to="reactivate" size="xl">
-              Reactivate Cluster
-            </Button>
+            isSSVCluster ? (
+              <Button as={Link} to={`/switch-wizard/${clusterHash}`} size="xl">
+                Switch to ETH
+              </Button>
+            ) : (
+              <Button as={Link} to="reactivate-balance" size="xl">
+                Reactivate Cluster
+              </Button>
+            )
           ) : (
             <div className="flex flex-col gap-6">
               <div className="flex gap-6 [&>*]:flex-1">

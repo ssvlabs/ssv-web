@@ -20,22 +20,26 @@ import { config } from "@/wagmi/config";
 import { isUndefined } from "lodash-es";
 import type { UseQueryOptions } from "@/lib/react-query";
 import { isAddress } from "viem";
+import type { Prettify } from "@/types/ts-utils";
 
 type WriteParams<T extends AbiFunction> = {
-  args: AbiInputsToParams<T["inputs"]>;
   value?: bigint;
-};
+  options?: MutationOptions<AllEvents>;
+} & (AbiFunction["inputs"] extends readonly []
+  ? { args: never }
+  : { args: Prettify<AbiInputsToParams<T["inputs"]>> });
 
-type WriteHookResult<T extends WriteParams<AbiFunction> | void> = {
+type WriteHookResult<T extends AbiFunction> = {
   error: Error | null;
   isSuccess: boolean;
   isPending: boolean;
   mutation: ReturnType<typeof useWriteContract>;
-  write: (params: T, options?: MutationOptions<AllEvents>) => Promise<unknown>;
-  send: (
-    params: T,
-    options?: MutationOptions<AllEvents>,
-  ) => Promise<`0x${string}`>;
+  write: T["inputs"] extends readonly []
+    ? (params?: Prettify<WriteParams<T>>) => Promise<unknown>
+    : (params: Prettify<WriteParams<T>>) => Promise<unknown>;
+  send: T["inputs"] extends readonly []
+    ? (params?: Prettify<WriteParams<T>>) => Promise<`0x${string}`>
+    : (params: Prettify<WriteParams<T>>) => Promise<`0x${string}`>;
   wait: ReturnType<typeof useWaitForTransactionReceipt>;
 };
 
@@ -43,7 +47,7 @@ type WriteHooksObject<T extends AbiFunction[]> = {
   [Fn in T[number] as `use${Capitalize<Fn["name"]>}`]: (args?: {
     chainId?: number;
     contract?: Address;
-  }) => WriteHookResult<WriteParams<Fn>>;
+  }) => WriteHookResult<Fn>;
 };
 type CustomQueryOptions = {
   chainId: number;
@@ -184,8 +188,8 @@ export function createContractHooks<
 
       const mutation = useWriteContract();
 
-      const write = (params: any, options: MutationOptions<AllEvents> = {}) => {
-        options.onInitiated?.();
+      const write = (params?: WriteParams<any>) => {
+        params?.options?.onInitiated?.();
 
         return mutation
           .writeContractAsync(
@@ -200,26 +204,26 @@ export function createContractHooks<
               value: params?.value,
             },
             {
-              onSuccess: (hash) => options.onConfirmed?.(hash),
-              onError: (error) => options.onError?.(error),
+              onSuccess: (hash) => params?.options?.onConfirmed?.(hash),
+              onError: (error) => params?.options?.onError?.(error),
             },
           )
           .then((hash) =>
             waitForTx.mutateAsync(hash, {
               onSuccess: async (receipt) => {
                 await wait(1);
-                return options.onMined?.(receipt);
+                return params?.options?.onMined?.(receipt);
               },
               onError: async (error) => {
                 await wait(1);
-                return options.onError?.(error as any);
+                return params?.options?.onError?.(error as any);
               },
             }),
           );
       };
 
-      const send = (params: any, options: MutationOptions<AllEvents> = {}) => {
-        options.onInitiated?.();
+      const send = (params?: WriteParams<any>) => {
+        params?.options?.onInitiated?.();
 
         return mutation.writeContractAsync(
           // @ts-expect-error - TODO: fix this
@@ -233,9 +237,9 @@ export function createContractHooks<
             value: params?.value,
           },
           {
-            onSuccess: (hash) => options.onConfirmed?.(hash),
+            onSuccess: (hash) => params?.options?.onConfirmed?.(hash),
             onError: (error) =>
-              options.onError?.(error as WriteContractErrorType),
+              params?.options?.onError?.(error as WriteContractErrorType),
           },
         );
       };

@@ -23,11 +23,10 @@ import { isAddress } from "viem";
 import type { Prettify } from "@/types/ts-utils";
 
 type WriteParams<T extends AbiFunction> = {
+  args: Prettify<AbiInputsToParams<T["inputs"]>>;
   value?: bigint;
   options?: MutationOptions<AllEvents>;
-} & (AbiFunction["inputs"] extends readonly []
-  ? { args: never }
-  : { args: Prettify<AbiInputsToParams<T["inputs"]>> });
+};
 
 type WriteHookResult<T extends AbiFunction> = {
   error: Error | null;
@@ -35,10 +34,10 @@ type WriteHookResult<T extends AbiFunction> = {
   isPending: boolean;
   mutation: ReturnType<typeof useWriteContract>;
   write: T["inputs"] extends readonly []
-    ? (params?: Prettify<WriteParams<T>>) => Promise<unknown>
+    ? (params?: Prettify<Partial<WriteParams<T>>>) => Promise<unknown>
     : (params: Prettify<WriteParams<T>>) => Promise<unknown>;
   send: T["inputs"] extends readonly []
-    ? (params?: Prettify<WriteParams<T>>) => Promise<`0x${string}`>
+    ? (params?: Prettify<Partial<WriteParams<T>>>) => Promise<`0x${string}`>
     : (params: Prettify<WriteParams<T>>) => Promise<`0x${string}`>;
   wait: ReturnType<typeof useWaitForTransactionReceipt>;
 };

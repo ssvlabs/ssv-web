@@ -1,10 +1,14 @@
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  queryOptions,
+  useQuery,
+} from "@tanstack/react-query";
 
 import type { UseQueryOptions } from "@/lib/react-query";
 import { enabled, getDefaultChainedQueryOptions } from "@/lib/react-query";
 import { getCluster } from "@/api/cluster";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
-import { useChainId } from "wagmi";
+import { useBlockNumber, useChainId } from "wagmi";
 import { boolify } from "@/lib/utils/boolean";
 import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 
@@ -22,14 +26,26 @@ export const getClusterQueryOptions = (
   });
 };
 
-export const useCluster = (hash?: string, options?: UseQueryOptions) => {
+export const useCluster = (
+  hash?: string,
+  options?: UseQueryOptions & { watch?: boolean },
+) => {
   const { clusterHash } = useClusterPageParams();
   const chainId = useChainId();
+  const { data: blockNumber } = useBlockNumber({ watch: options?.watch });
 
-  return useQuery(
-    getClusterQueryOptions(hash ?? clusterHash, {
-      chainId,
-      options,
-    }),
-  );
+  const queryOptions = getClusterQueryOptions(hash ?? clusterHash, {
+    chainId,
+    options,
+  });
+
+  return useQuery({
+    ...queryOptions,
+    ...(options?.watch
+      ? {
+          queryKey: [...queryOptions.queryKey, blockNumber?.toString()],
+          placeholderData: keepPreviousData,
+        }
+      : {}),
+  });
 };

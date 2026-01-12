@@ -1,4 +1,6 @@
-import { sortNumbers } from "@/lib/utils/number";
+import { globals } from "@/config";
+import { bigintMax } from "@/lib/utils/bigint";
+import { numberFormatter, sortNumbers } from "@/lib/utils/number";
 import { add0x } from "@/lib/utils/strings";
 import type {
   Cluster,
@@ -63,3 +65,63 @@ export const filterOutRemovedValidators = (
           add0x(pk).toLowerCase() === add0x(validator.public_key).toLowerCase(),
       ),
   );
+
+type CalculateRunwayParams = {
+  balance: bigint;
+  feesPerBlock: bigint;
+  validators: bigint;
+  deltaBalance?: bigint;
+  deltaValidators?: bigint;
+  liquidationThresholdBlocks: bigint;
+  minimumLiquidationCollateral: bigint;
+};
+
+export const calculateRunway = ({
+  balance,
+  feesPerBlock,
+  validators,
+  deltaBalance = 0n,
+  deltaValidators = 0n,
+  liquidationThresholdBlocks,
+  minimumLiquidationCollateral,
+}: CalculateRunwayParams) => {
+  const burnRateSnapshot = feesPerBlock * (validators || 1n);
+  const burnRateWithDelta = feesPerBlock * (validators + deltaValidators);
+
+  const collateralSnapshot = bigintMax(
+    burnRateSnapshot * liquidationThresholdBlocks,
+    minimumLiquidationCollateral,
+  );
+
+  const collateralWithDelta = bigintMax(
+    burnRateWithDelta * liquidationThresholdBlocks,
+    minimumLiquidationCollateral,
+  );
+
+  const burnRatePerDaySnapshot =
+    burnRateSnapshot * globals.BLOCKS_PER_DAY || 1n;
+  const burnRatePerDayWithDelta =
+    burnRateWithDelta * globals.BLOCKS_PER_DAY || 1n;
+
+  const runwaySnapshot = bigintMax(
+    (balance - collateralSnapshot) / burnRatePerDaySnapshot,
+    0n,
+  );
+
+  const runwayWithDelta = bigintMax(
+    (balance + deltaBalance - collateralWithDelta) / burnRatePerDayWithDelta,
+    0n,
+  );
+
+  const deltaDays = (runwaySnapshot - runwayWithDelta) * -1n;
+
+  return {
+    runway: runwayWithDelta,
+    runwayDisplay: `${numberFormatter.format(runwayWithDelta)} Days`,
+    isAtRisk: runwayWithDelta < 30n,
+    deltaDays,
+    isIncreasing: deltaDays > 0n,
+    isDecreasing: deltaDays < 0n,
+    hasDelta: deltaDays !== 0n,
+  };
+};

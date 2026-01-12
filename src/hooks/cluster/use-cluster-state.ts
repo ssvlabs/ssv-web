@@ -14,11 +14,11 @@ export const useClusterState = (
     cluster?: Options;
     isLiquidated?: Options;
     balance?: Options;
+    watch?: boolean;
   } = {},
 ) => {
   const account = useAccount();
-  const cluster = useCluster(hash);
-
+  const cluster = useCluster(hash, { watch: opts.watch });
   const clusterSnapshot = useMemo(
     () => ({
       clusterOwner: account.address!,
@@ -52,8 +52,6 @@ export const useClusterState = (
         !isLiquidated.data,
     ),
   });
-
-  console.log("balanceETH.error:", balanceETH.error);
 
   const balanceSSV = useGetBalanceSSV(clusterSnapshot, {
     watch: isLiquidated.data ? false : opts.balance?.watch,

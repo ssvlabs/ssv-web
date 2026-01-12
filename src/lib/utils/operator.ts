@@ -120,9 +120,13 @@ export const prepareOperatorsForShares = (
     operatorKey: operator.public_key,
   }));
 
-export const sumOperatorsFee = (operators: Pick<Operator, "eth_fee">[]) => {
+export const sumOperatorsFee = (
+  operators: Pick<Operator, "eth_fee" | "fee">[],
+  by: "eth" | "ssv" = "eth",
+) => {
   return operators.reduce(
-    (acc, operator) => acc + BigInt(operator.eth_fee),
+    (acc, operator) =>
+      acc + BigInt(by === "eth" ? operator.eth_fee : operator.fee),
     0n,
   );
 };

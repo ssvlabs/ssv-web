@@ -49,7 +49,7 @@ type WriteHooksObject<T extends AbiFunction[]> = {
   }) => WriteHookResult<Fn>;
 };
 type CustomQueryOptions = {
-  chainId: number;
+  chainId?: number;
   enabled?: boolean;
   watch?: boolean;
   contract?: Address;
@@ -105,18 +105,18 @@ export function createContractHooks<
       //@ts-expect-error - TODO: fix this
       hooks[hookName] = (
         params: AbiInputsToParams<typeof fn.inputs>,
-        options: CustomQueryOptions = {
-          enabled: true,
-          chainId: getChainId(config),
-          contract: defaultContractAddressGetter?.(),
-        },
+        {
+          enabled = true,
+          watch = false,
+          chainId = getChainId(config),
+          contract = defaultContractAddressGetter?.(),
+        }: CustomQueryOptions = {},
       ) => {
-        const contractAddress =
-          options.contract || defaultContractAddressGetter?.();
+        const contractAddress = contract || defaultContractAddressGetter?.();
 
         const blockNumber = useBlockNumber({
-          watch: options.watch,
-          chainId: options.chainId,
+          watch: watch,
+          chainId: chainId,
         });
         const args = paramsToArray({ params, abiFunction });
 
@@ -125,12 +125,11 @@ export function createContractHooks<
           address: contractAddress,
           functionName: functionName as string,
           args: args as readonly unknown[],
-          chainId: options.chainId,
-          blockNumber: options.watch ? blockNumber.data : undefined,
+          chainId: chainId,
+          blockNumber: watch ? blockNumber.data : undefined,
           query: {
-            ...options,
             enabled:
-              (options?.enabled ?? true) &&
+              (enabled ?? true) &&
               !!contractAddress &&
               args?.every((arg) => !isUndefined(arg)),
           },
@@ -139,26 +138,23 @@ export function createContractHooks<
     } else {
       // Create hook function for functions without parameters
       //@ts-expect-error - TODO: fix this
-      hooks[hookName] = (
-        options: CustomQueryOptions = {
-          enabled: true,
-          chainId: getChainId(config),
-          contract: defaultContractAddressGetter?.(),
-        },
-      ) => {
-        const contractAddress =
-          options.contract || defaultContractAddressGetter?.();
-        const blockNumber = useBlockNumber({ watch: options.watch });
+      hooks[hookName] = ({
+        enabled = true,
+        watch = false,
+        chainId = getChainId(config),
+        contract = defaultContractAddressGetter?.(),
+      }: CustomQueryOptions = {}) => {
+        const contractAddress = contract || defaultContractAddressGetter?.();
+        const blockNumber = useBlockNumber({ watch: watch });
 
         return useReadContract({
           abi,
           address: contractAddress,
           functionName: functionName as string,
-          chainId: options.chainId,
-          blockNumber: options.watch ? blockNumber.data : undefined,
+          chainId: chainId,
+          blockNumber: watch ? blockNumber.data : undefined,
           query: {
-            ...options,
-            enabled: options?.enabled && !!contractAddress,
+            enabled: enabled && !!contractAddress,
           },
         } as any);
       };
@@ -167,17 +163,15 @@ export function createContractHooks<
 
   writeFunctions.forEach((fn) => {
     const hookName = "use" + capitalize(fn.name);
-    const hookFn = (
-      args: { chainId?: number; contract?: Address } = {
-        chainId: getChainId(config),
-        contract: defaultContractAddressGetter?.(),
-      },
-    ) => {
-      const isValidContract = isAddress(args.contract ?? "");
+    const hookFn = ({
+      chainId = getChainId(config),
+      contract = defaultContractAddressGetter?.(),
+    }: CustomQueryOptions = {}) => {
+      const isValidContract = isAddress(contract ?? "");
       if (!isValidContract) {
         throw new Error("Invalid contract address at hook: " + hookName);
       }
-      const waitForTx = useWaitForTransactionReceipt([hookName, args.contract]);
+      const waitForTx = useWaitForTransactionReceipt([hookName, contract]);
       const functionName = fn.name;
 
       const abiFunction = useMemo(
@@ -195,8 +189,9 @@ export function createContractHooks<
             // @ts-expect-error - TODO: fix this
             {
               abi,
-              address: args.contract,
+              address: contract,
               functionName,
+              chainId,
               args: params?.args
                 ? paramsToArray({ params: params.args, abiFunction })
                 : undefined,
@@ -228,7 +223,7 @@ export function createContractHooks<
           // @ts-expect-error - TODO: fix this
           {
             abi,
-            address: args.contract,
+            address: contract,
             functionName,
             args: params?.args
               ? paramsToArray({ params: params.args, abiFunction })

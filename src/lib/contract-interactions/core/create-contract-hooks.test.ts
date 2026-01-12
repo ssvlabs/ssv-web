@@ -1,7 +1,11 @@
 import { describe, it, expect, vi } from "vitest";
 import type { Abi, Address } from "abitype";
 
-// Mock wagmi hooks - writeContractAsync returns the args it receives
+// Mock hash returned by writeContractAsync
+const MOCK_TX_HASH =
+  "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890";
+
+// Mock wagmi hooks - writeContractAsync returns the args it receives and invokes callbacks
 vi.mock("wagmi", () => ({
   useBlockNumber: vi.fn(() => ({ data: 123n })),
   useReadContract: vi.fn(() => ({
@@ -10,18 +14,50 @@ vi.mock("wagmi", () => ({
     error: null,
   })),
   useWriteContract: vi.fn(() => ({
-    writeContractAsync: vi.fn((args: unknown) => Promise.resolve(args)),
+    writeContractAsync: vi.fn(
+      (
+        args: unknown,
+        options?: {
+          onSuccess?: (hash: string) => void;
+          onError?: (error: Error) => void;
+        },
+      ) => {
+        // Invoke onSuccess callback with mock hash
+        options?.onSuccess?.(MOCK_TX_HASH);
+        return Promise.resolve(args);
+      },
+    ),
     error: null,
     isPending: false,
   })),
 }));
 
-// Mock useWaitForTransactionReceipt
+// Mock receipt returned by waitForTransactionReceipt
+const MOCK_RECEIPT = {
+  status: "success",
+  transactionHash: MOCK_TX_HASH,
+  blockNumber: 12345n,
+};
+
+// Mock useWaitForTransactionReceipt - invokes callbacks (must await async callbacks)
 vi.mock(
   "@/lib/contract-interactions/utils/useWaitForTransactionReceipt",
   () => ({
     useWaitForTransactionReceipt: vi.fn(() => ({
-      mutateAsync: vi.fn(() => Promise.resolve({ status: "success" })),
+      mutateAsync: vi.fn(
+        async (
+          hash: string,
+          options?: {
+            onSuccess?: (receipt: typeof MOCK_RECEIPT) => void | Promise<void>;
+            onError?: (error: Error) => void | Promise<void>;
+          },
+        ) => {
+          const receipt = { ...MOCK_RECEIPT, transactionHash: hash };
+          // Invoke onSuccess callback with mock receipt (await in case it's async)
+          await options?.onSuccess?.(receipt);
+          return receipt;
+        },
+      ),
       error: null,
       isPending: false,
       isSuccess: false,
@@ -307,6 +343,232 @@ describe("createContractHooks", () => {
       expect(result).toMatchObject({
         functionName: "transfer",
         args: ["0xabcdefabcdefabcdefabcdefabcdefabcdefabcd", 500n],
+      });
+    });
+  });
+
+  describe("Options callbacks", () => {
+    describe("send function callbacks", () => {
+      it("should call onInitiated immediately when send is called", async () => {
+        const hooks = createContractHooks(testAbi, defaultContractGetter);
+        const transferHook = hooks.useTransfer({ contract: DEFAULT_CONTRACT });
+
+        const onInitiated = vi.fn();
+
+        await transferHook.send({
+          args: {
+            to: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" as Address,
+            amount: 100n,
+          },
+          options: { onInitiated },
+        });
+
+        expect(onInitiated).toHaveBeenCalledTimes(1);
+      });
+
+      it("should call onConfirmed with hash when transaction is submitted", async () => {
+        const hooks = createContractHooks(testAbi, defaultContractGetter);
+        const transferHook = hooks.useTransfer({ contract: DEFAULT_CONTRACT });
+
+        const onConfirmed = vi.fn();
+
+        await transferHook.send({
+          args: {
+            to: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" as Address,
+            amount: 100n,
+          },
+          options: { onConfirmed },
+        });
+
+        expect(onConfirmed).toHaveBeenCalledTimes(1);
+        expect(onConfirmed).toHaveBeenCalledWith(MOCK_TX_HASH);
+      });
+
+      it("should call onError when writeContractAsync fails", async () => {
+        // Create a custom mock that rejects
+        const mockError = new Error("Transaction rejected");
+        const { useWriteContract } = await import("wagmi");
+        vi.mocked(useWriteContract).mockReturnValueOnce({
+          writeContractAsync: vi.fn(
+            (
+              _args: unknown,
+              options?: { onError?: (error: Error) => void },
+            ) => {
+              options?.onError?.(mockError);
+              return Promise.reject(mockError);
+            },
+          ),
+          error: null,
+          isPending: false,
+        } as unknown as ReturnType<typeof useWriteContract>);
+
+        const hooks = createContractHooks(testAbi, defaultContractGetter);
+        const transferHook = hooks.useTransfer({ contract: DEFAULT_CONTRACT });
+
+        const onError = vi.fn();
+
+        await expect(
+          transferHook.send({
+            args: {
+              to: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" as Address,
+              amount: 100n,
+            },
+            options: { onError },
+          }),
+        ).rejects.toThrow("Transaction rejected");
+
+        expect(onError).toHaveBeenCalledTimes(1);
+        expect(onError).toHaveBeenCalledWith(mockError);
+      });
+    });
+
+    describe("write function callbacks", () => {
+      it("should call onInitiated immediately when write is called", async () => {
+        const hooks = createContractHooks(testAbi, defaultContractGetter);
+        const transferHook = hooks.useTransfer({ contract: DEFAULT_CONTRACT });
+
+        const onInitiated = vi.fn();
+
+        await transferHook.write({
+          args: {
+            to: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" as Address,
+            amount: 100n,
+          },
+          options: { onInitiated },
+        });
+
+        expect(onInitiated).toHaveBeenCalledTimes(1);
+      });
+
+      it("should call onConfirmed with hash when transaction is submitted", async () => {
+        const hooks = createContractHooks(testAbi, defaultContractGetter);
+        const transferHook = hooks.useTransfer({ contract: DEFAULT_CONTRACT });
+
+        const onConfirmed = vi.fn();
+
+        await transferHook.write({
+          args: {
+            to: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" as Address,
+            amount: 100n,
+          },
+          options: { onConfirmed },
+        });
+
+        expect(onConfirmed).toHaveBeenCalledTimes(1);
+        expect(onConfirmed).toHaveBeenCalledWith(MOCK_TX_HASH);
+      });
+
+      it("should call onMined with receipt when transaction is mined", async () => {
+        const hooks = createContractHooks(testAbi, defaultContractGetter);
+        const transferHook = hooks.useTransfer({ contract: DEFAULT_CONTRACT });
+
+        const onMined = vi.fn();
+
+        const result = await transferHook.write({
+          args: {
+            to: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" as Address,
+            amount: 100n,
+          },
+          options: { onMined },
+        });
+
+        expect(onMined).toHaveBeenCalledTimes(1);
+        expect(onMined).toHaveBeenCalledWith(expect.objectContaining(result));
+      });
+
+      it("should call all callbacks in correct order for successful write", async () => {
+        const hooks = createContractHooks(testAbi, defaultContractGetter);
+        const transferHook = hooks.useTransfer({ contract: DEFAULT_CONTRACT });
+
+        const callOrder: string[] = [];
+        const onInitiated = vi.fn(() => callOrder.push("onInitiated"));
+        const onConfirmed = vi.fn(() => callOrder.push("onConfirmed"));
+        const onMined = vi.fn(() => callOrder.push("onMined"));
+
+        await transferHook.write({
+          args: {
+            to: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" as Address,
+            amount: 100n,
+          },
+          options: { onInitiated, onConfirmed, onMined },
+        });
+
+        expect(callOrder).toEqual(["onInitiated", "onConfirmed", "onMined"]);
+      });
+
+      it("should call onError when writeContractAsync fails", async () => {
+        const mockError = new Error("Transaction rejected");
+        const { useWriteContract } = await import("wagmi");
+        vi.mocked(useWriteContract).mockReturnValueOnce({
+          writeContractAsync: vi.fn(
+            (
+              _args: unknown,
+              options?: { onError?: (error: Error) => void },
+            ) => {
+              options?.onError?.(mockError);
+              return Promise.reject(mockError);
+            },
+          ),
+          error: null,
+          isPending: false,
+        } as unknown as ReturnType<typeof useWriteContract>);
+
+        const hooks = createContractHooks(testAbi, defaultContractGetter);
+        const transferHook = hooks.useTransfer({ contract: DEFAULT_CONTRACT });
+
+        const onError = vi.fn();
+
+        await expect(
+          transferHook.write({
+            args: {
+              to: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" as Address,
+              amount: 100n,
+            },
+            options: { onError },
+          }),
+        ).rejects.toThrow("Transaction rejected");
+
+        expect(onError).toHaveBeenCalledTimes(1);
+        expect(onError).toHaveBeenCalledWith(mockError);
+      });
+
+      it("should call onError when waitForTransactionReceipt fails", async () => {
+        const mockError = new Error("Transaction reverted");
+        const { useWaitForTransactionReceipt } = await import(
+          "@/lib/contract-interactions/utils/useWaitForTransactionReceipt"
+        );
+        vi.mocked(useWaitForTransactionReceipt).mockReturnValueOnce({
+          mutateAsync: vi.fn(
+            async (
+              _hash: string,
+              options?: { onError?: (error: Error) => void | Promise<void> },
+            ) => {
+              await options?.onError?.(mockError);
+              throw mockError;
+            },
+          ),
+          error: null,
+          isPending: false,
+          isSuccess: false,
+        } as unknown as ReturnType<typeof useWaitForTransactionReceipt>);
+
+        const hooks = createContractHooks(testAbi, defaultContractGetter);
+        const transferHook = hooks.useTransfer({ contract: DEFAULT_CONTRACT });
+
+        const onError = vi.fn();
+
+        await expect(
+          transferHook.write({
+            args: {
+              to: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" as Address,
+              amount: 100n,
+            },
+            options: { onError },
+          }),
+        ).rejects.toThrow("Transaction reverted");
+
+        expect(onError).toHaveBeenCalledTimes(1);
+        expect(onError).toHaveBeenCalledWith(mockError);
       });
     });
   });

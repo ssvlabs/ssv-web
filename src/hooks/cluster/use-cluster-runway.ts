@@ -34,7 +34,6 @@ export const useClusterRunway = (
     watch: false,
   },
 ) => {
-  const forceMode = opts.forceMode ?? "eth";
   const { state } = useRegisterValidatorContext;
 
   const params = useClusterPageParams();
@@ -47,7 +46,8 @@ export const useClusterRunway = (
   const operators = useOperators(cluster.data?.operators ?? []);
 
   const isETH =
-    forceMode === "eth" || ((!forceMode && cluster.data?.migrated) ?? false);
+    opts.forceMode === "eth" ||
+    ((!opts.forceMode && cluster.data?.migrated) ?? false);
 
   const ethNetworkFee = useNetworkFee();
   const ssvNetworkFee = useNetworkFeeSSV();
@@ -74,8 +74,6 @@ export const useClusterRunway = (
   );
 
   const validators = (effectiveBalance + state.effectiveBalance) / gwei32;
-
-  console.log(clusterHash?.slice(0, 10), validators);
 
   const isLoading =
     cluster.isLoading ||

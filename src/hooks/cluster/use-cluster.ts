@@ -41,11 +41,7 @@ export const useCluster = (
 
   return useQuery({
     ...queryOptions,
-    ...(options?.watch
-      ? {
-          queryKey: [...queryOptions.queryKey, blockNumber?.toString()],
-          placeholderData: keepPreviousData,
-        }
-      : {}),
+    queryKey: [...queryOptions.queryKey, blockNumber?.toString()],
+    placeholderData: keepPreviousData,
   });
 };

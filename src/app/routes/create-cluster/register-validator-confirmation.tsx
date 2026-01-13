@@ -31,7 +31,7 @@ import { queryClient } from "@/lib/react-query";
 import { bigintifyNumbers } from "@/lib/utils/bigint";
 import {
   createClusterHash,
-  formatClusterData,
+  toSolidityCluster,
   getDefaultClusterData,
 } from "@/lib/utils/cluster";
 import { computeDailyAmount } from "@/lib/utils/keystore";
@@ -68,7 +68,7 @@ export const RegisterValidatorConfirmation: FC = () => {
 
   const handleRegisterValidator = () => {
     const clusterData = clusterQuery.data
-      ? formatClusterData(clusterQuery.data)
+      ? toSolidityCluster(clusterQuery.data)
       : getDefaultClusterData();
     const [share] = shares;
 

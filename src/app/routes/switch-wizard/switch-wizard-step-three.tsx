@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import type { SwitchWizardStepThreeState } from "@/components/wizard/switch-wizard-types";
 import { useMigrateClusterToETH } from "@/lib/contract-interactions/write/use-migrate-cluster-to-eth";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { formatClusterData } from "@/lib/utils/cluster";
+import { toSolidityCluster } from "@/lib/utils/cluster";
 import { getCluster } from "@/api/cluster";
 import { retryPromiseUntilSuccess } from "@/lib/utils/promise";
 import { queryClient } from "@/lib/react-query";
@@ -46,7 +46,7 @@ export const SwitchWizardStepThreeRoute = () => {
         migrate.write(
           {
             operatorIds: cluster.data?.operators.map((id) => BigInt(id)) ?? [],
-            cluster: formatClusterData(cluster.data),
+            cluster: toSolidityCluster(cluster.data),
           },
           totalDeposit,
           withTransactionModal({

@@ -18,7 +18,8 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { Divider } from "@/components/ui/divider";
-import { isBigIntChanged, stringifyBigints } from "@/lib/utils/bigint";
+import { isBigIntChanged } from "@/lib/utils/bigint";
+import { mergeClusterSnapshot } from "@/lib/utils/cluster";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { setOptimisticData } from "@/lib/react-query";
 import { useDepositClusterBalance } from "@/hooks/cluster/use-deposit-cluster-balance";
@@ -27,7 +28,6 @@ import {
   getClusterQueryOptions,
   useCluster,
 } from "@/hooks/cluster/use-cluster";
-import { merge } from "lodash-es";
 import { formatSSV } from "@/lib/utils/number";
 import { useBalance } from "wagmi";
 import { useAccount } from "@/hooks/account/use-account";
@@ -67,7 +67,12 @@ export const DepositClusterBalance: FC = () => {
               getClusterQueryOptions(params.clusterHash!).queryKey,
               (cluster) => {
                 if (!cluster) return cluster;
-                return merge({}, cluster, stringifyBigints(event.args.cluster));
+
+                return mergeClusterSnapshot(cluster, event.args.cluster, {
+                  isLiquidated: Boolean(
+                    events.find((e) => e.eventName === "ClusterLiquidated"),
+                  ),
+                });
               },
             );
 

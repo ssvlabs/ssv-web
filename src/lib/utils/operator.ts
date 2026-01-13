@@ -131,9 +131,17 @@ export const sumOperatorsFee = (
   );
 };
 
-export const getOperatorIds = <T extends { id: number }[]>(operators: T) => {
-  return sortNumbers(operators.map((operator) => operator.id));
-};
+export function getOperatorIds<T extends { id: number }[] | number[]>(
+  operators: T,
+): number[] {
+  if (!operators.length) return [];
+  if (typeof operators.at(0) === "number") {
+    return sortNumbers(operators as number[]);
+  }
+  return sortNumbers(
+    (operators as { id: number }[]).map((operator) => operator.id),
+  );
+}
 
 type MergeOperatorWhitelistAddressesOpts = {
   shouldAdd: boolean;

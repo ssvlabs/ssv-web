@@ -1,5 +1,5 @@
 import { globals } from "@/config";
-import { bigintMax } from "@/lib/utils/bigint";
+import { bigintMax, stringifyBigints } from "@/lib/utils/bigint";
 import { numberFormatter, sortNumbers } from "@/lib/utils/number";
 import { add0x } from "@/lib/utils/strings";
 import type {
@@ -44,15 +44,46 @@ export const getDefaultClusterData = (
     cluster,
   );
 
-export const formatClusterData = (
+export const toSolidityCluster = (
   cluster?: Partial<Cluster<{ operators: number[] }>> | null,
-) => ({
+): SolidityCluster => ({
   active: cluster?.active ?? true,
-  balance: BigInt(cluster?.ethBalance ?? 0) || BigInt(cluster?.balance ?? 0),
+  balance: cluster?.migrated
+    ? BigInt(cluster?.ethBalance ?? 0)
+    : BigInt(cluster?.balance ?? 0),
   index: BigInt(cluster?.index ?? 0),
   networkFeeIndex: BigInt(cluster?.networkFeeIndex ?? 0),
   validatorCount: cluster?.validatorCount ?? 0,
 });
+
+export const toSolidityClusterSnapshot = (
+  cluster?: Partial<Cluster<{ operators: number[] }>> | null,
+) => ({
+  clusterOwner: cluster?.ownerAddress ?? "",
+  cluster: toSolidityCluster(cluster),
+  operatorIds: cluster?.operators?.map((id) => BigInt(id)) ?? [],
+});
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const mergeClusterSnapshot = <T extends Cluster<any>>(
+  cluster: T,
+  solidityCluster: SolidityCluster,
+  additionalData: Partial<T>,
+): T => {
+  const isMigrated = cluster.migrated;
+  const { balance, ...rest } = solidityCluster;
+  const balanceProperty = (
+    isMigrated ? "ethBalance" : "balance"
+  ) satisfies keyof Cluster;
+
+  return merge(
+    {},
+    cluster,
+    stringifyBigints(rest),
+    { [balanceProperty]: balance.toString() },
+    additionalData,
+  );
+};
 
 export const filterOutRemovedValidators = (
   fetchedValidators: Validator[],

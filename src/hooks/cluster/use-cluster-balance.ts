@@ -18,7 +18,7 @@ export const useClusterBalance = (
 ) => {
   const account = useAccount();
   const cluster = useCluster(hash);
-  console.log("cluster:", cluster);
+
   const clusterSnapshot = useMemo(
     () => ({
       clusterOwner: account.address!,

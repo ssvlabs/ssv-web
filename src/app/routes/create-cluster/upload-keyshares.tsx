@@ -22,7 +22,7 @@ import { useKeysharesValidatorsList } from "@/hooks/keyshares/use-keyshares-vali
 import { useOperatorsUsability } from "@/hooks/keyshares/use-operators-usability";
 import { createClusterHash } from "@/lib/utils/cluster";
 import { cn } from "@/lib/utils/tw";
-import { useEffect, type ComponentPropsWithoutRef, type FC } from "react";
+import { type ComponentPropsWithoutRef, type FC, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { ref } from "valtio";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -96,6 +96,7 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
 
   useEffect(() => {
     state.clusterSize = operatorIds.length as ClusterSize;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [operatorIds.length]);
 
   const submit = () => {

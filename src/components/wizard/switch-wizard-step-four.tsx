@@ -54,7 +54,7 @@ export const SwitchWizardStepFour: FC<SwitchWizardStepFourProps> = ({
           </div>
         </Tooltip>
 
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center flex-wrap">
           {operators.map((operator) => (
             <div
               className="flex flex-col gap-2 items-center w-[60px]"

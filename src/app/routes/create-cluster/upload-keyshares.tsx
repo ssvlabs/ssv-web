@@ -26,7 +26,8 @@ import { type ComponentPropsWithoutRef, type FC, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { ref } from "valtio";
 import { Tooltip } from "@/components/ui/tooltip";
-import { globals, links } from "@/config";
+import { globals } from "@/config";
+import { links } from "@/config/links";
 import type { ClusterSize } from "@/components/operator/operator-picker/operator-cluster-size-picker.tsx";
 
 export type GenerateKeySharesOfflineProps = {

@@ -110,6 +110,7 @@ export function createContractHooks<
           watch = false,
           chainId = getChainId(config),
           contract = defaultContractAddressGetter?.(),
+          ...queryOptions
         }: CustomQueryOptions = {},
       ) => {
         const contractAddress = contract || defaultContractAddressGetter?.();
@@ -128,6 +129,7 @@ export function createContractHooks<
           chainId: chainId,
           blockNumber: watch ? blockNumber.data : undefined,
           query: {
+            ...queryOptions,
             enabled:
               (enabled ?? true) &&
               !!contractAddress &&
@@ -143,6 +145,7 @@ export function createContractHooks<
         watch = false,
         chainId = getChainId(config),
         contract = defaultContractAddressGetter?.(),
+        ...queryOptions
       }: CustomQueryOptions = {}) => {
         const contractAddress = contract || defaultContractAddressGetter?.();
         const blockNumber = useBlockNumber({ watch: watch });
@@ -154,6 +157,7 @@ export function createContractHooks<
           chainId: chainId,
           blockNumber: watch ? blockNumber.data : undefined,
           query: {
+            ...queryOptions,
             enabled: enabled && !!contractAddress,
           },
         } as any);

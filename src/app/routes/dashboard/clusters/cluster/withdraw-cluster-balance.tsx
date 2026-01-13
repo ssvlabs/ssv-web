@@ -22,7 +22,8 @@ import { useLiquidateCluster } from "@/hooks/cluster/use-liquidate-cluster";
 import { useWithdrawClusterBalance } from "@/hooks/cluster/use-withdraw-cluster-balance";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { setOptimisticData } from "@/lib/react-query";
-import { isBigIntChanged, stringifyBigints } from "@/lib/utils/bigint";
+import { isBigIntChanged } from "@/lib/utils/bigint";
+import { mergeClusterSnapshot } from "@/lib/utils/cluster";
 import { formatSSV } from "@/lib/utils/number";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type FC, useState } from "react";
@@ -87,13 +88,12 @@ export const WithdrawClusterBalance: FC = () => {
             getClusterQueryOptions(params.clusterHash!).queryKey,
             (cluster) => {
               if (!cluster) return cluster;
-              return {
-                ...cluster,
-                ...stringifyBigints(event.args.cluster),
+
+              return mergeClusterSnapshot(cluster, event.args.cluster, {
                 isLiquidated: Boolean(
                   events.find((e) => e.eventName === "ClusterLiquidated"),
                 ),
-              };
+              });
             },
           );
 

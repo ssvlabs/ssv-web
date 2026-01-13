@@ -8,7 +8,7 @@ import type { UseQueryOptions } from "@/lib/react-query";
 import { enabled, getDefaultChainedQueryOptions } from "@/lib/react-query";
 import { getCluster } from "@/api/cluster";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
-import { useBlockNumber, useChainId } from "wagmi";
+import { useChainId } from "wagmi";
 import { boolify } from "@/lib/utils/boolean";
 import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 
@@ -32,7 +32,6 @@ export const useCluster = (
 ) => {
   const { clusterHash } = useClusterPageParams();
   const chainId = useChainId();
-  const { data: blockNumber } = useBlockNumber({ watch: options?.watch });
 
   const queryOptions = getClusterQueryOptions(hash ?? clusterHash, {
     chainId,
@@ -41,7 +40,6 @@ export const useCluster = (
 
   return useQuery({
     ...queryOptions,
-    queryKey: [...queryOptions.queryKey, blockNumber?.toString()],
     placeholderData: keepPreviousData,
   });
 };

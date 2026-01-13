@@ -33,7 +33,7 @@ import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitF
 import { useReactivate } from "@/lib/contract-interactions/write/use-reactivate";
 import { setOptimisticData } from "@/lib/react-query";
 import { bigintifyNumbers, stringifyBigints } from "@/lib/utils/bigint";
-import { formatClusterData } from "@/lib/utils/cluster";
+import { toSolidityCluster } from "@/lib/utils/cluster";
 import { sumOperatorsFee } from "@/lib/utils/operator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { merge } from "lodash-es";
@@ -79,10 +79,14 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
   const operators = useOperators(operatorIds);
 
   // Get effectiveBalance from state (passed from previous step)
-  const effectiveBalanceFromState = location.state?.effectiveBalance as bigint | undefined;
-  const effectiveBalance = effectiveBalanceFromState ?? (cluster.data?.effectiveBalance
-    ? BigInt(cluster.data.effectiveBalance)
-    : 0n);
+  const effectiveBalanceFromState = location.state?.effectiveBalance as
+    | bigint
+    | undefined;
+  const effectiveBalance =
+    effectiveBalanceFromState ??
+    (cluster.data?.effectiveBalance
+      ? BigInt(cluster.data.effectiveBalance)
+      : 0n);
 
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
@@ -138,7 +142,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
       {
         amount: amount.total,
         operatorIds: bigintifyNumbers(operatorIds),
-        cluster: formatClusterData(cluster.data),
+        cluster: toSolidityCluster(cluster.data),
       },
       amount.total,
       withTransactionModal({
@@ -167,7 +171,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
           });
           return () => navigate("..");
         },
-      },),
+      }),
     );
   });
 
@@ -308,14 +312,14 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
             fundingDays={days}
             effectiveBalance={effectiveBalance}
           />
-            <Button
-              isActionBtn
-              isLoading={reactive.isPending}
-              size="xl"
-              type="submit"
-            >
-              Reactivate
-            </Button>
+          <Button
+            isActionBtn
+            isLoading={reactive.isPending}
+            size="xl"
+            type="submit"
+          >
+            Reactivate
+          </Button>
         </Card>
       </Form>
     </Container>

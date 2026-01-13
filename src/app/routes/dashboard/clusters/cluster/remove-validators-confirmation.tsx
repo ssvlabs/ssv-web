@@ -19,7 +19,7 @@ import { useRemoveValidator } from "@/lib/contract-interactions/write/use-remove
 import { track } from "@/lib/analytics/mixpanel";
 import { setOptimisticData } from "@/lib/react-query";
 import { bigintifyNumbers, stringifyBigints } from "@/lib/utils/bigint";
-import { formatClusterData } from "@/lib/utils/cluster";
+import { toSolidityCluster } from "@/lib/utils/cluster";
 import { sortNumbers } from "@/lib/utils/number";
 import { add0x } from "@/lib/utils/strings";
 import type { Address } from "abitype";
@@ -41,7 +41,7 @@ export const RemoveValidatorsConfirmation: FC = () => {
   const isPending = removeValidator.isPending || bulkRemoveValidators.isPending;
 
   const remove = async () => {
-    const clusterData = formatClusterData(cluster.data);
+    const clusterData = toSolidityCluster(cluster.data);
     const operatorIds = sortNumbers(
       bigintifyNumbers(cluster.data?.operators ?? []),
     );

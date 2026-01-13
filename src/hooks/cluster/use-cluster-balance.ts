@@ -1,62 +1,57 @@
 import { useCluster } from "@/hooks/cluster/use-cluster";
-import { useGetBalance } from "@/lib/contract-interactions/read/use-get-balance";
 import { useAccount } from "@/hooks/account/use-account";
-import { formatClusterData } from "@/lib/utils/cluster";
+import { toSolidityCluster } from "@/lib/utils/cluster";
 import { useMemo } from "react";
 import { keepPreviousData } from "@tanstack/react-query";
-import { useGetBalanceSSV } from "@/lib/contract-interactions/read/use-get-balance-ssv";
 import { combineQueryStatus } from "@/lib/react-query";
+import {
+  useGetBalance,
+  useGetBalanceSSV,
+} from "@/lib/contract-interactions/hooks/getter";
 
 export const useClusterBalance = (
   hash: string,
   {
-    watch = false,
-    enabled = true,
+    watch: _watch = false,
+    enabled: _enabled = true,
   }: Partial<{ watch: boolean; enabled: boolean }> = {},
 ) => {
   const account = useAccount();
   const cluster = useCluster(hash);
 
-  const operatorIds = useMemo(
-    () => cluster.data?.operators.map((id) => BigInt(id)) ?? [],
-    [cluster.data],
+  const clusterSnapshot = useMemo(
+    () => ({
+      clusterOwner: account.address!,
+      cluster: toSolidityCluster(cluster.data),
+      operatorIds: cluster.data?.operators.map((id) => BigInt(id)) ?? [],
+    }),
+    [account.address, cluster.data],
   );
 
-  const ethBalance = useGetBalance(
-    {
-      clusterOwner: account.address!,
-      cluster: formatClusterData(cluster.data),
-      operatorIds,
-    },
-    {
-      watch: cluster.data?.isLiquidated ? false : watch,
-      retry: cluster.data?.isLiquidated ? false : undefined,
-      refetchOnWindowFocus: false,
-      placeholderData: keepPreviousData,
-      enabled: Boolean(account.address && cluster.data && enabled),
-    },
-  );
+  const enabled = Boolean(account.address && cluster.data && _enabled);
 
-  const ssvBalance = useGetBalanceSSV(
-    {
-      clusterOwner: account.address!,
-      cluster: formatClusterData(cluster.data),
-      operatorIds,
-    },
-    {
-      watch: cluster.data?.isLiquidated ? false : watch,
-      retry: cluster.data?.isLiquidated ? false : undefined,
-      refetchOnWindowFocus: false,
-      placeholderData: keepPreviousData,
-      enabled: Boolean(account.address && cluster.data && enabled),
-    },
-  );
+  const watch = cluster.data?.isLiquidated ? false : _watch;
+  const retry = cluster.data?.isLiquidated ? false : undefined;
+
+  const eth = useGetBalance(clusterSnapshot, {
+    placeholderData: keepPreviousData,
+    watch,
+    retry,
+    enabled,
+  });
+
+  const ssv = useGetBalanceSSV(clusterSnapshot, {
+    placeholderData: keepPreviousData,
+    watch,
+    retry,
+    enabled,
+  });
 
   return {
-    ...combineQueryStatus(ethBalance, ssvBalance),
+    ...combineQueryStatus(eth, ssv),
     data: {
-      eth: ethBalance.data,
-      ssv: ssvBalance.data,
+      eth: eth.data || BigInt(cluster.data?.ethBalance || 0),
+      ssv: ssv.data || BigInt(cluster.data?.balance || 0),
     },
   };
 };

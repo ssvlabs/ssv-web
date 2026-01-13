@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Loading } from "@/components/ui/Loading";
 import LogoIcon from "@/assets/images/logo-icon.svg?react";
-import { links } from "@/config";
+import { links } from "@/config/links";
 
 export type ClusterTableProps = {
   clusters: Cluster[];

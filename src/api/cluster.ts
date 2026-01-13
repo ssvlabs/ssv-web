@@ -4,7 +4,7 @@ import {
   validatorsSearchParamsSerializer,
   type ValidatorsSearchSchema,
 } from "@/lib/search-parsers/validators-search-parsers";
-import { formatClusterData, getDefaultClusterData } from "@/lib/utils/cluster";
+import { toSolidityCluster, getDefaultClusterData } from "@/lib/utils/cluster";
 import { mapBeaconChainStatus } from "@/lib/utils/validator-status-mapping";
 import type {
   GetClusterResponse,
@@ -35,7 +35,7 @@ export const getCluster = (hash: string) => {
 export const getClusterData = (hash: string) =>
   getCluster(hash)
     .then((cluster) =>
-      cluster ? formatClusterData(cluster) : getDefaultClusterData(),
+      cluster ? toSolidityCluster(cluster) : getDefaultClusterData(),
     )
     .catch(() => getDefaultClusterData());
 

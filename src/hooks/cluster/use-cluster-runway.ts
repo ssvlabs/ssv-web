@@ -1,17 +1,28 @@
-import { useRunway } from "@/hooks/cluster/use-calculate-runway";
 import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useClusterBalance } from "@/hooks/cluster/use-cluster-balance";
-import {
-  getDeltaValidators,
-  useClusterBurnRate,
-} from "@/hooks/cluster/use-cluster-burn-rate";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
-import { tryCatch } from "@/lib/utils/tryCatch.ts";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
+import { parseGwei } from "viem";
+import { bigintMax } from "@/lib/utils/bigint";
+import { calculateRunway } from "@/lib/utils/cluster";
+import { useNetworkFee, useNetworkFeeSSV } from "@/hooks/use-ssv-network-fee";
+import { sumOperatorsFee } from "@/lib/utils/operator";
+import { useOperators } from "@/hooks/operator/use-operators";
+
+const gwei32 = parseGwei("32");
+const gwei1 = parseGwei("1");
+
+const getDeltaValidators = (options: Options) => {
+  if ("deltaValidators" in options) return options.deltaValidators ?? 0n;
+  if ("deltaEffectiveBalance" in options)
+    return BigInt(options.deltaEffectiveBalance ?? 0) / gwei32;
+  return 0n;
+};
 
 type Options = {
   deltaBalance?: bigint;
   watch?: boolean;
+  forceMode?: "eth" | "ssv";
 } & ({ deltaValidators?: bigint } | { deltaEffectiveBalance?: bigint });
 
 export const useClusterRunway = (
@@ -23,34 +34,63 @@ export const useClusterRunway = (
     watch: false,
   },
 ) => {
+  const { state } = useRegisterValidatorContext;
+
   const params = useClusterPageParams();
   const clusterHash = hash ?? params.clusterHash;
 
   const deltaValidators = getDeltaValidators(opts);
 
-  const cluster = useCluster(clusterHash);
+  const cluster = useCluster(clusterHash, { watch: opts.watch });
   const balance = useClusterBalance(clusterHash!, { watch: opts.watch });
-  const burnRate = useClusterBurnRate(clusterHash!, { deltaValidators });
-  const { state } = useRegisterValidatorContext;
+  const operators = useOperators(cluster.data?.operators ?? []);
 
-  const hasEffectiveBalance = tryCatch(
-    () => BigInt(cluster.data?.effectiveBalance ?? 0) + state.effectiveBalance > 0n,
-    false,
+  const isETH =
+    opts.forceMode === "eth" ||
+    ((!opts.forceMode && cluster.data?.migrated) ?? false);
+
+  const ethNetworkFee = useNetworkFee();
+  const ssvNetworkFee = useNetworkFeeSSV();
+
+  const {
+    liquidationThresholdPeriod: { data: liquidationThresholdBlocks = 0n },
+    minimumLiquidationCollateral: { data: minimumLiquidationCollateral = 0n },
+    ssvNetworkFee: { data: networkFee = 0n },
+  } = isETH ? ethNetworkFee : ssvNetworkFee;
+
+  const operatorFees =
+    sumOperatorsFee(operators.data ?? [], isETH ? "eth" : "ssv") + networkFee;
+
+  const feesPerBlock = operatorFees + networkFee;
+
+  const clusterEffectiveBalance =
+    BigInt(cluster.data?.effectiveBalance ?? 0) * gwei1;
+  const minClusterEffectiveBalance =
+    BigInt(cluster.data?.validatorCount ?? 1) * gwei32;
+
+  const effectiveBalance = bigintMax(
+    clusterEffectiveBalance,
+    minClusterEffectiveBalance,
   );
-  const validators = hasEffectiveBalance
-    ? (BigInt(cluster.data?.effectiveBalance ?? 0) + state.effectiveBalance) / 32n
-    : BigInt(cluster.data?.validatorCount ?? 0);
+
+  const validators = (effectiveBalance + state.effectiveBalance) / gwei32;
 
   const isLoading =
-    cluster.isLoading || balance.isLoading || burnRate.isLoading;
+    cluster.isLoading ||
+    balance.isLoading ||
+    operators.isLoading ||
+    ethNetworkFee.isLoading ||
+    ssvNetworkFee.isLoading;
 
-  const runway = useRunway({
+  const runway = calculateRunway({
     balance: balance.data.eth ?? balance.data.ssv ?? 0n,
-    burnRate: burnRate.data?.burnRatePerBlock ?? 0n,
+    feesPerBlock,
     validators,
     deltaValidators: deltaValidators,
-    deltaBalance: opts.deltaBalance,
+    deltaBalance: opts.deltaBalance ?? 0n,
+    liquidationThresholdBlocks,
+    minimumLiquidationCollateral,
   });
 
-  return { ...runway, isLoading };
+  return { data: runway, isLoading };
 };

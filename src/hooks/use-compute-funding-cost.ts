@@ -1,6 +1,6 @@
 import { computeFundingCost } from "@/lib/utils/keystore";
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
-import { useSsvNetworkFee } from "./use-ssv-network-fee";
+import { useNetworkFee } from "./use-ssv-network-fee";
 import type { Operator } from "@/types/api";
 import { stringifyBigints } from "@/lib/utils/bigint";
 import { sumOperatorsFee } from "@/lib/utils/operator";
@@ -18,7 +18,7 @@ export const useComputeFundingCost = () => {
     liquidationThresholdPeriod,
     minimumLiquidationCollateral,
     ssvNetworkFee,
-  } = useSsvNetworkFee();
+  } = useNetworkFee();
 
   return useMutation({
     mutationFn: async ({
@@ -44,7 +44,7 @@ export const useComputeFundingCost = () => {
 };
 
 export type UseFundingCostArgs = {
-  operators: Pick<Operator, "eth_fee">[];
+  operators: Pick<Operator, "eth_fee" | "fee">[];
   validatorsAmount: number;
   fundingDays: number;
   effectiveBalance?: bigint;
@@ -62,7 +62,7 @@ export const useFundingCost = ({
     liquidationThresholdPeriod,
     minimumLiquidationCollateral,
     ssvNetworkFee,
-  } = useSsvNetworkFee();
+  } = useNetworkFee();
 
   const costQuery = useQuery({
     staleTime: 0,

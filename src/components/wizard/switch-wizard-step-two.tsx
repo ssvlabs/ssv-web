@@ -26,7 +26,7 @@ import {
   computeDailyAmount,
   computeLiquidationCollateralCostPerValidator,
 } from "@/lib/utils/keystore";
-import { useSsvNetworkFee } from "@/hooks/use-ssv-network-fee";
+import { useNetworkFee } from "@/hooks/use-ssv-network-fee";
 import { formatUnits } from "viem";
 import type { SwitchWizardStepThreeState } from "./switch-wizard-types";
 
@@ -68,7 +68,7 @@ export const SwitchWizardStepTwo = ({
   ssvBalance,
 }: SwitchWizardStepTwoProps) => {
   const rates = useRates();
-  const networkFees = useSsvNetworkFee();
+  const networkFees = useNetworkFee();
   const hasSsvBalance = (ssvBalance ?? 0n) > 0n;
 
   const form = useForm<z.infer<typeof schema>>({

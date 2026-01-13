@@ -14,7 +14,6 @@ export const SwitchWizardStepOneRoute = () => {
   const operatorsQuery = useOperators(cluster.data?.operators ?? []);
   const operators = operatorsQuery.data ?? [];
   const basePath = `/switch-wizard/${clusterHash}`;
-  const clusterPath = `/clusters/${clusterHash}`;
 
   return (
     <SwitchWizardStepOne
@@ -22,7 +21,6 @@ export const SwitchWizardStepOneRoute = () => {
         navigate(`${basePath}/step-one`);
       }}
       backButtonLabel="Back"
-      navigateRoutePath={clusterPath}
       operators={operators}
     />
   );

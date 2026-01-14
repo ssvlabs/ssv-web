@@ -16,7 +16,6 @@ type ClusterFundingSummaryFC = FC<
 >;
 
 export const ClusterFundingSummary: ClusterFundingSummaryFC = ({
-  validatorsAmount,
   fundingDays,
   operators,
   effectiveBalance,
@@ -26,7 +25,6 @@ export const ClusterFundingSummary: ClusterFundingSummaryFC = ({
   // const isBulk = validatorsAmount > 1;
   const cost = useFundingCost({
     operators,
-    validatorsAmount,
     fundingDays,
     effectiveBalance,
   });

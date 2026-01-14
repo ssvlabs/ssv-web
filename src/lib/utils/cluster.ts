@@ -68,7 +68,7 @@ export const toSolidityClusterSnapshot = (
 export const mergeClusterSnapshot = <T extends Cluster<any>>(
   cluster: T,
   solidityCluster: SolidityCluster,
-  additionalData: Partial<T>,
+  additionalData: Partial<T> = {},
 ): T => {
   const isMigrated = cluster.migrated;
   const { balance, ...rest } = solidityCluster;

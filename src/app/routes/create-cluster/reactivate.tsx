@@ -40,7 +40,7 @@ import { merge } from "lodash-es";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { Collapse } from "react-collapse";
 import { useForm } from "react-hook-form";
-import { Navigate, useNavigate, useLocation } from "react-router";
+import { Navigate, useLocation, useNavigate } from "react-router";
 import { z } from "zod";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Spacer } from "@/components/ui/spacer";
@@ -225,7 +225,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
                       <Text variant="body-2-semibold">1 Year</Text>
                       <Spacer />
                       <Text variant="body-1-bold">
-                        {formatSSV(yearFundingCost.data?.total ?? 0n)} SSV
+                        {formatSSV(yearFundingCost.data?.total ?? 0n)} ETH
                       </Text>
                     </div>
                   </FormLabel>
@@ -235,7 +235,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
                       <Text variant="body-2-semibold">6 Months</Text>
                       <Spacer />
                       <Text variant="body-1-bold">
-                        {formatSSV(halfYearFundingCost.data?.total ?? 0n)} SSV
+                        {formatSSV(halfYearFundingCost.data?.total ?? 0n)} ETH
                       </Text>
                     </div>
                   </FormLabel>
@@ -248,7 +248,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
                         <Text variant="body-1-bold">
                           {values.selected === "custom"
                             ? formatSSV(customFundingCost.data?.total ?? 0n) +
-                              " SSV"
+                              " ETH"
                             : "-"}
                         </Text>
                       </div>

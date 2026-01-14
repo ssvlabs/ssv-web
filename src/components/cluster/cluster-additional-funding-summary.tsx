@@ -1,4 +1,4 @@
-import type { FC, ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef, FC } from "react";
 import { cn } from "@/lib/utils/tw";
 import { Text } from "@/components/ui/text";
 import { formatSSV } from "@/lib/utils/number";
@@ -18,9 +18,9 @@ export const ClusterAdditionalFundingSummary: ClusterAdditionalFundingSummaryFC 
               Transaction Summary
             </Text>
             <div className="flex justify-between items-center">
-              <Text variant="body-2-medium">SSV Deposit</Text>
+              <Text variant="body-2-medium">ETH Deposit</Text>
               <Text variant="body-2-medium">
-                {formatSSV(depositAmount ?? 0n)} SSV
+                {formatSSV(depositAmount ?? 0n)} ETH
               </Text>
             </div>
           </div>
@@ -29,7 +29,7 @@ export const ClusterAdditionalFundingSummary: ClusterAdditionalFundingSummaryFC 
         <div className="flex justify-between items-center">
           <Text variant="body-2-medium">Total</Text>
           <Text variant="body-1-bold">
-            {formatSSV(depositAmount ?? 0n)} SSV
+            {formatSSV(depositAmount ?? 0n)} ETH
           </Text>
         </div>
       </>

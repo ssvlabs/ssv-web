@@ -32,11 +32,10 @@ import {
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useReactivate } from "@/lib/contract-interactions/write/use-reactivate";
 import { setOptimisticData } from "@/lib/react-query";
-import { bigintifyNumbers, stringifyBigints } from "@/lib/utils/bigint";
-import { toSolidityCluster } from "@/lib/utils/cluster";
+import { bigintifyNumbers } from "@/lib/utils/bigint";
+import { mergeClusterSnapshot, toSolidityCluster } from "@/lib/utils/cluster";
 import { sumOperatorsFee } from "@/lib/utils/operator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { merge } from "lodash-es";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { Collapse } from "react-collapse";
 import { useForm } from "react-hook-form";
@@ -82,6 +81,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
   const effectiveBalanceFromState = location.state?.effectiveBalance as
     | bigint
     | undefined;
+
   const effectiveBalance =
     effectiveBalanceFromState ??
     (cluster.data?.effectiveBalance
@@ -107,21 +107,18 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
   const customFundingCost = useFundingCost({
     fundingDays: values.custom,
     operators: operators.data ?? [],
-    validatorsAmount: cluster.data?.validatorCount ?? 1,
     effectiveBalance,
   });
 
   const yearFundingCost = useFundingCost({
     fundingDays: periods.year,
     operators: operators.data ?? [],
-    validatorsAmount: cluster.data?.validatorCount ?? 1,
     effectiveBalance,
   });
 
   const halfYearFundingCost = useFundingCost({
     fundingDays: periods["half-year"],
     operators: operators.data ?? [],
-    validatorsAmount: cluster.data?.validatorCount ?? 1,
     effectiveBalance,
   });
 
@@ -134,7 +131,6 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
     const amount = await computeFundingCost.mutateAsync({
       fundingDays: days,
       operatorsFee: sumOperatorsFee(operators.data ?? []),
-      validators: cluster.data?.validatorCount ?? 1,
       effectiveBalance,
     });
 
@@ -156,12 +152,9 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
               getClusterQueryOptions(params.clusterHash!).queryKey,
               (cluster) => {
                 if (!cluster) return cluster;
-                return merge(
-                  {},
-                  cluster,
-                  stringifyBigints(event.args.cluster),
-                  { isLiquidated: false },
-                );
+                return mergeClusterSnapshot(cluster, event.args.cluster, {
+                  isLiquidated: false,
+                });
               },
             );
 
@@ -308,7 +301,6 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
           <Divider />
           <ClusterFundingSummary
             operators={operators.data ?? []}
-            validatorsAmount={cluster.data?.validatorCount ?? 1}
             fundingDays={days}
             effectiveBalance={effectiveBalance}
           />

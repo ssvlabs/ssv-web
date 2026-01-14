@@ -2,20 +2,16 @@ import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useClusterBalance } from "@/hooks/cluster/use-cluster-balance";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
-import { parseGwei } from "viem";
 import { bigintMax } from "@/lib/utils/bigint";
 import { calculateRunway } from "@/lib/utils/cluster";
 import { useNetworkFee, useNetworkFeeSSV } from "@/hooks/use-ssv-network-fee";
 import { sumOperatorsFee } from "@/lib/utils/operator";
 import { useOperators } from "@/hooks/operator/use-operators";
 
-const gwei32 = parseGwei("32");
-const gwei1 = parseGwei("1");
-
 const getDeltaValidators = (options: Options) => {
   if ("deltaValidators" in options) return options.deltaValidators ?? 0n;
   if ("deltaEffectiveBalance" in options)
-    return BigInt(options.deltaEffectiveBalance ?? 0) / gwei32;
+    return BigInt(options.deltaEffectiveBalance ?? 0) / 32n;
   return 0n;
 };
 
@@ -48,7 +44,6 @@ export const useClusterRunway = (
   const isETH =
     opts.forceMode === "eth" ||
     ((!opts.forceMode && cluster.data?.migrated) ?? false);
-
   const ethNetworkFee = useNetworkFee();
   const ssvNetworkFee = useNetworkFeeSSV();
 
@@ -63,17 +58,16 @@ export const useClusterRunway = (
 
   const feesPerBlock = operatorFees + networkFee;
 
-  const clusterEffectiveBalance =
-    BigInt(cluster.data?.effectiveBalance ?? 0) * gwei1;
+  const clusterEffectiveBalance = BigInt(cluster.data?.effectiveBalance ?? 0);
   const minClusterEffectiveBalance =
-    BigInt(cluster.data?.validatorCount ?? 1) * gwei32;
+    BigInt(cluster.data?.validatorCount ?? 1) * 32n;
 
   const effectiveBalance = bigintMax(
     clusterEffectiveBalance,
     minClusterEffectiveBalance,
   );
 
-  const validators = (effectiveBalance + state.effectiveBalance) / gwei32;
+  const validators = (effectiveBalance + state.effectiveBalance) / 32n;
 
   const isLoading =
     cluster.isLoading ||

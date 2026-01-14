@@ -180,7 +180,6 @@ export const RegisterValidatorConfirmation: FC = () => {
         ) : (
           <ClusterFundingSummary
             operators={operators.data ?? []}
-            validatorsAmount={shares.length}
             fundingDays={fundingDays}
             effectiveBalance={effectiveBalance}
           />

@@ -63,12 +63,8 @@ export const InitialFunding: FCProps = ({ ...props }) => {
   const navigate = useNavigate();
 
   const { state } = useRegisterValidatorContext;
-  const {
-    shares,
-    fundingDays,
-    selectedInitialFundingPeriod,
-    effectiveBalance,
-  } = useRegisterValidatorContext();
+  const { fundingDays, selectedInitialFundingPeriod, effectiveBalance } =
+    useRegisterValidatorContext();
   const operatorIds = useSelectedOperatorIds();
 
   const operators = useOperators(operatorIds);
@@ -95,21 +91,18 @@ export const InitialFunding: FCProps = ({ ...props }) => {
   const customFundingCost = useFundingCost({
     fundingDays: values.custom,
     operators: operators.data ?? [],
-    validatorsAmount: shares.length,
     effectiveBalance,
   });
 
   const yearFundingCost = useFundingCost({
     fundingDays: periods.year,
     operators: operators.data ?? [],
-    validatorsAmount: shares.length,
     effectiveBalance,
   });
 
   const halfYearFundingCost = useFundingCost({
     fundingDays: periods["half-year"],
     operators: operators.data ?? [],
-    validatorsAmount: shares.length,
     effectiveBalance,
   });
 
@@ -118,7 +111,6 @@ export const InitialFunding: FCProps = ({ ...props }) => {
     const cost = await computeFundingCost.mutateAsync({
       fundingDays: days,
       operatorsFee,
-      validators: shares.length,
       effectiveBalance,
     });
 
@@ -282,7 +274,6 @@ export const InitialFunding: FCProps = ({ ...props }) => {
           </Collapse>
           <ClusterFundingSummary
             operators={operators.data ?? []}
-            validatorsAmount={shares.length}
             fundingDays={days}
             effectiveBalance={effectiveBalance}
           />

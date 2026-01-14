@@ -7,9 +7,8 @@ import { sumOperatorsFee } from "@/lib/utils/operator";
 
 type Args = {
   operatorsFee: bigint;
-  validators: number;
   fundingDays: number;
-  effectiveBalance?: bigint;
+  effectiveBalance: bigint;
 };
 
 export const useComputeFundingCost = () => {
@@ -23,7 +22,6 @@ export const useComputeFundingCost = () => {
   return useMutation({
     mutationFn: async ({
       fundingDays,
-      validators,
       operatorsFee,
       effectiveBalance,
     }: Args) => {
@@ -36,7 +34,6 @@ export const useComputeFundingCost = () => {
         networkFee: ssvNetworkFee.data!,
         liquidationCollateralPeriod: liquidationThresholdPeriod.data!,
         minimumLiquidationCollateral: minimumLiquidationCollateral.data!,
-        validators: BigInt(validators || 1),
         effectiveBalance,
       });
     },
@@ -45,14 +42,12 @@ export const useComputeFundingCost = () => {
 
 export type UseFundingCostArgs = {
   operators: Pick<Operator, "eth_fee" | "fee">[];
-  validatorsAmount: number;
   fundingDays: number;
-  effectiveBalance?: bigint;
+  effectiveBalance: bigint;
 };
 
 export const useFundingCost = ({
   operators,
-  validatorsAmount,
   fundingDays,
   effectiveBalance,
 }: UseFundingCostArgs) => {
@@ -70,7 +65,6 @@ export const useFundingCost = ({
     queryKey: stringifyBigints([
       "fundingCost",
       operators,
-      validatorsAmount,
       fundingDays,
       effectiveBalance,
     ]),
@@ -81,7 +75,6 @@ export const useFundingCost = ({
         networkFee: ssvNetworkFee.data!,
         liquidationCollateralPeriod: liquidationThresholdPeriod.data!,
         minimumLiquidationCollateral: minimumLiquidationCollateral.data!,
-        validators: BigInt(validatorsAmount || 1),
         effectiveBalance,
       }),
     placeholderData: keepPreviousData,

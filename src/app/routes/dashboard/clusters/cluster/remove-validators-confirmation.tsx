@@ -18,12 +18,11 @@ import { useBulkRemoveValidator } from "@/lib/contract-interactions/write/use-bu
 import { useRemoveValidator } from "@/lib/contract-interactions/write/use-remove-validator";
 import { track } from "@/lib/analytics/mixpanel";
 import { setOptimisticData } from "@/lib/react-query";
-import { bigintifyNumbers, stringifyBigints } from "@/lib/utils/bigint";
-import { toSolidityCluster } from "@/lib/utils/cluster";
+import { bigintifyNumbers } from "@/lib/utils/bigint";
+import { mergeClusterSnapshot, toSolidityCluster } from "@/lib/utils/cluster";
 import { sortNumbers } from "@/lib/utils/number";
 import { add0x } from "@/lib/utils/strings";
 import type { Address } from "abitype";
-import { merge } from "lodash-es";
 import { useState, type FC } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -61,9 +60,9 @@ export const RemoveValidatorsConfirmation: FC = () => {
 
         setOptimisticData(
           getClusterQueryOptions(params.clusterHash!).queryKey,
-          (prev) => {
-            if (!prev || !event) return prev;
-            return merge(prev, stringifyBigints(event.args.cluster));
+          (cluster) => {
+            if (!cluster || !event) return cluster;
+            return mergeClusterSnapshot(cluster, event.args.cluster);
           },
         );
 

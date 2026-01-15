@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/grid-table";
 import { CopyBtn } from "@/components/ui/copy-btn";
-import { SsvExplorerBtn } from "@/components/ui/ssv-explorer-btn";
+import { BeaconchainBtn } from "@/components/ui/ssv-explorer-btn";
 import { add0x, shortenAddress } from "@/lib/utils/strings";
 import { Badge } from "@/components/ui/badge";
 import { BigNumberInput } from "@/components/ui/number-input";
@@ -360,7 +360,7 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
                       {shortenAddress(add0x(validator.publicKey))}
                     </Text>
                     <CopyBtn text={validator.publicKey} />
-                    <SsvExplorerBtn validatorId={validator.publicKey} />
+                    <BeaconchainBtn validatorId={validator.publicKey} />
                   </TableCell>
                   <TableCell>
                     <Badge

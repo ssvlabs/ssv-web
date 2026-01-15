@@ -151,7 +151,7 @@ importers:
         version: 2.55.1
       nuqs:
         specifier: ^2.4.0
-        version: 2.4.0(react-router-dom@6.24.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-router@6.24.1(react@18.3.1))(react@18.3.1)
+        version: 2.4.0(react-router-dom@6.24.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-router@6.30.2(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -178,7 +178,7 @@ importers:
         version: 5.4.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-router:
         specifier: '6'
-        version: 6.24.1(react@18.3.1)
+        version: 6.30.2(react@18.3.1)
       react-router-dom:
         specifier: ^6.24.1
         version: 6.24.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -2896,6 +2896,10 @@ packages:
 
   '@remix-run/router@1.17.1':
     resolution: {integrity: sha512-mCOMec4BKd6BRGBZeSnGiIgwsbLGp3yhVqAD8H+PxiRNEHgDpZb8J1TnrSDlg97t0ySKMQJTHCWBCmBpSmkF6Q==}
+    engines: {node: '>=14.0.0'}
+
+  '@remix-run/router@1.23.1':
+    resolution: {integrity: sha512-vDbaOzF7yT2Qs4vO6XV1MHcJv+3dgR1sT+l3B8xxOVhUC336prMvqrvsLL/9Dnw2xr6Qhz4J0dmS0llNAbnUmQ==}
     engines: {node: '>=14.0.0'}
 
   '@rnx-kit/chromium-edge-launcher@1.0.0':
@@ -7223,6 +7227,12 @@ packages:
     peerDependencies:
       react: '>=16.8'
 
+  react-router@6.30.2:
+    resolution: {integrity: sha512-H2Bm38Zu1bm8KUE5NVWRMzuIyAV8p/JrOaBJAwVmp37AXG72+CZJlEBw6pdn9i5TBgLMhNDgijS4ZlblpHyWTA==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: '>=16.8'
+
   react-shallow-renderer@16.15.0:
     resolution: {integrity: sha512-oScf2FqQ9LFVQgA73vr86xl2NaOIX73rh+YFqcOp68CWj56tSfgtGKrEbyhCj0rSijyG9M1CYprTh39fBi5hzA==}
     peerDependencies:
@@ -10215,7 +10225,7 @@ snapshots:
   '@metamask/json-rpc-engine@8.0.2':
     dependencies:
       '@metamask/rpc-errors': 6.4.0
-      '@metamask/safe-event-emitter': 3.1.2
+      '@metamask/safe-event-emitter': 3.1.1
       '@metamask/utils': 8.5.0
     transitivePeerDependencies:
       - supports-color
@@ -10223,7 +10233,7 @@ snapshots:
   '@metamask/json-rpc-middleware-stream@7.0.2':
     dependencies:
       '@metamask/json-rpc-engine': 8.0.2
-      '@metamask/safe-event-emitter': 3.1.2
+      '@metamask/safe-event-emitter': 3.1.1
       '@metamask/utils': 8.5.0
       readable-stream: 3.6.2
     transitivePeerDependencies:
@@ -11670,6 +11680,8 @@ snapshots:
       '@types/react': 18.3.27
 
   '@remix-run/router@1.17.1': {}
+
+  '@remix-run/router@1.23.1': {}
 
   '@rnx-kit/chromium-edge-launcher@1.0.0':
     dependencies:
@@ -15953,12 +15965,12 @@ snapshots:
 
   nullthrows@1.1.1: {}
 
-  nuqs@2.4.0(react-router-dom@6.24.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-router@6.24.1(react@18.3.1))(react@18.3.1):
+  nuqs@2.4.0(react-router-dom@6.24.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-router@6.30.2(react@18.3.1))(react@18.3.1):
     dependencies:
       mitt: 3.0.1
       react: 18.3.1
     optionalDependencies:
-      react-router: 6.24.1(react@18.3.1)
+      react-router: 6.30.2(react@18.3.1)
       react-router-dom: 6.24.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
   ob1@0.80.12:
@@ -16654,6 +16666,11 @@ snapshots:
   react-router@6.24.1(react@18.3.1):
     dependencies:
       '@remix-run/router': 1.17.1
+      react: 18.3.1
+
+  react-router@6.30.2(react@18.3.1):
+    dependencies:
+      '@remix-run/router': 1.23.1
       react: 18.3.1
 
   react-shallow-renderer@16.15.0(react@18.3.1):

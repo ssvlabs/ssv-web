@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/container";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils/tw";
-import { xor } from "lodash-es";
+import { isNil, xor } from "lodash-es";
 import { type ComponentPropsWithoutRef, type FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCluster } from "@/hooks/cluster/use-cluster";
@@ -103,7 +103,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
     reshareFlow.operators.length === 0 &&
     isClusterSizeMet &&
     cluster.isSuccess &&
-    cluster.data !== null;
+    !isNil(cluster.data);
 
   const nextStep = () => {
     if (

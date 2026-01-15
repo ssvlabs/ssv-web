@@ -12,24 +12,33 @@ import { Spacer } from "@/components/ui/spacer";
 import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
-import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
 import { useClusterState } from "@/hooks/cluster/use-cluster-state";
 import { useOperatorsUsability } from "@/hooks/keyshares/use-operators-usability";
-import { formatSSV } from "@/lib/utils/number";
-import { cn } from "@/lib/utils/tw";
 import { PlusIcon } from "lucide-react";
 import type { FC } from "react";
 import { Link } from "react-router-dom";
 import { useAccount } from "@/hooks/account/use-account";
+import { BalanceDisplay } from "@/components/ui/balance-display";
+import { SwitchToEthMenuOptionTooltip } from "@/components/cluster/switch-to-eth-menu-option-tooltip";
 
 export const Cluster: FC = () => {
   const account = useAccount();
   const { clusterHash } = useClusterPageParams();
 
-  const { cluster, isLiquidated, balance } = useClusterState(clusterHash!, {
-    balance: { watch: true },
-    isLiquidated: { watch: true },
-  });
+  const { cluster, isLiquidated, balanceSSV, balanceETH } = useClusterState(
+    clusterHash!,
+    {
+      balance: { watch: true },
+      isLiquidated: { watch: true },
+    },
+  );
+
+  const isMigrated = cluster.data?.migrated;
+  const isSSVCluster = cluster.data?.isSSVCluster;
+
+  const isLoadingBalance = isMigrated
+    ? balanceETH.isLoading
+    : balanceSSV.isLoading;
 
   const operatorsUsability = useOperatorsUsability({
     account: account.address!,
@@ -47,9 +56,8 @@ export const Cluster: FC = () => {
       return "One of your chosen operators has shifted to a permissioned status. To onboard validators, you'll need to select a new cluster.";
     if (operatorsUsability.data?.hasExceededValidatorsLimit)
       return "One of your operators has reached their maximum number of validators";
+    if (!isMigrated) return "Switch to ETH to enable this option";
   };
-
-  const { data: runway } = useClusterRunway(clusterHash!);
 
   return (
     <Container
@@ -77,23 +85,21 @@ export const Cluster: FC = () => {
               </Text>
               {isLiquidated.data && <Badge variant="error">Liquidated</Badge>}
             </div>
-            {balance.isLoading ? (
+            {isLoadingBalance ? (
               <Skeleton className="h-10 w-24 my-1" />
             ) : (
-              <Text
-                variant="headline2"
-                className={cn({
-                  "text-error-500": runway?.isAtRisk,
-                })}
-              >
-                {formatSSV(balance.data || 0n)} SSV
-              </Text>
+              <BalanceDisplay
+                amount={BigInt(
+                  isMigrated ? balanceETH.data || 0n : balanceSSV.data || 0n,
+                )}
+                token={isMigrated ? "ETH" : "SSV"}
+              />
             )}
           </div>
           {Boolean(cluster.data?.validatorCount) && (
             <>
               <Divider />
-              {balance.isLoading ? (
+              {isLoadingBalance ? (
                 <div className="space-y-1">
                   <Skeleton className="h-6 w-[208px] " />
                   <Skeleton className="h-7 w-24 " />
@@ -106,17 +112,50 @@ export const Cluster: FC = () => {
           )}
 
           {isLiquidated.data ? (
-            <Button as={Link} to="reactivate" size="xl">
-              Reactivate Cluster
-            </Button>
+            isSSVCluster ? (
+              <Button as={Link} to={`/switch-wizard/${clusterHash}`} size="xl">
+                Switch to ETH
+              </Button>
+            ) : (
+              <Button as={Link} to="reactivate-balance" size="xl">
+                Reactivate Cluster
+              </Button>
+            )
           ) : (
-            <div className="flex gap-3 [&>*]:flex-1">
-              <Button as={Link} to="deposit" size="xl">
-                Deposit
-              </Button>
-              <Button as={Link} to="withdraw" size="xl" variant="secondary">
-                Withdraw
-              </Button>
+            <div className="flex flex-col gap-6">
+              <div className="flex gap-6 [&>*]:flex-1">
+                <SwitchToEthMenuOptionTooltip asChild enabled={!isMigrated}>
+                  <Button
+                    as={Link}
+                    to="deposit"
+                    size="xl"
+                    disabled={!isMigrated}
+                  >
+                    Deposit
+                  </Button>
+                </SwitchToEthMenuOptionTooltip>
+                <SwitchToEthMenuOptionTooltip asChild enabled={!isMigrated}>
+                  <Button
+                    as={Link}
+                    to="withdraw"
+                    size="xl"
+                    variant="secondary"
+                    disabled={!isMigrated}
+                  >
+                    Withdraw
+                  </Button>
+                </SwitchToEthMenuOptionTooltip>
+              </div>
+              {!isMigrated && (
+                <Button
+                  as={Link}
+                  to={`/switch-wizard/${clusterHash}`}
+                  size="xl"
+                  variant="default"
+                >
+                  Switch to ETH
+                </Button>
+              )}
             </div>
           )}
         </Card>
@@ -129,7 +168,10 @@ export const Cluster: FC = () => {
               {cluster.data?.validatorCount}
             </Badge>
             <Spacer />
-            <ValidatorsActionsMenu isLiquidated={Boolean(isLiquidated.data)} />
+            <ValidatorsActionsMenu
+              isLiquidated={Boolean(isLiquidated.data)}
+              isSSVCluster={!isMigrated}
+            />
             <Tooltip content={getTooltipContent()}>
               <Button
                 disabled={
@@ -137,7 +179,8 @@ export const Cluster: FC = () => {
                   operatorsUsability.data?.hasExceededValidatorsLimit ||
                   operatorsUsability.data?.hasPermissionedOperators ||
                   operatorsUsability.data?.hasDeletedOperators ||
-                  isLiquidated.data
+                  isLiquidated.data ||
+                  !isMigrated
                 }
                 isLoading={
                   operatorsUsability.isLoading || isLiquidated.isLoading

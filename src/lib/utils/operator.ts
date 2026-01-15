@@ -3,8 +3,8 @@ import type { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
 import { fetchIsAddressWhitelistedInWhitelistingContract } from "@/lib/contract-interactions/read/use-is-address-whitelisted-in-whitelisting-contract";
 import { ethFormatter, sortNumbers } from "@/lib/utils/number";
 import type { Operator } from "@/types/api";
+import type { Operator as KeysharesOperator } from "@/types/keyshares";
 import { difference } from "lodash-es";
-import type { IOperator } from "ssv-keys/dist/tsc/src/lib/KeyShares/KeySharesData/IOperator";
 import type { Address, DecodeEventLogReturnType } from "viem";
 import { formatUnits, isAddressEqual } from "viem";
 
@@ -20,7 +20,7 @@ export function getYearlyFee(
 ): string | bigint {
   const yearlyFee = fee * BigInt(globals.BLOCKS_PER_YEAR);
   if (opts?.format)
-    return ethFormatter.format(+formatUnits(yearlyFee, 18)) + " SSV";
+    return ethFormatter.format(+formatUnits(yearlyFee, 18)) + " ETH";
   return yearlyFee;
 }
 
@@ -112,19 +112,36 @@ export const sortOperators = <T extends { id: number }[]>(operators: T) => {
   return [...operators].sort((a, b) => a.id - b.id);
 };
 
-export const prepareOperatorsForShares = (operators: Operator[]): IOperator[] =>
+export const prepareOperatorsForShares = (
+  operators: Operator[],
+): KeysharesOperator[] =>
   sortOperators(operators).map((operator) => ({
     id: operator.id,
     operatorKey: operator.public_key,
   }));
 
-export const sumOperatorsFee = (operators: Pick<Operator, "fee">[]) => {
-  return operators.reduce((acc, operator) => acc + BigInt(operator.fee), 0n);
+export const sumOperatorsFee = (
+  operators: Pick<Operator, "eth_fee" | "fee">[],
+  by: "eth" | "ssv" = "eth",
+) => {
+  return operators.reduce(
+    (acc, operator) =>
+      acc + BigInt(by === "eth" ? operator.eth_fee : operator.fee),
+    0n,
+  );
 };
 
-export const getOperatorIds = <T extends { id: number }[]>(operators: T) => {
-  return sortNumbers(operators.map((operator) => operator.id));
-};
+export function getOperatorIds<T extends { id: number }[] | number[]>(
+  operators: T,
+): number[] {
+  if (!operators.length) return [];
+  if (typeof operators.at(0) === "number") {
+    return sortNumbers(operators as number[]);
+  }
+  return sortNumbers(
+    (operators as { id: number }[]).map((operator) => operator.id),
+  );
+}
 
 type MergeOperatorWhitelistAddressesOpts = {
   shouldAdd: boolean;
@@ -154,6 +171,7 @@ export const createDefaultOperator = (
   declared_fee: "0",
   previous_fee: "0",
   fee: "0",
+  eth_fee: "0",
   public_key: "",
   owner_address: "",
   address_whitelist: "",
@@ -186,6 +204,7 @@ export const createDefaultOperator = (
   whitelist_addresses: [],
   updated_at: 0,
   ...operator,
+  effective_balance: operator.effective_balance ?? "0",
 });
 
 export type MainnetEvent = DecodeEventLogReturnType<typeof MainnetV4SetterABI>;
@@ -202,7 +221,7 @@ export const createOperatorFromEvent = (
 };
 
 export const sumOperatorsFees = (operators: Operator[]) =>
-  operators.reduce((acc, operator) => acc + BigInt(operator.fee), 0n);
+  operators.reduce((acc, operator) => acc + BigInt(operator.eth_fee), 0n);
 
 export const canAccountUseOperator = async (
   account: Address,

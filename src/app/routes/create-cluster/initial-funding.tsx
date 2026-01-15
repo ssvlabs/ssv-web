@@ -63,7 +63,7 @@ export const InitialFunding: FCProps = ({ ...props }) => {
   const navigate = useNavigate();
 
   const { state } = useRegisterValidatorContext;
-  const { shares, fundingDays, selectedInitialFundingPeriod } =
+  const { fundingDays, selectedInitialFundingPeriod, effectiveBalance } =
     useRegisterValidatorContext();
   const operatorIds = useSelectedOperatorIds();
 
@@ -91,19 +91,19 @@ export const InitialFunding: FCProps = ({ ...props }) => {
   const customFundingCost = useFundingCost({
     fundingDays: values.custom,
     operators: operators.data ?? [],
-    validatorsAmount: shares.length,
+    effectiveBalance,
   });
 
   const yearFundingCost = useFundingCost({
     fundingDays: periods.year,
     operators: operators.data ?? [],
-    validatorsAmount: shares.length,
+    effectiveBalance,
   });
 
   const halfYearFundingCost = useFundingCost({
     fundingDays: periods["half-year"],
     operators: operators.data ?? [],
-    validatorsAmount: shares.length,
+    effectiveBalance,
   });
 
   const submit = form.handleSubmit(async ({ selected, custom }) => {
@@ -111,7 +111,7 @@ export const InitialFunding: FCProps = ({ ...props }) => {
     const cost = await computeFundingCost.mutateAsync({
       fundingDays: days,
       operatorsFee,
-      validators: shares.length,
+      effectiveBalance,
     });
 
     state.depositAmount = cost.total;
@@ -131,7 +131,7 @@ export const InitialFunding: FCProps = ({ ...props }) => {
         <Card as="form" onSubmit={submit} {...props}>
           <Text variant="headline4">Select your validator funding period</Text>
           <Text variant="body-2-medium">
-            The SSV amount you deposit will determine your validator operational
+            The ETH amount you deposit will determine your validator operational
             runway (You can always manage it later by withdrawing or depositing
             more funds).
           </Text>
@@ -151,7 +151,7 @@ export const InitialFunding: FCProps = ({ ...props }) => {
                       <Text variant="body-2-semibold">1 Year</Text>
                       <Spacer />
                       <Text variant="body-1-bold">
-                        {formatSSV(yearFundingCost.data?.total ?? 0n)} SSV
+                        {formatSSV(yearFundingCost.data?.total ?? 0n)} ETH
                       </Text>
                     </div>
                   </FormLabel>
@@ -161,7 +161,7 @@ export const InitialFunding: FCProps = ({ ...props }) => {
                       <Text variant="body-2-semibold">6 Months</Text>
                       <Spacer />
                       <Text variant="body-1-bold">
-                        {formatSSV(halfYearFundingCost.data?.total ?? 0n)} SSV
+                        {formatSSV(halfYearFundingCost.data?.total ?? 0n)} ETH
                       </Text>
                     </div>
                   </FormLabel>
@@ -174,7 +174,7 @@ export const InitialFunding: FCProps = ({ ...props }) => {
                         <Text variant="body-1-bold">
                           {values.selected === "custom"
                             ? formatSSV(customFundingCost.data?.total ?? 0n) +
-                              " SSV"
+                              " ETH"
                             : "-"}
                         </Text>
                       </div>
@@ -274,8 +274,8 @@ export const InitialFunding: FCProps = ({ ...props }) => {
           </Collapse>
           <ClusterFundingSummary
             operators={operators.data ?? []}
-            validatorsAmount={shares.length}
             fundingDays={days}
+            effectiveBalance={effectiveBalance}
           />
           <Button size="xl" type="submit">
             Next

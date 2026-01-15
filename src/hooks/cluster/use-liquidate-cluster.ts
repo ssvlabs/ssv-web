@@ -4,7 +4,7 @@ import type {
   MutationOptions,
 } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useLiquidate } from "@/lib/contract-interactions/write/use-liquidate";
-import { formatClusterData } from "@/lib/utils/cluster";
+import { toSolidityCluster } from "@/lib/utils/cluster";
 import { useAccount } from "@/hooks/account/use-account";
 
 export const useLiquidateCluster = (clusterHash: string) => {
@@ -22,7 +22,7 @@ export const useLiquidateCluster = (clusterHash: string) => {
       {
         clusterOwner: account.address,
         operatorIds: cluster.data?.operators.map((id) => BigInt(id)) || [],
-        cluster: formatClusterData(cluster.data),
+        cluster: toSolidityCluster(cluster.data),
       },
       options,
     );

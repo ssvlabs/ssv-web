@@ -3,6 +3,8 @@ import type {
   BeaconChainStatus,
   ValidatorStatus,
 } from "@/lib/utils/validator-status-mapping";
+import type { AbiParameterToPrimitiveType } from "abitype";
+import type { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
 
 export type { BeaconChainStatus, ValidatorStatus };
 
@@ -33,6 +35,7 @@ export type Operator = {
   declared_fee: string;
   previous_fee: string;
   fee: string;
+  eth_fee: string;
   public_key: string;
   owner_address: string;
   address_whitelist: string;
@@ -64,6 +67,7 @@ export type Operator = {
   validators_count: number;
   version: string;
   network: string;
+  effective_balance: string;
   updated_at: number;
 };
 
@@ -133,13 +137,26 @@ export type PaginatedValidatorsResponse = {
   };
 };
 
-export type SolidityCluster = {
-  active: boolean;
-  balance: bigint;
-  index: bigint;
-  networkFeeIndex: bigint;
-  validatorCount: number;
-};
+type FindClusterStruct<T> = T extends readonly [infer First, ...infer Rest]
+  ? First extends { type: "function"; inputs: readonly unknown[] }
+    ? FindClusterStructInInputs<First["inputs"]> extends never
+      ? FindClusterStruct<Rest>
+      : FindClusterStructInInputs<First["inputs"]>
+    : FindClusterStruct<Rest>
+  : never;
+
+type FindClusterStructInInputs<T> = T extends readonly [
+  infer First,
+  ...infer Rest,
+]
+  ? First extends { internalType: "struct ISSVNetworkCore.Cluster" }
+    ? First
+    : FindClusterStructInInputs<Rest>
+  : never;
+
+export type SolidityCluster = AbiParameterToPrimitiveType<
+  FindClusterStruct<typeof MainnetV4SetterABI>
+>;
 
 export type Cluster<
   T extends { operators: (Operator | number)[] } = { operators: Operator[] },
@@ -153,12 +170,16 @@ export type Cluster<
     validatorCount: number;
     networkFeeIndex: string;
     index: string;
-    balance: string;
+    balance: string; // balance in SSV
+    ethBalance: string;
+    effectiveBalance: string;
     active: boolean;
     isLiquidated: boolean;
     blockNumber: number;
     createdAt: string;
     updatedAt: string;
+    isSSVCluster: boolean;
+    migrated?: boolean;
   } & T
 >;
 

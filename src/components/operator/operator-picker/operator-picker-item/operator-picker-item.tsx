@@ -142,7 +142,7 @@ export const OperatorPickerItem: FCProps = ({
           })}
         >
           <div className="h-10">
-            {getYearlyFee(BigInt(operator.fee), { format: true })}
+            {getYearlyFee(BigInt(operator.eth_fee), { format: true })}
           </div>
         </TableCell>
         <TableCell>

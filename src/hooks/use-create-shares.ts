@@ -2,15 +2,16 @@ import type { MutationConfig } from "@/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
 
 import type { CreateSharesMessage } from "@/workers/create-keystore-payload";
-import type { IOperator } from "ssv-keys/dist/tsc/src/lib/KeyShares/KeySharesData/IOperator";
-import type { KeySharesPayload } from "ssv-keys/dist/tsc/src/lib/KeyShares/KeySharesData/KeySharesPayload";
+import type { Operator as KeysharesOperator } from "@/types/keyshares";
 
-import { KeySharesItem, SSVKeys } from "ssv-keys";
+import { KeySharesItem, SSVKeys } from "@ssv-labs/ssv-sdk/keys";
 const ssvKeys = new SSVKeys();
+
+type KeySharesPayload = KeySharesItem["payload"];
 
 const createAndEncryptShares = async (
   privateKey: string,
-  operators: IOperator[],
+  operators: KeysharesOperator[],
 ) => {
   const threshold = await ssvKeys.createThreshold(privateKey, operators);
   const encryptedShares = await ssvKeys.encryptShares(

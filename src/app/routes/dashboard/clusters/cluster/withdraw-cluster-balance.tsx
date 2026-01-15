@@ -22,10 +22,11 @@ import { useLiquidateCluster } from "@/hooks/cluster/use-liquidate-cluster";
 import { useWithdrawClusterBalance } from "@/hooks/cluster/use-withdraw-cluster-balance";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { setOptimisticData } from "@/lib/react-query";
-import { isBigIntChanged, stringifyBigints } from "@/lib/utils/bigint";
+import { isBigIntChanged } from "@/lib/utils/bigint";
+import { mergeClusterSnapshot } from "@/lib/utils/cluster";
 import { formatSSV } from "@/lib/utils/number";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, type FC } from "react";
+import { type FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -41,12 +42,18 @@ export const WithdrawClusterBalance: FC = () => {
   const withdraw = useWithdrawClusterBalance(params.clusterHash!);
   const liquidate = useLiquidateCluster(params.clusterHash!);
 
-  const { balance: clusterBalance, cluster } = useClusterState(
+  const { balanceETH, balanceSSV, cluster } = useClusterState(
     params.clusterHash!,
     {
       balance: { watch: true },
     },
   );
+
+  const isMigrated = cluster.data?.migrated;
+  const symbol = isMigrated ? "ETH" : "SSV";
+  const clusterBalance = isMigrated
+    ? balanceETH.data ?? 0n
+    : balanceSSV.data ?? 0n;
 
   const [hasAgreed, setHasAgreed] = useState(false);
 
@@ -81,13 +88,12 @@ export const WithdrawClusterBalance: FC = () => {
             getClusterQueryOptions(params.clusterHash!).queryKey,
             (cluster) => {
               if (!cluster) return cluster;
-              return {
-                ...cluster,
-                ...stringifyBigints(event.args.cluster),
+
+              return mergeClusterSnapshot(cluster, event.args.cluster, {
                 isLiquidated: Boolean(
                   events.find((e) => e.eventName === "ClusterLiquidated"),
                 ),
-              };
+              });
             },
           );
 
@@ -110,7 +116,7 @@ export const WithdrawClusterBalance: FC = () => {
           Available Balance
         </Text>
         <Text variant="headline1">
-          {formatSSV(clusterBalance.data ?? 0n)} SSV
+          {formatSSV(clusterBalance)} {symbol}
         </Text>
       </Card>
       <Form {...form}>
@@ -126,7 +132,7 @@ export const WithdrawClusterBalance: FC = () => {
                 <FormControl>
                   <BigNumberInput
                     placeholder="0"
-                    max={clusterBalance.data ?? 0n}
+                    max={clusterBalance}
                     value={field.value}
                     onChange={field.onChange}
                     render={(props, ref) => (
@@ -143,18 +149,17 @@ export const WithdrawClusterBalance: FC = () => {
                             variant="secondary"
                             className="font-semibold px-4"
                             onClick={() =>
-                              form.setValue(
-                                "amount",
-                                clusterBalance.data ?? 0n,
-                                {
-                                  shouldValidate: true,
-                                },
-                              )
+                              form.setValue("amount", clusterBalance, {
+                                shouldValidate: true,
+                              })
                             }
                           >
                             MAX
                           </Button>
-                          <span className="text-[28px] font-medium">SSV</span>
+                          <span className="text-[28px] font-medium">
+                            {" "}
+                            {symbol}
+                          </span>
                         </div>
                       </div>
                     )}

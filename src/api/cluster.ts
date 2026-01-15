@@ -4,7 +4,7 @@ import {
   validatorsSearchParamsSerializer,
   type ValidatorsSearchSchema,
 } from "@/lib/search-parsers/validators-search-parsers";
-import { formatClusterData, getDefaultClusterData } from "@/lib/utils/cluster";
+import { toSolidityCluster, getDefaultClusterData } from "@/lib/utils/cluster";
 import { mapBeaconChainStatus } from "@/lib/utils/validator-status-mapping";
 import type {
   GetClusterResponse,
@@ -12,16 +12,30 @@ import type {
   PaginatedSearchValidatorsResponse,
 } from "@/types/api";
 import type { Address } from "abitype";
+import { merge } from "lodash-es";
 
-export const getCluster = (hash: string) =>
-  api
-    .get<GetClusterResponse>(endpoint("clusters", hash))
-    .then((res) => res.cluster);
+export const getCluster = (hash: string) => {
+  return api.get<GetClusterResponse>(endpoint("clusters", hash)).then((res) => {
+    const hasSSVBalance =
+      ![undefined, null, "0", 0].includes(res.cluster?.balance) &&
+      BigInt(res.cluster?.balance || 0) > 0;
+
+    const hasEthBalance =
+      ![undefined, null, "0", 0].includes(res.cluster?.ethBalance) &&
+      BigInt(res.cluster?.ethBalance || 0) > 0;
+
+    return res.cluster
+      ? merge(res.cluster, {
+          isSSVCluster: hasSSVBalance && !hasEthBalance,
+        })
+      : res.cluster;
+  });
+};
 
 export const getClusterData = (hash: string) =>
   getCluster(hash)
     .then((cluster) =>
-      cluster ? formatClusterData(cluster) : getDefaultClusterData(),
+      cluster ? toSolidityCluster(cluster) : getDefaultClusterData(),
     )
     .catch(() => getDefaultClusterData());
 
@@ -52,6 +66,7 @@ export const getPaginatedAccountClusters = ({
     )
     .then((response) => ({
       ...response,
+      clusters: response.clusters,
       pagination: {
         ...response.pagination,
         page: response.pagination.page || 1,
@@ -66,7 +81,6 @@ export const getPaginatedClusterValidators = (
   params: GetPaginatedClusterValidators,
 ) => {
   const searchParams = validatorsSearchParamsSerializer(params);
-  console.log("searchParams:", searchParams);
 
   return api
     .get<PaginatedSearchValidatorsResponse>(

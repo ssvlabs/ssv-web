@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Loading } from "@/components/ui/Loading";
 import LogoIcon from "@/assets/images/logo-icon.svg?react";
-import { links } from "@/config";
+import { links } from "@/config/links";
 
 export type ClusterTableProps = {
   clusters: Cluster[];
@@ -74,7 +74,10 @@ export const ClusterTable: FCProps = ({
           </TableHead>
           <TableHead>Operators</TableHead>
           <TableHead>Validators</TableHead>
-          <TableHead>Est Operational Runway</TableHead>
+          <TableHead>Effective Balance</TableHead>
+          <TableHead>Balance</TableHead>
+          <TableHead>Runway</TableHead>
+          <TableHead />
           <TableHead />
         </TableHeader>
         <TableBody>

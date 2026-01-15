@@ -10,7 +10,7 @@ import {
   Table,
   TableCell,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/grid-table";
 import { CopyBtn } from "@/components/ui/copy-btn";
 import { SsvExplorerBtn } from "@/components/ui/ssv-explorer-btn";
@@ -41,25 +41,25 @@ export type EffectiveBalanceFormProps = {
 };
 
 export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
-                                                                      validators,
-                                                                      onNext,
-                                                                      initialBalance,
-                                                                      isLoading = false,
-                                                                      backTo = "..",
-                                                                      backPersistSearch = false,
-                                                                      formatBalance,
-                                                                      showDetailedErrors = false
-                                                                    }) => {
+  validators,
+  onNext,
+  initialBalance,
+  isLoading = false,
+  backTo = "..",
+  backPersistSearch = false,
+  formatBalance,
+  showDetailedErrors = false,
+}) => {
   const validatorCount = validators.length;
 
   const estimatedTotalBalance = useMemo(() => {
-    const totalFromValidators = validators.reduce(
+    const totalEffectiveBalance = validators.reduce(
       (sum, validator) => sum + validator.effectiveBalance,
-      0
+      0,
     );
-    return totalFromValidators > 0
-      ? totalFromValidators
-      : validatorCount * globals.VALIDATOR_FULL_DEPOSIT_VALUE_IN_ETH;
+    const minEffectiveBalance =
+      validatorCount * globals.VALIDATOR_FULL_DEPOSIT_VALUE_IN_ETH;
+    return Math.max(totalEffectiveBalance, minEffectiveBalance);
   }, [validators, validatorCount]);
 
   const [hasEdited, setHasEdited] = useState(false);
@@ -74,7 +74,7 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
   const tabLabels = {
     all: "All",
     deposited: "Deposited",
-    notDeposited: "Not Deposited"
+    notDeposited: "Not Deposited",
   } as const;
 
   type TabKey = keyof typeof tabLabels;
@@ -82,15 +82,15 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
 
   const counts = useMemo(() => {
     const deposited = validators.filter(
-      (validator) => validator.status === "Deposited"
+      (validator) => validator.status === "Deposited",
     ).length;
     const notDeposited = validators.filter(
-      (validator) => validator.status === "Not Deposited"
+      (validator) => validator.status === "Not Deposited",
     ).length;
     return {
       all: validators.length,
       deposited,
-      notDeposited
+      notDeposited,
     };
   }, [validators]);
 
@@ -100,7 +100,7 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
       return validators.filter((validator) => validator.status === "Deposited");
     }
     return validators.filter(
-      (validator) => validator.status === "Not Deposited"
+      (validator) => validator.status === "Not Deposited",
     );
   }, [selectedTab, validators]);
 
@@ -143,8 +143,9 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
               </Tooltip>
             </div>
             <Text variant="body-2-medium" className="text-gray-600">
-              To accurately estimate your cluster’s fees and runway, please enter the total effective balance (in ETH)
-              of all validators you are onboarding.
+              To accurately estimate your cluster’s fees and runway, please
+              enter the total effective balance (in ETH) of all validators you
+              are onboarding.
             </Text>
           </div>
 
@@ -182,7 +183,7 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
               }
               inputProps={{
                 className:
-                  "text-2xl font-semibold text-gray-800 placeholder:text-gray-400"
+                  "text-2xl font-semibold text-gray-800 placeholder:text-gray-400",
               }}
               decimals={0}
               displayDecimals={0}
@@ -227,8 +228,9 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
                 {showDetailedErrors ? (
                   <>
                     The entered total projected balance is higher than the max
-                    EB per validator ({numberFormatter.format(maxEffectiveBalance)}{" "}
-                    ETH). Please double-check the balance entered.
+                    EB per validator (
+                    {numberFormatter.format(maxEffectiveBalance)} ETH). Please
+                    double-check the balance entered.
                   </>
                 ) : (
                   <>
@@ -305,8 +307,7 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
             </TabsList>
           </Tabs>
 
-          <div
-            className="flex items-center justify-between rounded-lg border border-primary-200 bg-primary-50 px-4 py-3">
+          <div className="flex items-center justify-between rounded-lg border border-primary-200 bg-primary-50 px-4 py-3">
             <Text variant="body-3-medium" className="text-gray-600">
               Estimated Effective Balance
             </Text>

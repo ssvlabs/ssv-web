@@ -117,7 +117,7 @@ export const SwitchWizardStepTwo = ({
       operatorsFee,
       liquidationCollateralPeriod: liquidationThreshold,
       minimumLiquidationCollateral,
-      validators: BigInt(validatorsAmount || 1),
+      effectiveBalance: BigInt(validatorsAmount || 1) * 32n,
     });
 
     const operatorsPerEth = operatorsCost / 32n;

@@ -9,12 +9,16 @@ import { useOperator } from "@/hooks/operator/use-operator";
 import { useOperatorPageParams } from "@/hooks/operator/use-operator-page-params";
 import { useGetOperatorEarnings } from "@/lib/contract-interactions/read/use-get-operator-earnings";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useWithdrawAllVersionOperatorEarnings } from "@/lib/contract-interactions/write/use-withdraw-all-version-operator-earnings.ts";
 import { cn } from "@/lib/utils/tw";
 import { type ComponentPropsWithoutRef, type FC } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router";
-import { useGetOperatorEarningsSSV } from "@/lib/contract-interactions/read/use-get-operator-earnings-ssv.ts";
+import {
+  useWithdrawAllOperatorEarnings,
+  useWithdrawAllOperatorEarningsSSV,
+  useWithdrawAllVersionOperatorEarnings,
+} from "@/lib/contract-interactions/hooks/setter";
+import { useGetOperatorEarningsSSV } from "@/lib/contract-interactions/hooks/getter";
 
 export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
   className,
@@ -33,16 +37,27 @@ export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
 
   const balanceEth = operatorEarningsEth.data ?? 0n;
   const balanceSSV = operatorEarningsSSV.data ?? 0n;
-  const hasBalance = balanceEth > 0n || balanceSSV > 0n;
+  const hasSSVBalance = balanceSSV > 0n;
+  const hasETHBalance = balanceEth > 0n;
+  const hasBalance = hasSSVBalance || hasETHBalance;
+  const hasBothBalances = hasSSVBalance && hasETHBalance;
 
-  const withdraw = useWithdrawAllVersionOperatorEarnings();
+  const withdrawAll = useWithdrawAllVersionOperatorEarnings();
+  const withdrawAllSSV = useWithdrawAllOperatorEarningsSSV();
+  const withdrawAllETH = useWithdrawAllOperatorEarnings();
+
+  const withdraw = hasBothBalances
+    ? withdrawAll
+    : hasETHBalance
+      ? withdrawAllETH
+      : withdrawAllSSV;
 
   const handleWithdrawAll = () => {
     if (!hasBalance) return;
 
-    return withdraw.write(
-      { operatorId: BigInt(operatorId!) },
-      withTransactionModal({
+    return withdraw.write({
+      args: { operatorId: BigInt(operatorId!) },
+      options: withTransactionModal({
         onMined: () => {
           toast({
             title: "Withdrawal Successful",
@@ -52,7 +67,7 @@ export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
           return () => navigate("..");
         },
       }),
-    );
+    });
   };
 
   return (
@@ -66,8 +81,8 @@ export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
           Available Balance
         </Text>
         <div className="flex flex-col gap-4">
-          <BalanceDisplay amount={balanceEth} token="ETH" />
-          <BalanceDisplay amount={balanceSSV} token="SSV" />
+          {hasETHBalance && <BalanceDisplay amount={balanceEth} token="ETH" />}
+          {hasSSVBalance && <BalanceDisplay amount={balanceSSV} token="SSV" />}
         </div>
         <Button
           disabled={!hasBalance}

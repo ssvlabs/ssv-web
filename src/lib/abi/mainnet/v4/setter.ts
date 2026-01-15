@@ -1,5 +1,10 @@
 export const MainnetV4SetterABI = [
   {
+    inputs: [],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -945,7 +950,33 @@ export const MainnetV4SetterABI = [
         type: "uint64",
       },
     ],
+    name: "LiquidationThresholdPeriodSSVUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "value",
+        type: "uint64",
+      },
+    ],
     name: "LiquidationThresholdPeriodUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "value",
+        type: "uint256",
+      },
+    ],
+    name: "MinimumLiquidationCollateralSSVUpdated",
     type: "event",
   },
   {
@@ -1016,6 +1047,25 @@ export const MainnetV4SetterABI = [
       },
     ],
     name: "NetworkFeeUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "oldFee",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newFee",
+        type: "uint256",
+      },
+    ],
+    name: "NetworkFeeUpdatedSSV",
     type: "event",
   },
   {
@@ -1141,6 +1191,19 @@ export const MainnetV4SetterABI = [
       },
     ],
     name: "OperatorFeeIncreaseLimitUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "maxFee",
+        type: "uint64",
+      },
+    ],
+    name: "OperatorMaximumFeeSSVUpdated",
     type: "event",
   },
   {
@@ -1703,6 +1766,18 @@ export const MainnetV4SetterABI = [
         name: "quorum",
         type: "uint256",
       },
+      {
+        indexed: false,
+        internalType: "uint32",
+        name: "oracleId",
+        type: "uint32",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "oracle",
+        type: "address",
+      },
     ],
     name: "WeightedRootProposed",
     type: "event",
@@ -2077,24 +2152,6 @@ export const MainnetV4SetterABI = [
       },
     ],
     name: "initialize",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "cssv_",
-        type: "address",
-      },
-      {
-        internalType: "uint64",
-        name: "cooldownDuration_",
-        type: "uint64",
-      },
-    ],
-    name: "initializeSSVStaking",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -2696,34 +2753,6 @@ export const MainnetV4SetterABI = [
   {
     inputs: [
       {
-        internalType: "uint64",
-        name: "firstStartEpoch",
-        type: "uint64",
-      },
-      {
-        internalType: "uint64",
-        name: "firstInterval",
-        type: "uint64",
-      },
-      {
-        internalType: "uint64",
-        name: "secondStartEpoch",
-        type: "uint64",
-      },
-      {
-        internalType: "uint64",
-        name: "secondInterval",
-        type: "uint64",
-      },
-    ],
-    name: "setOracleTimingConfig",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "uint16",
         name: "quorum",
         type: "uint16",
@@ -2888,11 +2917,37 @@ export const MainnetV4SetterABI = [
     inputs: [
       {
         internalType: "uint64",
+        name: "blocks",
+        type: "uint64",
+      },
+    ],
+    name: "updateLiquidationThresholdPeriodSSV",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint64",
         name: "maxFee",
         type: "uint64",
       },
     ],
     name: "updateMaximumOperatorFee",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint64",
+        name: "maxFee",
+        type: "uint64",
+      },
+    ],
+    name: "updateMaximumOperatorFeeSSV",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -2906,6 +2961,19 @@ export const MainnetV4SetterABI = [
       },
     ],
     name: "updateMinimumLiquidationCollateral",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "updateMinimumLiquidationCollateralSSV",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -3132,6 +3200,56 @@ export const MainnetV4SetterABI = [
       },
     ],
     name: "withdrawOperatorEarningsSSV",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint64[]",
+        name: "operatorIds",
+        type: "uint64[]",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        components: [
+          {
+            internalType: "uint32",
+            name: "validatorCount",
+            type: "uint32",
+          },
+          {
+            internalType: "uint64",
+            name: "networkFeeIndex",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "index",
+            type: "uint64",
+          },
+          {
+            internalType: "bool",
+            name: "active",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "balance",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct ISSVNetworkCore.Cluster",
+        name: "cluster",
+        type: "tuple",
+      },
+    ],
+    name: "withdrawSSV",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

@@ -6,6 +6,7 @@ import { keepPreviousData } from "@tanstack/react-query";
 import { useIsLiquidated } from "@/lib/contract-interactions/read/use-is-liquidated";
 import { useGetBalance } from "@/lib/contract-interactions/read/use-get-balance";
 import { useGetBalanceSSV } from "@/lib/contract-interactions/read/use-get-balance-ssv.ts";
+import { useGetEffectiveBalance } from "@/lib/contract-interactions/hooks/getter.ts";
 
 type Options = Partial<{ watch: boolean; enabled: boolean }>;
 export const useClusterState = (
@@ -14,6 +15,7 @@ export const useClusterState = (
     cluster?: Options;
     isLiquidated?: Options;
     balance?: Options;
+    effectiveBalance?: Options;
     watch?: boolean;
   } = {},
 ) => {
@@ -69,10 +71,28 @@ export const useClusterState = (
     ),
   });
 
+  const effectiveBalance = useGetEffectiveBalance(clusterSnapshot, {
+    watch: isLiquidated.data ? false : opts.effectiveBalance?.watch,
+    retry: isLiquidated.data ? false : undefined,
+    refetchOnWindowFocus: false,
+    placeholderData: (prev) => {
+      return (
+        keepPreviousData(prev) ?? (Number(cluster.data?.effectiveBalance) || 0)
+      );
+    },
+    enabled: Boolean(
+      account.address &&
+        cluster.data &&
+        (opts.effectiveBalance?.enabled ?? true) &&
+        !isLiquidated.data,
+    ),
+  });
+
   return {
     cluster,
     isLiquidated,
     balanceETH,
     balanceSSV,
+    effectiveBalance,
   };
 };

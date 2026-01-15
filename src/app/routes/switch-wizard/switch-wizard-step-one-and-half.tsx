@@ -50,6 +50,7 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
 
   return (
     <EffectiveBalanceForm
+      clusterHash={clusterHash}
       validators={validatorRows}
       onNext={handleNext}
       backTo={basePath}

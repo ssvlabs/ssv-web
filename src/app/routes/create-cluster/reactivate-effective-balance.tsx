@@ -11,7 +11,8 @@ import { EffectiveBalanceForm } from "@/components/effective-balance/effective-b
 const ReactivateEffectiveBalance = () => {
   const navigate = useNavigate();
   const { clusterHash } = useClusterPageParams();
-  const { validators, infiniteQuery } = useInfiniteClusterValidators(clusterHash);
+  const { validators, infiniteQuery } =
+    useInfiniteClusterValidators(clusterHash);
 
   const [validatorBalances, setValidatorBalances] = useState<
     Record<string, number>
@@ -46,7 +47,7 @@ const ReactivateEffectiveBalance = () => {
         const balanceMap: Record<string, number> = {};
 
         // Check if response has validators array or is a direct map
-        if ('validators' in response && Array.isArray(response.validators)) {
+        if ("validators" in response && Array.isArray(response.validators)) {
           response.validators.forEach((validator) => {
             const formattedKey = formatPublicKey(validator.publicKey);
             balanceMap[formattedKey] = validator.effectiveBalance;
@@ -82,6 +83,7 @@ const ReactivateEffectiveBalance = () => {
 
   return (
     <EffectiveBalanceForm
+      clusterHash={clusterHash}
       validators={validatorsWithStatus}
       onNext={handleNext}
       backTo=".."

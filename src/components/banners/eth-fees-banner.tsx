@@ -20,8 +20,17 @@ export const EthFeesBanner: FC = () => {
     <div className="bg-orange-500 flex items-center justify-center px-5 py-4 relative w-full">
       <div className="flex-1 flex items-center justify-center">
         <Text variant="body-2-medium" className="text-white text-center">
-          ETH fees are now active. A default network rate has been applied to
-          your operator. You may update this rate at any time in your dashboard.
+          ETH fees are now active. A default ETH fee has been applied to your
+          operators. You may update this fee at any time in your dashboard.{" "}
+          {/* <Text
+            as="a"
+            href="https://docs.ssv.network/operators/operator-onboarding/update-fee"
+            target="_blank"
+            variant="body-2-medium"
+            className="text-white underline"
+          >
+            Read more
+          </Text> */}
         </Text>
       </div>
       <button

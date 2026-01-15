@@ -45,7 +45,7 @@ const EffectiveValidatorsBalance = () => {
         const balanceMap: Record<string, number> = {};
 
         // Check if response has validators array or is a direct map
-        if ('validators' in response && Array.isArray(response.validators)) {
+        if ("validators" in response && Array.isArray(response.validators)) {
           response.validators.forEach((validator) => {
             const formattedKey = formatPublicKey(validator.publicKey);
             balanceMap[formattedKey] = validator.effectiveBalance;
@@ -78,7 +78,7 @@ const EffectiveValidatorsBalance = () => {
     <EffectiveBalanceForm
       validators={validatorsWithStatus}
       onNext={handleNext}
-      initialBalance={savedEffectiveBalance}
+      forceInitialBalance={savedEffectiveBalance}
       backTo="/"
       backPersistSearch
     />

@@ -5,7 +5,7 @@ import { Text } from "@/components/ui/text.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Alert, AlertDescription } from "@/components/ui/alert.tsx";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
-import { useEffect, useMemo, useState, type FC } from "react";
+import { type FC, useEffect, useMemo, useState } from "react";
 import {
   Table,
   TableCell,
@@ -22,6 +22,7 @@ import { FaCircleInfo } from "react-icons/fa6";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { numberFormatter } from "@/lib/utils/number";
 import { globals } from "@/config";
+import { useClusterState } from "@/hooks/cluster/use-cluster-state.ts";
 
 export type ValidatorItem = {
   publicKey: string;
@@ -32,7 +33,8 @@ export type ValidatorItem = {
 export type EffectiveBalanceFormProps = {
   validators: ValidatorItem[];
   onNext: (effectiveBalance: bigint) => void;
-  initialBalance?: bigint;
+  forceInitialBalance?: bigint;
+  clusterHash?: string;
   isLoading?: boolean;
   backTo?: string;
   backPersistSearch?: boolean;
@@ -43,14 +45,22 @@ export type EffectiveBalanceFormProps = {
 export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
   validators,
   onNext,
-  initialBalance,
+  forceInitialBalance,
   isLoading = false,
   backTo = "..",
   backPersistSearch = false,
+  clusterHash,
   formatBalance,
   showDetailedErrors = false,
 }) => {
   const validatorCount = validators.length;
+
+  const { effectiveBalance } = useClusterState(clusterHash!, {
+    watch: false,
+    isLiquidated: { enabled: false },
+    balance: { enabled: false },
+    effectiveBalance: { enabled: true },
+  });
 
   const estimatedTotalBalance = useMemo(() => {
     const totalEffectiveBalance = validators.reduce(
@@ -59,13 +69,16 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
     );
     const minEffectiveBalance =
       validatorCount * globals.VALIDATOR_FULL_DEPOSIT_VALUE_IN_ETH;
-    return Math.max(totalEffectiveBalance, minEffectiveBalance);
-  }, [validators, validatorCount]);
+    const beaconEB = Math.max(totalEffectiveBalance, minEffectiveBalance);
+    const contractEB = effectiveBalance.data || 0;
+    console.log(contractEB);
+    return contractEB - beaconEB >= 1 ? contractEB : beaconEB;
+  }, [validators, validatorCount, effectiveBalance.data]);
 
   const [hasEdited, setHasEdited] = useState(false);
   const [balanceValue, setBalanceValue] = useState(() => {
-    if (initialBalance && initialBalance > 0n) {
-      return initialBalance;
+    if (forceInitialBalance && forceInitialBalance > 0n) {
+      return forceInitialBalance;
     }
     return estimatedTotalBalance > 0 ? BigInt(estimatedTotalBalance) : 0n;
   });

@@ -20,9 +20,8 @@ export const EthFundingMigrationBanner: FC = () => {
     <div className="bg-orange-500 flex items-center justify-center px-5 py-4 relative w-full">
       <div className="flex-1 flex items-center justify-center">
         <Text variant="body-2-medium" className="text-white text-center">
-          Upgrade Required: The SSV Network is transitioning entirely to ETH
-          Funding. Migrate now to unlock Max Stake (up to 2048 ETH) per
-          validator. SSV deposits are now disabled.
+          ETH fees are now active. Switch to ETH to regain full cluster
+          management capabilities.
         </Text>
       </div>
       <button

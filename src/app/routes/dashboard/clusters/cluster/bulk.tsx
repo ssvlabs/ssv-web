@@ -23,7 +23,7 @@ import { Link } from "react-router-dom";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge.tsx";
 import { ValidatorsSearchAndFilters } from "@/components/cluster/validators-search-and-filters";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import type { Validator } from "@/types/api.ts";
 
 export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {

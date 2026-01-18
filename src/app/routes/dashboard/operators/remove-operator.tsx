@@ -11,7 +11,7 @@ import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitF
 import { useRemoveOperator } from "@/lib/contract-interactions/write/use-remove-operator";
 import { setOptimisticData } from "@/lib/react-query";
 import { useState, type FC } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { track } from "@/lib/analytics/mixpanel";
 
 export const RemoveOperator: FC = () => {

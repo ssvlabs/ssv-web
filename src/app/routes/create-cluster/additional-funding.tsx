@@ -24,7 +24,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils/tw";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useBalance } from "wagmi";
 import { useAccount } from "@/hooks/account/use-account";
 

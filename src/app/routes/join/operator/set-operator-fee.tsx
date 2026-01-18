@@ -16,7 +16,7 @@ import { BigNumberInput } from "@/components/ui/number-input";
 import { formatUnits, parseEther } from "viem";
 import { globals } from "@/config";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { useFocus } from "@/hooks/use-focus";
 import { useRegisterOperatorContext } from "@/guard/register-operator-guards";

@@ -39,7 +39,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { Collapse } from "react-collapse";
 import { useForm } from "react-hook-form";
-import { Navigate, useLocation, useNavigate } from "react-router";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Spacer } from "@/components/ui/spacer";

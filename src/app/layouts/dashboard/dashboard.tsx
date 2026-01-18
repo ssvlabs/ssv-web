@@ -15,8 +15,9 @@ import { cn } from "@/lib/utils/tw";
 import { useIsRestoring } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ComponentPropsWithRef, FC } from "react";
-import { Navigate } from "react-router";
+import { Navigate } from "react-router-dom";
 import { useLocationState } from "@/app/routes/router.tsx";
+
 import { matchPath } from "react-router-dom";
 import { EthFundingMigrationBanner } from "@/components/banners/eth-funding-migration-banner.tsx";
 

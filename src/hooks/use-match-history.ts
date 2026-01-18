@@ -1,6 +1,6 @@
 import { useLocationState } from "@/app/routes/router";
 import { useMemo } from "react";
-import { matchPath } from "react-router";
+import { matchPath } from "react-router-dom";
 
 export function useMatchHistory(pattern: string) {
   const state = useLocationState();

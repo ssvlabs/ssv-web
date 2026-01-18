@@ -20,7 +20,7 @@ import { useOperator } from "@/hooks/operator/use-operator";
 import { usePastingLimitExceededModal } from "@/signals/modal";
 import { X } from "lucide-react";
 import { useRef } from "react";
-import { useBlocker } from "react-router";
+import { useBlocker } from "react-router-dom";
 import { UnsavedChangesModal } from "../../../../../components/operator/operator-permission/unsaved-changes-modal";
 
 export const AuthorizedAddresses = () => {

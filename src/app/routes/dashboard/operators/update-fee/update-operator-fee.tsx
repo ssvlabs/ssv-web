@@ -25,7 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useForm } from "react-hook-form";
 import { FaCircleInfo } from "react-icons/fa6";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { formatUnits } from "viem";
 import { z } from "zod";
 

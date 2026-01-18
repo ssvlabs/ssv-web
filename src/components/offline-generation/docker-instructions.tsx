@@ -25,7 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 interface DockerInstructionsProps {
   operators: Operator[];

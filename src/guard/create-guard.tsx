@@ -3,8 +3,8 @@ import type { AppRoutePaths } from "@/app/routes/router";
 import { reset } from "@/lib/utils/valtio";
 import type { ReactNode } from "react";
 import React, { useMemo } from "react";
-import type { Location, Params, PathMatch } from "react-router";
-import { useLocation, matchPath, Navigate, useParams } from "react-router";
+import type { Location, Params, PathMatch } from "react-router-dom";
+import { useLocation, matchPath, Navigate, useParams } from "react-router-dom";
 import { useLocalStorage, useUnmount } from "react-use";
 import { proxy, useSnapshot } from "valtio";
 

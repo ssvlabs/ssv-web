@@ -17,7 +17,7 @@ import { formatBigintInput } from "@/lib/utils/number";
 import { createDefaultOperator } from "@/lib/utils/operator";
 import { shortenAddress } from "@/lib/utils/strings";
 import { type FC } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { encodeAbiParameters, parseAbiParameters } from "viem";
 import { useAccount } from "@/hooks/account/use-account";
 import { useRegisterOperatorContext } from "@/guard/register-operator-guards";

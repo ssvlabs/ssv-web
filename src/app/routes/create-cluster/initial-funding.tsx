@@ -28,7 +28,7 @@ import {
 } from "@/guard/register-validator-guard";
 import { useOperators } from "@/hooks/operator/use-operators";
 import { sumOperatorsFees } from "@/lib/utils/operator";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { ClusterFundingSummary } from "@/components/cluster/cluster-funding-summary";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";

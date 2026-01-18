@@ -32,7 +32,7 @@ import { camelCase, isEqual, mapKeys } from "lodash-es";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useForm } from "react-hook-form";
 import { FaCircleInfo } from "react-icons/fa6";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { MultipleSelector } from "@/components/ui/multi-select2";
 import { Combobox } from "@/components/ui/combobox";

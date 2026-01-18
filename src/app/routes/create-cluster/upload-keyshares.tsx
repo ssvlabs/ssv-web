@@ -23,7 +23,7 @@ import { useOperatorsUsability } from "@/hooks/keyshares/use-operators-usability
 import { createClusterHash } from "@/lib/utils/cluster";
 import { cn } from "@/lib/utils/tw";
 import { type ComponentPropsWithoutRef, type FC, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { ref } from "valtio";
 import { Tooltip } from "@/components/ui/tooltip";
 import { globals } from "@/config";

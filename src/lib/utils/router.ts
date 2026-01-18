@@ -1,5 +1,5 @@
 import { locationState } from "@/app/routes/router";
-import { matchPath } from "react-router";
+import { matchPath } from "react-router-dom";
 
 export const isFrom = (pattern: string) => {
   return matchPath(pattern, locationState.previous.pathname ?? "");

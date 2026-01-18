@@ -39,7 +39,7 @@ import { formatSSV } from "@/lib/utils/number";
 import { retryPromiseUntilSuccess } from "@/lib/utils/promise";
 import type { Address } from "abitype";
 import type { FC } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 export const RegisterValidatorConfirmation: FC = () => {
   const inCluster = Boolean(useClusterPageParams().clusterHash);

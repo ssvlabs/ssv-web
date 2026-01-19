@@ -54,7 +54,7 @@ export const useClusterRunway = (
   } = isETH ? ethNetworkFee : ssvNetworkFee;
 
   const operatorFees =
-    sumOperatorsFee(operators.data ?? [], isETH ? "eth" : "ssv") + networkFee;
+    sumOperatorsFee(operators.data ?? [], isETH ? "eth" : "ssv");
 
   const feesPerBlock = operatorFees + networkFee;
 

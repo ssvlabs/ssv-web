@@ -70,7 +70,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
   const { operators, infiniteQuery, fetched } = useSearchOperators({
     search: searchDebounced,
     ordering,
-    has_dkg_address: isDKGCheckedDebounced === "true",
+    has_dkg_address: isDKGCheckedDebounced === "true" || undefined,
     type: isVerifiedCheckedDebounced || undefined,
   });
 

@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils/tw";
 import type { Cluster } from "@/types/api";
 import { merge } from "lodash-es";
 import type { ComponentPropsWithoutRef, FC } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export type ClustersTableRowProps = {
   cluster: Cluster;
@@ -31,6 +31,9 @@ type FCProps = FC<
 >;
 
 export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
+  const location = useLocation();
+  const from = `${location.pathname}${location.search}${location.hash}`;
+
   const { data: apiCluster } = useCluster(cluster.clusterId);
   const runway = useClusterRunway(cluster.clusterId);
   const isLiquidated = apiCluster?.isLiquidated;
@@ -133,6 +136,7 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
           <Button
             as={Link}
             to={`/switch-wizard/${cluster.clusterId}`}
+            state={{ from }}
             onClick={(ev) => {
               ev.stopPropagation();
             }}

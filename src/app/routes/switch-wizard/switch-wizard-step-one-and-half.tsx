@@ -2,16 +2,21 @@ import { useInfiniteClusterValidators } from "@/hooks/cluster/use-infinite-clust
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { ValidatorStatus } from "@/lib/utils/validator-status-mapping";
 import { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { formatUnits, parseEther } from "viem";
 import { EffectiveBalanceForm } from "@/components/effective-balance/effective-balance-form";
 import { ethFormatter } from "@/lib/utils/number";
 
 export const SwitchWizardStepOneAndHalfRoute = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { clusterHash } = useClusterPageParams();
   const basePath = `/switch-wizard/${clusterHash}`;
   const { validators } = useInfiniteClusterValidators(clusterHash);
+
+  const locationState = location.state as { from?: unknown } | null;
+  const from =
+    typeof locationState?.from === "string" ? locationState.from : undefined;
 
   const validatorRows = useMemo(
     () =>
@@ -40,6 +45,7 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
     navigate(`${basePath}/step-two`, {
       state: {
         effectiveBalance: effectiveBalanceWei,
+        ...(from ? { from } : {}),
       },
     });
   };
@@ -54,6 +60,7 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
       validators={validatorRows}
       onNext={handleNext}
       backTo={basePath}
+      backState={from ? { from } : undefined}
       formatBalance={formatBalance}
       showDetailedErrors
     />

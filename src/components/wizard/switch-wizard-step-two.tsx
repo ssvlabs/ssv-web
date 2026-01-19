@@ -28,6 +28,7 @@ import {
 } from "@/lib/utils/keystore";
 import { useNetworkFee } from "@/hooks/use-ssv-network-fee";
 import { formatUnits } from "viem";
+import type { NavigateOptions } from "react-router-dom";
 import type { SwitchWizardStepThreeState } from "./switch-wizard-types";
 
 type SwitchWizardStepTwoProps = {
@@ -35,6 +36,7 @@ type SwitchWizardStepTwoProps = {
   onBack?: () => void;
   backButtonLabel?: string;
   navigateRoutePath?: string;
+  navigateRouteOptions?: NavigateOptions;
   operators?: Pick<Operator, "id" | "name" | "logo" | "fee" | "eth_fee">[];
   validatorsAmount?: number;
   effectiveBalance?: bigint;
@@ -61,6 +63,7 @@ export const SwitchWizardStepTwo = ({
   onBack,
   backButtonLabel = "Back",
   navigateRoutePath,
+  navigateRouteOptions,
   operators = [],
   validatorsAmount = 1,
   effectiveBalance,
@@ -184,6 +187,7 @@ export const SwitchWizardStepTwo = ({
       className="py-6"
       backButtonLabel={backButtonLabel}
       navigateRoutePath={navigateRoutePath}
+      navigateRouteOptions={navigateRouteOptions}
       onBackButtonClick={onBack}
     >
       <Form {...form}>

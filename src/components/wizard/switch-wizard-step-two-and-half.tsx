@@ -5,12 +5,14 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Container } from "@/components/ui/container";
 import { Text } from "@/components/ui/text";
+import type { NavigateOptions } from "react-router-dom";
 
 type SwitchWizardStepTwoAndHalfProps = {
   onNext: () => void;
   onBack?: () => void;
   backButtonLabel?: string;
   navigateRoutePath?: string;
+  navigateRouteOptions?: NavigateOptions;
 };
 
 export const SwitchWizardStepTwoAndHalf = ({
@@ -18,6 +20,7 @@ export const SwitchWizardStepTwoAndHalf = ({
   onBack,
   backButtonLabel = "Back",
   navigateRoutePath,
+  navigateRouteOptions,
 }: SwitchWizardStepTwoAndHalfProps) => {
   const [feesAcknowledged, setFeesAcknowledged] = useState(false);
   const [liquidationAcknowledged, setLiquidationAcknowledged] = useState(false);
@@ -36,6 +39,7 @@ export const SwitchWizardStepTwoAndHalf = ({
       className="py-6"
       backButtonLabel={backButtonLabel}
       navigateRoutePath={navigateRoutePath}
+      navigateRouteOptions={navigateRouteOptions}
       onBackButtonClick={onBack}
     >
       <Card

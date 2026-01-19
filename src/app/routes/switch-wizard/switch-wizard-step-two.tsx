@@ -5,7 +5,10 @@ import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
 import { useOperators } from "@/hooks/operator/use-operators";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import type { SwitchWizardStepThreeState } from "@/components/wizard/switch-wizard-types";
+import type {
+  SwitchWizardStepThreeState,
+  SwitchWizardStepTwoState,
+} from "@/components/wizard/switch-wizard-types";
 
 export const SwitchWizardStepTwoRoute = () => {
   const navigate = useNavigate();
@@ -15,9 +18,9 @@ export const SwitchWizardStepTwoRoute = () => {
     balance: { enabled: true },
   });
   const location = useLocation();
-  const effectiveBalance = (
-    location.state as { effectiveBalance?: bigint } | null
-  )?.effectiveBalance;
+  const stepState = location.state as SwitchWizardStepTwoState | null;
+  const effectiveBalance = stepState?.effectiveBalance;
+  const from = typeof stepState?.from === "string" ? stepState.from : undefined;
   const { data: clusterRunway } = useClusterRunway(clusterHash);
 
   const operatorsQuery = useOperators(cluster.data?.operators ?? []);
@@ -33,12 +36,14 @@ export const SwitchWizardStepTwoRoute = () => {
   return (
     <SwitchWizardStepTwo
       onNext={(nextState: SwitchWizardStepThreeState) => {
+        const nextStateWithFrom = from ? { ...nextState, from } : nextState;
         navigate(`${basePath}/step-two-and-half`, {
-          state: nextState,
+          state: nextStateWithFrom,
         });
       }}
       backButtonLabel="Back"
       navigateRoutePath={`${basePath}/step-one`}
+      navigateRouteOptions={from ? { state: { from } } : undefined}
       operators={operators}
       validatorsAmount={cluster.data?.validatorCount ?? 1}
       effectiveBalance={effectiveBalance}

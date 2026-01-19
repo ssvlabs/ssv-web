@@ -13,6 +13,7 @@ export const SwitchWizardStepTwoAndHalfRoute = () => {
   const hasRequiredState =
     typeof stepState?.effectiveBalance === "bigint" &&
     typeof stepState?.fundingDays === "number";
+  const backOptions = stepState ? { state: stepState } : undefined;
 
   useEffect(() => {
     if (!hasRequiredState) {
@@ -28,6 +29,7 @@ export const SwitchWizardStepTwoAndHalfRoute = () => {
       }}
       backButtonLabel="Back"
       navigateRoutePath={`${basePath}/step-two`}
+      navigateRouteOptions={backOptions}
     />
   );
 };

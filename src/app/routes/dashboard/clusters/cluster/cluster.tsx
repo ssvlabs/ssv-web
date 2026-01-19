@@ -17,7 +17,7 @@ import { useClusterState } from "@/hooks/cluster/use-cluster-state";
 import { useOperatorsUsability } from "@/hooks/keyshares/use-operators-usability";
 import { PlusIcon } from "lucide-react";
 import type { FC } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAccount } from "@/hooks/account/use-account";
 import { BalanceDisplay } from "@/components/ui/balance-display";
 import { SwitchToEthMenuOptionTooltip } from "@/components/cluster/switch-to-eth-menu-option-tooltip";
@@ -25,6 +25,8 @@ import { SwitchToEthMenuOptionTooltip } from "@/components/cluster/switch-to-eth
 export const Cluster: FC = () => {
   const account = useAccount();
   const { clusterHash } = useClusterPageParams();
+  const location = useLocation();
+  const from = `${location.pathname}${location.search}${location.hash}`;
 
   const { cluster, isLiquidated, balanceSSV, balanceETH } = useClusterState(
     clusterHash!,
@@ -116,6 +118,7 @@ export const Cluster: FC = () => {
                 <Button
                   as={Link}
                   to={`/switch-wizard/${clusterHash}`}
+                  state={{ from }}
                   size="xl"
                 >
                   Switch to ETH
@@ -154,6 +157,7 @@ export const Cluster: FC = () => {
                   <Button
                     as={Link}
                     to={`/switch-wizard/${clusterHash}`}
+                    state={{ from }}
                     size="xl"
                     variant="default"
                   >

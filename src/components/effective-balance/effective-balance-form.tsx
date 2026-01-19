@@ -23,6 +23,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { numberFormatter } from "@/lib/utils/number";
 import { globals } from "@/config";
 import { useClusterState } from "@/hooks/cluster/use-cluster-state.ts";
+import type { LinkProps } from "react-router-dom";
 
 export type ValidatorItem = {
   publicKey: string;
@@ -37,6 +38,7 @@ export type EffectiveBalanceFormProps = {
   clusterHash?: string;
   isLoading?: boolean;
   backTo?: string;
+  backState?: LinkProps["state"];
   backPersistSearch?: boolean;
   formatBalance?: (balance: number) => string;
   showDetailedErrors?: boolean;
@@ -48,6 +50,7 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
   forceInitialBalance,
   isLoading = false,
   backTo = "..",
+  backState,
   backPersistSearch = false,
   clusterHash,
   formatBalance,
@@ -145,7 +148,11 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
 
   return (
     <Container variant="vertical" size="xl" className="py-6 h-full">
-      <NavigateBackBtn to={backTo} persistSearch={backPersistSearch} />
+      <NavigateBackBtn
+        to={backTo}
+        state={backState}
+        persistSearch={backPersistSearch}
+      />
       <div className="flex w-full gap-6">
         <Card className="w-full flex-1 flex flex-col gap-6 p-8 bg-white rounded-2xl">
           <div className="flex flex-col gap-3">

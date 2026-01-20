@@ -1,10 +1,10 @@
-import type { FC, ComponentPropsWithoutRef } from "react";
-import type { Pagination as IPagination, Cluster } from "@/types/api";
+import type { ComponentPropsWithoutRef, FC, ReactNode } from "react";
+import type { Cluster, Pagination as IPagination } from "@/types/api";
 import {
-  TableHeader,
-  TableHead,
-  TableBody,
   Table,
+  TableBody,
+  TableHead,
+  TableHeader,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils/tw";
 import { Pagination } from "@/components/ui/pagination";
@@ -18,11 +18,15 @@ import { Link } from "react-router-dom";
 import { Loading } from "@/components/ui/Loading";
 import LogoIcon from "@/assets/images/logo-icon.svg?react";
 import { links } from "@/config/links";
+import type { OrderBy, Sort } from "@/api/cluster";
+import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 
 export type ClusterTableProps = {
   clusters: Cluster[];
   onClusterClick: (cluster: Cluster) => void;
   pagination: IPagination;
+  orderBy?: `${OrderBy}:${Sort}`;
+  onOrderByChange?: (orderBy: `${OrderBy}:${Sort}`) => void;
   isEmpty?: boolean;
   isLoading?: boolean;
 };
@@ -37,10 +41,56 @@ export const ClusterTable: FCProps = ({
   clusters,
   onClusterClick,
   pagination,
+  orderBy: orderByProp = "id:asc",
+  onOrderByChange,
   className,
   isEmpty,
   ...props
 }) => {
+  const [orderBy, sort] = orderByProp.split(":") as [OrderBy, Sort];
+
+  const handleSort = (field: OrderBy) => {
+    if (!onOrderByChange) return;
+
+    if (orderBy !== field) {
+      onOrderByChange(`${field}:desc`);
+    } else if (sort === "desc") {
+      onOrderByChange(`${field}:asc`);
+    } else {
+      onOrderByChange("id:asc");
+    }
+  };
+
+  const renderSortableHeader = (header: {
+    type: OrderBy;
+    title: ReactNode;
+  }) => {
+    const isActive = orderBy === header.type;
+
+    return (
+      <div
+        className="cursor-pointer flex gap-1 justify-start items-center flex-nowrap text-nowrap font-normal"
+        onClick={() => handleSort(header.type)}
+      >
+        {header.title}
+        <div className="size-4 flex flex-col justify-center items-center gap-0">
+          <FaAngleUp
+            className={cn("p-0 size-4 mb-[-2px]", {
+              "text-primary-500": isActive && sort === "asc",
+              "text-gray-400": !isActive,
+            })}
+          />
+          <FaAngleDown
+            className={cn("p-0 size-4 mt-[-2px]", {
+              "text-primary-500": isActive && sort === "desc",
+              "text-gray-400": !isActive,
+            })}
+          />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col w-full">
       <Table
@@ -66,17 +116,32 @@ export const ClusterTable: FCProps = ({
                 </>
               }
             >
-              <div className="flex gap-2 items-center">
-                <Text>Cluster ID</Text>
-                <FaCircleInfo className="size-3 text-gray-500" />
-              </div>
+              {renderSortableHeader({
+                type: "id",
+                title: (
+                  <span className="flex gap-2 items-center">
+                    <span>Cluster ID</span>
+                    <FaCircleInfo className="size-3 text-gray-500" />
+                  </span>
+                ),
+              })}
             </Tooltip>
           </TableHead>
           <TableHead>Operators</TableHead>
-          <TableHead>Validators</TableHead>
-          <TableHead>Effective Balance</TableHead>
-          <TableHead>Balance</TableHead>
-          <TableHead>Runway</TableHead>
+          <TableHead>
+            {renderSortableHeader({
+              type: "validatorCount",
+              title: "Validators",
+            })}
+          </TableHead>
+          <TableHead>
+            {renderSortableHeader({
+              type: "effectiveBalance",
+              title: "Total Effective Balance",
+            })}
+          </TableHead>
+          <TableHead>Cluster Balance</TableHead>
+          <TableHead>Operational Runway</TableHead>
           <TableHead />
           <TableHead />
         </TableHeader>

@@ -4,7 +4,7 @@ import {
   validatorsSearchParamsSerializer,
   type ValidatorsSearchSchema,
 } from "@/lib/search-parsers/validators-search-parsers";
-import { toSolidityCluster, getDefaultClusterData } from "@/lib/utils/cluster";
+import { getDefaultClusterData, toSolidityCluster } from "@/lib/utils/cluster";
 import { mapBeaconChainStatus } from "@/lib/utils/validator-status-mapping";
 import type {
   GetClusterResponse,
@@ -39,16 +39,21 @@ export const getClusterData = (hash: string) =>
     )
     .catch(() => getDefaultClusterData());
 
+export type OrderBy = "id" | "validatorCount" | "effectiveBalance";
+export type Sort = "asc" | "desc";
+
 export type GetPaginatedAccountClusters = {
   account: string | Address;
   page?: number;
   perPage?: number;
+  ordering?: `${OrderBy}:${Sort}`;
 };
 
 export const getPaginatedAccountClusters = ({
   account,
   page = 1,
   perPage = 10,
+  ordering = "id:asc",
 }: GetPaginatedAccountClusters) => {
   return api
     .get<GetPaginatedClustersResponse>(
@@ -59,7 +64,7 @@ export const getPaginatedAccountClusters = ({
           page: page.toString(),
           perPage: perPage.toString(),
           withFee: "true",
-          ordering: "id:asc",
+          ordering,
           operatorDetails: "true",
         }).toString()}`,
       ),

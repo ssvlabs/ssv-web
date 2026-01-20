@@ -10,7 +10,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { FaCircleInfo } from "react-icons/fa6";
 import type { Operator } from "@/types/api";
 import { getYearlyFee } from "@/lib/utils/operator";
-import { currencyFormatter, ethFormatter, formatSSV } from "@/lib/utils/number";
+import { currencyFormatter, formatETH, formatSSV } from "@/lib/utils/number";
 import { formatUnits } from "viem";
 import { useRates } from "@/hooks/use-rates";
 import type { SwitchWizardFundingSummary } from "./switch-wizard-types";
@@ -57,15 +57,14 @@ export const SwitchWizardStepThree = ({
   const validatorsCount = validatorsAmount ?? 1;
   const isMultiValidator = validatorsCount > 1;
 
-  const formatETH = (value: bigint) =>
-    `${ethFormatter.format(+formatUnits(value, 18))} ETH`;
+  const formatEthDisplay = (value: bigint) => `${formatETH(value)} ETH`;
   const formatUsd = (value: bigint) =>
     `~${currencyFormatter.format(ethRate * +formatUnits(value, 18))}`;
   const formatEthValue = (value?: bigint) =>
-    value !== undefined ? formatETH(value) : "-";
+    value !== undefined ? formatEthDisplay(value) : "-";
 
   const effectiveBalanceDisplay =
-    effectiveBalance !== undefined ? formatETH(effectiveBalance) : "-";
+    effectiveBalance !== undefined ? formatEthDisplay(effectiveBalance) : "-";
   const totalDepositFallback = fundingSummary
     ? fundingSummary.operatorsSubtotal +
       fundingSummary.networkSubtotal +
@@ -128,7 +127,7 @@ export const SwitchWizardStepThree = ({
                 />
                 <div className="text-end space-y-1">
                   <Text variant="body-2-medium">
-                    {formatETH(yearlyEthFeeDisplay)}
+                    {formatEthDisplay(yearlyEthFeeDisplay)}
                   </Text>
                   <Text variant="body-3-medium" className="text-gray-500">
                     {formatUsd(yearlyEthFeeDisplay)} /year{yearlyFeeSuffix}
@@ -215,7 +214,7 @@ export const SwitchWizardStepThree = ({
             <div className="flex flex-col items-end">
               <Text variant="headline4">
                 {totalDeposit !== undefined
-                  ? formatETH(totalDeposit)
+                  ? formatEthDisplay(totalDeposit)
                   : formatEthValue(totalDepositFallback)}
               </Text>
               <Text variant="body-3-medium" className="text-gray-500">

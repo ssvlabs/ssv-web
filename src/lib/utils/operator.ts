@@ -1,12 +1,12 @@
 import { globals } from "@/config";
 import type { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
 import { fetchIsAddressWhitelistedInWhitelistingContract } from "@/lib/contract-interactions/read/use-is-address-whitelisted-in-whitelisting-contract";
-import { ethFormatter, sortNumbers } from "@/lib/utils/number";
+import { formatETH, sortNumbers } from "@/lib/utils/number";
 import type { Operator } from "@/types/api";
 import type { Operator as KeysharesOperator } from "@/types/keyshares";
 import { difference } from "lodash-es";
 import type { Address, DecodeEventLogReturnType } from "viem";
-import { formatUnits, isAddressEqual } from "viem";
+import { isAddressEqual } from "viem";
 
 type GetYearlyFeeOpts = {
   format?: boolean;
@@ -19,8 +19,7 @@ export function getYearlyFee(
   opts?: GetYearlyFeeOpts,
 ): string | bigint {
   const yearlyFee = fee * BigInt(globals.BLOCKS_PER_YEAR);
-  if (opts?.format)
-    return ethFormatter.format(+formatUnits(yearlyFee, 18)) + " ETH";
+  if (opts?.format) return `${formatETH(yearlyFee)} ETH`;
   return yearlyFee;
 }
 

@@ -48,12 +48,43 @@ export const operatorETHFeeFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 5,
 });
 
-export const formatSSV = (num: bigint, decimals = 18) =>
-  ethFormatter.format(+formatUnits(num, decimals));
+const MIN_DISPLAYABLE_ETH = 1e-8;
+const SIGNIFICANT_DIGITS = 2;
 
-export const formatETH = formatSSV;
-export const formatEffectiveBalance = (num: bigint) =>
-  ethFormatter.format(+formatUnits(num, 0)); // assuming EB is in full ETH
+const formatTinyEth = (value: number): string => {
+  const sign = value < 0 ? "-" : "";
+  const absValue = Math.abs(value);
+  if (absValue === 0) return "0";
+
+  const clampedValue = Math.max(absValue, MIN_DISPLAYABLE_ETH);
+  const order = Math.floor(Math.log10(clampedValue));
+  const scale = Math.pow(10, SIGNIFICANT_DIGITS - 1 - order);
+  const truncated = Math.floor(clampedValue * scale) / scale;
+  const decimals = Math.max(0, -order + (SIGNIFICANT_DIGITS - 1));
+  const raw = truncated.toFixed(decimals);
+  const trimmed = raw.replace(/\.?0+$/, "");
+
+  return `${sign}${trimmed}`;
+};
+
+export function formatETH(value: number): string;
+export function formatETH(value: bigint, decimals?: number): string;
+export function formatETH(value: bigint | number, decimals = 18): string {
+  const isNumber = typeof value === "number";
+  const isZero = isNumber ? value === 0 : value === 0n;
+  const numberValue = isNumber ? value : Number(formatUnits(value, decimals));
+  const formatted = ethFormatter.format(numberValue);
+  if (formatted !== "0" || isZero) {
+    return formatted;
+  }
+
+  return formatTinyEth(numberValue);
+}
+
+export const formatSSV = (num: bigint, decimals = 18) =>
+  formatETH(num, decimals);
+
+export const formatEffectiveBalance = (num: bigint) => formatETH(num, 0); // assuming EB is in full ETH
 
 export const formatBigintInput = (num: bigint, decimals = 18) =>
   bigintFormatter.format(+formatUnits(num, decimals));

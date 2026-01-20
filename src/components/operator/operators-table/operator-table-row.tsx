@@ -78,7 +78,7 @@ export const OperatorTableRow: FCProps = ({
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 text-gray-800 font-medium">
             <img src="/images/networks/dark.svg" className="size-5" />{" "}
-            {formatSSV(BigInt(operator.effective_balance), 9)}
+            {operator.effective_balance}
           </div>
         </div>
       </TableCell>

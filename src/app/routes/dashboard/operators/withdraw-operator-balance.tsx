@@ -16,23 +16,23 @@ import { useNavigate } from "react-router-dom";
 import {
   useWithdrawAllOperatorEarnings,
   useWithdrawAllOperatorEarningsSSV,
-  useWithdrawAllVersionOperatorEarnings,
+  useWithdrawAllVersionOperatorEarnings
 } from "@/lib/contract-interactions/hooks/setter";
 import { useGetOperatorEarningsSSV } from "@/lib/contract-interactions/hooks/getter";
 
 export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
-  className,
-  ...props
-}) => {
+                                                                               className,
+                                                                               ...props
+                                                                             }) => {
   const navigate = useNavigate();
   const { operatorId } = useOperatorPageParams();
 
   const { data: operator } = useOperator();
   const operatorEarningsEth = useGetOperatorEarnings({
-    id: BigInt(operatorId!),
+    id: BigInt(operatorId!)
   });
   const operatorEarningsSSV = useGetOperatorEarningsSSV({
-    id: BigInt(operatorId!),
+    id: BigInt(operatorId!)
   });
 
   const balanceEth = operatorEarningsEth.data ?? 0n;
@@ -60,13 +60,13 @@ export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
       options: withTransactionModal({
         onMined: () => {
           toast({
-            title: "Withdrawal Successful",
+            title: "Withdrawal Successful"
           });
           operatorEarningsEth.refetch();
           operatorEarningsSSV.refetch();
           return () => navigate("..");
-        },
-      }),
+        }
+      })
     });
   };
 
@@ -81,7 +81,7 @@ export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
           Available Balance
         </Text>
         <div className="flex flex-col gap-4">
-          {hasETHBalance && <BalanceDisplay amount={balanceEth} token="ETH" />}
+          <BalanceDisplay amount={balanceEth} token="ETH" />
           {hasSSVBalance && <BalanceDisplay amount={balanceSSV} token="SSV" />}
         </div>
         <Button

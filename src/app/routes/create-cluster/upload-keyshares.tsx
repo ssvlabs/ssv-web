@@ -106,8 +106,8 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
         .slice(0, context.selectedValidatorsCount)
         .map((share) => share.payload) || [];
 
-    if (cluster.data)
-      return navigate(`/join/validator/${cluster.data.clusterId}/funding`);
+    // if (cluster.data)
+    //   return navigate(`/join/validator/${cluster.data.clusterId}/funding`);
     navigate("../effective-balance");
   };
 

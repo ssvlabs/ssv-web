@@ -23,6 +23,8 @@ import { useRegisterOperatorContext } from "@/guard/register-operator-guards";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRates } from "@/hooks/use-rates";
 import { currencyFormatter } from "@/lib/utils/number";
+import { Tooltip } from "@/components/ui/tooltip";
+import { FaCircleInfo } from "react-icons/fa6";
 
 const minimumFee =
   globals.BLOCKS_PER_YEAR * globals.MINIMUM_OPERATOR_FEE_PER_BLOCK;
@@ -112,7 +114,12 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
             name="yearlyFee"
             render={({ field, fieldState }) => (
               <FormItem>
-                <FormLabel>Annual fee</FormLabel>
+                <Tooltip content="The yearly fee per 32 ETH validator unit">
+                  <FormLabel className="flex items-center gap-1">
+                    <Text>Annual fee</Text>
+                    <FaCircleInfo className="size-4 text-gray-500" />
+                  </FormLabel>
+                </Tooltip>
                 <FormControl>
                   <BigNumberInput
                     displayDecimals={7}

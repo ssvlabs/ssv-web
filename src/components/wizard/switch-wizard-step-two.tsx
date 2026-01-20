@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/tw";
 import { Spacer } from "@/components/ui/spacer";
 import type { Operator } from "@/types/api";
-import { currencyFormatter, ethFormatter } from "@/lib/utils/number";
+import { currencyFormatter, formatETH } from "@/lib/utils/number";
 import { useRates } from "@/hooks/use-rates";
 import {
   computeDailyAmount,
@@ -154,9 +154,7 @@ export const SwitchWizardStepTwo = ({
   const customCosts = getCostsForDays(values.custom);
 
   const formatEth = (value?: bigint) =>
-    value !== undefined
-      ? `${ethFormatter.format(+formatUnits(value, 18))} ETH`
-      : "-";
+    value !== undefined ? `${formatETH(value)} ETH` : "-";
 
   const formatUsd = (value?: bigint) =>
     value !== undefined

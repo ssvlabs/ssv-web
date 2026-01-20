@@ -54,11 +54,20 @@ export const ClusterTable: FCProps = ({
 
     if (orderBy !== field) {
       onOrderByChange(`${field}:desc`);
-    } else if (sort === "desc") {
-      onOrderByChange(`${field}:asc`);
-    } else {
-      onOrderByChange("id:asc");
+      return;
     }
+
+    if (sort === "desc") {
+      onOrderByChange(`${field}:asc`);
+      return;
+    }
+
+    if (field === "id") {
+      onOrderByChange(`${field}:desc`);
+      return;
+    }
+
+    onOrderByChange("id:asc");
   };
 
   const renderSortableHeader = (header: {

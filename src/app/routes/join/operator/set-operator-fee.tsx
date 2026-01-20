@@ -1,4 +1,4 @@
-import { type FC, type ComponentPropsWithoutRef } from "react";
+import { type ComponentPropsWithoutRef, type FC } from "react";
 import { Container } from "@/components/ui/container";
 import { Card, CardHeader } from "@/components/ui/card";
 import {
@@ -87,9 +87,11 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
             Operators set their own fees, denominated in ETH, which are charged
             per 32 ETH of validator effective balance for each validator that
             selects them as an operator. As a result, operator earnings scale
-            with the effective balance of the validators they manage. Fees are
-            presented as annual amounts, but in practice are paid to operators
-            continuously as an ongoing process, per each passed block.
+            with the effective balance of the validators they manage.
+          </Text>
+          <Text variant="body-2-medium">
+            Fees are presented as annual amounts, but in practice are paid to
+            operators continuously as an ongoing process, per each passed block.
           </Text>
           <Text variant="body-2-medium">
             Your earnings are paid to your operator ETH balance and can be

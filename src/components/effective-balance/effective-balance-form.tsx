@@ -5,25 +5,18 @@ import { Text } from "@/components/ui/text.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Alert, AlertDescription } from "@/components/ui/alert.tsx";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
-import { type FC, useEffect, useMemo, useState } from "react";
-import {
-  Table,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/grid-table";
-import { CopyBtn } from "@/components/ui/copy-btn";
-import { BeaconchainBtn } from "@/components/ui/ssv-explorer-btn";
-import { add0x, shortenAddress } from "@/lib/utils/strings";
-import { Badge } from "@/components/ui/badge";
+import { Form } from "@/components/ui/form";
+import { type FC, useEffect, useId, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { BigNumberInput } from "@/components/ui/number-input";
 import { Tooltip } from "@/components/ui/tooltip";
 import { FaCircleInfo } from "react-icons/fa6";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { numberFormatter } from "@/lib/utils/number";
 import { globals } from "@/config";
-import { useClusterState } from "@/hooks/cluster/use-cluster-state.ts";
 import type { LinkProps } from "react-router-dom";
+import { ValidatorsBreakdown } from "./validators-breakdown";
 
 export type ValidatorItem = {
   publicKey: string;
@@ -40,7 +33,6 @@ export type EffectiveBalanceFormProps = {
   backTo?: string;
   backState?: LinkProps["state"];
   backPersistSearch?: boolean;
-  formatBalance?: (balance: number) => string;
   showDetailedErrors?: boolean;
 };
 
@@ -52,98 +44,62 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
   backTo = "..",
   backState,
   backPersistSearch = false,
-  clusterHash,
-  formatBalance,
   showDetailedErrors = false,
 }) => {
   const validatorCount = validators.length;
 
-  const { effectiveBalance } = useClusterState(clusterHash!, {
-    watch: false,
-    isLiquidated: { enabled: false },
-    balance: { enabled: false },
-    effectiveBalance: { enabled: true },
-  });
-
-  const estimatedTotalBalance = useMemo(() => {
+  const estimatedEffectiveBalance = useMemo(() => {
     const totalEffectiveBalance = validators.reduce(
       (sum, validator) => sum + validator.effectiveBalance,
       0,
     );
+
     const minEffectiveBalance =
-      validatorCount * globals.VALIDATOR_FULL_DEPOSIT_VALUE_IN_ETH;
-    const beaconEB = Math.max(totalEffectiveBalance, minEffectiveBalance);
-    const contractEB = effectiveBalance.data || 0;
-    console.log(contractEB);
-    return contractEB - beaconEB >= 1 ? contractEB : beaconEB;
-  }, [validators, validatorCount, effectiveBalance.data]);
+      validatorCount * globals.MIN_VALIDATOR_EFFECTIVE_BALANCE;
+    return Math.max(totalEffectiveBalance, minEffectiveBalance);
+  }, [validators, validatorCount]);
 
-  const [hasEdited, setHasEdited] = useState(false);
-  const [balanceValue, setBalanceValue] = useState(() => {
-    if (forceInitialBalance && forceInitialBalance > 0n) {
-      return forceInitialBalance;
-    }
-    return estimatedTotalBalance > 0 ? BigInt(estimatedTotalBalance) : 0n;
-  });
-  const [isConfirmed, setIsConfirmed] = useState(false);
-
-  const tabLabels = {
-    all: "All",
-    deposited: "Deposited",
-    notDeposited: "Not Deposited",
-  } as const;
-
-  type TabKey = keyof typeof tabLabels;
-  const [selectedTab, setSelectedTab] = useState<TabKey>("all");
-
-  const counts = useMemo(() => {
-    const deposited = validators.filter(
-      (validator) => validator.status === "Deposited",
-    ).length;
-    const notDeposited = validators.filter(
-      (validator) => validator.status === "Not Deposited",
-    ).length;
-    return {
-      all: validators.length,
-      deposited,
-      notDeposited,
-    };
-  }, [validators]);
-
-  const filteredValidators = useMemo(() => {
-    if (selectedTab === "all") return validators;
-    if (selectedTab === "deposited") {
-      return validators.filter((validator) => validator.status === "Deposited");
-    }
-    return validators.filter(
-      (validator) => validator.status === "Not Deposited",
-    );
-  }, [selectedTab, validators]);
-
-  const numericBalance = Number(balanceValue);
   const maxEffectiveBalance = validatorCount * 2048;
 
-  const isLowBalance =
-    numericBalance > 0 &&
-    estimatedTotalBalance > 0 &&
-    numericBalance < estimatedTotalBalance;
-  const isHighBalance =
-    maxEffectiveBalance > 0 && numericBalance > maxEffectiveBalance;
-  const isInvalidBalance = isLowBalance || isHighBalance;
+  const schema = useMemo(
+    () =>
+      z.object({
+        totalEffectiveBalance: z
+          .number()
+          .positive({ message: "Balance must be greater than 0" })
+          .min(estimatedEffectiveBalance)
+          .max(maxEffectiveBalance),
+      }),
+    [estimatedEffectiveBalance, maxEffectiveBalance],
+  );
+  const totalEffectiveBalance = Number(
+    forceInitialBalance || estimatedEffectiveBalance,
+  );
+
+  const form = useForm<z.infer<typeof schema>>({
+    defaultValues: {
+      totalEffectiveBalance,
+    },
+    resolver: zodResolver(schema),
+    mode: "all",
+  });
 
   useEffect(() => {
-    if (!hasEdited) {
-      setBalanceValue(BigInt(estimatedTotalBalance));
-    }
-  }, [hasEdited, estimatedTotalBalance]);
+    form.setValue("totalEffectiveBalance", totalEffectiveBalance);
+  }, [form, totalEffectiveBalance]);
 
-  const handleBalanceChange = (value: bigint) => {
-    setHasEdited(true);
-    setBalanceValue(value);
-  };
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const confirmId = useId();
+
+  const balanceValue = form.watch("totalEffectiveBalance");
+  console.log("balanceValue:", balanceValue);
+
+  const balanceError = form.formState.errors.totalEffectiveBalance?.type;
+  const isLowBalance = balanceError === "too_small";
+  const isHighBalance = balanceError === "too_big";
 
   const handleNext = () => {
-    onNext(balanceValue);
+    onNext(BigInt(balanceValue));
   };
 
   return (
@@ -169,46 +125,54 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
             </Text>
           </div>
 
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2">
-              <Text
-                as="label"
-                htmlFor="total-effective-balance"
-                variant="body-3-semibold"
-                className="text-gray-500"
-              >
-                Total Effective Balance
-              </Text>
-              <Tooltip content="Sum of validator effective balances in ETH.">
-                <FaCircleInfo className="size-3 text-gray-400" />
-              </Tooltip>
+          <Form {...form}>
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-2">
+                <Text
+                  as="label"
+                  htmlFor="total-effective-balance"
+                  variant="body-3-semibold"
+                  className="text-gray-500"
+                >
+                  Total Effective Balance
+                </Text>
+                <Tooltip content="Sum of validator effective balances in ETH.">
+                  <FaCircleInfo className="size-3 text-gray-400" />
+                </Tooltip>
+              </div>
+              <BigNumberInput
+                id="total-effective-balance"
+                value={BigInt(balanceValue)}
+                onChange={(value) => {
+                  form.setValue("totalEffectiveBalance", Number(value), {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                    shouldTouch: true,
+                  });
+                }}
+                className="h-[64px] border-primary-200 bg-white focus-within:border-primary-500"
+                placeholder="0"
+                rightSlot={
+                  <div className="flex items-center gap-2 pr-1 text-gray-500">
+                    <img
+                      src="/images/networks/dark.svg"
+                      alt="ETH"
+                      className="size-4"
+                    />
+                    <Text variant="body-2-medium" className="text-gray-500">
+                      ETH
+                    </Text>
+                  </div>
+                }
+                inputProps={{
+                  className:
+                    "text-2xl font-semibold text-gray-800 placeholder:text-gray-400",
+                }}
+                decimals={0}
+                displayDecimals={0}
+              />
             </div>
-            <BigNumberInput
-              id="total-effective-balance"
-              value={balanceValue}
-              onChange={handleBalanceChange}
-              className="h-[64px] border-primary-200 bg-white focus-within:border-primary-500"
-              placeholder="0"
-              rightSlot={
-                <div className="flex items-center gap-2 pr-1 text-gray-500">
-                  <img
-                    src="/images/networks/dark.svg"
-                    alt="ETH"
-                    className="size-4"
-                  />
-                  <Text variant="body-2-medium" className="text-gray-500">
-                    ETH
-                  </Text>
-                </div>
-              }
-              inputProps={{
-                className:
-                  "text-2xl font-semibold text-gray-800 placeholder:text-gray-400",
-              }}
-              decimals={0}
-              displayDecimals={0}
-            />
-          </div>
+          </Form>
 
           <Alert variant="warning" className="rounded-lg text-gray-700">
             <AlertDescription className="text-sm font-medium">
@@ -227,9 +191,10 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
                 {showDetailedErrors ? (
                   <>
                     The entered total projected balance is lower than our
-                    estimation ({numberFormatter.format(estimatedTotalBalance)}{" "}
-                    ETH). This may lead to an insufficient runway. Please
-                    double-check the balance entered.
+                    estimation (
+                    {numberFormatter.format(estimatedEffectiveBalance)} ETH).
+                    This may lead to an insufficient runway. Please double-check
+                    the balance entered.
                   </>
                 ) : (
                   <>
@@ -262,150 +227,42 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
             </Alert>
           )}
 
-          <div className="flex items-start gap-3">
+          <label
+            htmlFor={confirmId}
+            className="flex items-start gap-3 cursor-pointer"
+          >
             <Checkbox
+              id={confirmId}
               checked={isConfirmed}
-              onCheckedChange={(checked) => setIsConfirmed(checked === true)}
+              onCheckedChange={(checked) => {
+                form.trigger();
+                return setIsConfirmed(checked === true);
+              }}
               className="mt-0.5"
             />
-            <Text variant="body-3-medium" className="text-gray-700">
+            <Text as="span" variant="body-3-medium" className="text-gray-700">
               I confirm that the total projected balance is accurate, and I
               understand that an insufficient funding balance based on this
               amount could lead to my cluster being liquidated.
             </Text>
-          </div>
+          </label>
 
           <Button
             size="xl"
             width="full"
             className="font-semibold"
             onClick={handleNext}
-            disabled={!isConfirmed || numericBalance <= 0 || isInvalidBalance}
+            disabled={!isConfirmed || !form.formState.isValid}
             isLoading={isLoading}
           >
             Next
           </Button>
         </Card>
 
-        <Card className="flex-1 flex min-h-0 flex-col gap-4 p-6 bg-white rounded-2xl">
-          <div className="flex items-center gap-2">
-            <Text variant="headline4">Validator Breakdown</Text>
-            <Tooltip content="Overview of validator statuses and balances.">
-              <FaCircleInfo className="size-3.5 text-gray-400" />
-            </Tooltip>
-          </div>
-
-          <Tabs
-            value={selectedTab}
-            onValueChange={(value) => setSelectedTab(value as TabKey)}
-          >
-            <TabsList className="flex w-full [&>*]:flex-1">
-              <TabsTrigger value="all" className="flex items-center gap-2">
-                <Text variant="body-3-medium">{tabLabels.all}</Text>
-                <Badge variant="primary" size="xs" className="rounded-md">
-                  {counts.all}
-                </Badge>
-              </TabsTrigger>
-              <TabsTrigger
-                value="deposited"
-                className="flex items-center gap-2"
-              >
-                <Text variant="body-3-medium">{tabLabels.deposited}</Text>
-                <Badge variant="success" size="xs" className="rounded-md">
-                  {counts.deposited}
-                </Badge>
-              </TabsTrigger>
-              <TabsTrigger
-                value="notDeposited"
-                className="flex items-center gap-2"
-              >
-                <Text variant="body-3-medium">{tabLabels.notDeposited}</Text>
-                <Badge variant="warning" size="xs" className="rounded-md">
-                  {counts.notDeposited}
-                </Badge>
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          <div className="flex items-center justify-between rounded-lg border border-primary-200 bg-primary-50 px-4 py-3">
-            <Text variant="body-3-medium" className="text-gray-600">
-              Estimated Effective Balance
-            </Text>
-            <div className="flex items-center gap-2">
-              <Text variant="body-2-semibold" className="text-gray-800">
-                {numberFormatter.format(estimatedTotalBalance)}
-              </Text>
-              <img
-                src="/images/networks/dark.svg"
-                alt="ETH"
-                className="size-4"
-              />
-              <Text variant="body-3-medium" className="text-gray-500">
-                ETH
-              </Text>
-            </div>
-          </div>
-
-          <Table
-            gridTemplateColumns="minmax(200px, 1fr) 120px 140px"
-            className="flex-1 min-h-0 max-h-[360px] bg-white"
-          >
-            <TableHeader className="sticky top-0 z-10 bg-gray-100">
-              <TableCell>Public Key</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell className="justify-end">Effective Balance</TableCell>
-            </TableHeader>
-            {filteredValidators.map((validator) => {
-              const isNotDeposited = validator.status === "Not Deposited";
-              const displayBalance = formatBalance
-                ? formatBalance(validator.effectiveBalance)
-                : validator.effectiveBalance;
-              return (
-                <TableRow key={validator.publicKey} className="bg-white">
-                  <TableCell className="flex items-center gap-2">
-                    <Text variant="body-3-medium" className="text-gray-600">
-                      {shortenAddress(add0x(validator.publicKey))}
-                    </Text>
-                    <CopyBtn text={validator.publicKey} />
-                    <BeaconchainBtn validatorId={validator.publicKey} />
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={isNotDeposited ? "warning" : "success"}
-                      size="xs"
-                      className="rounded-md"
-                    >
-                      {validator.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="flex items-center justify-end gap-1">
-                    <Text
-                      variant="body-3-medium"
-                      className={
-                        isNotDeposited ? "text-warning-500" : "text-gray-800"
-                      }
-                    >
-                      {displayBalance}
-                    </Text>
-                    <img
-                      src="/images/networks/dark.svg"
-                      alt="ETH"
-                      className="size-3.5"
-                    />
-                    <Text
-                      variant="body-3-medium"
-                      className={
-                        isNotDeposited ? "text-warning-500" : "text-gray-500"
-                      }
-                    >
-                      ETH
-                    </Text>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </Table>
-        </Card>
+        <ValidatorsBreakdown
+          validators={validators}
+          estimatedTotalBalance={estimatedEffectiveBalance}
+        />
       </div>
     </Container>
   );

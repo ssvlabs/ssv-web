@@ -92,10 +92,8 @@ export interface ValidatorEffectiveBalance {
   effectiveBalance: number;
 }
 
-export interface ValidatorsEffectiveBalanceResponse {
-  validators: ValidatorEffectiveBalance[];
-  totalEffectiveBalance: number;
-}
+type PublicKey = string;
+export type ValidatorsEffectiveBalanceResponse = Record<PublicKey, number>;
 
 export const getValidatorsEffectiveBalance = async (publicKeys: string[]) => {
   return await api.post<ValidatorsEffectiveBalanceResponse>(

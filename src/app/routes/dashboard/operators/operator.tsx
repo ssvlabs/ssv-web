@@ -15,9 +15,7 @@ import { Helmet } from "react-helmet";
 import { FaCircleInfo } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
-import {
-  IncreaseOperatorFeeStatusBadge
-} from "@/components/operator/increase-operator-fee/increase-operator-fee-status-badge";
+import { IncreaseOperatorFeeStatusBadge } from "@/components/operator/increase-operator-fee/increase-operator-fee-status-badge";
 import { OperatorValidatorsList } from "@/components/operator/operator-validators-list";
 import { OperatorStatusBadge } from "@/components/operator/operator-status-badge";
 import { useOperatorEarningsAndFees } from "@/hooks/operator/use-operator-earnings-and-fees";
@@ -50,11 +48,9 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                   Name
                 </Text>
                 <OperatorDetails operator={operator.data} />
-              </div>
-              {" "}
+              </div>{" "}
               <div className="flex flex-col gap-2">
-                <Tooltip
-                  content="Is the operator performing duties for the majority of its validators for the last 2 epochs.">
+                <Tooltip content="Is the operator performing duties for the majority of its validators for the last 2 epochs.">
                   <div className="flex gap-2 items-center">
                     <Text variant="body-3-medium" className="text-gray-500">
                       Status
@@ -63,8 +59,7 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                   </div>
                 </Tooltip>
                 <OperatorStatusBadge status={operator.data.status} size="sm" />
-              </div>
-              {" "}
+              </div>{" "}
               <div className="flex flex-col gap-2">
                 <Text variant="body-3-medium" className="text-gray-500">
                   Validators
@@ -80,6 +75,21 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                 <Text variant="body-2-medium">
                   {percentageFormatter.format(operator.data.performance["30d"])}
                 </Text>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Text variant="body-3-medium" className="text-gray-500">
+                  Total ETH Managed
+                </Text>
+                <div className="flex items-center gap-1">
+                  <img
+                    alt="ETH logo"
+                    src="/images/networks/dark.svg"
+                    className="size-5"
+                  />
+                  <Text variant="body-2-medium">
+                    {operator.data.effective_balance} ETH
+                  </Text>
+                </div>
               </div>
             </div>
           </Container>

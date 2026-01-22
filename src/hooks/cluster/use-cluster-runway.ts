@@ -8,7 +8,7 @@ import { useNetworkFee, useNetworkFeeSSV } from "@/hooks/use-ssv-network-fee";
 import { sumOperatorsFee } from "@/lib/utils/operator";
 import { useOperators } from "@/hooks/operator/use-operators";
 
-const getDeltaValidators = (options: Options) => {
+const getDeltaVUnits = (options: Options) => {
   if ("deltaValidators" in options) return options.deltaValidators ?? 0n;
   if ("deltaEffectiveBalance" in options)
     return BigInt(options.deltaEffectiveBalance ?? 0) / 32n;
@@ -35,7 +35,7 @@ export const useClusterRunway = (
   const params = useClusterPageParams();
   const clusterHash = hash ?? params.clusterHash;
 
-  const deltaValidators = getDeltaValidators(opts);
+  const deltaVUnits = getDeltaVUnits(opts);
 
   const cluster = useCluster(clusterHash, { watch: opts.watch });
   const balance = useClusterBalance(clusterHash!, { watch: opts.watch });
@@ -44,17 +44,19 @@ export const useClusterRunway = (
   const isETH =
     opts.forceMode === "eth" ||
     ((!opts.forceMode && cluster.data?.migrated) ?? false);
+
   const ethNetworkFee = useNetworkFee();
   const ssvNetworkFee = useNetworkFeeSSV();
 
   const {
-    liquidationThresholdPeriod: { data: liquidationThresholdBlocks = 0n },
     minimumLiquidationCollateral: { data: minimumLiquidationCollateral = 0n },
     ssvNetworkFee: { data: networkFee = 0n },
   } = isETH ? ethNetworkFee : ssvNetworkFee;
 
-  const operatorFees =
-    sumOperatorsFee(operators.data ?? [], isETH ? "eth" : "ssv");
+  const operatorFees = sumOperatorsFee(
+    operators.data ?? [],
+    isETH ? "eth" : "ssv",
+  );
 
   const feesPerBlock = operatorFees + networkFee;
 
@@ -67,7 +69,7 @@ export const useClusterRunway = (
     minClusterEffectiveBalance,
   );
 
-  const validators = (effectiveBalance + state.effectiveBalance) / 32n;
+  const vUnits = (effectiveBalance + state.effectiveBalance) / 32n;
 
   const isLoading =
     cluster.isLoading ||
@@ -79,10 +81,9 @@ export const useClusterRunway = (
   const runway = calculateRunway({
     balance: balance.data.eth ?? balance.data.ssv ?? 0n,
     feesPerBlock,
-    validators,
-    deltaValidators: deltaValidators,
+    vUnits,
+    deltaVUnits,
     deltaBalance: opts.deltaBalance ?? 0n,
-    liquidationThresholdBlocks,
     minimumLiquidationCollateral,
   });
 

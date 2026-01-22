@@ -41,7 +41,7 @@ type ComputeFundingCostArgs = Prettify<
 >;
 
 export const computeFundingCost = (args: ComputeFundingCostArgs) => {
-  const validators = args.effectiveBalance / 32n || 1n;
+  const vUnits = args.effectiveBalance / 32n || 1n;
 
   const networkCost = computeDailyAmount(args.networkFee, args.fundingDays);
   const operatorsCost = computeDailyAmount(args.operatorsFee, args.fundingDays);
@@ -49,18 +49,17 @@ export const computeFundingCost = (args: ComputeFundingCostArgs) => {
     computeLiquidationCollateralCostPerValidator(args);
 
   // Subtotal = base cost × effective balance × validators
-  const networkCostSubtotal = networkCost * validators;
-  const operatorsCostSubtotal = operatorsCost * validators;
-  const liquidationCollateralSubtotal = liquidationCollateral * validators;
+  const networkCostSubtotal = networkCost * vUnits;
+  const operatorsCostSubtotal = operatorsCost * vUnits;
+  const liquidationCollateralSubtotal = liquidationCollateral * vUnits;
 
   const total =
     networkCostSubtotal + operatorsCostSubtotal + liquidationCollateralSubtotal;
 
   const runway = calculateRunway({
+    vUnits,
     balance: total,
     feesPerBlock: args.networkFee + args.operatorsFee,
-    validators,
-    liquidationThresholdBlocks: args.liquidationCollateralPeriod,
     minimumLiquidationCollateral: args.minimumLiquidationCollateral,
   });
 

@@ -100,56 +100,45 @@ export const filterOutRemovedValidators = (
 type CalculateRunwayParams = {
   balance: bigint;
   feesPerBlock: bigint;
-  validators: bigint;
+  vUnits: bigint;
   deltaBalance?: bigint;
-  deltaValidators?: bigint;
-  liquidationThresholdBlocks: bigint;
+  deltaVUnits?: bigint;
   minimumLiquidationCollateral: bigint;
 };
 
 export const calculateRunway = ({
   balance,
   feesPerBlock,
-  validators,
+  vUnits,
   deltaBalance = 0n,
-  deltaValidators = 0n,
-  liquidationThresholdBlocks,
+  deltaVUnits = 0n,
   minimumLiquidationCollateral,
 }: CalculateRunwayParams) => {
-  const burnRateSnapshot = feesPerBlock * (validators || 1n);
-  const burnRateWithDelta = feesPerBlock * (validators + deltaValidators);
-
-  const collateralSnapshot = bigintMax(
-    burnRateSnapshot * liquidationThresholdBlocks,
-    minimumLiquidationCollateral,
-  );
-
-  const collateralWithDelta = bigintMax(
-    burnRateWithDelta * liquidationThresholdBlocks,
-    minimumLiquidationCollateral,
-  );
+  const burnRateSnapshot = feesPerBlock * (vUnits || 1n);
+  const burnRateWithDelta = feesPerBlock * (vUnits + deltaVUnits);
 
   const burnRatePerDaySnapshot =
     burnRateSnapshot * globals.BLOCKS_PER_DAY || 1n;
+
   const burnRatePerDayWithDelta =
     burnRateWithDelta * globals.BLOCKS_PER_DAY || 1n;
 
-  const runwaySnapshot = bigintMax(
-    (balance - collateralSnapshot) / burnRatePerDaySnapshot,
+  const runwayDays = bigintMax(
+    (balance - minimumLiquidationCollateral) / burnRatePerDaySnapshot,
+    0n,
+  );
+  const runwayDaysWithDelta = bigintMax(
+    (balance + deltaBalance - minimumLiquidationCollateral) /
+      burnRatePerDayWithDelta,
     0n,
   );
 
-  const runwayWithDelta = bigintMax(
-    (balance + deltaBalance - collateralWithDelta) / burnRatePerDayWithDelta,
-    0n,
-  );
-
-  const deltaDays = (runwaySnapshot - runwayWithDelta) * -1n;
+  const deltaDays = (runwayDays - runwayDaysWithDelta) * -1n;
 
   return {
-    runway: runwayWithDelta,
-    runwayDisplay: `${numberFormatter.format(runwayWithDelta)} Days`,
-    isAtRisk: runwayWithDelta < 30n,
+    runway: runwayDaysWithDelta,
+    runwayDisplay: `${numberFormatter.format(runwayDaysWithDelta)} Days`,
+    isAtRisk: runwayDaysWithDelta < 30n,
     deltaDays,
     isIncreasing: deltaDays > 0n,
     isDecreasing: deltaDays < 0n,

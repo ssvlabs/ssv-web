@@ -79,7 +79,7 @@ export const useClusterRunway = (
     ssvNetworkFee.isLoading;
 
   const runway = calculateRunway({
-    balance: balance.data.eth || balance.data.ssv || 0n,
+    balance: isETH ? balance.data.eth : balance.data.ssv,
     feesPerBlock,
     validators,
     deltaValidators: deltaValidators,

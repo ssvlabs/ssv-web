@@ -91,15 +91,20 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                 <BalanceDisplay amount={balanceEth} token="ETH" />
                 <BalanceDisplay amount={balanceSSV} token="SSV" />
               </div>
-              <Button
-                as={Link}
-                to="withdraw"
-                variant="default"
-                size="xl"
-                disabled={!hasBalance}
+              <Tooltip
+                asChild
+                content={!hasBalance ? "No balance to withdraw" : undefined}
               >
-                Withdraw
-              </Button>
+                <Button
+                  as={Link}
+                  to="withdraw"
+                  variant="default"
+                  size="xl"
+                  disabled={!hasBalance}
+                >
+                  Withdraw
+                </Button>
+              </Tooltip>
             </Card>
             <Card className="w-full">
               <div className="flex w-full justify-between items-center">

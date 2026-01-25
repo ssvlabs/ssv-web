@@ -7,6 +7,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Span } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useCluster } from "@/hooks/cluster/use-cluster";
+import { useClusterBalance } from "@/hooks/cluster/use-cluster-balance";
 import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
 import { useOptimisticOrProvidedOperator } from "@/hooks/operator/use-optimistic-operator";
 import {
@@ -35,6 +36,7 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
   const from = `${location.pathname}${location.search}${location.hash}`;
 
   const { data: apiCluster } = useCluster(cluster.clusterId);
+  const balance = useClusterBalance(cluster.clusterId);
   const runway = useClusterRunway(cluster.clusterId);
   const isLiquidated = apiCluster?.isLiquidated;
   const isLoadingRunway = !isLiquidated && runway.isLoading;
@@ -98,12 +100,12 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
         {resolvedCluster.isSSVCluster ? (
           <div className="flex items-center gap-1 text-gray-800 font-medium">
             <img src="/images/ssvIcons/icon.svg" className="size-5" />{" "}
-            {formatSSV(BigInt(resolvedCluster.balance))}
+            {formatSSV(balance.data?.ssv ?? 0n)}
           </div>
         ) : (
           <div className="flex items-center gap-1 text-gray-800 font-medium">
             <img src="/images/networks/dark.svg" className="size-5" />{" "}
-            {formatETH(BigInt(resolvedCluster.ethBalance))}
+            {formatETH(balance.data?.eth ?? 0n)}
           </div>
         )}
       </TableCell>

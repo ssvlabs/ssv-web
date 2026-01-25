@@ -2,6 +2,7 @@ import { Text } from "@/components/ui/text";
 import { useLocalStorage } from "react-use";
 import { FaXmark } from "react-icons/fa6";
 import type { FC } from "react";
+import { Link } from "react-router-dom";
 
 const STORAGE_KEY = "eth-fees-banner-dismissed";
 
@@ -17,20 +18,10 @@ export const EthFeesBanner: FC = () => {
   };
 
   return (
-    <div className="bg-orange-500 flex items-center justify-center px-5 py-4 relative w-full">
+    <div className="bg-orange-400 flex items-center justify-center px-5 py-4 relative w-full">
       <div className="flex-1 flex items-center justify-center">
         <Text variant="body-2-medium" className="text-white text-center">
-          ETH fees are now active. A default ETH fee has been applied to your
-          operators. You may update this fee at any time in your dashboard.{" "}
-          {/* <Text
-            as="a"
-            href="https://docs.ssv.network/operators/operator-onboarding/update-fee"
-            target="_blank"
-            variant="body-2-medium"
-            className="text-white underline"
-          >
-            Read more
-          </Text> */}
+          ETH fees are now active. A default ETH fee has been applied to your operators. You may update this fee at any time in your dashboard. <Link className={"text-[#7F35BA] underline"} target={"_blank"} to={'http://docs.ssv.network/operators/operator-onboarding/'}>Read more.</Link>
         </Text>
       </div>
       <button

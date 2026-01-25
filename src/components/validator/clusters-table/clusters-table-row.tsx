@@ -112,8 +112,8 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
       <TableCell>
         {isLoadingRunway ? (
           <Skeleton className="h-5 w-14" />
-        ) : (
-          runway.data?.runwayDisplay
+        ) : (resolvedCluster.validatorCount > 0 ?
+          runway.data?.runwayDisplay : '-'
         )}
       </TableCell>
       <TableCell className="whitespace-nowrap">

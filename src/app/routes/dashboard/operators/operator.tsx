@@ -28,6 +28,8 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
   const { feeEth, yearlyFeeEth, yearlyFeeSSV, balanceEth, balanceSSV } =
     useOperatorEarningsAndFees(operatorId);
 
+  const hasBalance = balanceEth > 0n || balanceSSV > 0n;
+
   if (!operator.data) return null;
 
   return (
@@ -104,9 +106,20 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                 <BalanceDisplay amount={balanceEth} token="ETH" />
                 <BalanceDisplay amount={balanceSSV} token="SSV" />
               </div>
-              <Button as={Link} to="withdraw" variant="default" size="xl">
-                Withdraw
-              </Button>
+              <Tooltip
+                asChild
+                content={!hasBalance ? "No balance to withdraw" : undefined}
+              >
+                <Button
+                  as={Link}
+                  to="withdraw"
+                  variant="default"
+                  size="xl"
+                  disabled={!hasBalance}
+                >
+                  Withdraw
+                </Button>
+              </Tooltip>
             </Card>
             <Card className="w-full">
               <div className="flex w-full justify-between items-center">

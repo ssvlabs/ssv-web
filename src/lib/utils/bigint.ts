@@ -35,7 +35,7 @@ export const bigintAbs = (n: bigint) => (n < 0n ? -n : n);
 export const isBigIntChanged = (
   a: bigint,
   b: bigint,
-  tolerance = parseUnits("0.0001", 18),
+  tolerance = parseUnits("0.00000001", 18),
 ): boolean => {
   return bigintAbs(a - b) > tolerance;
 };

@@ -5,7 +5,6 @@ import { useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { formatUnits, parseEther } from "viem";
 import { EffectiveBalanceForm } from "@/components/effective-balance/effective-balance-form";
-import { formatETH } from "@/lib/utils/number";
 
 export const SwitchWizardStepOneAndHalfRoute = () => {
   const navigate = useNavigate();
@@ -50,10 +49,6 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
     });
   };
 
-  const formatBalance = (balance: number) => {
-    return formatETH(balance);
-  };
-
   return (
     <EffectiveBalanceForm
       clusterHash={clusterHash}
@@ -61,7 +56,6 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
       onNext={handleNext}
       backTo={basePath}
       backState={from ? { from } : undefined}
-      formatBalance={formatBalance}
       showDetailedErrors
     />
   );

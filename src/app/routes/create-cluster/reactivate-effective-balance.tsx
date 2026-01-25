@@ -26,11 +26,10 @@ const ReactivateEffectiveBalance = () => {
         return {
           publicKey: validator.public_key,
           status:
-            balance >= globals.VALIDATOR_FULL_DEPOSIT_VALUE_IN_ETH
+            balance >= globals.MIN_VALIDATOR_EFFECTIVE_BALANCE
               ? ("Deposited" as const)
               : ("Not Deposited" as const),
-          effectiveBalance:
-            balance ?? globals.VALIDATOR_FULL_DEPOSIT_VALUE_IN_ETH,
+          effectiveBalance: balance ?? globals.MIN_VALIDATOR_EFFECTIVE_BALANCE,
         };
       }),
     [validators, validatorBalances],

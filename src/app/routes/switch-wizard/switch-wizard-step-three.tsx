@@ -42,7 +42,7 @@ export const SwitchWizardStepThreeRoute = () => {
     <SwitchWizardStepThree
       onNext={() => {
         if (!cluster.data || totalDeposit === undefined) return;
-        const wasSSVCluster = cluster.data.isSSVCluster;
+        const wasSSVCluster = !cluster.data.migrated;
         migrate.write(
           {
             operatorIds: cluster.data?.operators.map((id) => BigInt(id)) ?? [],
@@ -59,7 +59,7 @@ export const SwitchWizardStepThreeRoute = () => {
                     (updatedCluster) =>
                       updatedCluster &&
                       wasSSVCluster &&
-                      !updatedCluster.isSSVCluster,
+                      updatedCluster.migrated,
                   )
                   .catch(() => false),
               );

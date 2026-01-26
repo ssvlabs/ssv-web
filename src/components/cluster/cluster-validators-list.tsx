@@ -35,6 +35,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   const navigate = useNavigate();
   const cluster = useCluster();
   const { validators, infiniteQuery } = useInfiniteClusterValidators();
+  const isMigrated = !cluster.data?.migrated;
 
   return (
     <div className="flex flex-col gap-4">
@@ -91,11 +92,9 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                         <TbExternalLink className="size-3" />
                       </DropdownMenuItem>
                     </a>
-                    <SwitchToEthMenuOptionTooltip
-                      enabled={cluster.data?.isSSVCluster}
-                    >
+                    <SwitchToEthMenuOptionTooltip enabled={isMigrated}>
                       <DropdownMenuItem
-                        disabled={cluster.data?.isSSVCluster}
+                        disabled={isMigrated}
                         onClick={() => {
                           useBulkActionContext.state.selectedPublicKeys = [
                             item.public_key,

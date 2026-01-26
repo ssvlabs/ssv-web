@@ -37,7 +37,6 @@ export const Cluster: FC = () => {
   );
 
   const isMigrated = cluster.data?.migrated;
-  const isSSVCluster = cluster.data?.isSSVCluster;
 
   const isLoadingBalance = isMigrated
     ? balanceETH.isLoading
@@ -114,7 +113,11 @@ export const Cluster: FC = () => {
             )}
 
             {isLiquidated.data ? (
-              isSSVCluster ? (
+              isMigrated ? (
+                <Button as={Link} to="reactivate-balance" size="xl">
+                  Reactivate Cluster
+                </Button>
+              ) : (
                 <Button
                   as={Link}
                   to={`/switch-wizard/${clusterHash}`}
@@ -122,10 +125,6 @@ export const Cluster: FC = () => {
                   size="xl"
                 >
                   Switch to ETH
-                </Button>
-              ) : (
-                <Button as={Link} to="reactivate-balance" size="xl">
-                  Reactivate Cluster
                 </Button>
               )
             ) : (
@@ -178,7 +177,7 @@ export const Cluster: FC = () => {
               <Spacer />
               <ValidatorsActionsMenu
                 isLiquidated={Boolean(isLiquidated.data)}
-                isSSVCluster={!isMigrated}
+                isMigrated={isMigrated}
               />
               <Tooltip content={getTooltipContent()}>
                 <Button

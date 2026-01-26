@@ -18,7 +18,7 @@ import { SwitchToEthMenuOptionTooltip } from "@/components/cluster/switch-to-eth
 
 type Props = {
   isLiquidated: boolean;
-  isSSVCluster?: boolean;
+  isMigrated?: boolean;
 };
 
 enum ActionType {
@@ -29,11 +29,12 @@ enum ActionType {
 export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
   className,
   isLiquidated = true,
-  isSSVCluster,
+  isMigrated,
   ...props
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isSsvCluster = !isMigrated;
 
   const onActionClickHandler = (action: ActionType) => {
     useBulkActionContext.resetState();
@@ -42,8 +43,8 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
 
   return (
     <DropdownMenu>
-      <SwitchToEthMenuOptionTooltip enabled={isSSVCluster}>
-        <DropdownMenuTrigger asChild disabled={isSSVCluster}>
+      <SwitchToEthMenuOptionTooltip enabled={isSsvCluster}>
+        <DropdownMenuTrigger asChild disabled={isSsvCluster}>
           <Button variant="secondary" className={className} {...props}>
             <Text>Actions</Text> <ChevronDown className="size-4" />
           </Button>
@@ -52,7 +53,7 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
 
       <DropdownMenuContent>
         <DropdownMenuItem
-          disabled={isSSVCluster}
+          disabled={isSsvCluster}
           onClick={() => onActionClickHandler(ActionType.Remove)}
         >
           <LuTrash2 className="size-4" />

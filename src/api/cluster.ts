@@ -12,24 +12,11 @@ import type {
   PaginatedSearchValidatorsResponse,
 } from "@/types/api";
 import type { Address } from "abitype";
-import { merge } from "lodash-es";
 
 export const getCluster = (hash: string) => {
-  return api.get<GetClusterResponse>(endpoint("clusters", hash)).then((res) => {
-    const hasSSVBalance =
-      ![undefined, null, "0", 0].includes(res.cluster?.balance) &&
-      BigInt(res.cluster?.balance || 0) > 0;
-
-    const hasEthBalance =
-      ![undefined, null, "0", 0].includes(res.cluster?.ethBalance) &&
-      BigInt(res.cluster?.ethBalance || 0) > 0;
-
-    return res.cluster
-      ? merge(res.cluster, {
-          isSSVCluster: hasSSVBalance && !hasEthBalance,
-        })
-      : res.cluster;
-  });
+  return api
+    .get<GetClusterResponse>(endpoint("clusters", hash))
+    .then((res) => res.cluster);
 };
 
 export const getClusterData = (hash: string) =>

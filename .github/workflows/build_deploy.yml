@@ -101,28 +101,6 @@ jobs:
           role-to-assume: ${{ secrets.SSV_WEB_AWS_IAM_ROLE }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      # <app-pre.stage.ssv.network> pre-stage
-      - name: Run stage webapp build
-        if: github.ref == 'refs/heads/pre-stage'
-        run: >
-          GAS_PRICE="${{ env.GAS_PRICE }}"
-          GAS_LIMIT="${{ env.GAS_LIMIT }}"
-          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
-          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
-          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          pnpm build
-        env:
-          GAS_PRICE: ${{ secrets.GAS_PRICE }}
-          GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
-          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
-
-      - name: Upload files to S3
-        if: github.ref == 'refs/heads/pre-stage'
-        run: |
-          aws s3 cp ./build s3://${{ secrets.SSV_WEB_PRE_STAGE_AWS_S3_BUCKET }} --recursive
-      # </app-pre.stage.ssv.network>
-
       # <app.stage.ssv.network>
       - name: Run stage webapp build
         if: github.ref == 'refs/heads/stage'

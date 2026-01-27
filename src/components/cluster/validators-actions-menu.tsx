@@ -10,11 +10,10 @@ import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Text } from "@/components/ui/text";
 import { ChevronDown } from "lucide-react";
-import { LuTrash2, LuLogOut } from "react-icons/lu";
+import { LuLogOut, LuTrash2 } from "react-icons/lu";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TbRefreshDot } from "react-icons/tb";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
-import { SwitchToEthMenuOptionTooltip } from "@/components/cluster/switch-to-eth-menu-option-tooltip";
 
 type Props = {
   isLiquidated: boolean;
@@ -43,13 +42,11 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
 
   return (
     <DropdownMenu>
-      <SwitchToEthMenuOptionTooltip enabled={isSsvCluster}>
-        <DropdownMenuTrigger asChild disabled={isSsvCluster}>
-          <Button variant="secondary" className={className} {...props}>
-            <Text>Actions</Text> <ChevronDown className="size-4" />
-          </Button>
-        </DropdownMenuTrigger>
-      </SwitchToEthMenuOptionTooltip>
+      <DropdownMenuTrigger asChild>
+        <Button variant="secondary" className={className} {...props}>
+          <Text>Actions</Text> <ChevronDown className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
 
       <DropdownMenuContent>
         <DropdownMenuItem
@@ -84,6 +81,7 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
             DKG
           </div>
           <DropdownMenuItem
+            disabled={isSsvCluster}
             onClick={() => onActionClickHandler(ActionType.Reshare)}
           >
             <TbRefreshDot className="size-4" />

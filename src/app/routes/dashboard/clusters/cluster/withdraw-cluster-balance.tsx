@@ -1,4 +1,5 @@
 import { EstimatedOperationalRunway } from "@/components/cluster/estimated-operational-runway";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -50,6 +51,7 @@ export const WithdrawClusterBalance: FC = () => {
   );
 
   const isMigrated = cluster.data?.migrated;
+  const isSsvCluster = !isMigrated;
   const symbol = isMigrated ? "ETH" : "SSV";
   const clusterBalance = isMigrated
     ? balanceETH.data ?? 0n
@@ -58,7 +60,7 @@ export const WithdrawClusterBalance: FC = () => {
   const [hasAgreed, setHasAgreed] = useState(false);
 
   const form = useForm({
-    defaultValues: { amount: 0n },
+    defaultValues: { amount: isSsvCluster ? clusterBalance : 0n },
     resolver: zodResolver(schema),
   });
 
@@ -70,8 +72,10 @@ export const WithdrawClusterBalance: FC = () => {
 
   const isChanged = isBigIntChanged(0n, amount);
   const isLiquidating = clusterRunway.data?.runway === 0n;
+  const shouldLiquidate = isSsvCluster || isLiquidating;
 
-  const showRiskCheckbox = isChanged && clusterRunway.data?.isAtRisk;
+  const showRiskCheckbox =
+    isSsvCluster || (isChanged && clusterRunway.data?.isAtRisk);
   const disabled = showRiskCheckbox ? !hasAgreed : false;
 
   const submit = form.handleSubmit(async (values) => {
@@ -101,7 +105,7 @@ export const WithdrawClusterBalance: FC = () => {
       },
     });
 
-    if (isLiquidating) {
+    if (shouldLiquidate) {
       liquidate.write(options);
     } else {
       withdraw.write(values, options);
@@ -135,6 +139,7 @@ export const WithdrawClusterBalance: FC = () => {
                     max={clusterBalance}
                     value={field.value}
                     onChange={field.onChange}
+                    readOnly={isSsvCluster}
                     render={(props, ref) => (
                       <div className="flex flex-col pl-6 pr-5 py-4 gap-3 rounded-xl border border-gray-300 bg-gray-200">
                         <div className="flex h-14 items-center gap-5">
@@ -143,19 +148,22 @@ export const WithdrawClusterBalance: FC = () => {
                             className="w-full h-full border outline-none flex-1 text-[28px] font-medium border-none bg-transparent"
                             {...props}
                             ref={ref}
+                            readOnly={isSsvCluster}
                           />
-                          <Button
-                            size="lg"
-                            variant="secondary"
-                            className="font-semibold px-4"
-                            onClick={() =>
-                              form.setValue("amount", clusterBalance, {
-                                shouldValidate: true,
-                              })
-                            }
-                          >
-                            MAX
-                          </Button>
+                          {!isSsvCluster && (
+                            <Button
+                              size="lg"
+                              variant="secondary"
+                              className="font-semibold px-4"
+                              onClick={() =>
+                                form.setValue("amount", clusterBalance, {
+                                  shouldValidate: true,
+                                })
+                              }
+                            >
+                              MAX
+                            </Button>
+                          )}
                           <span className="text-[28px] font-medium">
                             {" "}
                             {symbol}
@@ -172,9 +180,43 @@ export const WithdrawClusterBalance: FC = () => {
           {Boolean(cluster.data?.validatorCount) && (
             <>
               <Divider />
-              <EstimatedOperationalRunway deltaBalance={-amount} />
+              <EstimatedOperationalRunway
+                deltaBalance={-amount}
+                withAlerts={!isSsvCluster}
+              />
               <Divider />
             </>
+          )}
+
+          {isSsvCluster && (
+            <Alert variant="error">
+              <AlertDescription className="flex flex-col gap-4">
+                <p>
+                  Withdrawing from an SSV cluster is full-withdrawal only
+                  (partial withdrawals aren't allowed). Proceeding will withdraw
+                  the entire cluster balance and liquidate your cluster, which
+                  will result in inactivation (
+                  <Button
+                    variant="link"
+                    as="a"
+                    target="_blank"
+                    href="https://launchpad.ethereum.org/en/faq#responsibilities"
+                  >
+                    penalties on the blockchain
+                  </Button>
+                  ) of your validators, as they will no longer be operated by
+                  the network.
+                </p>
+                <Button
+                  variant="link"
+                  as="a"
+                  target="_blank"
+                  href="https://docs.ssv.network/learn/protocol-overview/tokenomics/liquidations"
+                >
+                  Read more on liquidation
+                </Button>
+              </AlertDescription>
+            </Alert>
           )}
 
           {showRiskCheckbox && (
@@ -186,7 +228,7 @@ export const WithdrawClusterBalance: FC = () => {
                 onCheckedChange={(checked) => setHasAgreed(checked as boolean)}
               />
               <Text variant="body-2-semibold">
-                {isLiquidating
+                {shouldLiquidate
                   ? "I understand that withdrawing this amount will liquidate my cluster."
                   : "I understand the risks of having my cluster liquidated."}
               </Text>
@@ -197,9 +239,13 @@ export const WithdrawClusterBalance: FC = () => {
             size="xl"
             disabled={!isChanged || disabled}
             isLoading={liquidate.isPending || withdraw.isPending}
-            variant={isLiquidating ? "destructive" : "default"}
+            variant={shouldLiquidate ? "destructive" : "default"}
           >
-            {isLiquidating ? "Liquidate" : "Withdraw"}
+            {isSsvCluster
+              ? "Withdraw & Liquidate"
+              : isLiquidating
+                ? "Liquidate"
+                : "Withdraw"}
           </Button>
         </Card>
       </Form>

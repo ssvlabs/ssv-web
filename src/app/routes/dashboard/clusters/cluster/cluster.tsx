@@ -140,17 +140,9 @@ export const Cluster: FC = () => {
                       Deposit
                     </Button>
                   </SwitchToEthMenuOptionTooltip>
-                  <SwitchToEthMenuOptionTooltip asChild enabled={!isMigrated}>
-                    <Button
-                      as={Link}
-                      to="withdraw"
-                      size="xl"
-                      variant="secondary"
-                      disabled={!isMigrated}
-                    >
-                      Withdraw
-                    </Button>
-                  </SwitchToEthMenuOptionTooltip>
+                  <Button as={Link} to="withdraw" size="xl" variant="secondary">
+                    Withdraw
+                  </Button>
                 </div>
                 {!isMigrated && (
                   <Button

@@ -178,7 +178,6 @@ export type Cluster<
     blockNumber: number;
     createdAt: string;
     updatedAt: string;
-    isSSVCluster: boolean;
     migrated?: boolean;
   } & T
 >;

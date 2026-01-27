@@ -42,6 +42,8 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
   const isLoadingRunway = !isLiquidated && runway.isLoading;
 
   const resolvedCluster = merge({}, cluster, apiCluster);
+  const isMigrated = resolvedCluster.migrated;
+  const isSsvCluster = !isMigrated;
   return (
     <TableRow
       key={cluster.id}
@@ -97,7 +99,7 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
         </div>
       </TableCell>
       <TableCell>
-        {resolvedCluster.isSSVCluster ? (
+        {isSsvCluster ? (
           <div className="flex items-center gap-1 text-gray-800 font-medium">
             <img src="/images/ssvIcons/icon.svg" className="size-5" />{" "}
             {formatSSV(balance.data?.ssv ?? 0n)}
@@ -112,8 +114,10 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
       <TableCell>
         {isLoadingRunway ? (
           <Skeleton className="h-5 w-14" />
-        ) : (resolvedCluster.validatorCount > 0 ?
-          runway.data?.runwayDisplay : '-'
+        ) : resolvedCluster.validatorCount > 0 ? (
+          runway.data?.runwayDisplay
+        ) : (
+          "-"
         )}
       </TableCell>
       <TableCell className="whitespace-nowrap">
@@ -134,7 +138,7 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
         )}
       </TableCell>
       <TableCell>
-        {resolvedCluster.isSSVCluster && (
+        {isSsvCluster && (
           <Button
             as={Link}
             to={`/switch-wizard/${cluster.clusterId}`}

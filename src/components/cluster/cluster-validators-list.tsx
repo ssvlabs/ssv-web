@@ -27,7 +27,6 @@ import { useBulkActionContext } from "@/guard/bulk-action-guard";
 import { Spacer } from "@/components/ui/spacer";
 import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge";
 import { ValidatorsSearchAndFilters } from "@/components/cluster/validators-search-and-filters";
-import { SwitchToEthMenuOptionTooltip } from "@/components/cluster/switch-to-eth-menu-option-tooltip";
 
 export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
@@ -35,6 +34,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   const navigate = useNavigate();
   const cluster = useCluster();
   const { validators, infiniteQuery } = useInfiniteClusterValidators();
+  const isSsvCluster = !cluster.data?.migrated;
 
   return (
     <div className="flex flex-col gap-4">
@@ -72,7 +72,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
               <SsvExplorerBtn validatorId={item.public_key} />
               <BeaconchainBtn validatorId={item.public_key} />
 
-              {cluster.data?.migrated && (
+              {cluster.data && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <IconButton>
@@ -84,29 +84,24 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                       href="https://docs.ssv.network/stakers/validators/update-operators"
                       target="_blank"
                     >
-                      <DropdownMenuItem>
+                      <DropdownMenuItem disabled={isSsvCluster}>
                         <TbRefresh className="size-4" />
                         <span>Change Operators</span>
                         <Spacer />
                         <TbExternalLink className="size-3" />
                       </DropdownMenuItem>
                     </a>
-                    <SwitchToEthMenuOptionTooltip
-                      enabled={cluster.data?.isSSVCluster}
+                    <DropdownMenuItem
+                      onClick={() => {
+                        useBulkActionContext.state.selectedPublicKeys = [
+                          item.public_key,
+                        ];
+                        navigate("remove/confirmation");
+                      }}
                     >
-                      <DropdownMenuItem
-                        disabled={cluster.data?.isSSVCluster}
-                        onClick={() => {
-                          useBulkActionContext.state.selectedPublicKeys = [
-                            item.public_key,
-                          ];
-                          navigate("remove/confirmation");
-                        }}
-                      >
-                        <LuTrash2 className="size-4" />
-                        <span>Remove Validator</span>
-                      </DropdownMenuItem>
-                    </SwitchToEthMenuOptionTooltip>
+                      <LuTrash2 className="size-4" />
+                      <span>Remove Validator</span>
+                    </DropdownMenuItem>
                     <Tooltip
                       side="bottom"
                       delayDuration={350}

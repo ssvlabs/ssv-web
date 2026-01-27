@@ -22,7 +22,6 @@ describe("util:mergeClusterSnapshot", () => {
     blockNumber: 12345,
     createdAt: "2024-01-01",
     updatedAt: "2024-01-02",
-    isSSVCluster: true,
     operators: [1, 2, 3],
     ...overrides,
   });

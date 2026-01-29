@@ -234,6 +234,11 @@ export const TestnetV4SetterABI =[
   },
   {
     "inputs": [],
+    "name": "LegacyOperatorFeeDeclarationInvalid",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "MaxRequestsAmountReached",
     "type": "error"
   },
@@ -1824,11 +1829,6 @@ export const TestnetV4SetterABI =[
         "type": "bytes[]"
       },
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
         "components": [
           {
             "internalType": "uint32",
@@ -1983,11 +1983,6 @@ export const TestnetV4SetterABI =[
         "internalType": "uint64[]",
         "name": "operatorIds",
         "type": "uint64[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
       },
       {
         "components": [
@@ -2366,11 +2361,6 @@ export const TestnetV4SetterABI =[
         "type": "uint64[]"
       },
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
         "components": [
           {
             "internalType": "uint32",
@@ -2471,11 +2461,6 @@ export const TestnetV4SetterABI =[
         "internalType": "bytes",
         "name": "sharesData",
         "type": "bytes"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
       },
       {
         "components": [

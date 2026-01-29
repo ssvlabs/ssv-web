@@ -1,4 +1,4 @@
-export const TestnetV4GetterABI =[
+export const TestnetV4GetterABI = [
   {
     "inputs": [],
     "stateMutability": "nonpayable",
@@ -230,6 +230,11 @@ export const TestnetV4GetterABI =[
       }
     ],
     "name": "InvalidWhitelistingContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LegacyOperatorFeeDeclarationInvalid",
     "type": "error"
   },
   {
@@ -539,6 +544,19 @@ export const TestnetV4GetterABI =[
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getActiveOracleIds",
+    "outputs": [
+      {
+        "internalType": "uint32[4]",
+        "name": "",
+        "type": "uint32[4]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -775,7 +793,7 @@ export const TestnetV4GetterABI =[
         "type": "uint64[]"
       }
     ],
-    "name": "getClusterVersion",
+    "name": "getClusterAssetType",
     "outputs": [
       {
         "internalType": "uint8",
@@ -800,19 +818,6 @@ export const TestnetV4GetterABI =[
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getDefaultOracleIds",
-    "outputs": [
-      {
-        "internalType": "uint32[4]",
-        "name": "",
-        "type": "uint32[4]"
       }
     ],
     "stateMutability": "view",

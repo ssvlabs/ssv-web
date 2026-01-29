@@ -27,6 +27,7 @@ import { useBulkActionContext } from "@/guard/bulk-action-guard";
 import { Spacer } from "@/components/ui/spacer";
 import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge";
 import { ValidatorsSearchAndFilters } from "@/components/cluster/validators-search-and-filters";
+import { cn } from "@/lib/utils/tw.ts";
 
 export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
@@ -83,6 +84,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                     <a
                       href="https://docs.ssv.network/stakers/validators/update-operators"
                       target="_blank"
+                      className={cn({ "pointer-events-none": isSsvCluster })}
                     >
                       <DropdownMenuItem disabled={isSsvCluster}>
                         <TbRefresh className="size-4" />
@@ -92,7 +94,9 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                       </DropdownMenuItem>
                     </a>
                     <DropdownMenuItem
+                      disabled={isSsvCluster}
                       onClick={() => {
+                        if (isSsvCluster) return;
                         useBulkActionContext.state.selectedPublicKeys = [
                           item.public_key,
                         ];

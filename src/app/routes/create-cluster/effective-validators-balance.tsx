@@ -51,8 +51,7 @@ const EffectiveValidatorsBalance = () => {
       validators={validatorsWithStatus}
       onNext={handleNext}
       forceInitialBalance={savedEffectiveBalance}
-      backTo="/"
-      backPersistSearch
+      backBy="history"
     />
   );
 };

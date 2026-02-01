@@ -66,6 +66,5 @@ export const {
   useWithdrawNetworkSSVEarnings,
   useWithdrawOperatorEarnings,
   useWithdrawOperatorEarningsSSV,
-  useWithdrawSSV,
   useWithdrawUnlocked,
 } = setter;

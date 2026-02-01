@@ -55,9 +55,10 @@ export const DepositClusterBalance: FC = () => {
   const value = form.watch("value") ?? 0n;
   const isChanged = isBigIntChanged(0n, value);
 
-  const submit = form.handleSubmit(async (args) => {
+  const submit = form.handleSubmit(async () => {
     deposit.write(
-      { amount: args.value },
+      {},
+      value,
       withTransactionModal({
         onMined: async ({ events }) => {
           const event = events.find((e) => e.eventName === "ClusterDeposited");

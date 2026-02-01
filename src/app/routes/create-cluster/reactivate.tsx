@@ -136,7 +136,6 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
 
     return reactive.write(
       {
-        amount: amount.total,
         operatorIds: bigintifyNumbers(operatorIds),
         cluster: toSolidityCluster(cluster.data),
       },

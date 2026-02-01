@@ -30,6 +30,7 @@ export type EffectiveBalanceFormProps = {
   forceInitialBalance?: bigint;
   clusterHash?: string;
   isLoading?: boolean;
+  backBy?: "path" | "history";
   backTo?: string;
   backState?: LinkProps["state"];
   backPersistSearch?: boolean;
@@ -41,6 +42,7 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
   onNext,
   forceInitialBalance,
   isLoading = false,
+  backBy = "path",
   backTo = "..",
   backState,
   backPersistSearch = false,
@@ -102,13 +104,19 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
     onNext(BigInt(balanceValue));
   };
 
+  const backButtonProps =
+    backBy === "history"
+      ? ({ by: "history" } as const)
+      : ({
+          by: "path",
+          to: backTo,
+          state: backState,
+          persistSearch: backPersistSearch,
+        } as const);
+
   return (
     <Container variant="vertical" size="xl" className="py-6 h-full">
-      <NavigateBackBtn
-        to={backTo}
-        state={backState}
-        persistSearch={backPersistSearch}
-      />
+      <NavigateBackBtn {...backButtonProps} />
       <div className="flex w-full gap-6">
         <Card className="w-full flex-1 flex flex-col gap-6 p-8 bg-white rounded-2xl">
           <div className="flex flex-col gap-3">

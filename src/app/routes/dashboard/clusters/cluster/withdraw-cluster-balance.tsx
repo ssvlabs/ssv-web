@@ -189,7 +189,7 @@ export const WithdrawClusterBalance: FC = () => {
           )}
 
           {isSsvCluster && (
-            <Alert variant="error">
+            <Alert variant="warning">
               <AlertDescription className="flex flex-col gap-4">
                 <p>
                   Withdrawing from an SSV cluster is full-withdrawal only
@@ -239,7 +239,7 @@ export const WithdrawClusterBalance: FC = () => {
             size="xl"
             disabled={!isChanged || disabled}
             isLoading={liquidate.isPending || withdraw.isPending}
-            variant={shouldLiquidate ? "destructive" : "default"}
+            variant={isLiquidating && !isSsvCluster ? "destructive" : "default"}
           >
             {isSsvCluster
               ? "Withdraw & Liquidate"

@@ -112,7 +112,7 @@ export const RegisterValidatorConfirmation: FC = () => {
     if (shares.length === 1)
       return registerValidator.write(
         {
-          amount: depositAmount,
+          // amount: depositAmount,
           cluster: clusterData,
           operatorIds: bigintifyNumbers(operatorIds),
           publicKey: share.publicKey as Address,
@@ -124,7 +124,7 @@ export const RegisterValidatorConfirmation: FC = () => {
 
     return bulkRegisterValidator.write(
       {
-        amount: depositAmount,
+        // amount: depositAmount,
         cluster: clusterData,
         operatorIds: bigintifyNumbers(operatorIds),
         publicKeys: shares.map((share) => share.publicKey as Address),

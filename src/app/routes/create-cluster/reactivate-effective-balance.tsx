@@ -13,6 +13,8 @@ const ReactivateEffectiveBalance = () => {
   const { clusterHash } = useClusterPageParams();
   const { validators, infiniteQuery } =
     useInfiniteClusterValidators(clusterHash);
+  const { fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
+    infiniteQuery;
 
   const [validatorBalances, setValidatorBalances] = useState<
     Record<string, number>
@@ -36,6 +38,12 @@ const ReactivateEffectiveBalance = () => {
   );
 
   useEffect(() => {
+    if (!hasNextPage || isFetchingNextPage) return;
+    fetchNextPage();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  useEffect(() => {
+    if (isPending || isFetchingNextPage || hasNextPage) return;
     const fetchEffectiveBalances = async () => {
       if (validators.length === 0) return;
 
@@ -68,7 +76,7 @@ const ReactivateEffectiveBalance = () => {
     };
 
     fetchEffectiveBalances();
-  }, [validators]);
+  }, [validators, hasNextPage, isFetchingNextPage, isPending]);
 
   const handleNext = (effectiveBalance: bigint) => {
     navigate("../reactivate", {
@@ -78,7 +86,7 @@ const ReactivateEffectiveBalance = () => {
     });
   };
 
-  if (infiniteQuery.isPending) return <Loading />;
+  if (isPending || isFetchingNextPage || hasNextPage) return <Loading />;
 
   return (
     <EffectiveBalanceForm

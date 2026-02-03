@@ -1,21 +1,30 @@
 import { useInfiniteClusterValidators } from "@/hooks/cluster/use-infinite-cluster-validators";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { ValidatorStatus } from "@/lib/utils/validator-status-mapping";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { formatUnits, parseEther } from "viem";
 import { EffectiveBalanceForm } from "@/components/effective-balance/effective-balance-form";
+import { Loading } from "@/components/ui/Loading";
 
 export const SwitchWizardStepOneAndHalfRoute = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { clusterHash } = useClusterPageParams();
   const basePath = `/switch-wizard/${clusterHash}`;
-  const { validators } = useInfiniteClusterValidators(clusterHash);
+  const { validators, infiniteQuery } =
+    useInfiniteClusterValidators(clusterHash);
+  const { fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
+    infiniteQuery;
 
   const locationState = location.state as { from?: unknown } | null;
   const from =
     typeof locationState?.from === "string" ? locationState.from : undefined;
+
+  useEffect(() => {
+    if (!hasNextPage || isFetchingNextPage) return;
+    fetchNextPage();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const validatorRows = useMemo(
     () =>
@@ -37,6 +46,10 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
       }),
     [validators],
   );
+
+  if (isPending || isFetchingNextPage || hasNextPage) {
+    return <Loading />;
+  }
 
   const handleNext = (effectiveBalance: bigint) => {
     // Convert from ETH to Wei

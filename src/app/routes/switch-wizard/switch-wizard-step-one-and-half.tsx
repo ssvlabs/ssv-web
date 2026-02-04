@@ -12,8 +12,10 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
   const location = useLocation();
   const { clusterHash } = useClusterPageParams();
   const basePath = `/switch-wizard/${clusterHash}`;
-  const { validators, infiniteQuery } =
-    useInfiniteClusterValidators(clusterHash);
+  const { validators, infiniteQuery } = useInfiniteClusterValidators(
+    clusterHash,
+    1000,
+  );
   const { fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
     infiniteQuery;
 

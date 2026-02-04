@@ -11,8 +11,10 @@ import { EffectiveBalanceForm } from "@/components/effective-balance/effective-b
 const ReactivateEffectiveBalance = () => {
   const navigate = useNavigate();
   const { clusterHash } = useClusterPageParams();
-  const { validators, infiniteQuery } =
-    useInfiniteClusterValidators(clusterHash);
+  const { validators, infiniteQuery } = useInfiniteClusterValidators(
+    clusterHash,
+    1000,
+  );
   const { fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
     infiniteQuery;
 

@@ -16,6 +16,7 @@ import { FaCircleInfo } from "react-icons/fa6";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { numberFormatter } from "@/lib/utils/number";
 import type { ValidatorItem } from "./effective-balance-form";
+import { VList } from "virtua";
 
 const tabLabels = {
   all: "All",
@@ -119,53 +120,62 @@ export const ValidatorsBreakdown: FC<ValidatorsBreakdownProps> = ({
           <TableCell>Status</TableCell>
           <TableCell className="justify-end">Effective Balance</TableCell>
         </TableHeader>
-        {filteredValidators.map((validator) => {
-          const isNotDeposited = validator.status === "Not Deposited";
-          const displayBalance = validator.effectiveBalance;
-          return (
-            <TableRow key={validator.publicKey} className="bg-white">
-              <TableCell className="flex items-center gap-2">
-                <Text variant="body-3-medium" className="text-gray-600">
-                  {shortenAddress(add0x(validator.publicKey))}
-                </Text>
-                <CopyBtn text={validator.publicKey} />
-                <BeaconchainBtn validatorId={validator.publicKey} />
-              </TableCell>
-              <TableCell>
-                <Badge
-                  variant={isNotDeposited ? "warning" : "success"}
-                  size="xs"
-                  className="rounded-md"
-                >
-                  {validator.status}
-                </Badge>
-              </TableCell>
-              <TableCell className="flex items-center justify-end gap-1">
-                <Text
-                  variant="body-3-medium"
-                  className={
-                    isNotDeposited ? "text-warning-500" : "text-gray-800"
-                  }
-                >
-                  {displayBalance}
-                </Text>
-                <img
-                  src="/images/networks/dark.svg"
-                  alt="ETH"
-                  className="size-3.5"
-                />
-                <Text
-                  variant="body-3-medium"
-                  className={
-                    isNotDeposited ? "text-warning-500" : "text-gray-500"
-                  }
-                >
-                  ETH
-                </Text>
-              </TableCell>
-            </TableRow>
-          );
-        })}
+        <VList
+          overscan={30}
+          style={{
+            flex: "1",
+            overflowX: "visible",
+            height: "100%",
+          }}
+        >
+          {filteredValidators.map((validator) => {
+            const isNotDeposited = validator.status === "Not Deposited";
+            const displayBalance = validator.effectiveBalance;
+            return (
+              <TableRow key={validator.publicKey} className="bg-white">
+                <TableCell className="flex items-center gap-2">
+                  <Text variant="body-3-medium" className="text-gray-600">
+                    {shortenAddress(add0x(validator.publicKey))}
+                  </Text>
+                  <CopyBtn text={validator.publicKey} />
+                  <BeaconchainBtn validatorId={validator.publicKey} />
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    variant={isNotDeposited ? "warning" : "success"}
+                    size="xs"
+                    className="rounded-md"
+                  >
+                    {validator.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="flex items-center justify-end gap-1">
+                  <Text
+                    variant="body-3-medium"
+                    className={
+                      isNotDeposited ? "text-warning-500" : "text-gray-800"
+                    }
+                  >
+                    {displayBalance}
+                  </Text>
+                  <img
+                    src="/images/networks/dark.svg"
+                    alt="ETH"
+                    className="size-3.5"
+                  />
+                  <Text
+                    variant="body-3-medium"
+                    className={
+                      isNotDeposited ? "text-warning-500" : "text-gray-500"
+                    }
+                  >
+                    ETH
+                  </Text>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </VList>
       </Table>
     </Card>
   );

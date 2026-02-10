@@ -59,6 +59,14 @@ export const NavbarDVT: FCProps = ({ className, ...props }) => {
       </Text>
       <Text
         as="a"
+        href={links.ssv.stake}
+        target="_blank"
+        variant="body-2-medium"
+      >
+        Stake
+      </Text>
+      <Text
+        as="a"
         href="https://docs.ssv.network/"
         target="_blank"
         variant="body-2-medium"

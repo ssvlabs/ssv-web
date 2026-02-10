@@ -19,7 +19,10 @@ import { getClusterQueryOptions } from "@/hooks/cluster/use-cluster";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
 import { useClusterState } from "@/hooks/cluster/use-cluster-state";
-import { useLiquidateCluster } from "@/hooks/cluster/use-liquidate-cluster";
+import {
+  useLiquidateCluster,
+  useLiquidateClusterSSV,
+} from "@/hooks/cluster/use-liquidate-cluster";
 import { useWithdrawClusterBalance } from "@/hooks/cluster/use-withdraw-cluster-balance";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { setOptimisticData } from "@/lib/react-query";
@@ -42,6 +45,7 @@ export const WithdrawClusterBalance: FC = () => {
 
   const withdraw = useWithdrawClusterBalance(params.clusterHash!);
   const liquidate = useLiquidateCluster(params.clusterHash!);
+  const liquidateSSV = useLiquidateClusterSSV(params.clusterHash!);
 
   const { balanceETH, balanceSSV, cluster } = useClusterState(
     params.clusterHash!,
@@ -106,7 +110,8 @@ export const WithdrawClusterBalance: FC = () => {
     });
 
     if (shouldLiquidate) {
-      liquidate.write(options);
+      const writer = isMigrated ? liquidate : liquidateSSV;
+      writer.write(options);
     } else {
       withdraw.write(values, options);
     }

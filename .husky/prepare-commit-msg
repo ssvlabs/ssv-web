@@ -1,0 +1,30 @@
+#!/bin/sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+node -e "
+var dialog = require('dialog-node');
+var fs = require('fs');
+var file = process.argv[1];
+if (!file) process.exit(0);
+
+var msg = fs.readFileSync(file, 'utf8');
+var ticketIdReg = /\d{10,}/;
+
+if (ticketIdReg.test(msg)) process.exit(0);
+
+function prompt(message) {
+  return new Promise(function(resolve) {
+    dialog.entry(message, 'Ticket (optional)', 0, function(code, retVal, stderr) {
+      resolve((retVal || '').trim());
+    });
+  });
+}
+
+(async function() {
+  var value = await prompt('Add a ticket number to auto-close it on Monday, e.g. 1234567890 or just cancel to skip');
+  var match = value && value.match(ticketIdReg);
+  if (match) {
+    fs.writeFileSync(file, msg.trimEnd() + ' ' + match[0]);
+  }
+})();
+" "$1" || true

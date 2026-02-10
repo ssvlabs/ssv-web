@@ -1,55 +1,26 @@
-import { useInfiniteClusterValidators } from "@/hooks/cluster/use-infinite-cluster-validators";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
-import { ValidatorStatus } from "@/lib/utils/validator-status-mapping";
-import { useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { formatUnits, parseEther } from "viem";
-import { EffectiveBalanceForm } from "@/components/effective-balance/effective-balance-form";
+import { parseEther } from "viem";
 import { Loading } from "@/components/ui/Loading";
+import { useClusterTotalEffectiveBalance } from "@/hooks/cluster/use-cluster-total-effective-balance";
+import { MigrationEffectiveBalanceForm } from "@/components/effective-balance/migration-effective-balance-form";
+import { useCluster } from "@/hooks/cluster/use-cluster";
 
 export const SwitchWizardStepOneAndHalfRoute = () => {
+  const { clusterHash } = useClusterPageParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { clusterHash } = useClusterPageParams();
   const basePath = `/switch-wizard/${clusterHash}`;
-  const { validators, infiniteQuery } = useInfiniteClusterValidators(
-    clusterHash,
-    1000,
-  );
-  const { fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
-    infiniteQuery;
-
   const locationState = location.state as { from?: unknown } | null;
   const from =
     typeof locationState?.from === "string" ? locationState.from : undefined;
 
-  useEffect(() => {
-    if (!hasNextPage || isFetchingNextPage) return;
-    fetchNextPage();
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  const cluster = useCluster(clusterHash!);
 
-  const validatorRows = useMemo(
-    () =>
-      validators.map((validator) => {
-        const effectiveBalanceBigInt = BigInt(
-          validator.validator_info?.effective_balance ?? 0,
-        );
-        return {
-          publicKey: validator.public_key,
-          status:
-            validator.displayedStatus === ValidatorStatus.NOT_DEPOSITED
-              ? ("Not Deposited" as const)
-              : ("Deposited" as const),
-          effectiveBalance:
-            validator.displayedStatus === ValidatorStatus.NOT_DEPOSITED
-              ? 32
-              : Number(formatUnits(effectiveBalanceBigInt, 9)),
-        };
-      }),
-    [validators],
-  );
+  const totalEffectiveBalance = useClusterTotalEffectiveBalance(clusterHash!);
+  const maxEffectiveBalance = (cluster.data?.validatorCount ?? 0) * 2048;
 
-  if (isPending || isFetchingNextPage || hasNextPage) {
+  if (totalEffectiveBalance.isPending) {
     return <Loading />;
   }
 
@@ -65,9 +36,10 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
   };
 
   return (
-    <EffectiveBalanceForm
-      clusterHash={clusterHash}
-      validators={validatorRows}
+    <MigrationEffectiveBalanceForm
+      clusterHash={clusterHash!}
+      totalEffectiveBalance={totalEffectiveBalance.data!}
+      maxEffectiveBalance={maxEffectiveBalance}
       onNext={handleNext}
       backTo={basePath}
       backState={from ? { from } : undefined}

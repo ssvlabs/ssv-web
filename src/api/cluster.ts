@@ -5,6 +5,7 @@ import {
   type ValidatorsSearchSchema,
 } from "@/lib/search-parsers/validators-search-parsers";
 import { getDefaultClusterData, toSolidityCluster } from "@/lib/utils/cluster";
+import { add0x } from "@/lib/utils/strings";
 import { mapBeaconChainStatus } from "@/lib/utils/validator-status-mapping";
 import type {
   GetClusterResponse,
@@ -12,6 +13,7 @@ import type {
   PaginatedSearchValidatorsResponse,
 } from "@/types/api";
 import type { Address } from "abitype";
+import { formatGwei, type Hex } from "viem";
 
 export const getCluster = (hash: string) => {
   return api
@@ -90,4 +92,13 @@ export const getPaginatedClusterValidators = (
       })),
       pagination: response.pagination,
     }));
+};
+
+export const getClusterTotalEffectiveBalance = (clusterHash: string) => {
+  return api
+    .get<{
+      clusterId: Hex;
+      effectiveBalance: string;
+    }>(endpoint(`clusters/${add0x(clusterHash)}/totalEffectiveBalance`))
+    .then((response) => Number(formatGwei(BigInt(response.effectiveBalance))));
 };

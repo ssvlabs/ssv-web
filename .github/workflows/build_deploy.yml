@@ -16,6 +16,19 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
 
+    # {
+    #   \"networkId\": 1,
+    #   \"apiVersion\": \"v4\",
+    #   \"apiNetwork\": \"mainnet\",
+    #   \"api\": \"https://api.ssv.network/api\",
+    #   \"explorerUrl\": \"https://explorer.ssv.network\",
+    #   \"insufficientBalanceUrl\": \"https://coinmarketcap.com/currencies/ssv-network/#Markets\",
+    #   \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
+    #   \"distributionContract\": \"${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS_MAINNET }}\",
+    #   \"tokenAddress\": \"0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54\",
+    #   \"setterContractAddress\": \"${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4_MAINNET }}\",
+    #   \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_MAINNET }}\"
+    # },
     env:
       STAGE_SSV_NETWORKS: >
         [
@@ -35,28 +48,14 @@ jobs:
       PROD_SSV_NETWORKS: >
         [
           {
-            \"networkId\": 1,
-            \"apiVersion\": \"v4\",
-            \"apiNetwork\": \"mainnet\",
-            \"api\": \"https://api.ssv.network/api\",
-            \"explorerUrl\": \"https://explorer.ssv.network\",
-            \"insufficientBalanceUrl\": \"https://coinmarketcap.com/currencies/ssv-network/#Markets\",
-            \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
-            \"distributionContract\": \"${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS_MAINNET }}\",
-            \"tokenAddress\": \"0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54\",
-            \"setterContractAddress\": \"${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4_MAINNET }}\",
-            \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_MAINNET }}\"
-          },
-          {
             \"networkId\": 560048,
             \"apiVersion\": \"v4\",
             \"apiNetwork\": \"hoodi\",  
-            \"api\": \"https://api.ssv.network/api\",
-            \"explorerUrl\": \"https://explorer.ssv.network\",
+            \"api\": \"https://api.hoodi.ssv.network/api\",
+            \"explorerUrl\": \"https://explorer.hoodi.ssv.network/\",
             \"insufficientBalanceUrl\": \"https://faucet.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
             \"tokenAddress\": \"0x9F5d4Ec84fC4785788aB44F9de973cF34F7A038e\",
-            \"bAppContractAddress\": \"0xc7fCFeEc5FB9962bDC2234A7a25dCec739e27f9f\",
             \"setterContractAddress\": \"${{ secrets.PROD_HOODI_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
             \"getterContractAddress\": \"${{ secrets.PROD_HOODI_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
            }
@@ -101,28 +100,6 @@ jobs:
           role-to-assume: ${{ secrets.SSV_WEB_AWS_IAM_ROLE }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      # <app-pre.stage.ssv.network> pre-stage
-      - name: Run stage webapp build
-        if: github.ref == 'refs/heads/pre-stage'
-        run: >
-          GAS_PRICE="${{ env.GAS_PRICE }}"
-          GAS_LIMIT="${{ env.GAS_LIMIT }}"
-          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
-          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
-          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          pnpm build
-        env:
-          GAS_PRICE: ${{ secrets.GAS_PRICE }}
-          GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
-          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
-
-      - name: Upload files to S3
-        if: github.ref == 'refs/heads/pre-stage'
-        run: |
-          aws s3 cp ./build s3://${{ secrets.SSV_WEB_PRE_STAGE_AWS_S3_BUCKET }} --recursive
-      # </app-pre.stage.ssv.network>
-
       # <app.stage.ssv.network>
       - name: Run stage webapp build
         if: github.ref == 'refs/heads/stage'
@@ -166,29 +143,5 @@ jobs:
       - name: Upload files to S3
         if: github.ref == 'refs/heads/main'
         run: |
-          aws s3 cp ./build s3://${{ secrets.SSV_WEB_MAIN_AWS_S3_BUCKET }} --recursive
+          aws s3 cp ./build s3://${{ secrets.SSV_WEB_PROD_HOODI_AWS_S3_BUCKET }} --recursive
       # </app.ssv.network>
-
-      # <ba-app.ssv.network>
-      - name: Run prod ba-app webapp build
-        if: github.ref == 'refs/heads/bapps-prod'
-        run: >
-          GAS_PRICE="${{ env.GAS_PRICE }}"
-          GAS_LIMIT="${{ env.GAS_LIMIT }}"
-          SSV_NETWORKS="${{ env.BAPPS_PROD_SSV_NETWORKS }}"
-          MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
-          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"
-          pnpm build
-        env:
-          GAS_PRICE: ${{ secrets.GAS_PRICE }}
-          GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
-          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_PROD }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-
-      - name: Upload files to S3
-        if: github.ref == 'refs/heads/bapps-prod'
-        run: |
-          aws s3 cp ./build s3://${{ secrets.SSV_WEB_BAPP_PROD_AWS_S3_BUCKET }} --recursive
-       # </ba-app.ssv.network>

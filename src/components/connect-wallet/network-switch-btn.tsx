@@ -1,11 +1,31 @@
 import type { ButtonProps } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
 import { textVariants } from "@/components/ui/text";
+import { useAccount } from "@/hooks/account/use-account";
+import { hoodi } from "@/wagmi/config";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import type { FC } from "react";
+import { useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa6";
 
+const networkRedirects: Record<number, string> = {
+  [hoodi.id]: "https://app.hoodi.ssv.network/",
+};
+
 export const NetworkSwitchBtn: FC<ButtonProps> = (props) => {
+  const { chain: accountChain, isConnected } = useAccount();
+
+  useEffect(() => {
+    if (!isConnected || !accountChain?.id) return;
+    const targetBaseUrl = networkRedirects[accountChain.id];
+    if (!targetBaseUrl) return;
+
+    const targetUrl = new URL(window.location.pathname, targetBaseUrl);
+    if (window.location.origin === targetUrl.origin) return;
+
+    window.location.assign(targetUrl.toString());
+  }, [accountChain?.id, isConnected]);
+
   return (
     <ConnectButton.Custom>
       {({ account, chain, openChainModal, mounted }) => {

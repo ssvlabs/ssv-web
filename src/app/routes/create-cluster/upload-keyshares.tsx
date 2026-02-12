@@ -22,12 +22,11 @@ import { useKeysharesValidatorsList } from "@/hooks/keyshares/use-keyshares-vali
 import { useOperatorsUsability } from "@/hooks/keyshares/use-operators-usability";
 import { createClusterHash } from "@/lib/utils/cluster";
 import { cn } from "@/lib/utils/tw";
-import { type ComponentPropsWithoutRef, type FC, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, type ComponentPropsWithoutRef, type FC } from "react";
+import { useNavigate } from "react-router";
 import { ref } from "valtio";
 import { Tooltip } from "@/components/ui/tooltip";
-import { globals } from "@/config";
-import { links } from "@/config/links";
+import { globals, links } from "@/config";
 import type { ClusterSize } from "@/components/operator/operator-picker/operator-cluster-size-picker.tsx";
 
 export type GenerateKeySharesOfflineProps = {
@@ -97,7 +96,6 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
 
   useEffect(() => {
     state.clusterSize = operatorIds.length as ClusterSize;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [operatorIds.length]);
 
   const submit = () => {
@@ -106,9 +104,9 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
         .slice(0, context.selectedValidatorsCount)
         .map((share) => share.payload) || [];
 
-    // if (cluster.data)
-    //   return navigate(`/join/validator/${cluster.data.clusterId}/funding`);
-    navigate("../effective-balance");
+    if (cluster.data)
+      return navigate(`/join/validator/${cluster.data.clusterId}/funding`);
+    navigate("../funding");
   };
 
   const canProceed =

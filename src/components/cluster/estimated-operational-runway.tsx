@@ -33,7 +33,7 @@ export const EstimatedOperationalRunway: EstimatedOperationalRunwayFC = ({
   const params = useClusterPageParams();
   const hash = clusterHash || params.clusterHash;
 
-  const { isLiquidated } = useClusterState(hash!, { watch: true });
+  const { isLiquidated } = useClusterState(hash!);
 
   const { data: clusterRunway } = useClusterRunway(hash!, {
     deltaBalance,

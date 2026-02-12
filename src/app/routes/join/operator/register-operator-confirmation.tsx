@@ -17,7 +17,7 @@ import { formatBigintInput } from "@/lib/utils/number";
 import { createDefaultOperator } from "@/lib/utils/operator";
 import { shortenAddress } from "@/lib/utils/strings";
 import { type FC } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { encodeAbiParameters, parseAbiParameters } from "viem";
 import { useAccount } from "@/hooks/account/use-account";
 import { useRegisterOperatorContext } from "@/guard/register-operator-guards";
@@ -92,13 +92,13 @@ export const RegisterOperatorConfirmation: FC = () => {
         id="register-operator-confirmation"
         as="form"
         className="w-full"
-        onKeyDown={(ev: React.KeyboardEvent) => {
+        onKeyDown={(ev) => {
           if (ev.key === "Enter") {
             ev.preventDefault();
             submit();
           }
         }}
-        onSubmit={(ev: React.FormEvent) => {
+        onSubmit={(ev) => {
           ev.preventDefault();
           submit();
         }}
@@ -128,21 +128,16 @@ export const RegisterOperatorConfirmation: FC = () => {
             </Text>
           </div>
 
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between">
             <Text
               variant="body-2-medium"
               className="font-semibold text-sm text-gray-500"
             >
               Fee
             </Text>
-            <div className="flex items-center gap-1">
-              <img
-                src="/images/networks/dark.svg"
-                className="size-5"
-                alt="ETH"
-              />
-              <Text variant="body-2-bold" className="flex items-center gap-1">
-                {formatBigintInput(yearlyFee)} ETH
+            <div className="flex flex-col gap-0">
+              <Text variant="body-2-bold">
+                {formatBigintInput(yearlyFee)} SSV{" "}
                 <Span variant="body-3-semibold" className="text-gray-500">
                   / year
                 </Span>

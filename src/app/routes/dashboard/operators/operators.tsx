@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/container";
 import { usePaginatedAccountOperators } from "@/hooks/operator/use-paginated-account-operators";
 import { type ComponentPropsWithoutRef, type FC } from "react";
 import { Helmet } from "react-helmet";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 
 export const Operators: FC<ComponentPropsWithoutRef<"div">> = () => {
@@ -27,8 +27,6 @@ export const Operators: FC<ComponentPropsWithoutRef<"div">> = () => {
         <OperatorsTable
           operators={accountOperators.operators}
           pagination={accountOperators.pagination}
-          orderBy={accountOperators.orderBy}
-          onOrderByChange={accountOperators.setOrderBy}
           onOperatorClick={(operator) => {
             navigate(operator.id.toString());
           }}

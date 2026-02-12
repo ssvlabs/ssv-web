@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/container";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { useLinks } from "@/hooks/use-links";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router";
 import { useMaintenance } from "@/hooks/app/use-maintenance";
 
 export const Maintenance: FC = () => {

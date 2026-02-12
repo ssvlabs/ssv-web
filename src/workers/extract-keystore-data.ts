@@ -1,10 +1,8 @@
+import type { ExtractedKeys } from "ssv-keys/dist/tsc/src/lib/SSVKeys";
 import { Buffer } from "buffer";
-import type { SSVKeys as SSVKeysType } from "@ssv-labs/ssv-sdk/keys";
 self.Buffer = Buffer;
 
-type ExtractedKeys = Awaited<ReturnType<SSVKeysType["extractKeys"]>>;
-
-const { SSVKeys } = await import("@ssv-labs/ssv-sdk/keys");
+const { SSVKeys } = await import("ssv-keys");
 const ssvKeys = new SSVKeys();
 
 export type KeystoreDataMessage = MessageEvent<{

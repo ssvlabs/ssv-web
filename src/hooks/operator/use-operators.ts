@@ -37,14 +37,14 @@ export const useBlockchainOperators = (operatorIds: OperatorID[]) => {
     combine: (queries) => {
       const operators = queries.map((query) => {
         if (!query.data) return undefined;
-        const {
+        const [
           owner,
           fee,
           validatorCount,
           whitelistedAddress,
           isPrivate,
           isActive,
-        } = query.data;
+        ] = query.data;
         return {
           owner,
           fee,

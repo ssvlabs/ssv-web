@@ -1,73 +1,69 @@
 import { Button } from "@/components/ui/button";
-import { BalanceDisplay } from "@/components/ui/balance-display";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
+import { BigNumberInput } from "@/components/ui/number-input";
 import { Text } from "@/components/ui/text";
 import { toast } from "@/components/ui/use-toast";
 import { useOperator } from "@/hooks/operator/use-operator";
 import { useOperatorPageParams } from "@/hooks/operator/use-operator-page-params";
 import { useGetOperatorEarnings } from "@/lib/contract-interactions/read/use-get-operator-earnings";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
+import { useWithdrawOperatorEarnings } from "@/lib/contract-interactions/write/use-withdraw-operator-earnings";
+import { formatSSV } from "@/lib/utils/number";
 import { cn } from "@/lib/utils/tw";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { type ComponentPropsWithoutRef, type FC } from "react";
+import { Collapse } from "react-collapse";
 import { Helmet } from "react-helmet";
-import { useNavigate } from "react-router-dom";
-import {
-  useWithdrawAllOperatorEarnings,
-  useWithdrawAllOperatorEarningsSSV,
-  useWithdrawAllVersionOperatorEarnings
-} from "@/lib/contract-interactions/hooks/setter";
-import { useGetOperatorEarningsSSV } from "@/lib/contract-interactions/hooks/getter";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
+import { z } from "zod";
 
 export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
-                                                                               className,
-                                                                               ...props
-                                                                             }) => {
+  className,
+  ...props
+}) => {
   const navigate = useNavigate();
   const { operatorId } = useOperatorPageParams();
 
   const { data: operator } = useOperator();
-  const operatorEarningsEth = useGetOperatorEarnings({
-    id: BigInt(operatorId!)
-  });
-  const operatorEarningsSSV = useGetOperatorEarningsSSV({
-    id: BigInt(operatorId!)
+  const operatorEarnings = useGetOperatorEarnings({
+    id: BigInt(operatorId!),
   });
 
-  const balanceEth = operatorEarningsEth.data ?? 0n;
-  const balanceSSV = operatorEarningsSSV.data ?? 0n;
-  const hasSSVBalance = balanceSSV > 0n;
-  const hasETHBalance = balanceEth > 0n;
-  const hasBalance = hasSSVBalance || hasETHBalance;
-  const hasBothBalances = hasSSVBalance && hasETHBalance;
+  const max = operatorEarnings.data ?? 0n;
 
-  const withdrawAll = useWithdrawAllVersionOperatorEarnings();
-  const withdrawAllSSV = useWithdrawAllOperatorEarningsSSV();
-  const withdrawAllETH = useWithdrawAllOperatorEarnings();
+  const hasBalance = max > 0n;
 
-  const withdraw = hasBothBalances
-    ? withdrawAll
-    : hasETHBalance
-      ? withdrawAllETH
-      : withdrawAllSSV;
+  const schema = z.object({
+    value: z
+      .bigint()
+      .max(max, "Value exceeds available balance")
+      .positive("Value must be greater than 0"),
+  });
 
-  const handleWithdrawAll = () => {
-    if (!hasBalance) return;
+  const form = useForm<z.infer<typeof schema>>({
+    defaultValues: { value: 0n },
+    resolver: zodResolver(schema),
+  });
 
-    return withdraw.write({
-      args: { operatorId: BigInt(operatorId!) },
-      options: withTransactionModal({
+  const withdraw = useWithdrawOperatorEarnings();
+
+  const submit = ({ value }: z.infer<typeof schema>) => {
+    return withdraw.write(
+      { operatorId: BigInt(operatorId!), amount: value },
+      withTransactionModal({
         onMined: () => {
           toast({
-            title: "Withdrawal Successful"
+            title: "Withdrawal Successful",
           });
-          operatorEarningsEth.refetch();
-          operatorEarningsSSV.refetch();
+          form.reset();
+          operatorEarnings.refetch();
           return () => navigate("..");
-        }
-      })
-    });
+        },
+      }),
+    );
   };
 
   return (
@@ -80,18 +76,59 @@ export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
         <Text variant="headline4" className="text-gray-500">
           Available Balance
         </Text>
-        <div className="flex flex-col gap-4">
-          <BalanceDisplay amount={balanceEth} token="ETH" />
-          {hasSSVBalance && <BalanceDisplay amount={balanceSSV} token="SSV" />}
+        <Text variant="headline1">{formatSSV(max)} SSV</Text>
+      </Card>
+      <Card as="form" onSubmit={form.handleSubmit(submit)} className="w-full">
+        <Text variant="headline4" className="text-gray-500">
+          Withdraw
+        </Text>
+        <div className="flex flex-col">
+          <BigNumberInput
+            disabled={withdraw.isPending || !hasBalance}
+            value={form.watch("value")}
+            onChange={(value) =>
+              form.setValue("value", value, { shouldValidate: true })
+            }
+            max={max}
+            render={(props, ref) => (
+              <div className="flex flex-col pl-6 pr-5 py-4 gap-3 rounded-xl border border-gray-300 bg-gray-200">
+                <div className="flex h-14 items-center gap-5">
+                  <input
+                    disabled={withdraw.isPending || !hasBalance}
+                    placeholder="0"
+                    className="w-full h-full border outline-none flex-1 text-[28px] font-medium border-none bg-transparent"
+                    {...props}
+                    ref={ref}
+                  />
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    className="font-semibold px-4"
+                    onClick={() =>
+                      form.setValue("value", max, { shouldValidate: true })
+                    }
+                  >
+                    MAX
+                  </Button>
+                  <span className="text-[28px] font-medium">SSV</span>
+                </div>
+              </div>
+            )}
+          />
+          <Collapse isOpened={Boolean(form.formState.errors.value)}>
+            <Text variant="body-2-medium" className="text-error-500">
+              {form.formState.errors.value?.message}
+            </Text>
+          </Collapse>
         </div>
         <Button
-          disabled={!hasBalance}
+          disabled={Boolean(form.formState.errors.value) || !hasBalance}
           isActionBtn
           isLoading={withdraw.isPending}
-          onClick={handleWithdrawAll}
+          type="submit"
           size="xl"
         >
-          Withdraw All
+          Withdraw
         </Button>
       </Card>
     </Container>

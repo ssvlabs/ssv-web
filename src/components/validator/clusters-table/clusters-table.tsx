@@ -1,10 +1,10 @@
-import type { ComponentPropsWithoutRef, FC, ReactNode } from "react";
-import type { Cluster, Pagination as IPagination } from "@/types/api";
+import type { FC, ComponentPropsWithoutRef } from "react";
+import type { Pagination as IPagination, Cluster } from "@/types/api";
 import {
-  Table,
-  TableBody,
-  TableHead,
   TableHeader,
+  TableHead,
+  TableBody,
+  Table,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils/tw";
 import { Pagination } from "@/components/ui/pagination";
@@ -17,16 +17,12 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Loading } from "@/components/ui/Loading";
 import LogoIcon from "@/assets/images/logo-icon.svg?react";
-import { links } from "@/config/links";
-import type { OrderBy, Sort } from "@/api/cluster";
-import { FaAngleDown, FaAngleUp } from "react-icons/fa";
+import { links } from "@/config";
 
 export type ClusterTableProps = {
   clusters: Cluster[];
   onClusterClick: (cluster: Cluster) => void;
   pagination: IPagination;
-  orderBy?: `${OrderBy}:${Sort}`;
-  onOrderByChange?: (orderBy: `${OrderBy}:${Sort}`) => void;
   isEmpty?: boolean;
   isLoading?: boolean;
 };
@@ -41,65 +37,10 @@ export const ClusterTable: FCProps = ({
   clusters,
   onClusterClick,
   pagination,
-  orderBy: orderByProp = "id:asc",
-  onOrderByChange,
   className,
   isEmpty,
   ...props
 }) => {
-  const [orderBy, sort] = orderByProp.split(":") as [OrderBy, Sort];
-
-  const handleSort = (field: OrderBy) => {
-    if (!onOrderByChange) return;
-
-    if (orderBy !== field) {
-      onOrderByChange(`${field}:desc`);
-      return;
-    }
-
-    if (sort === "desc") {
-      onOrderByChange(`${field}:asc`);
-      return;
-    }
-
-    if (field === "id") {
-      onOrderByChange(`${field}:desc`);
-      return;
-    }
-
-    onOrderByChange("id:asc");
-  };
-
-  const renderSortableHeader = (header: {
-    type: OrderBy;
-    title: ReactNode;
-  }) => {
-    const isActive = orderBy === header.type;
-
-    return (
-      <div
-        className="cursor-pointer flex gap-1 justify-start items-center flex-nowrap text-nowrap font-normal"
-        onClick={() => handleSort(header.type)}
-      >
-        {header.title}
-        <div className="size-4 flex flex-col justify-center items-center gap-0">
-          <FaAngleUp
-            className={cn("p-0 size-4 mb-[-2px]", {
-              "text-primary-500": isActive && sort === "asc",
-              "text-gray-400": !isActive,
-            })}
-          />
-          <FaAngleDown
-            className={cn("p-0 size-4 mt-[-2px]", {
-              "text-primary-500": isActive && sort === "desc",
-              "text-gray-400": !isActive,
-            })}
-          />
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="flex flex-col w-full">
       <Table
@@ -125,33 +66,15 @@ export const ClusterTable: FCProps = ({
                 </>
               }
             >
-              {renderSortableHeader({
-                type: "id",
-                title: (
-                  <span className="flex gap-2 items-center">
-                    <span>Cluster ID</span>
-                    <FaCircleInfo className="size-3 text-gray-500" />
-                  </span>
-                ),
-              })}
+              <div className="flex gap-2 items-center">
+                <Text>Cluster ID</Text>
+                <FaCircleInfo className="size-3 text-gray-500" />
+              </div>
             </Tooltip>
           </TableHead>
           <TableHead>Operators</TableHead>
-          <TableHead>
-            {renderSortableHeader({
-              type: "validatorCount",
-              title: "Validators",
-            })}
-          </TableHead>
-          <TableHead>
-            {renderSortableHeader({
-              type: "effectiveBalance",
-              title: "Total Effective Balance",
-            })}
-          </TableHead>
-          <TableHead>Cluster Balance</TableHead>
-          <TableHead>Operational Runway</TableHead>
-          <TableHead />
+          <TableHead>Validators</TableHead>
+          <TableHead>Est Operational Runway</TableHead>
           <TableHead />
         </TableHeader>
         <TableBody>

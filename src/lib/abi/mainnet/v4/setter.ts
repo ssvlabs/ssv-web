@@ -17,12 +17,12 @@ export const MainnetV4SetterABI = [
   },
   {
     inputs: [],
-    name: "AlreadyVoted",
+    name: "ApprovalNotWithinTimeframe",
     type: "error",
   },
   {
     inputs: [],
-    name: "ApprovalNotWithinTimeframe",
+    name: "CallerNotOwner",
     type: "error",
   },
   {
@@ -39,6 +39,11 @@ export const MainnetV4SetterABI = [
       },
     ],
     name: "CallerNotOwnerWithData",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "CallerNotWhitelisted",
     type: "error",
   },
   {
@@ -59,7 +64,7 @@ export const MainnetV4SetterABI = [
   },
   {
     inputs: [],
-    name: "ClusterDoesNotExist",
+    name: "ClusterDoesNotExists",
     type: "error",
   },
   {
@@ -74,22 +79,18 @@ export const MainnetV4SetterABI = [
   },
   {
     inputs: [],
-    name: "EBBelowMinimum",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "EBExceedsMaximum",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "ETHTransferFailed",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "EmptyPublicKeysList",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint64",
+        name: "operatorId",
+        type: "uint64",
+      },
+    ],
+    name: "ExceedValidatorLimit",
     type: "error",
   },
   {
@@ -125,28 +126,12 @@ export const MainnetV4SetterABI = [
   },
   {
     inputs: [],
-    name: "FutureBlockNumber",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "IncorrectClusterState",
     type: "error",
   },
   {
     inputs: [],
-    name: "IncorrectClusterVersion",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint8",
-        name: "operatorVersion",
-        type: "uint8",
-      },
-    ],
-    name: "IncorrectOperatorVersion",
+    name: "IncorrectValidatorState",
     type: "error",
   },
   {
@@ -177,22 +162,7 @@ export const MainnetV4SetterABI = [
   },
   {
     inputs: [],
-    name: "InvalidProof",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "InvalidPublicKeyLength",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InvalidQuorum",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InvalidToken",
     type: "error",
   },
   {
@@ -209,26 +179,6 @@ export const MainnetV4SetterABI = [
       },
     ],
     name: "InvalidWhitelistingContract",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "LegacyOperatorFeeDeclarationInvalid",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "MaxPrecisionExceeded",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "MaxRequestsAmountReached",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "MaxValueExceeded",
     type: "error",
   },
   {
@@ -253,26 +203,6 @@ export const MainnetV4SetterABI = [
   },
   {
     inputs: [],
-    name: "NotCSSV",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "NotOracle",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "NothingToClaim",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "NothingToWithdraw",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "OperatorAlreadyExists",
     type: "error",
   },
@@ -288,22 +218,7 @@ export const MainnetV4SetterABI = [
   },
   {
     inputs: [],
-    name: "OracleAlreadyAssigned",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "OracleHasZeroWeight",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "PublicKeysSharesLengthMismatch",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "RootNotFound",
     type: "error",
   },
   {
@@ -313,17 +228,7 @@ export const MainnetV4SetterABI = [
   },
   {
     inputs: [],
-    name: "StakeTooLow",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "StaleBlockNumber",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "StaleUpdate",
+    name: "TargetModuleDoesNotExist",
     type: "error",
   },
   {
@@ -349,12 +254,7 @@ export const MainnetV4SetterABI = [
   },
   {
     inputs: [],
-    name: "UnstakeAmountExceedsBalance",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "UpdateTooFrequent",
+    name: "ValidatorAlreadyExists",
     type: "error",
   },
   {
@@ -375,17 +275,7 @@ export const MainnetV4SetterABI = [
   },
   {
     inputs: [],
-    name: "ZeroAddress",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "ZeroAddressNotAllowed",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "ZeroAmount",
     type: "error",
   },
   {
@@ -418,70 +308,6 @@ export const MainnetV4SetterABI = [
       },
     ],
     name: "BeaconUpgraded",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint64[]",
-        name: "operatorIds",
-        type: "uint64[]",
-      },
-      {
-        indexed: true,
-        internalType: "uint64",
-        name: "blockNum",
-        type: "uint64",
-      },
-      {
-        indexed: false,
-        internalType: "uint32",
-        name: "effectiveBalance",
-        type: "uint32",
-      },
-      {
-        components: [
-          {
-            internalType: "uint32",
-            name: "validatorCount",
-            type: "uint32",
-          },
-          {
-            internalType: "uint64",
-            name: "networkFeeIndex",
-            type: "uint64",
-          },
-          {
-            internalType: "uint64",
-            name: "index",
-            type: "uint64",
-          },
-          {
-            internalType: "bool",
-            name: "active",
-            type: "bool",
-          },
-          {
-            internalType: "uint256",
-            name: "balance",
-            type: "uint256",
-          },
-        ],
-        indexed: false,
-        internalType: "struct ISSVNetworkCore.Cluster",
-        name: "cluster",
-        type: "tuple",
-      },
-    ],
-    name: "ClusterBalanceUpdated",
     type: "event",
   },
   {
@@ -610,76 +436,6 @@ export const MainnetV4SetterABI = [
         type: "uint64[]",
       },
       {
-        indexed: false,
-        internalType: "uint256",
-        name: "ethDeposited",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "ssvRefunded",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint32",
-        name: "effectiveBalance",
-        type: "uint32",
-      },
-      {
-        components: [
-          {
-            internalType: "uint32",
-            name: "validatorCount",
-            type: "uint32",
-          },
-          {
-            internalType: "uint64",
-            name: "networkFeeIndex",
-            type: "uint64",
-          },
-          {
-            internalType: "uint64",
-            name: "index",
-            type: "uint64",
-          },
-          {
-            internalType: "bool",
-            name: "active",
-            type: "bool",
-          },
-          {
-            internalType: "uint256",
-            name: "balance",
-            type: "uint256",
-          },
-        ],
-        indexed: false,
-        internalType: "struct ISSVNetworkCore.Cluster",
-        name: "cluster",
-        type: "tuple",
-      },
-    ],
-    name: "ClusterMigratedToETH",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint64[]",
-        name: "operatorIds",
-        type: "uint64[]",
-      },
-      {
         components: [
           {
             internalType: "uint32",
@@ -780,49 +536,11 @@ export const MainnetV4SetterABI = [
       {
         indexed: false,
         internalType: "uint64",
-        name: "newCooldownDuration",
-        type: "uint64",
-      },
-    ],
-    name: "CooldownDurationUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint64",
         name: "value",
         type: "uint64",
       },
     ],
     name: "DeclareOperatorFeePeriodUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "ERC20Rescued",
     type: "event",
   },
   {
@@ -862,44 +580,12 @@ export const MainnetV4SetterABI = [
     inputs: [
       {
         indexed: false,
-        internalType: "uint256",
-        name: "newFeesWei",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "accEthPerShare",
-        type: "uint256",
-      },
-    ],
-    name: "FeesSynced",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
         internalType: "uint8",
         name: "version",
         type: "uint8",
       },
     ],
     name: "Initialized",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint64",
-        name: "value",
-        type: "uint64",
-      },
-    ],
-    name: "LiquidationThresholdPeriodSSVUpdated",
     type: "event",
   },
   {
@@ -925,33 +611,7 @@ export const MainnetV4SetterABI = [
         type: "uint256",
       },
     ],
-    name: "MinimumLiquidationCollateralSSVUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "value",
-        type: "uint256",
-      },
-    ],
     name: "MinimumLiquidationCollateralUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "minFee",
-        type: "uint256",
-      },
-    ],
-    name: "MinimumOperatorEthFeeUpdated",
     type: "event",
   },
   {
@@ -1009,25 +669,6 @@ export const MainnetV4SetterABI = [
       },
     ],
     name: "NetworkFeeUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "oldFee",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "newFee",
-        type: "uint256",
-      },
-    ],
-    name: "NetworkFeeUpdatedSSV",
     type: "event",
   },
   {
@@ -1160,9 +801,9 @@ export const MainnetV4SetterABI = [
     inputs: [
       {
         indexed: false,
-        internalType: "uint256",
+        internalType: "uint64",
         name: "maxFee",
-        type: "uint256",
+        type: "uint64",
       },
     ],
     name: "OperatorMaximumFeeUpdated",
@@ -1306,31 +947,6 @@ export const MainnetV4SetterABI = [
     inputs: [
       {
         indexed: true,
-        internalType: "uint32",
-        name: "oracleId",
-        type: "uint32",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "oldOracle",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "newOracle",
-        type: "address",
-      },
-    ],
-    name: "OracleReplaced",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
         internalType: "address",
         name: "previousOwner",
         type: "address",
@@ -1362,170 +978,6 @@ export const MainnetV4SetterABI = [
       },
     ],
     name: "OwnershipTransferred",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint16",
-        name: "newQuorum",
-        type: "uint16",
-      },
-    ],
-    name: "QuorumUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "user",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "RewardsClaimed",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "user",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "pending",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "accrued",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "userIndex",
-        type: "uint256",
-      },
-    ],
-    name: "RewardsSettled",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "merkleRoot",
-        type: "bytes32",
-      },
-      {
-        indexed: true,
-        internalType: "uint64",
-        name: "blockNum",
-        type: "uint64",
-      },
-    ],
-    name: "RootCommitted",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "string",
-        name: "version",
-        type: "string",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "blockNumber",
-        type: "uint256",
-      },
-    ],
-    name: "SSVNetworkUpgradeBlock",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "user",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "Staked",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "user",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "unlockTime",
-        type: "uint256",
-      },
-    ],
-    name: "UnstakeRequested",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "user",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "UnstakedWithdrawn",
     type: "event",
   },
   {
@@ -1689,49 +1141,6 @@ export const MainnetV4SetterABI = [
     type: "event",
   },
   {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "merkleRoot",
-        type: "bytes32",
-      },
-      {
-        indexed: true,
-        internalType: "uint64",
-        name: "blockNum",
-        type: "uint64",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "accumulatedWeight",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "quorum",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint32",
-        name: "oracleId",
-        type: "uint32",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "oracle",
-        type: "address",
-      },
-    ],
-    name: "WeightedRootProposed",
-    type: "event",
-  },
-  {
     stateMutability: "nonpayable",
     type: "fallback",
   },
@@ -1778,6 +1187,11 @@ export const MainnetV4SetterABI = [
         type: "bytes[]",
       },
       {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
         components: [
           {
             internalType: "uint32",
@@ -1812,7 +1226,7 @@ export const MainnetV4SetterABI = [
     ],
     name: "bulkRegisterValidator",
     outputs: [],
-    stateMutability: "payable",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -1879,31 +1293,6 @@ export const MainnetV4SetterABI = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "claimEthRewards",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "merkleRoot",
-        type: "bytes32",
-      },
-      {
-        internalType: "uint64",
-        name: "blockNum",
-        type: "uint64",
-      },
-    ],
-    name: "commitRoot",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "uint64",
@@ -1932,6 +1321,11 @@ export const MainnetV4SetterABI = [
         internalType: "uint64[]",
         name: "operatorIds",
         type: "uint64[]",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
       },
       {
         components: [
@@ -1968,7 +1362,7 @@ export const MainnetV4SetterABI = [
     ],
     name: "deposit",
     outputs: [],
-    stateMutability: "payable",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -2043,51 +1437,34 @@ export const MainnetV4SetterABI = [
         type: "address",
       },
       {
-        components: [
-          {
-            internalType: "uint64",
-            name: "minimumBlocksBeforeLiquidation",
-            type: "uint64",
-          },
-          {
-            internalType: "uint256",
-            name: "minimumLiquidationCollateral",
-            type: "uint256",
-          },
-          {
-            internalType: "uint32",
-            name: "validatorsPerOperatorLimit",
-            type: "uint32",
-          },
-          {
-            internalType: "uint64",
-            name: "declareOperatorFeePeriod",
-            type: "uint64",
-          },
-          {
-            internalType: "uint64",
-            name: "executeOperatorFeePeriod",
-            type: "uint64",
-          },
-          {
-            internalType: "uint64",
-            name: "operatorMaxFeeIncrease",
-            type: "uint64",
-          },
-          {
-            internalType: "uint32[4]",
-            name: "defaultOracleIds",
-            type: "uint32[4]",
-          },
-          {
-            internalType: "uint16",
-            name: "quorumBps",
-            type: "uint16",
-          },
-        ],
-        internalType: "struct ISSVNetwork.NetworkInitParams",
-        name: "params",
-        type: "tuple",
+        internalType: "uint64",
+        name: "minimumBlocksBeforeLiquidation_",
+        type: "uint64",
+      },
+      {
+        internalType: "uint256",
+        name: "minimumLiquidationCollateral_",
+        type: "uint256",
+      },
+      {
+        internalType: "uint32",
+        name: "validatorsPerOperatorLimit_",
+        type: "uint32",
+      },
+      {
+        internalType: "uint64",
+        name: "declareOperatorFeePeriod_",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "executeOperatorFeePeriod_",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "operatorMaxFeeIncrease_",
+        type: "uint64",
       },
     ],
     name: "initialize",
@@ -2146,124 +1523,6 @@ export const MainnetV4SetterABI = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "clusterOwner",
-        type: "address",
-      },
-      {
-        internalType: "uint64[]",
-        name: "operatorIds",
-        type: "uint64[]",
-      },
-      {
-        components: [
-          {
-            internalType: "uint32",
-            name: "validatorCount",
-            type: "uint32",
-          },
-          {
-            internalType: "uint64",
-            name: "networkFeeIndex",
-            type: "uint64",
-          },
-          {
-            internalType: "uint64",
-            name: "index",
-            type: "uint64",
-          },
-          {
-            internalType: "bool",
-            name: "active",
-            type: "bool",
-          },
-          {
-            internalType: "uint256",
-            name: "balance",
-            type: "uint256",
-          },
-        ],
-        internalType: "struct ISSVNetworkCore.Cluster",
-        name: "cluster",
-        type: "tuple",
-      },
-    ],
-    name: "liquidateSSV",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint64[]",
-        name: "operatorIds",
-        type: "uint64[]",
-      },
-      {
-        components: [
-          {
-            internalType: "uint32",
-            name: "validatorCount",
-            type: "uint32",
-          },
-          {
-            internalType: "uint64",
-            name: "networkFeeIndex",
-            type: "uint64",
-          },
-          {
-            internalType: "uint64",
-            name: "index",
-            type: "uint64",
-          },
-          {
-            internalType: "bool",
-            name: "active",
-            type: "bool",
-          },
-          {
-            internalType: "uint256",
-            name: "balance",
-            type: "uint256",
-          },
-        ],
-        internalType: "struct ISSVNetworkCore.Cluster",
-        name: "cluster",
-        type: "tuple",
-      },
-    ],
-    name: "migrateClusterToETH",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "from",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "onCSSVTransfer",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
     inputs: [],
     name: "owner",
     outputs: [
@@ -2310,6 +1569,11 @@ export const MainnetV4SetterABI = [
         type: "uint64[]",
       },
       {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
         components: [
           {
             internalType: "uint32",
@@ -2344,7 +1608,7 @@ export const MainnetV4SetterABI = [
     ],
     name: "reactivate",
     outputs: [],
-    stateMutability: "payable",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -2412,6 +1676,11 @@ export const MainnetV4SetterABI = [
         type: "bytes",
       },
       {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
         components: [
           {
             internalType: "uint32",
@@ -2446,7 +1715,7 @@ export const MainnetV4SetterABI = [
     ],
     name: "registerValidator",
     outputs: [],
-    stateMutability: "payable",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -2553,60 +1822,6 @@ export const MainnetV4SetterABI = [
   {
     inputs: [
       {
-        internalType: "uint32",
-        name: "oracleId",
-        type: "uint32",
-      },
-      {
-        internalType: "address",
-        name: "newOracle",
-        type: "address",
-      },
-    ],
-    name: "replaceOracle",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "requestUnstake",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "token",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "rescueERC20",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "address",
         name: "recipientAddress",
         type: "address",
@@ -2682,123 +1897,12 @@ export const MainnetV4SetterABI = [
   {
     inputs: [
       {
-        internalType: "uint16",
-        name: "quorum",
-        type: "uint16",
-      },
-    ],
-    name: "setQuorumBps",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint64",
-        name: "duration",
-        type: "uint64",
-      },
-    ],
-    name: "setUnstakeCooldownDuration",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "stake",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "syncFees",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "address",
         name: "newOwner",
         type: "address",
       },
     ],
     name: "transferOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint64",
-        name: "blockNum",
-        type: "uint64",
-      },
-      {
-        internalType: "address",
-        name: "clusterOwner",
-        type: "address",
-      },
-      {
-        internalType: "uint64[]",
-        name: "operatorIds",
-        type: "uint64[]",
-      },
-      {
-        components: [
-          {
-            internalType: "uint32",
-            name: "validatorCount",
-            type: "uint32",
-          },
-          {
-            internalType: "uint64",
-            name: "networkFeeIndex",
-            type: "uint64",
-          },
-          {
-            internalType: "uint64",
-            name: "index",
-            type: "uint64",
-          },
-          {
-            internalType: "bool",
-            name: "active",
-            type: "bool",
-          },
-          {
-            internalType: "uint256",
-            name: "balance",
-            type: "uint256",
-          },
-        ],
-        internalType: "struct ISSVNetworkCore.Cluster",
-        name: "cluster",
-        type: "tuple",
-      },
-      {
-        internalType: "uint32",
-        name: "effectiveBalance",
-        type: "uint32",
-      },
-      {
-        internalType: "bytes32[]",
-        name: "merkleProof",
-        type: "bytes32[]",
-      },
-    ],
-    name: "updateClusterBalance",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -2846,21 +1950,8 @@ export const MainnetV4SetterABI = [
     inputs: [
       {
         internalType: "uint64",
-        name: "blocks",
-        type: "uint64",
-      },
-    ],
-    name: "updateLiquidationThresholdPeriodSSV",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
         name: "maxFee",
-        type: "uint256",
+        type: "uint64",
       },
     ],
     name: "updateMaximumOperatorFee",
@@ -2877,32 +1968,6 @@ export const MainnetV4SetterABI = [
       },
     ],
     name: "updateMinimumLiquidationCollateral",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "updateMinimumLiquidationCollateralSSV",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "minFee",
-        type: "uint256",
-      },
-    ],
-    name: "updateMinimumOperatorEthFee",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -2934,19 +1999,6 @@ export const MainnetV4SetterABI = [
       },
     ],
     name: "updateNetworkFee",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "fee",
-        type: "uint256",
-      },
-    ],
-    name: "updateNetworkFeeSSV",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -3061,38 +2113,12 @@ export const MainnetV4SetterABI = [
   {
     inputs: [
       {
-        internalType: "uint64",
-        name: "operatorId",
-        type: "uint64",
-      },
-    ],
-    name: "withdrawAllOperatorEarningsSSV",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint64",
-        name: "operatorId",
-        type: "uint64",
-      },
-    ],
-    name: "withdrawAllVersionOperatorEarnings",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "uint256",
         name: "amount",
         type: "uint256",
       },
     ],
-    name: "withdrawNetworkSSVEarnings",
+    name: "withdrawNetworkEarnings",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -3111,31 +2137,6 @@ export const MainnetV4SetterABI = [
       },
     ],
     name: "withdrawOperatorEarnings",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint64",
-        name: "operatorId",
-        type: "uint64",
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "withdrawOperatorEarningsSSV",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "withdrawUnlocked",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

@@ -1,5 +1,4 @@
 import { NavbarDVT } from "@/app/layouts/dashboard/navbar-dvt";
-import { EthFeesBanner } from "@/components/banners/eth-fees-banner";
 import { BatchTransactionModal } from "@/components/modals/batch-transaction-modal";
 import { MultisigTransactionModal } from "@/components/ui/multisig-transaction-modal";
 import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
@@ -15,11 +14,7 @@ import { cn } from "@/lib/utils/tw";
 import { useIsRestoring } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ComponentPropsWithRef, FC } from "react";
-import { Navigate } from "react-router-dom";
-import { useLocationState } from "@/app/routes/router.tsx";
-
-import { matchPath } from "react-router-dom";
-import { EthFundingMigrationBanner } from "@/components/banners/eth-funding-migration-banner.tsx";
+import { Navigate } from "react-router";
 
 export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
   children,
@@ -34,12 +29,6 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
 
   const { isMaintenancePage } = useMaintenance();
   const { isLoadingClusters, isLoadingOperators } = useAccountState();
-
-  const loc = useLocationState();
-  const pathname = loc.current.pathname;
-  const isClusterRoute = matchPath("/clusters/*", pathname);
-  const isOperatorRoute = matchPath("/operators/*", pathname);
-
   if (isMaintenancePage) {
     return <Navigate to="/maintenance" replace />;
   }
@@ -72,8 +61,6 @@ export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
               exit={{ opacity: 0 }}
               key="content"
             >
-              {isClusterRoute && <EthFundingMigrationBanner />}
-              {isOperatorRoute && <EthFeesBanner />}
               <NavbarDVT className="px-5" />
               <main className={cn(className, "flex-1 overflow-auto")}>
                 {children}

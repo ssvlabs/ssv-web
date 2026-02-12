@@ -3,7 +3,6 @@ import { Clusters } from "@/app/routes/dashboard/clusters/clusters";
 import { Cluster } from "@/app/routes/dashboard/clusters/cluster/cluster";
 import { WithdrawClusterBalance } from "@/app/routes/dashboard/clusters/cluster/withdraw-cluster-balance";
 import { DepositClusterBalance } from "@/app/routes/dashboard/clusters/cluster/deposit-cluster-balance";
-import ReactivateEffectiveBalance from "@/app/routes/create-cluster/reactivate-effective-balance";
 import { ReactivateCluster } from "@/app/routes/create-cluster/reactivate";
 import { ProtectedClusterRoute } from "@/app/routes/protected-cluster-route";
 import { BulkActionGuard } from "@/guard/bulk-action-guard";
@@ -42,10 +41,6 @@ export const clustersRoutes = {
         {
           path: "deposit",
           element: <DepositClusterBalance />,
-        },
-        {
-          path: "reactivate-balance",
-          element: <ReactivateEffectiveBalance />,
         },
         {
           path: "reactivate",

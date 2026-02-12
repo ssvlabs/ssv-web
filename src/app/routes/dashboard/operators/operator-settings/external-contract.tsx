@@ -32,7 +32,7 @@ import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { FaCircleInfo } from "react-icons/fa6";
 import { IoDocumentTextOutline } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { isAddress, isAddressEqual, zeroAddress } from "viem";
 import { z } from "zod";
 

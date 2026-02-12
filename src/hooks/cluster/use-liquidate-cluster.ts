@@ -4,9 +4,8 @@ import type {
   MutationOptions,
 } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useLiquidate } from "@/lib/contract-interactions/write/use-liquidate";
-import { toSolidityCluster } from "@/lib/utils/cluster";
+import { formatClusterData } from "@/lib/utils/cluster";
 import { useAccount } from "@/hooks/account/use-account";
-import { useLiquidateSSV } from "@/lib/contract-interactions/write/use-liquidate-ssv.ts";
 
 export const useLiquidateCluster = (clusterHash: string) => {
   const account = useAccount();
@@ -23,34 +22,7 @@ export const useLiquidateCluster = (clusterHash: string) => {
       {
         clusterOwner: account.address,
         operatorIds: cluster.data?.operators.map((id) => BigInt(id)) || [],
-        cluster: toSolidityCluster(cluster.data),
-      },
-      options,
-    );
-  };
-
-  return {
-    ...liquidate,
-    write,
-  };
-};
-
-export const useLiquidateClusterSSV = (clusterHash: string) => {
-  const account = useAccount();
-  const cluster = useCluster(clusterHash);
-
-  const liquidate = useLiquidateSSV();
-
-  const write = (options: MutationOptions<MainnetEvent> = {}) => {
-    if (!account.address || !cluster) {
-      throw new Error("Account or cluster data not available");
-    }
-
-    return liquidate.write(
-      {
-        clusterOwner: account.address,
-        operatorIds: cluster.data?.operators.map((id) => BigInt(id)) || [],
-        cluster: toSolidityCluster(cluster.data),
+        cluster: formatClusterData(cluster.data),
       },
       options,
     );

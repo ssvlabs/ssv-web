@@ -50,15 +50,16 @@ jobs:
           {
             \"networkId\": 1,
             \"apiVersion\": \"v4\",
-            \"apiNetwork\": \"hoodi\",  
-            \"api\": \"https://api.hoodi.ssv.network/api\",
-            \"explorerUrl\": \"https://explorer.hoodi.ssv.network/\",
-            \"insufficientBalanceUrl\": \"https://faucet.ssv.network\",
-            \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
-            \"tokenAddress\": \"0x9F5d4Ec84fC4785788aB44F9de973cF34F7A038e\",
-            \"setterContractAddress\": \"${{ secrets.PROD_HOODI_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
-            \"getterContractAddress\": \"${{ secrets.PROD_HOODI_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
-           },
+            \"apiNetwork\": \"mainnet\",
+            \"api\": \"https://api.ssv.network/api\",
+            \"explorerUrl\": \"https://explorer.ssv.network\",
+            \"insufficientBalanceUrl\": \"https://coinmarketcap.com/currencies/ssv-network/#Markets\",
+            \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
+            \"distributionContract\": \"${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS_MAINNET }}\",
+            \"tokenAddress\": \"0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54\",
+            \"setterContractAddress\": \"${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4_MAINNET }}\",
+            \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_MAINNET }}\"
+          },
           {
             \"networkId\": 560048,
             \"apiVersion\": \"v4\",

@@ -1,7 +1,6 @@
 import { globals } from "@/config";
 import { bigintMax } from "./bigint";
 import type { Prettify } from "@/types/ts-utils";
-import { calculateRunway } from "@/lib/utils/cluster";
 
 export const computeDailyAmount = (value: bigint, days: number) => {
   const scale = 10 ** 6;
@@ -14,7 +13,7 @@ type LiquidationCollateralCostArgs = {
   operatorsFee: bigint;
   liquidationCollateralPeriod: bigint;
   minimumLiquidationCollateral: bigint;
-  effectiveBalance: bigint;
+  validators?: bigint;
 };
 
 export const computeLiquidationCollateralCostPerValidator = ({
@@ -22,9 +21,8 @@ export const computeLiquidationCollateralCostPerValidator = ({
   operatorsFee,
   liquidationCollateralPeriod,
   minimumLiquidationCollateral,
-  effectiveBalance,
+  validators = 1n,
 }: LiquidationCollateralCostArgs) => {
-  const validators = effectiveBalance / 32n || 1n;
   const total =
     (operatorsFee + networkFee) *
     liquidationCollateralPeriod *
@@ -36,33 +34,20 @@ export const computeLiquidationCollateralCostPerValidator = ({
 type ComputeFundingCostArgs = Prettify<
   {
     fundingDays: number;
-    effectiveBalance?: bigint;
   } & LiquidationCollateralCostArgs
 >;
 
 export const computeFundingCost = (args: ComputeFundingCostArgs) => {
-  const validators = args.effectiveBalance / 32n || 1n;
-
+  const validators = BigInt(args.validators || 1);
   const networkCost = computeDailyAmount(args.networkFee, args.fundingDays);
   const operatorsCost = computeDailyAmount(args.operatorsFee, args.fundingDays);
-  const liquidationCollateral =
-    computeLiquidationCollateralCostPerValidator(args);
-
-  // Subtotal = base cost × effective balance × validators
-  const networkCostSubtotal = networkCost * validators;
-  const operatorsCostSubtotal = operatorsCost * validators;
-  const liquidationCollateralSubtotal = liquidationCollateral * validators;
+  const liquidationCollateral = computeLiquidationCollateralCostPerValidator({
+    ...args,
+    validators,
+  });
 
   const total =
-    networkCostSubtotal + operatorsCostSubtotal + liquidationCollateralSubtotal;
-
-  const runway = calculateRunway({
-    balance: total,
-    feesPerBlock: args.networkFee + args.operatorsFee,
-    validators,
-    liquidationThresholdBlocks: args.liquidationCollateralPeriod,
-    minimumLiquidationCollateral: args.minimumLiquidationCollateral,
-  });
+    (networkCost + operatorsCost + liquidationCollateral) * validators;
 
   return {
     perValidator: {
@@ -71,12 +56,10 @@ export const computeFundingCost = (args: ComputeFundingCostArgs) => {
       liquidationCollateral,
     },
     subtotal: {
-      networkCost: networkCostSubtotal,
-      operatorsCost: operatorsCostSubtotal,
-      liquidationCollateral: liquidationCollateralSubtotal,
+      networkCost: networkCost * validators,
+      operatorsCost: operatorsCost * validators,
+      liquidationCollateral: liquidationCollateral * validators,
     },
     total,
-    runway,
-    effectiveBalance: args.effectiveBalance,
   };
 };

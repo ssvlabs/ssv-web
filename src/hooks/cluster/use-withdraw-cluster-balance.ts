@@ -1,6 +1,6 @@
 import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useWithdraw } from "@/lib/contract-interactions/write/use-withdraw";
-import { toSolidityCluster } from "@/lib/utils/cluster";
+import { formatClusterData } from "@/lib/utils/cluster";
 
 export const useWithdrawClusterBalance = (hash: string) => {
   const cluster = useCluster(hash);
@@ -19,7 +19,7 @@ export const useWithdrawClusterBalance = (hash: string) => {
           ...params,
           operatorIds:
             cluster.data?.operators.map((id) => BigInt(id)) ?? ([] as bigint[]),
-          cluster: toSolidityCluster(cluster.data),
+          cluster: formatClusterData(cluster.data),
         },
         options,
       );

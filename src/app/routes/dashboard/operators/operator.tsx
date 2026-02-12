@@ -1,7 +1,6 @@
 import { OperatorDetails } from "@/components/operator/operator-details";
 import { OperatorSettingsBtn } from "@/components/operator/operator-settings-btn";
 import { Button } from "@/components/ui/button";
-import { BalanceDisplay } from "@/components/ui/balance-display";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
@@ -9,7 +8,10 @@ import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useOperator } from "@/hooks/operator/use-operator";
 import { useOperatorPageParams } from "@/hooks/operator/use-operator-page-params";
-import { percentageFormatter } from "@/lib/utils/number";
+import { useGetOperatorEarnings } from "@/lib/contract-interactions/read/use-get-operator-earnings";
+import { useGetOperatorFee } from "@/lib/contract-interactions/read/use-get-operator-fee";
+import { formatSSV, percentageFormatter } from "@/lib/utils/number";
+import { getYearlyFee } from "@/lib/utils/operator";
 import { type ComponentPropsWithoutRef, type FC } from "react";
 import { Helmet } from "react-helmet";
 import { FaCircleInfo } from "react-icons/fa6";
@@ -18,18 +20,17 @@ import { Link } from "react-router-dom";
 import { IncreaseOperatorFeeStatusBadge } from "@/components/operator/increase-operator-fee/increase-operator-fee-status-badge";
 import { OperatorValidatorsList } from "@/components/operator/operator-validators-list";
 import { OperatorStatusBadge } from "@/components/operator/operator-status-badge";
-import { useOperatorEarningsAndFees } from "@/hooks/operator/use-operator-earnings-and-fees";
 
 export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
   const params = useOperatorPageParams();
   const operatorId = BigInt(params.operatorId!);
   const operator = useOperator(operatorId!);
 
-  const { feeEth, yearlyFeeEth, yearlyFeeSSV, balanceEth, balanceSSV } =
-    useOperatorEarningsAndFees(operatorId);
+  const earnings = useGetOperatorEarnings({ id: operatorId });
 
-  const hasBalance = balanceEth > 0n || balanceSSV > 0n;
-
+  const fee = useGetOperatorFee({ operatorId });
+  const yearlyFee = getYearlyFee(fee.data ?? 0n);
+  const balance = earnings.data ?? 0n;
   if (!operator.data) return null;
 
   return (
@@ -78,21 +79,6 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                   {percentageFormatter.format(operator.data.performance["30d"])}
                 </Text>
               </div>
-              <div className="flex flex-col gap-2">
-                <Text variant="body-3-medium" className="text-gray-500">
-                  Total ETH Managed
-                </Text>
-                <div className="flex items-center gap-1">
-                  <img
-                    alt="ETH logo"
-                    src="/images/networks/dark.svg"
-                    className="size-5"
-                  />
-                  <Text variant="body-2-medium">
-                    {operator.data.effective_balance} ETH
-                  </Text>
-                </div>
-              </div>
             </div>
           </Container>
         </div>
@@ -102,24 +88,11 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
               <Text variant="headline4" className="text-gray-500">
                 Balance
               </Text>
-              <div className="flex flex-col gap-4">
-                <BalanceDisplay amount={balanceEth} token="ETH" />
-                <BalanceDisplay amount={balanceSSV} token="SSV" />
-              </div>
-              <Tooltip
-                asChild
-                content={!hasBalance ? "No balance to withdraw" : undefined}
-              >
-                <Button
-                  as={Link}
-                  to="withdraw"
-                  variant="default"
-                  size="xl"
-                  disabled={!hasBalance}
-                >
-                  Withdraw
-                </Button>
-              </Tooltip>
+              <Text variant="headline3">{formatSSV(balance)} SSV</Text>
+
+              <Button as={Link} to="withdraw" variant="default" size="xl">
+                Withdraw
+              </Button>
             </Card>
             <Card className="w-full">
               <div className="flex w-full justify-between items-center">
@@ -128,17 +101,12 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                 </Text>
                 <IncreaseOperatorFeeStatusBadge />
               </div>
-              <div className="flex flex-col gap-4">
-                <BalanceDisplay amount={yearlyFeeEth} token="ETH" />
-                {yearlyFeeSSV > 0 && (
-                  <BalanceDisplay amount={yearlyFeeSSV} token="SSV" />
-                )}
-              </div>
+              <Text variant="headline3">{formatSSV(yearlyFee)} SSV</Text>
               <Tooltip
                 asChild
                 content={
-                  feeEth.data === 0n ? (
-                    <>
+                  fee.data === 0n ? (
+                    <Text variant="body-2-medium">
                       Operators with a fee of 0 cannot change their fee.{" "}
                       <Button
                         as="a"
@@ -149,13 +117,13 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                       >
                         Read more on operator fees
                       </Button>
-                    </>
+                    </Text>
                   ) : undefined
                 }
               >
                 <Button
                   as={Link}
-                  disabled={feeEth.isLoading || feeEth.data === 0n}
+                  disabled={fee.isLoading || fee.data === 0n}
                   to="fee/update"
                   variant="secondary"
                   size="xl"

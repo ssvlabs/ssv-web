@@ -2,11 +2,13 @@ import { OperatorDetails } from "@/components/operator/operator-details";
 import { OperatorStatusBadge } from "@/components/operator/operator-status-badge";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useOptimisticOrProvidedOperator } from "@/hooks/operator/use-optimistic-operator";
-import { formatETH, formatSSV, percentageFormatter } from "@/lib/utils/number";
+import { useGetOperatorEarnings } from "@/lib/contract-interactions/read/use-get-operator-earnings";
+import { useGetOperatorFee } from "@/lib/contract-interactions/read/use-get-operator-fee";
+import { formatSSV, percentageFormatter } from "@/lib/utils/number";
+import { getYearlyFee } from "@/lib/utils/operator";
 import { cn } from "@/lib/utils/tw";
 import type { Operator } from "@/types/api";
 import type { ComponentPropsWithoutRef, FC } from "react";
-import { useOperatorEarningsAndFees } from "@/hooks/operator/use-operator-earnings-and-fees";
 
 export type OperatorTableRowProps = {
   operator: Operator;
@@ -23,10 +25,11 @@ export const OperatorTableRow: FCProps = ({
   ...props
 }) => {
   const operator = useOptimisticOrProvidedOperator(_operator);
-  const operatorId = BigInt(operator.id!);
+  const fee = useGetOperatorFee({ operatorId: BigInt(_operator.id) });
 
-  const { yearlyFeeEth, yearlyFeeSSV, balanceEth, balanceSSV } =
-    useOperatorEarningsAndFees(operatorId);
+  const balance = useGetOperatorEarnings({
+    id: BigInt(operator.id),
+  });
 
   return (
     <TableRow
@@ -43,65 +46,11 @@ export const OperatorTableRow: FCProps = ({
       <TableCell>
         {percentageFormatter.format(operator.performance["30d"])}
       </TableCell>
+      <TableCell>{formatSSV(balance.data ?? 0n)} SSV</TableCell>
       <TableCell>
-        <div className="flex items-center gap-2 w-max">
-          <div className="flex items-center gap-1 text-gray-800 font-medium">
-            <img
-              alt="ETH logo"
-              src="/images/networks/dark.svg"
-              className="size-5"
-            />{" "}
-            <span>{formatETH(balanceEth)}</span>
-          </div>
-          {balanceSSV > 0 && (
-            <div className="flex items-center gap-1 text-gray-800 font-medium">
-              <span className="text-gray-300">|</span>
-              <img
-                alt="SSV logo"
-                src="/images/ssvIcons/icon.svg"
-                className="size-5"
-              />{" "}
-              {formatSSV(balanceSSV)}
-            </div>
-          )}
-        </div>
-      </TableCell>
-      <TableCell>
-        <div className="flex items-center gap-2 w-max">
-          <div className="flex items-center gap-1 text-gray-800 font-medium">
-            <img
-              alt="ETH logo"
-              src="/images/networks/dark.svg"
-              className="size-5"
-            />{" "}
-            {formatETH(yearlyFeeEth)}
-          </div>
-          {yearlyFeeSSV > 0 && (
-            <div className="flex items-center gap-1 text-gray-800 font-medium">
-              <span className="text-gray-300">|</span>
-              <img
-                alt="SSV logo"
-                src="/images/ssvIcons/icon.svg"
-                className="size-5"
-              />{" "}
-              {formatSSV(yearlyFeeSSV)}
-            </div>
-          )}
-        </div>
+        {getYearlyFee(BigInt(fee.data ?? 0n), { format: true })}
       </TableCell>
       <TableCell>{operator.validators_count}</TableCell>
-      <TableCell>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 text-gray-800 font-medium">
-            <img
-              alt="ETH logo"
-              src="/images/networks/dark.svg"
-              className="size-5"
-            />{" "}
-            {operator.effective_balance}
-          </div>
-        </div>
-      </TableCell>
     </TableRow>
   );
 };

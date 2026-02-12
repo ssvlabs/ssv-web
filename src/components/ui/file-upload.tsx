@@ -11,9 +11,9 @@ import {
   useState,
 } from "react";
 import type {
-  DropzoneOptions,
   DropzoneState,
   FileRejection,
+  DropzoneOptions,
 } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
@@ -153,7 +153,6 @@ export const FileUploader = forwardRef<
           setActiveIndex(-1);
         }
       },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [value, activeIndex, removeFileFromSet],
     );
 
@@ -195,7 +194,6 @@ export const FileUploader = forwardRef<
           }
         }
       },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [reSelectAll, value],
     );
 

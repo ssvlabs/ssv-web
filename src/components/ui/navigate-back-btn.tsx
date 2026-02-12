@@ -3,15 +3,12 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/tw";
 import type { FC } from "react";
 import { FaAngleLeft } from "react-icons/fa";
-import type { LinkProps, To } from "react-router-dom";
+import type { To } from "react-router-dom";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export const NavigateBackBtn: FC<
   ButtonProps &
-    (
-      | { by?: "path"; to: To; state?: LinkProps["state"] }
-      | { by?: "history" }
-    ) & {
+    ({ by?: "path"; to: To } | { by?: "history" }) & {
       persistSearch?: boolean;
     }
 > = ({ className, by = "path", persistSearch, ...props }) => {

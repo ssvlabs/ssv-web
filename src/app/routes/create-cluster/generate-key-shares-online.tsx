@@ -90,7 +90,7 @@ export const GenerateKeySharesOnline: FCProps = () => {
       });
 
       state.shares = [shares];
-      navigate("../effective-balance");
+      navigate("../funding");
     },
   });
 

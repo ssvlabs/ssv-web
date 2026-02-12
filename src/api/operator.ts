@@ -20,11 +20,10 @@ export type OrderBy =
   | "id"
   | "validatorsCount"
   | "performance30d"
-  | "ethFee"
+  | "fee"
   | "delegators"
   | "strategyId"
-  | "mev"
-  | "effectiveBalance";
+  | "mev";
 export type Sort = "asc" | "desc";
 
 export type SearchOperatorsParams = {
@@ -48,14 +47,12 @@ type GetAccountOperatorsParams = {
   address: string;
   page?: number;
   perPage?: number;
-  ordering?: `${OrderBy}:${Sort}`;
 };
 
 export const getPaginatedAccountOperators = ({
   address,
   page = 1,
   perPage = 10,
-  ordering = "id:asc",
 }: GetAccountOperatorsParams) => {
   return api
     .get<OperatorsSearchResponse>(
@@ -66,7 +63,7 @@ export const getPaginatedAccountOperators = ({
           page: page.toString(),
           perPage: perPage.toString(),
           withFee: "true",
-          ordering,
+          ordering: "id:asc",
         })}`,
       ),
     )
@@ -126,16 +123,6 @@ export const getOperatorLocations = () => {
 
 export const getOperatorNodes = (layer: number) => {
   return api.get<string[]>(endpoint("operators/nodes", layer));
-};
-
-export type AllOperatorNodesResponse = {
-  ETH1_NODE: string[];
-  ETH2_NODE: string[];
-  SSV_NODE: string[];
-};
-
-export const getAllOperatorNodes = () => {
-  return api.get<AllOperatorNodesResponse>(endpoint("operators/nodes/all"));
 };
 
 export const checkOperatorDKGHealth = (

@@ -18,11 +18,12 @@ import { useBulkRemoveValidator } from "@/lib/contract-interactions/write/use-bu
 import { useRemoveValidator } from "@/lib/contract-interactions/write/use-remove-validator";
 import { track } from "@/lib/analytics/mixpanel";
 import { setOptimisticData } from "@/lib/react-query";
-import { bigintifyNumbers } from "@/lib/utils/bigint";
-import { mergeClusterSnapshot, toSolidityCluster } from "@/lib/utils/cluster";
+import { bigintifyNumbers, stringifyBigints } from "@/lib/utils/bigint";
+import { formatClusterData } from "@/lib/utils/cluster";
 import { sortNumbers } from "@/lib/utils/number";
 import { add0x } from "@/lib/utils/strings";
 import type { Address } from "abitype";
+import { merge } from "lodash-es";
 import { useState, type FC } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -40,7 +41,7 @@ export const RemoveValidatorsConfirmation: FC = () => {
   const isPending = removeValidator.isPending || bulkRemoveValidators.isPending;
 
   const remove = async () => {
-    const clusterData = toSolidityCluster(cluster.data);
+    const clusterData = formatClusterData(cluster.data);
     const operatorIds = sortNumbers(
       bigintifyNumbers(cluster.data?.operators ?? []),
     );
@@ -60,9 +61,9 @@ export const RemoveValidatorsConfirmation: FC = () => {
 
         setOptimisticData(
           getClusterQueryOptions(params.clusterHash!).queryKey,
-          (cluster) => {
-            if (!cluster || !event) return cluster;
-            return mergeClusterSnapshot(cluster, event.args.cluster);
+          (prev) => {
+            if (!prev || !event) return prev;
+            return merge(prev, stringifyBigints(event.args.cluster));
           },
         );
 
@@ -80,7 +81,7 @@ export const RemoveValidatorsConfirmation: FC = () => {
         options,
       );
     }
-    console.log(clusterData);
+
     bulkRemoveValidators.write(
       {
         cluster: clusterData,

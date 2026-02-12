@@ -19,7 +19,6 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { useOperatorLocations } from "@/hooks/operator/use-operator-locations";
 import { useSignOperatorMetadata } from "@/hooks/operator/use-sign-operator-metadata";
 import { useOperator } from "@/hooks/operator/use-operator";
-import { useOperatorNodeClients } from "@/hooks/operator/use-all-operator-nodes";
 import {
   getMevRelaysOptions,
   SORTED_OPERATOR_METADATA_FIELDS,
@@ -32,7 +31,7 @@ import { camelCase, isEqual, mapKeys } from "lodash-es";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useForm } from "react-hook-form";
 import { FaCircleInfo } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { z } from "zod";
 import { MultipleSelector } from "@/components/ui/multi-select2";
 import { Combobox } from "@/components/ui/combobox";
@@ -73,7 +72,6 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
   const { data: operator } = useOperator();
 
   const operatorLocations = useOperatorLocations();
-  const operatorNodeClients = useOperatorNodeClients();
 
   const defaults = {
     ...operator,
@@ -237,7 +235,7 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
                     value={field.value}
                     onChange={(value) => field.onChange(value)}
                     placeholder="Add your SSV Client"
-                    options={(operatorNodeClients.data?.ssv_client || []).map(
+                    options={["SSV Node", "Anchor"].map(
                       (node) => ({
                         value: node,
                         label: node
@@ -262,7 +260,7 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
                     value={field.value}
                     onChange={(value) => field.onChange(value)}
                     placeholder="Geth, Nethermind, Besu..."
-                    options={(operatorNodeClients.data?.eth1_node_client || []).map(
+                    options={["Erigon", "Besu", "Nethermind", "Geth", "Reth"].map(
                       (node) => ({
                         value: node,
                         label: node
@@ -286,12 +284,16 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
                     value={field.value}
                     onChange={(value) => field.onChange(value)}
                     placeholder="Prism, Lighthouse, Teku..."
-                    options={(operatorNodeClients.data?.eth2_node_client || []).map(
-                      (node) => ({
-                        value: node,
-                        label: node
-                      })
-                    )}
+                    options={[
+                      "Lodestar",
+                      "Nimbus",
+                      "Teku",
+                      "Lighthouse",
+                      "Prysm"
+                    ].map((node) => ({
+                      value: node,
+                      label: node
+                    }))}
                     className={inputVariants({ className: "text-base" })}
                   />
                 </FormControl>

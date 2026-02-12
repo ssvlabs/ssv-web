@@ -17,6 +17,7 @@ import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { BigNumberInput } from "@/components/ui/number-input";
 import { Text } from "@/components/ui/text";
 import { toast } from "@/components/ui/use-toast";
+import { WithAllowance } from "@/components/with-allowance/with-allowance";
 import { globals } from "@/config";
 import { useSelectedOperatorIds } from "@/guard/register-validator-guard";
 import {
@@ -32,14 +33,15 @@ import {
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useReactivate } from "@/lib/contract-interactions/write/use-reactivate";
 import { setOptimisticData } from "@/lib/react-query";
-import { bigintifyNumbers } from "@/lib/utils/bigint";
-import { mergeClusterSnapshot, toSolidityCluster } from "@/lib/utils/cluster";
+import { bigintifyNumbers, stringifyBigints } from "@/lib/utils/bigint";
+import { formatClusterData } from "@/lib/utils/cluster";
 import { sumOperatorsFee } from "@/lib/utils/operator";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { merge } from "lodash-es";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { Collapse } from "react-collapse";
 import { useForm } from "react-hook-form";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router";
 import { z } from "zod";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Spacer } from "@/components/ui/spacer";
@@ -70,23 +72,11 @@ const periods: Record<
 
 export const ReactivateCluster: FCProps = ({ ...props }) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const params = useClusterPageParams();
 
   const cluster = useCluster();
   const operatorIds = useSelectedOperatorIds();
   const operators = useOperators(operatorIds);
-
-  // Get effectiveBalance from state (passed from previous step)
-  const effectiveBalanceFromState = location.state?.effectiveBalance as
-    | bigint
-    | undefined;
-
-  const effectiveBalance =
-    effectiveBalanceFromState ??
-    (cluster.data?.effectiveBalance
-      ? BigInt(cluster.data.effectiveBalance)
-      : 0n);
 
   const form = useForm<z.infer<typeof schema>>({
     defaultValues: {
@@ -107,22 +97,28 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
   const customFundingCost = useFundingCost({
     fundingDays: values.custom,
     operators: operators.data ?? [],
-    effectiveBalance,
+    validatorsAmount: cluster.data?.validatorCount ?? 1,
   });
 
   const yearFundingCost = useFundingCost({
     fundingDays: periods.year,
     operators: operators.data ?? [],
-    effectiveBalance,
+    validatorsAmount: cluster.data?.validatorCount ?? 1,
   });
 
   const halfYearFundingCost = useFundingCost({
     fundingDays: periods["half-year"],
     operators: operators.data ?? [],
-    effectiveBalance,
+    validatorsAmount: cluster.data?.validatorCount ?? 1,
   });
 
   const computeFundingCost = useComputeFundingCost();
+
+  const fundingCost = useFundingCost({
+    operators: operators.data ?? [],
+    validatorsAmount: cluster.data?.validatorCount ?? 1,
+    fundingDays: days,
+  });
 
   const reactive = useReactivate();
 
@@ -131,15 +127,15 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
     const amount = await computeFundingCost.mutateAsync({
       fundingDays: days,
       operatorsFee: sumOperatorsFee(operators.data ?? []),
-      effectiveBalance,
+      validators: cluster.data?.validatorCount ?? 1,
     });
 
     return reactive.write(
       {
+        amount: amount.total,
         operatorIds: bigintifyNumbers(operatorIds),
-        cluster: toSolidityCluster(cluster.data),
+        cluster: formatClusterData(cluster.data),
       },
-      amount.total,
       withTransactionModal({
         onMined: ({ events }) => {
           const event = events.find(
@@ -151,9 +147,12 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
               getClusterQueryOptions(params.clusterHash!).queryKey,
               (cluster) => {
                 if (!cluster) return cluster;
-                return mergeClusterSnapshot(cluster, event.args.cluster, {
-                  isLiquidated: false,
-                });
+                return merge(
+                  {},
+                  cluster,
+                  stringifyBigints(event.args.cluster),
+                  { isLiquidated: false },
+                );
               },
             );
 
@@ -217,7 +216,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
                       <Text variant="body-2-semibold">1 Year</Text>
                       <Spacer />
                       <Text variant="body-1-bold">
-                        {formatSSV(yearFundingCost.data?.total ?? 0n)} ETH
+                        {formatSSV(yearFundingCost.data?.total ?? 0n)} SSV
                       </Text>
                     </div>
                   </FormLabel>
@@ -227,7 +226,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
                       <Text variant="body-2-semibold">6 Months</Text>
                       <Spacer />
                       <Text variant="body-1-bold">
-                        {formatSSV(halfYearFundingCost.data?.total ?? 0n)} ETH
+                        {formatSSV(halfYearFundingCost.data?.total ?? 0n)} SSV
                       </Text>
                     </div>
                   </FormLabel>
@@ -240,7 +239,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
                         <Text variant="body-1-bold">
                           {values.selected === "custom"
                             ? formatSSV(customFundingCost.data?.total ?? 0n) +
-                              " ETH"
+                              " SSV"
                             : "-"}
                         </Text>
                       </div>
@@ -300,17 +299,19 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
           <Divider />
           <ClusterFundingSummary
             operators={operators.data ?? []}
+            validatorsAmount={cluster.data?.validatorCount ?? 1}
             fundingDays={days}
-            effectiveBalance={effectiveBalance}
           />
-          <Button
-            isActionBtn
-            isLoading={reactive.isPending}
-            size="xl"
-            type="submit"
-          >
-            Reactivate
-          </Button>
+          <WithAllowance amount={fundingCost.data?.total ?? 0n} size="xl">
+            <Button
+              isActionBtn
+              isLoading={reactive.isPending}
+              size="xl"
+              type="submit"
+            >
+              Reactivate
+            </Button>
+          </WithAllowance>
         </Card>
       </Form>
     </Container>

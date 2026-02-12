@@ -5,8 +5,9 @@ import { Text } from "@/components/ui/text";
 import { useAccountState } from "@/hooks/account/use-account-state";
 import { useMultisigTransactionModal } from "@/signals/modal";
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import type { ComponentPropsWithoutRef, FC } from "react";
+import { useLocation } from "react-router";
 
 export type MultisigTransactionModalProps = {
   // TODO: Add props or remove this type

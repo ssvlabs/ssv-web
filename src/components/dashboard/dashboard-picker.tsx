@@ -8,7 +8,7 @@ import type { TextProps } from "@/components/ui/text";
 import { Text } from "@/components/ui/text";
 import { ChevronDown } from "lucide-react";
 import type { FC } from "react";
-import { useMatch } from "react-router-dom";
+import { useMatch } from "react-router";
 import { Link } from "react-router-dom";
 
 type DashboardPickerFC = FC<TextProps>;

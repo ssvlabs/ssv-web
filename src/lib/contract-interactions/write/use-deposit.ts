@@ -34,12 +34,10 @@ export const useDeposit = () => {
 
   const send = (
     params: AbiInputsToParams<Fn["inputs"]>,
-    value?: bigint,
     options: MutationOptions<MainnetEvent> = {},
   ) => {
     return mutation.writeContractAsync(
       {
-        value,
         abi: MainnetV4SetterABI,
         address: setterContractAddress,
         functionName: "deposit",
@@ -54,14 +52,12 @@ export const useDeposit = () => {
 
   const write = (
     params: AbiInputsToParams<Fn["inputs"]>,
-    value?: bigint,
     options: MutationOptions<MainnetEvent> = {},
   ) => {
     options.onInitiated?.();
     return mutation
       .writeContractAsync(
         {
-          value,
           abi: MainnetV4SetterABI,
           address: setterContractAddress,
           functionName: "deposit",

@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils/tw";
 import type { FC } from "react";
 import { LuMoreVertical } from "react-icons/lu";
 import { TbAdjustments, TbEdit, TbTrash } from "react-icons/tb";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export const OperatorSettingsBtn: FC<ButtonProps> = ({
   className,

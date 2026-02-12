@@ -18,33 +18,30 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { Divider } from "@/components/ui/divider";
-import { isBigIntChanged } from "@/lib/utils/bigint";
-import { mergeClusterSnapshot } from "@/lib/utils/cluster";
+import { isBigIntChanged, stringifyBigints } from "@/lib/utils/bigint";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { setOptimisticData } from "@/lib/react-query";
 import { useDepositClusterBalance } from "@/hooks/cluster/use-deposit-cluster-balance";
 import { useNavigate } from "react-router-dom";
+import { useSSVBalance } from "@/hooks/use-ssv-balance";
 import {
   getClusterQueryOptions,
   useCluster,
 } from "@/hooks/cluster/use-cluster";
+import { WithAllowance } from "@/components/with-allowance/with-allowance";
+import { merge } from "lodash-es";
 import { formatSSV } from "@/lib/utils/number";
-import { useBalance } from "wagmi";
-import { useAccount } from "@/hooks/account/use-account";
 
 const schema = z.object({
   value: z.bigint().positive(),
 });
 
 export const DepositClusterBalance: FC = () => {
-  const account = useAccount();
   const params = useClusterPageParams();
   const deposit = useDepositClusterBalance(params.clusterHash!);
   const navigate = useNavigate();
 
-  const { data: balance } = useBalance({
-    address: account.address!,
-  });
+  const { data: ssvBalance } = useSSVBalance();
   const { data: cluster } = useCluster(params.clusterHash!);
 
   const form = useForm({
@@ -55,10 +52,9 @@ export const DepositClusterBalance: FC = () => {
   const value = form.watch("value") ?? 0n;
   const isChanged = isBigIntChanged(0n, value);
 
-  const submit = form.handleSubmit(async () => {
+  const submit = form.handleSubmit(async (args) => {
     deposit.write(
-      {},
-      value,
+      { amount: args.value },
       withTransactionModal({
         onMined: async ({ events }) => {
           const event = events.find((e) => e.eventName === "ClusterDeposited");
@@ -68,12 +64,7 @@ export const DepositClusterBalance: FC = () => {
               getClusterQueryOptions(params.clusterHash!).queryKey,
               (cluster) => {
                 if (!cluster) return cluster;
-
-                return mergeClusterSnapshot(cluster, event.args.cluster, {
-                  isLiquidated: Boolean(
-                    events.find((e) => e.eventName === "ClusterLiquidated"),
-                  ),
-                });
+                return merge({}, cluster, stringifyBigints(event.args.cluster));
               },
             );
 
@@ -101,7 +92,7 @@ export const DepositClusterBalance: FC = () => {
                     placeholder="0"
                     value={field.value}
                     onChange={field.onChange}
-                    max={balance?.value}
+                    max={ssvBalance?.value}
                     className="h-20"
                     // rightSlot={
                     //   <div className="flex flex-col items-end gap-1 px-2">
@@ -138,14 +129,14 @@ export const DepositClusterBalance: FC = () => {
                             variant="secondary"
                             className="font-semibold px-4"
                             onClick={() =>
-                              form.setValue("value", balance?.value ?? 0n, {
+                              form.setValue("value", ssvBalance?.value ?? 0n, {
                                 shouldValidate: true,
                               })
                             }
                           >
                             MAX
                           </Button>
-                          <span className="text-[28px] font-medium">ETH</span>
+                          <span className="text-[28px] font-medium">SSV</span>
                         </div>
                         <Divider />
                         <div className="flex justify-end">
@@ -153,8 +144,8 @@ export const DepositClusterBalance: FC = () => {
                             variant="body-2-medium"
                             className="text-gray-500"
                           >
-                            Wallet Balance: {formatSSV(balance?.value ?? 0n)}{" "}
-                            ETH
+                            Wallet Balance: {formatSSV(ssvBalance?.value ?? 0n)}{" "}
+                            SSV
                           </Text>
                         </div>
                       </div>
@@ -173,14 +164,16 @@ export const DepositClusterBalance: FC = () => {
             </>
           )}
 
-          <Button
-            type="submit"
-            size="xl"
-            disabled={!isChanged}
-            isLoading={deposit.isPending}
-          >
-            Deposit
-          </Button>
+          <WithAllowance size="xl" amount={value ?? 0n}>
+            <Button
+              type="submit"
+              size="xl"
+              disabled={!isChanged}
+              isLoading={deposit.isPending}
+            >
+              Deposit
+            </Button>
+          </WithAllowance>
         </Card>
       </Form>
     </Container>

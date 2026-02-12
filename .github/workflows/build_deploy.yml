@@ -28,8 +28,9 @@ jobs:
             \"insufficientBalanceUrl\": \"https://faucet.stage.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
             \"tokenAddress\": \"0x746c33ccc28b1363c35c09badaf41b2ffa7e6d56\",
-            \"setterContractAddress\": \"0x0aaace4e8affc47c6834171c88d342a4abd8f105\",
-            \"getterContractAddress\": \"0x9143b8c25efa53f28de4cbefd0b6dfd66d43fea6\"
+            \"bAppContractAddress\": \"0x40d959B95e7c56962D6d388d87921c03734b9C2C\",
+            \"setterContractAddress\": \"${{ secrets.STAGE_HOODI_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
+            \"getterContractAddress\": \"${{ secrets.STAGE_HOODI_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
            }
         ]
       PROD_SSV_NETWORKS: >

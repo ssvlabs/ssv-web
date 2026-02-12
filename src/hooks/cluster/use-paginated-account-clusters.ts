@@ -1,8 +1,4 @@
-import {
-  getPaginatedAccountClusters,
-  type OrderBy,
-  type Sort,
-} from "@/api/cluster";
+import { getPaginatedAccountClusters } from "@/api/cluster";
 import { createDefaultPagination } from "@/lib/utils/api";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { Address } from "abitype";
@@ -18,7 +14,6 @@ export const getPaginatedAccountClustersQueryOptions = (
   account?: Address,
   page: number = 1,
   perPage: number = 10,
-  orderBy: `${OrderBy}:${Sort}` = "id:asc",
   {
     chainId = getSSVNetworkDetails().networkId,
     options,
@@ -30,7 +25,6 @@ export const getPaginatedAccountClustersQueryOptions = (
       account?.toLowerCase(),
       page,
       perPage,
-      orderBy,
       chainId,
     ],
     queryFn: () =>
@@ -38,7 +32,6 @@ export const getPaginatedAccountClustersQueryOptions = (
         account: account!,
         page: page,
         perPage,
-        ordering: orderBy,
       }),
     enabled: boolify(account) && enabled(options?.enabled),
   });
@@ -52,33 +45,13 @@ export const usePaginatedAccountClusters = (
   const chainId = useChainId();
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get("page") || 1);
-  const orderBy =
-    (searchParams.get("orderBy") as `${OrderBy}:${Sort}`) || "id:asc";
 
   const query = useQuery(
-    getPaginatedAccountClustersQueryOptions(
-      account.address,
-      page,
-      perPage,
-      orderBy,
-      {
-        chainId,
-        options,
-      },
-    ),
+    getPaginatedAccountClustersQueryOptions(account.address, page, perPage, {
+      chainId,
+      options,
+    }),
   );
-
-  const setPage = (page: number) => {
-    setSearchParams((prev) => ({ ...prev, page: String(page) }));
-  };
-
-  const setOrderBy = (orderBy: `${OrderBy}:${Sort}`) => {
-    setSearchParams((prev) => ({ ...prev, orderBy, page: "1" }));
-  };
-
-  if (query.data?.pagination && page > query.data.pagination.pages) {
-    setPage(query.data.pagination.pages);
-  }
 
   const pagination = query.data?.pagination || createDefaultPagination();
   const hasNext = page < pagination.pages;
@@ -87,11 +60,19 @@ export const usePaginatedAccountClusters = (
   const clusters = query.data?.clusters || [];
 
   const next = () => {
-    hasNext && setPage(page + 1);
+    hasNext &&
+      setSearchParams((prev) => ({
+        ...prev,
+        page: String(page + 1),
+      }));
   };
 
   const prev = () => {
-    hasPrev && setPage(page - 1);
+    hasPrev &&
+      setSearchParams((prev) => ({
+        ...prev,
+        page: String(page - 1),
+      }));
   };
 
   return {
@@ -103,7 +84,5 @@ export const usePaginatedAccountClusters = (
     next,
     prev,
     page,
-    orderBy,
-    setOrderBy,
   };
 };

@@ -141,7 +141,7 @@ jobs:
         run: >
           GAS_PRICE="${{ env.GAS_PRICE }}" 
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
-          SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
+          VITE_SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
           MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"

@@ -124,7 +124,7 @@ jobs:
 
       # <app.ssv.network>
       - name: Run prod webapp build
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/temporary-hoodi-deploy'
         run: >
           GAS_PRICE="${{ env.GAS_PRICE }}" 
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
@@ -141,7 +141,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Upload files to S3
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/temporary-hoodi-deploy'
         run: |
           aws s3 cp ./build s3://${{ secrets.SSV_WEB_PROD_HOODI_AWS_S3_BUCKET }} --recursive
       # </app.ssv.network>

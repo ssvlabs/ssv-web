@@ -1,9 +1,10 @@
 import type { MutationConfig } from "@/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
 
-import type { ExtractedKeys } from "ssv-keys/dist/tsc/src/lib/SSVKeys";
-import { SSVKeys } from "ssv-keys";
+import { SSVKeys } from "@ssv-labs/ssv-sdk/keys";
 const ssvKeys = new SSVKeys();
+
+type ExtractedKeys = Awaited<ReturnType<SSVKeys["extractKeys"]>>;
 
 type Params = {
   file: File;

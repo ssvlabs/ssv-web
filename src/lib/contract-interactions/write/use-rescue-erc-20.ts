@@ -19,21 +19,15 @@ import {
 import type { WriteContractErrorType } from "@wagmi/core";
 import type { WaitForTransactionReceiptErrorType } from "viem";
 
-type Fn = ExtractAbiFunction<
-  typeof MainnetV4SetterABI,
-  "withdrawNetworkEarnings"
->;
-const abiFunction = extractAbiFunction(
-  MainnetV4SetterABI,
-  "withdrawNetworkEarnings",
-);
+type Fn = ExtractAbiFunction<typeof MainnetV4SetterABI, "rescueERC20">;
+const abiFunction = extractAbiFunction(MainnetV4SetterABI, "rescueERC20");
 // type State = "idle" | "confirming" | "mining" | "mined" | "error";
 
-export const useWithdrawNetworkEarnings = () => {
+export const useRescueERC20 = () => {
   const { setterContractAddress } = useSSVNetworkDetails();
 
   const wait = useWaitForTransactionReceipt<MainnetEvent>([
-    "useWithdrawNetworkEarnings",
+    "useRescueERC20",
     setterContractAddress,
   ]);
   const mutation = useWriteContract();
@@ -46,7 +40,7 @@ export const useWithdrawNetworkEarnings = () => {
       {
         abi: MainnetV4SetterABI,
         address: setterContractAddress,
-        functionName: "withdrawNetworkEarnings",
+        functionName: "rescueERC20",
         args: paramsToArray({ params, abiFunction }),
       },
       {
@@ -66,7 +60,7 @@ export const useWithdrawNetworkEarnings = () => {
         {
           abi: MainnetV4SetterABI,
           address: setterContractAddress,
-          functionName: "withdrawNetworkEarnings",
+          functionName: "rescueERC20",
           args: paramsToArray({ params, abiFunction }),
         },
         {

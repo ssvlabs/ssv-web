@@ -1,4 +1,4 @@
-import { getPaginatedAccountOperators } from "@/api/operator";
+import { getPaginatedAccountOperators, type OrderBy, type Sort } from "@/api/operator";
 import { useCreatedOptimisticOperators } from "@/hooks/operator/use-created-optimistic-operators";
 import { createDefaultPagination } from "@/lib/utils/api";
 import { queryOptions, useQuery } from "@tanstack/react-query";
@@ -16,6 +16,7 @@ export const getPaginatedAccountOperatorsQueryOptions = (
   address?: Address,
   page: number = 1,
   perPage: number = 10,
+  orderBy: `${OrderBy}:${Sort}` = "id:asc",
   {
     chainId = getSSVNetworkDetails().networkId,
     options,
@@ -27,6 +28,7 @@ export const getPaginatedAccountOperatorsQueryOptions = (
       address?.toLowerCase(),
       page,
       perPage,
+      orderBy,
       chainId,
     ],
     queryFn: () =>
@@ -34,6 +36,7 @@ export const getPaginatedAccountOperatorsQueryOptions = (
         address: address!,
         page: page,
         perPage,
+        ordering: orderBy,
       }),
     enabled: boolify(address) && enabled(options?.enabled),
   });
@@ -47,11 +50,12 @@ export const usePaginatedAccountOperators = (
 
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
+  const orderBy = (searchParams.get("orderBy") as `${OrderBy}:${Sort}`) || "id:asc";
 
   const { data: optimisticOperators = [] } = useCreatedOptimisticOperators();
 
   const paginatedOperators = useQuery(
-    getPaginatedAccountOperatorsQueryOptions(address, page, perPage, {
+    getPaginatedAccountOperatorsQueryOptions(address, page, perPage, orderBy, {
       chainId,
       options,
     }),
@@ -59,6 +63,10 @@ export const usePaginatedAccountOperators = (
 
   const setPage = (page: number) => {
     setSearchParams((prev) => ({ ...prev, page: String(page) }));
+  };
+
+  const setOrderBy = (orderBy: `${OrderBy}:${Sort}`) => {
+    setSearchParams((prev) => ({ ...prev, orderBy, page: "1" }));
   };
 
   if (
@@ -100,5 +108,7 @@ export const usePaginatedAccountOperators = (
     next,
     prev,
     page,
+    orderBy,
+    setOrderBy,
   };
 };

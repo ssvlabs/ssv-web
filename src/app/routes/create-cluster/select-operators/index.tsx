@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/container";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils/tw";
-import { xor } from "lodash-es";
+import { isNil, xor } from "lodash-es";
 import { type ComponentPropsWithoutRef, type FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCluster } from "@/hooks/cluster/use-cluster";
@@ -70,7 +70,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
   const { operators, infiniteQuery, fetched } = useSearchOperators({
     search: searchDebounced,
     ordering,
-    has_dkg_address: isDKGCheckedDebounced === "true",
+    has_dkg_address: isDKGCheckedDebounced === "true" || undefined,
     type: isVerifiedCheckedDebounced || undefined,
   });
 
@@ -84,7 +84,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
     .filter(Boolean);
 
   const totalYearlyFee = selectedOperators.reduce(
-    (acc, operator) => acc + getYearlyFee(BigInt(operator.fee)),
+    (acc, operator) => acc + getYearlyFee(BigInt(operator.eth_fee)),
     0n,
   );
 
@@ -103,7 +103,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
     reshareFlow.operators.length === 0 &&
     isClusterSizeMet &&
     cluster.isSuccess &&
-    cluster.data !== null;
+    !isNil(cluster.data);
 
   const nextStep = () => {
     if (
@@ -199,7 +199,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
           <Divider />
           <div className="flex justify-between">
             <Text variant="body-2-medium">Operators Yearly Fee</Text>
-            <Text variant="body-2-bold">{formatSSV(totalYearlyFee)} SSV</Text>
+            <Text variant="body-2-bold">{formatSSV(totalYearlyFee)} ETH</Text>
           </div>
           {hasUnverifiedOperators && (
             <Alert variant="warning">

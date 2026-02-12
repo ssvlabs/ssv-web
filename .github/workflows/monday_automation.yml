@@ -1,5 +1,5 @@
 # .github/workflows/monday_automation.yml
-name: Monday Automation on Stage Merge
+name: Monday Automation on Stage/Pre-Stage Merge
 
 on:
   pull_request_target:
@@ -7,6 +7,7 @@ on:
       - closed
     branches:
       - stage
+      - pre-stage
 
 jobs:
   run_monday_automation:
@@ -25,3 +26,5 @@ jobs:
         env:
           MONDAY_API_KEY: ${{ secrets.MONDAY_API_KEY }}
           COMMITS_URL: ${{ github.event.pull_request.commits_url }}
+          DEPLOY_ENV_LABEL: ${{ github.event.pull_request.base.ref == 'pre-stage' && 'Pre-Stage' || 'Stage' }}
+          WEBAPP_URL: ${{ github.event.pull_request.base.ref == 'pre-stage' && 'https://app-pre.stage.ssv.network/' || 'https://app.stage.ssv.network/' }}

@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Link, Navigate } from "react-router-dom";
 import { useSearchParam } from "react-use";
 import { createClusterHash } from "@/lib/utils/cluster";
-import { links } from "@/config";
+import { links } from "@/config/links";
 
 export const RegisterValidatorSuccess: FC = () => {
   const { address } = useAccount();

@@ -1,10 +1,10 @@
 import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
-import { toChecksumAddress } from "ssv-keys/dist/tsc/src/lib/helpers/web3.helper";
 import { useAccount } from "@/hooks/account/use-account.ts";
 import { getAllValidators } from "@/api/validators.ts";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params.ts";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 import type { Address } from "abitype";
+import { getAddress } from "viem";
 
 export type Proof = {
   proof: {
@@ -29,10 +29,10 @@ const validateProofs = (proofs: Proof[] | Proof[][], address: Address) => {
       Array.isArray(proof)
         ? proof.every(
             (p: Proof) =>
-              toChecksumAddress(`0x${p.proof.owner}`) === address &&
+              getAddress(`0x${p.proof.owner}`) === address &&
               p.proof.validator === proof[0].proof.validator,
           )
-        : toChecksumAddress(`0x${proof.proof.owner}`) === address &&
+        : getAddress(`0x${proof.proof.owner}`) === address &&
           proof.proof.validator === (proofs as Proof[])[0].proof.validator,
     );
   } catch (e) {

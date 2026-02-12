@@ -3,7 +3,7 @@
 // ------------------------------------------------
 
 import type { UseReadContractParameters } from "wagmi";
-import { useReadContract, useBlockNumber } from "wagmi";
+import { useBlockNumber, useReadContract } from "wagmi";
 
 import { isUndefined } from "lodash-es";
 
@@ -14,8 +14,8 @@ import {
 import { MainnetV4GetterABI } from "@/lib/abi/mainnet/v4/getter";
 import type { AbiInputsToParams } from "@/lib/contract-interactions/utils";
 import {
-  paramsToArray,
   extractAbiFunction,
+  paramsToArray,
 } from "@/lib/contract-interactions/utils";
 import type { ExtractAbiFunction } from "abitype";
 import { readContractQueryOptions } from "wagmi/query";

@@ -31,6 +31,8 @@ export const buttonVariants = cva(
         wallet:
           "bg-[#F9FBFC] hover:bg-[#F2F6FA] text-gray-900 dark:bg-[#062031] dark:hover:bg-[#011627]",
         error: "",
+        primary:
+          "border-primary-500 text-primary-500 hover:text-primary-500 hover:bg-primary-100 active:bg-primary-200",
       },
       size: {
         default: "h-10 px-4 py-2 font-medium text-md rounded-lg",

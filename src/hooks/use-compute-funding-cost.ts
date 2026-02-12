@@ -1,14 +1,14 @@
 import { computeFundingCost } from "@/lib/utils/keystore";
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
-import { useSsvNetworkFee } from "./use-ssv-network-fee";
+import { useNetworkFee } from "./use-ssv-network-fee";
 import type { Operator } from "@/types/api";
 import { stringifyBigints } from "@/lib/utils/bigint";
 import { sumOperatorsFee } from "@/lib/utils/operator";
 
 type Args = {
   operatorsFee: bigint;
-  validators: number;
   fundingDays: number;
+  effectiveBalance: bigint;
 };
 
 export const useComputeFundingCost = () => {
@@ -17,10 +17,14 @@ export const useComputeFundingCost = () => {
     liquidationThresholdPeriod,
     minimumLiquidationCollateral,
     ssvNetworkFee,
-  } = useSsvNetworkFee();
+  } = useNetworkFee();
 
   return useMutation({
-    mutationFn: async ({ fundingDays, validators, operatorsFee }: Args) => {
+    mutationFn: async ({
+      fundingDays,
+      operatorsFee,
+      effectiveBalance,
+    }: Args) => {
       if (!isSuccess) {
         throw new Error("Something went wrong, please try again later.");
       }
@@ -30,22 +34,22 @@ export const useComputeFundingCost = () => {
         networkFee: ssvNetworkFee.data!,
         liquidationCollateralPeriod: liquidationThresholdPeriod.data!,
         minimumLiquidationCollateral: minimumLiquidationCollateral.data!,
-        validators: BigInt(validators || 1),
+        effectiveBalance,
       });
     },
   });
 };
 
 export type UseFundingCostArgs = {
-  operators: Pick<Operator, "fee">[];
-  validatorsAmount: number;
+  operators: Pick<Operator, "eth_fee" | "fee">[];
   fundingDays: number;
+  effectiveBalance: bigint;
 };
 
 export const useFundingCost = ({
   operators,
-  validatorsAmount,
   fundingDays,
+  effectiveBalance,
 }: UseFundingCostArgs) => {
   const {
     isSuccess,
@@ -53,7 +57,7 @@ export const useFundingCost = ({
     liquidationThresholdPeriod,
     minimumLiquidationCollateral,
     ssvNetworkFee,
-  } = useSsvNetworkFee();
+  } = useNetworkFee();
 
   const costQuery = useQuery({
     staleTime: 0,
@@ -61,8 +65,8 @@ export const useFundingCost = ({
     queryKey: stringifyBigints([
       "fundingCost",
       operators,
-      validatorsAmount,
       fundingDays,
+      effectiveBalance,
     ]),
     queryFn: async () =>
       computeFundingCost({
@@ -71,7 +75,7 @@ export const useFundingCost = ({
         networkFee: ssvNetworkFee.data!,
         liquidationCollateralPeriod: liquidationThresholdPeriod.data!,
         minimumLiquidationCollateral: minimumLiquidationCollateral.data!,
-        validators: BigInt(validatorsAmount || 1),
+        effectiveBalance,
       }),
     placeholderData: keepPreviousData,
     enabled: isSuccess,

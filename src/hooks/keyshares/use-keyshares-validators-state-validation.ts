@@ -6,7 +6,7 @@ import { add0x } from "@/lib/utils/strings";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { sortBy } from "lodash-es";
-import type { KeySharesItem } from "ssv-keys";
+import type { KeySharesItem } from "@ssv-labs/ssv-sdk/keys";
 import { useChainId } from "wagmi";
 
 export type KeysharesValidatorStatus = "registered" | "incorrect" | "available";

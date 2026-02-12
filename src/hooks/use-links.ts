@@ -14,7 +14,7 @@ export const useLinks = () => {
       etherscan: `https://${envPrefix}etherscan.io`,
       ssv: {
         explorer: `https://explorer${envPrefix}.ssv.network/`,
-        stake: `https://stake${envPrefix}.ssv.network`,
+        stake: `https://stake.ssv.network`,
         docs: `https://docs.ssv.network`,
         forum: `https://forum.ssv.network/`,
         governanceForum: `https://forum.ssv.network/`,

@@ -1,11 +1,31 @@
 import type { ButtonProps } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
 import { textVariants } from "@/components/ui/text";
+import { useAccount } from "@/hooks/account/use-account";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import type { FC } from "react";
+import { useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa6";
+import { mainnet } from "wagmi/chains";
+
+const networkRedirects: Record<number, URL> = {
+  [mainnet.id]: new URL("https://app.ssv.network/"),
+};
 
 export const NetworkSwitchBtn: FC<ButtonProps> = (props) => {
+  const { chain: accountChain, isConnected } = useAccount();
+
+  useEffect(() => {
+    if (!isConnected || !accountChain?.id) return;
+    const targetBaseUrl = networkRedirects[accountChain.id];
+    if (!targetBaseUrl) return;
+
+    const targetUrl = new URL(window.location.pathname, targetBaseUrl.origin);
+    if (window.location.origin === targetUrl.origin) return;
+
+    window.location.host = targetUrl.host;
+  }, [accountChain?.id, isConnected]);
+
   return (
     <ConnectButton.Custom>
       {({ account, chain, openChainModal, mounted }) => {

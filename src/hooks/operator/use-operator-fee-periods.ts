@@ -7,16 +7,23 @@ import { humanizeDuration } from "@/lib/utils/date";
 import { useInterval, useUpdate } from "react-use";
 
 export const useOperatorFeePeriods = () => {
-  const [declareOperatorFeePeriod, executeOperatorFeePeriod] =
-    useGetOperatorFeePeriods().data ?? [0n, 0n];
+  const { declarePeriod, executePeriod } = useGetOperatorFeePeriods().data ?? {
+    declarePeriod: 0n,
+    executePeriod: 0n,
+  };
 
   return {
-    declareOperatorFeePeriod,
-    executeOperatorFeePeriod,
+    declareOperatorFeePeriod: declarePeriod,
+    executeOperatorFeePeriod: executePeriod,
   };
 };
 
-const defaultDeclaredFee = [false, 0n, 0n, 0n] as const;
+const defaultDeclaredFee = {
+  isFeeDeclared: false,
+  fee: 0n,
+  approvalBeginTime: 0n,
+  approvalEndTime: 0n,
+} as const;
 
 export const useOperatorDeclaredFee = (operatorId: bigint) => {
   const context = useUpdateOperatorFeeContext();
@@ -31,14 +38,10 @@ export const useOperatorDeclaredFee = (operatorId: bigint) => {
 
   const { declareOperatorFeePeriod } = useOperatorFeePeriods();
 
-  const [
-    hasRequestedFeeChange,
-    requestedFee,
-    approvalBeginTime,
-    approvalEndTime,
-  ] = query.data || defaultDeclaredFee;
+  const { isFeeDeclared, fee, approvalBeginTime, approvalEndTime } =
+    query.data || defaultDeclaredFee;
 
-  const declarationDateMS = hasRequestedFeeChange
+  const declarationDateMS = isFeeDeclared
     ? Number(approvalBeginTime - declareOperatorFeePeriod) * 1000
     : Date.now();
 
@@ -46,8 +49,8 @@ export const useOperatorDeclaredFee = (operatorId: bigint) => {
     ...query,
     data: {
       declarationDateMS: declarationDateMS,
-      hasRequestedFeeChange,
-      requestedFee,
+      hasRequestedFeeChange: isFeeDeclared,
+      requestedFee: fee,
       approvalBeginTimeMS: Number(approvalBeginTime * 1000n),
       approvalEndTimeMS: Number(approvalEndTime * 1000n),
     },

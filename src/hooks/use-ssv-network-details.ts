@@ -6,7 +6,7 @@ import { config, hoodi } from "@/wagmi/config";
 import { getAccount, getChainId } from "@wagmi/core";
 import { useAccount } from "@/hooks/account/use-account";
 
-const networks = [
+export const NETWORKS = [
   {
     networkId: 1,
     apiVersion: "v4",
@@ -50,13 +50,13 @@ const networkSchema = z
   )
   .min(1);
 
-if (!networks) {
+if (!NETWORKS) {
   throw new Error(
     "VITE_SSV_NETWORKS is not defined in the environment variables",
   );
 }
 
-const parsed = networkSchema.safeParse(networks);
+const parsed = networkSchema.safeParse(NETWORKS);
 
 if (!parsed.success) {
   throw new Error(
@@ -72,7 +72,7 @@ Invalid network schema in VITE_SSV_NETWORKS environment variable:
 export const getSSVNetworkDetails = (chainId?: number) => {
   const _chainId = chainId ?? getChainId(config);
   const { isConnected } = getAccount(config);
-  return networks.find(
+  return NETWORKS.find(
     (network) => network.networkId === (isConnected ? _chainId : hoodi.id),
   )!;
 };

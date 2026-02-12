@@ -23,7 +23,7 @@ export const NetworkSwitchBtn: FC<ButtonProps> = (props) => {
     const targetUrl = new URL(window.location.pathname, targetBaseUrl.origin);
     if (window.location.origin === targetUrl.origin) return;
 
-    window.location.host = targetUrl.host;
+    window.location.assign(targetUrl.toString());
   }, [accountChain?.id, isConnected]);
 
   return (

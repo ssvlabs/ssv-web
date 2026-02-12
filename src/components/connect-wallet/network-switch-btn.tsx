@@ -20,6 +20,8 @@ export const NetworkSwitchBtn: FC<ButtonProps> = (props) => {
     const targetBaseUrl = networkRedirects[accountChain.id];
     if (!targetBaseUrl) return;
 
+    if (window.location.origin.includes("localhost")) return;
+
     const targetUrl = new URL(window.location.pathname, targetBaseUrl);
     if (window.location.origin === targetUrl.origin) return;
 

@@ -10,7 +10,7 @@ import { Divider } from "@/components/ui/divider";
 import { Input } from "@/components/ui/input";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { Text } from "@/components/ui/text";
-import { WithAllowance } from "@/components/with-allowance/with-allowance";
+// import { WithAllowance } from "@/components/with-allowance/with-allowance";
 import {
   useRegisterValidatorContext,
   useSelectedOperatorIds,
@@ -31,7 +31,7 @@ import { queryClient } from "@/lib/react-query";
 import { bigintifyNumbers } from "@/lib/utils/bigint";
 import {
   createClusterHash,
-  formatClusterData,
+  toSolidityCluster,
   getDefaultClusterData,
 } from "@/lib/utils/cluster";
 import { computeDailyAmount } from "@/lib/utils/keystore";
@@ -39,7 +39,7 @@ import { formatSSV } from "@/lib/utils/number";
 import { retryPromiseUntilSuccess } from "@/lib/utils/promise";
 import type { Address } from "abitype";
 import type { FC } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 export const RegisterValidatorConfirmation: FC = () => {
   const inCluster = Boolean(useClusterPageParams().clusterHash);
@@ -48,7 +48,8 @@ export const RegisterValidatorConfirmation: FC = () => {
   const accountClusters = usePaginatedAccountClusters();
 
   const account = useAccount();
-  const { shares, depositAmount, fundingDays } = useRegisterValidatorContext();
+  const { shares, depositAmount, fundingDays, effectiveBalance } =
+    useRegisterValidatorContext();
   const isBulk = shares.length > 1;
 
   const operatorIds = useSelectedOperatorIds();
@@ -67,7 +68,7 @@ export const RegisterValidatorConfirmation: FC = () => {
 
   const handleRegisterValidator = () => {
     const clusterData = clusterQuery.data
-      ? formatClusterData(clusterQuery.data)
+      ? toSolidityCluster(clusterQuery.data)
       : getDefaultClusterData();
     const [share] = shares;
 
@@ -111,23 +112,23 @@ export const RegisterValidatorConfirmation: FC = () => {
     if (shares.length === 1)
       return registerValidator.write(
         {
-          amount: depositAmount,
           cluster: clusterData,
           operatorIds: bigintifyNumbers(operatorIds),
           publicKey: share.publicKey as Address,
           sharesData: share.sharesData as Address,
         },
+        depositAmount,
         options,
       );
 
     return bulkRegisterValidator.write(
       {
-        amount: depositAmount,
         cluster: clusterData,
         operatorIds: bigintifyNumbers(operatorIds),
         publicKeys: shares.map((share) => share.publicKey as Address),
         sharesData: shares.map((share) => share.sharesData as Address),
       },
+      depositAmount,
       options,
     );
   };
@@ -160,9 +161,9 @@ export const RegisterValidatorConfirmation: FC = () => {
               <div className="text-end space-y-1">
                 <Text variant="body-2-medium">
                   {formatSSV(
-                    computeDailyAmount(BigInt(operator.fee), fundingDays),
+                    computeDailyAmount(BigInt(operator.eth_fee), fundingDays),
                   )}{" "}
-                  SSV
+                  ETH
                 </Text>
                 <Text variant="body-3-medium" className="text-gray-500">
                   /{fundingDays} days
@@ -177,20 +178,20 @@ export const RegisterValidatorConfirmation: FC = () => {
         ) : (
           <ClusterFundingSummary
             operators={operators.data ?? []}
-            validatorsAmount={shares.length}
             fundingDays={fundingDays}
+            effectiveBalance={effectiveBalance}
           />
         )}
-        <WithAllowance size="xl" amount={depositAmount}>
-          <Button
-            size="xl"
-            isLoading={isPending}
-            isActionBtn
-            onClick={handleRegisterValidator}
-          >
-            Register Validator
-          </Button>
-        </WithAllowance>
+        {/*<WithAllowance size="xl" amount={depositAmount}>*/}
+        <Button
+          size="xl"
+          isLoading={isPending}
+          isActionBtn
+          onClick={handleRegisterValidator}
+        >
+          Register Validator
+        </Button>
+        {/*</WithAllowance>*/}
       </Card>
     </Container>
   );

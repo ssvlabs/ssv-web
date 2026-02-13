@@ -10,13 +10,14 @@ import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Text } from "@/components/ui/text";
 import { ChevronDown } from "lucide-react";
-import { LuTrash2, LuLogOut } from "react-icons/lu";
+import { LuLogOut, LuTrash2 } from "react-icons/lu";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TbRefreshDot } from "react-icons/tb";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 
 type Props = {
   isLiquidated: boolean;
+  isMigrated?: boolean;
 };
 
 enum ActionType {
@@ -27,10 +28,12 @@ enum ActionType {
 export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
   className,
   isLiquidated = true,
+  isMigrated,
   ...props
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isSsvCluster = !isMigrated;
 
   const onActionClickHandler = (action: ActionType) => {
     useBulkActionContext.resetState();
@@ -44,8 +47,10 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
           <Text>Actions</Text> <ChevronDown className="size-4" />
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent>
         <DropdownMenuItem
+          disabled={isSsvCluster}
           onClick={() => onActionClickHandler(ActionType.Remove)}
         >
           <LuTrash2 className="size-4" />
@@ -76,6 +81,7 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
             DKG
           </div>
           <DropdownMenuItem
+            disabled={isSsvCluster}
             onClick={() => onActionClickHandler(ActionType.Reshare)}
           >
             <TbRefreshDot className="size-4" />

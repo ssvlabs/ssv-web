@@ -9,7 +9,7 @@ import { useSetOperatorsWhitelists } from "@/lib/contract-interactions/write/use
 import { mergeOperatorWhitelistAddresses } from "@/lib/utils/operator";
 import { useQueryClient } from "@tanstack/react-query";
 import type { Address } from "abitype";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 type Mode = "add" | "delete" | "view";
 

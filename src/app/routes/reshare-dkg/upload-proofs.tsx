@@ -48,6 +48,7 @@ const UploadProofs = () => {
     ) {
       nextStep();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proofsQuery.isLoading, proofsQuery.isSuccess]);
   return (
     <Container

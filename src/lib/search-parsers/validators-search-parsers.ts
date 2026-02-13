@@ -44,15 +44,9 @@ export const validatorsSearchFilters = {
   operator: parseAsArrayOf(z.number({ coerce: true })).withOptions(
     defaultSearchOptions,
   ),
-  status: parseAsArrayOf(
-    z
-      .string()
-      .refine((value) =>
-        VALIDATOR_STATUS_FILTER_KEYS.includes(
-          value as (typeof VALIDATOR_STATUS_FILTER_KEYS)[number],
-        ),
-      ),
-  ).withOptions(defaultSearchOptions),
+  status: parseAsArrayOf(z.enum(VALIDATOR_STATUS_FILTER_KEYS)).withOptions(
+    defaultSearchOptions,
+  ),
 };
 
 export type ValidatorSearchFilterKeys = keyof typeof validatorsSearchFilters;

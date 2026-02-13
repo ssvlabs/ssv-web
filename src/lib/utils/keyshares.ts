@@ -1,7 +1,7 @@
 import { sortNumbers } from "@/lib/utils/number";
 import { getOperatorIds, sortOperators } from "@/lib/utils/operator";
 import type { Operator } from "@/types/api";
-import { type KeySharesItem } from "ssv-keys";
+import type { KeySharesItem } from "@ssv-labs/ssv-sdk/keys";
 import type { Address } from "viem";
 import { getChainName } from "@/lib/utils/wagmi";
 import { getChainId } from "@wagmi/core";
@@ -65,7 +65,8 @@ export const validateConsistentOperatorPublicKeys = (
   const operatorsMap = new Map(operators.map((o) => [o.id, o.public_key]));
   const valid = keyshares.every(({ data }) =>
     data.operators?.every(
-      ({ id, operatorKey }) => operatorsMap.get(id) === operatorKey,
+      (operator: { id: number; operatorKey: string }) =>
+        operatorsMap.get(operator.id) === operator.operatorKey,
     ),
   );
 

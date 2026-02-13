@@ -6,7 +6,7 @@ import type { ComponentPropsWithoutRef, FC } from "react";
 import { Navigate } from "react-router-dom";
 import { isFrom } from "@/lib/utils/router.ts";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
-import { useLocation } from "react-router";
+import { useLocation } from "react-router-dom";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
 
 export const ProtectedClusterRoute: FC<ComponentPropsWithoutRef<"div">> = ({

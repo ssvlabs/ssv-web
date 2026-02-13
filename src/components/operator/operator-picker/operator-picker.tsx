@@ -39,7 +39,7 @@ export const OperatorPicker: FCProps = ({
     { type: "name", title: "Name" },
     { type: "validatorsCount", title: "Validators" },
     { type: "performance30d", title: "30D Performance" },
-    { type: "fee", title: "Yearly Fee" },
+    { type: "ethFee", title: "Yearly Fee" },
     { type: "mev", title: "MEV Relays" },
   ];
 

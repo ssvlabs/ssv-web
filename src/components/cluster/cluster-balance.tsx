@@ -25,7 +25,7 @@ export const ClusterBalance: EstimatedOperationalRunwayFC = ({
   const params = useClusterPageParams();
   const hash = clusterHash || params.clusterHash;
 
-  const { data: clusterBalance = 0n } = useClusterBalance(hash!);
+  const { data: { eth: balance = 0n } = {} } = useClusterBalance(hash!);
   const isWithdrawing = deltaBalance < 0n;
 
   return (
@@ -35,7 +35,7 @@ export const ClusterBalance: EstimatedOperationalRunwayFC = ({
       </Text>
       <div className={cn("flex gap-1")}>
         <Text variant="headline4" className="font-bold ">
-          {formatSSV(clusterBalance + deltaBalance)} SSV
+          {formatSSV(balance + deltaBalance)} ETH
           {deltaBalance !== 0n && (
             <Span
               variant="body-2-medium"
@@ -45,7 +45,7 @@ export const ClusterBalance: EstimatedOperationalRunwayFC = ({
               })}
             >
               ({isWithdrawing ? "-" : "+"}
-              {formatSSV(bigintAbs(deltaBalance))} SSV)
+              {formatSSV(bigintAbs(deltaBalance))} ETH)
             </Span>
           )}
         </Text>

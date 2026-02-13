@@ -1,3 +1,4 @@
+import { ClusterHeader } from "@/components/cluster/cluster-header";
 import { ClusterValidatorsList } from "@/components/cluster/cluster-validators-list";
 import { EstimatedOperationalRunway } from "@/components/cluster/estimated-operational-runway";
 import { ValidatorsActionsMenu } from "@/components/cluster/validators-actions-menu";
@@ -12,24 +13,34 @@ import { Spacer } from "@/components/ui/spacer";
 import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
-import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
 import { useClusterState } from "@/hooks/cluster/use-cluster-state";
 import { useOperatorsUsability } from "@/hooks/keyshares/use-operators-usability";
-import { formatSSV } from "@/lib/utils/number";
-import { cn } from "@/lib/utils/tw";
 import { PlusIcon } from "lucide-react";
 import type { FC } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAccount } from "@/hooks/account/use-account";
+import { BalanceDisplay } from "@/components/ui/balance-display";
+import { SwitchToEthMenuOptionTooltip } from "@/components/cluster/switch-to-eth-menu-option-tooltip";
 
 export const Cluster: FC = () => {
   const account = useAccount();
   const { clusterHash } = useClusterPageParams();
+  const location = useLocation();
+  const from = `${location.pathname}${location.search}${location.hash}`;
 
-  const { cluster, isLiquidated, balance } = useClusterState(clusterHash!, {
-    balance: { watch: true },
-    isLiquidated: { watch: true },
-  });
+  const { cluster, isLiquidated, balanceSSV, balanceETH } = useClusterState(
+    clusterHash!,
+    {
+      balance: { watch: true },
+      isLiquidated: { watch: true },
+    },
+  );
+
+  const isMigrated = cluster.data?.migrated;
+
+  const isLoadingBalance = isMigrated
+    ? balanceETH.isLoading
+    : balanceSSV.isLoading;
 
   const operatorsUsability = useOperatorsUsability({
     account: account.address!,
@@ -47,114 +58,146 @@ export const Cluster: FC = () => {
       return "One of your chosen operators has shifted to a permissioned status. To onboard validators, you'll need to select a new cluster.";
     if (operatorsUsability.data?.hasExceededValidatorsLimit)
       return "One of your operators has reached their maximum number of validators";
+    if (!isMigrated) return "Switch to ETH to enable this option";
   };
 
-  const { data: runway } = useClusterRunway(clusterHash!);
-
   return (
-    <Container
-      variant="vertical"
-      size="xl"
-      className="min-h-full py-6"
-      navigateRoutePath={"/clusters"}
-      backButtonLabel={"Clusters"}
-    >
-      <div className="grid grid-cols-4 gap-6 w-full">
-        {cluster.data?.operators.map((operatorId) => (
-          <OperatorStatCard
-            key={operatorId}
-            className="w-full"
-            operatorId={operatorId}
-          />
-        ))}
-      </div>
-      <div className="flex flex-1 items-start gap-6 w-full">
-        <Card className="flex-[1]">
-          <div className="flex flex-col gap-2 ">
-            <div className="flex gap-2 items-center">
-              <Text variant="headline4" className="text-gray-500">
-                Balance
-              </Text>
-              {isLiquidated.data && <Badge variant="error">Liquidated</Badge>}
-            </div>
-            {balance.isLoading ? (
-              <Skeleton className="h-10 w-24 my-1" />
-            ) : (
-              <Text
-                variant="headline2"
-                className={cn({
-                  "text-error-500": runway?.isAtRisk,
-                })}
-              >
-                {formatSSV(balance.data || 0n)} SSV
-              </Text>
-            )}
-          </div>
-          {Boolean(cluster.data?.validatorCount) && (
-            <>
-              <Divider />
-              {balance.isLoading ? (
-                <div className="space-y-1">
-                  <Skeleton className="h-6 w-[208px] " />
-                  <Skeleton className="h-7 w-24 " />
-                </div>
+    <>
+      <ClusterHeader
+        backRoutePath="/clusters"
+        backButtonLabel="Cluster Details"
+      />
+      <Container variant="vertical" size="xl" className="min-h-full py-6">
+        <div className="grid grid-cols-4 gap-6 w-full">
+          {cluster.data?.operators.map((operatorId) => (
+            <OperatorStatCard
+              key={operatorId}
+              className="w-full"
+              operatorId={operatorId}
+            />
+          ))}
+        </div>
+        <div className="flex flex-1 items-start gap-6 w-full">
+          <Card className="flex-[1]">
+            <div className="flex flex-col gap-2 ">
+              <div className="flex gap-2 items-center">
+                <Text variant="headline4" className="text-gray-500">
+                  Balance
+                </Text>
+                {isLiquidated.data && <Badge variant="error">Liquidated</Badge>}
+              </div>
+              {isLoadingBalance ? (
+                <Skeleton className="h-10 w-24 my-1" />
               ) : (
-                <EstimatedOperationalRunway />
+                <BalanceDisplay
+                  amount={BigInt(
+                    isMigrated ? balanceETH.data || 0n : balanceSSV.data || 0n,
+                  )}
+                  token={isMigrated ? "ETH" : "SSV"}
+                />
               )}
-              <Divider />
-            </>
-          )}
-
-          {isLiquidated.data ? (
-            <Button as={Link} to="reactivate" size="xl">
-              Reactivate Cluster
-            </Button>
-          ) : (
-            <div className="flex gap-3 [&>*]:flex-1">
-              <Button as={Link} to="deposit" size="xl">
-                Deposit
-              </Button>
-              <Button as={Link} to="withdraw" size="xl" variant="secondary">
-                Withdraw
-              </Button>
             </div>
-          )}
-        </Card>
-        <Card className="flex-[2] h-full">
-          <div className="flex w-full gap-2 justify-between">
-            <Text variant="headline4" className="text-gray-500">
-              Validators
-            </Text>
-            <Badge size="sm" variant="primary" className="h-fit">
-              {cluster.data?.validatorCount}
-            </Badge>
-            <Spacer />
-            <ValidatorsActionsMenu isLiquidated={Boolean(isLiquidated.data)} />
-            <Tooltip content={getTooltipContent()}>
-              <Button
-                disabled={
-                  operatorsUsability.isError ||
-                  operatorsUsability.data?.hasExceededValidatorsLimit ||
-                  operatorsUsability.data?.hasPermissionedOperators ||
-                  operatorsUsability.data?.hasDeletedOperators ||
-                  isLiquidated.data
-                }
-                isLoading={
-                  operatorsUsability.isLoading || isLiquidated.isLoading
-                }
-                as={Link}
-                to={`/join/validator/${clusterHash}/distribution-method`}
-              >
-                <Text>Add Validator</Text>
-                <PlusIcon className="size-4" />
-              </Button>
-            </Tooltip>
-          </div>
+            {Boolean(cluster.data?.validatorCount) && (
+              <>
+                <Divider />
+                {isLoadingBalance ? (
+                  <div className="space-y-1">
+                    <Skeleton className="h-6 w-[208px] " />
+                    <Skeleton className="h-7 w-24 " />
+                  </div>
+                ) : (
+                  <EstimatedOperationalRunway />
+                )}
+                <Divider />
+              </>
+            )}
 
-          <ClusterValidatorsList className="min-h-96" />
-        </Card>
-      </div>
-    </Container>
+            {isLiquidated.data ? (
+              isMigrated ? (
+                <Button as={Link} to="reactivate-balance" size="xl">
+                  Reactivate Cluster
+                </Button>
+              ) : (
+                <Button
+                  as={Link}
+                  to={`/switch-wizard/${clusterHash}`}
+                  state={{ from }}
+                  size="xl"
+                >
+                  Switch to ETH
+                </Button>
+              )
+            ) : (
+              <div className="flex flex-col gap-6">
+                <div className="flex gap-6 [&>*]:flex-1">
+                  <SwitchToEthMenuOptionTooltip asChild enabled={!isMigrated}>
+                    <Button
+                      as={Link}
+                      to="deposit"
+                      size="xl"
+                      disabled={!isMigrated}
+                    >
+                      Deposit
+                    </Button>
+                  </SwitchToEthMenuOptionTooltip>
+                  <Button as={Link} to="withdraw" size="xl" variant="secondary">
+                    Withdraw
+                  </Button>
+                </div>
+                {!isMigrated && (
+                  <Button
+                    as={Link}
+                    to={`/switch-wizard/${clusterHash}`}
+                    state={{ from }}
+                    size="xl"
+                    variant="default"
+                  >
+                    Switch to ETH
+                  </Button>
+                )}
+              </div>
+            )}
+          </Card>
+          <Card className="flex-[2] h-full">
+            <div className="flex w-full gap-2 justify-between">
+              <Text variant="headline4" className="text-gray-500">
+                Validators
+              </Text>
+              <Badge size="sm" variant="primary" className="h-fit">
+                {cluster.data?.validatorCount}
+              </Badge>
+              <Spacer />
+              <ValidatorsActionsMenu
+                isLiquidated={Boolean(isLiquidated.data)}
+                isMigrated={isMigrated}
+              />
+              <Tooltip content={getTooltipContent()}>
+                <Button
+                  disabled={
+                    operatorsUsability.isError ||
+                    operatorsUsability.data?.hasExceededValidatorsLimit ||
+                    operatorsUsability.data?.hasPermissionedOperators ||
+                    operatorsUsability.data?.hasDeletedOperators ||
+                    isLiquidated.data ||
+                    !isMigrated
+                  }
+                  isLoading={
+                    operatorsUsability.isLoading || isLiquidated.isLoading
+                  }
+                  as={Link}
+                  to={`/join/validator/${clusterHash}/distribution-method`}
+                >
+                  <Text>Add Validator</Text>
+                  <PlusIcon className="size-4" />
+                </Button>
+              </Tooltip>
+            </div>
+
+            <ClusterValidatorsList className="min-h-96" />
+          </Card>
+        </div>
+      </Container>
+    </>
   );
 };
 

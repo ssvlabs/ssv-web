@@ -1,1071 +1,1823 @@
 export const TestnetV4GetterABI = [
   {
-    inputs: [],
-    stateMutability: "nonpayable",
-    type: "constructor",
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "address",
-        name: "contractAddress",
-        type: "address",
-      },
+        "internalType": "address",
+        "name": "contractAddress",
+        "type": "address"
+      }
     ],
-    name: "AddressIsWhitelistingContract",
-    type: "error",
+    "name": "AddressIsWhitelistingContract",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "ApprovalNotWithinTimeframe",
-    type: "error",
+    "inputs": [],
+    "name": "AlreadyVoted",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "CallerNotOwner",
-    type: "error",
+    "inputs": [],
+    "name": "ApprovalNotWithinTimeframe",
+    "type": "error"
   },
   {
-    inputs: [
+    "inputs": [],
+    "name": "CallerNotOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [
       {
-        internalType: "address",
-        name: "caller",
-        type: "address",
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
       },
       {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
     ],
-    name: "CallerNotOwnerWithData",
-    type: "error",
+    "name": "CallerNotOwnerWithData",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "CallerNotWhitelisted",
-    type: "error",
+    "inputs": [],
+    "name": "CallerNotWhitelisted",
+    "type": "error"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "uint64",
-        name: "operatorId",
-        type: "uint64",
-      },
+        "internalType": "uint64",
+        "name": "operatorId",
+        "type": "uint64"
+      }
     ],
-    name: "CallerNotWhitelistedWithData",
-    type: "error",
+    "name": "CallerNotWhitelistedWithData",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "ClusterAlreadyEnabled",
-    type: "error",
+    "inputs": [],
+    "name": "ClusterAlreadyEnabled",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "ClusterDoesNotExists",
-    type: "error",
+    "inputs": [],
+    "name": "ClusterDoesNotExists",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "ClusterIsLiquidated",
-    type: "error",
+    "inputs": [],
+    "name": "ClusterIsLiquidated",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "ClusterNotLiquidatable",
-    type: "error",
+    "inputs": [],
+    "name": "ClusterNotLiquidatable",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "EmptyPublicKeysList",
-    type: "error",
+    "inputs": [],
+    "name": "EBBelowMinimum",
+    "type": "error"
   },
   {
-    inputs: [
+    "inputs": [],
+    "name": "EBExceedsMaximum",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ETHTransferFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "EmptyPublicKeysList",
+    "type": "error"
+  },
+  {
+    "inputs": [
       {
-        internalType: "uint64",
-        name: "operatorId",
-        type: "uint64",
-      },
+        "internalType": "uint64",
+        "name": "operatorId",
+        "type": "uint64"
+      }
     ],
-    name: "ExceedValidatorLimit",
-    type: "error",
+    "name": "ExceedValidatorLimit",
+    "type": "error"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "uint64",
-        name: "operatorId",
-        type: "uint64",
-      },
+        "internalType": "uint64",
+        "name": "operatorId",
+        "type": "uint64"
+      }
     ],
-    name: "ExceedValidatorLimitWithData",
-    type: "error",
+    "name": "ExceedValidatorLimitWithData",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "FeeExceedsIncreaseLimit",
-    type: "error",
+    "inputs": [],
+    "name": "FeeExceedsIncreaseLimit",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "FeeIncreaseNotAllowed",
-    type: "error",
+    "inputs": [],
+    "name": "FeeIncreaseNotAllowed",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "FeeTooHigh",
-    type: "error",
+    "inputs": [],
+    "name": "FeeTooHigh",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "FeeTooLow",
-    type: "error",
+    "inputs": [],
+    "name": "FeeTooLow",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "IncorrectClusterState",
-    type: "error",
+    "inputs": [],
+    "name": "FutureBlockNumber",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "IncorrectValidatorState",
-    type: "error",
+    "inputs": [],
+    "name": "IncorrectClusterState",
+    "type": "error"
   },
   {
-    inputs: [
+    "inputs": [],
+    "name": "IncorrectClusterVersion",
+    "type": "error"
+  },
+  {
+    "inputs": [
       {
-        internalType: "bytes",
-        name: "publicKey",
-        type: "bytes",
-      },
+        "internalType": "uint8",
+        "name": "operatorVersion",
+        "type": "uint8"
+      }
     ],
-    name: "IncorrectValidatorStateWithData",
-    type: "error",
+    "name": "IncorrectOperatorVersion",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "InsufficientBalance",
-    type: "error",
+    "inputs": [],
+    "name": "IncorrectValidatorState",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "InvalidContractAddress",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InvalidOperatorIdsLength",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InvalidPublicKeyLength",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InvalidWhitelistAddressesLength",
-    type: "error",
-  },
-  {
-    inputs: [
+    "inputs": [
       {
-        internalType: "address",
-        name: "contractAddress",
-        type: "address",
-      },
+        "internalType": "bytes",
+        "name": "publicKey",
+        "type": "bytes"
+      }
     ],
-    name: "InvalidWhitelistingContract",
-    type: "error",
+    "name": "IncorrectValidatorStateWithData",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "MaxValueExceeded",
-    type: "error",
+    "inputs": [],
+    "name": "InsufficientBalance",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "NewBlockPeriodIsBelowMinimum",
-    type: "error",
+    "inputs": [],
+    "name": "InvalidContractAddress",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "NoFeeDeclared",
-    type: "error",
+    "inputs": [],
+    "name": "InvalidOperatorIdsLength",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "NotAuthorized",
-    type: "error",
+    "inputs": [],
+    "name": "InvalidProof",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "OperatorAlreadyExists",
-    type: "error",
+    "inputs": [],
+    "name": "InvalidPublicKeyLength",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "OperatorDoesNotExist",
-    type: "error",
+    "inputs": [],
+    "name": "InvalidToken",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "OperatorsListNotUnique",
-    type: "error",
+    "inputs": [],
+    "name": "InvalidWhitelistAddressesLength",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "PublicKeysSharesLengthMismatch",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "SameFeeChangeNotAllowed",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "TargetModuleDoesNotExist",
-    type: "error",
-  },
-  {
-    inputs: [
+    "inputs": [
       {
-        internalType: "uint8",
-        name: "moduleId",
-        type: "uint8",
-      },
+        "internalType": "address",
+        "name": "contractAddress",
+        "type": "address"
+      }
     ],
-    name: "TargetModuleDoesNotExistWithData",
-    type: "error",
+    "name": "InvalidWhitelistingContract",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "TokenTransferFailed",
-    type: "error",
+    "inputs": [],
+    "name": "LegacyOperatorFeeDeclarationInvalid",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "UnsortedOperatorsList",
-    type: "error",
+    "inputs": [],
+    "name": "MaxRequestsAmountReached",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "ValidatorAlreadyExists",
-    type: "error",
+    "inputs": [],
+    "name": "MaxValueExceeded",
+    "type": "error"
   },
   {
-    inputs: [
+    "inputs": [],
+    "name": "NewBlockPeriodIsBelowMinimum",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoFeeDeclared",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotAuthorized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotAuthorizedOracle",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotCSSV",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotOracle",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NothingToClaim",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NothingToWithdraw",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OperatorAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OperatorDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OperatorsListNotUnique",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OracleAlreadyAssigned",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PublicKeysSharesLengthMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RootNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SameFeeChangeNotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StakeTooLow",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StaleBlockNumber",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StaleUpdate",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TargetModuleDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [
       {
-        internalType: "bytes",
-        name: "publicKey",
-        type: "bytes",
-      },
+        "internalType": "uint8",
+        "name": "moduleId",
+        "type": "uint8"
+      }
     ],
-    name: "ValidatorAlreadyExistsWithData",
-    type: "error",
+    "name": "TargetModuleDoesNotExistWithData",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "ValidatorDoesNotExist",
-    type: "error",
+    "inputs": [],
+    "name": "TokenTransferFailed",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "ZeroAddressNotAllowed",
-    type: "error",
+    "inputs": [],
+    "name": "UnsortedOperatorsList",
+    "type": "error"
   },
   {
-    anonymous: false,
-    inputs: [
+    "inputs": [],
+    "name": "UnstakeAmountExceedsBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UpdateTooFrequent",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ValidatorAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [
       {
-        indexed: false,
-        internalType: "address",
-        name: "previousAdmin",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "newAdmin",
-        type: "address",
-      },
+        "internalType": "bytes",
+        "name": "publicKey",
+        "type": "bytes"
+      }
     ],
-    name: "AdminChanged",
-    type: "event",
+    "name": "ValidatorAlreadyExistsWithData",
+    "type": "error"
   },
   {
-    anonymous: false,
-    inputs: [
+    "inputs": [],
+    "name": "ValidatorDoesNotExist",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroAddressNotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroInterval",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: true,
-        internalType: "address",
-        name: "beacon",
-        type: "address",
+        "indexed": false,
+        "internalType": "address",
+        "name": "previousAdmin",
+        "type": "address"
       },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
     ],
-    name: "BeaconUpgraded",
-    type: "event",
+    "name": "AdminChanged",
+    "type": "event"
   },
   {
-    anonymous: false,
-    inputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: false,
-        internalType: "uint8",
-        name: "version",
-        type: "uint8",
-      },
+        "indexed": true,
+        "internalType": "address",
+        "name": "beacon",
+        "type": "address"
+      }
     ],
-    name: "Initialized",
-    type: "event",
+    "name": "BeaconUpgraded",
+    "type": "event"
   },
   {
-    anonymous: false,
-    inputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: true,
-        internalType: "address",
-        name: "previousOwner",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
     ],
-    name: "OwnershipTransferStarted",
-    type: "event",
+    "name": "Initialized",
+    "type": "event"
   },
   {
-    anonymous: false,
-    inputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: true,
-        internalType: "address",
-        name: "previousOwner",
-        type: "address",
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
       },
       {
-        indexed: true,
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
     ],
-    name: "OwnershipTransferred",
-    type: "event",
+    "name": "OwnershipTransferStarted",
+    "type": "event"
   },
   {
-    anonymous: false,
-    inputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: true,
-        internalType: "address",
-        name: "implementation",
-        type: "address",
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
       },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
     ],
-    name: "Upgraded",
-    type: "event",
+    "name": "OwnershipTransferred",
+    "type": "event"
   },
   {
-    inputs: [],
-    name: "acceptOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
   },
   {
-    inputs: [
+    "inputs": [],
+    "name": "accEthPerShare",
+    "outputs": [
       {
-        internalType: "address",
-        name: "clusterOwner",
-        type: "address",
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "acceptOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "cooldownDuration",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getActiveOracleIds",
+    "outputs": [
+      {
+        "internalType": "uint32[4]",
+        "name": "",
+        "type": "uint32[4]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "clusterOwner",
+        "type": "address"
       },
       {
-        internalType: "uint64[]",
-        name: "operatorIds",
-        type: "uint64[]",
+        "internalType": "uint64[]",
+        "name": "operatorIds",
+        "type": "uint64[]"
       },
       {
-        components: [
+        "components": [
           {
-            internalType: "uint32",
-            name: "validatorCount",
-            type: "uint32",
+            "internalType": "uint32",
+            "name": "validatorCount",
+            "type": "uint32"
           },
           {
-            internalType: "uint64",
-            name: "networkFeeIndex",
-            type: "uint64",
+            "internalType": "uint64",
+            "name": "networkFeeIndex",
+            "type": "uint64"
           },
           {
-            internalType: "uint64",
-            name: "index",
-            type: "uint64",
+            "internalType": "uint64",
+            "name": "index",
+            "type": "uint64"
           },
           {
-            internalType: "bool",
-            name: "active",
-            type: "bool",
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
           },
           {
-            internalType: "uint256",
-            name: "balance",
-            type: "uint256",
-          },
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          }
         ],
-        internalType: "struct ISSVNetworkCore.Cluster",
-        name: "cluster",
-        type: "tuple",
-      },
+        "internalType": "struct ISSVNetworkCore.Cluster",
+        "name": "cluster",
+        "type": "tuple"
+      }
     ],
-    name: "getBalance",
-    outputs: [
+    "name": "getBalance",
+    "outputs": [
       {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
+        "internalType": "uint256",
+        "name": "balance",
+        "type": "uint256"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "address",
-        name: "clusterOwner",
-        type: "address",
+        "internalType": "address",
+        "name": "clusterOwner",
+        "type": "address"
       },
       {
-        internalType: "uint64[]",
-        name: "operatorIds",
-        type: "uint64[]",
+        "internalType": "uint64[]",
+        "name": "operatorIds",
+        "type": "uint64[]"
       },
       {
-        components: [
+        "components": [
           {
-            internalType: "uint32",
-            name: "validatorCount",
-            type: "uint32",
+            "internalType": "uint32",
+            "name": "validatorCount",
+            "type": "uint32"
           },
           {
-            internalType: "uint64",
-            name: "networkFeeIndex",
-            type: "uint64",
+            "internalType": "uint64",
+            "name": "networkFeeIndex",
+            "type": "uint64"
           },
           {
-            internalType: "uint64",
-            name: "index",
-            type: "uint64",
+            "internalType": "uint64",
+            "name": "index",
+            "type": "uint64"
           },
           {
-            internalType: "bool",
-            name: "active",
-            type: "bool",
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
           },
           {
-            internalType: "uint256",
-            name: "balance",
-            type: "uint256",
-          },
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          }
         ],
-        internalType: "struct ISSVNetworkCore.Cluster",
-        name: "cluster",
-        type: "tuple",
-      },
+        "internalType": "struct ISSVNetworkCore.Cluster",
+        "name": "cluster",
+        "type": "tuple"
+      }
     ],
-    name: "getBurnRate",
-    outputs: [
+    "name": "getBalanceSSV",
+    "outputs": [
       {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
+        "internalType": "uint256",
+        "name": "balance",
+        "type": "uint256"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: "getLiquidationThresholdPeriod",
-    outputs: [
+    "inputs": [
       {
-        internalType: "uint64",
-        name: "",
-        type: "uint64",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getMaximumOperatorFee",
-    outputs: [
-      {
-        internalType: "uint64",
-        name: "",
-        type: "uint64",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getMinimumLiquidationCollateral",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getNetworkEarnings",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getNetworkFee",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getNetworkValidatorsCount",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "",
-        type: "uint32",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint64",
-        name: "operatorId",
-        type: "uint64",
-      },
-    ],
-    name: "getOperatorById",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
+        "internalType": "address",
+        "name": "clusterOwner",
+        "type": "address"
       },
       {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
+        "internalType": "uint64[]",
+        "name": "operatorIds",
+        "type": "uint64[]"
       },
       {
-        internalType: "uint32",
-        name: "",
-        type: "uint32",
-      },
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint64",
-        name: "operatorId",
-        type: "uint64",
-      },
-    ],
-    name: "getOperatorDeclaredFee",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-      {
-        internalType: "uint64",
-        name: "",
-        type: "uint64",
-      },
-      {
-        internalType: "uint64",
-        name: "",
-        type: "uint64",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint64",
-        name: "id",
-        type: "uint64",
-      },
-    ],
-    name: "getOperatorEarnings",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint64",
-        name: "operatorId",
-        type: "uint64",
-      },
-    ],
-    name: "getOperatorFee",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getOperatorFeeIncreaseLimit",
-    outputs: [
-      {
-        internalType: "uint64",
-        name: "",
-        type: "uint64",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getOperatorFeePeriods",
-    outputs: [
-      {
-        internalType: "uint64",
-        name: "",
-        type: "uint64",
-      },
-      {
-        internalType: "uint64",
-        name: "",
-        type: "uint64",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "clusterOwner",
-        type: "address",
-      },
-      {
-        internalType: "bytes",
-        name: "publicKey",
-        type: "bytes",
-      },
-    ],
-    name: "getValidator",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getValidatorsPerOperatorLimit",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "",
-        type: "uint32",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getVersion",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint64[]",
-        name: "operatorIds",
-        type: "uint64[]",
-      },
-      {
-        internalType: "address",
-        name: "whitelistedAddress",
-        type: "address",
-      },
-    ],
-    name: "getWhitelistedOperators",
-    outputs: [
-      {
-        internalType: "uint64[]",
-        name: "whitelistedOperatorIds",
-        type: "uint64[]",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ISSVViews",
-        name: "ssvNetwork_",
-        type: "address",
-      },
-    ],
-    name: "initialize",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "addressToCheck",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "operatorId",
-        type: "uint256",
-      },
-      {
-        internalType: "address",
-        name: "whitelistingContract",
-        type: "address",
-      },
-    ],
-    name: "isAddressWhitelistedInWhitelistingContract",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "isWhitelisted",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "clusterOwner",
-        type: "address",
-      },
-      {
-        internalType: "uint64[]",
-        name: "operatorIds",
-        type: "uint64[]",
-      },
-      {
-        components: [
+        "components": [
           {
-            internalType: "uint32",
-            name: "validatorCount",
-            type: "uint32",
+            "internalType": "uint32",
+            "name": "validatorCount",
+            "type": "uint32"
           },
           {
-            internalType: "uint64",
-            name: "networkFeeIndex",
-            type: "uint64",
+            "internalType": "uint64",
+            "name": "networkFeeIndex",
+            "type": "uint64"
           },
           {
-            internalType: "uint64",
-            name: "index",
-            type: "uint64",
+            "internalType": "uint64",
+            "name": "index",
+            "type": "uint64"
           },
           {
-            internalType: "bool",
-            name: "active",
-            type: "bool",
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
           },
           {
-            internalType: "uint256",
-            name: "balance",
-            type: "uint256",
-          },
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          }
         ],
-        internalType: "struct ISSVNetworkCore.Cluster",
-        name: "cluster",
-        type: "tuple",
-      },
+        "internalType": "struct ISSVNetworkCore.Cluster",
+        "name": "cluster",
+        "type": "tuple"
+      }
     ],
-    name: "isLiquidatable",
-    outputs: [
+    "name": "getBurnRate",
+    "outputs": [
       {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "address",
-        name: "clusterOwner",
-        type: "address",
+        "internalType": "address",
+        "name": "clusterOwner",
+        "type": "address"
       },
       {
-        internalType: "uint64[]",
-        name: "operatorIds",
-        type: "uint64[]",
+        "internalType": "uint64[]",
+        "name": "operatorIds",
+        "type": "uint64[]"
       },
       {
-        components: [
+        "components": [
           {
-            internalType: "uint32",
-            name: "validatorCount",
-            type: "uint32",
+            "internalType": "uint32",
+            "name": "validatorCount",
+            "type": "uint32"
           },
           {
-            internalType: "uint64",
-            name: "networkFeeIndex",
-            type: "uint64",
+            "internalType": "uint64",
+            "name": "networkFeeIndex",
+            "type": "uint64"
           },
           {
-            internalType: "uint64",
-            name: "index",
-            type: "uint64",
+            "internalType": "uint64",
+            "name": "index",
+            "type": "uint64"
           },
           {
-            internalType: "bool",
-            name: "active",
-            type: "bool",
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
           },
           {
-            internalType: "uint256",
-            name: "balance",
-            type: "uint256",
-          },
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          }
         ],
-        internalType: "struct ISSVNetworkCore.Cluster",
-        name: "cluster",
-        type: "tuple",
-      },
+        "internalType": "struct ISSVNetworkCore.Cluster",
+        "name": "cluster",
+        "type": "tuple"
+      }
     ],
-    name: "isLiquidated",
-    outputs: [
+    "name": "getBurnRateSSV",
+    "outputs": [
       {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "address",
-        name: "contractAddress",
-        type: "address",
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
       },
-    ],
-    name: "isWhitelistingContract",
-    outputs: [
       {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
+        "internalType": "uint64[]",
+        "name": "operatorIds",
+        "type": "uint64[]"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "name": "getClusterAssetType",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: "owner",
-    outputs: [
+    "inputs": [
       {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
+        "internalType": "uint64",
+        "name": "blockNum",
+        "type": "uint64"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "name": "getCommittedRoot",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: "pendingOwner",
-    outputs: [
+    "inputs": [
       {
-        internalType: "address",
-        name: "",
-        type: "address",
+        "internalType": "address",
+        "name": "clusterOwner",
+        "type": "address"
       },
+      {
+        "internalType": "uint64[]",
+        "name": "operatorIds",
+        "type": "uint64[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "validatorCount",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "networkFeeIndex",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "index",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ISSVNetworkCore.Cluster",
+        "name": "cluster",
+        "type": "tuple"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "name": "getEffectiveBalance",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "effectiveBalance",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: "proxiableUUID",
-    outputs: [
+    "inputs": [],
+    "name": "getLiquidationThresholdPeriod",
+    "outputs": [
       {
-        internalType: "bytes32",
-        name: "",
-        type: "bytes32",
-      },
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: "renounceOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    "inputs": [],
+    "name": "getLiquidationThresholdPeriodSSV",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: "ssvNetwork",
-    outputs: [
+    "inputs": [],
+    "name": "getMaximumOperatorFee",
+    "outputs": [
       {
-        internalType: "contract ISSVViews",
-        name: "",
-        type: "address",
-      },
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [],
+    "name": "getMaximumOperatorFeeSSV",
+    "outputs": [
       {
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
     ],
-    name: "transferOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [],
+    "name": "getMinimumLiquidationCollateral",
+    "outputs": [
       {
-        internalType: "address",
-        name: "newImplementation",
-        type: "address",
-      },
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
     ],
-    name: "upgradeTo",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [],
+    "name": "getMinimumLiquidationCollateralSSV",
+    "outputs": [
       {
-        internalType: "address",
-        name: "newImplementation",
-        type: "address",
-      },
-      {
-        internalType: "bytes",
-        name: "data",
-        type: "bytes",
-      },
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
     ],
-    name: "upgradeToAndCall",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
+    "stateMutability": "view",
+    "type": "function"
   },
+  {
+    "inputs": [],
+    "name": "getNetworkEarnings",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getNetworkEarningsSSV",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getNetworkFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getNetworkFeeSSV",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getNetworkValidatorsCount",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "operatorId",
+        "type": "uint64"
+      }
+    ],
+    "name": "getOperatorById",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "operatorId",
+        "type": "uint64"
+      }
+    ],
+    "name": "getOperatorByIdSSV",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "operatorId",
+        "type": "uint64"
+      }
+    ],
+    "name": "getOperatorDeclaredFee",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "id",
+        "type": "uint64"
+      }
+    ],
+    "name": "getOperatorEarnings",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "id",
+        "type": "uint64"
+      }
+    ],
+    "name": "getOperatorEarningsSSV",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "operatorId",
+        "type": "uint64"
+      }
+    ],
+    "name": "getOperatorFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getOperatorFeeIncreaseLimit",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getOperatorFeePeriods",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "operatorId",
+        "type": "uint64"
+      }
+    ],
+    "name": "getOperatorFeeSSV",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "oracleId",
+        "type": "uint32"
+      }
+    ],
+    "name": "getOracle",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "oracleId",
+        "type": "uint32"
+      }
+    ],
+    "name": "getOracleWeight",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getQuorumBps",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getUserDelegation",
+    "outputs": [
+      {
+        "internalType": "uint32[4]",
+        "name": "oracleIds",
+        "type": "uint32[4]"
+      },
+      {
+        "internalType": "uint256[4]",
+        "name": "amounts",
+        "type": "uint256[4]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "clusterOwner",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "publicKey",
+        "type": "bytes"
+      }
+    ],
+    "name": "getValidator",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getValidatorsPerOperatorLimit",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getVersion",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64[]",
+        "name": "operatorIds",
+        "type": "uint64[]"
+      },
+      {
+        "internalType": "address",
+        "name": "whitelistedAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getWhitelistedOperators",
+    "outputs": [
+      {
+        "internalType": "uint64[]",
+        "name": "whitelistedOperatorIds",
+        "type": "uint64[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ISSVViews",
+        "name": "ssvNetwork_",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "addressToCheck",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "operatorId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "whitelistingContract",
+        "type": "address"
+      }
+    ],
+    "name": "isAddressWhitelistedInWhitelistingContract",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "isWhitelisted",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "clusterOwner",
+        "type": "address"
+      },
+      {
+        "internalType": "uint64[]",
+        "name": "operatorIds",
+        "type": "uint64[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "validatorCount",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "networkFeeIndex",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "index",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ISSVNetworkCore.Cluster",
+        "name": "cluster",
+        "type": "tuple"
+      }
+    ],
+    "name": "isLiquidatable",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "clusterOwner",
+        "type": "address"
+      },
+      {
+        "internalType": "uint64[]",
+        "name": "operatorIds",
+        "type": "uint64[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "validatorCount",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "networkFeeIndex",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "index",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ISSVNetworkCore.Cluster",
+        "name": "cluster",
+        "type": "tuple"
+      }
+    ],
+    "name": "isLiquidatableSSV",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "clusterOwner",
+        "type": "address"
+      },
+      {
+        "internalType": "uint64[]",
+        "name": "operatorIds",
+        "type": "uint64[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "validatorCount",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "networkFeeIndex",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "index",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ISSVNetworkCore.Cluster",
+        "name": "cluster",
+        "type": "tuple"
+      }
+    ],
+    "name": "isLiquidated",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "contractAddress",
+        "type": "address"
+      }
+    ],
+    "name": "isWhitelistingContract",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "pendingOwner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "pendingUnstake",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "unlockTimes",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "previewClaimableEth",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ssvNetwork",
+    "outputs": [
+      {
+        "internalType": "contract ISSVViews",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "stakedBalanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakingEthPoolBalance",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalStaked",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
 ] as const;

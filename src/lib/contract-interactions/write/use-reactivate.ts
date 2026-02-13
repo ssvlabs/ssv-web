@@ -34,10 +34,12 @@ export const useReactivate = () => {
 
   const send = (
     params: AbiInputsToParams<Fn["inputs"]>,
+    value?: bigint,
     options: MutationOptions<MainnetEvent> = {},
   ) => {
     return mutation.writeContractAsync(
       {
+        value,
         abi: MainnetV4SetterABI,
         address: setterContractAddress,
         functionName: "reactivate",
@@ -52,12 +54,14 @@ export const useReactivate = () => {
 
   const write = (
     params: AbiInputsToParams<Fn["inputs"]>,
+    value?: bigint,
     options: MutationOptions<MainnetEvent> = {},
   ) => {
     options.onInitiated?.();
     return mutation
       .writeContractAsync(
         {
+          value,
           abi: MainnetV4SetterABI,
           address: setterContractAddress,
           functionName: "reactivate",

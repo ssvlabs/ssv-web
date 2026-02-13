@@ -6,9 +6,9 @@ import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { Minus } from "lucide-react";
 import { formatSSV } from "@/lib/utils/number";
-import { getYearlyFee } from "@/lib/utils/operator";
 import VerifiedSVG from "@/assets/images/verified.svg?react";
 import { MevRelaysDisplay } from "@/components/operator/operator-picker/operator-picker-item/mev-relays/mev-relays-display";
+import { getYearlyFee } from "@/lib/utils/operator.ts";
 
 export type SelectedOperatorItemProps = {
   operator: Operator;
@@ -53,7 +53,7 @@ export const SelectedOperatorItem: SelectedOperatorItemFC = ({
               ))}
           </Text>
           <Text title={operator.name} variant="body-3-medium">
-            {formatSSV(getYearlyFee(BigInt(operator.fee)))} SSV
+            {formatSSV(getYearlyFee(BigInt(operator.eth_fee)))} ETH
           </Text>
         </div>
         <div className="flex justify-between">

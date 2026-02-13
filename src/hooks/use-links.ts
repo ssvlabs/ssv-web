@@ -1,19 +1,19 @@
 import { useMemo } from "react";
 import { useAccount } from "@/hooks/account/use-account";
 
-const isProduction = location.hostname === "app.ssv.network"; // TODO: determine production through build.yaml environment variable
-
 export const useLinks = () => {
   const { chain } = useAccount();
   return useMemo(() => {
     const chainPrefix = chain?.testnet ? `${chain.name.toLowerCase()}.` : "";
-    const envPrefix = isProduction ? "" : `.stage`;
+    const explorerPrefix = chainPrefix
+      ? `.${chainPrefix.replace(".", "")}`
+      : "";
     return {
       beaconcha: `https://${chainPrefix}beaconcha.in`,
       launchpad: `https://${chainPrefix}launchpad.ethereum.org`,
-      etherscan: `https://${envPrefix}etherscan.io`,
+      etherscan: `https://${chainPrefix}etherscan.io`,
       ssv: {
-        explorer: `https://explorer${envPrefix}.ssv.network/`,
+        explorer: `https://explorer${explorerPrefix}.ssv.network/`,
         stake: `https://stake.ssv.network`,
         docs: `https://docs.ssv.network`,
         forum: `https://forum.ssv.network/`,

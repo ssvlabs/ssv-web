@@ -3,7 +3,7 @@ import { useChainId } from "wagmi";
 import { z } from "zod";
 
 import { config, hoodi } from "@/wagmi/config";
-import { getAccount, getChainId } from "@wagmi/core";
+import { getChainId } from "@wagmi/core";
 import { useAccount } from "@/hooks/account/use-account";
 
 const networks = import.meta.env.VITE_SSV_NETWORKS;
@@ -46,10 +46,7 @@ Invalid network schema in VITE_SSV_NETWORKS environment variable:
 
 export const getSSVNetworkDetails = (chainId?: number) => {
   const _chainId = chainId ?? getChainId(config);
-  const { isConnected } = getAccount(config);
-  return networks.find(
-    (network) => network.networkId === (isConnected ? _chainId : hoodi.id),
-  )!;
+  return networks.find((network) => network.networkId === _chainId)!;
 };
 
 export const useSSVNetworkDetails = () => {

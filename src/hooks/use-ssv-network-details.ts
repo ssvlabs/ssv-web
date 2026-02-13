@@ -1,3 +1,4 @@
+import type { Address } from "viem";
 import { isAddress } from "viem";
 import { useChainId } from "wagmi";
 import { z } from "zod";
@@ -8,18 +9,6 @@ import { useAccount } from "@/hooks/account/use-account";
 
 export const NETWORKS = [
   {
-    networkId: 1,
-    apiVersion: "v4",
-    apiNetwork: "mainnet",
-    api: "https://api.hoodi.ssv.network/api",
-    explorerUrl: "https://explorer.hoodi.ssv.network/",
-    insufficientBalanceUrl: "https://faucet.ssv.network",
-    googleTagSecret: "GTM-K3GR7M5",
-    tokenAddress: "0x9F5d4Ec84fC4785788aB44F9de973cF34F7A038e",
-    setterContractAddress: "0x58410Bef803ECd7E63B23664C586A6DB72DAf59c",
-    getterContractAddress: "0x5AdDb3f1529C5ec70D77400499eE4bbF328368fe",
-  },
-  {
     networkId: 560048,
     apiVersion: "v4",
     apiNetwork: "hoodi",
@@ -28,8 +17,10 @@ export const NETWORKS = [
     insufficientBalanceUrl: "https://faucet.ssv.network",
     googleTagSecret: "GTM-K3GR7M5",
     tokenAddress: "0x9F5d4Ec84fC4785788aB44F9de973cF34F7A038e",
-    setterContractAddress: "0x58410Bef803ECd7E63B23664C586A6DB72DAf59c",
-    getterContractAddress: "0x5AdDb3f1529C5ec70D77400499eE4bbF328368fe",
+    setterContractAddress:
+      "0x58410Bef803ECd7E63B23664C586A6DB72DAf59c" as Address,
+    getterContractAddress:
+      "0x5AdDb3f1529C5ec70D77400499eE4bbF328368fe" as Address,
   },
 ];
 

@@ -180,6 +180,20 @@ export const Navbar: FCProps = ({ className, ...props }) => {
         </DropdownMenu>
         <div className="flex items-center gap-3">
           <NetworkSwitchBtn />
+          <Button
+            as="a"
+            href="https://app.ssv.network/"
+            target="_blank"
+            size="wallet"
+            variant="secondary"
+            colorScheme="wallet"
+            className={textVariants({
+              variant: "body-3-medium",
+              className: "flex items-center h-12 px-4 rounded-xl",
+            })}
+          >
+            Mainnet App
+          </Button>
           <ConnectWalletBtn />
         </div>
         <ThemeSwitcher className="ml-3" />

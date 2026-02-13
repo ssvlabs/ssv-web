@@ -1,4 +1,4 @@
-import { connectorsForWallets, type Chain } from "@rainbow-me/rainbowkit";
+import { type Chain, connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   coinbaseWallet,
   walletConnectWallet,
@@ -47,18 +47,18 @@ export const hoodi = {
 };
 
 const chains = [
-  {
-    networkId: 1,
-    apiVersion: "v4",
-    apiNetwork: "mainnet",
-    api: "https://api.hoodi.ssv.network/api",
-    explorerUrl: "https://explorer.hoodi.ssv.network/",
-    insufficientBalanceUrl: "https://faucet.ssv.network",
-    googleTagSecret: "GTM-K3GR7M5",
-    tokenAddress: "0x9F5d4Ec84fC4785788aB44F9de973cF34F7A038e",
-    setterContractAddress: "0x58410Bef803ECd7E63B23664C586A6DB72DAf59c",
-    getterContractAddress: "0x5AdDb3f1529C5ec70D77400499eE4bbF328368fe",
-  },
+  // {
+  //   networkId: 1,
+  //   apiVersion: "v4",
+  //   apiNetwork: "mainnet",
+  //   api: "https://api.hoodi.ssv.network/api",
+  //   explorerUrl: "https://explorer.hoodi.ssv.network/",
+  //   insufficientBalanceUrl: "https://faucet.ssv.network",
+  //   googleTagSecret: "GTM-K3GR7M5",
+  //   tokenAddress: "0x9F5d4Ec84fC4785788aB44F9de973cF34F7A038e",
+  //   setterContractAddress: "0x58410Bef803ECd7E63B23664C586A6DB72DAf59c",
+  //   getterContractAddress: "0x5AdDb3f1529C5ec70D77400499eE4bbF328368fe",
+  // },
   {
     networkId: 560048,
     apiVersion: "v4",

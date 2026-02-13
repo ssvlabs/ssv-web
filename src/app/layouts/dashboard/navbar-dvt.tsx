@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Spacer } from "@/components/ui/spacer";
-import { Text } from "@/components/ui/text";
+import { Text, textVariants } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { SsvLogo } from "@/components/ui/ssv-logo";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
@@ -123,6 +123,20 @@ export const NavbarDVT: FCProps = ({ className, ...props }) => {
       <Spacer />
       <div className="flex items-center gap-3">
         <NetworkSwitchBtn />
+        <Button
+          as="a"
+          href="https://app.hoodi.ssv.network/"
+          target="_blank"
+          size="wallet"
+          variant="secondary"
+          colorScheme="wallet"
+          className={textVariants({
+            variant: "body-3-medium",
+            className: "flex items-center h-12 px-4 rounded-xl",
+          })}
+        >
+          New Testnet
+        </Button>
         <ConnectWalletBtn />
         <ThemeSwitcher />
       </div>

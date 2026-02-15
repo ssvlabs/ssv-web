@@ -45,7 +45,6 @@ Invalid network schema in VITE_SSV_NETWORKS environment variable:
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const getSSVNetworkDetails = () => {
   return NETWORKS[0];
 };

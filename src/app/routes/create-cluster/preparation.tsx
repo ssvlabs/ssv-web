@@ -60,7 +60,7 @@ export const Preparation: FCProps = ({ className, ...props }) => {
           <div className="flex items-center gap-2">
             <BiCheck className="size-5 text-green-500" />
             <Text variant="body-2-medium">
-              SSV tokens to cover operational fees
+              ETH to cover operational fees
             </Text>
           </div>
         </div>

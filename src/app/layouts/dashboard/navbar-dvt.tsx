@@ -6,7 +6,6 @@ import { HiOutlineExternalLink, HiOutlineGlobeAlt } from "react-icons/hi";
 import { TbDots } from "react-icons/tb";
 
 import { ConnectWalletBtn } from "@/components/connect-wallet/connect-wallet-btn";
-import { NetworkSwitchBtn } from "@/components/connect-wallet/network-switch-btn";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,13 +15,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Spacer } from "@/components/ui/spacer";
-import { textVariants, Text } from "@/components/ui/text";
+import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { SsvLogo } from "@/components/ui/ssv-logo";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { Link } from "react-router-dom";
 import { useLinks } from "@/hooks/use-links";
 import { useAccountState } from "@/hooks/account/use-account-state";
+import { NetworkSwitcher } from "@/components/connect-wallet/network-switcher-hotfix";
 
 export type NavbarProps = {
   // TODO: Add props or remove this type
@@ -130,21 +130,8 @@ export const NavbarDVT: FCProps = ({ className, ...props }) => {
 
       <Spacer />
       <div className="flex items-center gap-3">
-        <NetworkSwitchBtn />
-        <Button
-          as="a"
-          href="https://app.ssv.network/"
-          target="_blank"
-          size="wallet"
-          variant="secondary"
-          colorScheme="wallet"
-          className={textVariants({
-            variant: "body-3-medium",
-            className: "flex items-center h-12 px-4 rounded-xl",
-          })}
-        >
-          Mainnet App
-        </Button>
+        {/* <NetworkSwitchBtn /> */}
+        <NetworkSwitcher />
         <ConnectWalletBtn />
         <ThemeSwitcher />
       </div>

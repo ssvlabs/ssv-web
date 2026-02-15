@@ -1,28 +1,13 @@
-import type { Address } from "viem";
+import { isMainnetEnvironment } from "@/lib/utils/env-checker";
 import { isAddress } from "viem";
-import { useChainId } from "wagmi";
 import { z } from "zod";
 
-import { config, hoodi } from "@/wagmi/config";
-import { getAccount, getChainId } from "@wagmi/core";
-import { useAccount } from "@/hooks/account/use-account";
-
-export const NETWORKS = [
-  {
-    networkId: 560048,
-    apiVersion: "v4",
-    apiNetwork: "hoodi",
-    api: "https://api.hoodi.ssv.network/api",
-    explorerUrl: "https://explorer.hoodi.ssv.network/",
-    insufficientBalanceUrl: "https://faucet.ssv.network",
-    googleTagSecret: "GTM-K3GR7M5",
-    tokenAddress: "0x9F5d4Ec84fC4785788aB44F9de973cF34F7A038e",
-    setterContractAddress:
-      "0x58410Bef803ECd7E63B23664C586A6DB72DAf59c" as Address,
-    getterContractAddress:
-      "0x5AdDb3f1529C5ec70D77400499eE4bbF328368fe" as Address,
-  },
-];
+// Get the network that matches the current environment for app.ssv.network or app.hoodi.ssv.network
+// NETWORKS will be an array with only one network -> hoodi or mainnet
+export const NETWORKS = import.meta.env.VITE_SSV_NETWORKS.filter(
+  (network) =>
+    network.apiNetwork === (isMainnetEnvironment ? "mainnet" : "hoodi"),
+);
 
 const networkSchema = z
   .array(
@@ -60,19 +45,11 @@ Invalid network schema in VITE_SSV_NETWORKS environment variable:
   );
 }
 
-export const getSSVNetworkDetails = (chainId?: number) => {
-  const _chainId = chainId ?? getChainId(config);
-  const { isConnected } = getAccount(config);
-  return NETWORKS.find(
-    (network) => network.networkId === (isConnected ? _chainId : hoodi.id),
-  )!;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const getSSVNetworkDetails = () => {
+  return NETWORKS[0];
 };
 
 export const useSSVNetworkDetails = () => {
-  const { isConnected } = useAccount();
-  const chainId = useChainId();
-
-  return import.meta.env.VITE_SSV_NETWORKS.find(
-    (network) => network.networkId === (isConnected ? chainId : hoodi.id),
-  )!;
+  return NETWORKS[0];
 };

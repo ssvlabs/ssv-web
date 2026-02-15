@@ -60,16 +60,13 @@ export const useClusterRunway = (
 
   const feesPerBlock = operatorFees + networkFee;
 
-  const clusterEffectiveBalance = BigInt(cluster.data?.effectiveBalance ?? 0);
-  const minClusterEffectiveBalance =
-    BigInt(cluster.data?.validatorCount ?? 1) * 32n;
-
-  const effectiveBalance = bigintMax(
-    clusterEffectiveBalance,
-    minClusterEffectiveBalance,
-  );
-
-  const validators = (effectiveBalance + state.effectiveBalance) / 32n;
+  const validators = isETH
+    ? bigintMax(
+        BigInt(cluster.data?.effectiveBalance ?? 0),
+        BigInt(cluster.data?.validatorCount ?? 1) * 32n,
+      ) / 32n +
+      state.effectiveBalance / 32n
+    : BigInt(cluster.data?.validatorCount ?? 1);
 
   const isLoading =
     cluster.isLoading ||

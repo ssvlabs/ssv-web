@@ -123,9 +123,9 @@ export const SwitchWizardStepTwo = ({
       effectiveBalance: BigInt(validatorsAmount || 1) * 32n,
     });
 
-    const operatorsPerEth = operatorsCost / 32n;
-    const networkPerEth = networkCost / 32n;
-    const liquidationPerEth = liquidationCost / 32n;
+    const operatorsPerEth = operatorsCost;
+    const networkPerEth = networkCost;
+    const liquidationPerEth = liquidationCost;
 
     const operatorsSubtotal =
       (operatorsCost * effectiveBalanceWei) / perValidatorBalance;

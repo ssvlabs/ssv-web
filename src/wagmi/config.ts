@@ -1,7 +1,8 @@
-import { connectorsForWallets, type Chain } from "@rainbow-me/rainbowkit";
+import { isMainnetEnvironment } from "@/lib/utils/env-checker";
+import { type Chain, connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
-  walletConnectWallet,
   coinbaseWallet,
+  walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
 import { createPublicClient, http } from "viem";
@@ -17,7 +18,6 @@ const mainnet: Chain = {
 export const hoodi = {
   id: 560048,
   name: "Hoodi",
-  network: "hoodi",
   nativeCurrency: {
     name: "Ethereum",
     symbol: "ETH",
@@ -44,15 +44,13 @@ export const hoodi = {
   iconBackground: "none",
   iconUrl: "/images/networks/light.svg",
   testnet: true,
-};
+} satisfies Chain;
 
-const chains = import.meta.env.VITE_SSV_NETWORKS.map((network) =>
-  [mainnet, hoodi].find((chain) => chain.id === network.networkId),
-).filter(Boolean) as [Chain, ...Chain[]];
-export const isChainSupported = (chainId: number) => {
-  return chains.some((chain) => chain.id === chainId);
-};
-
+const chains = (isMainnetEnvironment ? [mainnet] : [hoodi]) satisfies [
+  Chain,
+  ...Chain[],
+];
+export type Chains = typeof chains;
 const connectors = connectorsForWallets(
   [
     {

@@ -1,12 +1,13 @@
+import { isMainnetEnvironment } from "@/lib/utils/env-checker";
 import { isAddress } from "viem";
-import { useChainId } from "wagmi";
 import { z } from "zod";
 
-import { config, hoodi } from "@/wagmi/config";
-import { getChainId } from "@wagmi/core";
-import { useAccount } from "@/hooks/account/use-account";
-
-const networks = import.meta.env.VITE_SSV_NETWORKS;
+// Get the network that matches the current environment for app.ssv.network or app.hoodi.ssv.network
+// NETWORKS will be an array with only one network -> hoodi or mainnet
+export const NETWORKS = import.meta.env.VITE_SSV_NETWORKS.filter(
+  (network) =>
+    network.apiNetwork === (isMainnetEnvironment ? "mainnet" : "hoodi"),
+);
 
 const networkSchema = z
   .array(
@@ -25,13 +26,13 @@ const networkSchema = z
   )
   .min(1);
 
-if (!networks) {
+if (!NETWORKS) {
   throw new Error(
     "VITE_SSV_NETWORKS is not defined in the environment variables",
   );
 }
 
-const parsed = networkSchema.safeParse(networks);
+const parsed = networkSchema.safeParse(NETWORKS);
 
 if (!parsed.success) {
   throw new Error(
@@ -44,16 +45,10 @@ Invalid network schema in VITE_SSV_NETWORKS environment variable:
   );
 }
 
-export const getSSVNetworkDetails = (chainId?: number) => {
-  const _chainId = chainId ?? getChainId(config);
-  return networks.find((network) => network.networkId === _chainId)!;
+export const getSSVNetworkDetails = () => {
+  return NETWORKS[0];
 };
 
 export const useSSVNetworkDetails = () => {
-  const { isConnected } = useAccount();
-  const chainId = useChainId();
-
-  return import.meta.env.VITE_SSV_NETWORKS.find(
-    (network) => network.networkId === (isConnected ? chainId : hoodi.id),
-  )!;
+  return NETWORKS[0];
 };

@@ -1,7 +1,8 @@
-const plugin = require("tailwindcss/plugin");
+import plugin from "tailwindcss/plugin";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   prefix: "",
@@ -117,7 +118,7 @@ module.exports = {
     },
   },
   plugins: [
-    require("tailwindcss-animate"),
+    tailwindcssAnimate,
     plugin(function ({ addVariant }) {
       addVariant("not-last", "& > *:not(:last-child)");
       addVariant("last-child", "& > :last-child");

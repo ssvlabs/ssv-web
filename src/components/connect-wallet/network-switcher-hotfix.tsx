@@ -95,7 +95,7 @@ export const NetworkSwitcher: FC<Props> = ({ className, ...props }) => {
                     <div className="flex items-center gap-3">
                       <FaEthereum className="size-4" />
                       <Text variant="body-3-medium">
-                        {isMainnetEnvironment ? "Mainnet" : "Hoodi"}
+                        {isMainnetEnvironment ? "Ethereum" : "Hoodi"}
                       </Text>
                     </div>
                     <div className="flex size-5 items-center justify-center">
@@ -124,7 +124,7 @@ export const NetworkSwitcher: FC<Props> = ({ className, ...props }) => {
                         "font-semibold": isMainnetEnvironment,
                       })}
                     >
-                      Mainnet
+                      Ethereum
                     </Text>
                     <div className="ml-auto mr-2 ">
                       {isMainnetEnvironment ? (

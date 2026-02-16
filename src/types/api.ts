@@ -67,6 +67,7 @@ export type Operator = {
   validators_count: number;
   version: string;
   network: string;
+  migrated: boolean;
   effective_balance: string;
   updated_at: number;
 };

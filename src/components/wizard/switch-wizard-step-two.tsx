@@ -65,7 +65,6 @@ export const SwitchWizardStepTwo = ({
   navigateRoutePath,
   navigateRouteOptions,
   operators = [],
-  validatorsAmount = 1,
   effectiveBalance,
   currentRunwayDays = 0,
   ssvBalance,

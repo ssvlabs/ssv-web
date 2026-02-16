@@ -10,7 +10,7 @@ import type {
 } from "@/types/api";
 import type { Address } from "abitype";
 import { isNumber, merge } from "lodash-es";
-import { encodePacked, keccak256, parseUnits } from "viem";
+import { encodePacked, keccak256 } from "viem";
 
 export const createClusterHash = (
   account: Address,
@@ -100,63 +100,52 @@ export const filterOutRemovedValidators = (
 type CalculateRunwayParams = {
   balance: bigint;
   feesPerBlock: bigint;
-  validators: number;
+  effectiveBalance: bigint;
   deltaBalance?: bigint;
-  deltaValidators?: number;
+  deltaEffectiveBalance?: bigint;
   liquidationThresholdBlocks: bigint;
   minimumLiquidationCollateral: bigint;
 };
 
-const VALIDATOR_DECIMALS = 6;
-const VALIDATOR_SCALE = 10n ** BigInt(VALIDATOR_DECIMALS);
-
-const toScaledValidators = (value: number): bigint => {
-  if (!Number.isFinite(value)) return 0n;
-  const normalized = value > 0 ? value : 0;
-  return parseUnits(normalized.toFixed(VALIDATOR_DECIMALS), VALIDATOR_DECIMALS);
-};
+const EB_PER_VALIDATOR = 32n;
 
 export const calculateRunway = ({
   balance,
   feesPerBlock,
-  validators,
+  effectiveBalance,
   deltaBalance = 0n,
-  deltaValidators = 0,
+  deltaEffectiveBalance = 0n,
   liquidationThresholdBlocks,
   minimumLiquidationCollateral,
 }: CalculateRunwayParams) => {
-  const validatorsSnapshot = validators > 0 ? validators : 1;
-  const validatorsWithDelta = validators + deltaValidators;
+  const snapshotEB = effectiveBalance || EB_PER_VALIDATOR;
+  const totalEB = effectiveBalance + deltaEffectiveBalance;
+  const burnRateSnapshot = (feesPerBlock * snapshotEB) / EB_PER_VALIDATOR;
+  const burnRateWithDelta =
+    (feesPerBlock * (totalEB || EB_PER_VALIDATOR)) / EB_PER_VALIDATOR;
 
-  const burnRateSnapshotScaled =
-    feesPerBlock * toScaledValidators(validatorsSnapshot);
-  const burnRateWithDeltaScaled =
-    feesPerBlock * toScaledValidators(validatorsWithDelta);
-
-  const collateralSnapshotScaled = bigintMax(
-    burnRateSnapshotScaled * liquidationThresholdBlocks,
-    minimumLiquidationCollateral * VALIDATOR_SCALE,
+  const collateralSnapshot = bigintMax(
+    burnRateSnapshot * liquidationThresholdBlocks,
+    minimumLiquidationCollateral,
   );
 
-  const collateralWithDeltaScaled = bigintMax(
-    burnRateWithDeltaScaled * liquidationThresholdBlocks,
-    minimumLiquidationCollateral * VALIDATOR_SCALE,
+  const collateralWithDelta = bigintMax(
+    burnRateWithDelta * liquidationThresholdBlocks,
+    minimumLiquidationCollateral,
   );
 
-  const burnRatePerDaySnapshotScaled =
-    burnRateSnapshotScaled * globals.BLOCKS_PER_DAY || 1n;
-  const burnRatePerDayWithDeltaScaled =
-    burnRateWithDeltaScaled * globals.BLOCKS_PER_DAY || 1n;
+  const burnRatePerDaySnapshot =
+    burnRateSnapshot * globals.BLOCKS_PER_DAY || 1n;
+  const burnRatePerDayWithDelta =
+    burnRateWithDelta * globals.BLOCKS_PER_DAY || 1n;
 
   const runwaySnapshot = bigintMax(
-    (balance * VALIDATOR_SCALE - collateralSnapshotScaled) /
-      burnRatePerDaySnapshotScaled,
+    (balance - collateralSnapshot) / burnRatePerDaySnapshot,
     0n,
   );
 
   const runwayWithDelta = bigintMax(
-    ((balance + deltaBalance) * VALIDATOR_SCALE - collateralWithDeltaScaled) /
-      burnRatePerDayWithDeltaScaled,
+    (balance + deltaBalance - collateralWithDelta) / burnRatePerDayWithDelta,
     0n,
   );
 

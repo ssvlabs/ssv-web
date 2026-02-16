@@ -24,11 +24,10 @@ export const computeLiquidationCollateralCostPerValidator = ({
   minimumLiquidationCollateral,
   effectiveBalance,
 }: LiquidationCollateralCostArgs) => {
-  const validators = effectiveBalance / 32n || 1n;
+  const eb = effectiveBalance || 32n;
+  const validators = eb / 32n || 1n;
   const total =
-    (operatorsFee + networkFee) *
-    liquidationCollateralPeriod *
-    BigInt(validators);
+    ((operatorsFee + networkFee) * liquidationCollateralPeriod * eb) / 32n;
 
   return bigintMax(total, minimumLiquidationCollateral) / validators;
 };
@@ -41,18 +40,18 @@ type ComputeFundingCostArgs = Prettify<
 >;
 
 export const computeFundingCost = (args: ComputeFundingCostArgs) => {
-  const validators = args.effectiveBalance / 32n || 1n;
-  const validatorsNumber = Number(args.effectiveBalance ?? 0n) / 32;
+  const effectiveBalance = args.effectiveBalance || 32n;
 
   const networkCost = computeDailyAmount(args.networkFee, args.fundingDays);
   const operatorsCost = computeDailyAmount(args.operatorsFee, args.fundingDays);
   const liquidationCollateral =
     computeLiquidationCollateralCostPerValidator(args);
 
-  // Subtotal = base cost × effective balance × validators
-  const networkCostSubtotal = networkCost * validators;
-  const operatorsCostSubtotal = operatorsCost * validators;
-  const liquidationCollateralSubtotal = liquidationCollateral * validators;
+  // Multiply before dividing to preserve precision for non-32-multiple EBs
+  const networkCostSubtotal = (networkCost * effectiveBalance) / 32n;
+  const operatorsCostSubtotal = (operatorsCost * effectiveBalance) / 32n;
+  const liquidationCollateralSubtotal =
+    (liquidationCollateral * effectiveBalance) / 32n;
 
   const total =
     networkCostSubtotal + operatorsCostSubtotal + liquidationCollateralSubtotal;
@@ -60,7 +59,7 @@ export const computeFundingCost = (args: ComputeFundingCostArgs) => {
   const runway = calculateRunway({
     balance: total,
     feesPerBlock: args.networkFee + args.operatorsFee,
-    validators: validatorsNumber,
+    effectiveBalance,
     liquidationThresholdBlocks: args.liquidationCollateralPeriod,
     minimumLiquidationCollateral: args.minimumLiquidationCollateral,
   });

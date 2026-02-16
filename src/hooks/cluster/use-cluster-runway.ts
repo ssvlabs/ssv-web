@@ -1,31 +1,31 @@
 import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useClusterBalance } from "@/hooks/cluster/use-cluster-balance";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
+import { bigintMax } from "@/lib/utils/bigint";
 import { calculateRunway } from "@/lib/utils/cluster";
 import { useNetworkFee, useNetworkFeeSSV } from "@/hooks/use-ssv-network-fee";
 import { sumOperatorsFee } from "@/lib/utils/operator";
 import { useOperators } from "@/hooks/operator/use-operators";
 
-const getDeltaValidators = (options: Options): number => {
-  if ("deltaValidators" in options) return options.deltaValidators ?? 0;
-  if ("deltaEffectiveBalance" in options) {
-    const deltaEffectiveBalance = options.deltaEffectiveBalance ?? 0n;
-    return Number(deltaEffectiveBalance) / 32;
-  }
-  return 0;
+const getDeltaEffectiveBalance = (options: Options) => {
+  if ("deltaValidators" in options)
+    return (options.deltaValidators ?? 0n) * 32n;
+  if ("deltaEffectiveBalance" in options)
+    return BigInt(options.deltaEffectiveBalance ?? 0);
+  return 0n;
 };
 
 type Options = {
   deltaBalance?: bigint;
   watch?: boolean;
   forceMode?: "eth" | "ssv";
-} & ({ deltaValidators?: number } | { deltaEffectiveBalance?: bigint });
+} & ({ deltaValidators?: bigint } | { deltaEffectiveBalance?: bigint });
 
 export const useClusterRunway = (
   hash?: string,
   opts: Options = {
     deltaBalance: 0n,
-    deltaValidators: 0,
+    deltaValidators: 0n,
     deltaEffectiveBalance: 0n,
     watch: false,
   },
@@ -33,7 +33,7 @@ export const useClusterRunway = (
   const params = useClusterPageParams();
   const clusterHash = hash ?? params.clusterHash;
 
-  const deltaValidators = getDeltaValidators(opts);
+  const deltaEffectiveBalance = getDeltaEffectiveBalance(opts);
 
   const cluster = useCluster(clusterHash, { watch: opts.watch });
   const balance = useClusterBalance(clusterHash!, { watch: opts.watch });
@@ -58,12 +58,12 @@ export const useClusterRunway = (
 
   const feesPerBlock = operatorFees + networkFee;
 
-  const validators = isETH
-    ? Math.max(
-        Number(cluster.data?.effectiveBalance ?? 0),
-        (cluster.data?.validatorCount ?? 1) * 32,
-      ) / 32
-    : cluster.data?.validatorCount ?? 1;
+  const effectiveBalance = isETH
+    ? bigintMax(
+        BigInt(cluster.data?.effectiveBalance ?? 0),
+        BigInt(cluster.data?.validatorCount ?? 1) * 32n,
+      )
+    : BigInt(cluster.data?.validatorCount ?? 1) * 32n;
 
   const isLoading =
     cluster.isLoading ||
@@ -75,8 +75,8 @@ export const useClusterRunway = (
   const runway = calculateRunway({
     balance: (isETH ? balance.data.eth : balance.data.ssv) || 0n,
     feesPerBlock,
-    validators,
-    deltaValidators: deltaValidators,
+    effectiveBalance,
+    deltaEffectiveBalance,
     deltaBalance: opts.deltaBalance ?? 0n,
     liquidationThresholdBlocks,
     minimumLiquidationCollateral,

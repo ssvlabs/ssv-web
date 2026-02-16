@@ -44,7 +44,6 @@ export const AdditionalFunding: FC = () => {
   const context = useRegisterValidatorContext();
 
   const deltaEffectiveBalance = context.effectiveBalance;
-  const deltaValidators = Number(deltaEffectiveBalance) / 32;
 
   const form = useForm({
     defaultValues: { depositAmount: context.depositAmount, topUp: true },
@@ -82,7 +81,7 @@ export const AdditionalFunding: FC = () => {
             <Divider />
             <EstimatedOperationalRunway
               withAlerts={false}
-              deltaValidators={deltaValidators}
+              deltaEffectiveBalance={deltaEffectiveBalance}
               deltaBalance={topUp ? depositAmount : 0n}
             />
           </Card>

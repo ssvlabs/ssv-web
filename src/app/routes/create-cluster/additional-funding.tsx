@@ -42,7 +42,8 @@ export const AdditionalFunding: FC = () => {
   });
 
   const context = useRegisterValidatorContext();
-  const deltaValidators = BigInt(context.shares.length);
+
+  const deltaEffectiveBalance = context.effectiveBalance;
 
   const form = useForm({
     defaultValues: { depositAmount: context.depositAmount, topUp: true },
@@ -53,7 +54,7 @@ export const AdditionalFunding: FC = () => {
 
   const { data: clusterRunway } = useClusterRunway(params.clusterHash!, {
     deltaBalance: topUp ? depositAmount : 0n,
-    deltaValidators,
+    deltaEffectiveBalance,
   });
 
   const submit = form.handleSubmit((data) => {
@@ -80,7 +81,7 @@ export const AdditionalFunding: FC = () => {
             <Divider />
             <EstimatedOperationalRunway
               withAlerts={false}
-              deltaValidators={deltaValidators}
+              deltaEffectiveBalance={deltaEffectiveBalance}
               deltaBalance={topUp ? depositAmount : 0n}
             />
           </Card>

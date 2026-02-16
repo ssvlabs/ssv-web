@@ -45,7 +45,6 @@ export const SwitchWizardStepTwoRoute = () => {
       navigateRoutePath={`${basePath}/step-one`}
       navigateRouteOptions={from ? { state: { from } } : undefined}
       operators={operators}
-      validatorsAmount={cluster.data?.validatorCount ?? 1}
       effectiveBalance={effectiveBalance}
       currentRunwayDays={Number(clusterRunway?.runway) || 0}
       ssvBalance={balanceSSV.data}

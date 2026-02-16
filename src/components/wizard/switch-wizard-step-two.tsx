@@ -38,7 +38,6 @@ type SwitchWizardStepTwoProps = {
   navigateRoutePath?: string;
   navigateRouteOptions?: NavigateOptions;
   operators?: Pick<Operator, "id" | "name" | "logo" | "fee" | "eth_fee">[];
-  validatorsAmount?: number;
   effectiveBalance?: bigint;
   currentRunwayDays?: number;
   ssvBalance?: bigint;
@@ -65,7 +64,6 @@ export const SwitchWizardStepTwo = ({
   navigateRoutePath,
   navigateRouteOptions,
   operators = [],
-  validatorsAmount = 1,
   effectiveBalance,
   currentRunwayDays = 0,
   ssvBalance,
@@ -120,7 +118,7 @@ export const SwitchWizardStepTwo = ({
       operatorsFee,
       liquidationCollateralPeriod: liquidationThreshold,
       minimumLiquidationCollateral,
-      effectiveBalance: BigInt(validatorsAmount || 1) * 32n,
+      effectiveBalance: effectiveBalanceWei,
     });
 
     const operatorsPerEth = operatorsCost;

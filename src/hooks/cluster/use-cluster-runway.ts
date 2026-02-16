@@ -1,30 +1,31 @@
 import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useClusterBalance } from "@/hooks/cluster/use-cluster-balance";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
-import { bigintMax } from "@/lib/utils/bigint";
 import { calculateRunway } from "@/lib/utils/cluster";
 import { useNetworkFee, useNetworkFeeSSV } from "@/hooks/use-ssv-network-fee";
 import { sumOperatorsFee } from "@/lib/utils/operator";
 import { useOperators } from "@/hooks/operator/use-operators";
 
-const getDeltaValidators = (options: Options) => {
-  if ("deltaValidators" in options) return options.deltaValidators ?? 0n;
-  if ("deltaEffectiveBalance" in options)
-    return BigInt(options.deltaEffectiveBalance ?? 0) / 32n;
-  return 0n;
+const getDeltaValidators = (options: Options): number => {
+  if ("deltaValidators" in options) return options.deltaValidators ?? 0;
+  if ("deltaEffectiveBalance" in options) {
+    const deltaEffectiveBalance = options.deltaEffectiveBalance ?? 0n;
+    return Number(deltaEffectiveBalance) / 32;
+  }
+  return 0;
 };
 
 type Options = {
   deltaBalance?: bigint;
   watch?: boolean;
   forceMode?: "eth" | "ssv";
-} & ({ deltaValidators?: bigint } | { deltaEffectiveBalance?: bigint });
+} & ({ deltaValidators?: number } | { deltaEffectiveBalance?: bigint });
 
 export const useClusterRunway = (
   hash?: string,
   opts: Options = {
     deltaBalance: 0n,
-    deltaValidators: 0n,
+    deltaValidators: 0,
     deltaEffectiveBalance: 0n,
     watch: false,
   },
@@ -58,11 +59,11 @@ export const useClusterRunway = (
   const feesPerBlock = operatorFees + networkFee;
 
   const validators = isETH
-    ? bigintMax(
-        BigInt(cluster.data?.effectiveBalance ?? 0),
-        BigInt(cluster.data?.validatorCount ?? 1) * 32n,
-      ) / 32n
-    : BigInt(cluster.data?.validatorCount ?? 1);
+    ? Math.max(
+        Number(cluster.data?.effectiveBalance ?? 0),
+        (cluster.data?.validatorCount ?? 1) * 32,
+      ) / 32
+    : cluster.data?.validatorCount ?? 1;
 
   const isLoading =
     cluster.isLoading ||

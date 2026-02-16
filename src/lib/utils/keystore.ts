@@ -42,6 +42,7 @@ type ComputeFundingCostArgs = Prettify<
 
 export const computeFundingCost = (args: ComputeFundingCostArgs) => {
   const validators = args.effectiveBalance / 32n || 1n;
+  const validatorsNumber = Number(args.effectiveBalance ?? 0n) / 32;
 
   const networkCost = computeDailyAmount(args.networkFee, args.fundingDays);
   const operatorsCost = computeDailyAmount(args.operatorsFee, args.fundingDays);
@@ -59,7 +60,7 @@ export const computeFundingCost = (args: ComputeFundingCostArgs) => {
   const runway = calculateRunway({
     balance: total,
     feesPerBlock: args.networkFee + args.operatorsFee,
-    validators,
+    validators: validatorsNumber,
     liquidationThresholdBlocks: args.liquidationCollateralPeriod,
     minimumLiquidationCollateral: args.minimumLiquidationCollateral,
   });

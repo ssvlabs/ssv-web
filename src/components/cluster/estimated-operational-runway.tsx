@@ -13,7 +13,7 @@ import { humanizeFundingDuration } from "@/lib/utils/date";
 export type EstimatedOperationalRunwayProps = {
   clusterHash?: string;
   deltaBalance?: bigint;
-  deltaValidators?: bigint;
+  deltaValidators?: number;
   withAlerts?: boolean;
 };
 
@@ -25,7 +25,7 @@ type EstimatedOperationalRunwayFC = FC<
 export const EstimatedOperationalRunway: EstimatedOperationalRunwayFC = ({
   className,
   clusterHash,
-  deltaValidators = 0n,
+  deltaValidators = 0,
   deltaBalance = 0n,
   withAlerts = true,
   ...props
@@ -81,7 +81,7 @@ export const EstimatedOperationalRunway: EstimatedOperationalRunwayFC = ({
       {withAlerts && (
         <EstimatedOperationalRunwayAlert
           isLiquidated={isLiquidated.data ?? false}
-          hasDeltaValidators={deltaValidators !== 0n}
+          hasDeltaValidators={deltaValidators !== 0}
           isAtRisk={clusterRunway?.isAtRisk ?? false}
           runway={clusterRunway?.runway ?? 0n}
           isWithdrawing={clusterRunway?.isDecreasing && !deltaValidators}

@@ -42,7 +42,9 @@ export const AdditionalFunding: FC = () => {
   });
 
   const context = useRegisterValidatorContext();
-  const deltaValidators = BigInt(context.shares.length);
+
+  const deltaEffectiveBalance = context.effectiveBalance;
+  const deltaValidators = Number(deltaEffectiveBalance) / 32;
 
   const form = useForm({
     defaultValues: { depositAmount: context.depositAmount, topUp: true },
@@ -53,7 +55,7 @@ export const AdditionalFunding: FC = () => {
 
   const { data: clusterRunway } = useClusterRunway(params.clusterHash!, {
     deltaBalance: topUp ? depositAmount : 0n,
-    deltaValidators,
+    deltaEffectiveBalance,
   });
 
   const submit = form.handleSubmit((data) => {

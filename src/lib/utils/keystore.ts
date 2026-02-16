@@ -24,11 +24,13 @@ export const computeLiquidationCollateralCostPerValidator = ({
   minimumLiquidationCollateral,
   effectiveBalance,
 }: LiquidationCollateralCostArgs) => {
-  const validators = effectiveBalance / 32n || 1n;
+  const eb = effectiveBalance || 32n;
+  const validators = eb / 32n || 1n;
+  // Multiply before dividing to preserve precision for non-32-multiple EBs
   const total =
     (operatorsFee + networkFee) *
     liquidationCollateralPeriod *
-    BigInt(validators);
+    eb / 32n;
 
   return bigintMax(total, minimumLiquidationCollateral) / validators;
 };
@@ -41,16 +43,17 @@ type ComputeFundingCostArgs = Prettify<
 >;
 
 export const computeFundingCost = (args: ComputeFundingCostArgs) => {
-  const validators = args.effectiveBalance / 32n || 1n;
+  const eb = args.effectiveBalance || 32n;
+  const validators = eb / 32n || 1n;
 
   const networkCost = computeDailyAmount(args.networkFee, args.fundingDays);
   const operatorsCost = computeDailyAmount(args.operatorsFee, args.fundingDays);
   const liquidationCollateral =
     computeLiquidationCollateralCostPerValidator(args);
 
-  // Subtotal = base cost × effective balance × validators
-  const networkCostSubtotal = networkCost * validators;
-  const operatorsCostSubtotal = operatorsCost * validators;
+  // Multiply before dividing to preserve precision for non-32-multiple EBs
+  const networkCostSubtotal = (networkCost * eb) / 32n;
+  const operatorsCostSubtotal = (operatorsCost * eb) / 32n;
   const liquidationCollateralSubtotal = liquidationCollateral * validators;
 
   const total =
@@ -59,7 +62,7 @@ export const computeFundingCost = (args: ComputeFundingCostArgs) => {
   const runway = calculateRunway({
     balance: total,
     feesPerBlock: args.networkFee + args.operatorsFee,
-    validators,
+    effectiveBalance: eb,
     liquidationThresholdBlocks: args.liquidationCollateralPeriod,
     minimumLiquidationCollateral: args.minimumLiquidationCollateral,
   });

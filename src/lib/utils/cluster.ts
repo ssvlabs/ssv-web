@@ -100,24 +100,29 @@ export const filterOutRemovedValidators = (
 type CalculateRunwayParams = {
   balance: bigint;
   feesPerBlock: bigint;
-  validators: bigint;
+  effectiveBalance: bigint;
   deltaBalance?: bigint;
-  deltaValidators?: bigint;
+  deltaEffectiveBalance?: bigint;
   liquidationThresholdBlocks: bigint;
   minimumLiquidationCollateral: bigint;
 };
 
+const EB_PER_VALIDATOR = 32n;
+
 export const calculateRunway = ({
   balance,
   feesPerBlock,
-  validators,
+  effectiveBalance,
   deltaBalance = 0n,
-  deltaValidators = 0n,
+  deltaEffectiveBalance = 0n,
   liquidationThresholdBlocks,
   minimumLiquidationCollateral,
 }: CalculateRunwayParams) => {
-  const burnRateSnapshot = feesPerBlock * (validators || 1n);
-  const burnRateWithDelta = feesPerBlock * (validators + deltaValidators);
+  // Multiply before dividing to preserve precision for non-32-multiple EBs (post-Pectra)
+  const snapshotEB = effectiveBalance || EB_PER_VALIDATOR;
+  const totalEB = effectiveBalance + deltaEffectiveBalance;
+  const burnRateSnapshot = (feesPerBlock * snapshotEB) / EB_PER_VALIDATOR;
+  const burnRateWithDelta = (feesPerBlock * (totalEB || EB_PER_VALIDATOR)) / EB_PER_VALIDATOR;
 
   const collateralSnapshot = bigintMax(
     burnRateSnapshot * liquidationThresholdBlocks,

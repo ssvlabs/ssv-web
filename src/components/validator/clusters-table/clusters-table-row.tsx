@@ -42,6 +42,12 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
   const isLoadingRunway = !isLiquidated && runway.isLoading;
 
   const resolvedCluster = merge({}, cluster, apiCluster);
+
+  const effectiveBalance = Math.max(
+    Number(resolvedCluster.effectiveBalance),
+    resolvedCluster.validatorCount * 32,
+  );
+
   const isMigrated = resolvedCluster.migrated;
   const isSsvCluster = !isMigrated;
   return (
@@ -95,7 +101,7 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
       <TableCell>
         <div className="flex items-center gap-1 text-gray-800 font-medium">
           <img src="/images/networks/dark.svg" className="size-5" />{" "}
-          {formatEffectiveBalance(BigInt(resolvedCluster.effectiveBalance))}
+          {formatEffectiveBalance(BigInt(effectiveBalance))}
         </div>
       </TableCell>
       <TableCell>

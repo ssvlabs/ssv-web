@@ -63,17 +63,16 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
 
   const maxEffectiveBalance = validatorCount * 2048;
 
-  const schema = useMemo(
-    () =>
-      z.object({
-        totalEffectiveBalance: z
-          .number()
-          .positive({ message: "Balance must be greater than 0" })
-          .min(estimatedEffectiveBalance)
-          .max(maxEffectiveBalance),
-      }),
-    [estimatedEffectiveBalance, maxEffectiveBalance],
-  );
+  const schema = useMemo(() => {
+    let balanceSchema = z
+      .number()
+      .nonnegative({ message: "Balance must be 0 or greater" })
+      .min(estimatedEffectiveBalance);
+    if (maxEffectiveBalance > 0) {
+      balanceSchema = balanceSchema.max(maxEffectiveBalance);
+    }
+    return z.object({ totalEffectiveBalance: balanceSchema });
+  }, [estimatedEffectiveBalance, maxEffectiveBalance]);
   const totalEffectiveBalance = Number(
     forceInitialBalance || estimatedEffectiveBalance,
   );

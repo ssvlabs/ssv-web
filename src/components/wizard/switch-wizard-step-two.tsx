@@ -65,7 +65,6 @@ export const SwitchWizardStepTwo = ({
   navigateRoutePath,
   navigateRouteOptions,
   operators = [],
-  validatorsAmount = 1,
   effectiveBalance,
   currentRunwayDays = 0,
   ssvBalance,
@@ -115,24 +114,22 @@ export const SwitchWizardStepTwo = ({
 
     const operatorsCost = computeDailyAmount(operatorsFee, days);
     const networkCost = computeDailyAmount(networkFee, days);
+    const validators = effectiveBalanceWei / perValidatorBalance || 1n;
     const liquidationCost = computeLiquidationCollateralCostPerValidator({
       networkFee,
       operatorsFee,
       liquidationCollateralPeriod: liquidationThreshold,
       minimumLiquidationCollateral,
-      effectiveBalance: BigInt(validatorsAmount || 1) * 32n,
+      effectiveBalance: effectiveBalanceWei,
     });
 
     const operatorsPerEth = operatorsCost / 32n;
     const networkPerEth = networkCost / 32n;
     const liquidationPerEth = liquidationCost / 32n;
 
-    const operatorsSubtotal =
-      (operatorsCost * effectiveBalanceWei) / perValidatorBalance;
-    const networkSubtotal =
-      (networkCost * effectiveBalanceWei) / perValidatorBalance;
-    const liquidationSubtotal =
-      (liquidationCost * effectiveBalanceWei) / perValidatorBalance;
+    const operatorsSubtotal = operatorsCost * validators;
+    const networkSubtotal = networkCost * validators;
+    const liquidationSubtotal = liquidationCost * validators;
     const totalDeposit =
       operatorsSubtotal + networkSubtotal + liquidationSubtotal;
 

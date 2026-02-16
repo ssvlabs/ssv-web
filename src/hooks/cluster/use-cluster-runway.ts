@@ -1,7 +1,6 @@
 import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useClusterBalance } from "@/hooks/cluster/use-cluster-balance";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
-import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
 import { bigintMax } from "@/lib/utils/bigint";
 import { calculateRunway } from "@/lib/utils/cluster";
 import { useNetworkFee, useNetworkFeeSSV } from "@/hooks/use-ssv-network-fee";
@@ -30,8 +29,6 @@ export const useClusterRunway = (
     watch: false,
   },
 ) => {
-  const { state } = useRegisterValidatorContext;
-
   const params = useClusterPageParams();
   const clusterHash = hash ?? params.clusterHash;
 
@@ -64,8 +61,7 @@ export const useClusterRunway = (
     ? bigintMax(
         BigInt(cluster.data?.effectiveBalance ?? 0),
         BigInt(cluster.data?.validatorCount ?? 1) * 32n,
-      ) / 32n +
-      state.effectiveBalance / 32n
+      ) / 32n
     : BigInt(cluster.data?.validatorCount ?? 1);
 
   const isLoading =
@@ -76,7 +72,7 @@ export const useClusterRunway = (
     ssvNetworkFee.isLoading;
 
   const runway = calculateRunway({
-    balance: balance.data.eth || balance.data.ssv || 0n,
+    balance: (isETH ? balance.data.eth : balance.data.ssv) || 0n,
     feesPerBlock,
     validators,
     deltaValidators: deltaValidators,

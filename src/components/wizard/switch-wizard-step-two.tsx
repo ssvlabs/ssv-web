@@ -114,7 +114,6 @@ export const SwitchWizardStepTwo = ({
 
     const operatorsCost = computeDailyAmount(operatorsFee, days);
     const networkCost = computeDailyAmount(networkFee, days);
-    const validators = effectiveBalanceWei / perValidatorBalance || 1n;
     const liquidationCost = computeLiquidationCollateralCostPerValidator({
       networkFee,
       operatorsFee,
@@ -123,13 +122,16 @@ export const SwitchWizardStepTwo = ({
       effectiveBalance: effectiveBalanceWei,
     });
 
-    const operatorsPerEth = operatorsCost / 32n;
-    const networkPerEth = networkCost / 32n;
-    const liquidationPerEth = liquidationCost / 32n;
+    const operatorsPerEth = operatorsCost;
+    const networkPerEth = networkCost;
+    const liquidationPerEth = liquidationCost;
 
-    const operatorsSubtotal = operatorsCost * validators;
-    const networkSubtotal = networkCost * validators;
-    const liquidationSubtotal = liquidationCost * validators;
+    const operatorsSubtotal =
+      (operatorsCost * effectiveBalanceWei) / perValidatorBalance;
+    const networkSubtotal =
+      (networkCost * effectiveBalanceWei) / perValidatorBalance;
+    const liquidationSubtotal =
+      (liquidationCost * effectiveBalanceWei) / perValidatorBalance;
     const totalDeposit =
       operatorsSubtotal + networkSubtotal + liquidationSubtotal;
 

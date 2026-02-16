@@ -24,7 +24,6 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
   const params = useOperatorPageParams();
   const operatorId = BigInt(params.operatorId!);
   const operator = useOperator(operatorId!);
-
   const { feeEth, yearlyFeeEth, yearlyFeeSSV, balanceEth, balanceSSV } =
     useOperatorEarningsAndFees(operatorId);
 
@@ -104,7 +103,7 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
               </Text>
               <div className="flex flex-col gap-4">
                 <BalanceDisplay amount={balanceEth} token="ETH" />
-                <BalanceDisplay amount={balanceSSV} token="SSV" />
+                {yearlyFeeSSV !== 0n && !operator.data.migrated && <BalanceDisplay amount={balanceSSV} token="SSV" />}
               </div>
               <Tooltip
                 asChild

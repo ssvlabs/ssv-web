@@ -46,18 +46,11 @@ export const ExistingClusterValidatorsBreakdown: FC<
         break;
       case "deposited":
         setFilters({
-          status: [
-            "active",
-            "exited",
-            "exiting",
-            "slashed",
-            "pending",
-            "inactive",
-          ],
+          status: ["active", "exiting", "slashed", "pending"],
         });
         break;
       case "notDeposited":
-        setFilters({ status: ["notDeposited"] });
+        setFilters({ status: ["notDeposited", "exited", "inactive"] });
         break;
     }
     _setSelectedTab(value as TabKey);

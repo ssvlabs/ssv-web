@@ -70,7 +70,6 @@ export const MigrationEffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
   const confirmId = useId();
 
   const balanceValue = form.watch("totalEffectiveBalance");
-  console.log("balanceValue:", balanceValue);
 
   const balanceError = form.formState.errors.totalEffectiveBalance?.type;
   const isLowBalance = balanceError === "too_small";

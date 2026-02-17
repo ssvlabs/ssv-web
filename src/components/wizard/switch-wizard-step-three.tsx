@@ -190,12 +190,7 @@ export const SwitchWizardStepThree = ({
               {formatEthValue(fundingSummary?.networkSubtotal)}
             </Text>
 
-            <div className="flex gap-2 items-center">
-              <Text variant="body-2-medium">Liquidation collateral</Text>
-              <Tooltip content="Liquidation collateral information">
-                <FaCircleInfo className="size-3.5 text-gray-500" />
-              </Tooltip>
-            </div>
+            <Text variant="body-2-medium">Liquidation collateral</Text>
             <Text variant="body-2-medium" className="text-right">
               {formatEthValue(fundingSummary?.liquidationPerEth)}
             </Text>
@@ -232,7 +227,7 @@ export const SwitchWizardStepThree = ({
           <div className="flex items-start justify-between">
             <div className="flex gap-2 items-center">
               <Text variant="body-2-medium">Withdraw SSV</Text>
-              <Tooltip content="SSV withdrawal information">
+              <Tooltip content="The SSV amount withdrawn from this cluster to your wallet during this transaction.">
                 <FaCircleInfo className="size-3.5 text-gray-500" />
               </Tooltip>
             </div>

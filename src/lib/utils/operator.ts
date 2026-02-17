@@ -204,6 +204,7 @@ export const createDefaultOperator = (
   updated_at: 0,
   ...operator,
   effective_balance: operator.effective_balance ?? "0",
+  migrated: true,
 });
 
 export type MainnetEvent = DecodeEventLogReturnType<typeof MainnetV4SetterABI>;

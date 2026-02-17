@@ -99,9 +99,10 @@ export const SwitchWizardStepTwo = ({
     0n,
   );
 
-  const effectiveBalanceWei = effectiveBalance ?? 0n;
-  const ethRate = rates.data?.eth ?? 0;
   const weiPerEth = 10n ** 18n;
+  const effectiveBalanceWei = effectiveBalance ?? 0n;
+  const effectiveBalanceEth = effectiveBalanceWei / weiPerEth;
+  const ethRate = rates.data?.eth ?? 0;
   const perValidatorBalance = 32n * weiPerEth;
 
   const getCostsForDays = (days: number) => {
@@ -119,7 +120,7 @@ export const SwitchWizardStepTwo = ({
       operatorsFee,
       liquidationCollateralPeriod: liquidationThreshold,
       minimumLiquidationCollateral,
-      effectiveBalance: effectiveBalanceWei,
+      effectiveBalance: effectiveBalanceEth,
     });
 
     const operatorsPerEth = operatorsCost;

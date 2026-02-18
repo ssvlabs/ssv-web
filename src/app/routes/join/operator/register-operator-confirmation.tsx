@@ -12,8 +12,8 @@ import { getOperatorQueryOptions } from "@/hooks/operator/use-operator";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useRegisterOperator } from "@/lib/contract-interactions/write/use-register-operator";
 import { queryClient } from "@/lib/react-query";
-import { roundOperatorFee } from "@/lib/utils/bigint";
-import { formatBigintInput } from "@/lib/utils/number";
+import { bigintMin, roundOperatorFee } from "@/lib/utils/bigint";
+import { formatBigintInput, ms } from "@/lib/utils/number";
 import { createDefaultOperator } from "@/lib/utils/operator";
 import { shortenAddress } from "@/lib/utils/strings";
 import { type FC } from "react";
@@ -22,6 +22,7 @@ import { encodeAbiParameters, parseAbiParameters } from "viem";
 import { useAccount } from "@/hooks/account/use-account";
 import { useRegisterOperatorContext } from "@/guard/register-operator-guards";
 import { track } from "@/lib/analytics/mixpanel";
+import { useGetMaximumOperatorFee } from "@/lib/contract-interactions/hooks/getter";
 
 export const RegisterOperatorConfirmation: FC = () => {
   const navigate = useNavigate();
@@ -29,12 +30,19 @@ export const RegisterOperatorConfirmation: FC = () => {
   const { address } = useAccount();
   const { publicKey, yearlyFee, isPrivate } = useRegisterOperatorContext();
 
+  const { data: maxFee = 0n } = useGetMaximumOperatorFee({
+    staleTime: ms(1, "days"),
+  });
+
   const register = useRegisterOperator();
 
   const submit = () => {
     const createOperatorArgs = {
       setPrivate: isPrivate,
-      fee: roundOperatorFee(yearlyFee / globals.BLOCKS_PER_YEAR),
+      fee: bigintMin(
+        roundOperatorFee(yearlyFee / globals.BLOCKS_PER_YEAR),
+        maxFee,
+      ),
       publicKey: encodeAbiParameters(parseAbiParameters("string"), [publicKey]),
     };
 

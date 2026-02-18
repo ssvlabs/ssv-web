@@ -1,12 +1,14 @@
 import { globals } from "@/config";
 import { bigintMax } from "./bigint";
 import type { Prettify } from "@/types/ts-utils";
-import { calculateRunway } from "@/lib/utils/cluster";
+import { formatETH } from "@/lib/utils/number";
+
+const SCALE = 10 ** 6;
+const SCALE_N = BigInt(SCALE);
 
 export const computeDailyAmount = (value: bigint, days: number) => {
-  const scale = 10 ** 6;
-  const scaledDays = BigInt(days * scale);
-  return (value * scaledDays * BigInt(globals.BLOCKS_PER_DAY)) / BigInt(scale);
+  const scaledDays = BigInt(days * SCALE);
+  return (value * scaledDays * BigInt(globals.BLOCKS_PER_DAY)) / SCALE_N;
 };
 
 type LiquidationCollateralCostArgs = {
@@ -24,13 +26,15 @@ export const computeLiquidationCollateralCostPerValidator = ({
   minimumLiquidationCollateral,
   effectiveBalance,
 }: LiquidationCollateralCostArgs) => {
-  const validators = effectiveBalance / 32n || 1n;
+  const validatorsScaled = (effectiveBalance * SCALE_N) / 32n || SCALE_N;
   const total =
     (operatorsFee + networkFee) *
     liquidationCollateralPeriod *
-    BigInt(validators);
+    validatorsScaled;
 
-  return bigintMax(total, minimumLiquidationCollateral) / validators;
+  return (
+    bigintMax(total, minimumLiquidationCollateral * SCALE_N) / validatorsScaled
+  );
 };
 
 type ComputeFundingCostArgs = Prettify<
@@ -41,32 +45,28 @@ type ComputeFundingCostArgs = Prettify<
 >;
 
 export const computeFundingCost = (args: ComputeFundingCostArgs) => {
-  const validators = args.effectiveBalance / 32n || 1n;
+  const effectiveBalance = args.effectiveBalance ?? 32n;
+  const vUnitsScaled = (effectiveBalance * SCALE_N) / 32n || SCALE_N;
 
   const networkCost = computeDailyAmount(args.networkFee, args.fundingDays);
   const operatorsCost = computeDailyAmount(args.operatorsFee, args.fundingDays);
-  const liquidationCollateral =
-    computeLiquidationCollateralCostPerValidator(args);
+  const liquidationCollateral = computeLiquidationCollateralCostPerValidator({
+    ...args,
+    effectiveBalance,
+  });
 
-  // Subtotal = base cost × effective balance × validators
-  const networkCostSubtotal = networkCost * validators;
-  const operatorsCostSubtotal = operatorsCost * validators;
-  const liquidationCollateralSubtotal = liquidationCollateral * validators;
+  // Subtotal = base cost × validators (scaled then unscaled)
+  const networkCostSubtotal = (networkCost * vUnitsScaled) / SCALE_N;
+  const operatorsCostSubtotal = (operatorsCost * vUnitsScaled) / SCALE_N;
+  const liquidationCollateralSubtotal =
+    (liquidationCollateral * vUnitsScaled) / SCALE_N;
 
   const total =
     networkCostSubtotal + operatorsCostSubtotal + liquidationCollateralSubtotal;
 
-  const runway = calculateRunway({
-    balance: total,
-    feesPerBlock: args.networkFee + args.operatorsFee,
-    validators,
-    liquidationThresholdBlocks: args.liquidationCollateralPeriod,
-    minimumLiquidationCollateral: args.minimumLiquidationCollateral,
-  });
-
   return {
     perValidator: {
-      networkCost,
+      networkCost: networkCost,
       operatorsCost,
       liquidationCollateral,
     },
@@ -76,7 +76,18 @@ export const computeFundingCost = (args: ComputeFundingCostArgs) => {
       liquidationCollateral: liquidationCollateralSubtotal,
     },
     total,
-    runway,
-    effectiveBalance: args.effectiveBalance,
+    formatted: {
+      perValidator: {
+        networkCost: formatETH(networkCost),
+        operatorsCost: formatETH(operatorsCost),
+        liquidationCollateral: formatETH(liquidationCollateral),
+      },
+      subtotal: {
+        networkCost: formatETH(networkCostSubtotal),
+        operatorsCost: formatETH(operatorsCostSubtotal),
+        liquidationCollateral: formatETH(liquidationCollateralSubtotal),
+      },
+      total: formatETH(total),
+    },
   };
 };

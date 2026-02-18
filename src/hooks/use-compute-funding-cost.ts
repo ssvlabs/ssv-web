@@ -43,10 +43,11 @@ export const useComputeFundingCost = () => {
 export type UseFundingCostArgs = {
   operators: Pick<Operator, "eth_fee" | "fee">[];
   fundingDays: number;
+  /** Effective balance in ETH (human-readable). Examples: 32n (1 validator), 64n (2 validators) */
   effectiveBalance: bigint;
 };
 
-export const useFundingCost = ({
+export const useFundingCostETH = ({
   operators,
   fundingDays,
   effectiveBalance,
@@ -70,7 +71,7 @@ export const useFundingCost = ({
     ]),
     queryFn: async () =>
       computeFundingCost({
-        operatorsFee: sumOperatorsFee(operators),
+        operatorsFee: sumOperatorsFee(operators, "eth"),
         fundingDays,
         networkFee: ssvNetworkFee.data!,
         liquidationCollateralPeriod: liquidationThresholdPeriod.data!,

@@ -1,6 +1,6 @@
 import {
   useComputeFundingCost,
-  useFundingCost,
+  useFundingCostETH,
 } from "@/hooks/use-compute-funding-cost";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -88,19 +88,19 @@ export const InitialFunding: FCProps = ({ ...props }) => {
     days && days < globals.CLUSTER_VALIDITY_PERIOD_MINIMUM,
   );
 
-  const customFundingCost = useFundingCost({
+  const customFundingCost = useFundingCostETH({
     fundingDays: values.custom,
     operators: operators.data ?? [],
     effectiveBalance,
   });
 
-  const yearFundingCost = useFundingCost({
+  const yearFundingCost = useFundingCostETH({
     fundingDays: periods.year,
     operators: operators.data ?? [],
     effectiveBalance,
   });
 
-  const halfYearFundingCost = useFundingCost({
+  const halfYearFundingCost = useFundingCostETH({
     fundingDays: periods["half-year"],
     operators: operators.data ?? [],
     effectiveBalance,

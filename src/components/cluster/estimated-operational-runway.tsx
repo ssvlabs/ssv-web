@@ -33,7 +33,7 @@ export const EstimatedOperationalRunway: EstimatedOperationalRunwayFC = ({
   const params = useClusterPageParams();
   const hash = clusterHash || params.clusterHash;
 
-  const { isLiquidated } = useClusterState(hash!, { watch: true });
+  const { isLiquidated, cluster } = useClusterState(hash!, { watch: true });
 
   const { data: clusterRunway } = useClusterRunway(hash!, {
     deltaBalance,
@@ -87,6 +87,7 @@ export const EstimatedOperationalRunway: EstimatedOperationalRunwayFC = ({
           isWithdrawing={
             clusterRunway?.isDecreasing && deltaEffectiveBalance === 0n
           }
+          isMigrated={cluster.data?.migrated ?? false}
         />
       )}
     </div>

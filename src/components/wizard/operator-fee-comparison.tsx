@@ -14,7 +14,7 @@ import {
   formatSSV,
 } from "@/lib/utils/number.ts";
 import { useRates } from "@/hooks/use-rates.ts";
-import { formatUnits, parseEther } from "viem";
+import { formatUnits } from "viem";
 
 type OperatorFeeComparisonProps = {
   operators: Pick<Operator, "id" | "name" | "logo" | "fee" | "eth_fee">[];
@@ -42,7 +42,7 @@ export const OperatorFeeComparison = ({
       if (hasEthFee) {
         return sum + getYearlyFee(BigInt(op.eth_fee));
       }
-      return sum + parseEther("0.0005");
+      return sum;
     }, 0n);
     const totalSSVFormatted = `${formatSSV(totalYearlyFeeSSV)} SSV`;
     const totalETHFormatted = `${formatETH(totalYearlyFeeETH)} ETH`;

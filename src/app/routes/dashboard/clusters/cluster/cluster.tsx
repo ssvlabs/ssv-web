@@ -71,6 +71,7 @@ export const Cluster: FC = () => {
         <div className="grid grid-cols-4 gap-6 w-full">
           {cluster.data?.operators.map((operatorId) => (
             <OperatorStatCard
+              isClusterMigrated={isMigrated}
               key={operatorId}
               className="w-full"
               operatorId={operatorId}

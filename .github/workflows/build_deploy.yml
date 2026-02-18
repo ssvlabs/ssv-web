@@ -48,6 +48,19 @@ jobs:
       PROD_SSV_NETWORKS: >
         [
           {
+            \"networkId\": 1,
+            \"apiVersion\": \"v4\",
+            \"apiNetwork\": \"mainnet\",
+            \"api\": \"https://api.ssv.network/api\",
+            \"explorerUrl\": \"https://explorer.ssv.network\",
+            \"insufficientBalanceUrl\": \"https://coinmarketcap.com/currencies/ssv-network/#Markets\",
+            \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
+            \"distributionContract\": \"${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS_MAINNET }}\",
+            \"tokenAddress\": \"0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54\",
+            \"setterContractAddress\": \"${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4_MAINNET }}\",
+            \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_MAINNET }}\"
+          },
+          {
             \"networkId\": 560048,
             \"apiVersion\": \"v4\",
             \"apiNetwork\": \"hoodi\",  
@@ -94,7 +107,7 @@ jobs:
         run: npx semantic-release
 
       - name: Configure AWS credentials
-        if: github.ref == 'refs/heads/pre-stage' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/bapps-prod'
+        if: github.ref == 'refs/heads/pre-stage' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/bapps-prod' || github.ref == 'refs/heads/temporary-hoodi-deploy'
         uses: aws-actions/configure-aws-credentials@50ac8dd1e1b10d09dac7b8727528b91bed831ac0 # v3
         with:
           role-to-assume: ${{ secrets.SSV_WEB_AWS_IAM_ROLE }}
@@ -121,10 +134,9 @@ jobs:
         run: |
           aws s3 cp ./build s3://${{ secrets.SSV_WEB_STAGE_AWS_S3_BUCKET }} --recursive
       # </app.stage.ssv.network>
-
       # <app.ssv.network>
       - name: Run prod webapp build
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/temporary-hoodi-deploy'
         run: >
           GAS_PRICE="${{ env.GAS_PRICE }}" 
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
@@ -141,7 +153,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Upload files to S3
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/temporary-hoodi-deploy'
         run: |
           aws s3 cp ./build s3://${{ secrets.SSV_WEB_PROD_HOODI_AWS_S3_BUCKET }} --recursive
       # </app.ssv.network>

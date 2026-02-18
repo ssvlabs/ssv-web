@@ -4,7 +4,6 @@ import { textVariants } from "@/components/ui/text";
 import { useAccount } from "@/hooks/account/use-account";
 import { shortenAddress } from "@/lib/utils/strings";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { ChevronDown } from "lucide-react";
 import type { FC } from "react";
 
 type WalletType = "ledger" | "trezor" | "walletconnect" | "metamask";
@@ -40,15 +39,9 @@ export const ConnectWalletBtn: FC<ButtonProps> = (props) => {
 
   return (
     <ConnectButton.Custom>
-      {({
-        chain,
-        openAccountModal,
-        openChainModal,
-        openConnectModal,
-        mounted,
-      }) => {
+      {({ chain, openAccountModal, openConnectModal, mounted }) => {
         const connected = mounted && account && chain;
-        if (!mounted) return null;
+        if (!mounted || chain?.unsupported) return null;
 
         if (!connected) {
           return (
@@ -60,25 +53,6 @@ export const ConnectWalletBtn: FC<ButtonProps> = (props) => {
               {...props}
             >
               Connect Wallet
-            </Button>
-          );
-        }
-
-        if (chain.unsupported) {
-          return (
-            <Button
-              size="lg"
-              variant="destructive"
-              onClick={openChainModal}
-              className={textVariants({
-                variant: "body-3-medium",
-                className: "flex items-center gap-3 h-12 px-4 rounded-xl",
-              })}
-              {...props}
-            >
-              <div className="flex gap-1 items-center">
-                <span>Wrong Network</span> <ChevronDown className="size-5" />
-              </div>
             </Button>
           );
         }

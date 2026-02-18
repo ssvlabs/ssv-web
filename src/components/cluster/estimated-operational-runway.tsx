@@ -1,4 +1,4 @@
-import type { FC, ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef, FC } from "react";
 import { cn } from "@/lib/utils/tw";
 import { Span, Text } from "@/components/ui/text";
 import { FaCircleInfo } from "react-icons/fa6";
@@ -13,7 +13,7 @@ import { humanizeFundingDuration } from "@/lib/utils/date";
 export type EstimatedOperationalRunwayProps = {
   clusterHash?: string;
   deltaBalance?: bigint;
-  deltaValidators?: bigint;
+  deltaEffectiveBalance?: bigint;
   withAlerts?: boolean;
 };
 
@@ -25,7 +25,7 @@ type EstimatedOperationalRunwayFC = FC<
 export const EstimatedOperationalRunway: EstimatedOperationalRunwayFC = ({
   className,
   clusterHash,
-  deltaValidators = 0n,
+  deltaEffectiveBalance = 0n,
   deltaBalance = 0n,
   withAlerts = true,
   ...props
@@ -37,7 +37,7 @@ export const EstimatedOperationalRunway: EstimatedOperationalRunwayFC = ({
 
   const { data: clusterRunway } = useClusterRunway(hash!, {
     deltaBalance,
-    deltaValidators,
+    deltaEffectiveBalance,
     watch: true,
   });
 
@@ -81,10 +81,12 @@ export const EstimatedOperationalRunway: EstimatedOperationalRunwayFC = ({
       {withAlerts && (
         <EstimatedOperationalRunwayAlert
           isLiquidated={isLiquidated.data ?? false}
-          hasDeltaValidators={deltaValidators !== 0n}
+          hasDeltaValidators={deltaEffectiveBalance !== 0n}
           isAtRisk={clusterRunway?.isAtRisk ?? false}
           runway={clusterRunway?.runway ?? 0n}
-          isWithdrawing={clusterRunway?.isDecreasing && !deltaValidators}
+          isWithdrawing={
+            clusterRunway?.isDecreasing && deltaEffectiveBalance === 0n
+          }
         />
       )}
     </div>

@@ -37,12 +37,12 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
   const rates = useRates();
 
   const { data: minFee = 0n } = useGetMinimumOperatorEthFee({
-    staleTime: ms(1, "weeks"),
+    staleTime: ms(1, "days"),
   });
-  const { data: maxFee = 13900000000n /* value from the contract */ } =
-    useGetMaximumOperatorFee({
-      staleTime: ms(1, "weeks"),
-    });
+
+  const { data: maxFee = 0n } = useGetMaximumOperatorFee({
+    staleTime: ms(1, "days"),
+  });
 
   const minYearlyFee = getYearlyFee(minFee);
   const minYearlyFeeFormatted = getYearlyFee(minFee, { format: true });

@@ -9,6 +9,7 @@ export type EstimatedOperationalRunwayAlertProps = {
   isAtRisk: boolean;
   isLiquidated: boolean;
   runway: bigint;
+  isMigrated?: boolean;
 };
 
 type EstimatedOperationalRunwayAlertFC = FC<
@@ -27,10 +28,10 @@ export const EstimatedOperationalRunwayAlert: EstimatedOperationalRunwayAlertFC 
     hasDeltaValidators,
     isLiquidated,
     runway,
+    isMigrated = true,
     ...props
   }) => {
     const isWithdrawingAll = isWithdrawing && runway <= 0n;
-
     if (!isAtRisk) return null;
 
     const renderMessage = () => {
@@ -44,6 +45,14 @@ export const EstimatedOperationalRunwayAlert: EstimatedOperationalRunwayAlertFC 
         );
       }
       if (isLiquidated) {
+        if (!isMigrated) {
+          return (
+            <p>
+              Your cluster has been liquidated. Switch your cluster to ETH to
+              reactivate and resume operations.
+            </p>
+          );
+        }
         return (
           <p>
             Your cluster has been liquidated. Please reactivate your cluster in

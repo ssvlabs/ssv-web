@@ -22,10 +22,7 @@ import { Spacer } from "@/components/ui/spacer";
 import type { Operator } from "@/types/api";
 import { currencyFormatter, formatETH } from "@/lib/utils/number";
 import { useRates } from "@/hooks/use-rates";
-import {
-  computeDailyAmount,
-  computeLiquidationCollateralCostPerValidator,
-} from "@/lib/utils/keystore";
+import { computeFundingCost } from "@/lib/utils/keystore";
 import { useNetworkFee } from "@/hooks/use-ssv-network-fee";
 import { formatUnits } from "viem";
 import type { NavigateOptions } from "react-router-dom";
@@ -103,7 +100,6 @@ export const SwitchWizardStepTwo = ({
   const effectiveBalanceWei = effectiveBalance ?? 0n;
   const effectiveBalanceEth = effectiveBalanceWei / weiPerEth;
   const ethRate = rates.data?.eth ?? 0;
-  const perValidatorBalance = 32n * weiPerEth;
 
   const getCostsForDays = (days: number) => {
     if (!networkFees.isSuccess || days <= 0) return null;
@@ -113,37 +109,23 @@ export const SwitchWizardStepTwo = ({
     const minimumLiquidationCollateral =
       networkFees.minimumLiquidationCollateral.data ?? 0n;
 
-    const operatorsCost = computeDailyAmount(operatorsFee, days);
-    const networkCost = computeDailyAmount(networkFee, days);
-    const liquidationCost = computeLiquidationCollateralCostPerValidator({
-      networkFee,
+    const cost = computeFundingCost({
+      fundingDays: days,
       operatorsFee,
+      networkFee,
       liquidationCollateralPeriod: liquidationThreshold,
       minimumLiquidationCollateral,
       effectiveBalance: effectiveBalanceEth,
     });
 
-    const operatorsPerEth = operatorsCost;
-    const networkPerEth = networkCost;
-    const liquidationPerEth = liquidationCost;
-
-    const operatorsSubtotal =
-      (operatorsCost * effectiveBalanceWei) / perValidatorBalance;
-    const networkSubtotal =
-      (networkCost * effectiveBalanceWei) / perValidatorBalance;
-    const liquidationSubtotal =
-      (liquidationCost * effectiveBalanceWei) / perValidatorBalance;
-    const totalDeposit =
-      operatorsSubtotal + networkSubtotal + liquidationSubtotal;
-
     return {
-      operatorsPerEth,
-      networkPerEth,
-      liquidationPerEth,
-      operatorsSubtotal,
-      networkSubtotal,
-      liquidationSubtotal,
-      totalDeposit,
+      operatorsPerEth: cost.perValidator.operatorsCost,
+      networkPerEth: cost.perValidator.networkCost,
+      liquidationPerEth: cost.perValidator.liquidationCollateral,
+      operatorsSubtotal: cost.subtotal.operatorsCost,
+      networkSubtotal: cost.subtotal.networkCost,
+      liquidationSubtotal: cost.subtotal.liquidationCollateral,
+      totalDeposit: cost.total,
     };
   };
 

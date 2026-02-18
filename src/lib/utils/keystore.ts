@@ -12,10 +12,13 @@ export const computeDailyAmount = (value: bigint, days: number) => {
 };
 
 type LiquidationCollateralCostArgs = {
+  /** Network fee per one block */
   networkFee: bigint;
+  /** Operators fee per one block */
   operatorsFee: bigint;
   liquidationCollateralPeriod: bigint;
   minimumLiquidationCollateral: bigint;
+  /** Effective balance in ETH (human-readable). Examples: 32n (1 validator), 64n (2 validators) */
   effectiveBalance: bigint;
 };
 
@@ -26,27 +29,25 @@ export const computeLiquidationCollateralCostPerValidator = ({
   minimumLiquidationCollateral,
   effectiveBalance,
 }: LiquidationCollateralCostArgs) => {
-  const validatorsScaled = (effectiveBalance * SCALE_N) / 32n || SCALE_N;
   const total =
-    (operatorsFee + networkFee) *
-    liquidationCollateralPeriod *
-    validatorsScaled;
+    ((operatorsFee + networkFee) *
+      liquidationCollateralPeriod *
+      effectiveBalance) /
+    32n;
 
   return (
-    bigintMax(total, minimumLiquidationCollateral * SCALE_N) / validatorsScaled
+    (bigintMax(total, minimumLiquidationCollateral) * 32n) / effectiveBalance
   );
 };
 
 type ComputeFundingCostArgs = Prettify<
   {
     fundingDays: number;
-    effectiveBalance?: bigint;
   } & LiquidationCollateralCostArgs
 >;
 
 export const computeFundingCost = (args: ComputeFundingCostArgs) => {
   const effectiveBalance = args.effectiveBalance ?? 32n;
-  const vUnitsScaled = (effectiveBalance * SCALE_N) / 32n || SCALE_N;
 
   const networkCost = computeDailyAmount(args.networkFee, args.fundingDays);
   const operatorsCost = computeDailyAmount(args.operatorsFee, args.fundingDays);
@@ -56,10 +57,10 @@ export const computeFundingCost = (args: ComputeFundingCostArgs) => {
   });
 
   // Subtotal = base cost × validators (scaled then unscaled)
-  const networkCostSubtotal = (networkCost * vUnitsScaled) / SCALE_N;
-  const operatorsCostSubtotal = (operatorsCost * vUnitsScaled) / SCALE_N;
+  const networkCostSubtotal = (networkCost * effectiveBalance) / 32n;
+  const operatorsCostSubtotal = (operatorsCost * effectiveBalance) / 32n;
   const liquidationCollateralSubtotal =
-    (liquidationCollateral * vUnitsScaled) / SCALE_N;
+    (liquidationCollateral * effectiveBalance) / 32n;
 
   const total =
     networkCostSubtotal + operatorsCostSubtotal + liquidationCollateralSubtotal;

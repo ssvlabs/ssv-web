@@ -9,13 +9,19 @@ import { Text } from "@/components/ui/text";
 import { FaCircleInfo } from "react-icons/fa6";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useOperatorState } from "@/hooks/operator/use-operator-state";
-import { formatOperatorETHFee, percentageFormatter } from "@/lib/utils/number";
+import {
+  formatOperatorETHFee,
+  formatSSV,
+  percentageFormatter,
+} from "@/lib/utils/number";
 import { CircleX } from "lucide-react";
 import { OperatorStatusBadge } from "@/components/operator/operator-status-badge";
 import { FaEthereum } from "react-icons/fa";
+import { getYearlyFee } from "@/lib/utils/operator";
 
 export type OperatorStatCardProps = {
   operatorId: OperatorID;
+  isClusterMigrated?: boolean;
 };
 
 type OperatorStatCardFC = FC<
@@ -26,9 +32,20 @@ type OperatorStatCardFC = FC<
 export const OperatorStatCard: OperatorStatCardFC = ({
   operatorId,
   className,
+  isClusterMigrated = true,
   ...props
 }) => {
   const operatorState = useOperatorState(operatorId);
+
+  const fee = getYearlyFee(
+    isClusterMigrated
+      ? BigInt(operatorState.data?.operator?.eth_fee ?? 0n)
+      : BigInt(operatorState.data?.operator?.fee ?? 0n),
+  );
+
+  const displayFee = isClusterMigrated
+    ? formatOperatorETHFee(fee)
+    : formatSSV(fee);
 
   if (operatorState.isLoading)
     return (
@@ -62,7 +79,7 @@ export const OperatorStatCard: OperatorStatCardFC = ({
       </Card>
     );
 
-  const { operator, fee } = operatorState.data;
+  const { operator } = operatorState.data;
 
   return (
     <Card
@@ -106,9 +123,13 @@ export const OperatorStatCard: OperatorStatCardFC = ({
           {percentageFormatter.format(operator.performance["30d"])}
         </Text>
         <div className="flex items-center justify-end gap-0.5">
-          <FaEthereum className="size-3 text-gray-600" />
+          {isClusterMigrated ? (
+            <FaEthereum className="size-3 text-gray-600" />
+          ) : (
+            <img src="/images/ssvIcons/icon.svg" className="size-3" alt="SSV" />
+          )}
           <Text variant="body-3-medium" className="text-gray-800">
-            {formatOperatorETHFee(fee.yearly)} {/* ETH */}
+            {displayFee}
           </Text>
         </div>
       </div>

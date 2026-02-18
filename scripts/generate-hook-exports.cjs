@@ -197,8 +197,14 @@ function generate() {
     const outputPath = path.join(HOOKS_DIR, `${name}.ts`);
     const content = generateExportFile(name, hookNames);
 
-    fs.writeFileSync(outputPath, content, "utf-8");
-    console.log(`  Generated: ${outputPath}`);
+    const existing = fs.existsSync(outputPath) ? fs.readFileSync(outputPath, "utf-8") : "";
+    const normalize = (s) => s.replace(/\s/g, "");
+    if (normalize(existing) === normalize(content)) {
+      console.log(`  Unchanged: ${outputPath}`);
+    } else {
+      fs.writeFileSync(outputPath, content, "utf-8");
+      console.log(`  Generated: ${outputPath}`);
+    }
   }
 
   console.log("Done!");

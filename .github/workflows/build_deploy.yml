@@ -97,7 +97,7 @@ jobs:
         run: npx semantic-release
 
       - name: Configure AWS credentials
-        if: github.ref == 'refs/heads/pre-stage' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/bapps-prod'
+        if: github.ref == 'refs/heads/pre-stage' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/bapps-prod' || github.ref == 'refs/heads/temporary-hoodi-deploy'
         uses: aws-actions/configure-aws-credentials@50ac8dd1e1b10d09dac7b8727528b91bed831ac0 # v3
         with:
           role-to-assume: ${{ secrets.SSV_WEB_AWS_IAM_ROLE }}
@@ -124,10 +124,9 @@ jobs:
         run: |
           aws s3 cp ./build s3://${{ secrets.SSV_WEB_STAGE_AWS_S3_BUCKET }} --recursive
       # </app.stage.ssv.network>
-
       # <app.ssv.network>
       - name: Run prod webapp build
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/temporary-hoodi-deploy'
         run: >
           GAS_PRICE="${{ env.GAS_PRICE }}" 
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
@@ -144,7 +143,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Upload files to S3
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/temporary-hoodi-deploy'
         run: |
           aws s3 cp ./build s3://${{ secrets.SSV_WEB_PROD_HOODI_AWS_S3_BUCKET }} --recursive
       # </app.ssv.network>

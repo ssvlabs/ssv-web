@@ -6,7 +6,6 @@ import { HiOutlineExternalLink, HiOutlineGlobeAlt } from "react-icons/hi";
 import { TbDots } from "react-icons/tb";
 
 import { ConnectWalletBtn } from "@/components/connect-wallet/connect-wallet-btn";
-import { NetworkSwitchBtn } from "@/components/connect-wallet/network-switch-btn";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -23,6 +22,7 @@ import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { Link } from "react-router-dom";
 import { useLinks } from "@/hooks/use-links";
 import { useAccountState } from "@/hooks/account/use-account-state";
+import { NetworkSwitcher } from "@/components/connect-wallet/network-switcher-hotfix";
 
 export type NavbarProps = {
   // TODO: Add props or remove this type
@@ -130,7 +130,8 @@ export const NavbarDVT: FCProps = ({ className, ...props }) => {
 
       <Spacer />
       <div className="flex items-center gap-3">
-        <NetworkSwitchBtn />
+        {/* <NetworkSwitchBtn /> */}
+        <NetworkSwitcher />
         <ConnectWalletBtn />
         <ThemeSwitcher />
       </div>

@@ -27,7 +27,7 @@ import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { useOperators } from "@/hooks/operator/use-operators";
 import {
   useComputeFundingCost,
-  useFundingCost,
+  useFundingCostETH,
 } from "@/hooks/use-compute-funding-cost";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useReactivate } from "@/lib/contract-interactions/write/use-reactivate";
@@ -104,19 +104,19 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
     days && days < globals.CLUSTER_VALIDITY_PERIOD_MINIMUM,
   );
 
-  const customFundingCost = useFundingCost({
+  const customFundingCost = useFundingCostETH({
     fundingDays: values.custom,
     operators: operators.data ?? [],
     effectiveBalance,
   });
 
-  const yearFundingCost = useFundingCost({
+  const yearFundingCost = useFundingCostETH({
     fundingDays: periods.year,
     operators: operators.data ?? [],
     effectiveBalance,
   });
 
-  const halfYearFundingCost = useFundingCost({
+  const halfYearFundingCost = useFundingCostETH({
     fundingDays: periods["half-year"],
     operators: operators.data ?? [],
     effectiveBalance,

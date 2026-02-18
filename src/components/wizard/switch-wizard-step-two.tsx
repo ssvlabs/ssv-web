@@ -22,8 +22,7 @@ import { Spacer } from "@/components/ui/spacer";
 import type { Operator } from "@/types/api";
 import { currencyFormatter, formatETH } from "@/lib/utils/number";
 import { useRates } from "@/hooks/use-rates";
-import { computeFundingCost } from "@/lib/utils/keystore";
-import { useNetworkFee } from "@/hooks/use-ssv-network-fee";
+import { useFundingCostETH } from "@/hooks/use-compute-funding-cost";
 import { formatUnits } from "viem";
 import type { NavigateOptions } from "react-router-dom";
 import type { SwitchWizardStepThreeState } from "./switch-wizard-types";
@@ -67,7 +66,6 @@ export const SwitchWizardStepTwo = ({
   ssvBalance,
 }: SwitchWizardStepTwoProps) => {
   const rates = useRates();
-  const networkFees = useNetworkFee();
   const hasSsvBalance = (ssvBalance ?? 0n) > 0n;
 
   const form = useForm<z.infer<typeof schema>>({
@@ -91,49 +89,61 @@ export const SwitchWizardStepTwo = ({
         ? currentRunwayDays
         : periods[values.selected];
 
-  const operatorsFee = operators.reduce(
-    (sum, operator) => sum + BigInt(operator.eth_fee || "0"),
-    0n,
-  );
-
   const weiPerEth = 10n ** 18n;
   const effectiveBalanceWei = effectiveBalance ?? 0n;
   const effectiveBalanceEth = effectiveBalanceWei / weiPerEth;
   const ethRate = rates.data?.eth ?? 0;
 
-  const getCostsForDays = (days: number) => {
-    if (!networkFees.isSuccess || days <= 0) return null;
-    const networkFee = networkFees.ssvNetworkFee.data ?? 0n;
-    const liquidationThreshold =
-      networkFees.liquidationThresholdPeriod.data ?? 0n;
-    const minimumLiquidationCollateral =
-      networkFees.minimumLiquidationCollateral.data ?? 0n;
+  const currentCostsQuery = useFundingCostETH({
+    fundingDays: currentRunwayDays,
+    operators,
+    effectiveBalance: effectiveBalanceEth,
+  });
 
-    const cost = computeFundingCost({
-      fundingDays: days,
-      operatorsFee,
-      networkFee,
-      liquidationCollateralPeriod: liquidationThreshold,
-      minimumLiquidationCollateral,
-      effectiveBalance: effectiveBalanceEth,
-    });
+  const halfYearCostsQuery = useFundingCostETH({
+    fundingDays: periods["half-year"],
+    operators,
+    effectiveBalance: effectiveBalanceEth,
+  });
 
-    return {
-      operatorsPerEth: cost.perValidator.operatorsCost,
-      networkPerEth: cost.perValidator.networkCost,
-      liquidationPerEth: cost.perValidator.liquidationCollateral,
-      operatorsSubtotal: cost.subtotal.operatorsCost,
-      networkSubtotal: cost.subtotal.networkCost,
-      liquidationSubtotal: cost.subtotal.liquidationCollateral,
-      totalDeposit: cost.total,
-    };
-  };
+  const yearCostsQuery = useFundingCostETH({
+    fundingDays: periods.year,
+    operators,
+    effectiveBalance: effectiveBalanceEth,
+  });
 
-  const selectedCosts = getCostsForDays(selectedDays);
-  const currentCosts = getCostsForDays(currentRunwayDays);
-  const halfYearCosts = getCostsForDays(periods["half-year"]);
-  const yearCosts = getCostsForDays(periods.year);
-  const customCosts = getCostsForDays(values.custom);
+  const customCostsQuery = useFundingCostETH({
+    fundingDays: values.custom,
+    operators,
+    effectiveBalance: effectiveBalanceEth,
+  });
+
+  const mapQueryToCosts = (data: typeof halfYearCostsQuery.data) =>
+    data
+      ? {
+          operatorsPerEth: data.perValidator.operatorsCost,
+          networkPerEth: data.perValidator.networkCost,
+          liquidationPerEth: data.perValidator.liquidationCollateral,
+          operatorsSubtotal: data.subtotal.operatorsCost,
+          networkSubtotal: data.subtotal.networkCost,
+          liquidationSubtotal: data.subtotal.liquidationCollateral,
+          totalDeposit: data.total,
+        }
+      : null;
+
+  const currentCosts = mapQueryToCosts(currentCostsQuery.data);
+  const halfYearCosts = mapQueryToCosts(halfYearCostsQuery.data);
+  const yearCosts = mapQueryToCosts(yearCostsQuery.data);
+  const customCosts = mapQueryToCosts(customCostsQuery.data);
+
+  const selectedCosts =
+    values.selected === "current"
+      ? currentCosts
+      : values.selected === "half-year"
+        ? halfYearCosts
+        : values.selected === "year"
+          ? yearCosts
+          : customCosts;
 
   const formatEth = (value?: bigint) =>
     value !== undefined ? `${formatETH(value)} ETH` : "-";

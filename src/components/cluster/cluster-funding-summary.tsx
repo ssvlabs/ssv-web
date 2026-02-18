@@ -1,7 +1,7 @@
 import type { FC, ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils/tw";
 import type { UseFundingCostArgs } from "@/hooks/use-compute-funding-cost";
-import { useFundingCost } from "@/hooks/use-compute-funding-cost";
+import { useFundingCostETH } from "@/hooks/use-compute-funding-cost";
 import { Text } from "@/components/ui/text";
 import { formatSSV } from "@/lib/utils/number";
 import { Divider } from "@/components/ui/divider";
@@ -23,7 +23,7 @@ export const ClusterFundingSummary: ClusterFundingSummaryFC = ({
   ...props
 }) => {
   // const isBulk = validatorsAmount > 1;
-  const cost = useFundingCost({
+  const cost = useFundingCostETH({
     operators,
     fundingDays,
     effectiveBalance,

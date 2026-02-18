@@ -14,7 +14,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@/components/ui/text";
 import { BigNumberInput } from "@/components/ui/number-input";
 import { formatUnits, parseEther } from "viem";
-import { globals } from "@/config";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
@@ -22,17 +21,35 @@ import { useFocus } from "@/hooks/use-focus";
 import { useRegisterOperatorContext } from "@/guard/register-operator-guards";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRates } from "@/hooks/use-rates";
-import { currencyFormatter } from "@/lib/utils/number";
+import { currencyFormatter, ms } from "@/lib/utils/number";
 import { Tooltip } from "@/components/ui/tooltip";
 import { FaCircleInfo } from "react-icons/fa6";
-
-const minimumFee =
-  globals.BLOCKS_PER_YEAR * globals.MINIMUM_OPERATOR_FEE_PER_BLOCK;
+import {
+  useGetMaximumOperatorFee,
+  useGetMinimumOperatorEthFee,
+} from "@/lib/contract-interactions/hooks/getter";
+import { getYearlyFee } from "@/lib/utils/operator";
 
 export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
-  const navigate = useNavigate();
   const { isPrivate } = useRegisterOperatorContext();
+
+  const navigate = useNavigate();
   const rates = useRates();
+
+  const { data: minFee = 0n } = useGetMinimumOperatorEthFee({
+    staleTime: ms(1, "weeks"),
+  });
+  const { data: maxFee = 13900000000n /* value from the contract */ } =
+    useGetMaximumOperatorFee({
+      staleTime: ms(1, "weeks"),
+    });
+
+  const minYearlyFee = getYearlyFee(minFee);
+  const minYearlyFeeFormatted = getYearlyFee(minFee, { format: true });
+
+  const maxYearlyFee = getYearlyFee(maxFee);
+  const maxYearlyFeeFormatted = getYearlyFee(maxFee, { format: true });
+
   const ethRate = rates.data?.eth ?? 0;
 
   const form = useForm({
@@ -43,10 +60,10 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
     resolver: zodResolver(
       z.object({
         yearlyFee: z.bigint().superRefine((value, ctx) => {
-          if (value > parseEther("200")) {
+          if (value > maxYearlyFee) {
             return ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: "Fee must be lower than 200 ETH",
+              message: `Fee must be lower than ${maxYearlyFeeFormatted}`,
             });
           }
           if (isPrivate && value === parseEther("0")) return;
@@ -57,10 +74,10 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
               message: `Fee cannot be set to 0 while operator status is set to public. To set the fee to 0, switch the operator status to private in the previous step.`,
             });
 
-          if (value >= parseEther("0") && value < minimumFee)
+          if (value >= parseEther("0") && value < minYearlyFee)
             return ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: `Fee must be greater than ${formatUnits(minimumFee, 18)} ETH`,
+              message: `Fee must be greater than ${minYearlyFeeFormatted}`,
             });
         }),
       }),
@@ -137,7 +154,7 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
                     id="register-operator-fee"
                     value={field.value}
                     onChange={field.onChange}
-                    max={parseEther("200")}
+                    max={maxYearlyFee}
                     rightSlot={
                       <div className="flex items-center gap-1 px-3">
                         <img

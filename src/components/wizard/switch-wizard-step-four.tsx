@@ -2,7 +2,7 @@ import type { FC } from "react";
 import { Container } from "@/components/ui/container";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
-import { shortenAddress } from "@/lib/utils/strings";
+import { shortenClusterId } from "@/lib/utils/strings";
 import { FaCircleInfo } from "react-icons/fa6";
 import { OperatorAvatar } from "@/components/operator/operator-avatar";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -25,79 +25,98 @@ export const SwitchWizardStepFour: FC<SwitchWizardStepFourProps> = ({
     <Container variant="vertical" className="py-6">
       <Card
         variant="unstyled"
-        className="w-full flex flex-col gap-6 p-8 bg-white rounded-2xl"
+        className="relative w-full overflow-hidden rounded-2xl bg-white p-8"
       >
-        <div className="flex flex-col gap-4 items-start">
-          <Text variant="headline4">
-            Cluster Successfully Migrated to ETH Fees
-          </Text>
-          <Text variant="body-2-medium" className="text-gray-700">
-            Your new validator are now managed by the following cluster:
-          </Text>
-        </div>
+        <img
+          src="/images/backgroundIcon/light.svg"
+          className="pointer-events-none absolute right-0 top-0 h-48"
+          alt=""
+        />
 
-        <Tooltip
-          asChild
-          content={
-            <>
-              Clusters represent a unique set of operators who operate your
-              validators.
-            </>
-          }
-        >
-          <div className="flex items-center gap-2 w-fit">
-            <Text variant="body-3-medium" className="text-gray-500">
-              Validator Cluster |{" "}
-              {clusterHash ? shortenAddress(clusterHash) : "..."}
+        <div className="relative z-10 flex flex-col gap-6">
+          <div className="flex flex-col gap-4 items-start">
+            <Text variant="headline4">
+              Cluster Successfully Migrated to ETH Fees
             </Text>
-            <FaCircleInfo className="size-4 text-gray-500" />
+            <Text variant="body-2-medium" className="text-gray-700">
+              Your existing validators will continue to be managed by the
+              operator cluster:
+            </Text>
           </div>
-        </Tooltip>
 
-        <div className="flex gap-2 items-center flex-wrap">
-          {operators.map((operator) => (
-            <div
-              className="flex flex-col gap-2 items-center w-[60px]"
-              key={operator.id}
+          <div className="flex flex-col gap-4 items-start">
+            <Tooltip
+              asChild
+              content={
+                <>
+                  Clusters represent a unique set of operators who operate your
+                  validators.
+                </>
+              }
             >
-              <div className="flex items-center justify-center size-[60px] rounded-full border border-gray-300 p-2">
-                <OperatorAvatar
-                  src={operator.logo}
-                  size="lg"
-                  variant="circle"
-                />
-              </div>
-              <div className="flex flex-col items-center gap-0.5">
-                <Text variant="overline" className="text-gray-800 text-center">
-                  {operator.name}
+              <div className="flex items-center gap-1 w-fit">
+                <Text variant="body-3-semibold" className="text-gray-500">
+                  Validator Cluster |{" "}
+                  {clusterHash ? shortenClusterId(clusterHash) : "..."}
                 </Text>
-                <Text variant="overline" className="text-gray-500 text-center">
-                  ID: {operator.id}
-                </Text>
+                <FaCircleInfo className="size-3.5 text-gray-500" />
               </div>
+            </Tooltip>
+
+            <div className="flex items-start gap-3 flex-wrap pr-10">
+              {operators.map((operator) => (
+                <div
+                  className="flex flex-col gap-2 items-center w-[60px]"
+                  key={operator.id}
+                >
+                  <div className="flex size-10 items-center justify-center overflow-hidden rounded-lg border-[1.5px] border-gray-300">
+                    <OperatorAvatar
+                      src={operator.logo}
+                      size="lg"
+                      variant="square"
+                    />
+                  </div>
+                  <div className="flex w-full flex-col items-center">
+                    <Text
+                      variant="caption-medium"
+                      className="w-full truncate text-center text-gray-900"
+                    >
+                      {operator.name}
+                    </Text>
+                    <Text
+                      as="span"
+                      className="w-full text-center text-[9px] font-medium leading-4 text-gray-500"
+                    >
+                      ID: {operator.id}
+                    </Text>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          <Text variant="body-2-medium" className="text-gray-700">
+            Your operators will now charge fees in ETH, and your runway will be
+            calculated based on your ETH balance. Your remaining SSV balance has
+            been withdrawn to your wallet
+          </Text>
+
+          {clusterPath ? (
+            <Button
+              as={Link}
+              to={clusterPath}
+              size="xl"
+              width="full"
+              className="font-semibold"
+            >
+              Manage Cluster
+            </Button>
+          ) : (
+            <Button size="xl" width="full" className="font-semibold" disabled>
+              Manage Cluster
+            </Button>
+          )}
         </div>
-
-        <Text variant="body-2-medium" className="text-gray-700">
-          Your validators remain fully managed by the same operator cluster:
-        </Text>
-
-        {clusterPath ? (
-          <Button
-            as={Link}
-            to={clusterPath}
-            size="xl"
-            width="full"
-            className="font-semibold"
-          >
-            Manage Cluster
-          </Button>
-        ) : (
-          <Button size="xl" width="full" className="font-semibold" disabled>
-            Manage Cluster
-          </Button>
-        )}
       </Card>
     </Container>
   );

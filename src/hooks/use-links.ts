@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useAccount } from "@/hooks/account/use-account";
 
-const isProduction = location.hostname === "app.ssv.network"; // TODO: determine production through build.yaml environment variable
+const isProduction = location.hostname === "app.ssv.network" || location.hostname === "app.hoodi.ssv.network"; // TODO: determine production through build.yaml environment variable
 
 export const useLinks = () => {
   const { chain } = useAccount();

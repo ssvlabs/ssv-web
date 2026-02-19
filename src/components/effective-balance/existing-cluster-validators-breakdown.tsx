@@ -12,7 +12,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { FaCircleInfo } from "react-icons/fa6";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { numberFormatter } from "@/lib/utils/number";
-import { ValidatorStatus } from "@/lib/utils/validator-status-mapping";
+import { BeaconChainStatus } from "@/lib/utils/validator-status-mapping";
 import { useInfiniteClusterValidators } from "@/hooks/cluster/use-infinite-cluster-validators";
 import { formatUnits } from "viem";
 import { useChainedQuery } from "@/hooks/react-query/use-chained-query";
@@ -56,16 +56,21 @@ export const ExistingClusterValidatorsBreakdown: FC<
     _setSelectedTab(value as TabKey);
   };
 
-  const statusesQuery = useChainedQuery({
+  const { data: statuses, isLoading: isStatusesLoading } = useChainedQuery({
     queryKey: ["validators-status-counts", clusterHash],
     queryFn: () => getValidatorsStatusCounts(clusterHash!),
     enabled: Boolean(clusterHash),
   });
 
-  const total = Object.values(statusesQuery.data ?? {}).reduce(
+  const total = Object.values(statuses ?? {}).reduce(
     (acc, curr) => acc + curr,
     0,
   ) as number;
+
+  const notDepositedCount =
+    (statuses?.notDeposited ?? 0) + (statuses?.exited ?? 0);
+
+  const depositedCount = total - notDepositedCount;
 
   const { validators: apiValidators, infiniteQuery } =
     useInfiniteClusterValidators(clusterHash, 30);
@@ -76,16 +81,21 @@ export const ExistingClusterValidatorsBreakdown: FC<
         const effectiveBalanceBigInt = BigInt(
           validator.validator_info?.effective_balance ?? 0,
         );
+
+        const isDeposited = [
+          BeaconChainStatus.ACTIVE_ONGOING,
+          BeaconChainStatus.ACTIVE_EXITING,
+          BeaconChainStatus.ACTIVE_SLASHED,
+        ].includes(validator.validator_info.status);
+
         return {
           publicKey: validator.public_key,
-          status:
-            validator.displayedStatus === ValidatorStatus.NOT_DEPOSITED
-              ? ("Not Deposited" as const)
-              : ("Deposited" as const),
-          effectiveBalance:
-            validator.displayedStatus === ValidatorStatus.NOT_DEPOSITED
-              ? 32
-              : Number(formatUnits(effectiveBalanceBigInt, 9)),
+          status: isDeposited
+            ? ("Deposited" as const)
+            : ("Not Deposited" as const),
+          effectiveBalance: isDeposited
+            ? Number(formatUnits(effectiveBalanceBigInt, 9))
+            : 32,
         };
       }),
     [apiValidators],
@@ -107,7 +117,7 @@ export const ExistingClusterValidatorsBreakdown: FC<
         <TabsList className="flex w-full [&>*]:flex-1">
           <TabsTrigger value="all" className="flex items-center gap-2">
             <Text variant="body-3-medium">{tabLabels.all}</Text>
-            {statusesQuery.isLoading ? (
+            {isStatusesLoading ? (
               <Spinner size="sm" />
             ) : (
               <Badge variant="primary" size="xs" className="rounded-md">
@@ -118,21 +128,21 @@ export const ExistingClusterValidatorsBreakdown: FC<
           <TabsTrigger value="deposited" className="flex items-center gap-2">
             <Text variant="body-3-medium">{tabLabels.deposited}</Text>
 
-            {statusesQuery.isLoading ? (
+            {isStatusesLoading ? (
               <Spinner size="sm" />
             ) : (
               <Badge variant="success" size="xs" className="rounded-md">
-                {total - (statusesQuery.data?.notDeposited ?? 0)}
+                {depositedCount}
               </Badge>
             )}
           </TabsTrigger>
           <TabsTrigger value="notDeposited" className="flex items-center gap-2">
             <Text variant="body-3-medium">{tabLabels.notDeposited}</Text>
-            {statusesQuery.isLoading ? (
+            {isStatusesLoading ? (
               <Spinner size="sm" />
             ) : (
               <Badge variant="warning" size="xs" className="rounded-md">
-                {statusesQuery.data?.notDeposited ?? 0}
+                {notDepositedCount}
               </Badge>
             )}
           </TabsTrigger>

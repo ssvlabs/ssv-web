@@ -105,7 +105,7 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
             per 32 ETH of{" "}
             <Button
               as="a"
-              href="https://docs.ssv.network/stakers/clusters/cluster-balance"
+              href="https://docs.ssv.network/stakers/clusters/effective-balance"
               target="_blank"
               variant="link"
             >

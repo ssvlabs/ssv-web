@@ -47,6 +47,10 @@ export const validatorsSearchFilters = {
   status: parseAsArrayOf(z.enum(VALIDATOR_STATUS_FILTER_KEYS)).withOptions(
     defaultSearchOptions,
   ),
+  includeOperatorData: parseAsBoolean.withDefault(false).withOptions({
+    ...defaultSearchOptions,
+    clearOnDefault: false,
+  }),
 };
 
 export type ValidatorSearchFilterKeys = keyof typeof validatorsSearchFilters;

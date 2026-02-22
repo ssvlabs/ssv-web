@@ -49,44 +49,61 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent>
-        <DropdownMenuItem
-          disabled={isSsvCluster}
-          onClick={() => onActionClickHandler(ActionType.Remove)}
+        <Tooltip
+          side="right"
+          delayDuration={0}
+          content={isSsvCluster ? "Switch to ETH to enable this option" : undefined}
         >
-          <LuTrash2 className="size-4" />
-          <span>Remove Validators</span>
-        </DropdownMenuItem>
+          <div>
+            <DropdownMenuItem
+              disabled={isSsvCluster}
+              onClick={() => onActionClickHandler(ActionType.Remove)}
+            >
+              <LuTrash2 className="size-4" />
+              <span>Remove Validators</span>
+            </DropdownMenuItem>
+          </div>
+        </Tooltip>
 
         <Tooltip
-          side="bottom"
-          delayDuration={350}
-          asChild
+          side="right"
+          delayDuration={0}
           content={
             isLiquidated
               ? "You cannot perform this operation when your cluster is liquidated. Please reactivate to proceed."
               : undefined
           }
         >
-          <DropdownMenuItem
-            disabled={isLiquidated}
-            onClick={() => onActionClickHandler(ActionType.Exit)}
-          >
-            <LuLogOut className="size-4" />
-            <span>Exit Validators</span>
-          </DropdownMenuItem>
+          <div>
+            <DropdownMenuItem
+              disabled={isLiquidated}
+              onClick={() => onActionClickHandler(ActionType.Exit)}
+            >
+              <LuLogOut className="size-4" />
+              <span>Exit Validators</span>
+            </DropdownMenuItem>
+          </div>
         </Tooltip>
         <>
           <div className="w-full h-[1px] bg-gray-300" />
           <div className="h-9 flex items-center text-gray-500 text-xs	font-semibold pl-[16px]">
             DKG
           </div>
-          <DropdownMenuItem
-            disabled={isSsvCluster}
-            onClick={() => onActionClickHandler(ActionType.Reshare)}
+          <Tooltip
+            side="right"
+            delayDuration={0}
+            content={isSsvCluster ? "Switch to ETH to enable this option" : undefined}
           >
-            <TbRefreshDot className="size-4" />
-            <span>Reshare</span>
-          </DropdownMenuItem>
+            <div>
+              <DropdownMenuItem
+                disabled={isSsvCluster}
+                onClick={() => onActionClickHandler(ActionType.Reshare)}
+              >
+                <TbRefreshDot className="size-4" />
+                <span>Reshare</span>
+              </DropdownMenuItem>
+            </div>
+          </Tooltip>
         </>
       </DropdownMenuContent>
     </DropdownMenu>

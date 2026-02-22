@@ -21,6 +21,7 @@ import {
   useCluster,
 } from "@/hooks/cluster/use-cluster";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
+import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
 import { usePaginatedAccountClusters } from "@/hooks/cluster/use-paginated-account-clusters";
 import { useOperators } from "@/hooks/operator/use-operators";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
@@ -59,6 +60,15 @@ export const RegisterValidatorConfirmation: FC = () => {
   const clusterQuery = useCluster(clusterHash, {
     retry: false,
   });
+
+  const clusterRunway = useClusterRunway(clusterHash, {
+    deltaValidators: BigInt(shares.length),
+    deltaBalance: depositAmount,
+  });
+
+  const displayFundingDays = inCluster
+    ? Number(clusterRunway.data?.runway ?? 0n)
+    : fundingDays;
 
   const registerValidator = useRegisterValidator();
   const bulkRegisterValidator = useBulkRegisterValidator();
@@ -161,12 +171,15 @@ export const RegisterValidatorConfirmation: FC = () => {
               <div className="text-end space-y-1">
                 <Text variant="body-2-medium">
                   {formatSSV(
-                    computeDailyAmount(BigInt(operator.eth_fee), fundingDays),
+                    computeDailyAmount(
+                      BigInt(operator.eth_fee),
+                      displayFundingDays,
+                    ),
                   )}{" "}
                   ETH
                 </Text>
                 <Text variant="body-3-medium" className="text-gray-500">
-                  /{fundingDays} days
+                  /{displayFundingDays} days
                 </Text>
               </div>
             </div>

@@ -14,6 +14,10 @@ import { LuLogOut, LuTrash2 } from "react-icons/lu";
 import { Tooltip } from "@/components/ui/tooltip";
 import { TbRefreshDot } from "react-icons/tb";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
+import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
+import { useCluster } from "@/hooks/cluster/use-cluster";
+import { useOperators } from "@/hooks/operator/use-operators";
+import { dgkURLSchema } from "@/lib/zod";
 
 type Props = {
   isLiquidated: boolean;
@@ -31,6 +35,15 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
   isMigrated,
   ...props
 }) => {
+  const { clusterHash } = useClusterPageParams();
+  const { data: cluster } = useCluster(clusterHash!);
+  const operators = useOperators(cluster?.operators ?? []);
+
+  const allOperatorsHaveValidDkgAddress =
+    operators.data?.every(
+      (op) => dgkURLSchema.safeParse(op.dkg_address ?? "").success,
+    ) ?? false;
+
   const location = useLocation();
   const navigate = useNavigate();
   const isSsvCluster = !isMigrated;
@@ -84,7 +97,8 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
             </DropdownMenuItem>
           </div>
         </Tooltip>
-        <>
+        {allOperatorsHaveValidDkgAddress ? (
+           <>
           <div className="w-full h-[1px] bg-gray-300" />
           <div className="h-9 flex items-center text-gray-500 text-xs	font-semibold pl-[16px]">
             DKG
@@ -105,6 +119,7 @@ export const ValidatorsActionsMenu: FC<ButtonProps & Props> = ({
             </div>
           </Tooltip>
         </>
+        ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
   );

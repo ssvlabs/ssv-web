@@ -85,7 +85,6 @@ export const SwitchWizardStepThreeRoute = () => {
       fundingSummary={fundingSummary}
       effectiveBalance={effectiveBalance}
       totalDeposit={totalDeposit}
-      validatorsAmount={cluster.data?.validatorCount ?? 1}
       withdrawSsvBalance={balanceSSV.data}
       isSubmitting={migrate.isPending}
       isSubmitDisabled={!canSubmit}

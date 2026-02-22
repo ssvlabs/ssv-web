@@ -9,10 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip } from "@/components/ui/tooltip";
 import { FaCircleInfo } from "react-icons/fa6";
 import type { Operator } from "@/types/api";
-import { getYearlyFee } from "@/lib/utils/operator";
-import { currencyFormatter, formatETH, formatSSV } from "@/lib/utils/number";
-import { formatUnits } from "viem";
-import { useRates } from "@/hooks/use-rates";
+import { useMigrationCalculationData } from "@/hooks/use-migration-calculation-data";
 import type { SwitchWizardFundingSummary } from "./switch-wizard-types";
 import type { NavigateOptions } from "react-router-dom";
 
@@ -27,7 +24,6 @@ type SwitchWizardStepThreeProps = {
   totalDeposit?: bigint;
   effectiveBalance?: bigint;
   fundingSummary?: SwitchWizardFundingSummary;
-  validatorsAmount?: number;
   withdrawSsvBalance?: bigint;
   isSubmitting?: boolean;
   isSubmitDisabled?: boolean;
@@ -44,42 +40,29 @@ export const SwitchWizardStepThree = ({
   totalDeposit,
   effectiveBalance,
   fundingSummary,
-  validatorsAmount,
   withdrawSsvBalance,
   isSubmitting = false,
   isSubmitDisabled = false,
 }: SwitchWizardStepThreeProps) => {
   const [isAcknowledged, setIsAcknowledged] = useState(false);
   const acknowledgeId = useId();
-  const rates = useRates();
-  const ethRate = rates.data?.eth ?? 0;
-  const ssvRate = rates.data?.ssv ?? 0;
-  const validatorsCount = validatorsAmount ?? 1;
-  const isMultiValidator = validatorsCount > 1;
 
-  const formatEthDisplay = (value: bigint) => `${formatETH(value)} ETH`;
-  const formatUsd = (value: bigint) =>
-    `~${currencyFormatter.format(ethRate * +formatUnits(value, 18))}`;
-  const formatEthValue = (value?: bigint) =>
-    value !== undefined ? formatEthDisplay(value) : "-";
-
-  const effectiveBalanceDisplay =
-    effectiveBalance !== undefined ? formatEthDisplay(effectiveBalance) : "-";
-  const totalDepositFallback = fundingSummary
-    ? fundingSummary.operatorsSubtotal +
-      fundingSummary.networkSubtotal +
-      fundingSummary.liquidationSubtotal
-    : undefined;
-  const withdrawSsvDisplay =
-    withdrawSsvBalance !== undefined
-      ? `${formatSSV(withdrawSsvBalance)} SSV`
-      : "0 SSV";
-  const withdrawSsvUsd =
-    withdrawSsvBalance !== undefined
-      ? `~${currencyFormatter.format(
-          ssvRate * Number(formatUnits(withdrawSsvBalance, 18)),
-        )}`
-      : "";
+  const {
+    operatorFees,
+    effectiveBalanceDisplay,
+    totalDepositDisplay,
+    totalDepositUsd,
+    withdrawSsvDisplay,
+    withdrawSsvUsd,
+    formatEthValue,
+  } = useMigrationCalculationData({
+    operators,
+    fundingDays,
+    effectiveBalance,
+    fundingSummary,
+    totalDeposit,
+    withdrawSsvBalance,
+  });
 
   const handleSubmit = () => {
     if (!isAcknowledged || isSubmitting || isSubmitDisabled) return;
@@ -107,15 +90,8 @@ export const SwitchWizardStepThree = ({
           <Text variant="body-3-semibold" className="text-gray-500">
             Selected Operators
           </Text>
-          {operators.map((operator) => {
-            const yearlyEthFee = getYearlyFee(BigInt(operator.eth_fee || "0"));
-            const yearlyEthFeeDisplay = isMultiValidator
-              ? yearlyEthFee * BigInt(validatorsCount)
-              : yearlyEthFee;
-            const yearlyFeeSuffix = isMultiValidator
-              ? ` (total for ${validatorsCount} validators)`
-              : "";
-
+          {operatorFees.map((opFee, index) => {
+            const operator = operators[index];
             return (
               <div
                 className="flex justify-between items-center"
@@ -127,10 +103,10 @@ export const SwitchWizardStepThree = ({
                 />
                 <div className="text-end space-y-1">
                   <Text variant="body-2-medium">
-                    {formatEthDisplay(yearlyEthFeeDisplay)}
+                    {opFee.periodFeeDisplay}
                   </Text>
                   <Text variant="body-3-medium" className="text-gray-500">
-                    {formatUsd(yearlyEthFeeDisplay)} /year{yearlyFeeSuffix}
+                    {opFee.periodFeeUsd} /{fundingDays} days
                   </Text>
                 </div>
               </div>
@@ -207,17 +183,9 @@ export const SwitchWizardStepThree = ({
           <div className="flex items-start justify-between">
             <Text variant="body-2-medium">Total Deposit</Text>
             <div className="flex flex-col items-end">
-              <Text variant="headline4">
-                {totalDeposit !== undefined
-                  ? formatEthDisplay(totalDeposit)
-                  : formatEthValue(totalDepositFallback)}
-              </Text>
+              <Text variant="headline4">{totalDepositDisplay}</Text>
               <Text variant="body-3-medium" className="text-gray-500">
-                {totalDeposit !== undefined
-                  ? formatUsd(totalDeposit)
-                  : totalDepositFallback !== undefined
-                    ? formatUsd(totalDepositFallback)
-                    : ""}
+                {totalDepositUsd}
               </Text>
             </div>
           </div>

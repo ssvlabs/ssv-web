@@ -41,7 +41,7 @@ export const useComputeFundingCost = () => {
 };
 
 export type UseFundingCostArgs = {
-  operators: Pick<Operator, "eth_fee" | "fee">[];
+  operators: Operator[];
   fundingDays: number;
   /** Effective balance in ETH (human-readable). Examples: 32n (1 validator), 64n (2 validators) */
   effectiveBalance: bigint;

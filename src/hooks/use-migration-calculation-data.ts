@@ -14,7 +14,7 @@ type OperatorFeeDisplay = {
 };
 
 type UseMigrationCalculationDataArgs = {
-  operators: Pick<Operator, "id" | "name" | "logo" | "eth_fee">[];
+  operators: Operator[];
   fundingDays: number;
   effectiveBalance?: bigint;
   fundingSummary?: SwitchWizardFundingSummary;

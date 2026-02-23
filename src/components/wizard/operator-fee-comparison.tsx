@@ -17,7 +17,7 @@ import { useRates } from "@/hooks/use-rates.ts";
 import { formatUnits } from "viem";
 
 type OperatorFeeComparisonProps = {
-  operators: Pick<Operator, "id" | "name" | "logo" | "fee" | "eth_fee">[];
+  operators: Operator[];
 };
 
 const formatUsd = (value: bigint, rate: number) =>

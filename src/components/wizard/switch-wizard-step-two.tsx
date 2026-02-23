@@ -33,7 +33,7 @@ type SwitchWizardStepTwoProps = {
   backButtonLabel?: string;
   navigateRoutePath?: string;
   navigateRouteOptions?: NavigateOptions;
-  operators?: Pick<Operator, "id" | "name" | "logo" | "fee" | "eth_fee">[];
+  operators?: Operator[];
   validatorsAmount?: number;
   effectiveBalance?: bigint;
   currentRunwayDays?: number;

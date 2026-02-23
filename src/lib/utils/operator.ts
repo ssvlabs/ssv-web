@@ -12,8 +12,6 @@ type GetYearlyFeeOpts = {
   format?: boolean;
 };
 
-type OperatorStatus = Partial<Pick<Operator, "is_deleted">>;
-
 export function getYearlyFee(fee: bigint, opts: { format: true }): string;
 export function getYearlyFee(fee: bigint, opts?: GetYearlyFeeOpts): bigint;
 export function getYearlyFee(
@@ -121,11 +119,10 @@ export const prepareOperatorsForShares = (
     operatorKey: operator.public_key,
   }));
 
-export const isOperatorRemoved = (operator: OperatorStatus) =>
-  operator.is_deleted === true;
+export const isOperatorRemoved = (operator: Operator) => operator.is_deleted;
 
 export const getOperatorEthFee = (
-  operator: Pick<Operator, "eth_fee"> & OperatorStatus,
+  operator: Operator,
   ignoreRemoved = false,
 ) => {
   if (ignoreRemoved && isOperatorRemoved(operator)) return 0n;
@@ -133,8 +130,7 @@ export const getOperatorEthFee = (
 };
 
 export const sumOperatorsFee = (
-  operators: (Pick<Operator, "eth_fee" | "fee"> &
-    Partial<Pick<Operator, "is_deleted">>)[],
+  operators: Operator[],
   by: "eth" | "ssv" = "eth",
   ignoreRemovedForEth = false,
 ) => {

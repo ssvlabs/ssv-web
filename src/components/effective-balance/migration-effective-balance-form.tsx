@@ -48,10 +48,10 @@ export const MigrationEffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
         totalEffectiveBalance: z
           .number()
           .positive({ message: "Balance must be greater than 0" })
-          .min(totalEffectiveBalance),
-        // .max(maxEffectiveBalance),
+          .min(totalEffectiveBalance)
+          .max(maxEffectiveBalance),
       }),
-    [totalEffectiveBalance],
+    [maxEffectiveBalance, totalEffectiveBalance],
   );
 
   const form = useForm<z.infer<typeof schema>>({

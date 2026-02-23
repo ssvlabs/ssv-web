@@ -98,24 +98,28 @@ export const SwitchWizardStepTwo = ({
     fundingDays: currentRunwayDays,
     operators,
     effectiveBalance: effectiveBalanceEth,
+    ignoreRemovedOperators: true,
   });
 
   const halfYearCostsQuery = useFundingCostETH({
     fundingDays: periods["half-year"],
     operators,
     effectiveBalance: effectiveBalanceEth,
+    ignoreRemovedOperators: true,
   });
 
   const yearCostsQuery = useFundingCostETH({
     fundingDays: periods.year,
     operators,
     effectiveBalance: effectiveBalanceEth,
+    ignoreRemovedOperators: true,
   });
 
   const customCostsQuery = useFundingCostETH({
     fundingDays: values.custom,
     operators,
     effectiveBalance: effectiveBalanceEth,
+    ignoreRemovedOperators: true,
   });
 
   const mapQueryToCosts = (data: typeof halfYearCostsQuery.data) =>

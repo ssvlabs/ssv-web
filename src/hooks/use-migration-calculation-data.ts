@@ -2,6 +2,7 @@ import { computeDailyAmount } from "@/lib/utils/keystore";
 import type { Operator } from "@/types/api";
 import { useRates } from "@/hooks/use-rates";
 import { currencyFormatter, formatETH } from "@/lib/utils/number";
+import { getOperatorEthFee } from "@/lib/utils/operator";
 import { formatUnits } from "viem";
 import type { SwitchWizardFundingSummary } from "@/components/wizard/switch-wizard-types";
 
@@ -50,7 +51,7 @@ export const useMigrationCalculationData = ({
   // Calculate operator fees for the selected period (per 32 ETH validator)
   const operatorFees: OperatorFeeDisplay[] = operators.map((operator) => {
     const periodFee = computeDailyAmount(
-      BigInt(operator.eth_fee || "0"),
+      getOperatorEthFee(operator, true),
       fundingDays,
     );
     return {

@@ -35,10 +35,15 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
     });
   };
 
+  const effectiveBalance = Math.max(
+    totalEffectiveBalance.data ?? 0,
+    (cluster.data?.validatorCount ?? 0) * 32,
+  );
+
   return (
     <MigrationEffectiveBalanceForm
       clusterHash={clusterHash!}
-      totalEffectiveBalance={totalEffectiveBalance.data!}
+      totalEffectiveBalance={effectiveBalance}
       maxEffectiveBalance={maxEffectiveBalance}
       onNext={handleNext}
       backTo={basePath}

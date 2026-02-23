@@ -75,7 +75,7 @@ export const RemoveValidatorsConfirmation: FC = () => {
         {
           cluster: clusterData,
           publicKey: selectedPublicKeys[0] as Address,
-          operatorIds: operatorIds,
+          operatorIds,
         },
         options,
       );
@@ -85,7 +85,7 @@ export const RemoveValidatorsConfirmation: FC = () => {
       {
         cluster: clusterData,
         publicKeys: selectedPublicKeys as Address[],
-        operatorIds: bigintifyNumbers(cluster.data?.operators ?? []),
+        operatorIds,
       },
       options,
     );

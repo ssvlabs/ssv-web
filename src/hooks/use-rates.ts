@@ -17,10 +17,21 @@ export const useRates = () => {
     queryKey: ["rates"],
     queryFn: async () => {
       const res = await fetch(
-        "https://ssv-price-8c98717db454.herokuapp.com/data",
+        "https://api.coingecko.com/api/v3/simple/price?ids=ethereum,ssv-network&vs_currencies=usd",
       );
       if (!res.ok) throw new Error("Failed to fetch rates");
-      return res.json() as Promise<RatesResponse>;
+      const data = await res.json();
+
+      // Transform CoinGecko response to match our RatesResponse format
+      return {
+        eth: data.ethereum?.usd ?? 0,
+        ssv: data["ssv-network"]?.usd ?? 0,
+        apr: 0,
+        boost: 0,
+        operators: 0,
+        validators: 0,
+        timestamp: new Date().toISOString(),
+      } as RatesResponse;
     },
   });
 };

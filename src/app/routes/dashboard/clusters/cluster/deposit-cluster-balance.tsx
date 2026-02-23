@@ -133,18 +133,6 @@ export const DepositClusterBalance: FC = () => {
                             {...props}
                             ref={ref}
                           />
-                          <Button
-                            size="lg"
-                            variant="secondary"
-                            className="font-semibold px-4"
-                            onClick={() =>
-                              form.setValue("value", balance?.value ?? 0n, {
-                                shouldValidate: true,
-                              })
-                            }
-                          >
-                            MAX
-                          </Button>
                           <span className="text-[28px] font-medium">ETH</span>
                         </div>
                         <Divider />

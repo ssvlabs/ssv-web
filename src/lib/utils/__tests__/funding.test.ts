@@ -114,6 +114,67 @@ describe("util:keystore", () => {
     expect(result.total).toBe(10740n + 10740n + 9n);
   });
 
+  it("covers EB examples used in scaled fee calculation", () => {
+    const cases = [
+      {
+        effectiveBalance: 33n,
+        expectedVUnitsFloor: 10312n,
+        expectedVUnitsCeil: 10313n,
+        expectedNetworkSubtotal: 7383n,
+      },
+      {
+        effectiveBalance: 48n,
+        expectedVUnitsFloor: 15000n,
+        expectedVUnitsCeil: 15000n,
+        expectedNetworkSubtotal: 10740n,
+      },
+      {
+        effectiveBalance: 64n,
+        expectedVUnitsFloor: 20000n,
+        expectedVUnitsCeil: 20000n,
+        expectedNetworkSubtotal: 14320n,
+      },
+      {
+        effectiveBalance: 100n,
+        expectedVUnitsFloor: 31250n,
+        expectedVUnitsCeil: 31250n,
+        expectedNetworkSubtotal: 22375n,
+      },
+      {
+        effectiveBalance: 2048n,
+        expectedVUnitsFloor: 640000n,
+        expectedVUnitsCeil: 640000n,
+        expectedNetworkSubtotal: 458240n,
+      },
+    ] as const;
+
+    const perValidatorDailyNetworkCost = globals.BLOCKS_PER_DAY;
+
+    for (const c of cases) {
+      const result = computeFundingCost({
+        fundingDays: 1,
+        effectiveBalance: c.effectiveBalance,
+        networkFee: 1n,
+        operatorsFee: 0n,
+        liquidationCollateralPeriod: 0n,
+        minimumLiquidationCollateral: 0n,
+      });
+
+      const vUnitsFloor = (c.effectiveBalance * 10000n) / 32n;
+      const vUnitsCeil = (c.effectiveBalance * 10000n + 31n) / 32n;
+      const subtotalViaVUnits =
+        (perValidatorDailyNetworkCost * vUnitsFloor) / 10000n;
+
+      expect(vUnitsFloor).toBe(c.expectedVUnitsFloor);
+      expect(vUnitsCeil).toBe(c.expectedVUnitsCeil);
+      expect(result.subtotal.networkCost).toBe(c.expectedNetworkSubtotal);
+      expect(result.subtotal.networkCost).toBe(subtotalViaVUnits);
+      expect(result.subtotal.operatorsCost).toBe(0n);
+      expect(result.subtotal.liquidationCollateral).toBe(0n);
+      expect(result.total).toBe(c.expectedNetworkSubtotal);
+    }
+  });
+
   it("computeFundingCost scales network and operators cost by funding days", () => {
     // 1 validator, 3 days → costs are 3× the 1-day amounts
     // liquidation is one-time collateral, unchanged by days

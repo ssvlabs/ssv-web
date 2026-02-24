@@ -12,7 +12,7 @@ import type { Operator } from "@/types/api";
 
 type SwitchWizardStepFourProps = {
   clusterHash?: string;
-  operators?: Pick<Operator, "id" | "name" | "logo">[];
+  operators?: Operator[];
   clusterPath?: string;
 };
 

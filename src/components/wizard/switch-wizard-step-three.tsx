@@ -19,7 +19,7 @@ type SwitchWizardStepThreeProps = {
   backButtonLabel?: string;
   navigateRoutePath?: string;
   navigateRouteOptions?: NavigateOptions;
-  operators: Pick<Operator, "id" | "name" | "logo" | "eth_fee">[];
+  operators: Operator[];
   fundingDays: number;
   totalDeposit?: bigint;
   effectiveBalance?: bigint;
@@ -102,9 +102,7 @@ export const SwitchWizardStepThree = ({
                   isShowExplorerLink={false}
                 />
                 <div className="text-end space-y-1">
-                  <Text variant="body-2-medium">
-                    {opFee.periodFeeDisplay}
-                  </Text>
+                  <Text variant="body-2-medium">{opFee.periodFeeDisplay}</Text>
                   <Text variant="body-3-medium" className="text-gray-500">
                     {opFee.periodFeeUsd} /{fundingDays} days
                   </Text>

@@ -14,7 +14,7 @@ import { encodePacked, keccak256 } from "viem";
 
 export const createClusterHash = (
   account: Address,
-  operators: readonly (Pick<Operator, "id"> | number)[],
+  operators: readonly (Operator | number)[],
 ) =>
   keccak256(
     encodePacked(

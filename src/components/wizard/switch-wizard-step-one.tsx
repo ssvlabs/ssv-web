@@ -11,7 +11,7 @@ type SwitchWizardStepOneProps = {
   onBack?: () => void;
   backButtonLabel?: string;
   navigateRoutePath?: string;
-  operators: Pick<Operator, "id" | "name" | "logo" | "fee" | "eth_fee">[];
+  operators: Operator[];
 };
 
 export const SwitchWizardStepOne = ({

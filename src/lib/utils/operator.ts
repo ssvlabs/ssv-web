@@ -119,13 +119,27 @@ export const prepareOperatorsForShares = (
     operatorKey: operator.public_key,
   }));
 
+export const isOperatorRemoved = (operator: Operator) => operator.is_deleted;
+
+export const getOperatorEthFee = (
+  operator: Operator,
+  ignoreRemoved = false,
+) => {
+  if (ignoreRemoved && isOperatorRemoved(operator)) return 0n;
+  return BigInt(operator.eth_fee);
+};
+
 export const sumOperatorsFee = (
-  operators: Pick<Operator, "eth_fee" | "fee">[],
+  operators: Operator[],
   by: "eth" | "ssv" = "eth",
+  ignoreRemovedForEth = false,
 ) => {
   return operators.reduce(
     (acc, operator) =>
-      acc + BigInt(by === "eth" ? operator.eth_fee : operator.fee),
+      acc +
+      (by === "eth"
+        ? getOperatorEthFee(operator, ignoreRemovedForEth)
+        : BigInt(operator.fee)),
     0n,
   );
 };

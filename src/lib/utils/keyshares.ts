@@ -60,7 +60,7 @@ export const validateConsistentOperatorIds = (keyshares: KeySharesItem[]) => {
 
 export const validateConsistentOperatorPublicKeys = (
   keyshares: KeySharesItem[],
-  operators: Pick<Operator, "id" | "public_key">[],
+  operators: Operator[],
 ) => {
   const operatorsMap = new Map(operators.map((o) => [o.id, o.public_key]));
   const valid = keyshares.every(({ data }) =>
@@ -92,7 +92,7 @@ export const ensureValidatorsUniqueness = (keyshares: KeySharesItem[]) => {
 const cmd = isWindows ? "ssv-keys.exe" : "./ssv-keys-mac";
 
 type GenerateSSVKeysCMDParams = {
-  operators: Pick<Operator, "id" | "public_key">[];
+  operators: Operator[];
   nonce: number;
   account: Address;
 };
@@ -112,14 +112,14 @@ export const generateSSVKeysCMD = ({
 };
 
 type GenerateSSVKeysDockerCMDParams = {
-  operators: Pick<Operator, "id" | "public_key" | "dkg_address">[];
+  operators: Operator[];
   nonce: number;
   account: Address;
   withdrawalAddress: Address;
   chainId?: number;
   validatorsCount?: number;
   os?: ReturnType<typeof getOSName>;
-  newOperators?: Pick<Operator, "id" | "public_key" | "dkg_address">[];
+  newOperators?: Operator[];
   signatures?: string;
   isReshare?: boolean;
   proofsString?: string;
@@ -146,9 +146,7 @@ export const generateSSVKeysDockerCMD = ({
   const operatorIds = sortedOperators.map((op) => op.id).join(",");
   const dynamicFullPath = os === "windows" ? "%cd%" : "$(pwd)";
 
-  const getOperatorsData = (
-    operators: Pick<Operator, "id" | "public_key" | "dkg_address">[],
-  ) => {
+  const getOperatorsData = (operators: Operator[]) => {
     const jsonOperatorInfo = JSON.stringify(
       sortOperators(operators).map(({ id, public_key, dkg_address }) => ({
         id,

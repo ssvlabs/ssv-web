@@ -33,7 +33,7 @@ type SwitchWizardStepTwoProps = {
   backButtonLabel?: string;
   navigateRoutePath?: string;
   navigateRouteOptions?: NavigateOptions;
-  operators?: Pick<Operator, "id" | "name" | "logo" | "fee" | "eth_fee">[];
+  operators?: Operator[];
   validatorsAmount?: number;
   effectiveBalance?: bigint;
   currentRunwayDays?: number;
@@ -98,24 +98,28 @@ export const SwitchWizardStepTwo = ({
     fundingDays: currentRunwayDays,
     operators,
     effectiveBalance: effectiveBalanceEth,
+    ignoreRemovedOperators: true,
   });
 
   const halfYearCostsQuery = useFundingCostETH({
     fundingDays: periods["half-year"],
     operators,
     effectiveBalance: effectiveBalanceEth,
+    ignoreRemovedOperators: true,
   });
 
   const yearCostsQuery = useFundingCostETH({
     fundingDays: periods.year,
     operators,
     effectiveBalance: effectiveBalanceEth,
+    ignoreRemovedOperators: true,
   });
 
   const customCostsQuery = useFundingCostETH({
     fundingDays: values.custom,
     operators,
     effectiveBalance: effectiveBalanceEth,
+    ignoreRemovedOperators: true,
   });
 
   const mapQueryToCosts = (data: typeof halfYearCostsQuery.data) =>

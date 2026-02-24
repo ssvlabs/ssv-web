@@ -17,7 +17,7 @@ export type OperatorDKGHealthResponse = {
 };
 
 export const getOperatorsDKGHealthQueryOptions = (
-  operators: Pick<Operator, "id" | "dkg_address">[],
+  operators: Operator[],
   {
     chainId = getSSVNetworkDetails().networkId,
     options,
@@ -41,7 +41,7 @@ export const getOperatorsDKGHealthQueryOptions = (
 };
 
 export const useOperatorsDKGHealth = (
-  operators: Pick<Operator, "id" | "dkg_address">[],
+  operators: Operator[],
   options: UseQueryOptions = {},
 ) => {
   const chainId = useChainId();

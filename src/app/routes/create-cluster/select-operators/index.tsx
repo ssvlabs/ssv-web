@@ -97,7 +97,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
   const currentCluster = useCluster(clusterHash ?? "", {
     enabled: Boolean(clusterHash),
   });
-  const feeMode = currentCluster.data?.migrated === false ? "ssv" : "eth";
+  const feeMode = !currentCluster.data?.migrated ? "ssv" : "eth";
   const feeField = feeMode === "eth" ? "eth_fee" : "fee";
   const feeDenomination = feeMode === "eth" ? "ETH" : "SSV";
   const totalYearlyFee = selectedOperators.reduce(

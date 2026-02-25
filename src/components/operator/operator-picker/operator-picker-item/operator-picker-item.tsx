@@ -28,6 +28,7 @@ export type OperatorPickerItemProps = {
   isSelected?: boolean;
   isDisabled?: boolean;
   onCheckedChange?: (checked: boolean) => void;
+  feeMode?: "eth" | "ssv";
 };
 
 type FCProps = FC<
@@ -41,6 +42,7 @@ export const OperatorPickerItem: FCProps = ({
   onCheckedChange,
   isSelected,
   isDisabled,
+  feeMode = "eth",
   ...props
 }) => {
   const { address } = useAccount();
@@ -54,6 +56,13 @@ export const OperatorPickerItem: FCProps = ({
 
   const hasValidators = operator.validators_count !== 0;
   const isInactive = operator.is_active < 1;
+  const yearlyFee = getYearlyFee(
+    feeMode === "eth" ? BigInt(operator.eth_fee) : BigInt(operator.fee || "0"),
+    {
+      format: true,
+      denomination: feeMode === "eth" ? "ETH" : "SSV",
+    },
+  );
 
   const chainId = useChainId();
 
@@ -141,9 +150,7 @@ export const OperatorPickerItem: FCProps = ({
             "font-semibold": isSelected,
           })}
         >
-          <div className="h-10">
-            {getYearlyFee(BigInt(operator.eth_fee), { format: true })}
-          </div>
+          <div className="h-10">{yearlyFee}</div>
         </TableCell>
         <TableCell>
           <MevRelays

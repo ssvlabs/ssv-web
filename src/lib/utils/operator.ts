@@ -10,16 +10,21 @@ import { isAddressEqual } from "viem";
 
 type GetYearlyFeeOpts = {
   format?: boolean;
+  denomination?: "ETH" | "SSV";
 };
 
-export function getYearlyFee(fee: bigint, opts: { format: true }): string;
+export function getYearlyFee(
+  fee: bigint,
+  opts: { format: true; denomination?: "ETH" | "SSV" },
+): string;
 export function getYearlyFee(fee: bigint, opts?: GetYearlyFeeOpts): bigint;
 export function getYearlyFee(
   fee: bigint,
   opts?: GetYearlyFeeOpts,
 ): string | bigint {
   const yearlyFee = fee * BigInt(globals.BLOCKS_PER_YEAR);
-  if (opts?.format) return `${formatETH(yearlyFee)} ETH`;
+  if (opts?.format)
+    return `${formatETH(yearlyFee)} ${opts.denomination || "ETH"}`;
   return yearlyFee;
 }
 

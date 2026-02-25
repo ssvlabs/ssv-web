@@ -104,6 +104,13 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       # <app.stage.ssv.network>
+      - name: Check ABI compatibility
+        if: github.ref == 'refs/heads/stage'
+        run: node scripts/check-abi.js
+        env:
+          REMOTE_SSV_NETWORK_ABI_URL: https://raw.githubusercontent.com/ssvlabs/ssv-network/ssv-staking/abis/SSVNetwork.json
+          REMOTE_SSV_NETWORK_VIEWS_ABI_URL: https://raw.githubusercontent.com/ssvlabs/ssv-network/ssv-staking/abis/SSVNetworkViews.json
+
       - name: Run stage webapp build
         if: github.ref == 'refs/heads/stage'
         run: >

@@ -26,11 +26,6 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "CallerNotOwner",
-    "type": "error"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -44,11 +39,6 @@
       }
     ],
     "name": "CallerNotOwnerWithData",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "CallerNotWhitelisted",
     "type": "error"
   },
   {
@@ -69,7 +59,7 @@
   },
   {
     "inputs": [],
-    "name": "ClusterDoesNotExists",
+    "name": "ClusterDoesNotExist",
     "type": "error"
   },
   {
@@ -100,17 +90,6 @@
   {
     "inputs": [],
     "name": "EmptyPublicKeysList",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "operatorId",
-        "type": "uint64"
-      }
-    ],
-    "name": "ExceedValidatorLimit",
     "type": "error"
   },
   {
@@ -171,11 +150,6 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "IncorrectValidatorState",
-    "type": "error"
-  },
-  {
     "inputs": [
       {
         "internalType": "bytes",
@@ -213,6 +187,11 @@
   },
   {
     "inputs": [],
+    "name": "InvalidQuorum",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InvalidToken",
     "type": "error"
   },
@@ -239,7 +218,17 @@
   },
   {
     "inputs": [],
+    "name": "MaxPrecisionExceeded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "MaxRequestsAmountReached",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MaxValueExceeded",
     "type": "error"
   },
   {
@@ -260,11 +249,6 @@
   {
     "inputs": [],
     "name": "NotAuthorized",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NotAuthorizedOracle",
     "type": "error"
   },
   {
@@ -309,6 +293,11 @@
   },
   {
     "inputs": [],
+    "name": "OracleHasZeroWeight",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "PublicKeysSharesLengthMismatch",
     "type": "error"
   },
@@ -335,11 +324,6 @@
   {
     "inputs": [],
     "name": "StaleUpdate",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "TargetModuleDoesNotExist",
     "type": "error"
   },
   {
@@ -374,11 +358,6 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "ValidatorAlreadyExists",
-    "type": "error"
-  },
-  {
     "inputs": [
       {
         "internalType": "bytes",
@@ -407,11 +386,6 @@
   {
     "inputs": [],
     "name": "ZeroAmount",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ZeroInterval",
     "type": "error"
   },
   {
@@ -832,31 +806,6 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint32[4]",
-        "name": "oracleIds",
-        "type": "uint32[4]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[4]",
-        "name": "amounts",
-        "type": "uint256[4]"
-      }
-    ],
-    "name": "DelegationUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
         "name": "token",
         "type": "address"
       },
@@ -990,6 +939,19 @@
       }
     ],
     "name": "MinimumLiquidationCollateralUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "minFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "MinimumOperatorEthFeeUpdated",
     "type": "event"
   },
   {
@@ -1198,22 +1160,9 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint64",
+        "internalType": "uint256",
         "name": "maxFee",
-        "type": "uint64"
-      }
-    ],
-    "name": "OperatorMaximumFeeSSVUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint64",
-        "name": "maxFee",
-        "type": "uint64"
+        "type": "uint256"
       }
     ],
     "name": "OperatorMaximumFeeUpdated",
@@ -1501,19 +1450,19 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "merkleRoot",
-        "type": "bytes32"
+        "indexed": false,
+        "internalType": "string",
+        "name": "version",
+        "type": "string"
       },
       {
-        "indexed": true,
-        "internalType": "uint64",
-        "name": "blockNum",
-        "type": "uint64"
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "blockNumber",
+        "type": "uint256"
       }
     ],
-    "name": "RootProposed",
+    "name": "SSVNetworkUpgradeBlock",
     "type": "event"
   },
   {
@@ -2909,25 +2858,12 @@
   {
     "inputs": [
       {
-        "internalType": "uint64",
+        "internalType": "uint256",
         "name": "maxFee",
-        "type": "uint64"
+        "type": "uint256"
       }
     ],
     "name": "updateMaximumOperatorFee",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "maxFee",
-        "type": "uint64"
-      }
-    ],
-    "name": "updateMaximumOperatorFeeSSV",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -2954,6 +2890,19 @@
       }
     ],
     "name": "updateMinimumLiquidationCollateralSSV",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "minFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateMinimumOperatorEthFee",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

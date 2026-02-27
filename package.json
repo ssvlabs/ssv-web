@@ -6,7 +6,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "dev": "concurrently --raw --hide 1 \"vite\" \"pnpm generate:hooks:watch\"",
-    "dev:prod": "vite --mode prod",
+    "dev:prod": "vite --mode production",
     "watch": "vite build --watch",
     "build": "node --max_old_space_size=9192 ./node_modules/vite/bin/vite.js build --mode production",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 10",

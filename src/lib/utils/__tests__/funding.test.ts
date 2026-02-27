@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { computeFundingCost } from "@/lib/utils/keystore";
+import {
+  computeFundingCost,
+  effectiveBalanceToVUnits,
+} from "@/lib/utils/keystore";
 import { globals } from "@/config";
 
 // Abbreviations: NF=networkFee, OF=operatorsFee, LCP=liquidationCollateralPeriod,
@@ -84,8 +87,8 @@ describe("util:keystore", () => {
     });
   });
 
-  it("computeFundingCost uses scaled validators for fractional count (48 effectiveBalance = 1.5)", () => {
-    // 48/32 = 1.5 validators; validatorsScaled = 48×10⁶/32 = 1500000
+  it("computeFundingCost uses contract-like vUnits scaling for fractional EB (48 effectiveBalance = 1.5)", () => {
+    // 48/32 = 1.5 validators; vUnits = ceil(48 * 10000 / 32) = 15000
     const result = computeFundingCost({
       fundingDays: 1,
       effectiveBalance: 48n,
@@ -102,48 +105,42 @@ describe("util:keystore", () => {
     expect(result.perValidator.networkCost).toBe(networkCost);
     expect(result.perValidator.operatorsCost).toBe(operatorsCost);
 
-    // subtotal = cost × 1.5 (scaled math): (7160 × 1500000) / 10⁶ = 10740
+    // subtotal = (cost * vUnits) / 10000 = (7160 * 15000) / 10000 = 10740
     expect(result.subtotal.networkCost).toBe(10740n);
     expect(result.subtotal.operatorsCost).toBe(10740n);
 
-    // liquidation: (1+1)×2×1500000=6M < 10 MLC×scale → 10⁷/1500000 = 6 per validator
+    // liquidation subtotal uses the same vUnits scaling and min-collateral guard.
     expect(result.perValidator.liquidationCollateral).toBe(6n);
-    // (6 × 1500000) / 10⁶ = 9
-    expect(result.subtotal.liquidationCollateral).toBe(9n);
+    expect(result.subtotal.liquidationCollateral).toBe(10n);
 
-    expect(result.total).toBe(10740n + 10740n + 9n);
+    expect(result.total).toBe(10740n + 10740n + 10n);
   });
 
   it("covers EB examples used in scaled fee calculation", () => {
     const cases = [
       {
         effectiveBalance: 33n,
-        expectedVUnitsFloor: 10312n,
-        expectedVUnitsCeil: 10313n,
-        expectedNetworkSubtotal: 7383n,
+        expectedVUnits: 10313n,
+        expectedNetworkSubtotal: 7384n,
       },
       {
         effectiveBalance: 48n,
-        expectedVUnitsFloor: 15000n,
-        expectedVUnitsCeil: 15000n,
+        expectedVUnits: 15000n,
         expectedNetworkSubtotal: 10740n,
       },
       {
         effectiveBalance: 64n,
-        expectedVUnitsFloor: 20000n,
-        expectedVUnitsCeil: 20000n,
+        expectedVUnits: 20000n,
         expectedNetworkSubtotal: 14320n,
       },
       {
         effectiveBalance: 100n,
-        expectedVUnitsFloor: 31250n,
-        expectedVUnitsCeil: 31250n,
+        expectedVUnits: 31250n,
         expectedNetworkSubtotal: 22375n,
       },
       {
         effectiveBalance: 2048n,
-        expectedVUnitsFloor: 640000n,
-        expectedVUnitsCeil: 640000n,
+        expectedVUnits: 640000n,
         expectedNetworkSubtotal: 458240n,
       },
     ] as const;
@@ -160,13 +157,11 @@ describe("util:keystore", () => {
         minimumLiquidationCollateral: 0n,
       });
 
-      const vUnitsFloor = (c.effectiveBalance * 10000n) / 32n;
-      const vUnitsCeil = (c.effectiveBalance * 10000n + 31n) / 32n;
+      const vUnits = effectiveBalanceToVUnits(c.effectiveBalance);
       const subtotalViaVUnits =
-        (perValidatorDailyNetworkCost * vUnitsFloor) / 10000n;
+        (perValidatorDailyNetworkCost * vUnits) / 10000n;
 
-      expect(vUnitsFloor).toBe(c.expectedVUnitsFloor);
-      expect(vUnitsCeil).toBe(c.expectedVUnitsCeil);
+      expect(vUnits).toBe(c.expectedVUnits);
       expect(result.subtotal.networkCost).toBe(c.expectedNetworkSubtotal);
       expect(result.subtotal.networkCost).toBe(subtotalViaVUnits);
       expect(result.subtotal.operatorsCost).toBe(0n);

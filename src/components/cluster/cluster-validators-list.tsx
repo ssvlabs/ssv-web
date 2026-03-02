@@ -101,7 +101,6 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                         navigate("remove/confirmation");
                       }}
                     >
-                      /
                       <LuTrash2 className="size-4" />
                       <span>Remove Validator</span>
                     </DropdownMenuItem>

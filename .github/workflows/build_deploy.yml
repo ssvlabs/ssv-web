@@ -41,8 +41,8 @@ jobs:
             \"insufficientBalanceUrl\": \"https://faucet.stage.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
             \"tokenAddress\": \"0x746c33ccc28b1363c35c09badaf41b2ffa7e6d56\",
-            \"setterContractAddress\": \"0xc07B3E9671f884FDa67E1e7D43d952E0e1369fd8\",
-            \"getterContractAddress\": \"0x3234e84b7d1eE1AF8b586E26814d4e268336D142\"
+            \"setterContractAddress\": \"0x384AC2c8AF4Df1faD7E20F15064B2C2917fAa7a3\",
+            \"getterContractAddress\": \"0x92c71f0A9823789f72BAEBB2BFE39e897bDd26bd\"
            }
         ]
       PROD_SSV_NETWORKS: >
@@ -108,8 +108,9 @@ jobs:
         if: github.ref == 'refs/heads/stage'
         run: node scripts/check-abi.js
         env:
-          REMOTE_SSV_NETWORK_ABI_URL: https://raw.githubusercontent.com/ssvlabs/ssv-network/ssv-staking/abis/SSVNetwork.json
-          REMOTE_SSV_NETWORK_VIEWS_ABI_URL: https://raw.githubusercontent.com/ssvlabs/ssv-network/ssv-staking/abis/SSVNetworkViews.json
+          SSV_NETWORK_CONTRACT_ADDRESS: "0x384AC2c8AF4Df1faD7E20F15064B2C2917fAa7a3"
+          SSV_NETWORK_VIEWS_CONTRACT_ADDRESS: "0x92c71f0A9823789f72BAEBB2BFE39e897bDd26bd"
+          SSV_NETWORK_CHAIN_ID: "560048"
 
       - name: Run stage webapp build
         if: github.ref == 'refs/heads/stage'

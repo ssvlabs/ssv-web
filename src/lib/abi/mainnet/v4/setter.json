@@ -1,10 +1,5 @@
 [
   {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -2091,6 +2086,24 @@
       }
     ],
     "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "cooldownDuration",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint32[4]",
+        "name": "defaultOracleIds",
+        "type": "uint32[4]"
+      }
+    ],
+    "name": "initializeSSVStaking",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

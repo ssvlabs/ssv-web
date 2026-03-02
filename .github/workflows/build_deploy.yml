@@ -60,7 +60,7 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 10.20.0
+          version: 9.0.6
 
       - uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:

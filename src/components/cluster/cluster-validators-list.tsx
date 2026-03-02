@@ -94,15 +94,14 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                       </DropdownMenuItem>
                     </a>
                     <DropdownMenuItem
-                      disabled={isSsvCluster}
                       onClick={() => {
-                        if (isSsvCluster) return;
                         useBulkActionContext.state.selectedPublicKeys = [
                           item.public_key,
                         ];
                         navigate("remove/confirmation");
                       }}
                     >
+                      /
                       <LuTrash2 className="size-4" />
                       <span>Remove Validator</span>
                     </DropdownMenuItem>

@@ -19,10 +19,10 @@ export const getFaucetConfig = async () =>
   api.get<FaucetConfigResponse>(endpoint("faucet/config"));
 
 export type RequestSSVError = AxiosError<{
-  error: {
-    code: number;
+  statusCode: number;
+  message: {
+    status: number;
     message: string;
-    messages: string[];
   };
 }>;
 export const requestSSV = async (address: string) => {

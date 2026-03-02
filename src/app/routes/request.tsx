@@ -37,28 +37,23 @@ export const Request = () => {
       navigate("/success");
     },
     onError: (error) => {
-      if (
-        error.response?.data.error.message &&
-        /depleted/i.test(error.response?.data.error.message)
-      ) {
+      const errorMessage = error.response?.data?.message?.message;
+      if (errorMessage && /depleted/i.test(errorMessage)) {
         navigate("/depleted");
       } else {
         toast({
           title: "Error requesting SSV",
           variant: "destructive",
-          description:
-            error.response?.data.error.message +
-            " " +
-            error.response?.data.error.messages.join(" "),
+          description: errorMessage || "An error occurred",
         });
       }
     },
   });
 
   const isReachedLimit = Boolean(
-    requestMutation.error?.response?.data.error.message &&
+    requestMutation.error?.response?.data?.message?.message &&
       /reached max transactions/i.test(
-        requestMutation.error?.response?.data.error.message,
+        requestMutation.error?.response?.data?.message?.message,
       ),
   );
 
@@ -96,7 +91,7 @@ export const Request = () => {
           <Alert variant="error">
             {isReachedLimit
               ? "Reached maximum allowed transactions in the past 24 hours."
-              : requestMutation.error?.response?.data.error.message}
+              : requestMutation.error?.response?.data?.message?.message || "An error occurred"}
           </Alert>
         </Collapse>
         <HCaptcha
@@ -107,7 +102,7 @@ export const Request = () => {
         />
         <Button
           size="xl"
-          disabled={(!canRequest || isReachedLimit) && !import.meta.env.DEV}
+          disabled={(isReachedLimit && !import.meta.env.DEV) || !canRequest}
           className="w-full"
           isLoading={requestMutation.isPending}
           onClick={() => requestMutation.mutate()}

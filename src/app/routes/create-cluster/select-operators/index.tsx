@@ -29,7 +29,7 @@ import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params.ts
 import { useSelectOperatorIdsFromSearchParams } from "@/app/routes/create-cluster/select-operators/use-select-operator-ids-from-search-params";
 import { useOperatorsUsability } from "@/hooks/keyshares/use-operators-usability";
 import type { Operator } from "@/types/api";
-
+import { globals } from "@/config";
 export type SelectOperatorsProps = {
   // TODO: Add props or remove this type
 };
@@ -74,6 +74,15 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
     has_dkg_address: isDKGCheckedDebounced === "true" || undefined,
     type: isVerifiedCheckedDebounced || undefined,
   });
+
+  // Hide operators below the soft min fee, unless the user is searching (so they can still find specific low-fee operators)
+  const filteredOperators = search.trim()
+    ? operators
+    : operators.filter((operator) => {
+        if (operator.is_private) return true;
+        const yearlyFee = getYearlyFee(BigInt(operator.eth_fee || "0"));
+        return yearlyFee >= globals.SOFT_MIN_OPERATOR_YEARLY_FEE;
+      });
 
   const selectedOperators = selectedOperatorsIds
     .map(
@@ -181,7 +190,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
           </div>
           <OperatorPicker
             className="flex-1 h-[600px] min-h-[600px]"
-            operators={operators}
+            operators={filteredOperators}
             feeMode={feeMode}
             query={infiniteQuery}
             orderBy={orderBy}

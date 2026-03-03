@@ -21,7 +21,7 @@ import { useFocus } from "@/hooks/use-focus";
 import { useRegisterOperatorContext } from "@/guard/register-operator-guards";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRates } from "@/hooks/use-rates";
-import { currencyFormatter, ms } from "@/lib/utils/number";
+import { currencyFormatter, formatETH, ms } from "@/lib/utils/number";
 import { Tooltip } from "@/components/ui/tooltip";
 import { FaCircleInfo } from "react-icons/fa6";
 import {
@@ -29,6 +29,7 @@ import {
   useGetMinimumOperatorEthFee,
 } from "@/lib/contract-interactions/hooks/getter";
 import { getYearlyFee } from "@/lib/utils/operator";
+import { globals } from "@/config";
 
 export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
   const { isPrivate } = useRegisterOperatorContext();
@@ -83,6 +84,12 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
       }),
     ),
   });
+
+  const yearlyFee = form.watch("yearlyFee");
+
+  const isBelowSoftMin = yearlyFee < globals.SOFT_MIN_OPERATOR_YEARLY_FEE;
+  const showSoftMinWarning =
+    isBelowSoftMin && !isPrivate && !form.formState.errors.yearlyFee;
 
   const submit = form.handleSubmit((values) => {
     useRegisterOperatorContext.state.yearlyFee = values.yearlyFee;
@@ -179,7 +186,7 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
                     </AlertDescription>
                   </Alert>
                 )}
-                {isPrivate && form.watch("yearlyFee") === 0n && (
+                {isPrivate && yearlyFee === 0n && (
                   <Alert variant="warning">
                     <AlertDescription>
                       If you set your fee to 0 you will not be able to change it
@@ -187,10 +194,24 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
                     </AlertDescription>
                   </Alert>
                 )}
+                {showSoftMinWarning && (
+                  <Alert variant="warning">
+                    <AlertDescription>
+                      This fee is below the minimum for public operators (
+                      {formatETH(globals.SOFT_MIN_OPERATOR_YEARLY_FEE)} ETH).
+                      You may still register, but your operator will be hidden
+                      by default in the operator selection table.
+                    </AlertDescription>
+                  </Alert>
+                )}
               </FormItem>
             )}
           />
-          <Button type="submit" size="xl">
+          <Button
+            type="submit"
+            size="xl"
+            disabled={Boolean(form.formState.errors.yearlyFee)}
+          >
             Next
           </Button>
         </Card>

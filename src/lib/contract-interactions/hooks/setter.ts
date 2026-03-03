@@ -15,6 +15,7 @@ export const {
   useExitValidator,
   useGetVersion,
   useInitialize,
+  useInitializeSSVStaking,
   useLiquidate,
   useLiquidateSSV,
   useMigrateClusterToETH,

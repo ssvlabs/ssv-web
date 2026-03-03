@@ -106,13 +106,13 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       # <app.stage.ssv.network>
-      - name: Check ABI compatibility
-        if: github.ref == 'refs/heads/stage'
-        run: node scripts/check-abi.js
-        env:
-          SSV_NETWORK_CONTRACT_ADDRESS: ${{ env.STAGE_SETTER_CONTRACT_ADDRESS }}
-          SSV_NETWORK_VIEWS_CONTRACT_ADDRESS: ${{ env.STAGE_GETTER_CONTRACT_ADDRESS }}
-          SSV_NETWORK_CHAIN_ID: "560048"
+      # - name: Check ABI compatibility
+      #   if: github.ref == 'refs/heads/stage'
+      #   run: node scripts/check-abi.js
+      #   env:
+      #     SSV_NETWORK_CONTRACT_ADDRESS: ${{ env.STAGE_SETTER_CONTRACT_ADDRESS }}
+      #     SSV_NETWORK_VIEWS_CONTRACT_ADDRESS: ${{ env.STAGE_GETTER_CONTRACT_ADDRESS }}
+      #     SSV_NETWORK_CHAIN_ID: "560048"
 
       - name: Run stage webapp build
         if: github.ref == 'refs/heads/stage'

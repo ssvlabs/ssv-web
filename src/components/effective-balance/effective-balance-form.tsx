@@ -63,16 +63,19 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
 
   const maxEffectiveBalance = validatorCount * 2048;
 
+  const minEffectiveBalance =
+    validatorCount * globals.MIN_VALIDATOR_EFFECTIVE_BALANCE;
+
   const schema = useMemo(() => {
     let balanceSchema = z
       .number()
       .nonnegative({ message: "Balance must be 0 or greater" })
-      .min(estimatedEffectiveBalance);
+      .min(minEffectiveBalance);
     if (maxEffectiveBalance > 0) {
       balanceSchema = balanceSchema.max(maxEffectiveBalance);
     }
     return z.object({ totalEffectiveBalance: balanceSchema });
-  }, [estimatedEffectiveBalance, maxEffectiveBalance]);
+  }, [minEffectiveBalance, maxEffectiveBalance]);
   const totalEffectiveBalance = Number(
     forceInitialBalance || estimatedEffectiveBalance,
   );
@@ -195,21 +198,8 @@ export const EffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
           {isLowBalance && (
             <Alert variant="error" className="rounded-lg">
               <AlertDescription className="text-sm font-medium">
-                {showDetailedErrors ? (
-                  <>
-                    The entered total projected balance is lower than our
-                    estimation (
-                    {numberFormatter.format(estimatedEffectiveBalance)} ETH).
-                    This may lead to an insufficient runway. Please double-check
-                    the balance entered.
-                  </>
-                ) : (
-                  <>
-                    The entered total projected balance is lower than our
-                    estimation. This may lead to an insufficient runway. Please
-                    double-check the balance entered.
-                  </>
-                )}
+                This value cannot be lower than the minimum of 32 ETH per
+                validator.
               </AlertDescription>
             </Alert>
           )}

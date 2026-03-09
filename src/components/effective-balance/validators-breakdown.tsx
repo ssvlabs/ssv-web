@@ -50,6 +50,7 @@ export const ValidatorsBreakdown: FC<ValidatorsBreakdownProps> = ({
       notDeposited,
     };
   }, [validators]);
+  console.log("counts:", counts);
 
   const filteredValidators = useMemo(() => {
     if (selectedTab === "all") return validators;
@@ -69,7 +70,6 @@ export const ValidatorsBreakdown: FC<ValidatorsBreakdownProps> = ({
           <FaCircleInfo className="size-3.5 text-gray-400" />
         </Tooltip>
       </div>
-
       <Tabs
         value={selectedTab}
         onValueChange={(value) => setSelectedTab(value as TabKey)}

@@ -40,7 +40,8 @@ export const ValidatorsSearchAndFilters: FC<
   const { data: statusCounts, isLoading: isStatusCountsLoading } =
     useChainedQuery({
       queryKey: ["validators-status-counts", clusterHash],
-      queryFn: () => getValidatorsStatusCounts(clusterHash!),
+      queryFn: () =>
+        getValidatorsStatusCounts(clusterHash!).then((res) => res.data),
       enabled: Boolean(clusterHash) && isStatusesOpen && !externalStatusCounts,
     });
 

@@ -231,3 +231,7 @@ export interface GetOperatorByPublicKeyResponse {
     whitelistingContract: string;
   };
 }
+
+export type PendingEffectiveBalanceResponse = {
+  pendingEffectiveBalance: string;
+};

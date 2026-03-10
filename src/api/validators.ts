@@ -53,12 +53,11 @@ export const getIsRegisteredValidator = async (publicKey: string) => {
 };
 
 export const getValidatorsStatusCounts = async (clusterHash: string) => {
-  return await api
-    .get<{
-      cluster: string;
-      data: Record<ValidatorStatusFilterKey, number>;
-    }>(endpoint(`validators/statusCount?clusterHash=${add0x(clusterHash)}`))
-    .then((response) => response.data);
+  return await api.get<{
+    cluster: string;
+    data: Record<ValidatorStatusFilterKey, number>;
+    eb: Record<ValidatorStatusFilterKey, number>;
+  }>(endpoint(`validators/statusCount?clusterHash=${add0x(clusterHash)}`));
 };
 
 export const getAllValidators = async (clusterHash: string | Address) => {

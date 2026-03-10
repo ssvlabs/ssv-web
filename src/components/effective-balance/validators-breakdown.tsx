@@ -69,7 +69,6 @@ export const ValidatorsBreakdown: FC<ValidatorsBreakdownProps> = ({
           <FaCircleInfo className="size-3.5 text-gray-400" />
         </Tooltip>
       </div>
-
       <Tabs
         value={selectedTab}
         onValueChange={(value) => setSelectedTab(value as TabKey)}

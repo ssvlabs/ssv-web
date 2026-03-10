@@ -50,7 +50,6 @@ export const ValidatorsBreakdown: FC<ValidatorsBreakdownProps> = ({
       notDeposited,
     };
   }, [validators]);
-  console.log("counts:", counts);
 
   const filteredValidators = useMemo(() => {
     if (selectedTab === "all") return validators;

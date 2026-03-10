@@ -30,8 +30,6 @@ jobs:
     #   \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_MAINNET }}\"
     # },
     env:
-      STAGE_SETTER_CONTRACT_ADDRESS: "0x384AC2c8AF4Df1faD7E20F15064B2C2917fAa7a3"
-      STAGE_GETTER_CONTRACT_ADDRESS: "0x92c71f0A9823789f72BAEBB2BFE39e897bDd26bd"
       STAGE_SSV_NETWORKS: >
         [
           {
@@ -43,8 +41,8 @@ jobs:
             \"insufficientBalanceUrl\": \"https://faucet.stage.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
             \"tokenAddress\": \"0x746c33ccc28b1363c35c09badaf41b2ffa7e6d56\",
-            \"setterContractAddress\": \"${{ env.STAGE_SETTER_CONTRACT_ADDRESS }}\",
-            \"getterContractAddress\": \"${{ env.STAGE_GETTER_CONTRACT_ADDRESS }}\"
+            \"setterContractAddress\": \"0x384AC2c8AF4Df1faD7E20F15064B2C2917fAa7a3\",
+            \"getterContractAddress\": \"0x92c71f0A9823789f72BAEBB2BFE39e897bDd26bd\"
            }
         ]
       PROD_SSV_NETWORKS: >
@@ -110,8 +108,8 @@ jobs:
         if: github.ref == 'refs/heads/stage'
         run: node scripts/check-abi.js
         env:
-          SSV_NETWORK_CONTRACT_ADDRESS: ${{ env.STAGE_SETTER_CONTRACT_ADDRESS }}
-          SSV_NETWORK_VIEWS_CONTRACT_ADDRESS: ${{ env.STAGE_GETTER_CONTRACT_ADDRESS }}
+          SSV_NETWORK_CONTRACT_ADDRESS: "0x384AC2c8AF4Df1faD7E20F15064B2C2917fAa7a3"
+          SSV_NETWORK_VIEWS_CONTRACT_ADDRESS: "0x92c71f0A9823789f72BAEBB2BFE39e897bDd26bd"
           SSV_NETWORK_CHAIN_ID: "560048"
 
       - name: Run stage webapp build

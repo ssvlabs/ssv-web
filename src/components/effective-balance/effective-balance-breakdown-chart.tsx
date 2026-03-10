@@ -1,14 +1,32 @@
-import { type FC, type ComponentPropsWithoutRef, useState } from "react";
+import { type FC, type ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils/tw";
 import { Text } from "@/components/ui/text";
+import { StripedBar } from "@/components/ui/striped-bar";
 import { numberFormatter } from "@/lib/utils/number";
 import { useClusterEffectiveBalanceBreakdown } from "@/hooks/cluster/use-cluster-effective-balance-breakdown";
+import type { ValidatorStatusFilterKey } from "@/lib/search-parsers/validators-search-parsers";
 
 export type EffectiveBalanceBreakDownChartProps = {
   clusterHash: string;
 };
 
 const MIN_BAR_WIDTH = 8;
+
+type StatusVisualConfig = {
+  key: ValidatorStatusFilterKey;
+  label: string;
+  variant: React.ComponentProps<typeof StripedBar>["variant"];
+};
+
+const STATUS_CONFIG: StatusVisualConfig[] = [
+  { key: "inactive", label: "Invalid", variant: "invalid" },
+  { key: "active", label: "Active", variant: "active" },
+  { key: "pending", label: "Depositing", variant: "depositing" },
+  { key: "notDeposited", label: "Not Deposited", variant: "notDeposited" },
+  { key: "exiting", label: "Exiting", variant: "exiting" },
+  { key: "exited", label: "Exited", variant: "exited" },
+  { key: "slashed", label: "Slashed", variant: "slashed" },
+];
 
 type EffectiveBalanceBreakDownChartFC = FC<
   Omit<
@@ -20,69 +38,45 @@ type EffectiveBalanceBreakDownChartFC = FC<
 
 export const EffectiveBalanceBreakDownChart: EffectiveBalanceBreakDownChartFC =
   ({ className, clusterHash, ...props }) => {
-    const { data: items = [] } =
+    const { data: counts = {} as Record<ValidatorStatusFilterKey, number> } =
       useClusterEffectiveBalanceBreakdown(clusterHash);
 
-    const visibleItems = items.filter((item) => item.amount > 0);
-    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+    const visibleItems = STATUS_CONFIG.map((config) => ({
+      ...config,
+      amount: counts[config.key] ?? 0,
+    })).filter((item) => item.amount > 0);
 
     return (
       <div className={cn("flex flex-col gap-4", className)} {...props}>
         <div className="flex h-2 gap-px">
-          {visibleItems.map((item, index) => {
-            const isDimmed = hoveredIndex !== null && hoveredIndex !== index;
-            return (
-              <div
-                key={index}
-                className={cn("rounded-[2px] transition-all", {
-                  "opacity-20": isDimmed,
-                })}
-                style={{
-                  backgroundColor: item.color,
-                  flexGrow: item.amount,
-                  flexShrink: 0,
-                  flexBasis: 0,
-                  minWidth: `${MIN_BAR_WIDTH}px`,
-                }}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              />
-            );
-          })}
+          {visibleItems.map((item) => (
+            <StripedBar
+              key={item.key}
+              variant={item.variant}
+              className="h-2 flex-1"
+              style={{
+                flexGrow: item.amount,
+                flexShrink: 0,
+                flexBasis: 0,
+                minWidth: `${MIN_BAR_WIDTH}px`,
+              }}
+            />
+          ))}
         </div>
-        <div className="flex flex-wrap gap-1">
-          {visibleItems.map((item, index) => {
-            const isInvalid = item.label === "Invalid";
-            const isDimmed = hoveredIndex !== null && hoveredIndex !== index;
-            return (
-              <div
-                key={index}
-                className={cn(
-                  "flex items-center gap-1 rounded bg-gray-100 border border-gray-200 px-1.5 py-0.5 transition-opacity cursor-default",
-                  { "opacity-50": isDimmed },
-                )}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              >
-                <div
-                  className="size-2 rounded-[2px]"
-                  style={{ backgroundColor: item.color }}
-                />
-                <Text
-                  variant="caption-medium"
-                  className={cn(isInvalid ? "text-error-200" : "text-gray-500")}
-                >
+        <div className="flex flex-col gap-2">
+          {visibleItems.map((item) => (
+            <div key={item.key} className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <StripedBar variant={item.variant} className="size-2" />
+                <Text variant="caption-medium" className="text-gray-500">
                   {item.label}
                 </Text>
-                <Text
-                  variant="caption-bold"
-                  className={cn(isInvalid ? "text-error-500" : "text-gray-700")}
-                >
-                  {numberFormatter.format(item.amount)} ETH
-                </Text>
               </div>
-            );
-          })}
+              <Text variant="caption-bold">
+                {numberFormatter.format(item.amount)} ETH
+              </Text>
+            </div>
+          ))}
         </div>
       </div>
     );

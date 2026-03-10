@@ -7,10 +7,12 @@ import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { useClusterState } from "@/hooks/cluster/use-cluster-state";
 import { shortenClusterId } from "@/lib/utils/strings";
 import { FaAngleLeft } from "react-icons/fa";
-import { MdOutlineLock } from "react-icons/md";
 import { Link } from "react-router-dom";
-import VerifiedSVG from "@/assets/images/verified.svg?react";
 import { ClusterOperators } from "./cluster-operators";
+import { Tooltip } from "@/components/ui/tooltip";
+import { Card } from "@/components/ui/card";
+import { OperatorsBreakdownChart } from "@/components/cluster/operators-breakdown-chart";
+import { useOperators } from "@/hooks/operator/use-operators";
 
 export const ClusterHeader: FC<ComponentPropsWithoutRef<"div">> = ({
   className,
@@ -21,12 +23,16 @@ export const ClusterHeader: FC<ComponentPropsWithoutRef<"div">> = ({
     isLiquidated: { watch: true },
   });
 
+  const { data: operators = [] } = useOperators(cluster.data?.operators ?? []);
+
   const clusterId = cluster.data?.clusterId ?? "";
-  const operatorIds = cluster.data?.operators ?? [];
   const isLiquidatedCluster = Boolean(isLiquidated.data);
 
   return (
-    <div className={cn("flex items-center gap-3 w-full", className)} {...props}>
+    <Card
+      className={cn("flex flex-row items-center gap-3 p-6 w-full", className)}
+      {...props}
+    >
       <Link
         to="/clusters"
         className="flex items-center justify-center rounded-[6px] bg-gray-100 p-1.5"
@@ -37,10 +43,6 @@ export const ClusterHeader: FC<ComponentPropsWithoutRef<"div">> = ({
       <div className="flex flex-1 items-center gap-5">
         <div className="flex items-center gap-2">
           <Text variant="headline4">Cluster</Text>
-          <div className="flex items-center gap-1.5">
-            <MdOutlineLock className="size-[18px] text-gray-500" />
-            <VerifiedSVG className="size-[18px]" />
-          </div>
         </div>
 
         <div className="flex flex-1 items-center gap-2.5">
@@ -66,10 +68,15 @@ export const ClusterHeader: FC<ComponentPropsWithoutRef<"div">> = ({
             </Badge>
           </div>
 
-          <ClusterOperators operatorIds={operatorIds} />
+          <Tooltip
+            className="p-6"
+            content={<OperatorsBreakdownChart operators={operators} />}
+          >
+            <ClusterOperators operators={operators} />
+          </Tooltip>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 

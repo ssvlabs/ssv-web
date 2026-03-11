@@ -32,7 +32,7 @@ export const MevRelaysDisplay: MevRelaysDisplayFC = ({
             content={
               <div className="flex gap-3 items-center">
                 <img
-                  src={`/images/mevs/${logo}${"-dark"}.svg`}
+                  src={`/images/mevs/${logo}${dark ? "-dark" : ""}.svg`}
                   className={cn("size-10")}
                   alt={mev}
                 />

@@ -14,8 +14,8 @@ import {
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { getRemovedOptimisticValidatorsQueryOptions } from "@/hooks/cluster/use-removed-optimistic-validators";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useBulkRemoveValidator } from "@/lib/contract-interactions/write/use-bulk-remove-validator";
-import { useRemoveValidator } from "@/lib/contract-interactions/write/use-remove-validator";
+import { useBulkRemoveValidator } from "@/lib/contract-interactions/hooks/setter";
+import { useRemoveValidator } from "@/lib/contract-interactions/hooks/setter";
 import { track } from "@/lib/analytics/mixpanel";
 import { setOptimisticData } from "@/lib/react-query";
 import { bigintifyNumbers } from "@/lib/utils/bigint";
@@ -71,24 +71,24 @@ export const RemoveValidatorsConfirmation: FC = () => {
     });
 
     if (selectedPublicKeys.length === 1) {
-      return removeValidator.write(
-        {
+      return removeValidator.write({
+        args: {
           cluster: clusterData,
           publicKey: selectedPublicKeys[0] as Address,
           operatorIds,
         },
         options,
-      );
+      });
     }
     console.log(clusterData);
-    bulkRemoveValidators.write(
-      {
+    bulkRemoveValidators.write({
+      args: {
         cluster: clusterData,
         publicKeys: selectedPublicKeys as Address[],
         operatorIds,
       },
       options,
-    );
+    });
   };
 
   return (

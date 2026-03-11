@@ -10,7 +10,7 @@ import { getCreatedOptimisticOperatorsQueryOptions } from "@/hooks/operator/use-
 import { useFocus } from "@/hooks/use-focus";
 import { getOperatorQueryOptions } from "@/hooks/operator/use-operator";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useRegisterOperator } from "@/lib/contract-interactions/write/use-register-operator";
+import { useRegisterOperator } from "@/lib/contract-interactions/hooks/setter";
 import { queryClient } from "@/lib/react-query";
 import { bigintMin, roundOperatorFee } from "@/lib/utils/bigint";
 import { formatBigintInput, ms } from "@/lib/utils/number";
@@ -46,9 +46,9 @@ export const RegisterOperatorConfirmation: FC = () => {
       publicKey: encodeAbiParameters(parseAbiParameters("string"), [publicKey]),
     };
 
-    register.write(
-      createOperatorArgs,
-      withTransactionModal({
+    register.write({
+      args: createOperatorArgs,
+      options: withTransactionModal({
         onMined: async (receipt) => {
           track("Register Operator");
           const event = receipt.events?.find(
@@ -88,7 +88,7 @@ export const RegisterOperatorConfirmation: FC = () => {
           return () => navigate(`../success?operatorId=${operator.id}`);
         },
       }),
-    );
+    });
   };
 
   useFocus("#register-operator-confirmation");

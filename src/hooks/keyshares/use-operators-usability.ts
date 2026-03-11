@@ -1,5 +1,5 @@
 import { useOperators } from "@/hooks/operator/use-operators";
-import { useGetValidatorsPerOperatorLimit } from "@/lib/contract-interactions/read/use-get-validators-per-operator-limit";
+import { useGetValidatorsPerOperatorLimit } from "@/lib/contract-interactions/hooks/getter";
 import type { UseQueryOptions } from "@/lib/react-query";
 import { combineQueryStatus } from "@/lib/react-query";
 import { ms } from "@/lib/utils/number";

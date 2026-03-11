@@ -1,11 +1,11 @@
 import {
+  useGetLiquidationThresholdPeriod,
   useGetLiquidationThresholdPeriodSSV,
+  useGetMinimumLiquidationCollateral,
   useGetMinimumLiquidationCollateralSSV,
+  useGetNetworkFee,
   useGetNetworkFeeSSV,
 } from "@/lib/contract-interactions/hooks/getter";
-import { useGetLiquidationThresholdPeriod } from "@/lib/contract-interactions/read/use-get-liquidation-threshold-period";
-import { useGetMinimumLiquidationCollateral } from "@/lib/contract-interactions/read/use-get-minimum-liquidation-collateral";
-import { useGetNetworkFee } from "@/lib/contract-interactions/read/use-get-network-fee";
 
 export const useNetworkFee = (enabled: boolean = true) => {
   const ssvNetworkFee = useGetNetworkFee({ enabled });

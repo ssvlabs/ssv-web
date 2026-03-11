@@ -5,7 +5,7 @@ import { useOperators } from "@/hooks/operator/use-operators";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { SwitchWizardStepThreeState } from "@/components/wizard/switch-wizard-types";
-import { useMigrateClusterToETH } from "@/lib/contract-interactions/write/use-migrate-cluster-to-eth";
+import { useMigrateClusterToETH } from "@/lib/contract-interactions/hooks/setter";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { toSolidityCluster } from "@/lib/utils/cluster";
 import { getCluster } from "@/api/cluster";
@@ -43,13 +43,13 @@ export const SwitchWizardStepThreeRoute = () => {
       onNext={() => {
         if (!cluster.data || totalDeposit === undefined) return;
         const wasSSVCluster = !cluster.data.migrated;
-        migrate.write(
-          {
+        migrate.write({
+          args: {
             operatorIds: cluster.data?.operators.map((id) => BigInt(id)) ?? [],
             cluster: toSolidityCluster(cluster.data),
           },
-          totalDeposit,
-          withTransactionModal({
+          value: totalDeposit,
+          options: withTransactionModal({
             variant: "2-step",
             onMined: async () => {
               // Wait until cluster is indexed and switched from SSV to ETH
@@ -72,7 +72,7 @@ export const SwitchWizardStepThreeRoute = () => {
               return () => navigate(`${basePath}/step-four`);
             },
           }),
-        );
+        });
       }}
       backButtonLabel="Back"
       navigateRoutePath={`${basePath}/step-two-and-half`}

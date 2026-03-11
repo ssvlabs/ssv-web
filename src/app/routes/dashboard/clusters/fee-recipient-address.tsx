@@ -25,7 +25,7 @@ import {
   useSSVAccount,
 } from "@/hooks/use-ssv-account";
 import { tryCatch } from "@/lib/utils/tryCatch";
-import { useSetFeeRecipientAddress } from "@/lib/contract-interactions/write/use-set-fee-recipient-address";
+import { useSetFeeRecipientAddress } from "@/lib/contract-interactions/hooks/setter";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useAccount } from "@/hooks/account/use-account";
 import { setOptimisticData } from "@/lib/react-query";
@@ -71,11 +71,11 @@ export const FeeRecipientAddress: FC<ComponentPropsWithoutRef<"div">> = () => {
 
   const setFeeRecipient = useSetFeeRecipientAddress();
   const submit = form.handleSubmit((values) => {
-    setFeeRecipient.write(
-      {
+    setFeeRecipient.write({
+      args: {
         recipientAddress: values.feeRecipientAddress,
       },
-      withTransactionModal({
+      options: withTransactionModal({
         successToast: {
           title: "Fee Recipient Address Updated",
         },
@@ -93,7 +93,7 @@ export const FeeRecipientAddress: FC<ComponentPropsWithoutRef<"div">> = () => {
           return () => navigate("/clusters");
         },
       }),
-    );
+    });
   });
 
   return (

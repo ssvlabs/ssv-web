@@ -5,7 +5,7 @@ import { FeeChange } from "@/components/ui/fee-change";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { useReduceOperatorFee } from "@/lib/contract-interactions/write/use-reduce-operator-fee";
+import { useReduceOperatorFee } from "@/lib/contract-interactions/hooks/setter";
 import { useUpdateOperatorFeeContext } from "@/guard/register-operator-guards";
 import { useOperatorPageParams } from "@/hooks/operator/use-operator-page-params";
 import { globals } from "@/config";
@@ -29,12 +29,12 @@ export const DecreaseOperatorFee: FC = () => {
       state.newYearlyFee / globals.BLOCKS_PER_YEAR,
     );
 
-    reduceOperatorFee.write(
-      {
+    reduceOperatorFee.write({
+      args: {
         operatorId: BigInt(operatorId),
         fee: blockFee,
       },
-      withTransactionModal({
+      options: withTransactionModal({
         onMined: () => {
           setOptimisticData(
             getOperatorQueryOptions(operatorId).queryKey,
@@ -46,7 +46,7 @@ export const DecreaseOperatorFee: FC = () => {
           return () => navigate("../success");
         },
       }),
-    );
+    });
   };
 
   return (

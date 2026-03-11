@@ -1,5 +1,5 @@
 import { globals } from "@/config";
-import type { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
+import type { SetterABI } from "@/lib/abi/setter.ts";
 import { fetchIsAddressWhitelistedInWhitelistingContract } from "@/lib/contract-interactions/read/use-is-address-whitelisted-in-whitelisting-contract";
 import { formatETH, sortNumbers } from "@/lib/utils/number";
 import type { Operator } from "@/types/api";
@@ -226,7 +226,7 @@ export const createDefaultOperator = (
   migrated: true,
 });
 
-export type MainnetEvent = DecodeEventLogReturnType<typeof MainnetV4SetterABI>;
+export type MainnetEvent = DecodeEventLogReturnType<typeof SetterABI>;
 
 export const createOperatorFromEvent = (
   event: Extract<MainnetEvent, { eventName: "OperatorAdded" }>,

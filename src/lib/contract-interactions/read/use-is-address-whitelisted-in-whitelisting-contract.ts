@@ -11,7 +11,7 @@ import {
   getSSVNetworkDetails,
   useSSVNetworkDetails,
 } from "@/hooks/use-ssv-network-details";
-import { MainnetV4GetterABI } from "@/lib/abi/mainnet/v4/getter";
+import { GetterABI } from "@/lib/abi/getter.ts";
 import type { AbiInputsToParams } from "@/lib/contract-interactions/utils";
 import {
   paramsToArray,
@@ -24,11 +24,11 @@ import { config } from "@/wagmi/config";
 import { queryClient } from "@/lib/react-query";
 
 type Fn = ExtractAbiFunction<
-  typeof MainnetV4GetterABI,
+  typeof GetterABI,
   "isAddressWhitelistedInWhitelistingContract"
 >;
 const abiFunction = extractAbiFunction(
-  MainnetV4GetterABI,
+  GetterABI,
   "isAddressWhitelistedInWhitelistingContract",
 );
 
@@ -36,7 +36,7 @@ export const getIsAddressWhitelistedInWhitelistingContractQueryOptions = (
   params: AbiInputsToParams<Fn["inputs"]>,
 ) =>
   readContractQueryOptions(config, {
-    abi: MainnetV4GetterABI,
+    abi: GetterABI,
     chainId: getChainId(config),
     address: getSSVNetworkDetails().getterContractAddress,
     functionName: "isAddressWhitelistedInWhitelistingContract",
@@ -44,7 +44,7 @@ export const getIsAddressWhitelistedInWhitelistingContractQueryOptions = (
   });
 
 type QueryOptions = UseReadContractParameters<
-  typeof MainnetV4GetterABI,
+  typeof GetterABI,
   "isAddressWhitelistedInWhitelistingContract"
 >["query"];
 
@@ -64,7 +64,7 @@ export const useIsAddressWhitelistedInWhitelistingContract = (
   const blockNumber = useBlockNumber({ watch: options.watch });
 
   return useReadContract({
-    abi: MainnetV4GetterABI,
+    abi: GetterABI,
     address: getterContractAddress,
     functionName: "isAddressWhitelistedInWhitelistingContract",
     args,

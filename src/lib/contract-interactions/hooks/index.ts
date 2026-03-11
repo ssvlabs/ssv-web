@@ -1,6 +1,6 @@
 import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
-import { MainnetV4GetterABI } from "@/lib/abi/mainnet/v4/getter";
-import { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
+import { GetterABI } from "@/lib/abi/getter.ts";
+import { SetterABI } from "@/lib/abi/setter.ts";
 import { TokenABI } from "@/lib/abi/token";
 import { createContractHooks } from "@/lib/contract-interactions/core/create-contract-hooks";
 
@@ -22,12 +22,12 @@ import { createContractHooks } from "@/lib/contract-interactions/core/create-con
 */
 
 export const setter = createContractHooks(
-  MainnetV4SetterABI,
+  SetterABI,
   () => getSSVNetworkDetails().setterContractAddress,
 );
 
 export const getter = createContractHooks(
-  MainnetV4GetterABI,
+  GetterABI,
   () => getSSVNetworkDetails().getterContractAddress,
 );
 

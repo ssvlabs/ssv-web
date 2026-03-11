@@ -4,7 +4,7 @@ import type {
   ValidatorStatus,
 } from "@/lib/utils/validator-status-mapping";
 import type { AbiParameterToPrimitiveType } from "abitype";
-import type { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
+import type { SetterABI } from "@/lib/abi/setter.ts";
 
 export type { BeaconChainStatus, ValidatorStatus };
 
@@ -156,7 +156,7 @@ type FindClusterStructInInputs<T> = T extends readonly [
   : never;
 
 export type SolidityCluster = AbiParameterToPrimitiveType<
-  FindClusterStruct<typeof MainnetV4SetterABI>
+  FindClusterStruct<typeof SetterABI>
 >;
 
 export type Cluster<

@@ -6,16 +6,9 @@
   const prettier = require("prettier");
   const typescriptParser = require("prettier/parser-typescript");
   const babelParser = require("prettier/parser-babel");
-  const { isEqual, kebabCase } = await import("lodash-es");
+  const { kebabCase } = await import("lodash-es");
 
-  const mainnetAbi = require("../src/lib/abi/mainnet/v4/getter.json");
-
-  const testnetAbi = require("../src/lib/abi/testnet/v4/getter.json").filter(
-    (item) => {
-      const mainnetItem = mainnetAbi.find((f) => f?.name === item?.name);
-      return !isEqual(mainnetItem, item);
-    },
-  );
+  const mainnetAbi = require("../src/lib/abi/getter.json");
 
   const folder = path.join(
     path.dirname(__dirname),
@@ -31,12 +24,6 @@
     fs.unlinkSync(path.join(folder, file));
   });
 
-  const readFns = testnetAbi.filter(
-    (item) =>
-      item.type === "function" &&
-      (item.stateMutability == "view" || item.stateMutability == "pure"),
-  );
-
   const readFnsMainnet = mainnetAbi.filter(
     (item) =>
       item.type === "function" &&
@@ -50,9 +37,7 @@
     const filePath = path.join(folder, `${fileName}`);
     const hasInputs = Boolean(item.inputs?.length);
 
-    const networkName = isTestnet ? "testnet" : "mainnet";
-
-    const abiName = isTestnet ? "TestnetV4GetterABI" : "MainnetV4GetterABI";
+    const abiName = "GetterABI";
 
     const content = `
 // ------------------------------------------------
@@ -66,7 +51,7 @@ import { useReadContract, useBlockNumber } from "wagmi";
 ${hasInputs ? `import { isUndefined } from "lodash-es";` : ""}
 
 import { getSSVNetworkDetails, useSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
-import { ${abiName} } from "@/lib/abi/${networkName}/v4/getter";${
+import { ${abiName} } from "@/lib/abi/getter.ts";${
       hasInputs
         ? `
 import type {
@@ -98,7 +83,7 @@ export const get${capitalizeFirstLetter(functionName)}QueryOptions = (${hasInput
   });
 
 type QueryOptions = UseReadContractParameters<
-  typeof MainnetV4GetterABI,
+  typeof GetterABI,
   "${functionName}"
 >["query"];
 
@@ -145,7 +130,6 @@ export const ${hookName} = (${hasInputs ? 'params: AbiInputsToParams<Fn["inputs"
       });
   };
   readFnsMainnet.forEach(createWriteFn.bind(null, false));
-  readFns.forEach(createWriteFn.bind(null, true));
 
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);

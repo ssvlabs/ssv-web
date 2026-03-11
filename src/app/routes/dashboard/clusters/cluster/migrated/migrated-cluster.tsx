@@ -9,29 +9,37 @@ import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { useClusterState } from "@/hooks/cluster/use-cluster-state";
 import { useOperatorsUsability } from "@/hooks/keyshares/use-operators-usability";
 import { PlusIcon } from "lucide-react";
-import type { FC } from "react";
+import { type FC, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAccount } from "@/hooks/account/use-account";
-import { EffectiveBalanceBreakDownChart } from "@/components/effective-balance/effective-balance-breakdown-chart";
-import { numberFormatter } from "@/lib/utils/number";
+import { EffectiveBalanceBreakdownCard } from "@/components/effective-balance/effective-balance-breakdown-card";
+import { useClusterEffectiveBalanceBreakdown } from "@/hooks/cluster/use-cluster-effective-balance-breakdown";
 import { ClusterHeader } from "./cluster-header";
-import { OperationalRunwayBreakdown } from "./operational-runway-breakdown";
-import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
+import { OperationalRunwayCard } from "./operational-runway-card";
 import { Tab } from "@/components/ui/custom-tab";
+type TabKey = "current" | "projected";
 
 export const MigratedCluster: FC = () => {
   const account = useAccount();
 
-  const { clusterHash } = useClusterPageParams();
+  const [activeTab, setActiveTab] = useState<TabKey>("current");
+  const isProjected = activeTab === "projected";
 
+  const { clusterHash } = useClusterPageParams();
   const { cluster, isLiquidated } = useClusterState(clusterHash!, {
     balance: { watch: true },
     isLiquidated: { watch: true },
   });
 
-  const isMigrated = cluster.data?.migrated;
+  const { data: effectiveBalanceBreakdown } =
+    useClusterEffectiveBalanceBreakdown(clusterHash!);
 
-  const { data: runway } = useClusterRunway(clusterHash, { watch: true });
+  const hasProjected = (effectiveBalanceBreakdown?.pending ?? 0) > 0;
+
+  const currentEffectiveBalance = Number(cluster.data?.effectiveBalance ?? 0);
+  const projectedEffectiveBalance = Number(
+    currentEffectiveBalance + (effectiveBalanceBreakdown?.pending ?? 0),
+  );
 
   const operatorsUsability = useOperatorsUsability({
     account: account.address!,
@@ -49,7 +57,6 @@ export const MigratedCluster: FC = () => {
       return "One of your chosen operators has shifted to a permissioned status. To onboard validators, you'll need to select a new cluster.";
     if (operatorsUsability.data?.hasExceededValidatorsLimit)
       return "One of your operators has reached their maximum number of validators";
-    if (!isMigrated) return "Switch to ETH to enable this option";
   };
 
   const location = useLocation();
@@ -61,45 +68,22 @@ export const MigratedCluster: FC = () => {
         <ClusterHeader />
         <div className="flex flex-1 items-start gap-6 w-full">
           <div className="flex flex-[1] flex-col gap-6 min-w-0">
-            <Card className="w-full p-6 gap-6">
-              <div className="flex items-center justify-between">
-                <Text variant="headline4" className="text-gray-500">
-                  Effective Balance
-                </Text>
-                <Text variant="headline4">
-                  {numberFormatter.format(
-                    +(cluster.data?.effectiveBalance || 0),
-                  )}{" "}
-                  ETH
-                </Text>
-              </div>
-              <EffectiveBalanceBreakDownChart clusterHash={clusterHash!} />
-            </Card>
-            <Card className="w-full flex-1 p-6 gap-6">
-              <div className="flex items-center justify-between">
-                <Text variant="headline4" className="text-gray-500">
-                  Operational Runway
-                </Text>
-                <Text variant="headline4" className="text-gray-700">
-                  {runway?.runway?.toString() ?? "0"} days
-                </Text>
-              </div>
-              <OperationalRunwayBreakdown clusterHash={clusterHash!} />
-              {isLiquidated.data ? (
-                <Button as={Link} to="reactivate-balance" size="xl">
-                  Reactivate Cluster
-                </Button>
-              ) : (
-                <div className="flex gap-3 [&>*]:flex-1 pt-2">
-                  <Button as={Link} to="deposit" size="xl">
-                    Deposit
-                  </Button>
-                  <Button as={Link} to="withdraw" size="xl" variant="secondary">
-                    Withdraw
-                  </Button>
-                </div>
+            <EffectiveBalanceBreakdownCard
+              clusterHash={clusterHash!}
+              effectiveBalance={currentEffectiveBalance}
+              projectedEffectiveBalance={projectedEffectiveBalance}
+              hasProjected={hasProjected}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
+            <OperationalRunwayCard
+              clusterHash={clusterHash!}
+              isLiquidated={Boolean(isLiquidated.data)}
+              isProjected={hasProjected && isProjected}
+              deltaEffectiveBalance={BigInt(
+                effectiveBalanceBreakdown?.pending ?? 0,
               )}
-            </Card>
+            />
           </div>
           <Card className="flex-[2] h-full p-6">
             <div className="flex w-full gap-2 justify-between">
@@ -124,7 +108,7 @@ export const MigratedCluster: FC = () => {
               <Spacer />
               <ValidatorsActionsMenu
                 isLiquidated={Boolean(isLiquidated.data)}
-                isMigrated={isMigrated}
+                isMigrated
               />
               <Tooltip content={getTooltipContent()}>
                 <Button
@@ -133,8 +117,7 @@ export const MigratedCluster: FC = () => {
                     operatorsUsability.data?.hasExceededValidatorsLimit ||
                     operatorsUsability.data?.hasPermissionedOperators ||
                     operatorsUsability.data?.hasDeletedOperators ||
-                    isLiquidated.data ||
-                    !isMigrated
+                    isLiquidated.data
                   }
                   isLoading={
                     operatorsUsability.isLoading || isLiquidated.isLoading

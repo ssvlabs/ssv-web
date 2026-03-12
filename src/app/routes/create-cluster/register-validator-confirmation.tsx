@@ -25,8 +25,8 @@ import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
 import { usePaginatedAccountClusters } from "@/hooks/cluster/use-paginated-account-clusters";
 import { useOperators } from "@/hooks/operator/use-operators";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useBulkRegisterValidator } from "@/lib/contract-interactions/write/use-bulk-register-validator";
-import { useRegisterValidator } from "@/lib/contract-interactions/write/use-register-validator";
+import { useBulkRegisterValidator } from "@/lib/contract-interactions/hooks/setter";
+import { useRegisterValidator } from "@/lib/contract-interactions/hooks/setter";
 import { track } from "@/lib/analytics/mixpanel";
 import { queryClient } from "@/lib/react-query";
 import { bigintifyNumbers } from "@/lib/utils/bigint";
@@ -120,27 +120,27 @@ export const RegisterValidatorConfirmation: FC = () => {
     });
 
     if (shares.length === 1)
-      return registerValidator.write(
-        {
+      return registerValidator.write({
+        args: {
           cluster: clusterData,
           operatorIds: bigintifyNumbers(operatorIds),
           publicKey: share.publicKey as Address,
           sharesData: share.sharesData as Address,
         },
-        depositAmount,
+        value: depositAmount,
         options,
-      );
+      });
 
-    return bulkRegisterValidator.write(
-      {
+    return bulkRegisterValidator.write({
+      args: {
         cluster: clusterData,
         operatorIds: bigintifyNumbers(operatorIds),
         publicKeys: shares.map((share) => share.publicKey as Address),
         sharesData: shares.map((share) => share.sharesData as Address),
       },
-      depositAmount,
+      value: depositAmount,
       options,
-    );
+    });
   };
 
   return (

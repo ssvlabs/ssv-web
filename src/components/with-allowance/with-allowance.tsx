@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import { useBlockNumber, useReadContract } from "wagmi";
 import { TokenABI } from "@/lib/abi/token";
-import { useApprove } from "@/lib/contract-interactions/erc-20/write/use-approve";
+import { useApprove } from "@/lib/contract-interactions/hooks/erc20";
 import React, { useMemo } from "react";
 import { Stepper } from "@/components/ui/stepper";
 import { toast } from "@/components/ui/use-toast";
@@ -43,15 +43,18 @@ export const WithAllowance: WithAllowanceFC = ({
   const account = useAccount();
   const ssvNetworkDetails = useSSVNetworkDetails();
   const block = useBlockNumber({ watch: true });
+  const tokenAddress =
+    options?.token.address ?? ssvNetworkDetails?.tokenAddress;
+  const spenderAddress =
+    options?.spender ?? ssvNetworkDetails?.setterContractAddress;
+  const approveContractAddress = (tokenAddress ??
+    "0x0000000000000000000000000000000000000000") as Address;
 
   const allowance = useReadContract({
     abi: TokenABI,
-    address: options?.token.address ?? ssvNetworkDetails?.tokenAddress,
+    address: tokenAddress,
     functionName: "allowance",
-    args: [
-      account.address!,
-      options?.spender ?? ssvNetworkDetails?.setterContractAddress,
-    ],
+    args: [account.address!, spenderAddress],
     blockNumber: block.data,
     query: {
       placeholderData: keepPreviousData,
@@ -59,22 +62,21 @@ export const WithAllowance: WithAllowanceFC = ({
     },
   });
 
-  const approver = useApprove();
+  const approver = useApprove({ contract: approveContractAddress });
   const approve = () => {
-    if (!ssvNetworkDetails)
+    if (!ssvNetworkDetails || !tokenAddress || !spenderAddress)
       return toast({
         variant: "destructive",
-        title: "SSV Network Details not found",
+        title: "Contract details not found",
       });
 
-    approver.write(
-      {
-        tokenAddress: options?.token.address ?? ssvNetworkDetails?.tokenAddress,
-        spender: options?.spender ?? ssvNetworkDetails?.setterContractAddress,
+    approver.write({
+      args: {
+        spender: spenderAddress,
         amount: globals.MAX_WEI_AMOUNT,
       },
-      withTransactionModal(),
-    );
+      options: withTransactionModal(),
+    });
   };
 
   const hasAllowance = allowance.isSuccess ? allowance.data >= amount : true;

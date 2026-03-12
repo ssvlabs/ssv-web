@@ -1,5 +1,5 @@
 import { useOperator } from "@/hooks/operator/use-operator.ts";
-import { useGetOperatorFee } from "@/lib/contract-interactions/read/use-get-operator-fee.ts";
+import { useGetOperatorFee } from "@/lib/contract-interactions/hooks/getter";
 import { getYearlyFee } from "@/lib/utils/operator.ts";
 import type { OperatorID } from "@/types/types.ts";
 import { combineQueryStatus } from "@/lib/react-query";

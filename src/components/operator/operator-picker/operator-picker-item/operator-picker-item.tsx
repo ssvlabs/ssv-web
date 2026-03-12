@@ -7,7 +7,7 @@ import { TableCell, TableRow } from "@/components/ui/grid-table";
 import { SsvExplorerBtn } from "@/components/ui/ssv-explorer-btn";
 import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
-import { useGetValidatorsPerOperatorLimit } from "@/lib/contract-interactions/read/use-get-validators-per-operator-limit";
+import { useGetValidatorsPerOperatorLimit } from "@/lib/contract-interactions/hooks/getter";
 import { percentageFormatter } from "@/lib/utils/number";
 import { canAccountUseOperator, getYearlyFee } from "@/lib/utils/operator";
 import { cn } from "@/lib/utils/tw";

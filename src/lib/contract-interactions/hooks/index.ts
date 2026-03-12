@@ -18,7 +18,7 @@ import { createContractHooks } from "@/lib/contract-interactions/core/create-con
     import { setter } from "@/lib/contract-interactions/hooks"
     setter.useRegisterValidator(...)
 
-  Requires the ABI to be a local file to generate the exports (e.g. @/lib/abi/mainnet/v4/setter.ts)
+  Requires the ABI to be a local file to generate the exports (e.g. @/lib/abi/setter.ts)
 */
 
 export const setter = createContractHooks(

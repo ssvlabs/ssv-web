@@ -1,7 +1,7 @@
-import { useGetOperatorEarnings } from "@/lib/contract-interactions/read/use-get-operator-earnings";
-import { useGetOperatorEarningsSSV } from "@/lib/contract-interactions/read/use-get-operator-earnings-ssv";
-import { useGetOperatorFee } from "@/lib/contract-interactions/read/use-get-operator-fee";
-import { useGetOperatorFeeSSV } from "@/lib/contract-interactions/read/use-get-operator-fee-ssv";
+import { useGetOperatorEarnings } from "@/lib/contract-interactions/hooks/getter";
+import { useGetOperatorEarningsSSV } from "@/lib/contract-interactions/hooks/getter";
+import { useGetOperatorFee } from "@/lib/contract-interactions/hooks/getter";
+import { useGetOperatorFeeSSV } from "@/lib/contract-interactions/hooks/getter";
 import { getYearlyFee } from "@/lib/utils/operator";
 
 export const useOperatorEarningsAndFees = (operatorId: bigint) => {

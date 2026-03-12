@@ -1,6 +1,6 @@
 import { globals } from "@/config";
 import type { SetterABI } from "@/lib/abi/setter.ts";
-import { fetchIsAddressWhitelistedInWhitelistingContract } from "@/lib/contract-interactions/read/use-is-address-whitelisted-in-whitelisting-contract";
+import { fetchIsAddressWhitelistedInWhitelistingContract } from "@/lib/contract-interactions/hooks/query-options";
 import { formatETH, sortNumbers } from "@/lib/utils/number";
 import type { Operator } from "@/types/api";
 import type { Operator as KeysharesOperator } from "@/types/keyshares";

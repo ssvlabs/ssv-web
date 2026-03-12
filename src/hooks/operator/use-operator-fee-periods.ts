@@ -1,7 +1,7 @@
 import { useUpdateOperatorFeeContext } from "@/guard/register-operator-guards";
 import { useOperator } from "@/hooks/operator/use-operator";
-import { useGetOperatorDeclaredFee } from "@/lib/contract-interactions/read/use-get-operator-declared-fee";
-import { useGetOperatorFeePeriods } from "@/lib/contract-interactions/read/use-get-operator-fee-periods";
+import { useGetOperatorDeclaredFee } from "@/lib/contract-interactions/hooks/getter";
+import { useGetOperatorFeePeriods } from "@/lib/contract-interactions/hooks/getter";
 import { queryClient } from "@/lib/react-query";
 import { humanizeDuration } from "@/lib/utils/date";
 import { useInterval, useUpdate } from "react-use";

@@ -14,11 +14,11 @@ import {
   useOperatorDeclaredFeeStatus,
 } from "@/hooks/operator/use-operator-fee-periods";
 import { useOperatorPageParams } from "@/hooks/operator/use-operator-page-params";
-import { useGetOperatorFee } from "@/lib/contract-interactions/read/use-get-operator-fee";
+import { useGetOperatorFee } from "@/lib/contract-interactions/hooks/getter";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useCancelDeclaredOperatorFee } from "@/lib/contract-interactions/write/use-cancel-declared-operator-fee";
-import { useDeclareOperatorFee } from "@/lib/contract-interactions/write/use-declare-operator-fee";
-import { useExecuteOperatorFee } from "@/lib/contract-interactions/write/use-execute-operator-fee";
+import { useCancelDeclaredOperatorFee } from "@/lib/contract-interactions/hooks/setter";
+import { useDeclareOperatorFee } from "@/lib/contract-interactions/hooks/setter";
+import { useExecuteOperatorFee } from "@/lib/contract-interactions/hooks/setter";
 import { setOptimisticData } from "@/lib/react-query";
 import { bigintFloor } from "@/lib/utils/bigint";
 import { getYearlyFee } from "@/lib/utils/operator";
@@ -53,33 +53,33 @@ export const IncreaseOperatorFee: FC = () => {
   });
 
   const declare = () => {
-    declareOperatorFee.write(
-      {
+    declareOperatorFee.write({
+      args: {
         operatorId: BigInt(operatorId!),
         fee: bigintFloor(
           useUpdateOperatorFeeContext.state.newYearlyFee /
             globals.BLOCKS_PER_YEAR,
         ),
       },
-      withTransactionModal({
+      options: withTransactionModal({
         onMined: async () => {
           declaredFee.refetch();
         },
       }),
-    );
+    });
   };
 
   const cancel = () => {
-    cancelDeclaredOperatorFee.write(
-      { operatorId: BigInt(operatorId!) },
-      withTransactionModal(),
-    );
+    cancelDeclaredOperatorFee.write({
+      args: { operatorId: BigInt(operatorId!) },
+      options: withTransactionModal(),
+    });
   };
 
   const execute = () => {
-    executeOperatorFee.write(
-      { operatorId: BigInt(operatorId!) },
-      withTransactionModal({
+    executeOperatorFee.write({
+      args: { operatorId: BigInt(operatorId!) },
+      options: withTransactionModal({
         onMined: async () => {
           setOptimisticData(
             getOperatorQueryOptions(operatorId!).queryKey,
@@ -93,7 +93,7 @@ export const IncreaseOperatorFee: FC = () => {
           );
         },
       }),
-    );
+    });
   };
 
   const renderButtons = () => {

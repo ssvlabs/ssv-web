@@ -3,9 +3,9 @@ import { useAccount } from "@/hooks/account/use-account";
 import { toSolidityCluster } from "@/lib/utils/cluster";
 import { useMemo } from "react";
 import { keepPreviousData } from "@tanstack/react-query";
-import { useIsLiquidated } from "@/lib/contract-interactions/read/use-is-liquidated";
-import { useGetBalance } from "@/lib/contract-interactions/read/use-get-balance";
-import { useGetBalanceSSV } from "@/lib/contract-interactions/read/use-get-balance-ssv.ts";
+import { useIsLiquidated } from "@/lib/contract-interactions/hooks/getter";
+import { useGetBalance } from "@/lib/contract-interactions/hooks/getter";
+import { useGetBalanceSSV } from "@/lib/contract-interactions/hooks/getter";
 import { useGetEffectiveBalance } from "@/lib/contract-interactions/hooks/getter.ts";
 
 type Options = Partial<{ watch: boolean; enabled: boolean }>;

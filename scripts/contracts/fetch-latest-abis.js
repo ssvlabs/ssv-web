@@ -9,13 +9,13 @@ const CHAINS = {
     name: "Ethereum",
     rpc: "https://ethereum-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
     etherscanApi: "https://api.etherscan.io/v2/api",
-    abiDir: resolve("src/lib/abi/mainnet/v4"),
+    abiDir: resolve("src/lib/abi"),
   },
   560048: {
     name: "Hoodi",
     rpc: "https://ethereum-hoodi-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
     etherscanApi: "https://api.etherscan.io/v2/api",
-    abiDir: resolve("src/lib/abi/mainnet/v4"),
+    abiDir: resolve("src/lib/abi"),
   },
 };
 
@@ -79,14 +79,14 @@ const ABIS = [
     proxy: setterAddress,
     jsonFile: "setter.json",
     tsFile: "setter.ts",
-    tsExport: "MainnetV4SetterABI",
+    tsExport: "SetterABI",
   },
   {
     name: "SSVNetworkViews (getter)",
     proxy: getterAddress,
     jsonFile: "getter.json",
     tsFile: "getter.ts",
-    tsExport: "MainnetV4GetterABI",
+    tsExport: "GetterABI",
   },
 ];
 

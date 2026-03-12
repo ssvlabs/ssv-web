@@ -11,7 +11,7 @@ import {
   getSSVNetworkDetails,
   useSSVNetworkDetails,
 } from "@/hooks/use-ssv-network-details";
-import { MainnetV4GetterABI } from "@/lib/abi/mainnet/v4/getter";
+import { GetterABI } from "@/lib/abi/getter.ts";
 import type { AbiInputsToParams } from "@/lib/contract-interactions/utils";
 import {
   paramsToArray,
@@ -23,14 +23,14 @@ import { getChainId } from "@wagmi/core";
 import { config } from "@/wagmi/config";
 import { queryClient } from "@/lib/react-query";
 
-type Fn = ExtractAbiFunction<typeof MainnetV4GetterABI, "getBurnRateSSV">;
-const abiFunction = extractAbiFunction(MainnetV4GetterABI, "getBurnRateSSV");
+type Fn = ExtractAbiFunction<typeof GetterABI, "getBurnRateSSV">;
+const abiFunction = extractAbiFunction(GetterABI, "getBurnRateSSV");
 
 export const getGetBurnRateSSVQueryOptions = (
   params: AbiInputsToParams<Fn["inputs"]>,
 ) =>
   readContractQueryOptions(config, {
-    abi: MainnetV4GetterABI,
+    abi: GetterABI,
     chainId: getChainId(config),
     address: getSSVNetworkDetails().getterContractAddress,
     functionName: "getBurnRateSSV",
@@ -38,7 +38,7 @@ export const getGetBurnRateSSVQueryOptions = (
   });
 
 type QueryOptions = UseReadContractParameters<
-  typeof MainnetV4GetterABI,
+  typeof GetterABI,
   "getBurnRateSSV"
 >["query"];
 
@@ -54,7 +54,7 @@ export const useGetBurnRateSSV = (
   const blockNumber = useBlockNumber({ watch: options.watch });
 
   return useReadContract({
-    abi: MainnetV4GetterABI,
+    abi: GetterABI,
     address: getterContractAddress,
     functionName: "getBurnRateSSV",
     args,

@@ -4,7 +4,7 @@
 
 import { useWriteContract } from "wagmi";
 import type {
-  MainnetEvent,
+  AllEvents,
   MutationOptions,
 } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useWaitForTransactionReceipt } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
@@ -12,8 +12,8 @@ import { TokenABI } from "@/lib/abi/token";
 import type { ExtractAbiFunction } from "abitype";
 import type { AbiInputsToParams } from "@/lib/contract-interactions/utils";
 import {
-  paramsToArray,
   extractAbiFunction,
+  paramsToArray,
 } from "@/lib/contract-interactions/utils";
 import type { WriteContractErrorType } from "@wagmi/core";
 import type { WaitForTransactionReceiptErrorType } from "viem";
@@ -23,7 +23,7 @@ const abiFunction = extractAbiFunction(TokenABI, "approve");
 // type State = "idle" | "confirming" | "mining" | "mined" | "error";
 
 export const useApprove = () => {
-  const wait = useWaitForTransactionReceipt<MainnetEvent>(["useApprove"]);
+  const wait = useWaitForTransactionReceipt<AllEvents>(["useApprove"]);
   const mutation = useWriteContract();
 
   const send = (
@@ -31,7 +31,7 @@ export const useApprove = () => {
       tokenAddress,
       ...params
     }: AbiInputsToParams<Fn["inputs"]> & { tokenAddress: `0x${string}` },
-    options: MutationOptions<MainnetEvent> = {},
+    options: MutationOptions<AllEvents> = {},
   ) => {
     return mutation.writeContractAsync(
       {
@@ -52,7 +52,7 @@ export const useApprove = () => {
       tokenAddress,
       ...params
     }: AbiInputsToParams<Fn["inputs"]> & { tokenAddress: `0x${string}` },
-    options: MutationOptions<MainnetEvent> = {},
+    options: MutationOptions<AllEvents> = {},
   ) => {
     options.onInitiated?.();
     return mutation

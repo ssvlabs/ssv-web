@@ -6,16 +6,9 @@
   const prettier = require("prettier");
   const typescriptParser = require("prettier/parser-typescript");
   const babelParser = require("prettier/parser-babel");
-  const { isEqual, kebabCase } = await import("lodash-es");
+  const { kebabCase } = await import("lodash-es");
 
-  const mainnetAbi = require("../src/lib/abi/mainnet/v4/setter.json");
-
-  const testnetAbi = require("../src/lib/abi/testnet/v4/setter.json").filter(
-    (item) => {
-      const mainnetItem = mainnetAbi.find((f) => f?.name === item?.name);
-      return !isEqual(mainnetItem, item);
-    },
-  );
+  const mainnetAbi = require("../src/lib/abi/setter.json");
 
   const folder = path.join(
     path.dirname(__dirname),
@@ -30,13 +23,6 @@
   fs.readdirSync(folder).forEach((file) => {
     fs.unlinkSync(path.join(folder, file));
   });
-
-  const writeFns = testnetAbi.filter(
-    (item) =>
-      item.type === "function" &&
-      item.stateMutability !== "view" &&
-      item.stateMutability !== "pure",
-  );
 
   const writeFnsMainnet = mainnetAbi.filter(
     (item) =>
@@ -54,13 +40,11 @@
 
     const args = item.inputs;
 
-    const networkName = isTestnet ? "testnet" : "mainnet";
-
     const isPayable = item.stateMutability === "payable";
 
-    const abiName = isTestnet ? "TestnetV4SetterABI" : "MainnetV4SetterABI";
+    const abiName = "SetterABI";
 
-    const eventTypeName = isTestnet ? "TestnetEvent" : "MainnetEvent";
+    const eventTypeName = "AllEvents";
 
     const useWaitForTxHookName = `useWaitForTransactionReceipt${isTestnet ? "_Testnet" : ""}`;
 
@@ -79,7 +63,7 @@ import type {
 import {
   ${useWaitForTxHookName},
 } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { ${abiName} } from "@/lib/abi/${networkName}/v4/setter";${
+import { ${abiName} } from "@/lib/abi/setter.ts";${
       hasInputs
         ? `
 import type {  ExtractAbiFunction } from "abitype";
@@ -166,7 +150,6 @@ export const ${hookName} = () => {
       });
   };
   writeFnsMainnet.forEach(createWriteFn.bind(null, false));
-  writeFns.forEach(createWriteFn.bind(null, true));
 
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);

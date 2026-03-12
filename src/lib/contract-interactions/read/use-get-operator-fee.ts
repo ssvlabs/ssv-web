@@ -11,7 +11,7 @@ import {
   getSSVNetworkDetails,
   useSSVNetworkDetails,
 } from "@/hooks/use-ssv-network-details";
-import { MainnetV4GetterABI } from "@/lib/abi/mainnet/v4/getter";
+import { GetterABI } from "@/lib/abi/getter.ts";
 import type { AbiInputsToParams } from "@/lib/contract-interactions/utils";
 import {
   paramsToArray,
@@ -23,14 +23,14 @@ import { getChainId } from "@wagmi/core";
 import { config } from "@/wagmi/config";
 import { queryClient } from "@/lib/react-query";
 
-type Fn = ExtractAbiFunction<typeof MainnetV4GetterABI, "getOperatorFee">;
-const abiFunction = extractAbiFunction(MainnetV4GetterABI, "getOperatorFee");
+type Fn = ExtractAbiFunction<typeof GetterABI, "getOperatorFee">;
+const abiFunction = extractAbiFunction(GetterABI, "getOperatorFee");
 
 export const getGetOperatorFeeQueryOptions = (
   params: AbiInputsToParams<Fn["inputs"]>,
 ) =>
   readContractQueryOptions(config, {
-    abi: MainnetV4GetterABI,
+    abi: GetterABI,
     chainId: getChainId(config),
     address: getSSVNetworkDetails().getterContractAddress,
     functionName: "getOperatorFee",
@@ -38,7 +38,7 @@ export const getGetOperatorFeeQueryOptions = (
   });
 
 type QueryOptions = UseReadContractParameters<
-  typeof MainnetV4GetterABI,
+  typeof GetterABI,
   "getOperatorFee"
 >["query"];
 
@@ -54,7 +54,7 @@ export const useGetOperatorFee = (
   const blockNumber = useBlockNumber({ watch: options.watch });
 
   return useReadContract({
-    abi: MainnetV4GetterABI,
+    abi: GetterABI,
     address: getterContractAddress,
     functionName: "getOperatorFee",
     args,

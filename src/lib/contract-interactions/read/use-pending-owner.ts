@@ -9,7 +9,7 @@ import {
   getSSVNetworkDetails,
   useSSVNetworkDetails,
 } from "@/hooks/use-ssv-network-details";
-import { MainnetV4GetterABI } from "@/lib/abi/mainnet/v4/getter";
+import { GetterABI } from "@/lib/abi/getter.ts";
 
 import { readContractQueryOptions } from "wagmi/query";
 import { getChainId } from "@wagmi/core";
@@ -18,14 +18,14 @@ import { queryClient } from "@/lib/react-query";
 
 export const getPendingOwnerQueryOptions = () =>
   readContractQueryOptions(config, {
-    abi: MainnetV4GetterABI,
+    abi: GetterABI,
     chainId: getChainId(config),
     address: getSSVNetworkDetails().getterContractAddress,
     functionName: "pendingOwner",
   });
 
 type QueryOptions = UseReadContractParameters<
-  typeof MainnetV4GetterABI,
+  typeof GetterABI,
   "pendingOwner"
 >["query"];
 
@@ -40,7 +40,7 @@ export const usePendingOwner = (
   const blockNumber = useBlockNumber({ watch: options.watch });
 
   return useReadContract({
-    abi: MainnetV4GetterABI,
+    abi: GetterABI,
     address: getterContractAddress,
     functionName: "pendingOwner",
 

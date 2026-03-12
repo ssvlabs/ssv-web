@@ -6,12 +6,8 @@ import {
   getAddress,
   defineChain,
 } from "viem";
-import LocalSSVNetworkABIJson from "../src/lib/abi/mainnet/v4/setter.json" with {
-  type: "json",
-};
-import LocalSSVNetworkViewsABIJson from "../src/lib/abi/mainnet/v4/getter.json" with {
-  type: "json",
-};
+import LocalSSVNetworkABIJson from "../src/lib/abi/setter.json" with { type: "json" };
+import LocalSSVNetworkViewsABIJson from "../src/lib/abi/getter.json" with { type: "json" };
 
 const RPC_BY_CHAIN_ID = {
   1: "https://ethereum-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
@@ -64,7 +60,9 @@ function getImplementationFromEIP1167(bytecode) {
 }
 
 function extractSelectors(bytecode) {
-  const hex = (bytecode.startsWith("0x") ? bytecode.slice(2) : bytecode).toLowerCase();
+  const hex = (
+    bytecode.startsWith("0x") ? bytecode.slice(2) : bytecode
+  ).toLowerCase();
   const selectors = new Set();
   for (let i = 0; i < hex.length - 9; i += 2) {
     const op = hex[i] + hex[i + 1];

@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils/tw";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
+import { Tooltip } from "@/components/ui/tooltip";
 import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useClusterBalance } from "@/hooks/cluster/use-cluster-balance";
 import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
@@ -66,9 +67,14 @@ export const OperationalRunwayCard: FC<OperationalRunwayCardProps> = ({
   return (
     <Card className="w-full flex-1 p-6 gap-6">
       <div className="flex items-center justify-between">
-        <Text variant="headline4" className="text-gray-500">
-          Operational Runway
-        </Text>
+        <Tooltip content="Estimated amount of days the cluster balance is sufficient to run all its validators.">
+          <div className="flex items-center gap-1">
+            <Text variant="headline4" className="text-gray-500">
+              Est. Operational Runway
+            </Text>
+            {/* <FaCircleInfo className="size-4 text-gray-500" /> */}
+          </div>
+        </Tooltip>
         <Text
           variant="headline4"
           className={cn(isProjected ? "text-primary-500" : "text-gray-700")}
@@ -79,14 +85,17 @@ export const OperationalRunwayCard: FC<OperationalRunwayCardProps> = ({
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <Text variant="body-3-semibold" className="text-gray-600">
-              Burn Rate
-            </Text>
-            <Text variant="body-3-medium" className="text-gray-500">
-              / day
-            </Text>
-          </div>
+          <Tooltip content="ETH deducted from this cluster per day (operator fees + network fee), based on current effective balance.">
+            <div className="flex items-center gap-1.5">
+              <Text variant="body-3-semibold" className="text-gray-600">
+                Burn Rate
+              </Text>
+              <Text variant="body-3-medium" className="text-gray-500">
+                / day
+              </Text>
+              {/* <FaCircleInfo className="size-3 text-gray-400" /> */}
+            </div>
+          </Tooltip>
           <Text
             variant="body-3-bold"
             className={cn(isProjected && "text-primary-500")}
@@ -97,11 +106,13 @@ export const OperationalRunwayCard: FC<OperationalRunwayCardProps> = ({
         <div className="flex flex-col gap-2">
           <Row
             label="Operators fee"
+            tooltip="Operator charges per day, scaled by current effective balance."
             value={`${fundingCost.data?.formatted.subtotal.operatorsCost ?? "0"} ETH`}
             isProjected={isProjected}
           />
           <Row
             label="Network fee"
+            tooltip="Network fee per day, scaled by current effective balance."
             value={`${fundingCost.data?.formatted.subtotal.networkCost ?? "0"} ETH`}
             isProjected={isProjected}
           />
@@ -110,19 +121,26 @@ export const OperationalRunwayCard: FC<OperationalRunwayCardProps> = ({
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <Text variant="body-3-semibold" className="text-gray-600">
-            Balance
-          </Text>
+          <Tooltip content="Current cluster ETH balance on-chain.">
+            <div className="flex items-center gap-1">
+              <Text variant="body-3-semibold" className="text-gray-600">
+                Balance
+              </Text>
+              {/* <FaCircleInfo className="size-3 text-gray-400" /> */}
+            </div>
+          </Tooltip>
           <Text variant="body-3-bold">{formatETH(totalBalance)} ETH</Text>
         </div>
         <div className="flex flex-col gap-2">
           <Row
             label="Operational balance"
+            tooltip="Portion of balance available to pay ongoing fees after reserving liquidation collateral."
             value={`${formatETH(operationalBalance)} ETH`}
             isProjected={isProjected}
           />
           <Row
             label="Liquidation Collateral"
+            tooltip="Protected liquidation buffer excluded from operational runway."
             value={`${fundingCost.data?.formatted.subtotal.liquidationCollateral ?? "0"} ETH`}
             isProjected={isProjected}
           />
@@ -158,12 +176,18 @@ OperationalRunwayCard.displayName = "OperationalRunwayCard";
 const Row: FC<{
   label: string;
   value: string;
+  tooltip?: string;
   isProjected?: boolean;
-}> = ({ label, value, isProjected }) => (
+}> = ({ label, value, tooltip, isProjected }) => (
   <div className="flex items-center justify-between">
-    <Text variant="body-3-medium" className="text-gray-500">
-      {label}
-    </Text>
+    <Tooltip content={tooltip}>
+      <div className="flex items-center gap-1">
+        <Text variant="body-3-medium" className="text-gray-500">
+          {label}
+        </Text>
+        {/* {tooltip && <FaCircleInfo className="size-3 text-gray-400" />} */}
+      </div>
+    </Tooltip>
     <Text
       variant="body-3-semibold"
       className={cn(isProjected ? "text-primary-500" : "text-gray-600")}

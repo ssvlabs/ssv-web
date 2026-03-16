@@ -4,7 +4,7 @@ import { Text } from "@/components/ui/text";
 import { StripedBar } from "@/components/ui/striped-bar";
 import { numberFormatter } from "@/lib/utils/number";
 import { useClusterEffectiveBalanceBreakdown } from "@/hooks/cluster/use-cluster-effective-balance-breakdown";
-import type { ValidatorStatusFilterKey } from "@/lib/search-parsers/validators-search-parsers";
+import type { ValidatorsEffectiveBalanceByClusterResponse } from "@/api/validators";
 
 export type EffectiveBalanceBreakDownChartProps = {
   clusterHash: string;
@@ -13,16 +13,15 @@ export type EffectiveBalanceBreakDownChartProps = {
 const MIN_BAR_WIDTH = 8;
 
 type StatusVisualConfig = {
-  key: ValidatorStatusFilterKey;
+  key: keyof ValidatorsEffectiveBalanceByClusterResponse["effectiveBalance"];
   label: string;
   variant: React.ComponentProps<typeof StripedBar>["variant"];
 };
 
 const STATUS_CONFIG: StatusVisualConfig[] = [
-  { key: "inactive", label: "Invalid", variant: "invalid" },
-  { key: "active", label: "Active", variant: "active" },
-  { key: "pending", label: "Depositing", variant: "depositing" },
   { key: "notDeposited", label: "Not Deposited", variant: "notDeposited" },
+  { key: "pending", label: "Depositing", variant: "depositing" },
+  { key: "deposited", label: "Deposited", variant: "active" },
   { key: "exiting", label: "Exiting", variant: "exiting" },
   { key: "exited", label: "Exited", variant: "exited" },
   { key: "slashed", label: "Slashed", variant: "slashed" },
@@ -38,12 +37,11 @@ type EffectiveBalanceBreakDownChartFC = FC<
 
 export const EffectiveBalanceBreakDownChart: EffectiveBalanceBreakDownChartFC =
   ({ className, clusterHash, ...props }) => {
-    const { data: counts = {} as Record<ValidatorStatusFilterKey, number> } =
-      useClusterEffectiveBalanceBreakdown(clusterHash);
+    const { data: counts } = useClusterEffectiveBalanceBreakdown(clusterHash);
 
     const visibleItems = STATUS_CONFIG.map((config) => ({
       ...config,
-      amount: counts[config.key] ?? 0,
+      amount: counts?.[config.key] ?? 0,
     })).filter((item) => item.amount > 0);
 
     return (

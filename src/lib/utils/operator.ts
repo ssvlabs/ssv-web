@@ -1,6 +1,6 @@
 import { globals } from "@/config";
-import type { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
-import { fetchIsAddressWhitelistedInWhitelistingContract } from "@/lib/contract-interactions/read/use-is-address-whitelisted-in-whitelisting-contract";
+import type { SetterABI } from "@/lib/abi/setter.ts";
+import { fetchIsAddressWhitelistedInWhitelistingContract } from "@/lib/contract-interactions/hooks/query-options";
 import { formatETH, sortNumbers } from "@/lib/utils/number";
 import type { Operator } from "@/types/api";
 import type { Operator as KeysharesOperator } from "@/types/keyshares";
@@ -10,16 +10,21 @@ import { isAddressEqual } from "viem";
 
 type GetYearlyFeeOpts = {
   format?: boolean;
+  denomination?: "ETH" | "SSV";
 };
 
-export function getYearlyFee(fee: bigint, opts: { format: true }): string;
+export function getYearlyFee(
+  fee: bigint,
+  opts: { format: true; denomination?: "ETH" | "SSV" },
+): string;
 export function getYearlyFee(fee: bigint, opts?: GetYearlyFeeOpts): bigint;
 export function getYearlyFee(
   fee: bigint,
   opts?: GetYearlyFeeOpts,
 ): string | bigint {
   const yearlyFee = fee * BigInt(globals.BLOCKS_PER_YEAR);
-  if (opts?.format) return `${formatETH(yearlyFee)} ETH`;
+  if (opts?.format)
+    return `${formatETH(yearlyFee)} ${opts.denomination || "ETH"}`;
   return yearlyFee;
 }
 
@@ -221,7 +226,7 @@ export const createDefaultOperator = (
   migrated: true,
 });
 
-export type MainnetEvent = DecodeEventLogReturnType<typeof MainnetV4SetterABI>;
+export type MainnetEvent = DecodeEventLogReturnType<typeof SetterABI>;
 
 export const createOperatorFromEvent = (
   event: Extract<MainnetEvent, { eventName: "OperatorAdded" }>,

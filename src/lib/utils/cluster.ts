@@ -1,5 +1,6 @@
 import { globals } from "@/config";
 import { bigintMax, stringifyBigints } from "@/lib/utils/bigint";
+import { effectiveBalanceToVUnits } from "@/lib/utils/keystore";
 import { numberFormatter, sortNumbers } from "@/lib/utils/number";
 import { add0x } from "@/lib/utils/strings";
 import type {
@@ -107,8 +108,6 @@ type CalculateRunwayParams = {
   minimumLiquidationCollateral: bigint;
 };
 
-const EB_PER_VALIDATOR = 32n;
-
 export const calculateRunway = ({
   balance,
   feesPerBlock,
@@ -118,11 +117,15 @@ export const calculateRunway = ({
   liquidationThresholdBlocks,
   minimumLiquidationCollateral,
 }: CalculateRunwayParams) => {
-  const snapshotEB = effectiveBalance || EB_PER_VALIDATOR;
+  const snapshotEB = effectiveBalance || globals.DEFAULT_EB_PER_VALIDATOR;
   const totalEB = effectiveBalance + deltaEffectiveBalance;
-  const burnRateSnapshot = (feesPerBlock * snapshotEB) / EB_PER_VALIDATOR;
+  const burnRateSnapshot =
+    (feesPerBlock * effectiveBalanceToVUnits(snapshotEB)) /
+    globals.VUNITS_PRECISION;
   const burnRateWithDelta =
-    (feesPerBlock * (totalEB || EB_PER_VALIDATOR)) / EB_PER_VALIDATOR;
+    (feesPerBlock *
+      effectiveBalanceToVUnits(totalEB || globals.DEFAULT_EB_PER_VALIDATOR)) /
+    globals.VUNITS_PRECISION;
 
   const collateralSnapshot = bigintMax(
     burnRateSnapshot * liquidationThresholdBlocks,

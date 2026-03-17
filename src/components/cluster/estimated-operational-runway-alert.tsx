@@ -10,6 +10,7 @@ export type EstimatedOperationalRunwayAlertProps = {
   isLiquidated: boolean;
   runway: bigint;
   isMigrated?: boolean;
+  isProjected?: boolean;
 };
 
 type EstimatedOperationalRunwayAlertFC = FC<
@@ -27,6 +28,7 @@ export const EstimatedOperationalRunwayAlert: EstimatedOperationalRunwayAlertFC 
     isAtRisk,
     hasDeltaValidators,
     isLiquidated,
+    isProjected,
     runway,
     isMigrated = true,
     ...props
@@ -90,6 +92,18 @@ export const EstimatedOperationalRunwayAlert: EstimatedOperationalRunwayAlertFC 
     return (
       <Alert variant="error" className={cn(className)} {...props}>
         <AlertDescription className="flex flex-col gap-4">
+          {isProjected ? (
+            <Alert
+              variant="default"
+              className="rounded-lg text-gray-700 p-1 px-2"
+            >
+              <AlertDescription className="flex flex-col gap-4">
+                <p className="text-xs font-medium">
+                  This warning applies to your projected effective balance.
+                </p>
+              </AlertDescription>
+            </Alert>
+          ) : null}
           {renderMessage()}
           <Button
             variant="link"

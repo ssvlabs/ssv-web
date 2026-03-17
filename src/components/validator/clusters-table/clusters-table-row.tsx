@@ -70,7 +70,6 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
                   asChild
                   content={
                     <OperatorDetails
-                      className="dark"
                       isShowExplorerLink={false}
                       operator={operator}
                     />

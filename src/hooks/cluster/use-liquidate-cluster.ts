@@ -3,10 +3,10 @@ import type {
   MainnetEvent,
   MutationOptions,
 } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useLiquidate } from "@/lib/contract-interactions/write/use-liquidate";
+import { useLiquidate } from "@/lib/contract-interactions/hooks/setter";
 import { toSolidityCluster } from "@/lib/utils/cluster";
 import { useAccount } from "@/hooks/account/use-account";
-import { useLiquidateSSV } from "@/lib/contract-interactions/write/use-liquidate-ssv.ts";
+import { useLiquidateSSV } from "@/lib/contract-interactions/hooks/setter";
 
 export const useLiquidateCluster = (clusterHash: string) => {
   const account = useAccount();
@@ -19,14 +19,14 @@ export const useLiquidateCluster = (clusterHash: string) => {
       throw new Error("Account or cluster data not available");
     }
 
-    return liquidate.write(
-      {
+    return liquidate.write({
+      args: {
         clusterOwner: account.address,
         operatorIds: cluster.data?.operators.map((id) => BigInt(id)) || [],
         cluster: toSolidityCluster(cluster.data),
       },
       options,
-    );
+    });
   };
 
   return {
@@ -46,14 +46,14 @@ export const useLiquidateClusterSSV = (clusterHash: string) => {
       throw new Error("Account or cluster data not available");
     }
 
-    return liquidate.write(
-      {
+    return liquidate.write({
+      args: {
         clusterOwner: account.address,
         operatorIds: cluster.data?.operators.map((id) => BigInt(id)) || [],
         cluster: toSolidityCluster(cluster.data),
       },
       options,
-    );
+    });
   };
 
   return {

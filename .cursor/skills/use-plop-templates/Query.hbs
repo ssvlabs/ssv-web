@@ -1,0 +1,26 @@
+import { QueryConfig } from '@/lib/react-query';
+
+import type { UndefinedInitialDataOptions } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
+
+
+export const {{camelCase name}}QueryOptions = () => {
+  return queryOptions({
+    queryKey: ['{{kebabCase name}}'],
+    queryFn: () => // Your fetcher function here,
+  });
+};
+
+type Use{{pascalCase name}}Options = {
+  options?: QueryConfig<typeof {{camelCase name}}QueryOptions>;
+};
+
+export const use{{pascalCase name}} = ({ options }: Use{{pascalCase name}}Options = {}) => {
+  const queryOptions = {{camelCase name}}QueryOptions();
+  return useQuery({
+    ...{{camelCase name}}QueryOptions(),
+    ...options,
+    enabled: queryOptions.enabled && options?.enabled,
+  });
+};
+

@@ -10,8 +10,8 @@ import { useBulkActionContext } from "@/guard/bulk-action-guard";
 import { useCluster } from "@/hooks/cluster/use-cluster";
 import { track } from "@/lib/analytics/mixpanel";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useBulkExitValidator } from "@/lib/contract-interactions/write/use-bulk-exit-validator";
-import { useExitValidator } from "@/lib/contract-interactions/write/use-exit-validator";
+import { useBulkExitValidator } from "@/lib/contract-interactions/hooks/setter";
+import { useExitValidator } from "@/lib/contract-interactions/hooks/setter";
 import { bigintifyNumbers } from "@/lib/utils/bigint";
 import { sortNumbers } from "@/lib/utils/number";
 import type { Address } from "abitype";
@@ -47,22 +47,22 @@ export const ExitValidatorsConfirmation: FC = () => {
     });
 
     if (selectedPublicKeys.length === 1) {
-      return exitValidator.write(
-        {
+      return exitValidator.write({
+        args: {
           publicKey: selectedPublicKeys[0] as Address,
           operatorIds: operatorIds,
         },
         options,
-      );
+      });
     }
 
-    bulkExitValidators.write(
-      {
+    bulkExitValidators.write({
+      args: {
         publicKeys: selectedPublicKeys as Address[],
         operatorIds: operatorIds,
       },
       options,
-    );
+    });
   };
 
   return (

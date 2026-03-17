@@ -4,8 +4,8 @@ import { useDeleteAuthorizedAddresses } from "@/hooks/operator/use-delete-author
 import { useOperatorPageParams } from "@/hooks/operator/use-operator-page-params";
 import { getOperatorQueryOptions } from "@/hooks/operator/use-operator";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useRemoveOperatorsWhitelists } from "@/lib/contract-interactions/write/use-remove-operators-whitelists";
-import { useSetOperatorsWhitelists } from "@/lib/contract-interactions/write/use-set-operators-whitelists";
+import { useRemoveOperatorsWhitelists } from "@/lib/contract-interactions/hooks/setter";
+import { useSetOperatorsWhitelists } from "@/lib/contract-interactions/hooks/setter";
 import { mergeOperatorWhitelistAddresses } from "@/lib/utils/operator";
 import { useQueryClient } from "@tanstack/react-query";
 import type { Address } from "abitype";
@@ -42,14 +42,14 @@ export const useManageAuthorizedAddresses = (_operatorId?: string) => {
     mode,
     params,
   }: {
-    params: Parameters<typeof set.write | typeof remove.write>[0];
+    params: NonNullable<Parameters<typeof set.write>[0]>["args"];
     mode: Mode;
   }) => {
     const isAdd = mode === "add";
     const writer = isAdd ? set : remove;
-    writer.write(
-      params,
-      withTransactionModal({
+    writer.write({
+      args: params,
+      options: withTransactionModal({
         onMined: () => {
           toast({
             title: "Operator whitelist updated",
@@ -73,7 +73,7 @@ export const useManageAuthorizedAddresses = (_operatorId?: string) => {
           return () => navigate("..");
         },
       }),
-    );
+    });
   };
 
   const submit = (event: React.FormEvent<HTMLFormElement>) => {

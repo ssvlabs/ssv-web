@@ -1,5 +1,5 @@
 import { getOperatorQueryOptions } from "@/hooks/operator/use-operator";
-import { getGetOperatorByIdQueryOptions } from "@/lib/contract-interactions/read/use-get-operator-by-id";
+import { getGetOperatorByIdQueryOptions } from "@/lib/contract-interactions/hooks/query-options";
 import { combineQueryStatus, queryClient } from "@/lib/react-query";
 import type { Operator } from "@/types/api";
 import type { OperatorID } from "@/types/types";

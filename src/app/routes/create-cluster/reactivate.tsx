@@ -30,7 +30,7 @@ import {
   useFundingCostETH,
 } from "@/hooks/use-compute-funding-cost";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useReactivate } from "@/lib/contract-interactions/write/use-reactivate";
+import { useReactivate } from "@/lib/contract-interactions/hooks/setter";
 import { setOptimisticData } from "@/lib/react-query";
 import { bigintifyNumbers } from "@/lib/utils/bigint";
 import { mergeClusterSnapshot, toSolidityCluster } from "@/lib/utils/cluster";
@@ -134,13 +134,13 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
       effectiveBalance,
     });
 
-    return reactive.write(
-      {
+    return reactive.write({
+      args: {
         operatorIds: bigintifyNumbers(operatorIds),
         cluster: toSolidityCluster(cluster.data),
       },
-      amount.total,
-      withTransactionModal({
+      value: amount.total,
+      options: withTransactionModal({
         onMined: ({ events }) => {
           const event = events.find(
             (event) => event.eventName === "ClusterReactivated",
@@ -164,7 +164,7 @@ export const ReactivateCluster: FCProps = ({ ...props }) => {
           return () => navigate("..");
         },
       }),
-    );
+    });
   });
 
   if (cluster.data && !cluster.data.isLiquidated)

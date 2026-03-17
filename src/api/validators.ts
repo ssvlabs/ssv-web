@@ -53,12 +53,10 @@ export const getIsRegisteredValidator = async (publicKey: string) => {
 };
 
 export const getValidatorsStatusCounts = async (clusterHash: string) => {
-  return await api
-    .get<{
-      cluster: string;
-      data: Record<ValidatorStatusFilterKey, number>;
-    }>(endpoint(`validators/statusCount?clusterHash=${add0x(clusterHash)}`))
-    .then((response) => response.data);
+  return await api.get<{
+    cluster: string;
+    data: Record<ValidatorStatusFilterKey, number>;
+  }>(endpoint(`validators/statusCount?clusterHash=${add0x(clusterHash)}`));
 };
 
 export const getAllValidators = async (clusterHash: string | Address) => {
@@ -102,4 +100,28 @@ export const getValidatorsEffectiveBalance = async (publicKeys: string[]) => {
       publicKeys,
     },
   );
+};
+
+export type ValidatorsEffectiveBalanceByClusterResponse = {
+  cluster: string;
+  effectiveBalance: {
+    deposited: number;
+    exited: number;
+    exiting: number;
+    notDeposited: number;
+    pending: number;
+    slashed: number;
+  };
+};
+
+export const getValidatorsEffectiveBalanceByCluster = async (
+  clusterHash: string,
+) => {
+  return await api
+    .get<ValidatorsEffectiveBalanceByClusterResponse>(
+      endpoint(
+        `validators/effectiveBalance/byStatus?clusterHash=${add0x(clusterHash)}`,
+      ),
+    )
+    .then((res) => res.effectiveBalance);
 };

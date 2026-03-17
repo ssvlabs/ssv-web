@@ -1,4 +1,4 @@
-import { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
+import { SetterABI } from "@/lib/abi/setter.ts";
 import type { AllEvents } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { tryCatch } from "@/lib/utils/tryCatch";
 import { decodeEventLog, type TransactionReceipt } from "viem";
@@ -8,7 +8,7 @@ export const decodeSSVEventLogs = <T extends AllEvents>(
 ) =>
   receipt.logs.reduce((acc, log) => {
     try {
-      for (const eventAbi of [MainnetV4SetterABI]) {
+      for (const eventAbi of [SetterABI]) {
         tryCatch(() => {
           const event = decodeEventLog({
             abi: eventAbi,

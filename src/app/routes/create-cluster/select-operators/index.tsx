@@ -28,7 +28,8 @@ import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params.ts";
 import { useSelectOperatorIdsFromSearchParams } from "@/app/routes/create-cluster/select-operators/use-select-operator-ids-from-search-params";
 import { useOperatorsUsability } from "@/hooks/keyshares/use-operators-usability";
-
+import type { Operator } from "@/types/api";
+import { globals } from "@/config";
 export type SelectOperatorsProps = {
   // TODO: Add props or remove this type
 };
@@ -74,6 +75,15 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
     type: isVerifiedCheckedDebounced || undefined,
   });
 
+  // Hide operators below the soft min fee, unless the user is searching (so they can still find specific low-fee operators)
+  const filteredOperators = search.trim()
+    ? operators
+    : operators.filter((operator) => {
+        if (operator.is_private) return true;
+        const yearlyFee = getYearlyFee(BigInt(operator.eth_fee || "0"));
+        return yearlyFee >= globals.SOFT_MIN_OPERATOR_YEARLY_FEE;
+      });
+
   const selectedOperators = selectedOperatorsIds
     .map(
       (id) =>
@@ -81,12 +91,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
         reshareFlow.operators.find(({ operator }) => operator.id === id)
           ?.operator,
     )
-    .filter(Boolean);
-
-  const totalYearlyFee = selectedOperators.reduce(
-    (acc, operator) => acc + getYearlyFee(BigInt(operator.eth_fee)),
-    0n,
-  );
+    .filter((operator): operator is Operator => Boolean(operator));
 
   const hasUnverifiedOperators = selectedOperators.some(
     (operator) => operator.type !== "verified_operator",
@@ -98,6 +103,16 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
     enabled: isClusterSizeMet,
   });
   const { clusterHash } = useClusterPageParams();
+  const currentCluster = useCluster(clusterHash ?? "", {
+    enabled: Boolean(clusterHash),
+  });
+  const feeMode = currentCluster.data?.migrated === false ? "ssv" : "eth";
+  const feeField = feeMode === "eth" ? "eth_fee" : "fee";
+  const feeDenomination = feeMode === "eth" ? "ETH" : "SSV";
+  const totalYearlyFee = selectedOperators.reduce(
+    (acc, operator) => acc + getYearlyFee(BigInt(operator[feeField] || "0")),
+    0n,
+  );
 
   const isClusterExists =
     reshareFlow.operators.length === 0 &&
@@ -175,7 +190,8 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
           </div>
           <OperatorPicker
             className="flex-1 h-[600px] min-h-[600px]"
-            operators={operators}
+            operators={filteredOperators}
+            feeMode={feeMode}
             query={infiniteQuery}
             orderBy={orderBy}
             sort={sort}
@@ -192,6 +208,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
             className="flex-[1] overflow-auto min-h-[300px]"
             clusterSize={clusterSize}
             selectedOperators={selectedOperators}
+            feeMode={feeMode}
             onRemoveOperator={({ id }) => {
               state.selectedOperatorsIds = xor(selectedOperatorsIds, [id]);
             }}
@@ -199,7 +216,9 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
           <Divider />
           <div className="flex justify-between">
             <Text variant="body-2-medium">Operators Yearly Fee</Text>
-            <Text variant="body-2-bold">{formatSSV(totalYearlyFee)} ETH</Text>
+            <Text variant="body-2-bold">
+              {formatSSV(totalYearlyFee)} {feeDenomination}
+            </Text>
           </div>
           {hasUnverifiedOperators && (
             <Alert variant="warning">

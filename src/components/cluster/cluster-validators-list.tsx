@@ -28,6 +28,7 @@ import { Spacer } from "@/components/ui/spacer";
 import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge";
 import { ValidatorsSearchAndFilters } from "@/components/cluster/validators-search-and-filters";
 import { cn } from "@/lib/utils/tw.ts";
+import { formatGwei } from "viem";
 
 export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
@@ -41,11 +42,11 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
     <div className="flex flex-col gap-4">
       <ValidatorsSearchAndFilters />
       <VirtualizedInfinityTable
-        gridTemplateColumns="220px minmax(200px, auto) 120px"
+        gridTemplateColumns="200px 140px minmax(100px, auto) 120px"
         {...props}
         query={infiniteQuery}
         headers={[
-          <Text>Public key</Text>,
+          <Text>Public Key</Text>,
           <Tooltip
             asChild
             content="Refers to the validators status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs)"
@@ -55,19 +56,27 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
               <FaCircleInfo className="size-3 text-gray-500" />
             </div>
           </Tooltip>,
+          <Text>Effective Balance</Text>,
           null,
         ]}
         items={validators}
         renderRow={({ index, item }) => (
           <TableRow key={index}>
             <TableCell className="flex gap-2 items-center">
-              <Text variant="body-2-medium">
+              <Text variant="body-3-medium">
                 {shortenAddress(add0x(item.public_key))}
               </Text>
               <CopyBtn variant="subtle" text={item.public_key} />
             </TableCell>
             <TableCell>
-              <ValidatorStatusBadge size="sm" status={item.displayedStatus} />
+              <ValidatorStatusBadge size="xs" status={item.displayedStatus} />
+            </TableCell>
+            <TableCell>
+              <Text variant="body-3-medium">
+                {formatGwei(BigInt(item.validator_info?.effective_balance)) ||
+                  32}{" "}
+                ETH
+              </Text>
             </TableCell>
             <TableCell className="flex gap-0.5 justify-end">
               <SsvExplorerBtn validatorId={item.public_key} />
@@ -94,9 +103,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                       </DropdownMenuItem>
                     </a>
                     <DropdownMenuItem
-                      disabled={isSsvCluster}
                       onClick={() => {
-                        if (isSsvCluster) return;
                         useBulkActionContext.state.selectedPublicKeys = [
                           item.public_key,
                         ];

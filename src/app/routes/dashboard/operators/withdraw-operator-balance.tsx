@@ -7,7 +7,7 @@ import { Text } from "@/components/ui/text";
 import { toast } from "@/components/ui/use-toast";
 import { useOperator } from "@/hooks/operator/use-operator";
 import { useOperatorPageParams } from "@/hooks/operator/use-operator-page-params";
-import { useGetOperatorEarnings } from "@/lib/contract-interactions/read/use-get-operator-earnings";
+import { useGetOperatorEarnings } from "@/lib/contract-interactions/hooks/getter";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { cn } from "@/lib/utils/tw";
 import { type ComponentPropsWithoutRef, type FC } from "react";
@@ -16,23 +16,23 @@ import { useNavigate } from "react-router-dom";
 import {
   useWithdrawAllOperatorEarnings,
   useWithdrawAllOperatorEarningsSSV,
-  useWithdrawAllVersionOperatorEarnings
+  useWithdrawAllVersionOperatorEarnings,
 } from "@/lib/contract-interactions/hooks/setter";
 import { useGetOperatorEarningsSSV } from "@/lib/contract-interactions/hooks/getter";
 
 export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
-                                                                               className,
-                                                                               ...props
-                                                                             }) => {
+  className,
+  ...props
+}) => {
   const navigate = useNavigate();
   const { operatorId } = useOperatorPageParams();
 
   const { data: operator } = useOperator();
   const operatorEarningsEth = useGetOperatorEarnings({
-    id: BigInt(operatorId!)
+    id: BigInt(operatorId!),
   });
   const operatorEarningsSSV = useGetOperatorEarningsSSV({
-    id: BigInt(operatorId!)
+    id: BigInt(operatorId!),
   });
 
   const balanceEth = operatorEarningsEth.data ?? 0n;
@@ -60,13 +60,13 @@ export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
       options: withTransactionModal({
         onMined: () => {
           toast({
-            title: "Withdrawal Successful"
+            title: "Withdrawal Successful",
           });
           operatorEarningsEth.refetch();
           operatorEarningsSSV.refetch();
           return () => navigate("..");
-        }
-      })
+        },
+      }),
     });
   };
 

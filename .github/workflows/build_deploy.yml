@@ -26,25 +26,12 @@ jobs:
     #   \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
     #   \"distributionContract\": \"${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS_MAINNET }}\",
     #   \"tokenAddress\": \"0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54\",
-    #   \"setterContractAddress\": \"${{ secrets.PROD_NETWORK_SETTER_CONTRACT_ADDRESS_V4_MAINNET }}\",
-    #   \"getterContractAddress\": \"${{ secrets.PROD_NETWORK_GETTER_CONTRACT_ADDRESS_V4_MAINNET }}\"
+    #   \"setterContractAddress\": \"0xDD9BC35aE942eF0cFa76930954a156B3fF30a4E1\",
+    #   \"getterContractAddress\": \"0xafE830B6Ee262ba11cce5F32fDCd760FFE6a66e4\"
     # },
     env:
-      STAGE_SSV_NETWORKS: >
-        [
-          {
-            \"networkId\": 560048,
-            \"apiVersion\": \"v4\",
-            \"apiNetwork\": \"hoodi\",  
-            \"api\": \"https://api.stage.ops.ssvlabsinternal.com/api\",
-            \"explorerUrl\": \"https://explorer.stage.ssv.network\",
-            \"insufficientBalanceUrl\": \"https://faucet.stage.ssv.network\",
-            \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
-            \"tokenAddress\": \"0x746c33ccc28b1363c35c09badaf41b2ffa7e6d56\",
-            \"setterContractAddress\": \"0x384AC2c8AF4Df1faD7E20F15064B2C2917fAa7a3\",
-            \"getterContractAddress\": \"0x92c71f0A9823789f72BAEBB2BFE39e897bDd26bd\"
-           }
-        ]
+      STAGE_SETTER_CONTRACT_ADDRESS: "0xc07B3E9671f884FDa67E1e7D43d952E0e1369fd8"
+      STAGE_GETTER_CONTRACT_ADDRESS: "0x3234e84b7d1eE1AF8b586E26814d4e268336D142"
       PROD_SSV_NETWORKS: >
         [
           {
@@ -56,8 +43,8 @@ jobs:
             \"insufficientBalanceUrl\": \"https://faucet.ssv.network\",
             \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
             \"tokenAddress\": \"0x9F5d4Ec84fC4785788aB44F9de973cF34F7A038e\",
-            \"setterContractAddress\": \"${{ secrets.PROD_HOODI_NETWORK_SETTER_CONTRACT_ADDRESS_V4 }}\",
-            \"getterContractAddress\": \"${{ secrets.PROD_HOODI_NETWORK_GETTER_CONTRACT_ADDRESS_V4 }}\"
+            \"setterContractAddress\": \"0x58410Bef803ECd7E63B23664C586A6DB72DAf59c\",
+            \"getterContractAddress\": \"0x5AdDb3f1529C5ec70D77400499eE4bbF328368fe\"
            }
         ]
 
@@ -97,19 +84,29 @@ jobs:
         run: npx semantic-release
 
       - name: Configure AWS credentials
-        if: github.ref == 'refs/heads/pre-stage' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/bapps-prod' || github.ref == 'refs/heads/temporary-hoodi-deploy'
+        if: github.ref == 'refs/heads/pre-stage' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/main-preview' || github.ref == 'refs/heads/bapps-prod' || github.ref == 'refs/heads/temporary-hoodi-deploy'
         uses: aws-actions/configure-aws-credentials@50ac8dd1e1b10d09dac7b8727528b91bed831ac0 # v3
         with:
           role-to-assume: ${{ secrets.SSV_WEB_AWS_IAM_ROLE }}
           aws-region: ${{ vars.AWS_REGION }}
 
       # <app.stage.ssv.network>
+      - name: Set stage SSV networks config
+        if: github.ref == 'refs/heads/stage'
+        run: |
+          echo 'STAGE_SSV_NETWORKS=[{"networkId":560048,"apiVersion":"v4","apiNetwork":"hoodi","api":"https://api.stage.ops.ssvlabsinternal.com/api","explorerUrl":"https://explorer.stage.ssv.network","insufficientBalanceUrl":"https://faucet.stage.ssv.network","googleTagSecret":"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}","tokenAddress":"0x746c33ccc28b1363c35c09badaf41b2ffa7e6d56","setterContractAddress":"${{ env.STAGE_SETTER_CONTRACT_ADDRESS }}","getterContractAddress":"${{ env.STAGE_GETTER_CONTRACT_ADDRESS }}"}]' >> $GITHUB_ENV
+
+      - name: Check ABI compatibility (stage)
+        if: github.ref == 'refs/heads/stage'
+        run: pnpm check-abi:dev
+
+
       - name: Run stage webapp build
         if: github.ref == 'refs/heads/stage'
         run: >
-          GAS_PRICE="${{ env.GAS_PRICE }}" 
+          GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
-          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
+          SSV_NETWORKS="$STAGE_SSV_NETWORKS"
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 
           pnpm build
@@ -147,3 +144,26 @@ jobs:
         run: |
           aws s3 cp ./build s3://${{ secrets.SSV_WEB_PROD_HOODI_AWS_S3_BUCKET }} --recursive
       # </app.ssv.network>
+      # <preview.app.ssv.network>
+      - name: Run preview webapp build
+        if: github.ref == 'refs/heads/main-preview'
+        run: >
+          GAS_PRICE="${{ env.GAS_PRICE }}"
+          GAS_LIMIT="${{ env.GAS_LIMIT }}"
+          SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
+          MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
+          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
+          SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"
+          pnpm build
+        env:
+          GAS_PRICE: ${{ secrets.GAS_PRICE }}
+          GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
+          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
+          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_PROD }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      - name: Upload files to S3
+        if: github.ref == 'refs/heads/main-preview'
+        run: |
+          aws s3 cp ./build s3://${{ secrets.SSV_WEB_PREVIEW_AWS_S3_BUCKET }} --recursive
+      # </preview.app.ssv.network>

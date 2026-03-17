@@ -1,8 +1,8 @@
 import { globals } from "@/config";
 import { useOperator } from "@/hooks/operator/use-operator";
-import { useGetMaximumOperatorFee } from "@/lib/contract-interactions/read/use-get-maximum-operator-fee";
-import { useGetOperatorFee } from "@/lib/contract-interactions/read/use-get-operator-fee";
-import { useGetOperatorFeeIncreaseLimit } from "@/lib/contract-interactions/read/use-get-operator-fee-increase-limit";
+import { useGetMaximumOperatorFee } from "@/lib/contract-interactions/hooks/getter";
+import { useGetOperatorFee } from "@/lib/contract-interactions/hooks/getter";
+import { useGetOperatorFeeIncreaseLimit } from "@/lib/contract-interactions/hooks/getter";
 import { bigintMin } from "@/lib/utils/bigint";
 import { getYearlyFee } from "@/lib/utils/operator";
 

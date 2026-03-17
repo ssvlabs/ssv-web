@@ -58,7 +58,8 @@ export const ExistingClusterValidatorsBreakdown: FC<
 
   const { data: statuses, isLoading: isStatusesLoading } = useChainedQuery({
     queryKey: ["validators-status-counts", clusterHash],
-    queryFn: () => getValidatorsStatusCounts(clusterHash!),
+    queryFn: () =>
+      getValidatorsStatusCounts(clusterHash!).then((res) => res.data),
     enabled: Boolean(clusterHash),
   });
 

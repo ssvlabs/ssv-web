@@ -1,3 +1,4 @@
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -13,13 +14,14 @@ import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { BigNumberInput } from "@/components/ui/number-input";
 import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
+import { globals } from "@/config";
 import { useUpdateOperatorFeeContext } from "@/guard/register-operator-guards";
 import { useOperator } from "@/hooks/operator/use-operator";
 import { useOperatorFeeLimits } from "@/hooks/operator/use-operator-fee-limits";
 import { useOperatorDeclaredFee } from "@/hooks/operator/use-operator-fee-periods";
 import { useOperatorPageParams } from "@/hooks/operator/use-operator-page-params";
 import { isBigIntChanged } from "@/lib/utils/bigint";
-import { formatBigintInput } from "@/lib/utils/number";
+import { formatBigintInput, formatETH } from "@/lib/utils/number";
 import { cn } from "@/lib/utils/tw";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { ComponentPropsWithoutRef, FC } from "react";
@@ -78,7 +80,13 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
     },
   });
 
+  const yearlyFee = form.watch("yearlyFee");
   const hasErrors = Boolean(form.formState.errors.yearlyFee);
+
+  const showSoftMinWarning =
+    yearlyFee < globals.SOFT_MIN_OPERATOR_YEARLY_FEE &&
+    !operator?.is_private &&
+    !hasErrors;
 
   const declaredOperatorFee = useOperatorDeclaredFee(BigInt(operatorId!));
 
@@ -168,6 +176,16 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
               </FormItem>
             )}
           />
+          {showSoftMinWarning && (
+            <Alert variant="warning">
+              <AlertDescription>
+                This fee is below the minimum for public operators (
+                {formatETH(globals.SOFT_MIN_OPERATOR_YEARLY_FEE)} ETH). You may
+                still update it, but your operator will be hidden by default in
+                the operator selection table.
+              </AlertDescription>
+            </Alert>
+          )}
           <Button
             size="xl"
             type="submit"

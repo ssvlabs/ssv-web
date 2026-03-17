@@ -18,10 +18,10 @@ import {
   getOperatorQueryOptions,
   useOperator,
 } from "@/hooks/operator/use-operator";
-import { fetchIsWhitelistingContract } from "@/lib/contract-interactions/read/use-is-whitelisting-contract";
+import { fetchIsWhitelistingContract } from "@/lib/contract-interactions/hooks/query-options";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useRemoveOperatorsWhitelistingContract } from "@/lib/contract-interactions/write/use-remove-operators-whitelisting-contract";
-import { useSetOperatorsWhitelistingContract } from "@/lib/contract-interactions/write/use-set-operators-whitelisting-contract";
+import { useRemoveOperatorsWhitelistingContract } from "@/lib/contract-interactions/hooks/setter";
+import { useSetOperatorsWhitelistingContract } from "@/lib/contract-interactions/hooks/setter";
 import { setOptimisticData } from "@/lib/react-query";
 import { tryCatch } from "@/lib/utils/tryCatch";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -130,21 +130,21 @@ export const ExternalContract: FC = () => {
     });
 
     if (!values.externalContract) {
-      return removeExternalContract.write(
-        {
+      return removeExternalContract.write({
+        args: {
           operatorIds: [BigInt(operator.id)],
         },
         options,
-      );
+      });
     }
 
-    return setExternalContract.write(
-      {
+    return setExternalContract.write({
+      args: {
         operatorIds: [BigInt(operator.id)],
         whitelistingContract: values.externalContract as `0x${string}`,
       },
       options,
-    );
+    });
   });
 
   return (

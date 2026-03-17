@@ -257,9 +257,9 @@ export function createContractHooks<
     hooks[hookName] = hookFn;
   });
   return hooks as WriteHooksObject<
-    //@ts-expect-error - TODO: fix this
+    //@ts-ignore
     ExtractAbiFunctions<T, "nonpayable" | "payable">[]
   > &
-    //@ts-expect-error - TODO: fix this
+    //@ts-ignore
     ReadHooksObject<ExtractAbiFunctions<T, "view" | "pure">[]>;
 }

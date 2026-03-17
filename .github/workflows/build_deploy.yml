@@ -96,13 +96,10 @@ jobs:
         run: |
           echo 'STAGE_SSV_NETWORKS=[{"networkId":560048,"apiVersion":"v4","apiNetwork":"hoodi","api":"https://api.stage.ops.ssvlabsinternal.com/api","explorerUrl":"https://explorer.stage.ssv.network","insufficientBalanceUrl":"https://faucet.stage.ssv.network","googleTagSecret":"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}","tokenAddress":"0x746c33ccc28b1363c35c09badaf41b2ffa7e6d56","setterContractAddress":"${{ env.STAGE_SETTER_CONTRACT_ADDRESS }}","getterContractAddress":"${{ env.STAGE_GETTER_CONTRACT_ADDRESS }}"}]' >> $GITHUB_ENV
 
-      - name: Check ABI compatibility
+      - name: Check ABI compatibility (stage)
         if: github.ref == 'refs/heads/stage'
-        run: node scripts/check-abi.js
-        env:
-          SSV_NETWORK_CONTRACT_ADDRESS: ${{ env.STAGE_SETTER_CONTRACT_ADDRESS }}
-          SSV_NETWORK_VIEWS_CONTRACT_ADDRESS: ${{ env.STAGE_GETTER_CONTRACT_ADDRESS }}
-          SSV_NETWORK_CHAIN_ID: "560048"
+        run: pnpm check-abi:dev
+
 
       - name: Run stage webapp build
         if: github.ref == 'refs/heads/stage'

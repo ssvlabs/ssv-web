@@ -34,6 +34,19 @@ jobs:
       STAGE_GETTER_CONTRACT_ADDRESS: "0x3234e84b7d1eE1AF8b586E26814d4e268336D142"
       PROD_SSV_NETWORKS: >
         [
+             {
+             \"networkId\": 1,
+             \"apiVersion\": \"v4\",
+             \"apiNetwork\": \"mainnet\",
+             \"api\": \"https://api.ssv.network/api\",
+             \"explorerUrl\": \"https://explorer.ssv.network\",
+             \"insufficientBalanceUrl\": \"https://coinmarketcap.com/currencies/ssv-network/#Markets\",
+             \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",
+             \"distributionContract\": \"${{ secrets.PROD_DISTRIBUTION_CONTRACT_ADDRESS_MAINNET }}\",
+             \"tokenAddress\": \"0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54\",
+             \"setterContractAddress\": \"0xDD9BC35aE942eF0cFa76930954a156B3fF30a4E1\",
+             \"getterContractAddress\": \"0xafE830B6Ee262ba11cce5F32fDCd760FFE6a66e4\"
+          },
           {
             \"networkId\": 560048,
             \"apiVersion\": \"v4\",

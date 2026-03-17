@@ -199,11 +199,6 @@ export const SetterABI = [
   },
   {
     inputs: [],
-    name: "InvalidContractAddress",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "InvalidOperatorFeeIncreaseLimit",
     type: "error",
   },
@@ -280,11 +275,6 @@ export const SetterABI = [
   },
   {
     inputs: [],
-    name: "MaxValueExceeded",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "MustUseLatestRoot",
     type: "error",
   },
@@ -296,11 +286,6 @@ export const SetterABI = [
   {
     inputs: [],
     name: "NoFeeDeclared",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "NotAuthorized",
     type: "error",
   },
   {
@@ -341,11 +326,6 @@ export const SetterABI = [
   {
     inputs: [],
     name: "OracleAlreadyAssigned",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "OracleHasZeroWeight",
     type: "error",
   },
   {
@@ -2224,24 +2204,6 @@ export const SetterABI = [
   {
     inputs: [
       {
-        internalType: "uint64",
-        name: "cooldownDuration",
-        type: "uint64",
-      },
-      {
-        internalType: "uint32[4]",
-        name: "defaultOracleIds",
-        type: "uint32[4]",
-      },
-    ],
-    name: "initializeSSVStaking",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "address",
         name: "clusterOwner",
         type: "address",
@@ -2819,32 +2781,6 @@ export const SetterABI = [
       },
     ],
     name: "setOperatorsWhitelists",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint16",
-        name: "quorum",
-        type: "uint16",
-      },
-    ],
-    name: "setQuorumBps",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint64",
-        name: "duration",
-        type: "uint64",
-      },
-    ],
-    name: "setUnstakeCooldownDuration",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

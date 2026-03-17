@@ -1,4 +1,3 @@
-import { isMainnetEnvironment } from "@/lib/utils/env-checker";
 import { type Chain, connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   coinbaseWallet,
@@ -46,10 +45,15 @@ export const hoodi = {
   testnet: true,
 } satisfies Chain;
 
-const chains = (isMainnetEnvironment ? [mainnet] : [hoodi]) satisfies [
-  Chain,
-  ...Chain[],
-];
+const chainMap: Record<number, Chain> = {
+  [mainnet.id]: mainnet,
+  [hoodi.id]: hoodi,
+};
+
+const chains = import.meta.env.VITE_SSV_NETWORKS
+  .map((n) => chainMap[n.networkId])
+  .filter(Boolean) satisfies [Chain, ...Chain[]];
+
 export type Chains = typeof chains;
 const connectors = connectorsForWallets(
   [

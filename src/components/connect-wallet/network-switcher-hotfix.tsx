@@ -19,34 +19,40 @@ import {
 import { Text, textVariants } from "@/components/ui/text";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { cn } from "@/lib/utils/tw";
-import { LuExternalLink } from "react-icons/lu";
+
 import { GoAlertFill } from "react-icons/go";
-import {
-  HOODI_HOST,
-  isHoodiEnvironment,
-  isMainnetEnvironment,
-  MAINNET_HOST,
-} from "@/lib/utils/env-checker";
+import { useChainId, useSwitchChain } from "wagmi";
+import { useAccount } from "@/hooks/account/use-account";
 
 type Props = ComponentPropsWithRef<"button">;
 
+const networks = import.meta.env.VITE_SSV_NETWORKS;
+
 export const NetworkSwitcher: FC<Props> = ({ className, ...props }) => {
   const [open, setOpen] = useState(false);
+  const chainId = useChainId();
+  const { isConnected } = useAccount();
+  const { switchChain } = useSwitchChain();
 
-  const handleSelect = (value: string) => {
-    if (isHoodiEnvironment && value === "mainnet")
-      window.location.host = MAINNET_HOST;
+  const currentNetworkId = isConnected ? chainId : networks[0]?.networkId;
 
-    if (isMainnetEnvironment && value === "hoodi")
-      window.location.host = HOODI_HOST;
+  const getNetworkLabel = (networkId: number) => {
+    if (networkId === 1) return "Ethereum";
+    if (networkId === 560048) return "Hoodi";
+    return String(networkId);
+  };
 
+  const handleSelect = (networkId: number) => {
+    if (networkId === currentNetworkId) return;
+    switchChain({ chainId: networkId });
     setOpen(false);
   };
+
+  const currentLabel = getNetworkLabel(currentNetworkId);
 
   return (
     <ConnectButton.Custom>
       {({ chain, openChainModal }) => {
-        console.log("chain:", chain);
         return (
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -94,9 +100,7 @@ export const NetworkSwitcher: FC<Props> = ({ className, ...props }) => {
                   <>
                     <div className="flex items-center gap-3">
                       <FaEthereum className="size-4" />
-                      <Text variant="body-3-medium">
-                        {isMainnetEnvironment ? "Ethereum" : "Hoodi"}
-                      </Text>
+                      <Text variant="body-3-medium">{currentLabel}</Text>
                     </div>
                     <div className="flex size-5 items-center justify-center">
                       <FaChevronDown className="size-[10px]" />
@@ -105,57 +109,38 @@ export const NetworkSwitcher: FC<Props> = ({ className, ...props }) => {
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="p-0  max-w-[240px] rounded-xl overflow-hidden border border-gray-200 dark:border-gray-300">
+            <PopoverContent className="p-0 max-w-[240px] rounded-xl overflow-hidden border border-gray-200 dark:border-gray-300">
               <Command
                 tabIndex={1}
-                className="outline-none border-none bg-gray-50 "
+                className="outline-none border-none bg-gray-50"
               >
                 <CommandList id="network-switcher-command">
                   <CommandEmpty>No results found</CommandEmpty>
-                  <CommandItem
-                    onSelect={() => handleSelect("mainnet")}
-                    className="flex items-center gap-2 p-3 py-2.5 border-none"
-                    value="mainnet"
-                  >
-                    <FaEthereum />
-                    <Text
-                      variant="body-3-medium"
-                      className={cn("capitalize", {
-                        "font-semibold": isMainnetEnvironment,
-                      })}
-                    >
-                      Ethereum
-                    </Text>
-                    <div className="ml-auto mr-2 ">
-                      {isMainnetEnvironment ? (
-                        <Check className="size-3" />
-                      ) : (
-                        <LuExternalLink className="size-3" />
-                      )}
-                    </div>
-                  </CommandItem>
-                  <CommandItem
-                    onSelect={() => handleSelect("hoodi")}
-                    className="flex items-center gap-2 p-3 py-2.5"
-                    value="hoodi"
-                  >
-                    <FaEthereum />
-                    <Text
-                      variant="body-3-medium"
-                      className={cn("capitalize", {
-                        "font-semibold": isHoodiEnvironment,
-                      })}
-                    >
-                      Hoodi
-                    </Text>
-                    <div className="ml-auto mr-2 ">
-                      {isHoodiEnvironment ? (
-                        <Check className="size-3" />
-                      ) : (
-                        <LuExternalLink className="size-3" />
-                      )}
-                    </div>
-                  </CommandItem>
+                  {networks.map((network) => {
+                    const isActive = network.networkId === currentNetworkId;
+                    const label = getNetworkLabel(network.networkId);
+                    return (
+                      <CommandItem
+                        key={network.networkId}
+                        onSelect={() => handleSelect(network.networkId)}
+                        className="flex items-center gap-2 p-3 py-2.5 border-none"
+                        value={String(network.networkId)}
+                      >
+                        <FaEthereum />
+                        <Text
+                          variant="body-3-medium"
+                          className={cn("capitalize", {
+                            "font-semibold": isActive,
+                          })}
+                        >
+                          {label}
+                        </Text>
+                        <div className="ml-auto mr-2">
+                          {isActive && <Check className="size-3" />}
+                        </div>
+                      </CommandItem>
+                    );
+                  })}
                 </CommandList>
               </Command>
             </PopoverContent>

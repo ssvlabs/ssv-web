@@ -38,7 +38,7 @@ jobs:
              \"networkId\": 1,
              \"apiVersion\": \"v4\",
              \"apiNetwork\": \"mainnet\",
-             \"api\": \"https://api.ssv.network/api\",
+             \"api\": \"https://api2.ssv.network/api\",
              \"explorerUrl\": \"https://explorer.ssv.network\",
              \"insufficientBalanceUrl\": \"https://coinmarketcap.com/currencies/ssv-network/#Markets\",
              \"googleTagSecret\": \"${{ secrets.PROD_GOOGLE_TAG_SECRET }}\",

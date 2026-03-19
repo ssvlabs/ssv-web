@@ -60,12 +60,11 @@ export const ClusterHeader: FC<ComponentPropsWithoutRef<"div">> = ({
               <CopyBtn text={clusterId} />
             </div>
 
-            <Badge
-              variant={isLiquidatedCluster ? "error" : "success"}
-              size="xs"
-            >
-              {isLiquidatedCluster ? "Liquidated" : "Active"}
-            </Badge>
+            {isLiquidatedCluster && (
+              <Badge variant="error" size="xs">
+                Liquidated
+              </Badge>
+            )}
           </div>
 
           <Tooltip

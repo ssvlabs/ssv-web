@@ -20,6 +20,7 @@ import { ExistingClusterValidatorsBreakdown } from "@/components/effective-balan
 export type EffectiveBalanceFormProps = {
   totalEffectiveBalance: number;
   maxEffectiveBalance: number;
+  validatorCount?: number;
   onNext: (effectiveBalance: bigint) => void;
   clusterHash: string;
   isLoading?: boolean;
@@ -38,20 +39,26 @@ export const MigrationEffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
   backState,
   totalEffectiveBalance,
   maxEffectiveBalance,
+  validatorCount = 1,
   backPersistSearch = false,
   showDetailedErrors = false,
   clusterHash,
 }) => {
+  const hasNoValidators = validatorCount === 0;
+  const currentMaxEffectiveBalance = maxEffectiveBalance === 0 ? 2048 : maxEffectiveBalance
+  const minEffectiveBalance = validatorCount === 0? 32 : validatorCount * 32; 
   const schema = useMemo(
     () =>
       z.object({
-        totalEffectiveBalance: z
-          .number()
-          .positive({ message: "Balance must be greater than 0" })
-          .min(totalEffectiveBalance)
-          .max(maxEffectiveBalance),
+        totalEffectiveBalance: hasNoValidators
+          ? z.number().min(0).max(currentMaxEffectiveBalance)
+          : z
+              .number()
+              .positive({ message: "Balance must be greater than 0" })
+              .min(minEffectiveBalance)
+              .max(maxEffectiveBalance),
       }),
-    [maxEffectiveBalance, totalEffectiveBalance],
+    [hasNoValidators, maxEffectiveBalance, totalEffectiveBalance],
   );
 
   const form = useForm<z.infer<typeof schema>>({
@@ -173,10 +180,7 @@ export const MigrationEffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
               <AlertDescription className="text-sm font-medium">
                 {showDetailedErrors ? (
                   <>
-                    The entered total projected balance is lower than our
-                    estimation ({numberFormatter.format(totalEffectiveBalance)}{" "}
-                    ETH). This may lead to an insufficient runway. Please
-                    double-check the balance entered.
+                    This value cannot be lower than the minimum of 32 ETH per validator.
                   </>
                 ) : (
                   <>
@@ -196,7 +200,7 @@ export const MigrationEffectiveBalanceForm: FC<EffectiveBalanceFormProps> = ({
                   <>
                     The entered total projected balance is higher than the max
                     EB per validator (
-                    {numberFormatter.format(maxEffectiveBalance)} ETH). Please
+                    {numberFormatter.format(currentMaxEffectiveBalance)} ETH). Please
                     double-check the balance entered.
                   </>
                 ) : (

@@ -35,9 +35,11 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
     });
   };
 
+  const validatorCount = cluster.data?.validatorCount ?? 0;
+
   const effectiveBalance = Math.max(
     totalEffectiveBalance.data ?? 0,
-    (cluster.data?.validatorCount ?? 0) * 32,
+    validatorCount * 32,
   );
 
   return (
@@ -45,6 +47,7 @@ export const SwitchWizardStepOneAndHalfRoute = () => {
       clusterHash={clusterHash!}
       totalEffectiveBalance={effectiveBalance}
       maxEffectiveBalance={maxEffectiveBalance}
+      validatorCount={validatorCount}
       onNext={handleNext}
       backTo={basePath}
       backState={from ? { from } : undefined}

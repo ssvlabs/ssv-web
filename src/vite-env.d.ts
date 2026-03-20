@@ -1,6 +1,8 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+  readonly VITE_EXPLORER_URL: string;
+  readonly VITE_STAKE_URL: string;
   readonly VITE_SSV_NETWORKS: {
     networkId: number;
     api: string;

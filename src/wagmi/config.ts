@@ -50,9 +50,9 @@ const chainMap: Record<number, Chain> = {
   [hoodi.id]: hoodi,
 };
 
-const chains = import.meta.env.VITE_SSV_NETWORKS
-  .map((n) => chainMap[n.networkId])
-  .filter(Boolean) satisfies [Chain, ...Chain[]];
+const chains = import.meta.env.VITE_SSV_NETWORKS.map(
+  (n) => chainMap[n.networkId],
+).filter((chain): chain is Chain => Boolean(chain));
 
 export type Chains = typeof chains;
 const connectors = connectorsForWallets(
@@ -76,7 +76,7 @@ export const mainnet_private_rpc_client = createPublicClient({
 });
 
 export const config = createConfig({
-  chains,
+  chains: chains as [Chain, ...Chain[]],
   connectors: connectors,
   transports: {
     [mainnet.id]: http(

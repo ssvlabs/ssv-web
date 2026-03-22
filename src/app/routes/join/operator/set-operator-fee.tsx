@@ -21,7 +21,7 @@ import { useFocus } from "@/hooks/use-focus";
 import { useRegisterOperatorContext } from "@/guard/register-operator-guards";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRates } from "@/hooks/use-rates";
-import { currencyFormatter, formatETH, ms } from "@/lib/utils/number";
+import { currencyFormatter, formatBigintInput, ms } from "@/lib/utils/number";
 import { Tooltip } from "@/components/ui/tooltip";
 import { FaCircleInfo } from "react-icons/fa6";
 import {
@@ -46,17 +46,19 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
   });
 
   const minYearlyFee = getYearlyFee(minFee);
-  const minYearlyFeeFormatted = getYearlyFee(minFee, { format: true });
+  const minYearlyFeeFormatted = formatBigintInput(getYearlyFee(minFee));
 
   const maxYearlyFee = getYearlyFee(maxFee);
-  const maxYearlyFeeFormatted = getYearlyFee(maxFee, { format: true });
+  const maxYearlyFeeFormatted = formatBigintInput(maxYearlyFee);
 
   const ethRate = rates.data?.eth ?? 0;
 
   const form = useForm({
     mode: "all",
     defaultValues: {
-      yearlyFee: useRegisterOperatorContext.state.yearlyFee ?? "",
+      yearlyFee:
+        useRegisterOperatorContext.state.yearlyFee ||
+        getYearlyFee(BigInt(globals.FIXED_OPERATOR_ETH_FEE)),
     },
     resolver: zodResolver(
       z.object({
@@ -198,7 +200,7 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
                   <Alert variant="warning">
                     <AlertDescription>
                       This fee is below the minimum for public operators (
-                      {formatETH(globals.SOFT_MIN_OPERATOR_YEARLY_FEE)} ETH).
+                      {formatUnits(globals.SOFT_MIN_OPERATOR_YEARLY_FEE, 18)} ETH).
                       You may still register, but your operator will be hidden
                       by default in the operator selection table.
                     </AlertDescription>

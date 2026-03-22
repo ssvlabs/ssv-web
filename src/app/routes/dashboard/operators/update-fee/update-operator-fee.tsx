@@ -21,7 +21,7 @@ import { useOperatorFeeLimits } from "@/hooks/operator/use-operator-fee-limits";
 import { useOperatorDeclaredFee } from "@/hooks/operator/use-operator-fee-periods";
 import { useOperatorPageParams } from "@/hooks/operator/use-operator-page-params";
 import { isBigIntChanged } from "@/lib/utils/bigint";
-import { formatBigintInput, formatETH } from "@/lib/utils/number";
+import { formatBigintInput } from "@/lib/utils/number";
 import { cn } from "@/lib/utils/tw";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { ComponentPropsWithoutRef, FC } from "react";
@@ -180,7 +180,7 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
             <Alert variant="warning">
               <AlertDescription>
                 This fee is below the minimum for public operators (
-                {formatETH(globals.SOFT_MIN_OPERATOR_YEARLY_FEE)} ETH). You may
+                {formatUnits(globals.SOFT_MIN_OPERATOR_YEARLY_FEE, 18)} ETH). You may
                 still update it, but your operator will be hidden by default in
                 the operator selection table.
               </AlertDescription>

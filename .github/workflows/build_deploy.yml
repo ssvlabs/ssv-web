@@ -123,13 +123,19 @@ jobs:
           VITE_EXPLORER_URL="https://explorer.stage.ssv.network"
           VITE_STAKE_URL="https://stake.ssv.network/"
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
-          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 
+          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
+          VITE_IPGEO_API_KEY="${{ secrets.VITE_IPGEO_API_KEY }}"
+          VITE_IPREGISTRY_KEY="${{ secrets.VITE_IPREGISTRY_KEY }}"
+          VITE_BIGDATACLOUD_KEY="${{ secrets.VITE_BIGDATACLOUD_KEY }}"
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
           GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
+          VITE_IPGEO_API_KEY: ${{ secrets.VITE_IPGEO_API_KEY }}
+          VITE_IPREGISTRY_KEY: ${{ secrets.VITE_IPREGISTRY_KEY }}
+          VITE_BIGDATACLOUD_KEY: ${{ secrets.VITE_BIGDATACLOUD_KEY }}
 
       - name: Upload files to S3
         if: github.ref == 'refs/heads/stage'
@@ -140,7 +146,7 @@ jobs:
       - name: Run prod webapp build
         if: github.ref == 'refs/heads/temporary-hoodi-deploy'
         run: >
-          GAS_PRICE="${{ env.GAS_PRICE }}" 
+          GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
           VITE_EXPLORER_URL="https://explorer.ssv.network"
@@ -148,6 +154,9 @@ jobs:
           MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"
+          VITE_IPGEO_API_KEY="${{ secrets.VITE_IPGEO_API_KEY }}"
+          VITE_IPREGISTRY_KEY="${{ secrets.VITE_IPREGISTRY_KEY }}"
+          VITE_BIGDATACLOUD_KEY="${{ secrets.VITE_BIGDATACLOUD_KEY }}"
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
@@ -155,6 +164,9 @@ jobs:
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_PROD }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          VITE_IPGEO_API_KEY: ${{ secrets.VITE_IPGEO_API_KEY }}
+          VITE_IPREGISTRY_KEY: ${{ secrets.VITE_IPREGISTRY_KEY }}
+          VITE_BIGDATACLOUD_KEY: ${{ secrets.VITE_BIGDATACLOUD_KEY }}
 
       - name: Upload files to S3
         if: github.ref == 'refs/heads/temporary-hoodi-deploy'
@@ -173,6 +185,9 @@ jobs:
           MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"
+          VITE_IPGEO_API_KEY="${{ secrets.VITE_IPGEO_API_KEY }}"
+          VITE_IPREGISTRY_KEY="${{ secrets.VITE_IPREGISTRY_KEY }}"
+          VITE_BIGDATACLOUD_KEY="${{ secrets.VITE_BIGDATACLOUD_KEY }}"
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
@@ -180,6 +195,9 @@ jobs:
           LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
           MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_PROD }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          VITE_IPGEO_API_KEY: ${{ secrets.VITE_IPGEO_API_KEY }}
+          VITE_IPREGISTRY_KEY: ${{ secrets.VITE_IPREGISTRY_KEY }}
+          VITE_BIGDATACLOUD_KEY: ${{ secrets.VITE_BIGDATACLOUD_KEY }}
 
       - name: Upload files to S3
         if: github.ref == 'refs/heads/main-preview'

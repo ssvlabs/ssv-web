@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
 import type { UseReadContractReturnType } from "wagmi";
-import { useBlockNumber, useReadContract, useWriteContract } from "wagmi";
+import { useReadContract, useWriteContract } from "wagmi";
 import type { Abi, AbiFunction, Address, ExtractAbiFunctions } from "abitype";
 import { getChainId, type WriteContractErrorType } from "@wagmi/core";
 import { useWaitForTransactionReceipt } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
@@ -21,6 +21,7 @@ import { isUndefined } from "lodash-es";
 import type { UseQueryOptions } from "@/lib/react-query";
 import { isAddress } from "viem";
 import type { Prettify } from "@/types/ts-utils";
+import { useInterval } from "react-use";
 
 type WriteParams<T extends AbiFunction> = {
   args: Prettify<AbiInputsToParams<T["inputs"]>>;
@@ -54,6 +55,8 @@ type CustomQueryOptions = {
   watch?: boolean;
   contract?: Address;
 };
+
+const refetchInterval = 12000;
 
 type ReadHooksObject<T extends AbiFunction[]> = {
   [Fn in T[number] as `use${Capitalize<Fn["name"]>}`]: Fn["inputs"] extends readonly []
@@ -115,19 +118,13 @@ export function createContractHooks<
       ) => {
         const contractAddress = contract || defaultContractAddressGetter?.();
 
-        const blockNumber = useBlockNumber({
-          watch: watch,
-          chainId: chainId,
-        });
         const args = paramsToArray({ params, abiFunction });
-
-        return useReadContract({
+        const query = useReadContract({
           abi,
           address: contractAddress,
           functionName: functionName as string,
           args: args as readonly unknown[],
           chainId: chainId,
-          blockNumber: watch ? blockNumber.data : undefined,
           query: {
             ...queryOptions,
             enabled:
@@ -136,6 +133,10 @@ export function createContractHooks<
               args?.every((arg) => !isUndefined(arg)),
           },
         } as any);
+
+        useInterval(() => query.refetch, watch ? refetchInterval : null);
+
+        return query;
       };
     } else {
       // Create hook function for functions without parameters
@@ -148,19 +149,21 @@ export function createContractHooks<
         ...queryOptions
       }: CustomQueryOptions = {}) => {
         const contractAddress = contract || defaultContractAddressGetter?.();
-        const blockNumber = useBlockNumber({ watch: watch });
 
-        return useReadContract({
+        const query = useReadContract({
           abi,
           address: contractAddress,
           functionName: functionName as string,
           chainId: chainId,
-          blockNumber: watch ? blockNumber.data : undefined,
           query: {
             ...queryOptions,
             enabled: enabled && !!contractAddress,
           },
         } as any);
+
+        useInterval(() => query.refetch, watch ? refetchInterval : null);
+
+        return query;
       };
     }
   });

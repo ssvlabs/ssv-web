@@ -23,7 +23,7 @@ export const Maintenance: FC = () => {
     >
       <div className="flex w-full flex-col items-center justify-center">
         <div className="flex w-full justify-between items-center">
-          <SsvLogo className="h-full" />
+          <SsvLogo />
           <ThemeSwitcher />
         </div>
       </div>

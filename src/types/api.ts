@@ -72,6 +72,15 @@ export type Operator = {
   updated_at: number;
 };
 
+export type OperatorSortingKeys = Pick<
+  Operator,
+  "validators_count" | "fee" | "status" | "id"
+> & {
+  performance24h: number;
+  performance30d: number;
+  ethFee: string;
+};
+
 export type OperatorsSearchResponse = WithInfinitePagination<{
   operators: Operator[];
 }>;

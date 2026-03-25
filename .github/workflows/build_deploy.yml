@@ -123,7 +123,10 @@ jobs:
           VITE_EXPLORER_URL="https://explorer.stage.ssv.network"
           VITE_STAKE_URL="https://stake.ssv.network/"
           MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
-          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS" 
+          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
+          IPGEO_API_KEY="${{ secrets.IPGEO_API_KEY }}"
+          IPREGISTRY_KEY="${{ secrets.IPREGISTRY_KEY }}"
+          BIGDATACLOUD_KEY="${{ secrets.BIGDATACLOUD_KEY }}"
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
@@ -140,7 +143,7 @@ jobs:
       - name: Run prod webapp build
         if: github.ref == 'refs/heads/temporary-hoodi-deploy'
         run: >
-          GAS_PRICE="${{ env.GAS_PRICE }}" 
+          GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
           SSV_NETWORKS="${{ env.PROD_SSV_NETWORKS }}"
           VITE_EXPLORER_URL="https://explorer.ssv.network"
@@ -148,6 +151,9 @@ jobs:
           MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"
+          IPGEO_API_KEY="${{ secrets.IPGEO_API_KEY }}"
+          IPREGISTRY_KEY="${{ secrets.IPREGISTRY_KEY }}"
+          BIGDATACLOUD_KEY="${{ secrets.BIGDATACLOUD_KEY }}"
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
@@ -173,6 +179,9 @@ jobs:
           MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
           LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
           SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"
+          IPGEO_API_KEY="${{ secrets.IPGEO_API_KEY }}"
+          IPREGISTRY_KEY="${{ secrets.IPREGISTRY_KEY }}"
+          BIGDATACLOUD_KEY="${{ secrets.BIGDATACLOUD_KEY }}"
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}

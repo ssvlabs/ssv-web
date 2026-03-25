@@ -43,13 +43,13 @@ export const getCurrentLocation = async (): Promise<string[]> => {
 
   const countryGetters = shuffleArray([
     {
-      url: "https://api.ipgeolocation.io/ipgeo?apiKey=ac26520f1aaa44408bbeb25f9071a91d",
+      url: `https://api.ipgeolocation.io/ipgeo?apiKey=${import.meta.env.VITE_IPGEO_API_KEY}`,
       callback: ({ data }: { data: any }): string[] => {
         return [data.country_name, data.city].filter(filterEmpty);
       },
     },
     {
-      url: "https://api.ipregistry.co/?key=tshvuvexipx89ca8",
+      url: `https://api.ipregistry.co/?key=${import.meta.env.VITE_IPREGISTRY_KEY}`,
       callback: ({ data }: { data: any }): string[] => {
         return [
           data.location?.country?.name,
@@ -59,7 +59,7 @@ export const getCurrentLocation = async (): Promise<string[]> => {
       },
     },
     {
-      url: "https://api.bigdatacloud.net/data/country-by-ip?key=bdc_daa2e4e3f8fb49eaad6f68f0f6732d38",
+      url: `https://api.bigdatacloud.net/data/country-by-ip?key=${import.meta.env.VITE_BIGDATACLOUD_KEY}`,
       callback: ({ data }: { data: any }): string[] => {
         return [
           data.country?.name,

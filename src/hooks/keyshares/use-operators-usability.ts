@@ -6,7 +6,7 @@ import { ms } from "@/lib/utils/number";
 import { canAccountUseOperator } from "@/lib/utils/operator";
 import type { Operator } from "@/types/api";
 import type { OperatorID } from "@/types/types";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { Address } from "abitype";
 import { useChainId } from "wagmi";
 import { useLocalStorage } from "react-use";
@@ -35,7 +35,10 @@ export const useOperatorsUsability = (
   options: UseQueryOptions<Record<number, boolean>> = { enabled: true },
 ) => {
   const { data: maxValidators = 0 } = useGetValidatorsPerOperatorLimit();
-  const operators = useOperators(operatorIds);
+  const operators = useOperators(operatorIds, {
+    placeholderData: keepPreviousData,
+  });
+
   const chainId = useChainId();
   const [skipValidation] = useLocalStorage("skipValidatorsMaxCount", false);
 

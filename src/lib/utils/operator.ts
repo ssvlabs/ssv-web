@@ -43,6 +43,26 @@ export const MEV_RELAYS = {
   ULTRA_SOUND: "Ultra Sound",
 };
 
+/** Values accepted by operator search / API filters (aligned with explorer). */
+export const MEV_RELAYS_VALUES = [
+  MEV_RELAYS.AESTUS,
+  MEV_RELAYS.AGNOSTIC,
+  MEV_RELAYS.BLOXROUTE_MAX_PROFIT,
+  MEV_RELAYS.BLOXROUTE_REGULATED,
+  MEV_RELAYS.EDEN,
+  MEV_RELAYS.FLASHBOTS,
+  MEV_RELAYS.MANIFOLD,
+  MEV_RELAYS.TITAN,
+  MEV_RELAYS.ULTRA_SOUND,
+] as const;
+
+export const STATUS_API_VALUES = [
+  "active",
+  "inactive",
+  "pending_validators",
+  "no_validators",
+] as const;
+
 export const MEV_RELAYS_LOGOS = {
   [MEV_RELAYS.AESTUS]: "Aestus",
   [MEV_RELAYS.AGNOSTIC]: "agnostic",

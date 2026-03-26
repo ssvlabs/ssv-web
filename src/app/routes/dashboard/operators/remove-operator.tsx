@@ -6,10 +6,9 @@ import { Container } from "@/components/ui/container";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { Text } from "@/components/ui/text";
 import { useOperatorPageParams } from "@/hooks/operator/use-operator-page-params";
-import { getOperatorQueryOptions } from "@/hooks/operator/use-operator";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useRemoveOperator } from "@/lib/contract-interactions/hooks/setter";
-import { setOptimisticData } from "@/lib/react-query";
+import { applyOptimisticOperatorUpdate } from "@/lib/utils/react-query/operator-optimistic-update";
 import { useState, type FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { track } from "@/lib/analytics/mixpanel";
@@ -25,18 +24,9 @@ export const RemoveOperator: FC = () => {
         operatorId: BigInt(operatorId!),
       },
       options: withTransactionModal({
-        onMined: () => {
+        onMined: ({ events }) => {
           track("Remove Operator");
-          setOptimisticData(
-            getOperatorQueryOptions(operatorId!).queryKey,
-            (prev) => {
-              if (!prev) return prev;
-              return {
-                ...prev,
-                is_deleted: true,
-              };
-            },
-          );
+          applyOptimisticOperatorUpdate(Number(operatorId!), events);
           return () => navigate("/operators");
         },
       }),

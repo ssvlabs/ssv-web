@@ -8,7 +8,6 @@ import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { Text } from "@/components/ui/text";
 import { globals } from "@/config";
 import { useUpdateOperatorFeeContext } from "@/guard/register-operator-guards";
-import { getOperatorQueryOptions } from "@/hooks/operator/use-operator";
 import {
   useOperatorDeclaredFee,
   useOperatorDeclaredFeeStatus,
@@ -19,13 +18,13 @@ import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitF
 import { useCancelDeclaredOperatorFee } from "@/lib/contract-interactions/hooks/setter";
 import { useDeclareOperatorFee } from "@/lib/contract-interactions/hooks/setter";
 import { useExecuteOperatorFee } from "@/lib/contract-interactions/hooks/setter";
-import { setOptimisticData } from "@/lib/react-query";
 import { bigintFloor } from "@/lib/utils/bigint";
 import { getYearlyFee } from "@/lib/utils/operator";
 import { format } from "date-fns";
 import { type FC } from "react";
 import { Link } from "react-router-dom";
 import { useUnmount } from "react-use";
+import { applyOptimisticOperatorUpdate } from "@/lib/utils/react-query/operator-optimistic-update";
 
 export const IncreaseOperatorFee: FC = () => {
   const { operatorId } = useOperatorPageParams();
@@ -80,17 +79,8 @@ export const IncreaseOperatorFee: FC = () => {
     executeOperatorFee.write({
       args: { operatorId: BigInt(operatorId!) },
       options: withTransactionModal({
-        onMined: async () => {
-          setOptimisticData(
-            getOperatorQueryOptions(operatorId!).queryKey,
-            (prev) => {
-              if (!prev) return prev;
-              return {
-                ...prev,
-                fee: declaredFee.data.requestedFee.toString(),
-              };
-            },
-          );
+        onMined: async ({ events }) => {
+          applyOptimisticOperatorUpdate(Number(operatorId!), events);
         },
       }),
     });

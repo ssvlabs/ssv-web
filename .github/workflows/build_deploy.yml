@@ -84,7 +84,7 @@ jobs:
 
       - name: Configure AWS credentials
         if: github.ref == 'refs/heads/pre-stage' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/bapps-prod'
-        uses: aws-actions/configure-aws-credentials@50ac8dd1e1b10d09dac7b8727528b91bed831ac0 # v3
+        uses: aws-actions/configure-aws-credentials@v6.0.0 # v3
         with:
           role-to-assume: ${{ secrets.SSV_WEB_AWS_IAM_ROLE }}
           aws-region: ${{ vars.AWS_REGION }}

@@ -1,6 +1,6 @@
 import { getOperators } from "@/api/operator";
 import { queryClient, type QueryConfig } from "@/lib/react-query";
-import { sortOperators } from "@/lib/utils/operator";
+import { createDefaultOperator, sortOperators } from "@/lib/utils/operator";
 import type { OperatorID } from "@/types/types";
 
 import { queryOptions, useQuery } from "@tanstack/react-query";
@@ -14,7 +14,18 @@ export const operatorsQueryOptions = (operatorIds: OperatorID[]) => {
     // use a paginated operators search hook for open-ended lists.
     queryFn: () =>
       getOperators({ id: ids, perPage: 20 }).then(({ operators }) =>
-        sortOperators(operators),
+        sortOperators(
+          ids.map(
+            (id) =>
+              operators.find((operator) => operator.id == id) ||
+              // Operator not found, return removed operator
+              createDefaultOperator({
+                id: Number(id),
+                is_deleted: true,
+                status: "Removed",
+              }),
+          ),
+        ),
       ),
   });
 };

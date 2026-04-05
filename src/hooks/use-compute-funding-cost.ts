@@ -67,7 +67,7 @@ export const useFundingCostETH = ({
     gcTime: 0,
     queryKey: stringifyBigints([
       "fundingCost",
-      operators,
+      operators.map(op => op.id),
       fundingDays,
       effectiveBalance,
       ignoreRemovedOperators,

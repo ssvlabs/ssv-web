@@ -259,9 +259,6 @@ export const createOperatorFromEvent = (
   });
 };
 
-export const sumOperatorsFees = (operators: Operator[]) =>
-  operators.reduce((acc, operator) => acc + BigInt(operator.eth_fee), 0n);
-
 export const canAccountUseOperator = async (
   account: Address,
   operator: Pick<

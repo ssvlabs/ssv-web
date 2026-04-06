@@ -72,6 +72,15 @@ export type Operator = {
   updated_at: number;
 };
 
+export type MinimalOperator = {
+  id: number;
+  name: string;
+  logo: string;
+  type: Operator["type"];
+  is_private: boolean;
+  is_deleted: boolean;
+};
+
 export type OperatorSortingKeys = Pick<
   Operator,
   "validators_count" | "fee" | "status" | "id"

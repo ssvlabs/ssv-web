@@ -36,10 +36,20 @@ export const MigratedCluster: FC = () => {
 
   const hasProjected = (effectiveBalanceBreakdown?.pending ?? 0) > 0;
 
-  const currentEffectiveBalance = Number(cluster.data?.effectiveBalance ?? 0);
-  const projectedEffectiveBalance = Number(
-    currentEffectiveBalance + (effectiveBalanceBreakdown?.pending ?? 0),
-  );
+  const currentEffectiveBalance = hasProjected
+    ? Number(
+        (effectiveBalanceBreakdown?.deposited ?? 0) +
+          (effectiveBalanceBreakdown?.notDeposited ?? 0),
+      )
+    : Number(cluster.data?.effectiveBalance ?? 0);
+
+  const projectedEffectiveBalance = hasProjected
+    ? Number(
+        (effectiveBalanceBreakdown?.deposited ?? 0) +
+          (effectiveBalanceBreakdown?.notDeposited ?? 0) +
+          (effectiveBalanceBreakdown?.pending ?? 0),
+      )
+    : currentEffectiveBalance;
 
   const operatorsUsability = useOperatorsUsability({
     account: account.address!,

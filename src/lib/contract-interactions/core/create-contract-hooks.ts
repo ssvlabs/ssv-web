@@ -89,6 +89,38 @@ const capitalize = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
+/**
+ * Two boundary helpers that cast only at the dynamic↔static-generic seam.
+ * The factory iterates ABI entries at runtime (string functionName / unknown args),
+ * while wagmi requires statically-known ContractFunctionName<TAbi> generics.
+ * Isolating the casts here keeps all hook construction logic above cast-free.
+ */
+function toReadContractParams<TAbi extends Abi>(params: {
+  abi: TAbi;
+  address: Address | undefined;
+  functionName: string;
+  args?: readonly unknown[];
+  chainId: number;
+  query: Record<string, unknown>;
+}): UseReadContractParameters {
+  return params as UseReadContractParameters;
+}
+
+type WriteContractParams = Parameters<
+  ReturnType<typeof useWriteContract>["writeContractAsync"]
+>[0];
+
+function toWriteContractParams<TAbi extends Abi>(params: {
+  abi: TAbi;
+  address: Address | undefined;
+  functionName: string;
+  chainId?: number;
+  args?: readonly unknown[];
+  value?: bigint;
+}): WriteContractParams {
+  return params as WriteContractParams;
+}
+
 export function createContractHooks<
   T extends Abi,
   DefaultContractAddressGetter extends () => Address | undefined,
@@ -106,169 +138,168 @@ export function createContractHooks<
       (item.stateMutability === "view" || item.stateMutability === "pure"),
   ) as AbiFunction[];
 
-  const hooks: Record<string, unknown> = {};
+  // Object.fromEntries: the cast is on the result of the full transformation,
+  // not on an empty accumulator that is later mutated (which TypeScript cannot verify).
+  const readHooks = Object.fromEntries(
+    readFunctions.map((fn) => {
+      const functionName = fn.name;
+      const hasInputs = Boolean(fn.inputs?.length);
+      const abiFunction = extractAbiFunction(abi, functionName);
 
-  readFunctions.forEach((fn) => {
-    const hookName = `use${capitalize(fn.name)}`;
-    const functionName = fn.name;
-    const hasInputs = Boolean(fn.inputs?.length);
-    const abiFunction = extractAbiFunction(abi, functionName);
+      const hookFn = hasInputs
+        ? (
+            params: AbiInputsToParams<typeof fn.inputs>,
+            {
+              enabled = true,
+              watch = false,
+              chainId = getChainId(config),
+              contract = defaultContractAddressGetter?.(),
+              ...queryOptions
+            }: CustomQueryOptions = {},
+          ) => {
+            const contractAddress = contract || defaultContractAddressGetter?.();
+            const args = paramsToArray({ params, abiFunction });
+            const query = useReadContract(
+              toReadContractParams({
+                abi,
+                address: contractAddress,
+                functionName,
+                args: args as readonly unknown[],
+                chainId,
+                query: {
+                  ...queryOptions,
+                  enabled:
+                    (enabled ?? true) &&
+                    !!contractAddress &&
+                    args?.every((arg) => !isUndefined(arg)),
+                },
+              }),
+            );
+            useInterval(() => query.refetch, watch ? refetchInterval : null);
+            return query;
+          }
+        : ({
+            enabled = true,
+            watch = false,
+            chainId = getChainId(config),
+            contract = defaultContractAddressGetter?.(),
+            ...queryOptions
+          }: CustomQueryOptions = {}) => {
+            const contractAddress = contract || defaultContractAddressGetter?.();
+            const query = useReadContract(
+              toReadContractParams({
+                abi,
+                address: contractAddress,
+                functionName,
+                chainId,
+                query: {
+                  ...queryOptions,
+                  enabled: enabled && !!contractAddress,
+                },
+              }),
+            );
+            useInterval(() => query.refetch, watch ? refetchInterval : null);
+            return query;
+          };
 
-    if (hasInputs) {
-      hooks[hookName] = (
-        params: AbiInputsToParams<typeof fn.inputs>,
-        {
-          enabled = true,
-          watch = false,
-          chainId = getChainId(config),
-          contract = defaultContractAddressGetter?.(),
-          ...queryOptions
-        }: CustomQueryOptions = {},
-      ) => {
-        const contractAddress = contract || defaultContractAddressGetter?.();
+      return [`use${capitalize(functionName)}`, hookFn];
+    }),
+  ) as ReadHooksObject<T>;
 
-        const args = paramsToArray({ params, abiFunction });
-        const query = useReadContract({
-          abi: abi as Abi,
-          address: contractAddress,
-          functionName,
-          args: args as readonly unknown[],
-          chainId,
-          query: {
-            ...queryOptions,
-            enabled:
-              (enabled ?? true) &&
-              !!contractAddress &&
-              args?.every((arg) => !isUndefined(arg)),
-          },
-        } as UseReadContractParameters);
+  const writeHooks = Object.fromEntries(
+    writeFunctions.map((fn) => {
+      const hookName = `use${capitalize(fn.name)}`;
 
-        useInterval(() => query.refetch, watch ? refetchInterval : null);
-
-        return query;
-      };
-    } else {
-      hooks[hookName] = ({
-        enabled = true,
-        watch = false,
+      const hookFn = ({
         chainId = getChainId(config),
         contract = defaultContractAddressGetter?.(),
-        ...queryOptions
       }: CustomQueryOptions = {}) => {
-        const contractAddress = contract || defaultContractAddressGetter?.();
+        const isValidContract = isAddress(contract ?? "");
+        if (!isValidContract) {
+          throw new Error("Invalid contract address at hook: " + hookName);
+        }
+        const waitForTx = useWaitForTransactionReceipt([hookName, contract]);
+        const functionName = fn.name;
 
-        const query = useReadContract({
-          abi: abi as Abi,
-          address: contractAddress,
-          functionName,
-          chainId,
-          query: {
-            ...queryOptions,
-            enabled: enabled && !!contractAddress,
-          },
-        } as UseReadContractParameters);
+        const abiFunction = useMemo(
+          () => extractAbiFunction(abi, functionName),
+          [functionName],
+        );
 
-        useInterval(() => query.refetch, watch ? refetchInterval : null);
+        const mutation = useWriteContract();
 
-        return query;
-      };
-    }
-  });
+        const write = (params?: WriteParams<AbiFunction>) => {
+          params?.options?.onInitiated?.();
+          return mutation
+            .writeContractAsync(
+              toWriteContractParams({
+                abi,
+                address: contract,
+                functionName,
+                chainId,
+                args: params?.args
+                  ? paramsToArray({ params: params.args, abiFunction })
+                  : undefined,
+                value: params?.value,
+              }),
+              {
+                onSuccess: (hash) => params?.options?.onConfirmed?.(hash),
+                onError: (error: WriteContractErrorType) =>
+                  params?.options?.onError?.(error),
+              },
+            )
+            .then((hash) =>
+              waitForTx.mutateAsync(hash, {
+                onSuccess: async (receipt) => {
+                  await wait(1);
+                  return params?.options?.onMined?.(receipt);
+                },
+                onError: async (error: Error) => {
+                  await wait(1);
+                  return params?.options?.onError?.(
+                    error as WriteContractErrorType,
+                  );
+                },
+              }),
+            );
+        };
 
-  writeFunctions.forEach((fn) => {
-    const hookName = "use" + capitalize(fn.name);
-    const hookFn = ({
-      chainId = getChainId(config),
-      contract = defaultContractAddressGetter?.(),
-    }: CustomQueryOptions = {}) => {
-      const isValidContract = isAddress(contract ?? "");
-      if (!isValidContract) {
-        throw new Error("Invalid contract address at hook: " + hookName);
-      }
-      const waitForTx = useWaitForTransactionReceipt([hookName, contract]);
-      const functionName = fn.name;
-
-      const abiFunction = useMemo(
-        () => extractAbiFunction(abi, functionName),
-        [functionName],
-      );
-
-      const mutation = useWriteContract();
-
-      type WriteMutationParams = Parameters<
-        typeof mutation.writeContractAsync
-      >[0];
-
-      const write = (params?: WriteParams<AbiFunction>) => {
-        params?.options?.onInitiated?.();
-
-        return mutation
-          .writeContractAsync(
-            {
+        const send = (params?: WriteParams<AbiFunction>) => {
+          params?.options?.onInitiated?.();
+          return mutation.writeContractAsync(
+            toWriteContractParams({
               abi,
               address: contract,
               functionName,
-              chainId,
               args: params?.args
                 ? paramsToArray({ params: params.args, abiFunction })
                 : undefined,
               value: params?.value,
-            } as WriteMutationParams,
+            }),
             {
               onSuccess: (hash) => params?.options?.onConfirmed?.(hash),
-              onError: (error) => params?.options?.onError?.(error),
+              onError: (error: WriteContractErrorType) =>
+                params?.options?.onError?.(error),
             },
-          )
-          .then((hash) =>
-            waitForTx.mutateAsync(hash, {
-              onSuccess: async (receipt) => {
-                await wait(1);
-                return params?.options?.onMined?.(receipt);
-              },
-              onError: async (error) => {
-                await wait(1);
-                return params?.options?.onError?.(
-                  error as WriteContractErrorType,
-                );
-              },
-            }),
           );
+        };
+
+        return {
+          error: mutation.error || waitForTx.error,
+          isSuccess: waitForTx.isSuccess,
+          isPending: mutation.isPending || waitForTx.isPending,
+          mutation,
+          write,
+          send,
+          wait: waitForTx,
+        };
       };
 
-      const send = (params?: WriteParams<AbiFunction>) => {
-        params?.options?.onInitiated?.();
+      return [hookName, hookFn];
+    }),
+  ) as WriteHooksObject<T>;
 
-        return mutation.writeContractAsync(
-          {
-            abi,
-            address: contract,
-            functionName,
-            args: params?.args
-              ? paramsToArray({ params: params.args, abiFunction })
-              : undefined,
-            value: params?.value,
-          } as WriteMutationParams,
-          {
-            onSuccess: (hash) => params?.options?.onConfirmed?.(hash),
-            onError: (error) =>
-              params?.options?.onError?.(error as WriteContractErrorType),
-          },
-        );
-      };
-
-      return {
-        error: mutation.error || waitForTx.error,
-        isSuccess: waitForTx.isSuccess,
-        isPending: mutation.isPending || waitForTx.isPending,
-        mutation,
-        write,
-        send,
-        wait: waitForTx,
-      };
-    };
-
-    hooks[hookName] = hookFn;
-  });
-
-  return hooks as WriteHooksObject<T> & ReadHooksObject<T>;
+  // satisfies verifies the merged shape against both mapped types.
+  return { ...readHooks, ...writeHooks } satisfies WriteHooksObject<T> &
+    ReadHooksObject<T>;
 }

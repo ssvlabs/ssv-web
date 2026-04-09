@@ -95,9 +95,8 @@ export const MigratedCluster: FC = () => {
               clusterHash={clusterHash!}
               isLiquidated={Boolean(isLiquidated.data)}
               isProjected={hasProjected && isProjected}
-              deltaEffectiveBalance={BigInt(
-                effectiveBalanceBreakdown?.pending ?? 0,
-              )}
+              effectiveBalance={BigInt(currentEffectiveBalance)}
+              projectedEffectiveBalance={BigInt(projectedEffectiveBalance)}
             />
           </div>
           <Card className="flex-[2] h-full p-6">

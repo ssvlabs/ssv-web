@@ -26,29 +26,34 @@ export const MigratedCluster: FC = () => {
   const isProjected = activeTab === "projected";
 
   const { clusterHash } = useClusterPageParams();
-  const { cluster, isLiquidated } = useClusterState(clusterHash!, {
-    balance: { watch: true },
-    isLiquidated: { watch: true },
-  });
+  const { cluster, isLiquidated, effectiveBalance } = useClusterState(
+    clusterHash!,
+    {
+      balance: { watch: true },
+      isLiquidated: { watch: true },
+      effectiveBalance: { watch: true },
+    },
+  );
 
   const { data: effectiveBalanceBreakdown } =
     useClusterEffectiveBalanceBreakdown(clusterHash!);
 
-  const hasProjected = (effectiveBalanceBreakdown?.pending ?? 0) > 0;
+  const currentEffectiveBalance = Number(effectiveBalance.data ?? 0);
 
-  const currentEffectiveBalance = hasProjected
-    ? Number(
-        (effectiveBalanceBreakdown?.deposited ?? 0) +
-          (effectiveBalanceBreakdown?.notDeposited ?? 0),
-      )
-    : Number(cluster.data?.effectiveBalance ?? 0);
+  const totalBreakdownBalance =
+    (effectiveBalanceBreakdown?.deposited ?? 0) +
+    (effectiveBalanceBreakdown?.exited ?? 0) +
+    (effectiveBalanceBreakdown?.exiting ?? 0) +
+    (effectiveBalanceBreakdown?.notDeposited ?? 0) +
+    (effectiveBalanceBreakdown?.pending ?? 0) +
+    (effectiveBalanceBreakdown?.slashed ?? 0);
+
+  const hasProjected =
+    (effectiveBalanceBreakdown?.pending ?? 0) > 0 ||
+    totalBreakdownBalance !== currentEffectiveBalance;
 
   const projectedEffectiveBalance = hasProjected
-    ? Number(
-        (effectiveBalanceBreakdown?.deposited ?? 0) +
-          (effectiveBalanceBreakdown?.notDeposited ?? 0) +
-          (effectiveBalanceBreakdown?.pending ?? 0),
-      )
+    ? totalBreakdownBalance
     : currentEffectiveBalance;
 
   const operatorsUsability = useOperatorsUsability({

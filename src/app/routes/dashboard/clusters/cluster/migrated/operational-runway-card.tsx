@@ -19,36 +19,39 @@ type OperationalRunwayCardProps = {
   clusterHash: string;
   isLiquidated: boolean;
   isProjected: boolean;
-  deltaEffectiveBalance?: bigint;
+  effectiveBalance: bigint;
+  projectedEffectiveBalance: bigint;
 };
 
 export const OperationalRunwayCard: FC<OperationalRunwayCardProps> = ({
   clusterHash,
   isLiquidated,
   isProjected,
-  deltaEffectiveBalance = 0n,
+  effectiveBalance,
+  projectedEffectiveBalance,
 }) => {
   const cluster = useCluster(clusterHash);
   const operatorIds = cluster.data?.operators ?? [];
 
   const { data: operators } = useOperators(operatorIds);
 
-  const effectiveBalance = bigintMax(
-    BigInt(cluster.data?.effectiveBalance ?? 0),
-    BigInt(cluster.data?.validatorCount ?? 1) * 32n,
-  );
-
   const balance = useClusterBalance(clusterHash, { watch: true });
+
+  const activeEffectiveBalance = isProjected
+    ? projectedEffectiveBalance
+    : effectiveBalance;
 
   const fundingCost = useFundingCostETH({
     operators: operators ?? [],
     fundingDays: 1,
-    effectiveBalance:
-      effectiveBalance + (isProjected ? deltaEffectiveBalance : 0n),
+    effectiveBalance: activeEffectiveBalance,
   });
+
+  const deltaEffectiveBalance = projectedEffectiveBalance - effectiveBalance;
 
   const { data: runway } = useClusterRunway(clusterHash, {
     watch: true,
+    effectiveBalance: activeEffectiveBalance,
     deltaEffectiveBalance: isProjected ? deltaEffectiveBalance : undefined,
   });
 

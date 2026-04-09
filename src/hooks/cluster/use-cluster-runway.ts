@@ -19,6 +19,7 @@ type Options = {
   deltaBalance?: bigint;
   watch?: boolean;
   forceMode?: "eth" | "ssv";
+  effectiveBalance?: bigint;
 } & ({ deltaValidators?: bigint } | { deltaEffectiveBalance?: bigint });
 
 export const useClusterRunway = (
@@ -58,12 +59,14 @@ export const useClusterRunway = (
 
   const feesPerBlock = operatorFees + networkFee;
 
-  const effectiveBalance = isETH
-    ? bigintMax(
-        BigInt(cluster.data?.effectiveBalance ?? 0),
-        BigInt(cluster.data?.validatorCount ?? 1) * 32n,
-      )
-    : BigInt(cluster.data?.validatorCount ?? 1) * 32n;
+  const effectiveBalance =
+    opts.effectiveBalance ??
+    (isETH
+      ? bigintMax(
+          BigInt(cluster.data?.effectiveBalance ?? 0),
+          BigInt(cluster.data?.validatorCount ?? 1) * 32n,
+        )
+      : BigInt(cluster.data?.validatorCount ?? 1) * 32n);
 
   const isLoading =
     cluster.isLoading ||

@@ -49,7 +49,7 @@ export const BulkValidatorPicker: BulkValidatorPickerFC = ({
         <Text variant="body-2-medium">Public key</Text>,
         <Tooltip
           asChild
-          content="Refers to the validators status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs)"
+          content="Validator's status within the SSV network, primarily based on operator performance over the last 2 epochs, with additional context from its Beacon chain state."
         >
           <div className="flex w-fit gap-2 items-center">
             <Text variant="body-2-medium">Status</Text>

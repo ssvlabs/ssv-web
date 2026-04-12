@@ -46,7 +46,7 @@ export const AdditionalFunding: FC = () => {
   const deltaEffectiveBalance = context.effectiveBalance;
 
   const form = useForm({
-    defaultValues: { depositAmount: context.depositAmount, topUp: true },
+    defaultValues: { depositAmount: context.depositAmount, topUp: false },
     resolver: zodResolver(schema),
   });
 
@@ -186,7 +186,10 @@ export const AdditionalFunding: FC = () => {
           <Button
             type="submit"
             size="xl"
-            disabled={clusterRunway?.isAtRisk && clusterRunway?.runway < 1n}
+            disabled={
+              (topUp && depositAmount === 0n) ||
+              (clusterRunway?.isAtRisk && clusterRunway?.runway < 1n)
+            }
           >
             Next
           </Button>

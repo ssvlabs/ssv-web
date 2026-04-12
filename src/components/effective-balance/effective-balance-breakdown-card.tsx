@@ -5,6 +5,7 @@ import { Text } from "@/components/ui/text";
 import { numberFormatter } from "@/lib/utils/number";
 import { EffectiveBalanceBreakDownChart } from "./effective-balance-breakdown-chart";
 import { Tooltip } from "@/components/ui/tooltip";
+import { FaCircleInfo } from "react-icons/fa6";
 
 type EffectiveBalanceBreakdownCardProps = {
   clusterHash: string;
@@ -28,9 +29,14 @@ export const EffectiveBalanceBreakdownCard: FC<
   return (
     <Card className="w-full p-6 gap-6">
       <div className="flex items-center justify-between">
-        <Text variant="headline4" className="text-gray-500">
-          Effective Balance
-        </Text>
+        <Tooltip asChild content="Current beacon-chain effective balance for this validator (ETH)">
+          <div className="flex items-center gap-1.5">
+            <Text variant="headline4" className="text-gray-500">
+              Effective Balance
+            </Text>
+            <FaCircleInfo className="size-4 text-gray-500" />
+          </div>
+        </Tooltip>
         {!hasProjected && (
           <Text variant="headline4">
             {numberFormatter.format(effectiveBalance)} ETH
@@ -71,7 +77,7 @@ export const EffectiveBalanceBreakdownCard: FC<
           </Tooltip>
           <Tooltip
             asChild
-            content="Total effective balance of all validators in this cluster, including validators waiting in the deposit queue."
+            content="Total effective balance of all validators in this cluster, including validators waiting in the deposit queue or not yet picked up by the oracles."
           >
             <button
               type="button"

@@ -5,6 +5,11 @@ import type { Abi, Address } from "abitype";
 const MOCK_TX_HASH =
   "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890";
 
+// Mock react-use (useInterval used by read hooks)
+vi.mock("react-use", () => ({
+  useInterval: vi.fn(),
+}));
+
 // Mock wagmi hooks - writeContractAsync returns the args it receives and invokes callbacks
 vi.mock("wagmi", () => ({
   useBlockNumber: vi.fn(() => ({ data: 123n })),
@@ -570,6 +575,134 @@ describe("createContractHooks", () => {
         expect(onError).toHaveBeenCalledTimes(1);
         expect(onError).toHaveBeenCalledWith(mockError);
       });
+    });
+  });
+
+  describe("Read hook structure", () => {
+    it("should return query shape for hook without params", () => {
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      const result = hooks.useTotalSupply();
+
+      expect(result).toHaveProperty("data");
+      expect(result).toHaveProperty("isLoading");
+      expect(result).toHaveProperty("error");
+    });
+
+    it("should call useReadContract with correct functionName for no-param hook", async () => {
+      const { useReadContract } = await import("wagmi");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useTotalSupply();
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({ functionName: "totalSupply" }),
+      );
+    });
+
+    it("should call useReadContract with correct abi", async () => {
+      const { useReadContract } = await import("wagmi");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useTotalSupply();
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({ abi: testAbi }),
+      );
+    });
+
+    it("should call useReadContract with default contract address", async () => {
+      const { useReadContract } = await import("wagmi");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useTotalSupply();
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({ address: DEFAULT_CONTRACT }),
+      );
+    });
+
+    it("should use custom contract address when provided", async () => {
+      const { useReadContract } = await import("wagmi");
+      const customContract: Address =
+        "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useTotalSupply({ contract: customContract });
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({ address: customContract }),
+      );
+    });
+
+    it("should disable query when enabled: false", async () => {
+      const { useReadContract } = await import("wagmi");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useTotalSupply({ enabled: false });
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: expect.objectContaining({ enabled: false }),
+        }),
+      );
+    });
+
+    it("should return query shape for hook with params", () => {
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      const result = hooks.useBalanceOf({ owner: DEFAULT_CONTRACT });
+
+      expect(result).toHaveProperty("data");
+      expect(result).toHaveProperty("isLoading");
+      expect(result).toHaveProperty("error");
+    });
+
+    it("should call useReadContract with correct functionName for param hook", async () => {
+      const { useReadContract } = await import("wagmi");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useBalanceOf({ owner: DEFAULT_CONTRACT });
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({ functionName: "balanceOf" }),
+      );
+    });
+
+    it("should call useReadContract with mapped args for param hook", async () => {
+      const { useReadContract } = await import("wagmi");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useBalanceOf({ owner: DEFAULT_CONTRACT });
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({ args: [DEFAULT_CONTRACT] }),
+      );
+    });
+
+    it("should disable query when arg is undefined", async () => {
+      const { useReadContract } = await import("wagmi");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useBalanceOf({ owner: undefined as unknown as Address });
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: expect.objectContaining({ enabled: false }),
+        }),
+      );
+    });
+
+    it("should call useInterval with refetchInterval when watch: true", async () => {
+      const { useInterval } = await import("react-use");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useTotalSupply({ watch: true });
+
+      expect(vi.mocked(useInterval)).toHaveBeenCalledWith(
+        expect.any(Function),
+        12000,
+      );
+    });
+
+    it("should call useInterval with null when watch: false", async () => {
+      const { useInterval } = await import("react-use");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useTotalSupply({ watch: false });
+
+      expect(vi.mocked(useInterval)).toHaveBeenCalledWith(
+        expect.any(Function),
+        null,
+      );
     });
   });
 });

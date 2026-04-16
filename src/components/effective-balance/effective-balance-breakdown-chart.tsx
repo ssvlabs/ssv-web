@@ -5,6 +5,8 @@ import { StripedBar } from "@/components/ui/striped-bar";
 import { numberFormatter } from "@/lib/utils/number";
 import { useClusterEffectiveBalanceBreakdown } from "@/hooks/cluster/use-cluster-effective-balance-breakdown";
 import type { ValidatorsEffectiveBalanceByClusterResponse } from "@/api/validators";
+import { FaCircleInfo } from "react-icons/fa6";
+import { Tooltip } from "@/components/ui/tooltip";
 
 export type EffectiveBalanceBreakDownChartProps = {
   clusterHash: string;
@@ -16,15 +18,52 @@ type StatusVisualConfig = {
   key: keyof ValidatorsEffectiveBalanceByClusterResponse["effectiveBalance"];
   label: string;
   variant: React.ComponentProps<typeof StripedBar>["variant"];
+  tooltip: string;
 };
 
 const STATUS_CONFIG: StatusVisualConfig[] = [
-  { key: "notDeposited", label: "Not Deposited", variant: "notDeposited" },
-  { key: "pending", label: "Depositing", variant: "depositing" },
-  { key: "deposited", label: "Deposited", variant: "active" },
-  { key: "exiting", label: "Exiting", variant: "exiting" },
-  { key: "exited", label: "Exited", variant: "exited" },
-  { key: "slashed", label: "Slashed", variant: "slashed" },
+  {
+    key: "notDeposited",
+    label: "Not Deposited",
+    variant: "notDeposited",
+    tooltip:
+      "Undeposited on the beacon chain. Minimum 32ETH effective balance applies per validator.",
+  },
+  {
+    key: "pending",
+    label: "Depositing",
+    variant: "depositing",
+    tooltip:
+      "Effective balance of validators in the beacon chain activation queue. Minimum 32ETH effective balance applies per validator.",
+  },
+  {
+    key: "deposited",
+    label: "Deposited",
+    variant: "active",
+    tooltip:
+      "Effective balance of validators with an active deposit on the beacon chain.",
+  },
+  {
+    key: "exiting",
+    label: "Exiting",
+    variant: "exiting",
+    tooltip:
+      "Effective balance of validators that have requested an exit but haven't reached their exit epoch yet.",
+  },
+  {
+    key: "exited",
+    label: "Exited",
+    variant: "exited",
+    tooltip:
+      "Validators that have fully exited the beacon chain. Minimum 32ETH effective balance applies per validator.",
+  },
+  {
+    key: "slashed",
+    label: "Slashed",
+    variant: "slashed",
+    tooltip:
+      "Validators that have been slashed. Minimum 32ETH minimum effective balance applies per validator.",
+  },
 ];
 
 type EffectiveBalanceBreakDownChartFC = FC<
@@ -69,6 +108,11 @@ export const EffectiveBalanceBreakDownChart: EffectiveBalanceBreakDownChartFC =
                 <Text variant="caption-medium" className="text-gray-500">
                   {item.label}
                 </Text>
+                <Tooltip asChild content={item.tooltip}>
+                  <span>
+                    <FaCircleInfo className="size-3 text-gray-400" />
+                  </span>
+                </Tooltip>
               </div>
               <Text variant="caption-bold">
                 {numberFormatter.format(item.amount)} ETH

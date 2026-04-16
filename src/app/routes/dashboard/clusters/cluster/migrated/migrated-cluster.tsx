@@ -26,20 +26,35 @@ export const MigratedCluster: FC = () => {
   const isProjected = activeTab === "projected";
 
   const { clusterHash } = useClusterPageParams();
-  const { cluster, isLiquidated } = useClusterState(clusterHash!, {
-    balance: { watch: true },
-    isLiquidated: { watch: true },
-  });
+  const { cluster, isLiquidated, effectiveBalance } = useClusterState(
+    clusterHash!,
+    {
+      balance: { watch: true },
+      isLiquidated: { watch: true },
+      effectiveBalance: { watch: true },
+    },
+  );
 
   const { data: effectiveBalanceBreakdown } =
     useClusterEffectiveBalanceBreakdown(clusterHash!);
 
-  const hasProjected = (effectiveBalanceBreakdown?.pending ?? 0) > 0;
+  const currentEffectiveBalance = Number(effectiveBalance.data ?? 0);
 
-  const currentEffectiveBalance = Number(cluster.data?.effectiveBalance ?? 0);
-  const projectedEffectiveBalance = Number(
-    currentEffectiveBalance + (effectiveBalanceBreakdown?.pending ?? 0),
-  );
+  const totalBreakdownBalance =
+    (effectiveBalanceBreakdown?.deposited ?? 0) +
+    (effectiveBalanceBreakdown?.exited ?? 0) +
+    (effectiveBalanceBreakdown?.exiting ?? 0) +
+    (effectiveBalanceBreakdown?.notDeposited ?? 0) +
+    (effectiveBalanceBreakdown?.pending ?? 0) +
+    (effectiveBalanceBreakdown?.slashed ?? 0);
+
+  const hasProjected =
+    (effectiveBalanceBreakdown?.pending ?? 0) > 0 ||
+    totalBreakdownBalance !== currentEffectiveBalance;
+
+  const projectedEffectiveBalance = hasProjected
+    ? totalBreakdownBalance
+    : currentEffectiveBalance;
 
   const operatorsUsability = useOperatorsUsability({
     account: account.address!,
@@ -80,9 +95,8 @@ export const MigratedCluster: FC = () => {
               clusterHash={clusterHash!}
               isLiquidated={Boolean(isLiquidated.data)}
               isProjected={hasProjected && isProjected}
-              deltaEffectiveBalance={BigInt(
-                effectiveBalanceBreakdown?.pending ?? 0,
-              )}
+              effectiveBalance={BigInt(currentEffectiveBalance)}
+              projectedEffectiveBalance={BigInt(projectedEffectiveBalance)}
             />
           </div>
           <Card className="flex-[2] h-full p-6">

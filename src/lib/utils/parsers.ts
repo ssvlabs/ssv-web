@@ -1,11 +1,11 @@
 import type { ExtendedColumnSort } from "@/types/data-table";
 import { type Row } from "@tanstack/react-table";
-import { type Parser } from "node_modules/nuqs/dist/_tsup-dts-rollup";
+import type { SingleParser } from "nuqs";
 import { createParser, parseAsStringLiteral } from "nuqs";
 import { z } from "zod";
 
 export function safeParse<T>(
-  parser: Parser<T>["parse"],
+  parser: SingleParser<T>["parse"],
   value: string,
   key?: string,
 ) {
@@ -115,7 +115,7 @@ export const parseAsNumberEnum = <T extends [number, ...number[]]>(
 };
 
 export function parseAsUniqueArrayOf<ItemType>(
-  itemParser: Parser<ItemType>,
+  itemParser: SingleParser<ItemType>,
   separator = ",",
 ) {
   const itemEq = itemParser.eq ?? ((a: ItemType, b: ItemType) => a === b);

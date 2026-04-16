@@ -127,6 +127,8 @@ jobs:
           VITE_IPGEO_API_KEY="${{ secrets.VITE_IPGEO_API_KEY }}"
           VITE_IPREGISTRY_KEY="${{ secrets.VITE_IPREGISTRY_KEY }}"
           VITE_BIGDATACLOUD_KEY="${{ secrets.VITE_BIGDATACLOUD_KEY }}"
+          VITE_SUPABASE_URL="https://zpbnunrwrtgpaczhhnow.supabase.co"
+          VITE_SUPABASE_PUBLISHABLE_KEY="sb_publishable_FPDi6MgZXd1Q9QJivzSHnA_8aVJIVp8"
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
@@ -188,6 +190,8 @@ jobs:
           VITE_IPGEO_API_KEY="${{ secrets.VITE_IPGEO_API_KEY }}"
           VITE_IPREGISTRY_KEY="${{ secrets.VITE_IPREGISTRY_KEY }}"
           VITE_BIGDATACLOUD_KEY="${{ secrets.VITE_BIGDATACLOUD_KEY }}"
+          VITE_SUPABASE_URL="https://tetvioknzhvbjgnaotrk.supabase.co"
+          VITE_SUPABASE_PUBLISHABLE_KEY="sb_publishable_DIupdY-BESliwf5DWppq4Q_MlZUMbNX"
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}

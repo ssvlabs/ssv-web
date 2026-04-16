@@ -1,64 +1,45 @@
-import { getOperatorQueryOptions } from "@/hooks/operator/use-operator";
-import { getGetOperatorByIdQueryOptions } from "@/lib/contract-interactions/hooks/query-options";
-import { combineQueryStatus, queryClient } from "@/lib/react-query";
-import type { Operator } from "@/types/api";
+import { getOperators } from "@/api/operator";
+import { queryClient, type QueryConfig } from "@/lib/react-query";
+import { createDefaultOperator, sortOperators } from "@/lib/utils/operator";
 import type { OperatorID } from "@/types/types";
-import { useQueries } from "@tanstack/react-query";
 
-export const queryFetchOperators = async (operatorIds: OperatorID[]) => {
-  return Promise.all(
-    operatorIds.map((id) =>
-      queryClient.fetchQuery(getOperatorQueryOptions(id)),
-    ),
-  );
-};
+import { queryOptions, useQuery } from "@tanstack/react-query";
 
-export const useOperators = (operatorIds: OperatorID[]) => {
-  return useQueries({
-    queries: operatorIds.map((id) => getOperatorQueryOptions(id)),
-    combine: (queries) => {
-      const operators = queries.map((query) => query.data) as Operator[];
-      const status = combineQueryStatus(...queries);
-      return {
-        data: status.isSuccess && !status.isError ? operators : undefined,
-        ...status,
-      };
-    },
+export const operatorsQueryOptions = (operatorIds: OperatorID[]) => {
+  const ids = operatorIds.map(Number);
+  return queryOptions({
+    queryKey: ["operators", ids],
+    // `perPage: 20` is a safe upper bound: a cluster has at most 13 operators, so one page
+    // always fits every ID in the cluster. This hook is only for resolving cluster operators—
+    // use a paginated operators search hook for open-ended lists.
+    queryFn: () =>
+      getOperators({ id: ids, perPage: 20 }).then(({ operators }) =>
+        sortOperators(
+          ids.map(
+            (id) =>
+              operators.find((operator) => operator.id == id) ||
+              // Operator not found, return removed operator
+              createDefaultOperator({
+                id: Number(id),
+                is_deleted: true,
+                status: "Removed",
+              }),
+          ),
+        ),
+      ),
   });
 };
 
-export const useBlockchainOperators = (operatorIds: OperatorID[]) => {
-  return useQueries({
-    queries: operatorIds.map((id) =>
-      getGetOperatorByIdQueryOptions({
-        operatorId: BigInt(id),
-      }),
-    ),
-    combine: (queries) => {
-      const operators = queries.map((query) => {
-        if (!query.data) return undefined;
-        const {
-          owner,
-          fee,
-          validatorCount,
-          whitelistedAddress,
-          isPrivate,
-          isActive,
-        } = query.data;
-        return {
-          owner,
-          fee,
-          validatorCount,
-          whitelistedAddress,
-          isPrivate,
-          isActive,
-        };
-      });
-      const status = combineQueryStatus(...queries);
-      return {
-        data: status.isSuccess && !status.isError ? operators : undefined,
-        ...status,
-      };
-    },
+export const queryFetchOperators = async (operatorIds: OperatorID[]) => {
+  return queryClient.fetchQuery(operatorsQueryOptions(operatorIds));
+};
+
+export const useOperators = (
+  operatorIds: OperatorID[],
+  options: QueryConfig<typeof operatorsQueryOptions> = {},
+) => {
+  return useQuery({
+    ...operatorsQueryOptions(operatorIds),
+    ...options,
   });
 };

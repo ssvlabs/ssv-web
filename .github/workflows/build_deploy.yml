@@ -89,34 +89,6 @@ jobs:
           role-to-assume: ${{ secrets.SSV_WEB_AWS_IAM_ROLE }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      # <app-pre.stage.ssv.network> pre-stage
-      - name: Run stage webapp build
-        if: github.ref == 'refs/heads/pre-stage'
-        run: >
-          GAS_PRICE="${{ env.GAS_PRICE }}"
-          GAS_LIMIT="${{ env.GAS_LIMIT }}"
-          SSV_NETWORKS="${{ env.STAGE_SSV_NETWORKS }}"
-          MIXPANEL_TOKEN_STAGE="${{ secrets.MIXPANEL_TOKEN_STAGE }}"
-          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          VITE_IPGEO_API_KEY="${{ secrets.VITE_IPGEO_API_KEY }}"
-          VITE_IPREGISTRY_KEY="${{ secrets.VITE_IPREGISTRY_KEY }}"
-          VITE_BIGDATACLOUD_KEY="${{ secrets.VITE_BIGDATACLOUD_KEY }}"
-          pnpm build
-        env:
-          GAS_PRICE: ${{ secrets.GAS_PRICE }}
-          GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
-          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_STAGE }}
-          VITE_IPGEO_API_KEY: ${{ secrets.VITE_IPGEO_API_KEY }}
-          VITE_IPREGISTRY_KEY: ${{ secrets.VITE_IPREGISTRY_KEY }}
-          VITE_BIGDATACLOUD_KEY: ${{ secrets.VITE_BIGDATACLOUD_KEY }}
-
-      - name: Upload files to S3
-        if: github.ref == 'refs/heads/pre-stage'
-        run: |
-          aws s3 cp ./build s3://${{ secrets.SSV_WEB_PRE_STAGE_AWS_S3_BUCKET }} --recursive
-      # </app-pre.stage.ssv.network>
-
       # <app.stage.ssv.network>
       - name: Run stage webapp build
         if: github.ref == 'refs/heads/stage'
@@ -129,6 +101,8 @@ jobs:
           VITE_IPGEO_API_KEY="${{ secrets.VITE_IPGEO_API_KEY }}"
           VITE_IPREGISTRY_KEY="${{ secrets.VITE_IPREGISTRY_KEY }}"
           VITE_BIGDATACLOUD_KEY="${{ secrets.VITE_BIGDATACLOUD_KEY }}"
+          VITE_SUPABASE_URL="https://zpbnunrwrtgpaczhhnow.supabase.co"
+          VITE_SUPABASE_PUBLISHABLE_KEY="sb_publishable_FPDi6MgZXd1Q9QJivzSHnA_8aVJIVp8"
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
@@ -144,7 +118,6 @@ jobs:
         run: |
           aws s3 cp ./build s3://${{ secrets.SSV_WEB_STAGE_AWS_S3_BUCKET }} --recursive
       # </app.stage.ssv.network>
-
       # <app.ssv.network>
       - name: Run prod webapp build
         if: github.ref == 'refs/heads/main'
@@ -158,6 +131,8 @@ jobs:
           VITE_IPGEO_API_KEY="${{ secrets.VITE_IPGEO_API_KEY }}"
           VITE_IPREGISTRY_KEY="${{ secrets.VITE_IPREGISTRY_KEY }}"
           VITE_BIGDATACLOUD_KEY="${{ secrets.VITE_BIGDATACLOUD_KEY }}"
+          VITE_SUPABASE_URL="https://tetvioknzhvbjgnaotrk.supabase.co"
+          VITE_SUPABASE_PUBLISHABLE_KEY="sb_publishable_DIupdY-BESliwf5DWppq4Q_MlZUMbNX"
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
@@ -174,33 +149,3 @@ jobs:
         run: |
           aws s3 cp ./build s3://${{ secrets.SSV_WEB_MAIN_AWS_S3_BUCKET }} --recursive
       # </app.ssv.network>
-
-      # <ba-app.ssv.network>
-      - name: Run prod ba-app webapp build
-        if: github.ref == 'refs/heads/bapps-prod'
-        run: >
-          GAS_PRICE="${{ env.GAS_PRICE }}"
-          GAS_LIMIT="${{ env.GAS_LIMIT }}"
-          SSV_NETWORKS="${{ env.BAPPS_PROD_SSV_NETWORKS }}"
-          MIXPANEL_TOKEN_PROD="${{ secrets.MIXPANEL_TOKEN_PROD }}"
-          LINK_SSV_DEV_DOCS="$LINK_SSV_DEV_DOCS"
-          SENTRY_AUTH_TOKEN="${{ secrets.SENTRY_AUTH_TOKEN }}"
-          VITE_IPGEO_API_KEY="${{ secrets.VITE_IPGEO_API_KEY }}"
-          VITE_IPREGISTRY_KEY="${{ secrets.VITE_IPREGISTRY_KEY }}"
-          VITE_BIGDATACLOUD_KEY="${{ secrets.VITE_BIGDATACLOUD_KEY }}"
-          pnpm build
-        env:
-          GAS_PRICE: ${{ secrets.GAS_PRICE }}
-          GAS_LIMIT: ${{ secrets.GAS_LIMIT }}
-          LINK_SSV_DEV_DOCS: ${{ secrets.LINK_SSV_DEV_DOCS }}
-          MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN_PROD }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          VITE_IPGEO_API_KEY: ${{ secrets.VITE_IPGEO_API_KEY }}
-          VITE_IPREGISTRY_KEY: ${{ secrets.VITE_IPREGISTRY_KEY }}
-          VITE_BIGDATACLOUD_KEY: ${{ secrets.VITE_BIGDATACLOUD_KEY }}
-
-      - name: Upload files to S3
-        if: github.ref == 'refs/heads/bapps-prod'
-        run: |
-          aws s3 cp ./build s3://${{ secrets.SSV_WEB_BAPP_PROD_AWS_S3_BUCKET }} --recursive
-       # </ba-app.ssv.network>

@@ -5,7 +5,7 @@ import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 import { TransactionModal } from "@/components/ui/transaction-modal";
 import { useAccount } from "@/hooks/account/use-account";
 import { useAccountState } from "@/hooks/account/use-account-state.ts";
-import { useMaintenance } from "@/hooks/app/use-maintenance";
+import { useMaintenance } from "@/lib/supabase";
 import { useBlockNavigationOnPendingTx } from "@/hooks/use-block-navigation-on-pending-tx";
 import { useIdentify } from "@/lib/analytics/mixpanel/useIdentify";
 import { useTrackPageViews } from "@/lib/analytics/mixpanel/useTrackPageViews";

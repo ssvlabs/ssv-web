@@ -1,4 +1,5 @@
 import "@/lib/analytics/sentry";
+import "@/lib/supabase";
 
 import { Buffer } from "buffer";
 globalThis.Buffer = Buffer;

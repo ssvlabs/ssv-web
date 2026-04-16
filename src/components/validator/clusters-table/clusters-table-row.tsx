@@ -59,7 +59,11 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
       })}
       {...props}
     >
-      <TableCell>{shortenClusterId(cluster.clusterId)}</TableCell>
+      <TableCell>
+        <div className="max-w-[88px] truncate">
+          {resolvedCluster.metadata?.name || shortenClusterId(cluster.clusterId)}
+        </div>
+      </TableCell>
       <TableCell>
         <div className="flex gap-[2px]">
           {cluster.operators.map((o) => {

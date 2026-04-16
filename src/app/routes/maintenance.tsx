@@ -6,7 +6,7 @@ import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { useLinks } from "@/hooks/use-links";
 import { Navigate } from "react-router";
-import { useMaintenance } from "@/hooks/app/use-maintenance";
+import { useMaintenance } from "@/lib/supabase";
 
 export const Maintenance: FC = () => {
   const links = useLinks();

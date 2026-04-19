@@ -3,6 +3,8 @@
 interface ImportMetaEnv {
   readonly VITE_EXPLORER_URL: string;
   readonly VITE_STAKE_URL: string;
+  readonly VITE_SUPABASE_URL?: string;
+  readonly VITE_SUPABASE_PUBLISHABLE_KEY?: string;
   readonly VITE_SSV_NETWORKS: {
     networkId: number;
     api: string;

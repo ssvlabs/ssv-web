@@ -146,7 +146,7 @@ jobs:
       # </app.stage.ssv.network>
       # <app.ssv.network>
       - name: Run prod webapp build
-        if: github.ref == 'refs/heads/temporary-hoodi-deploy'
+        if: github.ref == 'refs/heads/main'
         run: >
           GAS_PRICE="${{ env.GAS_PRICE }}"
           GAS_LIMIT="${{ env.GAS_LIMIT }}"
@@ -171,9 +171,9 @@ jobs:
           VITE_BIGDATACLOUD_KEY: ${{ secrets.VITE_BIGDATACLOUD_KEY }}
 
       - name: Upload files to S3
-        if: github.ref == 'refs/heads/temporary-hoodi-deploy'
+        if: github.ref == 'refs/heads/main'
         run: |
-          aws s3 cp ./build s3://${{ secrets.SSV_WEB_PROD_HOODI_AWS_S3_BUCKET }} --recursive
+          aws s3 cp ./build s3://${{ secrets.SSV_WEB_MAIN_AWS_S3_BUCKET }} --recursive
       # </app.ssv.network>
       # <preview.app.ssv.network>
       - name: Run preview webapp build

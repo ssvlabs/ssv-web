@@ -10,7 +10,7 @@ import { Divider } from "@/components/ui/divider";
 import { Input } from "@/components/ui/input";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { Text } from "@/components/ui/text";
-import { WithAllowance } from "@/components/with-allowance/with-allowance";
+// import { WithAllowance } from "@/components/with-allowance/with-allowance";
 import {
   useRegisterValidatorContext,
   useSelectedOperatorIds,
@@ -21,17 +21,18 @@ import {
   useCluster,
 } from "@/hooks/cluster/use-cluster";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
+import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
 import { usePaginatedAccountClusters } from "@/hooks/cluster/use-paginated-account-clusters";
 import { useOperators } from "@/hooks/operator/use-operators";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useBulkRegisterValidator } from "@/lib/contract-interactions/write/use-bulk-register-validator";
-import { useRegisterValidator } from "@/lib/contract-interactions/write/use-register-validator";
+import { useBulkRegisterValidator } from "@/lib/contract-interactions/hooks/setter";
+import { useRegisterValidator } from "@/lib/contract-interactions/hooks/setter";
 import { track } from "@/lib/analytics/mixpanel";
 import { queryClient } from "@/lib/react-query";
 import { bigintifyNumbers } from "@/lib/utils/bigint";
 import {
   createClusterHash,
-  formatClusterData,
+  toSolidityCluster,
   getDefaultClusterData,
 } from "@/lib/utils/cluster";
 import { computeDailyAmount } from "@/lib/utils/keystore";
@@ -39,7 +40,7 @@ import { formatSSV } from "@/lib/utils/number";
 import { retryPromiseUntilSuccess } from "@/lib/utils/promise";
 import type { Address } from "abitype";
 import type { FC } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 export const RegisterValidatorConfirmation: FC = () => {
   const inCluster = Boolean(useClusterPageParams().clusterHash);
@@ -48,7 +49,8 @@ export const RegisterValidatorConfirmation: FC = () => {
   const accountClusters = usePaginatedAccountClusters();
 
   const account = useAccount();
-  const { shares, depositAmount, fundingDays } = useRegisterValidatorContext();
+  const { shares, depositAmount, fundingDays, effectiveBalance } =
+    useRegisterValidatorContext();
   const isBulk = shares.length > 1;
 
   const operatorIds = useSelectedOperatorIds();
@@ -59,6 +61,15 @@ export const RegisterValidatorConfirmation: FC = () => {
     retry: false,
   });
 
+  const clusterRunway = useClusterRunway(clusterHash, {
+    deltaEffectiveBalance: effectiveBalance,
+    deltaBalance: depositAmount,
+  });
+
+  const displayFundingDays = inCluster
+    ? Number(clusterRunway.data?.runway ?? 0n)
+    : fundingDays;
+
   const registerValidator = useRegisterValidator();
   const bulkRegisterValidator = useBulkRegisterValidator();
 
@@ -67,7 +78,7 @@ export const RegisterValidatorConfirmation: FC = () => {
 
   const handleRegisterValidator = () => {
     const clusterData = clusterQuery.data
-      ? formatClusterData(clusterQuery.data)
+      ? toSolidityCluster(clusterQuery.data)
       : getDefaultClusterData();
     const [share] = shares;
 
@@ -109,27 +120,27 @@ export const RegisterValidatorConfirmation: FC = () => {
     });
 
     if (shares.length === 1)
-      return registerValidator.write(
-        {
-          amount: depositAmount,
+      return registerValidator.write({
+        args: {
           cluster: clusterData,
           operatorIds: bigintifyNumbers(operatorIds),
           publicKey: share.publicKey as Address,
           sharesData: share.sharesData as Address,
         },
+        value: depositAmount,
         options,
-      );
+      });
 
-    return bulkRegisterValidator.write(
-      {
-        amount: depositAmount,
+    return bulkRegisterValidator.write({
+      args: {
         cluster: clusterData,
         operatorIds: bigintifyNumbers(operatorIds),
         publicKeys: shares.map((share) => share.publicKey as Address),
         sharesData: shares.map((share) => share.sharesData as Address),
       },
+      value: depositAmount,
       options,
-    );
+    });
   };
 
   return (
@@ -160,12 +171,15 @@ export const RegisterValidatorConfirmation: FC = () => {
               <div className="text-end space-y-1">
                 <Text variant="body-2-medium">
                   {formatSSV(
-                    computeDailyAmount(BigInt(operator.fee), fundingDays),
+                    computeDailyAmount(
+                      BigInt(operator.eth_fee),
+                      displayFundingDays,
+                    ),
                   )}{" "}
-                  SSV
+                  ETH
                 </Text>
                 <Text variant="body-3-medium" className="text-gray-500">
-                  /{fundingDays} days
+                  /{displayFundingDays} days
                 </Text>
               </div>
             </div>
@@ -177,20 +191,20 @@ export const RegisterValidatorConfirmation: FC = () => {
         ) : (
           <ClusterFundingSummary
             operators={operators.data ?? []}
-            validatorsAmount={shares.length}
             fundingDays={fundingDays}
+            effectiveBalance={effectiveBalance}
           />
         )}
-        <WithAllowance size="xl" amount={depositAmount}>
-          <Button
-            size="xl"
-            isLoading={isPending}
-            isActionBtn
-            onClick={handleRegisterValidator}
-          >
-            Register Validator
-          </Button>
-        </WithAllowance>
+        {/*<WithAllowance size="xl" amount={depositAmount}>*/}
+        <Button
+          size="xl"
+          isLoading={isPending}
+          isActionBtn
+          onClick={handleRegisterValidator}
+        >
+          Register Validator
+        </Button>
+        {/*</WithAllowance>*/}
       </Card>
     </Container>
   );

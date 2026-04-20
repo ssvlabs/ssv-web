@@ -1,18 +1,22 @@
 import { globals } from "@/config";
-import type { MainnetV4SetterABI } from "@/lib/abi/mainnet/v4/setter";
-import { fetchIsAddressWhitelistedInWhitelistingContract } from "@/lib/contract-interactions/read/use-is-address-whitelisted-in-whitelisting-contract";
-import { ethFormatter, sortNumbers } from "@/lib/utils/number";
+import type { SetterABI } from "@/lib/abi/setter.ts";
+import { fetchIsAddressWhitelistedInWhitelistingContract } from "@/lib/contract-interactions/hooks/query-options";
+import { formatETH, sortNumbers } from "@/lib/utils/number";
 import type { Operator } from "@/types/api";
+import type { Operator as KeysharesOperator } from "@/types/keyshares";
 import { difference } from "lodash-es";
-import type { IOperator } from "ssv-keys/dist/tsc/src/lib/KeyShares/KeySharesData/IOperator";
 import type { Address, DecodeEventLogReturnType } from "viem";
-import { formatUnits, isAddressEqual } from "viem";
+import { isAddressEqual } from "viem";
 
 type GetYearlyFeeOpts = {
   format?: boolean;
+  denomination?: "ETH" | "SSV";
 };
 
-export function getYearlyFee(fee: bigint, opts: { format: true }): string;
+export function getYearlyFee(
+  fee: bigint,
+  opts: { format: true; denomination?: "ETH" | "SSV" },
+): string;
 export function getYearlyFee(fee: bigint, opts?: GetYearlyFeeOpts): bigint;
 export function getYearlyFee(
   fee: bigint,
@@ -20,7 +24,7 @@ export function getYearlyFee(
 ): string | bigint {
   const yearlyFee = fee * BigInt(globals.BLOCKS_PER_YEAR);
   if (opts?.format)
-    return ethFormatter.format(+formatUnits(yearlyFee, 18)) + " SSV";
+    return `${formatETH(yearlyFee)} ${opts.denomination || "ETH"}`;
   return yearlyFee;
 }
 
@@ -38,6 +42,26 @@ export const MEV_RELAYS = {
   TITAN: "Titan Relay",
   ULTRA_SOUND: "Ultra Sound",
 };
+
+/** Values accepted by operator search / API filters (aligned with explorer). */
+export const MEV_RELAYS_VALUES = [
+  MEV_RELAYS.AESTUS,
+  MEV_RELAYS.AGNOSTIC,
+  MEV_RELAYS.BLOXROUTE_MAX_PROFIT,
+  MEV_RELAYS.BLOXROUTE_REGULATED,
+  MEV_RELAYS.EDEN,
+  MEV_RELAYS.FLASHBOTS,
+  MEV_RELAYS.MANIFOLD,
+  MEV_RELAYS.TITAN,
+  MEV_RELAYS.ULTRA_SOUND,
+] as const;
+
+export const STATUS_API_VALUES = [
+  "active",
+  "inactive",
+  "pending_validators",
+  "no_validators",
+] as const;
 
 export const MEV_RELAYS_LOGOS = {
   [MEV_RELAYS.AESTUS]: "Aestus",
@@ -112,19 +136,50 @@ export const sortOperators = <T extends { id: number }[]>(operators: T) => {
   return [...operators].sort((a, b) => a.id - b.id);
 };
 
-export const prepareOperatorsForShares = (operators: Operator[]): IOperator[] =>
+export const prepareOperatorsForShares = (
+  operators: Operator[],
+): KeysharesOperator[] =>
   sortOperators(operators).map((operator) => ({
     id: operator.id,
     operatorKey: operator.public_key,
   }));
 
-export const sumOperatorsFee = (operators: Pick<Operator, "fee">[]) => {
-  return operators.reduce((acc, operator) => acc + BigInt(operator.fee), 0n);
+export const isOperatorRemoved = (operator: Operator) => operator.is_deleted;
+
+export const getOperatorEthFee = (
+  operator: Operator,
+  ignoreRemoved = false,
+) => {
+  if (ignoreRemoved && isOperatorRemoved(operator)) return 0n;
+  return BigInt(operator.eth_fee);
 };
 
-export const getOperatorIds = <T extends { id: number }[]>(operators: T) => {
-  return sortNumbers(operators.map((operator) => operator.id));
+export const sumOperatorsFee = (
+  operators: Operator[],
+  by: "eth" | "ssv" = "eth",
+  ignoreRemovedForEth = false,
+) => {
+  return operators.reduce(
+    (acc, operator) =>
+      acc +
+      (by === "eth"
+        ? getOperatorEthFee(operator, ignoreRemovedForEth)
+        : BigInt(operator.fee)),
+    0n,
+  );
 };
+
+export function getOperatorIds<T extends { id: number }[] | number[]>(
+  operators: T,
+): number[] {
+  if (!operators.length) return [];
+  if (typeof operators.at(0) === "number") {
+    return sortNumbers(operators as number[]);
+  }
+  return sortNumbers(
+    (operators as { id: number }[]).map((operator) => operator.id),
+  );
+}
 
 type MergeOperatorWhitelistAddressesOpts = {
   shouldAdd: boolean;
@@ -154,6 +209,7 @@ export const createDefaultOperator = (
   declared_fee: "0",
   previous_fee: "0",
   fee: "0",
+  eth_fee: "0",
   public_key: "",
   owner_address: "",
   address_whitelist: "",
@@ -186,9 +242,11 @@ export const createDefaultOperator = (
   whitelist_addresses: [],
   updated_at: 0,
   ...operator,
+  effective_balance: operator.effective_balance ?? "0",
+  migrated: true,
 });
 
-export type MainnetEvent = DecodeEventLogReturnType<typeof MainnetV4SetterABI>;
+export type MainnetEvent = DecodeEventLogReturnType<typeof SetterABI>;
 
 export const createOperatorFromEvent = (
   event: Extract<MainnetEvent, { eventName: "OperatorAdded" }>,
@@ -200,9 +258,6 @@ export const createOperatorFromEvent = (
     fee: event?.args.fee.toString(),
   });
 };
-
-export const sumOperatorsFees = (operators: Operator[]) =>
-  operators.reduce((acc, operator) => acc + BigInt(operator.fee), 0n);
 
 export const canAccountUseOperator = async (
   account: Address,

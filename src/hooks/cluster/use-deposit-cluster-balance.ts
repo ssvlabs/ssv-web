@@ -1,31 +1,39 @@
-import { useDeposit } from "@/lib/contract-interactions/write/use-deposit";
+import { useDeposit } from "@/lib/contract-interactions/hooks/setter";
 import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useAccount } from "@/hooks/account/use-account";
-import { formatClusterData } from "@/lib/utils/cluster";
+import { toSolidityCluster } from "@/lib/utils/cluster";
 
 export const useDepositClusterBalance = (hash: string) => {
   const account = useAccount();
   const cluster = useCluster(hash);
   const deposit = useDeposit();
 
-  type WriteParams = Parameters<typeof deposit.write>;
+  type DepositWriteParam = NonNullable<Parameters<typeof deposit.write>[0]>;
+  type DepositArgs = DepositWriteParam["args"];
+  type DepositOptions = DepositWriteParam["options"];
+
+  const write = (
+    params: Partial<
+      Pick<DepositArgs, "clusterOwner" | "operatorIds" | "cluster">
+    >,
+    value?: bigint,
+    options?: DepositOptions,
+  ) => {
+    return deposit.write({
+      args: {
+        ...params,
+        clusterOwner: account.address!,
+        operatorIds:
+          cluster.data?.operators.map((id) => BigInt(id)) ?? ([] as bigint[]),
+        cluster: toSolidityCluster(cluster.data),
+      },
+      value,
+      options,
+    });
+  };
 
   return {
     ...deposit,
-    write: (
-      params: Pick<WriteParams[0], "amount">,
-      options?: WriteParams[1],
-    ) => {
-      return deposit.write(
-        {
-          ...params,
-          clusterOwner: account.address!,
-          operatorIds:
-            cluster.data?.operators.map((id) => BigInt(id)) ?? ([] as bigint[]),
-          cluster: formatClusterData(cluster.data),
-        },
-        options,
-      );
-    },
+    write,
   };
 };

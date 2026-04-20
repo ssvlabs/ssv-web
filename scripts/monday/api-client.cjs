@@ -75,8 +75,10 @@ async function updateTicketStatus(itemId, boardId, statusColumnID) {
  * @returns {Promise<any>} API response
  */
 async function addStageDeploymentComment(itemId, commits) {
-  console.log(`Adding stage deployment comment to ticket ${itemId}`);
-  return postMondayAPI(queries.createStageDeploymentComment(itemId, commits));
+  const envLabel = process.env.DEPLOY_ENV_LABEL;
+  const webappUrl = process.env.WEBAPP_URL;
+  console.log(`Adding ${envLabel || "Stage"} deployment comment to ticket ${itemId}`);
+  return postMondayAPI(queries.createStageDeploymentComment(itemId, commits, envLabel, webappUrl));
 }
 
 /**

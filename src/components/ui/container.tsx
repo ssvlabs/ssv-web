@@ -3,7 +3,7 @@ import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type { ComponentPropsWithoutRef, FC, ReactElement } from "react";
 import { FaArrowLeft } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, type NavigateOptions } from "react-router-dom";
 
 export const variants = cva("mx-auto max-w-full", {
   variants: {
@@ -26,6 +26,7 @@ type FCProps = FC<
     VariantProps<typeof variants> & {
       backButtonLabel?: string | ReactElement;
       navigateRoutePath?: string;
+      navigateRouteOptions?: NavigateOptions;
       onBackButtonClick?: () => void;
       wrapperClassName?: ComponentPropsWithoutRef<"div">["className"];
     }
@@ -38,6 +39,7 @@ export const Container: FCProps = ({
   onBackButtonClick,
   backButtonLabel,
   navigateRoutePath,
+  navigateRouteOptions,
   wrapperClassName,
   ...props
 }) => {
@@ -48,7 +50,9 @@ export const Container: FCProps = ({
         <div
           onClick={() => {
             onBackButtonClick && onBackButtonClick();
-            navigateRoutePath ? navigate(navigateRoutePath) : navigate(-1);
+            navigateRoutePath
+              ? navigate(navigateRoutePath, navigateRouteOptions)
+              : navigate(-1);
           }}
           className="w-full h-[60px] bg-gray-100 px-[300px] py-3.5"
         >

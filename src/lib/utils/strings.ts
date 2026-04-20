@@ -6,6 +6,10 @@ export const add0x = (publicKey: string): Address =>
 export const remove0x = (address: string): Address =>
   address.replace(/^0x/, "") as Address;
 
+export const formatPublicKey = (publicKey: string): string => {
+  return remove0x(publicKey).toLowerCase();
+};
+
 export const shortenClusterId = (clusterId: string) => {
   const clusterIdWithout0x = remove0x(clusterId);
   return `${clusterIdWithout0x.slice(0, 4)}...${clusterIdWithout0x.slice(-4)}`;

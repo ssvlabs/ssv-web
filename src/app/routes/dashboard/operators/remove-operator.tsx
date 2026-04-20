@@ -8,10 +8,10 @@ import { Text } from "@/components/ui/text";
 import { useOperatorPageParams } from "@/hooks/operator/use-operator-page-params";
 import { getOperatorQueryOptions } from "@/hooks/operator/use-operator";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useRemoveOperator } from "@/lib/contract-interactions/write/use-remove-operator";
+import { useRemoveOperator } from "@/lib/contract-interactions/hooks/setter";
 import { setOptimisticData } from "@/lib/react-query";
 import { useState, type FC } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { track } from "@/lib/analytics/mixpanel";
 
 export const RemoveOperator: FC = () => {
@@ -20,11 +20,11 @@ export const RemoveOperator: FC = () => {
   const navigate = useNavigate();
 
   const remove = () =>
-    removeOperator.write(
-      {
+    removeOperator.write({
+      args: {
         operatorId: BigInt(operatorId!),
       },
-      withTransactionModal({
+      options: withTransactionModal({
         onMined: () => {
           track("Remove Operator");
           setOptimisticData(
@@ -40,7 +40,7 @@ export const RemoveOperator: FC = () => {
           return () => navigate("/operators");
         },
       }),
-    );
+    });
 
   const [accepted, setAccepted] = useState(false);
 

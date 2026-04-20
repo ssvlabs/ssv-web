@@ -1,4 +1,4 @@
-import { type FC, type ComponentPropsWithoutRef } from "react";
+import { type ComponentPropsWithoutRef, type FC } from "react";
 import { Container } from "@/components/ui/container";
 import { Card, CardHeader } from "@/components/ui/card";
 import {
@@ -14,33 +14,59 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Text } from "@/components/ui/text";
 import { BigNumberInput } from "@/components/ui/number-input";
 import { formatUnits, parseEther } from "viem";
-import { globals } from "@/config";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { useFocus } from "@/hooks/use-focus";
 import { useRegisterOperatorContext } from "@/guard/register-operator-guards";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-
-const minimumFee =
-  globals.BLOCKS_PER_YEAR * globals.MINIMUM_OPERATOR_FEE_PER_BLOCK;
+import { useRates } from "@/hooks/use-rates";
+import { currencyFormatter, formatBigintInput, ms } from "@/lib/utils/number";
+import { Tooltip } from "@/components/ui/tooltip";
+import { FaCircleInfo } from "react-icons/fa6";
+import {
+  useGetMaximumOperatorFee,
+  useGetMinimumOperatorEthFee,
+} from "@/lib/contract-interactions/hooks/getter";
+import { getYearlyFee } from "@/lib/utils/operator";
+import { globals } from "@/config";
 
 export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
-  const navigate = useNavigate();
   const { isPrivate } = useRegisterOperatorContext();
+
+  const navigate = useNavigate();
+  const rates = useRates();
+
+  const { data: minFee = 0n } = useGetMinimumOperatorEthFee({
+    staleTime: ms(1, "days"),
+  });
+
+  const { data: maxFee = 0n } = useGetMaximumOperatorFee({
+    staleTime: ms(1, "days"),
+  });
+
+  const minYearlyFee = getYearlyFee(minFee);
+  const minYearlyFeeFormatted = formatBigintInput(getYearlyFee(minFee));
+
+  const maxYearlyFee = getYearlyFee(maxFee);
+  const maxYearlyFeeFormatted = formatBigintInput(maxYearlyFee);
+
+  const ethRate = rates.data?.eth ?? 0;
 
   const form = useForm({
     mode: "all",
     defaultValues: {
-      yearlyFee: useRegisterOperatorContext.state.yearlyFee ?? "",
+      yearlyFee:
+        useRegisterOperatorContext.state.yearlyFee ||
+        getYearlyFee(BigInt(globals.FIXED_OPERATOR_ETH_FEE)),
     },
     resolver: zodResolver(
       z.object({
         yearlyFee: z.bigint().superRefine((value, ctx) => {
-          if (value > parseEther("200")) {
+          if (value > maxYearlyFee) {
             return ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: "Fee must be lower than 200 SSV",
+              message: `Fee must be lower than ${maxYearlyFeeFormatted}`,
             });
           }
           if (isPrivate && value === parseEther("0")) return;
@@ -51,15 +77,21 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
               message: `Fee cannot be set to 0 while operator status is set to public. To set the fee to 0, switch the operator status to private in the previous step.`,
             });
 
-          if (value >= parseEther("0") && value < minimumFee)
+          if (value >= parseEther("0") && value < minYearlyFee)
             return ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: `Fee must be greater than ${formatUnits(minimumFee, 18)} SSV`,
+              message: `Fee must be greater than ${minYearlyFeeFormatted}`,
             });
         }),
       }),
     ),
   });
+
+  const yearlyFee = form.watch("yearlyFee");
+
+  const isBelowSoftMin = yearlyFee < globals.SOFT_MIN_OPERATOR_YEARLY_FEE;
+  const showSoftMinWarning =
+    isBelowSoftMin && !isPrivate && !form.formState.errors.yearlyFee;
 
   const submit = form.handleSubmit((values) => {
     useRegisterOperatorContext.state.yearlyFee = values.yearlyFee;
@@ -75,24 +107,33 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
         <Card as="form" onSubmit={submit}>
           <CardHeader
             title="Set Operator Fee"
-            description="The ssv network utilizes the SSV token to facilitate payments between stakers to operators for maintaining their validators."
+            description="The SSV Network utilizes ETH to facilitate payments from stakers to operators for maintaining their validators."
           />
           <Text variant="body-2-medium">
-            Operators set their own fees, denominated in SSV tokens, to be
-            charged per each validator that selects them as one of their
-            operators.
+            Operators set their own fees, denominated in ETH, which are charged
+            per 32 ETH of{" "}
+            <Button
+              as="a"
+              href="https://docs.ssv.network/stakers/clusters/effective-balance"
+              target="_blank"
+              variant="link"
+            >
+              validator effective balance
+            </Button>{" "}
+            for each validator that selects them as an operator. As a result,
+            operator earnings scale with the effective balance of the validators
+            they manage.
           </Text>
           <Text variant="body-2-medium">
-            Fees are presented as annual payments, but in practice are paid to
-            operators continuously as an ongoing process - per each passed
-            block.
+            Fees are presented as annual amounts, but in practice are paid to
+            operators continuously as an ongoing process, per each passed block.
           </Text>
           <Text variant="body-2-medium">
-            Your earnings are paid to your ssv operator balance, and can be
+            Your earnings are paid to your operator ETH balance and can be
             withdrawn to your wallet at any time.
           </Text>
           <Text variant="body-2-medium">
-            Please note that you could always change your fee (according to the{" "}
+            Please note that you can adjust your fee (according to the{" "}
             <Button
               as="a"
               href="https://docs.ssv.network/operators/operator-onboarding/update-fee"
@@ -101,8 +142,8 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
             >
               limitations
             </Button>
-            ) to align with market dynamics, such as competitiveness and SSV
-            price fluctuations.
+            ) to align with market dynamics, such as competitiveness and changes
+            in network conditions.
           </Text>
 
           <FormField
@@ -110,26 +151,36 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
             name="yearlyFee"
             render={({ field, fieldState }) => (
               <FormItem>
-                <FormLabel>Annual fee</FormLabel>
+                <Tooltip content="The yearly fee per 32 ETH validator unit">
+                  <FormLabel className="flex items-center gap-1">
+                    <Text>Annual fee</Text>
+                    <FaCircleInfo className="size-4 text-gray-500" />
+                  </FormLabel>
+                </Tooltip>
                 <FormControl>
                   <BigNumberInput
                     displayDecimals={7}
                     id="register-operator-fee"
                     value={field.value}
                     onChange={field.onChange}
-                    max={parseEther("200")}
+                    max={maxYearlyFee}
                     rightSlot={
                       <div className="flex items-center gap-1 px-3">
                         <img
-                          src="/images/ssvIcons/logo.svg"
+                          src="/images/networks/dark.svg"
                           className="size-5"
-                          alt="logo"
+                          alt="ETH"
                         />
-                        <Text variant="body-2-bold">SSV</Text>
+                        <Text variant="body-2-bold">ETH</Text>
                       </div>
                     }
                   />
                 </FormControl>
+                <Text variant="body-3-medium" className="text-gray-500">
+                  {field.value
+                    ? `~${currencyFormatter.format(ethRate * +formatUnits(field.value, 18))}`
+                    : "~$0.00"}
+                </Text>
                 {fieldState.error?.message && (
                   <Alert variant="error">
                     <AlertDescription>
@@ -137,7 +188,7 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
                     </AlertDescription>
                   </Alert>
                 )}
-                {isPrivate && form.watch("yearlyFee") === 0n && (
+                {isPrivate && yearlyFee === 0n && (
                   <Alert variant="warning">
                     <AlertDescription>
                       If you set your fee to 0 you will not be able to change it
@@ -145,10 +196,24 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
                     </AlertDescription>
                   </Alert>
                 )}
+                {showSoftMinWarning && (
+                  <Alert variant="warning">
+                    <AlertDescription>
+                      This fee is below the minimum for public operators (
+                      {formatUnits(globals.SOFT_MIN_OPERATOR_YEARLY_FEE, 18)} ETH).
+                      You may still register, but your operator will be hidden
+                      by default in the operator selection table.
+                    </AlertDescription>
+                  </Alert>
+                )}
               </FormItem>
             )}
           />
-          <Button type="submit" size="xl">
+          <Button
+            type="submit"
+            size="xl"
+            disabled={Boolean(form.formState.errors.yearlyFee)}
+          >
             Next
           </Button>
         </Card>

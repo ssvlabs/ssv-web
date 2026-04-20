@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
 import { Clusters } from "@/app/routes/dashboard/clusters/clusters";
-import { Cluster } from "@/app/routes/dashboard/clusters/cluster/cluster";
 import { WithdrawClusterBalance } from "@/app/routes/dashboard/clusters/cluster/withdraw-cluster-balance";
 import { DepositClusterBalance } from "@/app/routes/dashboard/clusters/cluster/deposit-cluster-balance";
+import ReactivateEffectiveBalance from "@/app/routes/create-cluster/reactivate-effective-balance";
 import { ReactivateCluster } from "@/app/routes/create-cluster/reactivate";
 import { ProtectedClusterRoute } from "@/app/routes/protected-cluster-route";
 import { BulkActionGuard } from "@/guard/bulk-action-guard";
@@ -13,6 +13,9 @@ import { ExitValidatorsSuccess } from "@/app/routes/dashboard/clusters/cluster/e
 import UploadProofs from "@/app/routes/reshare-dkg/upload-proofs.tsx";
 import { SelectOperators } from "@/app/routes/create-cluster/select-operators";
 import Reshare from "@/app/routes/reshare-dkg/reshare.tsx";
+import { ClusterPageResolver } from "@/app/routes/dashboard/clusters/cluster/cluster-page-resolver";
+import { ClusterValidatorsList } from "@/components/cluster/cluster-validators-list";
+import { ClusterOperatorsTablePage } from "@/app/routes/dashboard/clusters/cluster/migrated/cluster-operators-table-page";
 
 export const clustersRoutes = {
   path: "clusters",
@@ -31,8 +34,17 @@ export const clustersRoutes = {
       ),
       children: [
         {
-          index: true,
-          element: <Cluster />,
+          element: <ClusterPageResolver />,
+          children: [
+            {
+              index: true,
+              element: <ClusterValidatorsList className="min-h-96" />,
+            },
+            {
+              path: "operators",
+              element: <ClusterOperatorsTablePage />,
+            },
+          ],
         },
         {
           path: "withdraw",
@@ -41,6 +53,10 @@ export const clustersRoutes = {
         {
           path: "deposit",
           element: <DepositClusterBalance />,
+        },
+        {
+          path: "reactivate-balance",
+          element: <ReactivateEffectiveBalance />,
         },
         {
           path: "reactivate",

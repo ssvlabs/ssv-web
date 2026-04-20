@@ -21,6 +21,7 @@ import { RegisterValidatorSuccess } from "@/app/routes/create-cluster/register-v
 import { Preparation } from "@/app/routes/create-cluster/preparation";
 import { SelectOperators } from "@/app/routes/create-cluster/select-operators";
 import { InitialFunding } from "@/app/routes/create-cluster/initial-funding";
+import EffectiveValidatorsBalance from "@/app/routes/create-cluster/effective-validators-balance.tsx";
 
 export const joinRoutes = {
   path: "join",
@@ -97,6 +98,10 @@ export const joinRoutes = {
               element: <UploadKeyshares />,
             },
             {
+              path: "effective-balance",
+              element: <EffectiveValidatorsBalance />,
+            },
+            {
               path: "funding",
               element: <AdditionalFunding />,
             },
@@ -149,6 +154,10 @@ export const joinRoutes = {
         {
           path: "funding",
           element: <InitialFunding />,
+        },
+        {
+          path: "effective-balance",
+          element: <EffectiveValidatorsBalance />,
         },
         {
           path: "balance-warning",

@@ -5,7 +5,7 @@ import {
 } from "@/lib/utils/keyshares";
 import { keysharesSchema } from "@/lib/zod/keyshares";
 import { useQuery } from "@tanstack/react-query";
-import { KeyShares } from "ssv-keys";
+import { KeyShares } from "@ssv-labs/ssv-sdk/keys";
 import { useChainId } from "wagmi";
 
 export const createKeysharesFromFile = async (file: File) => {

@@ -12,11 +12,12 @@ export const variants = cva("object-cover", {
       circle: "rounded-full",
       square: "rounded-sm",
     },
-
     size: {
+      xs: "size-[22px]",
       sm: "size-6",
       md: "size-8",
-      lg: "size-12",
+      lg: "size-10",
+      xl: "size-12",
     },
   },
   defaultVariants: {
@@ -49,13 +50,14 @@ export const OperatorAvatar = forwardRef<HTMLDivElement, FCProps>(
         {...props}
       >
         {isPrivate && (
-          <div className="absolute flex items-center justify-center left-0 top-0 -m-2 bg-gray-50 text-gray-800 rounded-full size-7 border">
-            <MdOutlineLock className="size-4" />
+          <div className="absolute flex items-center justify-center left-0 top-0 bg-gray-50 text-gray-800 rounded-full border size-[60%] -translate-x-[20%] -translate-y-[20%]">
+            <MdOutlineLock className="size-[60%]" />
           </div>
         )}
 
         {src ? (
           <img
+            alt="Operator Avatar"
             className={cn(variants({ size, variant }), "w-full h-full")}
             src={src || "/images/operator_default_background/light.svg"}
           />

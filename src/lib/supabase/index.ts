@@ -23,6 +23,7 @@ function setMaintenanceState(next: boolean) {
 }
 
 function applyMaintenanceRow(row: MaintenanceRow | null) {
+  console.log("row:", row);
   setMaintenanceState(row?.active ?? false);
 }
 
@@ -88,6 +89,7 @@ try {
 
 /** Live flag from Supabase — applies to all users unless bypass is set. */
 const BYPASS_KEY = "bypassMaintenance";
+console.log("BYPASS_KEY:", BYPASS_KEY);
 
 export const useMaintenance = () => {
   const isLiveMaintenance = useSnapshot(maintenanceProxy).isActive;

@@ -12,14 +12,9 @@ import { FaPowerOff } from "react-icons/fa";
 import VerifiedSVG from "@/assets/images/verified.svg?react";
 
 export type OperatorDetailsProps = {
-  operator: Pick<Operator, "id" | "name"> &
-    Partial<
-      Pick<
-        Operator,
-        "logo" | "is_private" | "id_str" | "is_deleted" | "verified_operator"
-      >
-    >;
+  operator: Operator;
   isShowExplorerLink?: boolean;
+  operatorAvatarProps?: ComponentPropsWithoutRef<typeof OperatorAvatar>;
 };
 
 type FCProps = FC<
@@ -31,6 +26,7 @@ export const OperatorDetails: FCProps = ({
   operator,
   className,
   isShowExplorerLink = true,
+  operatorAvatarProps,
   ...props
 }) => {
   const { ref, isInsideTooltip } = useIsInsideTooltip();
@@ -52,7 +48,8 @@ export const OperatorDetails: FCProps = ({
       {...props}
     >
       <OperatorAvatar
-        size="lg"
+        size="xl"
+        {...operatorAvatarProps}
         src={operator.logo}
         isPrivate={operator.is_private}
       />

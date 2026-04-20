@@ -1,4 +1,4 @@
-import type { RouteObject } from "react-router";
+import type { RouteObject } from "react-router-dom";
 
 export type Prettify<T> = {
   [K in keyof T]: T[K];

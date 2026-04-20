@@ -9,6 +9,8 @@ export type EstimatedOperationalRunwayAlertProps = {
   isAtRisk: boolean;
   isLiquidated: boolean;
   runway: bigint;
+  isMigrated?: boolean;
+  isProjected?: boolean;
 };
 
 type EstimatedOperationalRunwayAlertFC = FC<
@@ -26,11 +28,12 @@ export const EstimatedOperationalRunwayAlert: EstimatedOperationalRunwayAlertFC 
     isAtRisk,
     hasDeltaValidators,
     isLiquidated,
+    isProjected,
     runway,
+    isMigrated = true,
     ...props
   }) => {
     const isWithdrawingAll = isWithdrawing && runway <= 0n;
-
     if (!isAtRisk) return null;
 
     const renderMessage = () => {
@@ -44,6 +47,14 @@ export const EstimatedOperationalRunwayAlert: EstimatedOperationalRunwayAlertFC 
         );
       }
       if (isLiquidated) {
+        if (!isMigrated) {
+          return (
+            <p>
+              Your cluster has been liquidated. Switch your cluster to ETH to
+              reactivate and resume operations.
+            </p>
+          );
+        }
         return (
           <p>
             Your cluster has been liquidated. Please reactivate your cluster in
@@ -81,6 +92,18 @@ export const EstimatedOperationalRunwayAlert: EstimatedOperationalRunwayAlertFC 
     return (
       <Alert variant="error" className={cn(className)} {...props}>
         <AlertDescription className="flex flex-col gap-4">
+          {isProjected ? (
+            <Alert
+              variant="default"
+              className="rounded-lg text-gray-700 p-1 px-2"
+            >
+              <AlertDescription className="flex flex-col gap-4">
+                <p className="text-xs font-medium">
+                  This warning applies to your projected effective balance.
+                </p>
+              </AlertDescription>
+            </Alert>
+          ) : null}
           {renderMessage()}
           <Button
             variant="link"

@@ -9,6 +9,7 @@ export type SelectedOperatorsProps = {
   clusterSize: number;
   selectedOperators: Operator[];
   onRemoveOperator: (operator: Operator) => void;
+  feeMode?: "eth" | "ssv";
 };
 
 type SelectedOperatorsFC = FC<
@@ -21,6 +22,7 @@ export const SelectedOperators: SelectedOperatorsFC = ({
   onRemoveOperator,
   selectedOperators,
   clusterSize,
+  feeMode = "eth",
   ...props
 }) => (
   <div className={cn(className, "space-y-6")} {...props}>
@@ -36,6 +38,7 @@ export const SelectedOperators: SelectedOperatorsFC = ({
           className="mr-2"
           key={operator.public_key}
           operator={operator}
+          feeMode={feeMode}
           onRemoveOperator={onRemoveOperator}
         />
       ))}

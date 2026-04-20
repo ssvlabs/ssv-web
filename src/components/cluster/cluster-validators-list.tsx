@@ -1,6 +1,6 @@
-import type { FC, ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef, FC } from "react";
 import { CopyBtn } from "@/components/ui/copy-btn";
-import { TableRow, TableCell } from "@/components/ui/grid-table";
+import { TableCell, TableRow } from "@/components/ui/grid-table";
 import {
   BeaconchainBtn,
   SsvExplorerBtn,
@@ -27,6 +27,8 @@ import { useBulkActionContext } from "@/guard/bulk-action-guard";
 import { Spacer } from "@/components/ui/spacer";
 import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge";
 import { ValidatorsSearchAndFilters } from "@/components/cluster/validators-search-and-filters";
+import { cn } from "@/lib/utils/tw.ts";
+import { formatGwei } from "viem";
 
 export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
@@ -34,22 +36,32 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   const navigate = useNavigate();
   const cluster = useCluster();
   const { validators, infiniteQuery } = useInfiniteClusterValidators();
+  const isSsvCluster = !cluster.data?.migrated;
 
   return (
     <div className="flex flex-col gap-4">
       <ValidatorsSearchAndFilters />
       <VirtualizedInfinityTable
-        gridTemplateColumns="220px minmax(200px, auto) 120px"
+        gridTemplateColumns="200px 140px minmax(100px, auto) 120px"
         {...props}
         query={infiniteQuery}
         headers={[
-          <Text>Public key</Text>,
+          <Text>Public Key</Text>,
           <Tooltip
             asChild
-            content="Refers to the validators status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs)"
+            content="Validator's status within the SSV network, primarily based on operator performance over the last 2 epochs, with additional context from its Beacon chain state."
           >
             <div className="flex w-fit gap-2 items-center">
               <Text>Status</Text>
+              <FaCircleInfo className="size-3 text-gray-500" />
+            </div>
+          </Tooltip>,
+          <Tooltip
+            asChild
+            content="Each validator's effective balance according to the beacon chain. Operational runway is calculated from the cluster effective balance reported by the oracles."
+          >
+            <div className="flex items-center gap-1.5">
+              <Text>Effective Balance</Text>
               <FaCircleInfo className="size-3 text-gray-500" />
             </div>
           </Tooltip>,
@@ -59,72 +71,82 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
         renderRow={({ index, item }) => (
           <TableRow key={index}>
             <TableCell className="flex gap-2 items-center">
-              <Text variant="body-2-medium">
+              <Text variant="body-3-medium">
                 {shortenAddress(add0x(item.public_key))}
               </Text>
               <CopyBtn variant="subtle" text={item.public_key} />
             </TableCell>
             <TableCell>
-              <ValidatorStatusBadge size="sm" status={item.displayedStatus} />
+              <ValidatorStatusBadge size="xs" status={item.displayedStatus} />
+            </TableCell>
+            <TableCell>
+              <Text variant="body-3-medium">
+                {formatGwei(BigInt(item.validator_info?.effective_balance)) ||
+                  32}{" "}
+                ETH
+              </Text>
             </TableCell>
             <TableCell className="flex gap-0.5 justify-end">
               <SsvExplorerBtn validatorId={item.public_key} />
               <BeaconchainBtn validatorId={item.public_key} />
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <IconButton>
-                    <HiOutlineCog />
-                  </IconButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <a
-                    href="https://docs.ssv.network/stakers/validators/update-operators"
-                    target="_blank"
-                  >
-                    <DropdownMenuItem>
-                      <TbRefresh className="size-4" />
-                      <span>Change Operators</span>
-                      <Spacer />
-                      <TbExternalLink className="size-3" />
-                    </DropdownMenuItem>
-                  </a>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      useBulkActionContext.state.selectedPublicKeys = [
-                        item.public_key,
-                      ];
-                      navigate("remove/confirmation");
-                    }}
-                  >
-                    <LuTrash2 className="size-4" />
-                    <span>Remove Validator</span>
-                  </DropdownMenuItem>
-                  <Tooltip
-                    side="bottom"
-                    delayDuration={350}
-                    asChild
-                    content={
-                      cluster.data?.isLiquidated
-                        ? "You cannot perform this operation when your cluster is liquidated. Please reactivate to proceed."
-                        : undefined
-                    }
-                  >
+              {cluster.data && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <IconButton>
+                      <HiOutlineCog />
+                    </IconButton>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <a
+                      href="https://docs.ssv.network/stakers/validators/update-operators"
+                      target="_blank"
+                      className={cn({ "pointer-events-none": isSsvCluster })}
+                    >
+                      <DropdownMenuItem disabled={isSsvCluster}>
+                        <TbRefresh className="size-4" />
+                        <span>Change Operators</span>
+                        <Spacer />
+                        <TbExternalLink className="size-3" />
+                      </DropdownMenuItem>
+                    </a>
                     <DropdownMenuItem
-                      disabled={cluster.data?.isLiquidated}
                       onClick={() => {
                         useBulkActionContext.state.selectedPublicKeys = [
                           item.public_key,
                         ];
-                        navigate("exit/confirmation");
+                        navigate("remove/confirmation");
                       }}
                     >
-                      <LuLogOut className="size-4" />
-                      <span>Exit Validator</span>
+                      <LuTrash2 className="size-4" />
+                      <span>Remove Validator</span>
                     </DropdownMenuItem>
-                  </Tooltip>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    <Tooltip
+                      side="bottom"
+                      delayDuration={350}
+                      asChild
+                      content={
+                        cluster.data?.isLiquidated
+                          ? "You cannot perform this operation when your cluster is liquidated. Please reactivate to proceed."
+                          : undefined
+                      }
+                    >
+                      <DropdownMenuItem
+                        disabled={cluster.data?.isLiquidated}
+                        onClick={() => {
+                          useBulkActionContext.state.selectedPublicKeys = [
+                            item.public_key,
+                          ];
+                          navigate("exit/confirmation");
+                        }}
+                      >
+                        <LuLogOut className="size-4" />
+                        <span>Exit Validator</span>
+                      </DropdownMenuItem>
+                    </Tooltip>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </TableCell>
           </TableRow>
         )}

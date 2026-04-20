@@ -13,6 +13,12 @@ import { NotFound } from "./not-found";
 import { clustersRoutes } from "./router/route-definitions/clusters-routes";
 import { joinRoutes } from "./router/route-definitions/join-routes";
 import { operatorsRoutes } from "./router/route-definitions/operators-routes";
+import { SwitchWizardStepOneRoute } from "./switch-wizard/switch-wizard-step-one";
+import { SwitchWizardStepOneAndHalfRoute } from "./switch-wizard/switch-wizard-step-one-and-half";
+import { SwitchWizardStepTwoRoute } from "./switch-wizard/switch-wizard-step-two";
+import { SwitchWizardStepTwoAndHalfRoute } from "./switch-wizard/switch-wizard-step-two-and-half";
+import { SwitchWizardStepThreeRoute } from "./switch-wizard/switch-wizard-step-three";
+import { SwitchWizardStepFourRoute } from "./switch-wizard/switch-wizard-step-four";
 import type { RoutePaths, WritableRoutePaths } from "./router/route-types";
 
 const routes = [
@@ -33,6 +39,30 @@ const routes = [
       {
         path: "fee-recipient",
         element: <FeeRecipientAddress />,
+      },
+      {
+        path: "switch-wizard/:clusterHash",
+        element: <SwitchWizardStepOneRoute />,
+      },
+      {
+        path: "switch-wizard/:clusterHash/step-one",
+        element: <SwitchWizardStepOneAndHalfRoute />,
+      },
+      {
+        path: "switch-wizard/:clusterHash/step-two",
+        element: <SwitchWizardStepTwoRoute />,
+      },
+      {
+        path: "switch-wizard/:clusterHash/step-two-and-half",
+        element: <SwitchWizardStepTwoAndHalfRoute />,
+      },
+      {
+        path: "switch-wizard/:clusterHash/step-three",
+        element: <SwitchWizardStepThreeRoute />,
+      },
+      {
+        path: "switch-wizard/:clusterHash/step-four",
+        element: <SwitchWizardStepFourRoute />,
       },
       joinRoutes,
       clustersRoutes,
@@ -82,7 +112,7 @@ export const locationState = proxy({
 });
 
 router.subscribe((state) => {
-  locationState.previous = JSON.parse(JSON.stringify(locationState.current));
+  locationState.previous = locationState.current;
   locationState.current = state.location;
 
   if (state.historyAction === "PUSH") {

@@ -10,11 +10,11 @@ import {
   useOperator,
 } from "@/hooks/operator/use-operator";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useSetOperatorsPrivateUnchecked } from "@/lib/contract-interactions/write/use-set-operators-private-unchecked";
-import { useSetOperatorsPublicUnchecked } from "@/lib/contract-interactions/write/use-set-operators-public-unchecked";
+import { useSetOperatorsPrivateUnchecked } from "@/lib/contract-interactions/hooks/setter";
+import { useSetOperatorsPublicUnchecked } from "@/lib/contract-interactions/hooks/setter";
 import { useQueryClient } from "@tanstack/react-query";
 import type { FC } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 export const OperatorStatus: FC = () => {
   const navigate = useNavigate();
@@ -34,11 +34,11 @@ export const OperatorStatus: FC = () => {
   if (!operator) return;
 
   const toggle = () => {
-    return writer.write(
-      {
+    return writer.write({
+      args: {
         operatorIds: [BigInt(operator.id)],
       },
-      withTransactionModal({
+      options: withTransactionModal({
         onMined: () => {
           const queryKey = getOperatorQueryOptions(operator.id).queryKey;
           queryClient.cancelQueries({ queryKey });
@@ -49,7 +49,7 @@ export const OperatorStatus: FC = () => {
           return () => navigate("..");
         },
       }),
-    );
+    });
   };
 
   return (

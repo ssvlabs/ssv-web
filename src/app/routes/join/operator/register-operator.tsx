@@ -26,7 +26,7 @@ import { FaCircleInfo } from "react-icons/fa6";
 import { Tooltip } from "@/components/ui/tooltip";
 import { Switch } from "@/components/ui/switch";
 import { OperatorVisibilityBadge } from "@/components/operator/operator-permission/operator-visibility-badge";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { useFocus } from "@/hooks/use-focus";
 import { useRegisterOperatorContext } from "@/guard/register-operator-guards";

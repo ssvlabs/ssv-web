@@ -10,18 +10,19 @@ import { getCreatedOptimisticOperatorsQueryOptions } from "@/hooks/operator/use-
 import { useFocus } from "@/hooks/use-focus";
 import { getOperatorQueryOptions } from "@/hooks/operator/use-operator";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useRegisterOperator } from "@/lib/contract-interactions/write/use-register-operator";
+import { useRegisterOperator } from "@/lib/contract-interactions/hooks/setter";
 import { queryClient } from "@/lib/react-query";
-import { roundOperatorFee } from "@/lib/utils/bigint";
-import { formatBigintInput } from "@/lib/utils/number";
+import { bigintMin } from "@/lib/utils/bigint";
+import { formatBigintInput, ms } from "@/lib/utils/number";
 import { createDefaultOperator } from "@/lib/utils/operator";
 import { shortenAddress } from "@/lib/utils/strings";
 import { type FC } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { encodeAbiParameters, parseAbiParameters } from "viem";
 import { useAccount } from "@/hooks/account/use-account";
 import { useRegisterOperatorContext } from "@/guard/register-operator-guards";
 import { track } from "@/lib/analytics/mixpanel";
+import { useGetMaximumOperatorFee } from "@/lib/contract-interactions/hooks/getter";
 
 export const RegisterOperatorConfirmation: FC = () => {
   const navigate = useNavigate();
@@ -29,18 +30,22 @@ export const RegisterOperatorConfirmation: FC = () => {
   const { address } = useAccount();
   const { publicKey, yearlyFee, isPrivate } = useRegisterOperatorContext();
 
+  const { data: maxFee = 0n } = useGetMaximumOperatorFee({
+    staleTime: ms(1, "days"),
+  });
+
   const register = useRegisterOperator();
 
   const submit = () => {
     const createOperatorArgs = {
       setPrivate: isPrivate,
-      fee: roundOperatorFee(yearlyFee / globals.BLOCKS_PER_YEAR),
+      fee: bigintMin(yearlyFee / globals.BLOCKS_PER_YEAR, maxFee),
       publicKey: encodeAbiParameters(parseAbiParameters("string"), [publicKey]),
     };
 
-    register.write(
-      createOperatorArgs,
-      withTransactionModal({
+    register.write({
+      args: createOperatorArgs,
+      options: withTransactionModal({
         onMined: async (receipt) => {
           track("Register Operator");
           const event = receipt.events?.find(
@@ -80,7 +85,7 @@ export const RegisterOperatorConfirmation: FC = () => {
           return () => navigate(`../success?operatorId=${operator.id}`);
         },
       }),
-    );
+    });
   };
 
   useFocus("#register-operator-confirmation");
@@ -92,13 +97,13 @@ export const RegisterOperatorConfirmation: FC = () => {
         id="register-operator-confirmation"
         as="form"
         className="w-full"
-        onKeyDown={(ev) => {
+        onKeyDown={(ev: React.KeyboardEvent) => {
           if (ev.key === "Enter") {
             ev.preventDefault();
             submit();
           }
         }}
-        onSubmit={(ev) => {
+        onSubmit={(ev: React.FormEvent) => {
           ev.preventDefault();
           submit();
         }}
@@ -128,16 +133,21 @@ export const RegisterOperatorConfirmation: FC = () => {
             </Text>
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center">
             <Text
               variant="body-2-medium"
               className="font-semibold text-sm text-gray-500"
             >
               Fee
             </Text>
-            <div className="flex flex-col gap-0">
-              <Text variant="body-2-bold">
-                {formatBigintInput(yearlyFee)} SSV{" "}
+            <div className="flex items-center gap-1">
+              <img
+                src="/images/networks/dark.svg"
+                className="size-5"
+                alt="ETH"
+              />
+              <Text variant="body-2-bold" className="flex items-center gap-1">
+                {formatBigintInput(yearlyFee)} ETH
                 <Span variant="body-3-semibold" className="text-gray-500">
                   / year
                 </Span>

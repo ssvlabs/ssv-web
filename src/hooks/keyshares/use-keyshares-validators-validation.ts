@@ -2,7 +2,7 @@ import type { UseQueryOptions } from "@/lib/react-query";
 import { ensureValidatorsUniqueness } from "@/lib/utils/keyshares";
 
 import { useQuery } from "@tanstack/react-query";
-import type { KeySharesItem } from "ssv-keys";
+import type { KeySharesItem } from "@ssv-labs/ssv-sdk/keys";
 import { useChainId } from "wagmi";
 
 export const useKeysharesValidatorsValidation = (

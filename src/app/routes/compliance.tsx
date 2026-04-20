@@ -4,7 +4,7 @@ import { Text } from "@/components/ui/text";
 import { useCompliance } from "@/hooks/app/use-compliance";
 import { useLinks } from "@/hooks/use-links";
 import type { FC } from "react";
-import { Navigate } from "react-router";
+import { Navigate } from "react-router-dom";
 
 export const Compliance: FC = () => {
   const links = useLinks();

@@ -9,12 +9,19 @@ import { Text } from "@/components/ui/text";
 import { FaCircleInfo } from "react-icons/fa6";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useOperatorState } from "@/hooks/operator/use-operator-state";
-import { formatSSV, percentageFormatter } from "@/lib/utils/number";
+import {
+  formatOperatorETHFee,
+  formatSSV,
+  percentageFormatter,
+} from "@/lib/utils/number";
 import { CircleX } from "lucide-react";
 import { OperatorStatusBadge } from "@/components/operator/operator-status-badge";
+import { FaEthereum } from "react-icons/fa";
+import { getYearlyFee } from "@/lib/utils/operator";
 
 export type OperatorStatCardProps = {
   operatorId: OperatorID;
+  isClusterMigrated?: boolean;
 };
 
 type OperatorStatCardFC = FC<
@@ -25,9 +32,20 @@ type OperatorStatCardFC = FC<
 export const OperatorStatCard: OperatorStatCardFC = ({
   operatorId,
   className,
+  isClusterMigrated = true,
   ...props
 }) => {
   const operatorState = useOperatorState(operatorId);
+
+  const fee = getYearlyFee(
+    isClusterMigrated
+      ? BigInt(operatorState.data?.operator?.eth_fee ?? 0n)
+      : BigInt(operatorState.data?.operator?.fee ?? 0n),
+  );
+
+  const displayFee = isClusterMigrated
+    ? formatOperatorETHFee(fee)
+    : formatSSV(fee);
 
   if (operatorState.isLoading)
     return (
@@ -61,7 +79,7 @@ export const OperatorStatCard: OperatorStatCardFC = ({
       </Card>
     );
 
-  const { operator, fee } = operatorState.data;
+  const { operator } = operatorState.data;
 
   return (
     <Card
@@ -73,42 +91,45 @@ export const OperatorStatCard: OperatorStatCardFC = ({
     >
       <OperatorDetails operator={operator} />
       <Divider />
-      <div className="flex justify-between items-start gap-2">
-        <div className="flex flex-col gap-1">
-          <Tooltip content="Is the operator performing duties for the majority of its validators for the last 2 epochs.">
-            <div className="flex items-center gap-2">
-              <Text variant="caption-medium" className="text-gray-500">
-                Status
-              </Text>
-              <FaCircleInfo className="text-gray-400 size-3" />
-            </div>
-          </Tooltip>
-          <OperatorStatusBadge size="sm" status={operator.status} />
+      <div className="grid grid-cols-[auto_auto_auto] gap-1 gap-x-3 items-center">
+        <Tooltip content="Is the operator performing duties for the majority of its validators for the last 2 epochs.">
+          <div className="flex items-center justify-start gap-1">
+            <Text variant="caption-medium" className="text-gray-500">
+              Status
+            </Text>
+            <FaCircleInfo className="text-gray-400 size-3" />
+          </div>
+        </Tooltip>
+        <Tooltip content="Operator performance calculated by the percentage of attended duties over the last 30 days.">
+          <div className="flex items-center justify-end gap-1">
+            <Text variant="caption-medium" className="text-gray-500">
+              30D
+            </Text>
+            <FaCircleInfo className="text-gray-400 size-3" />
+          </div>
+        </Tooltip>
+        <Tooltip content="Annualized fee in ETH.">
+          <div className="flex items-center justify-end gap-1">
+            <Text variant="caption-medium" className="text-gray-500">
+              1Y Fee
+            </Text>
+            <FaCircleInfo className="text-gray-400 size-3" />
+          </div>
+        </Tooltip>
+        <div className="flex justify-start">
+          <OperatorStatusBadge size="xs" status={operator.status} />
         </div>
-        <div className="flex flex-col gap-1">
-          <Tooltip content="Operator performance calculated by the percentage of attended duties over the last 30 days.">
-            <div className="flex items-center gap-2">
-              <Text variant="caption-medium" className="text-gray-500">
-                30D
-              </Text>
-              <FaCircleInfo className="text-gray-400 size-3" />
-            </div>
-          </Tooltip>
-          <Text variant="body-2-medium" className="text-gray-800">
-            {percentageFormatter.format(operator.performance["30d"])}
-          </Text>
-        </div>
-        <div className="flex flex-col justify-end gap-1 text-end">
-          <Tooltip content="Annualized fee in SSV.">
-            <div className="flex items-center gap-2">
-              <Text variant="caption-medium" className="text-gray-500">
-                1Y Fee
-              </Text>
-              <FaCircleInfo className="text-gray-400 size-3" />
-            </div>
-          </Tooltip>
-          <Text variant="body-2-medium" className="text-gray-800">
-            {formatSSV(fee.yearly)} SSV
+        <Text variant="body-3-medium" className="text-gray-800 text-right">
+          {percentageFormatter.format(operator.performance["30d"])}
+        </Text>
+        <div className="flex items-center justify-end gap-0.5">
+          {isClusterMigrated ? (
+            <FaEthereum className="size-3 text-gray-600" />
+          ) : (
+            <img src="/images/ssvIcons/icon.svg" className="size-3" alt="SSV" />
+          )}
+          <Text variant="body-3-medium" className="text-gray-800">
+            {displayFee}
           </Text>
         </div>
       </div>

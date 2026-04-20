@@ -1,4 +1,3 @@
-import { stringifyBigints } from "@/lib/utils/bigint";
 import type {
   Abi,
   AbiFunction,
@@ -27,24 +26,22 @@ export const paramsToArray = <
   params: Params;
   abiFunction: Fn;
 }) => {
-  return stringifyBigints(
-    abiFunction.inputs.reduce(
-      (acc, param) => {
-        if (param.name) {
-          const value = params[param.name];
-          if (Number.isNaN(value)) {
-            console.warn(`Passed NaN for the [${param.name}] parameter`);
-            return [...acc, undefined] as AbiParametersToPrimitiveTypes<
-              Fn["inputs"]
-            >;
-          }
-          return [...acc, value] as AbiParametersToPrimitiveTypes<Fn["inputs"]>;
+  return abiFunction.inputs.reduce(
+    (acc, param) => {
+      if (param.name) {
+        const value = params[param.name];
+        if (Number.isNaN(value)) {
+          console.warn(`Passed NaN for the [${param.name}] parameter`);
+          return [...acc, undefined] as AbiParametersToPrimitiveTypes<
+            Fn["inputs"]
+          >;
         }
-        return acc;
-      },
-      [] as AbiParametersToPrimitiveTypes<Fn["inputs"]>,
-    ),
-  ) as AbiParametersToPrimitiveTypes<Fn["inputs"]>;
+        return [...acc, value] as AbiParametersToPrimitiveTypes<Fn["inputs"]>;
+      }
+      return acc;
+    },
+    [] as AbiParametersToPrimitiveTypes<Fn["inputs"]>,
+  );
 };
 
 export const extractAbiFunction = <

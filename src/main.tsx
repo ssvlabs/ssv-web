@@ -25,6 +25,7 @@ import "@fontsource/manrope/500.css";
 import "@fontsource/manrope/700.css";
 import "@fontsource/manrope/800.css";
 import { GTMFrame } from "@/lib/analytics/gtm";
+import "@/lib/supabase";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <WagmiProvider config={config}>

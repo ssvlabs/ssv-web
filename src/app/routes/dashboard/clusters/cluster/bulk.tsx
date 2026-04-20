@@ -23,7 +23,7 @@ import { Link } from "react-router-dom";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { ValidatorStatusBadge } from "@/components/cluster/validator-status-badge.tsx";
 import { ValidatorsSearchAndFilters } from "@/components/cluster/validators-search-and-filters";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import type { Validator } from "@/types/api.ts";
 
 export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
@@ -90,7 +90,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
             <Text>Public key</Text>,
             <Tooltip
               asChild
-              content="Refers to the validators status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs)"
+              content="Validator's status within the SSV network, primarily based on operator performance over the last 2 epochs, with additional context from its Beacon chain state."
             >
               <div className="flex w-fit gap-2 items-center">
                 <Text>Status</Text>

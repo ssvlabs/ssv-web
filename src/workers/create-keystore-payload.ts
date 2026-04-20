@@ -1,16 +1,17 @@
-import type { IOperator } from "ssv-keys/dist/tsc/src/lib/KeyShares/KeySharesData/IOperator";
+import type { KeySharesItem as KeySharesItemType } from "@ssv-labs/ssv-sdk/keys";
+import type { Operator as KeysharesOperator } from "@/types/keyshares";
 import type { Address } from "viem";
-
 import { Buffer } from "buffer";
-import type { KeySharesPayload } from "ssv-keys/dist/tsc/src/lib/KeyShares/KeySharesData/KeySharesPayload";
 self.Buffer = Buffer;
 
-const { SSVKeys, KeySharesItem } = await import("ssv-keys");
+type KeySharesPayload = KeySharesItemType["payload"];
+
+const { SSVKeys, KeySharesItem } = await import("@ssv-labs/ssv-sdk/keys");
 const ssvKeys = new SSVKeys();
 
 const createAndEncryptShares = async (
   privateKey: string,
-  operators: IOperator[],
+  operators: KeysharesOperator[],
 ) => {
   const threshold = await ssvKeys.createThreshold(privateKey, operators);
   const encryptedShares = await ssvKeys.encryptShares(
@@ -27,7 +28,7 @@ export type CreateSharesMessage = MessageEvent<{
   account: Address;
   nonce: number;
   privateKey: string;
-  operators: IOperator[];
+  operators: KeysharesOperator[];
 }>;
 
 export type CreateShareSuccess = {

@@ -21,12 +21,19 @@ function createUpdateStatusMutation(itemId, boardId, columnId) {
 }
 
 /**
- * Generates a GraphQL mutation to create a comment with information about commits merged to stage
+ * Generates a GraphQL mutation to create a comment with information about commits merged to stage/pre-stage
  * @param {string} itemId - The Monday item ID
  * @param {CommitRoot[]} commits - The commits related to this ticket
+ * @param {string} [envLabel] - The environment label (e.g., "Stage" or "Pre-Stage")
+ * @param {string} [webappUrl] - The webapp URL for the environment
  * @returns {string} - GraphQL mutation
  */
-function createStageDeploymentComment(itemId, commits) {
+function createStageDeploymentComment(itemId, commits, envLabel, webappUrl) {
+  // Default to Stage environment if not specified
+  const label = envLabel || "Stage";
+  const url = webappUrl || "https://app.stage.ssv.network/";
+  const urlDisplay = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+
   // Create commit links using Monday-compatible HTML formatting
   const commitLinks = commits
     .map((commit) => {
@@ -36,10 +43,10 @@ function createStageDeploymentComment(itemId, commits) {
 
   const bodyContent = `
   <p style="font-size:18px">
-    <strong>⤴️ Merged to Stage Environment</strong>
+    <strong>⤴️ Merged to ${label} Environment</strong>
   </p>
   <ul>${commitLinks}</ul>
-  <p style="font-size:12px; margin-top:10px; color:gray">Will be live in 3 minutes on <a href="https://app.stage.ssv.network/">app.stage.ssv.network</a></p>
+  <p style="font-size:12px; margin-top:10px; color:gray">Will be live in 3 minutes on <a href="${url}">${urlDisplay}</a></p>
   `
     .replace(/>\s+</g, "><")
     .trim();

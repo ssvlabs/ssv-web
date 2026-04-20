@@ -12,7 +12,7 @@ import {
 import { sortNumbers } from "@/lib/utils/number";
 import { useQuery } from "@tanstack/react-query";
 import { isEqual } from "lodash-es";
-import type { KeySharesItem } from "ssv-keys";
+import type { KeySharesItem } from "@ssv-labs/ssv-sdk/keys";
 import { useChainId } from "wagmi";
 import { getAddress } from "viem";
 import { useAccount } from "@/hooks/account/use-account.ts";
@@ -53,7 +53,7 @@ export const useKeysharesValidation = (
       }
 
       await Promise.all(
-        shares.map((share) =>
+        shares.map((share: KeySharesItem) =>
           share.validateSingleShares(share.payload.sharesData, {
             ownerAddress: getAddress(address || ""),
             ownerNonce: share.data.ownerNonce || 0,

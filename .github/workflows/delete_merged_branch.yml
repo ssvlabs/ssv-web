@@ -1,0 +1,18 @@
+# .github/workflows/delete_merged_branch.yml
+name: Delete Merged Branch
+
+on:
+  pull_request_target:
+    types: [closed]
+    branches:
+      - pre-stage
+
+jobs:
+  delete_branch:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete merged branch
+        run: gh api -X DELETE repos/${{ github.repository }}/git/refs/heads/${{ github.event.pull_request.head.ref }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -13,6 +13,7 @@ export type OperatorPickerProps = {
   selectedOperatorIds: readonly number[];
   onOperatorCheckedChange: (operatorId: number, checked: boolean) => void;
   maxSelection?: number;
+  feeMode?: "eth" | "ssv";
   handleOrdering: (type: OrderBy) => void;
   orderBy: OrderBy;
   sort: Sort;
@@ -29,6 +30,7 @@ export const OperatorPicker: FCProps = ({
   orderBy,
   sort,
   maxSelection,
+  feeMode = "eth",
   query,
   className,
   handleOrdering,
@@ -39,7 +41,10 @@ export const OperatorPicker: FCProps = ({
     { type: "name", title: "Name" },
     { type: "validatorsCount", title: "Validators" },
     { type: "performance30d", title: "30D Performance" },
-    { type: "fee", title: "Yearly Fee" },
+    {
+      type: feeMode === "eth" ? "ethFee" : undefined,
+      title: `Yearly Fee (${feeMode === "eth" ? "ETH" : "SSV"})`,
+    },
     { type: "mev", title: "MEV Relays" },
   ];
 
@@ -90,6 +95,7 @@ export const OperatorPicker: FCProps = ({
             isSelected={isSelected}
             isDisabled={isMaxSelected && !isSelected}
             operator={operator}
+            feeMode={feeMode}
             onCheckedChange={(checked) =>
               onOperatorCheckedChange(operator.id, checked)
             }

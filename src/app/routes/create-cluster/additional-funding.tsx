@@ -12,7 +12,6 @@ import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { EstimatedOperationalRunwayAlert } from "@/components/cluster/estimated-operational-runway-alert";
 import { UnmountClosed } from "react-collapse";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard";
-import { useSSVBalance } from "@/hooks/use-ssv-balance";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -25,7 +24,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils/tw";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
+import { useBalance } from "wagmi";
+import { useAccount } from "@/hooks/account/use-account";
 
 const schema = z.object({
   depositAmount: z.bigint().min(0n),
@@ -34,14 +35,18 @@ const schema = z.object({
 
 export const AdditionalFunding: FC = () => {
   const navigate = useNavigate();
+  const account = useAccount();
   const params = useClusterPageParams();
-  const { data: ssvBalance } = useSSVBalance();
+  const { data: balance } = useBalance({
+    address: account.address!,
+  });
 
   const context = useRegisterValidatorContext();
-  const deltaValidators = BigInt(context.shares.length);
+
+  const deltaEffectiveBalance = context.effectiveBalance;
 
   const form = useForm({
-    defaultValues: { depositAmount: context.depositAmount, topUp: true },
+    defaultValues: { depositAmount: context.depositAmount, topUp: false },
     resolver: zodResolver(schema),
   });
 
@@ -49,7 +54,7 @@ export const AdditionalFunding: FC = () => {
 
   const { data: clusterRunway } = useClusterRunway(params.clusterHash!, {
     deltaBalance: topUp ? depositAmount : 0n,
-    deltaValidators,
+    deltaEffectiveBalance,
   });
 
   const submit = form.handleSubmit((data) => {
@@ -76,7 +81,7 @@ export const AdditionalFunding: FC = () => {
             <Divider />
             <EstimatedOperationalRunway
               withAlerts={false}
-              deltaValidators={deltaValidators}
+              deltaEffectiveBalance={deltaEffectiveBalance}
               deltaBalance={topUp ? depositAmount : 0n}
             />
           </Card>
@@ -136,7 +141,7 @@ export const AdditionalFunding: FC = () => {
                               <FormControl>
                                 <BigNumberInput
                                   value={field.value}
-                                  max={ssvBalance?.value ?? 0n}
+                                  max={balance?.value ?? 0n}
                                   onChange={field.onChange}
                                   rightSlot={
                                     <div className="flex items-center gap-2">
@@ -147,13 +152,13 @@ export const AdditionalFunding: FC = () => {
                                         onClick={() =>
                                           form.setValue(
                                             "depositAmount",
-                                            ssvBalance?.value ?? 0n,
+                                            balance?.value ?? 0n,
                                           )
                                         }
                                       >
                                         Max
                                       </Button>
-                                      <Text variant="body-1-bold">SSV</Text>
+                                      <Text variant="body-1-bold">ETH</Text>
                                     </div>
                                   }
                                 />
@@ -181,7 +186,10 @@ export const AdditionalFunding: FC = () => {
           <Button
             type="submit"
             size="xl"
-            disabled={clusterRunway?.isAtRisk && clusterRunway?.runway < 1n}
+            disabled={
+              (topUp && depositAmount === 0n) ||
+              (clusterRunway?.isAtRisk && clusterRunway?.runway < 1n)
+            }
           >
             Next
           </Button>

@@ -10,6 +10,8 @@ import type {
 } from "@/types/api";
 import { isUndefined, omitBy } from "lodash-es";
 import type { OperatorDKGHealthResponse } from "@/hooks/operator/use-operator-dkg-health.ts";
+import type { OperatorsSearchSchema } from "@/lib/search-parsers/operator-search-parsers";
+import { operatorSearchParamsSerializer } from "@/lib/search-parsers/operator-search-parsers";
 
 export const getOperator = (id: number | string | bigint) => {
   return api.get<Operator>(endpoint("operators", id.toString()));
@@ -20,10 +22,11 @@ export type OrderBy =
   | "id"
   | "validatorsCount"
   | "performance30d"
-  | "fee"
+  | "ethFee"
   | "delegators"
   | "strategyId"
-  | "mev";
+  | "mev"
+  | "effectiveBalance";
 export type Sort = "asc" | "desc";
 
 export type SearchOperatorsParams = {
@@ -35,6 +38,10 @@ export type SearchOperatorsParams = {
   perPage?: number;
 };
 
+/**
+ * @deprecated Prefer {@link getOperators} with `operatorSearchParamsSerializer` / `OperatorsSearchSchema`.
+ * TODO(tech-debt): Remove this once all callers use `getOperators`.
+ */
 export const searchOperators = (params: SearchOperatorsParams) => {
   const filtered = omitBy(params, isUndefined);
   const searchParams = new URLSearchParams(filtered as Record<string, string>);
@@ -43,16 +50,24 @@ export const searchOperators = (params: SearchOperatorsParams) => {
   );
 };
 
+export const getOperators = (params: Partial<OperatorsSearchSchema>) => {
+  return api.get<OperatorsSearchResponse>(
+    endpoint("operators", operatorSearchParamsSerializer(params)),
+  );
+};
+
 type GetAccountOperatorsParams = {
   address: string;
   page?: number;
   perPage?: number;
+  ordering?: `${OrderBy}:${Sort}`;
 };
 
 export const getPaginatedAccountOperators = ({
   address,
   page = 1,
   perPage = 10,
+  ordering = "id:asc",
 }: GetAccountOperatorsParams) => {
   return api
     .get<OperatorsSearchResponse>(
@@ -63,7 +78,7 @@ export const getPaginatedAccountOperators = ({
           page: page.toString(),
           perPage: perPage.toString(),
           withFee: "true",
-          ordering: "id:asc",
+          ordering,
         })}`,
       ),
     )
@@ -123,6 +138,16 @@ export const getOperatorLocations = () => {
 
 export const getOperatorNodes = (layer: number) => {
   return api.get<string[]>(endpoint("operators/nodes", layer));
+};
+
+export type AllOperatorNodesResponse = {
+  ETH1_NODE: string[];
+  ETH2_NODE: string[];
+  SSV_NODE: string[];
+};
+
+export const getAllOperatorNodes = () => {
+  return api.get<AllOperatorNodesResponse>(endpoint("operators/nodes/all"));
 };
 
 export const checkOperatorDKGHealth = (

@@ -4,7 +4,8 @@ import {
   validatorsSearchParamsSerializer,
   type ValidatorsSearchSchema,
 } from "@/lib/search-parsers/validators-search-parsers";
-import { formatClusterData, getDefaultClusterData } from "@/lib/utils/cluster";
+import { getDefaultClusterData, toSolidityCluster } from "@/lib/utils/cluster";
+import { add0x } from "@/lib/utils/strings";
 import { mapBeaconChainStatus } from "@/lib/utils/validator-status-mapping";
 import type {
   GetClusterResponse,
@@ -12,29 +13,36 @@ import type {
   PaginatedSearchValidatorsResponse,
 } from "@/types/api";
 import type { Address } from "abitype";
+import { formatGwei, type Hex } from "viem";
 
-export const getCluster = (hash: string) =>
-  api
+export const getCluster = (hash: string) => {
+  return api
     .get<GetClusterResponse>(endpoint("clusters", hash))
     .then((res) => res.cluster);
+};
 
 export const getClusterData = (hash: string) =>
   getCluster(hash)
     .then((cluster) =>
-      cluster ? formatClusterData(cluster) : getDefaultClusterData(),
+      cluster ? toSolidityCluster(cluster) : getDefaultClusterData(),
     )
     .catch(() => getDefaultClusterData());
+
+export type OrderBy = "id" | "validatorCount" | "effectiveBalance";
+export type Sort = "asc" | "desc";
 
 export type GetPaginatedAccountClusters = {
   account: string | Address;
   page?: number;
   perPage?: number;
+  ordering?: `${OrderBy}:${Sort}`;
 };
 
 export const getPaginatedAccountClusters = ({
   account,
   page = 1,
   perPage = 10,
+  ordering = "id:asc",
 }: GetPaginatedAccountClusters) => {
   return api
     .get<GetPaginatedClustersResponse>(
@@ -45,13 +53,14 @@ export const getPaginatedAccountClusters = ({
           page: page.toString(),
           perPage: perPage.toString(),
           withFee: "true",
-          ordering: "id:asc",
+          ordering,
           operatorDetails: "true",
         }).toString()}`,
       ),
     )
     .then((response) => ({
       ...response,
+      clusters: response.clusters,
       pagination: {
         ...response.pagination,
         page: response.pagination.page || 1,
@@ -66,7 +75,6 @@ export const getPaginatedClusterValidators = (
   params: GetPaginatedClusterValidators,
 ) => {
   const searchParams = validatorsSearchParamsSerializer(params);
-  console.log("searchParams:", searchParams);
 
   return api
     .get<PaginatedSearchValidatorsResponse>(
@@ -84,4 +92,13 @@ export const getPaginatedClusterValidators = (
       })),
       pagination: response.pagination,
     }));
+};
+
+export const getClusterTotalEffectiveBalance = (clusterHash: string) => {
+  return api
+    .get<{
+      clusterId: Hex;
+      effectiveBalance: string;
+    }>(endpoint(`clusters/${add0x(clusterHash)}/totalEffectiveBalance`))
+    .then((response) => Number(formatGwei(BigInt(response.effectiveBalance))));
 };

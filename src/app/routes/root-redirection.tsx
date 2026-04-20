@@ -1,6 +1,6 @@
 import { locationState } from "@/app/routes/router";
 import { useAccountState } from "@/hooks/account/use-account-state";
-import { Navigate } from "react-router";
+import { Navigate } from "react-router-dom";
 import { cn } from "@/lib/utils/tw.ts";
 import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 import { motion } from "framer-motion";

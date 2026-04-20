@@ -182,7 +182,7 @@ export const Navbar: FCProps = ({ className, ...props }) => {
           <NetworkSwitchBtn />
           <Button
             as="a"
-            href="https://app.hoodi.ssv.network/"
+            href="https://app.ssv.network/"
             target="_blank"
             size="wallet"
             variant="secondary"
@@ -192,7 +192,7 @@ export const Navbar: FCProps = ({ className, ...props }) => {
               className: "flex items-center h-12 px-4 rounded-xl",
             })}
           >
-            New Testnet
+            Mainnet App
           </Button>
           <ConnectWalletBtn />
         </div>

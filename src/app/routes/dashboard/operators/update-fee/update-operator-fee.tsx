@@ -1,3 +1,4 @@
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -13,6 +14,7 @@ import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { BigNumberInput } from "@/components/ui/number-input";
 import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
+import { globals } from "@/config";
 import { useUpdateOperatorFeeContext } from "@/guard/register-operator-guards";
 import { useOperator } from "@/hooks/operator/use-operator";
 import { useOperatorFeeLimits } from "@/hooks/operator/use-operator-fee-limits";
@@ -25,7 +27,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { useForm } from "react-hook-form";
 import { FaCircleInfo } from "react-icons/fa6";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { formatUnits } from "viem";
 import { z } from "zod";
 
@@ -55,7 +57,7 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
           minimum: min,
           type: "bigint",
           inclusive: true,
-          message: `Fee must be at least ${formatUnits(min, 18)} SSV`,
+          message: `Fee must be at least ${formatUnits(min, 18)} ETH`,
         });
       }
       if (value > max) {
@@ -64,7 +66,7 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
           maximum: max,
           type: "bigint",
           inclusive: true,
-          message: `You can only increase your fee up to ${formatUnits(max, 18)} SSV`,
+          message: `You can only increase your fee up to ${formatUnits(max, 18)} ETH`,
         });
       }
     }),
@@ -78,7 +80,13 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
     },
   });
 
+  const yearlyFee = form.watch("yearlyFee");
   const hasErrors = Boolean(form.formState.errors.yearlyFee);
+
+  const showSoftMinWarning =
+    yearlyFee < globals.SOFT_MIN_OPERATOR_YEARLY_FEE &&
+    !operator?.is_private &&
+    !hasErrors;
 
   const declaredOperatorFee = useOperatorDeclaredFee(BigInt(operatorId!));
 
@@ -129,7 +137,7 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
                           >
                             MAX
                           </Button>
-                          <span className="text-[28px] font-medium">SSV</span>
+                          <span className="text-[28px] font-medium">ETH</span>
                         </div>
                         <Divider />
                         <div className="flex justify-end">
@@ -154,7 +162,7 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
                                 variant="body-2-medium"
                                 className="text-gray-500"
                               >
-                                Max Fee:{formatBigintInput(max)} SSV{" "}
+                                Max Fee: {formatBigintInput(max)} ETH{" "}
                               </Text>
                               <FaCircleInfo className="inline-block" />
                             </div>
@@ -168,6 +176,16 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
               </FormItem>
             )}
           />
+          {showSoftMinWarning && (
+            <Alert variant="warning">
+              <AlertDescription>
+                This fee is below the minimum for public operators (
+                {formatUnits(globals.SOFT_MIN_OPERATOR_YEARLY_FEE, 18)} ETH). You may
+                still update it, but your operator will be hidden by default in
+                the operator selection table.
+              </AlertDescription>
+            </Alert>
+          )}
           <Button
             size="xl"
             type="submit"

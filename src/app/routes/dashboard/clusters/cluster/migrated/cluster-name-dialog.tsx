@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSignMessage } from "wagmi";
 import { FaXmark } from "react-icons/fa6";
-import { updateClusterMetadata } from "@/api/cluster";
+import { updateClusterName } from "@/api/cluster";
+import { queryClient } from "@/lib/react-query";
 import {
   Dialog,
   DialogClose,
@@ -51,20 +53,46 @@ export const ClusterNameDialog = ({
 }: ClusterNameDialogProps) => {
   const form = useForm({
     mode: "onChange",
-    defaultValues: { name: currentName ?? "" },
+    values: { name: isOpen ? (currentName ?? "") : "" },
     resolver: zodResolver(makeSchema(!!currentName)),
   });
 
-  const { signMessage, isPending } = useSignMessage({
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const { signMessage, isPending: isSigning } = useSignMessage({
     mutation: {
-      onSuccess: (signature) => {
+      onSuccess: async (signature) => {
         const name = form.getValues("name") || clusterId;
-        updateClusterMetadata(clusterId, { name, signature });
-        onOpenChange(false);
-        form.reset();
+        setIsUpdating(true);
+        try {
+          await updateClusterName(clusterId, { name, signature });
+          // Poll until the API reflects the new name
+          const expectedName = name === clusterId ? undefined : name;
+          for (let i = 0; i < 10; i++) {
+            await queryClient.refetchQueries({ queryKey: ["cluster"] });
+            const data = queryClient.getQueriesData<{ name?: string }>({
+              predicate: (query) =>
+                query.queryKey[0] === "cluster" &&
+                query.queryKey[1] === clusterId.toLowerCase(),
+            });
+            const current = data[0]?.[1];
+            if (
+              (expectedName === undefined && !current?.name) ||
+              current?.name === expectedName
+            ) break;
+            await new Promise((r) => setTimeout(r, 1000));
+          }
+          await queryClient.invalidateQueries({ queryKey: ["paginated-my-account-clusters"] });
+          onOpenChange(false);
+          form.reset();
+        } finally {
+          setIsUpdating(false);
+        }
       },
     },
   });
+
+  const isPending = isSigning || isUpdating;
 
   const handleUpdate = form.handleSubmit(({ name }) => {
     signMessage({ message: name || clusterId });
@@ -72,8 +100,6 @@ export const ClusterNameDialog = ({
 
   const handleOpenChange = (open: boolean) => {
     onOpenChange(open);
-    if (open) form.reset({ name: currentName ?? "" });
-    else form.reset();
   };
 
   return (
@@ -109,7 +135,7 @@ export const ClusterNameDialog = ({
                       {field.value && (
                         <button
                           type="button"
-                          onClick={() => field.onChange("")}
+                          onClick={() => form.setValue("name", "", { shouldValidate: true, shouldDirty: true })}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 hover:text-gray-600 transition-colors"
                         >
                           Clear

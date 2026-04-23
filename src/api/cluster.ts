@@ -94,7 +94,7 @@ export const getPaginatedClusterValidators = (
     }));
 };
 
-export const updateClusterMetadata = (
+export const updateClusterName = (
   clusterId: string,
   payload: { name: string; signature: string },
 ) => {

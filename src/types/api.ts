@@ -189,7 +189,7 @@ export type Cluster<
     createdAt: string;
     updatedAt: string;
     migrated?: boolean;
-    metadata?: { name?: string };
+    name?: string;
   } & T
 >;
 

@@ -30,7 +30,7 @@ export const ClusterHeader: FC<ComponentPropsWithoutRef<"div">> = ({
   const { data: operators = [] } = useOperators(cluster.data?.operators ?? []);
 
   const clusterId = cluster.data?.clusterId ?? "";
-  const clusterName = cluster.data?.metadata?.name;
+  const clusterName = cluster.data?.name;
   const isLiquidatedCluster = Boolean(isLiquidated.data);
 
   const { address } = useAccount();

@@ -94,6 +94,13 @@ export const getPaginatedClusterValidators = (
     }));
 };
 
+export const updateClusterName = (
+  clusterId: string,
+  payload: { name: string; signature: string },
+) => {
+  return api.put(endpoint(`clusters/${clusterId}/metadata`), payload);
+};
+
 export const getClusterTotalEffectiveBalance = (clusterHash: string) => {
   return api
     .get<{

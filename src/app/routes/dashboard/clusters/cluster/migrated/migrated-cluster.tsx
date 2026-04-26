@@ -49,7 +49,7 @@ export const MigratedCluster: FC = () => {
     (effectiveBalanceBreakdown?.slashed ?? 0);
 
   const hasProjected =
-    (effectiveBalanceBreakdown?.pending ?? 0) > 0 ||
+    (effectiveBalanceBreakdown?.pending ?? 0) > 0 &&
     totalBreakdownBalance !== currentEffectiveBalance;
 
   const projectedEffectiveBalance = hasProjected

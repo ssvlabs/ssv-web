@@ -127,6 +127,7 @@ export const ClusterNameDialog = ({
                         placeholder="Cluster"
                         {...field}
                         disabled={isPending}
+                        className={field.value ? "pr-14" : undefined}
                         aria-invalid={
                           field.value.length > 0 &&
                           !!form.formState.errors.name
@@ -148,18 +149,25 @@ export const ClusterNameDialog = ({
                 </FormItem>
               )}
             />
-            <Button
-              type="submit"
-              size="xl"
-              disabled={
-                !form.formState.isDirty ||
-                !form.formState.isValid ||
-                isPending
-              }
-              isLoading={isPending}
-            >
-              Update Details
-            </Button>
+            {(() => {
+              const value = form.watch("name");
+              const isRemove = !!currentName && value === "";
+              return (
+                <Button
+                  type="submit"
+                  size="xl"
+                  variant={isRemove ? "secondary" : "default"}
+                  disabled={
+                    !form.formState.isDirty ||
+                    !form.formState.isValid ||
+                    isPending
+                  }
+                  isLoading={isPending}
+                >
+                  {isRemove ? "Remove Name" : "Update Details"}
+                </Button>
+              );
+            })()}
           </form>
         </Form>
       </DialogContent>

@@ -58,12 +58,14 @@ export const ClusterNameDialog = ({
   });
 
   const [isUpdating, setIsUpdating] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const { signMessage, isPending: isSigning } = useSignMessage({
     mutation: {
       onSuccess: async (signature) => {
         const name = form.getValues("name") || clusterId;
         setIsUpdating(true);
+        setApiError(null);
         try {
           await updateClusterName(clusterId, { name, signature });
           // Poll until the API reflects the new name
@@ -85,6 +87,16 @@ export const ClusterNameDialog = ({
           await queryClient.invalidateQueries({ queryKey: ["paginated-my-account-clusters"] });
           onOpenChange(false);
           form.reset();
+        } catch (err) {
+          const e = err as { response?: { data?: { message?: { message?: string } | string } } };
+          const msg = e?.response?.data?.message;
+          const text =
+            typeof msg === "string"
+              ? msg
+              : typeof msg === "object" && msg?.message
+                ? msg.message
+                : "Failed to update cluster name";
+          setApiError(text);
         } finally {
           setIsUpdating(false);
         }
@@ -100,6 +112,7 @@ export const ClusterNameDialog = ({
 
   const handleOpenChange = (open: boolean) => {
     onOpenChange(open);
+    if (!open) setApiError(null);
   };
 
   return (
@@ -126,11 +139,16 @@ export const ClusterNameDialog = ({
                       <Input
                         placeholder="Cluster"
                         {...field}
+                        onChange={(e) => {
+                          setApiError(null);
+                          field.onChange(e);
+                        }}
                         disabled={isPending}
                         className={field.value ? "pr-14" : undefined}
                         aria-invalid={
-                          field.value.length > 0 &&
-                          !!form.formState.errors.name
+                          (field.value.length > 0 &&
+                            !!form.formState.errors.name) ||
+                          !!apiError
                         }
                       />
                       {field.value && (
@@ -145,7 +163,11 @@ export const ClusterNameDialog = ({
                     </div>
                   </FormControl>
                   {form.formState.dirtyFields.name &&
-                    field.value.length > 0 && <FormMessage />}
+                    field.value.length > 0 &&
+                    !apiError && <FormMessage />}
+                  {apiError && (
+                    <p className="text-sm text-error-500">{apiError}</p>
+                  )}
                 </FormItem>
               )}
             />

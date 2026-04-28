@@ -87,16 +87,8 @@ export const ClusterNameDialog = ({
           await queryClient.invalidateQueries({ queryKey: ["paginated-my-account-clusters"] });
           onOpenChange(false);
           form.reset();
-        } catch (err) {
-          const e = err as { response?: { data?: { message?: { message?: string } | string } } };
-          const msg = e?.response?.data?.message;
-          const text =
-            typeof msg === "string"
-              ? msg
-              : typeof msg === "object" && msg?.message
-                ? msg.message
-                : "Failed to update cluster name";
-          setApiError(text);
+        } catch {
+          setApiError("Failed to update cluster name");
         } finally {
           setIsUpdating(false);
         }

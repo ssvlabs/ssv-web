@@ -28,7 +28,7 @@ export const getClusterData = (hash: string) =>
     )
     .catch(() => getDefaultClusterData());
 
-export type OrderBy = "id" | "validatorCount" | "effectiveBalance";
+export type OrderBy = "id" | "name" | "validatorCount" | "effectiveBalance";
 export type Sort = "asc" | "desc";
 
 export type GetPaginatedAccountClusters = {

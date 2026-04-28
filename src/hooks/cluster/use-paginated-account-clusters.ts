@@ -69,11 +69,20 @@ export const usePaginatedAccountClusters = (
   );
 
   const setPage = (page: number) => {
-    setSearchParams((prev) => ({ ...prev, page: String(page) }));
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set("page", String(page));
+      return next;
+    });
   };
 
   const setOrderBy = (orderBy: `${OrderBy}:${Sort}`) => {
-    setSearchParams((prev) => ({ ...prev, orderBy, page: "1" }));
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set("orderBy", orderBy);
+      next.set("page", "1");
+      return next;
+    });
   };
 
   if (query.data?.pagination && page > query.data.pagination.pages) {

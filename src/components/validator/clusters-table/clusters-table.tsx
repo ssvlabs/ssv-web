@@ -126,7 +126,7 @@ export const ClusterTable: FCProps = ({
               }
             >
               {renderSortableHeader({
-                type: "id",
+                type: "name",
                 title: (
                   <span className="flex gap-2 items-center">
                     <span>Cluster</span>

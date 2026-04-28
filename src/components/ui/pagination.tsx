@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils/tw";
 import type { ButtonProps } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
 import type { To } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import type { Pagination as IPagination } from "@/types/api";
 
 const PaginationContainer = ({
@@ -111,24 +111,26 @@ const Pagination: React.FC<React.ComponentProps<"nav"> & PaginationProps> = ({
   pagination,
   ...props
 }) => {
+  const [searchParams] = useSearchParams();
+  const buildSearch = (page: number) => {
+    const next = new URLSearchParams(searchParams);
+    next.set("page", String(page));
+    return `?${next.toString()}`;
+  };
+
   return (
     <PaginationContainer className={cn(className)} {...props}>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            to={{
-              search: `?page=${pagination.page - 1}`,
-            }}
+            to={{ search: buildSearch(pagination.page - 1) }}
             disabled={pagination.page === 1}
           />
         </PaginationItem>
         {Array.from({ length: pagination.pages }, (_, i) => (
           <PaginationItem key={i}>
             <PaginationLink
-              // disabled={i + 1 === pagination.page}
-              to={{
-                search: `?page=${i + 1}`,
-              }}
+              to={{ search: buildSearch(i + 1) }}
               isActive={i + 1 === pagination.page}
             >
               {i + 1}
@@ -137,7 +139,7 @@ const Pagination: React.FC<React.ComponentProps<"nav"> & PaginationProps> = ({
         ))}
         <PaginationItem>
           <PaginationNext
-            to={{ search: `?page=${pagination.page + 1}` }}
+            to={{ search: buildSearch(pagination.page + 1) }}
             disabled={pagination.page === pagination.pages}
           />
         </PaginationItem>

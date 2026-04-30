@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form.tsx";
 import { useForm } from "react-hook-form";
 import type { Address } from "viem";
-import { getAddress, isAddress } from "viem";
+import { getAddress, isAddress, parseGwei } from "viem";
 import { Input } from "@/components/ui/input.tsx";
 import { useState } from "react";
 import { useReshareSignaturePayload } from "@/hooks/operator/use-reshare-signature-payload.ts";
@@ -25,11 +25,16 @@ import { Link } from "react-router-dom";
 import CeremonySection from "@/app/routes/reshare-dkg/ceremony-section.tsx";
 import RemoveValidatorsSection from "@/app/routes/reshare-dkg/remove-validators-section.tsx";
 import { useMultisigTransactionModal } from "@/signals/modal.ts";
-import SignatureStep from "@/app/routes/reshare-dkg/SignatureStep.tsx";
+import SignatureStep, {
+  type ReshareTab,
+} from "@/app/routes/reshare-dkg/SignatureStep.tsx";
 import { ReshareSteps } from "@/lib/utils/dkg.ts";
 import { useCopyToClipboard } from "react-use";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
 import type { ClusterSize } from "@/components/operator/operator-picker/operator-cluster-size-picker.tsx";
+import { useOperatorsDKGHealth } from "@/hooks/operator/use-operator-dkg-health.ts";
+
+const MIN_EFFECTIVE_BALANCE_GWEI = parseGwei("32");
 
 const nextStepToMapping: Record<ReshareSteps, ReshareSteps> = {
   [ReshareSteps.Signature]: ReshareSteps.Resign,
@@ -78,13 +83,27 @@ const ReshareDkg = () => {
   });
 
   const { clusterHash } = useClusterPageParams();
-  const { getSignature, isLoading } = useReshareSignaturePayload(
-    form.watch() as {
+
+  const operators = context.dkgReshareState.newOperators.length
+    ? context.dkgReshareState.newOperators
+    : context.dkgReshareState.operators;
+  const { supportsCompounding } = useOperatorsDKGHealth(operators);
+
+  const [_tab, setTab] = useState<ReshareTab>("compounding");
+  const tab: ReshareTab = supportsCompounding ? _tab : "regular";
+  const [effectiveBalance, setEffectiveBalance] = useState<bigint>(
+    MIN_EFFECTIVE_BALANCE_GWEI,
+  );
+  const isCompounding = tab === "compounding";
+  const { getSignature, isLoading } = useReshareSignaturePayload({
+    ...(form.watch() as {
       ownerAddress: Address;
       withdrawAddress: Address;
       signature: string;
-    },
-  );
+    }),
+    compounding: isCompounding,
+    effectiveBalanceGwei: effectiveBalance,
+  });
   const isMultiSign = isContractWallet();
 
   const nextStep = () => {
@@ -151,6 +170,11 @@ const ReshareDkg = () => {
         isReshare={isReshare}
         setIsOpenModal={setIsOpenModal}
         submit={submit}
+        tab={tab}
+        setTab={setTab}
+        effectiveBalance={effectiveBalance}
+        setEffectiveBalance={setEffectiveBalance}
+        supportsCompounding={supportsCompounding}
       />
       <CeremonySection
         copyState={copyState}

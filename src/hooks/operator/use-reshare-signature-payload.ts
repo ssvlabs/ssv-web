@@ -13,9 +13,13 @@ import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 export const useReshareSignaturePayload = ({
   ownerAddress,
   withdrawAddress,
+  compounding = false,
+  effectiveBalanceGwei,
 }: {
   ownerAddress: Address;
   withdrawAddress: Address;
+  compounding?: boolean;
+  effectiveBalanceGwei?: bigint;
 }) => {
   const { proofsQuery } = useReshareDkg();
   const context = useBulkActionContext();
@@ -24,6 +28,10 @@ export const useReshareSignaturePayload = ({
   const getSignature = async () => {
     const nonce = await getOwnerNonce(ownerAddress);
     const chainId = FORKS[getChainId(config)];
+    const amount =
+      compounding && effectiveBalanceGwei !== undefined
+        ? Number(effectiveBalanceGwei)
+        : DEFAULT_AMOUNT;
     const payload = (proofsQuery.data?.validators || []).map(
       ({ publicKey, proofs }, index: number) => {
         const messageData: MessageData = {
@@ -33,7 +41,7 @@ export const useReshareSignaturePayload = ({
           withdrawalCredentials: withdrawAddress,
           ownerAddress,
           nonce: nonce + index,
-          amount: DEFAULT_AMOUNT,
+          amount,
         };
         if (context.dkgReshareState.newOperators.length) {
           messageData.newOperators = context.dkgReshareState.newOperators;

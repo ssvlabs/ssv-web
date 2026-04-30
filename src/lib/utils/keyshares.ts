@@ -7,6 +7,8 @@ import { getChainName } from "@/lib/utils/wagmi";
 import { getChainId } from "@wagmi/core";
 import { config } from "@/wagmi/config";
 import { getOSName, isWindows } from "@/lib/utils/os";
+import clsx from "clsx";
+import { isVersionLTE } from "@/lib/utils/version";
 export enum KeysharesValidationErrors {
   OPERATOR_NOT_EXIST_ID,
   OPERATOR_NOT_MATCHING_ID,
@@ -22,6 +24,7 @@ export enum KeysharesValidationErrors {
 export const DKG_VERSIONS = {
   OLD: "2.1.0",
   NEW: "3.0.3",
+  COMPOUNDING_MIN: "3.1.0",
 };
 
 export class KeysharesValidationError extends Error {
@@ -91,6 +94,23 @@ export const ensureValidatorsUniqueness = (keyshares: KeySharesItem[]) => {
 
 const cmd = isWindows ? "ssv-keys.exe" : "./ssv-keys-mac";
 
+export const getOperatorsData = (
+  operators: Operator[],
+  os: ReturnType<typeof getOSName>,
+) => {
+  const jsonOperatorInfo = JSON.stringify(
+    sortOperators(operators).map(({ id, public_key, dkg_address }) => ({
+      id,
+      public_key,
+      ip: dkg_address,
+    })),
+  );
+
+  return os === "windows"
+    ? `"${jsonOperatorInfo.replace(/"/g, '\\"')}"`
+    : `'${jsonOperatorInfo}'`;
+};
+
 type GenerateSSVKeysCMDParams = {
   operators: Operator[];
   nonce: number;
@@ -108,7 +128,13 @@ export const generateSSVKeysCMD = ({
     .map((op) => op.public_key)
     .join(",");
 
-  return `${cmd} --operator-keys=${operatorPublicKeys} --operator-ids=${operatorIds} --owner-address=${account} --owner-nonce=${nonce}`;
+  return clsx([
+    cmd,
+    `--operator-keys=${operatorPublicKeys}`,
+    `--operator-ids=${operatorIds}`,
+    `--owner-address=${account}`,
+    `--owner-nonce=${nonce}`,
+  ]);
 };
 
 type GenerateSSVKeysDockerCMDParams = {
@@ -124,6 +150,8 @@ type GenerateSSVKeysDockerCMDParams = {
   isReshare?: boolean;
   proofsString?: string;
   version?: string;
+  compounding?: boolean;
+  effectiveBalanceGwei?: bigint;
 };
 
 export const generateSSVKeysDockerCMD = ({
@@ -134,11 +162,13 @@ export const generateSSVKeysDockerCMD = ({
   chainId = getChainId(config),
   validatorsCount = 1,
   os = getOSName(),
-  version = DKG_VERSIONS.NEW,
+  version = DKG_VERSIONS.COMPOUNDING_MIN,
   newOperators,
   isReshare,
   signatures,
   proofsString,
+  compounding = false,
+  effectiveBalanceGwei = 0n,
 }: GenerateSSVKeysDockerCMDParams) => {
   const chainName =
     chainId === 1 ? "mainnet" : getChainName(chainId)?.toLowerCase();
@@ -146,28 +176,67 @@ export const generateSSVKeysDockerCMD = ({
   const operatorIds = sortedOperators.map((op) => op.id).join(",");
   const dynamicFullPath = os === "windows" ? "%cd%" : "$(pwd)";
 
-  const getOperatorsData = (operators: Operator[]) => {
-    const jsonOperatorInfo = JSON.stringify(
-      sortOperators(operators).map(({ id, public_key, dkg_address }) => ({
-        id,
-        public_key,
-        ip: dkg_address,
-      })),
-    );
-
-    return os === "windows"
-      ? `"${jsonOperatorInfo.replace(/"/g, '\\"')}"`
-      : `'${jsonOperatorInfo}'`;
-  };
+  const compoundingFlags = clsx([
+    "--compounding",
+    [`--amount ${effectiveBalanceGwei}`],
+  ]);
 
   if (signatures) {
-    return `docker pull ssvlabs/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/ssv-dkg/data -it "ssvlabs/ssv-dkg:v${version}" ${isReshare ? "reshare" : "resign"} --operatorIDs ${operatorIds} ${
-      newOperators?.length
-        ? `--newOperatorIDs ${sortOperators(newOperators)
-            .map((op) => op.id)
-            .join(",")}`
-        : ""
-    } --withdrawAddress ${withdrawalAddress} --owner ${account} --nonce ${nonce} --network ${chainName} ${proofsString ? `--proofsString '${proofsString}'` : "--proofsFilePath ./data/proofs.json"} --operatorsInfo ${newOperators ? getOperatorsData([...operators, ...newOperators]) : getOperatorsData(operators)} --signatures ${signatures.slice(2)} --outputPath ./data --logLevel info --logFormat json --logLevelFormat capitalColor --logFilePath ./data/debug.log --tlsInsecure`;
+    const newOperatorIds = sortOperators(newOperators || [])
+      .map((op) => op.id)
+      .join(",");
+
+    const operatorsInfo = newOperators
+      ? getOperatorsData([...operators, ...newOperators], os)
+      : getOperatorsData(operators, os);
+
+    return clsx([
+      `docker pull ssvlabs/ssv-dkg:v${version} &&`,
+      `docker run --rm -v ${dynamicFullPath}:/ssv-dkg/data`,
+      `-it "ssvlabs/ssv-dkg:v${version}"`,
+      isReshare ? "reshare" : "resign",
+      `--withdrawAddress ${withdrawalAddress}`,
+      `--owner ${account}`,
+      `--nonce ${nonce}`,
+      `--network ${chainName}`,
+      `--operatorIDs ${operatorIds}`,
+      `--operatorsInfo ${operatorsInfo}`,
+      {
+        [`--newOperatorIDs ${newOperatorIds}`]: newOperatorIds,
+        [`--proofsString '${proofsString}'`]: proofsString,
+        "--proofsFilePath ./data/proofs.json": !proofsString,
+        [compoundingFlags]: compounding,
+      },
+      `--signatures ${signatures.slice(2)}`,
+      "--outputPath ./data",
+      "--logLevel info",
+      "--logFormat json",
+      "--logLevelFormat capitalColor",
+      "--logFilePath ./data/debug.log",
+      "--tlsInsecure",
+    ]);
   }
-  return `docker pull ssvlabs/ssv-dkg:v${version} && docker run --rm -v ${dynamicFullPath}:/${version === DKG_VERSIONS.NEW ? "ssv-dkg/data" : "data"} -it "ssvlabs/ssv-dkg:v${version}" init --owner ${account} --nonce ${nonce} --withdrawAddress ${withdrawalAddress} --operatorIDs ${operatorIds} --operatorsInfo ${getOperatorsData(sortedOperators)} --network ${chainName} --validators ${validatorsCount} ${version === DKG_VERSIONS.OLD ? "--logFilePath /data/debug.log --outputPath /data" : "--logFilePath ./data/debug.log --outputPath ./data --tlsInsecure"}`;
+
+  const isOldVersion = isVersionLTE(version, DKG_VERSIONS.OLD);
+
+  return clsx([
+    `docker pull ssvlabs/ssv-dkg:v${version} &&`,
+    `docker run --rm -v ${dynamicFullPath}:/${
+      isOldVersion ? "data" : "ssv-dkg/data"
+    }`,
+    `-it "ssvlabs/ssv-dkg:v${version}" init`,
+    `--owner ${account}`,
+    `--nonce ${nonce}`,
+    `--withdrawAddress ${withdrawalAddress}`,
+    `--operatorIDs ${operatorIds}`,
+    `--operatorsInfo ${getOperatorsData(sortedOperators, os)}`,
+    `--network ${chainName}`,
+    `--validators ${validatorsCount}`,
+    {
+      [compoundingFlags]: compounding,
+      "--logFilePath /data/debug.log --outputPath /data": isOldVersion,
+      "--logFilePath ./data/debug.log --outputPath ./data --tlsInsecure":
+        !isOldVersion,
+    },
+  ]);
 };

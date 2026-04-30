@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/form.tsx";
 import { Tooltip } from "@/components/ui/tooltip.tsx";
 import { Button } from "@/components/ui/button.tsx";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs.tsx";
+import { BigNumberInput } from "@/components/ui/number-input.tsx";
 import { FaCircleInfo } from "react-icons/fa6";
 import { DkgAddressInput } from "@/app/routes/reshare-dkg/dkg-address-input.tsx";
 import { shortenAddress } from "@/lib/utils/strings.ts";
@@ -19,6 +21,15 @@ import type { Address } from "abitype";
 import React, { useState } from "react";
 import { ReshareSteps } from "@/lib/utils/dkg.ts";
 import { useGetWithdrawCredentials } from "@/hooks/operator/useGetWithdrawCredentials.ts";
+import { cn } from "@/lib/utils/tw.ts";
+import { parseGwei } from "viem";
+
+const COMPOUNDING_TOOLTIP =
+  "The DKG clients of the selected operators do not support generating compounding validators";
+
+export const MAX_EFFECTIVE_BALANCE_GWEI = parseGwei("2048");
+
+export type ReshareTab = "compounding" | "regular";
 
 type Props = {
   form: UseFormReturn<{
@@ -33,6 +44,11 @@ type Props = {
   isLoading: boolean;
   activateStep: (step: ReshareSteps, callback?: () => void) => void;
   setIsOpenModal: (isOpenModal: boolean) => void;
+  tab: ReshareTab;
+  setTab: (tab: ReshareTab) => void;
+  effectiveBalance: bigint;
+  setEffectiveBalance: (value: bigint) => void;
+  supportsCompounding: boolean;
 };
 
 const SignatureStep = ({
@@ -44,6 +60,11 @@ const SignatureStep = ({
   activateStep,
   isLoading,
   setIsOpenModal,
+  tab,
+  setTab,
+  effectiveBalance,
+  setEffectiveBalance,
+  supportsCompounding,
 }: Props) => {
   const [isOwnerInputDisabled, setIsOwnerInputDisabled] = useState(true);
   const [isWithdrawalInputDisabled, setIsWithdrawalInputDisabled] = useState(
@@ -58,6 +79,11 @@ const SignatureStep = ({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const isSubmitButtonDisabled =
     !isOwnerInputDisabled || !isWithdrawalInputDisabled;
+
+  const isCompounding = tab === "compounding" && supportsCompounding;
+  const helperText = isCompounding
+    ? "Maximum effective balance of 2048 ETH. Only whole numbers can be entered."
+    : "Maximum effective balance of 32 ETH";
 
   return (
     <Form {...form}>
@@ -158,6 +184,78 @@ const SignatureStep = ({
                 )}
               />
             )}
+            <div className="flex flex-col gap-6 p-6 rounded-2xl bg-gray-100 border border-gray-200">
+              <div className="flex flex-col gap-3">
+                <Tabs
+                  value={tab}
+                  onValueChange={(value) => setTab(value as ReshareTab)}
+                  className="w-full"
+                >
+                  <TabsList className="w-full h-12 rounded-xl bg-gray-200 border border-gray-300 p-1 gap-1">
+                    <Tooltip
+                      triggerProps={{
+                        className: cn("flex-1", {
+                          "cursor-not-allowed": !supportsCompounding,
+                        }),
+                      }}
+                      content={
+                        !supportsCompounding ? COMPOUNDING_TOOLTIP : undefined
+                      }
+                    >
+                      <TabsTrigger
+                        value="compounding"
+                        disabled={!supportsCompounding}
+                        className={cn(
+                          "flex-1 h-full rounded-lg text-sm font-semibold text-gray-500",
+                          "data-[state=active]:bg-white data-[state=active]:text-gray-700 data-[state=active]:shadow-sm",
+                          "disabled:opacity-50 disabled:pointer-events-none",
+                        )}
+                      >
+                        Compounding
+                      </TabsTrigger>
+                    </Tooltip>
+                    <TabsTrigger
+                      value="regular"
+                      className={cn(
+                        "flex-1 h-full rounded-lg text-sm font-semibold text-gray-500",
+                        "data-[state=active]:bg-white data-[state=active]:text-gray-700 data-[state=active]:shadow-sm",
+                      )}
+                    >
+                      Regular Withdrawals
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+                <Text variant="body-3-medium">{helperText}</Text>
+              </div>
+
+              {isCompounding && (
+                <FormItem>
+                  <Text className="text-xs font-semibold text-gray-500 leading-5">
+                    Effective Balance
+                  </Text>
+                  <BigNumberInput
+                    max={MAX_EFFECTIVE_BALANCE_GWEI}
+                    decimals={9}
+                    displayDecimals={0}
+                    className="bg-white"
+                    value={effectiveBalance}
+                    onChange={setEffectiveBalance}
+                    rightSlot={
+                      <div className="flex items-center gap-1 pr-2">
+                        <img
+                          alt="ETH"
+                          src="/images/networks/dark.svg"
+                          className="size-5"
+                        />
+                        <Text className="text-base font-medium text-gray-800">
+                          ETH
+                        </Text>
+                      </div>
+                    }
+                  />
+                </FormItem>
+              )}
+            </div>
             {!withdrawAddress.isLoading &&
               !withdrawAddress.data?.withdraw_credentials && (
                 <FormField

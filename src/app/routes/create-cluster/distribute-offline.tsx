@@ -13,45 +13,31 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { DockerInstructions } from "@/components/offline-generation/docker-instructions";
 import { SSVKeysInstructions } from "@/components/offline-generation/ssv-keys-instructions";
-import { useSearchParams } from "react-router-dom";
+import { parseAsStringEnum, useQueryState } from "nuqs";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 
 export const DistributeOffline: FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
   const inCluster = Boolean(useClusterPageParams().clusterHash);
 
-  const selectedOption = searchParams.get("option") as
-    | "existing"
-    | "new"
-    | null;
-
-  const setSelectedOption = (option: "existing" | "new" | null) => {
-    if (option) {
-      setSearchParams({ option });
-    } else {
-      searchParams.delete("option");
-      setSearchParams(searchParams);
-    }
-  };
+  const [selectedOption, setSelectedOption] = useQueryState(
+    "method",
+    parseAsStringEnum(["existing", "new"]),
+  );
 
   const isNew = selectedOption === "new";
 
   const selectedOperators = useSelectedOperatorIds();
   const operators = useOperators(selectedOperators);
+
   const health = useOperatorsDKGHealth(operators.data ?? [], {
     enabled: isNew,
   });
-  const hasOutdatedOperator = health.data?.some(({ isOutdated }) => isOutdated);
-  const isAllOperatorsAreOutdated =
-    health.data?.every(({ isOutdated }) => isOutdated) || false;
-  const hasUnhealthyOperators = health.data?.some(
-    ({ isHealthy, isMismatchId }) => !isHealthy || isMismatchId,
-  );
-  const hasIssuedOperator = hasOutdatedOperator
-    ? hasUnhealthyOperators || !isAllOperatorsAreOutdated
-    : hasUnhealthyOperators;
 
+  const hasIssuedOperator = false; /* health.hasOutdatedOperators
+    ? health.hasUnhealthyOperators || !health.areAllOperatorsOutdated
+    : health.hasUnhealthyOperators;
+ */
   return (
     <Container size="lg" variant="vertical" className="py-6">
       <NavigateBackBtn by="path" to="../distribution-method" />
@@ -95,10 +81,7 @@ export const DistributeOffline: FC = () => {
           </>
         )}
         {selectedOption === "new" && !hasIssuedOperator && health.isSuccess && (
-          <DockerInstructions
-            isOutdatedOperators={isAllOperatorsAreOutdated}
-            operators={operators.data ?? []}
-          />
+          <DockerInstructions operators={operators.data ?? []} />
         )}
         {selectedOption === "existing" && (
           <SSVKeysInstructions operators={operators.data ?? []} />

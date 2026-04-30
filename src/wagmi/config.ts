@@ -8,6 +8,8 @@ import { createPublicClient, http } from "viem";
 import { createConfig } from "wagmi";
 import { mainnet as mainnetBase } from "wagmi/chains";
 
+import { networks } from "@/config/networks";
+
 const mainnet: Chain = {
   ...mainnetBase,
   iconBackground: "none",
@@ -50,9 +52,9 @@ const chainMap: Record<number, Chain> = {
   [hoodi.id]: hoodi,
 };
 
-const chains = import.meta.env.VITE_SSV_NETWORKS.map(
-  (n) => chainMap[n.networkId],
-).filter((chain): chain is Chain => Boolean(chain));
+const chains = networks
+  .map((n) => chainMap[n.networkId])
+  .filter((chain): chain is Chain => Boolean(chain));
 
 export type Chains = typeof chains;
 const connectors = connectorsForWallets(
@@ -81,9 +83,16 @@ export const config = createConfig({
   transports: {
     [mainnet.id]: http(
       "https://ethereum-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
+      {
+        batch: {
+          wait: 20,
+        },
+      },
     ),
-    [hoodi.id]: http(
-      "https://ethereum-hoodi-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
-    ),
+    [hoodi.id]: http(undefined, {
+      batch: {
+        wait: 20,
+      },
+    }),
   },
 });

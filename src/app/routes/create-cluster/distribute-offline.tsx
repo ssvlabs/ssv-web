@@ -34,10 +34,10 @@ export const DistributeOffline: FC = () => {
     enabled: isNew,
   });
 
-  const hasIssuedOperator = false; /* health.hasOutdatedOperators
+  const hasIssuedOperator = health.hasOutdatedOperators
     ? health.hasUnhealthyOperators || !health.areAllOperatorsOutdated
     : health.hasUnhealthyOperators;
- */
+
   return (
     <Container size="lg" variant="vertical" className="py-6">
       <NavigateBackBtn by="path" to="../distribution-method" />

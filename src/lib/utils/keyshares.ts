@@ -8,7 +8,7 @@ import { getChainId } from "@wagmi/core";
 import { config } from "@/wagmi/config";
 import { getOSName, isWindows } from "@/lib/utils/os";
 import clsx from "clsx";
-import { isVersionLTE } from "@/lib/utils/version";
+import { isVersionLTE, normalizeVersion } from "@/lib/utils/version";
 export enum KeysharesValidationErrors {
   OPERATOR_NOT_EXIST_ID,
   OPERATOR_NOT_MATCHING_ID,
@@ -170,6 +170,8 @@ export const generateSSVKeysDockerCMD = ({
   compounding = false,
   effectiveBalanceGwei = 0n,
 }: GenerateSSVKeysDockerCMDParams) => {
+  const ver = normalizeVersion(version);
+
   const chainName =
     chainId === 1 ? "mainnet" : getChainName(chainId)?.toLowerCase();
   const sortedOperators = sortOperators(operators);
@@ -191,9 +193,9 @@ export const generateSSVKeysDockerCMD = ({
       : getOperatorsData(operators, os);
 
     return clsx([
-      `docker pull ssvlabs/ssv-dkg:v${version} &&`,
+      `docker pull ssvlabs/ssv-dkg:v${ver} &&`,
       `docker run --rm -v ${dynamicFullPath}:/ssv-dkg/data`,
-      `-it "ssvlabs/ssv-dkg:v${version}"`,
+      `-it "ssvlabs/ssv-dkg:v${ver}"`,
       isReshare ? "reshare" : "resign",
       `--withdrawAddress ${withdrawalAddress}`,
       `--owner ${account}`,
@@ -217,14 +219,14 @@ export const generateSSVKeysDockerCMD = ({
     ]);
   }
 
-  const isOldVersion = isVersionLTE(version, DKG_VERSIONS.OLD);
+  const isOldVersion = isVersionLTE(ver, DKG_VERSIONS.OLD);
 
   return clsx([
-    `docker pull ssvlabs/ssv-dkg:v${version} &&`,
+    `docker pull ssvlabs/ssv-dkg:v${ver} &&`,
     `docker run --rm -v ${dynamicFullPath}:/${
       isOldVersion ? "data" : "ssv-dkg/data"
     }`,
-    `-it "ssvlabs/ssv-dkg:v${version}" init`,
+    `-it "ssvlabs/ssv-dkg:v${ver}" init`,
     `--owner ${account}`,
     `--nonce ${nonce}`,
     `--withdrawAddress ${withdrawalAddress}`,

@@ -196,8 +196,12 @@ export const DockerInstructions: FC<DockerInstructionsProps> = ({
         >
           <TabsList className="w-full h-14 rounded-xl bg-gray-200 border border-gray-300 p-1 gap-1">
             <Tooltip
+              triggerProps={{
+                className: cn("flex-1", {
+                  "cursor-not-allowed": !supportsCompounding,
+                }),
+              }}
               content={!supportsCompounding ? COMPOUNDING_TOOLTIP : undefined}
-              asChild
             >
               <TabsTrigger
                 value="compounding"

@@ -1,8 +1,12 @@
+export const normalizeVersion = (v: string): string => {
+  return v.replace(/^v/i, "");
+};
+
 export const parseVersion = (
   v: string | undefined,
 ): [number, number, number] => {
   if (!v) return [0, 0, 0];
-  const cleaned = v.replace(/^v/i, "").split(/[-+]/)[0];
+  const cleaned = normalizeVersion(v).split(/[-+]/)[0];
   const parts = cleaned.split(".").map((n) => parseInt(n, 10));
   return [parts[0] || 0, parts[1] || 0, parts[2] || 0];
 };

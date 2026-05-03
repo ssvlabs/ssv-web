@@ -29,9 +29,11 @@ export const DkgAddressInput = ({
     {...field}
     disabled={isInputDisabled}
     value={value}
+    className="pr-1.5"
     rightSlot={
       acceptedButtonLabel && (
         <Button
+          size="sm"
           className="border-none text-primary-500 hover:bg-transparent hover:text-primary-500"
           variant={isInputDisabled ? "outline" : "secondary"}
           disabled={isAcceptedButtonDisabled}

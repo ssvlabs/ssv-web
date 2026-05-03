@@ -52,6 +52,7 @@ export const useReshareSignaturePayload = ({
         };
       },
     );
+
     return sign.signMessageAsync({
       message: getSignaturePayload(payload),
     });

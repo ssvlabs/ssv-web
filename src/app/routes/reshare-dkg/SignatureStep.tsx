@@ -18,7 +18,7 @@ import { DkgAddressInput } from "@/app/routes/reshare-dkg/dkg-address-input.tsx"
 import { shortenAddress } from "@/lib/utils/strings.ts";
 import type { UseFormReturn } from "react-hook-form";
 import type { Address } from "abitype";
-import React, { useState } from "react";
+import React, { useState, type FC } from "react";
 import { ReshareSteps } from "@/lib/utils/dkg.ts";
 import { useGetWithdrawCredentials } from "@/hooks/operator/useGetWithdrawCredentials.ts";
 import { cn } from "@/lib/utils/tw.ts";
@@ -30,6 +30,12 @@ const COMPOUNDING_TOOLTIP =
 export const MAX_EFFECTIVE_BALANCE_GWEI = parseGwei("2048");
 
 export type ReshareTab = "compounding" | "regular";
+
+const StepBadge: FC<{ step: number }> = ({ step }) => (
+  <div className="size-7 flex items-center justify-center rounded-lg bg-white border border-gray-300 shrink-0">
+    <Text className="text-xs font-medium text-gray-600 leading-5">{step}</Text>
+  </div>
+);
 
 type Props = {
   form: UseFormReturn<{
@@ -184,51 +190,57 @@ const SignatureStep = ({
                 )}
               />
             )}
-            <div className="flex flex-col gap-6 p-6 rounded-2xl bg-gray-100 border border-gray-200">
-              <div className="flex flex-col gap-3">
-                <Tabs
-                  value={tab}
-                  onValueChange={(value) => setTab(value as ReshareTab)}
-                  className="w-full"
-                >
-                  <TabsList className="w-full h-12 rounded-xl bg-gray-200 border border-gray-300 p-1 gap-1">
-                    <Tooltip
-                      triggerProps={{
-                        className: cn("flex-1", {
-                          "cursor-not-allowed": !supportsCompounding,
-                        }),
-                      }}
-                      content={
-                        !supportsCompounding ? COMPOUNDING_TOOLTIP : undefined
-                      }
-                    >
-                      <TabsTrigger
-                        value="compounding"
-                        disabled={!supportsCompounding}
-                        className={cn(
-                          "flex-1 h-full rounded-lg text-sm font-semibold text-gray-500",
-                          "data-[state=active]:bg-white data-[state=active]:text-gray-700 data-[state=active]:shadow-sm",
-                          "disabled:opacity-50 disabled:pointer-events-none",
-                        )}
-                      >
-                        Compounding
-                      </TabsTrigger>
-                    </Tooltip>
+            <div className="flex flex-col gap-3">
+              <Tabs
+                value={tab}
+                onValueChange={(value) => setTab(value as ReshareTab)}
+                className="w-full"
+              >
+                <TabsList className="w-full h-14 rounded-xl bg-gray-200 border border-gray-300 p-1 gap-1">
+                  <Tooltip
+                    triggerProps={{
+                      className: cn("flex-1", {
+                        "cursor-not-allowed": !supportsCompounding,
+                      }),
+                    }}
+                    content={
+                      !supportsCompounding ? COMPOUNDING_TOOLTIP : undefined
+                    }
+                  >
                     <TabsTrigger
-                      value="regular"
+                      value="compounding"
+                      disabled={!supportsCompounding}
                       className={cn(
-                        "flex-1 h-full rounded-lg text-sm font-semibold text-gray-500",
+                        "flex-1 h-full rounded-lg text-base font-semibold text-gray-500",
                         "data-[state=active]:bg-white data-[state=active]:text-gray-700 data-[state=active]:shadow-sm",
+                        "disabled:opacity-50 disabled:pointer-events-none",
                       )}
                     >
-                      Regular Withdrawals
+                      Compounding
                     </TabsTrigger>
-                  </TabsList>
-                </Tabs>
-                <Text variant="body-3-medium">{helperText}</Text>
-              </div>
+                  </Tooltip>
+                  <TabsTrigger
+                    value="regular"
+                    className={cn(
+                      "flex-1 h-full rounded-lg text-base font-semibold text-gray-500",
+                      "data-[state=active]:bg-white data-[state=active]:text-gray-700 data-[state=active]:shadow-sm",
+                    )}
+                  >
+                    Regular Withdrawals
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              <Text variant="body-3-medium">{helperText}</Text>
+            </div>
 
-              {isCompounding && (
+            {isCompounding && (
+              <div className="flex flex-col gap-4 p-5 rounded-2xl bg-gray-100">
+                <div className="flex items-center gap-3">
+                  <StepBadge step={1} />
+                  <Text className="text-sm font-semibold text-gray-700 leading-5">
+                    Select how many validators to generate
+                  </Text>
+                </div>
                 <FormItem>
                   <Text className="text-xs font-semibold text-gray-500 leading-5">
                     Effective Balance
@@ -254,40 +266,47 @@ const SignatureStep = ({
                     }
                   />
                 </FormItem>
-              )}
-            </div>
+              </div>
+            )}
             {!withdrawAddress.isLoading &&
               !withdrawAddress.data?.withdraw_credentials && (
-                <FormField
-                  control={form.control}
-                  name="withdrawAddress"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Set Withdrawal Address</FormLabel>
-                      <FormControl>
-                        <DkgAddressInput
-                          field={field}
-                          isAcceptedButtonDisabled={
-                            !!form.formState.errors.withdrawAddress ||
-                            (!isMultiSign && isLoading) ||
-                            !field.value
-                          }
-                          isInputDisabled={
-                            field.disabled ||
-                            (!isMultiSign && isLoading) ||
-                            isWithdrawalInputDisabled
-                          }
-                          acceptedButtonLabel={
-                            isWithdrawalInputDisabled ? "Change" : "Confirm"
-                          }
-                          setIsInputDisabled={setIsWithdrawalInputDisabled}
-                          value={field.value}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="flex flex-col gap-4 p-5 rounded-2xl bg-gray-100">
+                  <div className="flex items-center gap-3">
+                    <StepBadge step={isCompounding ? 2 : 1} />
+                    <Text className="text-base font-semibold text-gray-700 leading-6">
+                      Set Withdrawal Address
+                    </Text>
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="withdrawAddress"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <DkgAddressInput
+                            field={field}
+                            isAcceptedButtonDisabled={
+                              !!form.formState.errors.withdrawAddress ||
+                              (!isMultiSign && isLoading) ||
+                              !field.value
+                            }
+                            isInputDisabled={
+                              field.disabled ||
+                              (!isMultiSign && isLoading) ||
+                              isWithdrawalInputDisabled
+                            }
+                            acceptedButtonLabel={
+                              isWithdrawalInputDisabled ? "Change" : "Confirm"
+                            }
+                            setIsInputDisabled={setIsWithdrawalInputDisabled}
+                            value={field.value}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               )}
             <div className="flex flex-row justify-between gap-1.5 w-full">
               <Button

@@ -1,4 +1,12 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+
+vi.mock("@wagmi/core", () => ({
+  getChainId: () => 1,
+}));
+vi.mock("@/wagmi/config", () => ({
+  config: {},
+}));
+
 import { generateSSVKeysDockerCMD } from "@/lib/utils/keyshares";
 import type { Operator } from "@/types/api";
 import { parseGwei } from "viem";

@@ -23,10 +23,9 @@ import { cn } from "@/lib/utils/tw";
 import { GoAlertFill } from "react-icons/go";
 import { useChainId, useSwitchChain } from "wagmi";
 import { useAccount } from "@/hooks/account/use-account";
+import { networks } from "@/config/networks";
 
 type Props = ComponentPropsWithRef<"button">;
-
-const networks = import.meta.env.VITE_SSV_NETWORKS;
 
 export const NetworkSwitcher: FC<Props> = ({ className, ...props }) => {
   const [open, setOpen] = useState(false);

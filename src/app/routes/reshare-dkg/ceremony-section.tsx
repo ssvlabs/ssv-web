@@ -17,6 +17,7 @@ import { getOwnerNonce } from "@/api/account.ts";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { ReshareSteps } from "@/lib/utils/dkg.ts";
 import type { CopyToClipboardState } from "react-use/lib/useCopyToClipboard";
+import { useOperatorsDKGHealth } from "@/hooks/operator/use-operator-dkg-health.ts";
 
 const VALIDATOR_COUNT_THRESHOLD = 0;
 
@@ -50,6 +51,11 @@ const CeremonySection = ({
   const context = useBulkActionContext();
   const reshareContext = useReshareDkg();
 
+  const { cliVersion } = useOperatorsDKGHealth([
+    ...context.dkgReshareState.operators,
+    ...context.dkgReshareState.newOperators,
+  ]);
+
   const cmd = useChainedQuery({
     queryKey: stringifyBigints([
       "docker-cmd",
@@ -61,6 +67,7 @@ const CeremonySection = ({
       context.dkgReshareState.newOperators,
       signatures,
       isReshare,
+      cliVersion,
     ]),
     queryFn: async () => {
       const proofsString =
@@ -84,6 +91,7 @@ const CeremonySection = ({
           isReshare,
           os: context.dkgReshareState.selectedOs,
           proofsString,
+          version: cliVersion,
         }),
       );
     },

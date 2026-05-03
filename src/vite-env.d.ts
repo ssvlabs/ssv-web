@@ -3,18 +3,7 @@
 interface ImportMetaEnv {
   readonly VITE_EXPLORER_URL: string;
   readonly VITE_STAKE_URL: string;
-  readonly VITE_SSV_NETWORKS: {
-    networkId: number;
-    api: string;
-    apiVersion: string;
-    apiNetwork: string;
-    explorerUrl: string;
-    insufficientBalanceUrl: string;
-    googleTagSecret?: string;
-    tokenAddress: `0x${string}`;
-    setterContractAddress: `0x${string}`;
-    getterContractAddress: `0x${string}`;
-  }[];
+  readonly VITE_SSV_NETWORKS: string;
 }
 
 declare const APP_VERSION: string;

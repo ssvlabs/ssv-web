@@ -34,7 +34,7 @@ jobs:
       STAGE_GETTER_CONTRACT_ADDRESS: "0x3234e84b7d1eE1AF8b586E26814d4e268336D142"
       PROD_SSV_NETWORKS: >
         [
-             {
+          {
              \"networkId\": 1,
              \"apiVersion\": \"v4\",
              \"apiNetwork\": \"mainnet\",

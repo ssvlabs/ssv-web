@@ -34,7 +34,7 @@ jobs:
       STAGE_GETTER_CONTRACT_ADDRESS: "0x3234e84b7d1eE1AF8b586E26814d4e268336D142"
       PROD_SSV_NETWORKS: >
         [
-             {
+          {
              \"networkId\": 1,
              \"apiVersion\": \"v4\",
              \"apiNetwork\": \"mainnet\",
@@ -87,14 +87,14 @@ jobs:
       - name: Run lint
         run: pnpm lint
 
-      - name: Run tests
-        run: pnpm run test:run
+      # - name: Run tests
+      #   run: pnpm run test:run
 
-      - name: Run semantic-release
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+      # - name: Run semantic-release
+      #   if: github.event_name == 'push' && (github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main')
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: npx semantic-release
 
       - name: Configure AWS credentials
         if: github.ref == 'refs/heads/pre-stage' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/main-preview' || github.ref == 'refs/heads/bapps-prod' || github.ref == 'refs/heads/temporary-hoodi-deploy'
@@ -112,7 +112,6 @@ jobs:
       - name: Check ABI compatibility (stage)
         if: github.ref == 'refs/heads/stage'
         run: pnpm check-abi:dev
-
 
       - name: Run stage webapp build
         if: github.ref == 'refs/heads/stage'

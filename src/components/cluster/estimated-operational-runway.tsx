@@ -7,7 +7,8 @@ import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { EstimatedOperationalRunwayAlert } from "@/components/cluster/estimated-operational-runway-alert";
 import { bigintAbs } from "@/lib/utils/bigint";
-import { useClusterState } from "@/hooks/cluster/use-cluster-state";
+import { useCluster } from "@/hooks/cluster/use-cluster";
+import { useIsClusterLiquidated } from "@/hooks/cluster/use-is-cluster-liquidated";
 import { humanizeFundingDuration } from "@/lib/utils/date";
 
 export type EstimatedOperationalRunwayProps = {
@@ -33,7 +34,8 @@ export const EstimatedOperationalRunway: EstimatedOperationalRunwayFC = ({
   const params = useClusterPageParams();
   const hash = clusterHash || params.clusterHash;
 
-  const { isLiquidated, cluster } = useClusterState(hash!, { watch: true });
+  const cluster = useCluster(hash!);
+  const isLiquidated = useIsClusterLiquidated(hash!, { watch: true });
 
   const { data: clusterRunway } = useClusterRunway(hash!, {
     deltaBalance,

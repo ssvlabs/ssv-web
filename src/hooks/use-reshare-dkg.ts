@@ -1,10 +1,11 @@
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params.ts";
 import { useAccount } from "@/hooks/account/use-account.ts";
-import { useClusterState } from "@/hooks/cluster/use-cluster-state.ts";
+import { useCluster } from "@/hooks/cluster/use-cluster.ts";
 import { useOperatorsUsability } from "@/hooks/keyshares/use-operators-usability.ts";
 import { useValidateProofs } from "@/hooks/use-validate-proofs.ts";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 import type { Operator } from "@/types/api.ts";
+import { getOperatorIds } from "@/lib/utils/operator.ts";
 
 export const useReshareDkg = () => {
   const { clusterHash } = useClusterPageParams();
@@ -12,7 +13,7 @@ export const useReshareDkg = () => {
   const { state } = useBulkActionContext;
   const context = useBulkActionContext();
 
-  const { cluster } = useClusterState(clusterHash!);
+  const cluster = useCluster(clusterHash!);
 
   const proofsQuery = useValidateProofs(
     context.dkgReshareState.proofFiles.files || [],
@@ -23,7 +24,7 @@ export const useReshareDkg = () => {
 
   const operatorsUsability = useOperatorsUsability({
     account: account.address!,
-    operatorIds: cluster.data?.operators ?? [],
+    operatorIds: getOperatorIds(cluster.data?.operators ?? []),
   });
 
   return {

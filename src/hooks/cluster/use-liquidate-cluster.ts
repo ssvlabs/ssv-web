@@ -7,6 +7,8 @@ import { useLiquidate } from "@/lib/contract-interactions/hooks/setter";
 import { toSolidityCluster } from "@/lib/utils/cluster";
 import { useAccount } from "@/hooks/account/use-account";
 import { useLiquidateSSV } from "@/lib/contract-interactions/hooks/setter";
+import { bigintifyNumbers } from "@/lib/utils/bigint";
+import { getOperatorIds } from "@/lib/utils/operator";
 
 export const useLiquidateCluster = (clusterHash: string) => {
   const account = useAccount();
@@ -22,7 +24,9 @@ export const useLiquidateCluster = (clusterHash: string) => {
     return liquidate.write({
       args: {
         clusterOwner: account.address,
-        operatorIds: cluster.data?.operators.map((id) => BigInt(id)) || [],
+        operatorIds: bigintifyNumbers(
+          getOperatorIds(cluster.data?.operators ?? []),
+        ),
         cluster: toSolidityCluster(cluster.data),
       },
       options,
@@ -49,7 +53,9 @@ export const useLiquidateClusterSSV = (clusterHash: string) => {
     return liquidate.write({
       args: {
         clusterOwner: account.address,
-        operatorIds: cluster.data?.operators.map((id) => BigInt(id)) || [],
+        operatorIds: bigintifyNumbers(
+          getOperatorIds(cluster.data?.operators ?? []),
+        ),
         cluster: toSolidityCluster(cluster.data),
       },
       options,

@@ -15,10 +15,13 @@ import {
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 import { BigNumberInput } from "@/components/ui/number-input";
 import { Text } from "@/components/ui/text";
-import { getClusterQueryOptions } from "@/hooks/cluster/use-cluster";
+import {
+  getClusterQueryOptions,
+  useCluster,
+} from "@/hooks/cluster/use-cluster";
+import { useClusterBalance } from "@/hooks/cluster/use-cluster-balance";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
-import { useClusterState } from "@/hooks/cluster/use-cluster-state";
 import {
   useLiquidateCluster,
   useLiquidateClusterSSV,
@@ -47,19 +50,13 @@ export const WithdrawClusterBalance: FC = () => {
   const liquidate = useLiquidateCluster(params.clusterHash!);
   const liquidateSSV = useLiquidateClusterSSV(params.clusterHash!);
 
-  const { balanceETH, balanceSSV, cluster } = useClusterState(
-    params.clusterHash!,
-    {
-      balance: { watch: true },
-    },
-  );
+  const cluster = useCluster(params.clusterHash!);
+  const balance = useClusterBalance(params.clusterHash!, { watch: true });
 
   const isMigrated = cluster.data?.migrated;
   const isSsvCluster = !isMigrated;
-  const symbol = isMigrated ? "ETH" : "SSV";
-  const clusterBalance = isMigrated
-    ? balanceETH.data ?? 0n
-    : balanceSSV.data ?? 0n;
+  const symbol = balance.token;
+  const clusterBalance = balance.data;
 
   const [hasAgreed, setHasAgreed] = useState(false);
 

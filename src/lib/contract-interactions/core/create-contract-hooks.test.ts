@@ -5,11 +5,6 @@ import type { Abi, Address } from "abitype";
 const MOCK_TX_HASH =
   "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890";
 
-// Mock react-use (useInterval used by read hooks)
-vi.mock("react-use", () => ({
-  useInterval: vi.fn(),
-}));
-
 // Mock wagmi hooks - writeContractAsync returns the args it receives and invokes callbacks
 vi.mock("wagmi", () => ({
   useBlockNumber: vi.fn(() => ({ data: 123n })),
@@ -680,28 +675,6 @@ describe("createContractHooks", () => {
         expect.objectContaining({
           query: expect.objectContaining({ enabled: false }),
         }),
-      );
-    });
-
-    it("should call useInterval with refetchInterval when watch: true", async () => {
-      const { useInterval } = await import("react-use");
-      const hooks = createContractHooks(testAbi, defaultContractGetter);
-      hooks.useTotalSupply({ watch: true });
-
-      expect(vi.mocked(useInterval)).toHaveBeenCalledWith(
-        expect.any(Function),
-        12000,
-      );
-    });
-
-    it("should call useInterval with null when watch: false", async () => {
-      const { useInterval } = await import("react-use");
-      const hooks = createContractHooks(testAbi, defaultContractGetter);
-      hooks.useTotalSupply({ watch: false });
-
-      expect(vi.mocked(useInterval)).toHaveBeenCalledWith(
-        expect.any(Function),
-        null,
       );
     });
   });

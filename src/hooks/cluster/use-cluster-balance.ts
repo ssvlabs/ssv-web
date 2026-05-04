@@ -1,14 +1,23 @@
 import { useCluster } from "@/hooks/cluster/use-cluster";
-import { useAccount } from "@/hooks/account/use-account";
-import { toSolidityCluster } from "@/lib/utils/cluster";
-import { useMemo } from "react";
-import { keepPreviousData } from "@tanstack/react-query";
-import { combineQueryStatus } from "@/lib/react-query";
+import { useClusterSnapshot } from "@/hooks/cluster/use-cluster-snapshot";
 import {
   useGetBalance,
   useGetBalanceSSV,
 } from "@/lib/contract-interactions/hooks/getter";
+import { keepPreviousData } from "@tanstack/react-query";
 
+/**
+ * Returns the correct cluster balance based on the cluster's `migrated` value.
+ *
+ * - If the cluster is migrated, it fetches the ETH balance from the contract
+ *   (via `useGetBalance`) and returns it with `token: "ETH"`.
+ * - If the cluster is not migrated, it fetches the SSV balance from the
+ *   contract (via `useGetBalanceSSV`) and returns it with `token: "SSV"`.
+ *
+ * While the on-chain call is loading (or if it fails), the hook falls back to
+ * the balance reported by the API (`ethBalance` for migrated clusters,
+ * `balance` for non-migrated ones).
+ */
 export const useClusterBalance = (
   hash: string,
   {
@@ -16,42 +25,37 @@ export const useClusterBalance = (
     enabled: _enabled = true,
   }: Partial<{ watch: boolean; enabled: boolean }> = {},
 ) => {
-  const account = useAccount();
   const cluster = useCluster(hash);
+  const snapshot = useClusterSnapshot(cluster.data);
 
-  const clusterSnapshot = useMemo(
-    () => ({
-      clusterOwner: account.address!,
-      cluster: toSolidityCluster(cluster.data),
-      operatorIds: cluster.data?.operators.map((id) => BigInt(id)) ?? [],
-    }),
-    [account.address, cluster.data],
-  );
-
-  const enabled = Boolean(account.address && cluster.data && _enabled);
+  const isMigrated = Boolean(cluster.data?.migrated);
+  const enabled = Boolean(cluster.data && _enabled);
 
   const watch = cluster.data?.isLiquidated ? false : _watch;
   const retry = cluster.data?.isLiquidated ? false : undefined;
 
-  const eth = useGetBalance(clusterSnapshot, {
+  const eth = useGetBalance(snapshot, {
     placeholderData: keepPreviousData,
     watch,
     retry,
-    enabled,
+    enabled: enabled && isMigrated,
   });
 
-  const ssv = useGetBalanceSSV(clusterSnapshot, {
+  const ssv = useGetBalanceSSV(snapshot, {
     placeholderData: keepPreviousData,
     watch,
     retry,
-    enabled,
+    enabled: enabled && !isMigrated,
   });
+
+  const active = isMigrated ? eth : ssv;
+  const fallback = isMigrated
+    ? BigInt(cluster.data?.ethBalance || 0)
+    : BigInt(cluster.data?.balance || 0);
 
   return {
-    ...combineQueryStatus(eth, ssv),
-    data: {
-      eth: eth.data || BigInt(cluster.data?.ethBalance || 0),
-      ssv: ssv.data || BigInt(cluster.data?.balance || 0),
-    },
+    ...active,
+    data: active.data ?? fallback,
+    token: isMigrated ? ("ETH" as const) : ("SSV" as const),
   };
 };

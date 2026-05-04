@@ -1,12 +1,19 @@
 import { getOperators } from "@/api/operator";
 import { queryClient, type QueryConfig } from "@/lib/react-query";
-import { createDefaultOperator, sortOperators } from "@/lib/utils/operator";
+import {
+  createDefaultOperator,
+  getOperatorIds,
+  sortOperators,
+} from "@/lib/utils/operator";
+import type { Operator } from "@/types/api";
 import type { OperatorID } from "@/types/types";
 
 import { queryOptions, useQuery } from "@tanstack/react-query";
 
-export const operatorsQueryOptions = (operatorIds: OperatorID[]) => {
-  const ids = operatorIds.map(Number);
+export const operatorsQueryOptions = (
+  operatorsOrIds: OperatorID[] | Operator[],
+) => {
+  const ids = getOperatorIds(operatorsOrIds as { id: number }[] | number[]);
   return queryOptions({
     queryKey: ["operators", ids],
     // `perPage: 20` is a safe upper bound: a cluster has at most 13 operators, so one page
@@ -30,16 +37,18 @@ export const operatorsQueryOptions = (operatorIds: OperatorID[]) => {
   });
 };
 
-export const queryFetchOperators = async (operatorIds: OperatorID[]) => {
-  return queryClient.fetchQuery(operatorsQueryOptions(operatorIds));
+export const queryFetchOperators = async (
+  operatorsOrIds: OperatorID[] | Operator[],
+) => {
+  return queryClient.fetchQuery(operatorsQueryOptions(operatorsOrIds));
 };
 
 export const useOperators = (
-  operatorIds: OperatorID[],
+  operatorsOrIds: OperatorID[] | Operator[],
   options: QueryConfig<typeof operatorsQueryOptions> = {},
 ) => {
   return useQuery({
-    ...operatorsQueryOptions(operatorIds),
+    ...operatorsQueryOptions(operatorsOrIds),
     ...options,
   });
 };

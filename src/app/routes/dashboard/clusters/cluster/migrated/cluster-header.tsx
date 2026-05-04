@@ -4,8 +4,9 @@ import { cn } from "@/lib/utils/tw";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import { CopyBtn } from "@/components/ui/copy-btn";
+import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
-import { useClusterState } from "@/hooks/cluster/use-cluster-state";
+import { useIsClusterLiquidated } from "@/hooks/cluster/use-is-cluster-liquidated";
 import { shortenClusterId } from "@/lib/utils/strings";
 import { FaAngleLeft } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
@@ -23,9 +24,8 @@ export const ClusterHeader: FC<ComponentPropsWithoutRef<"div">> = ({
   ...props
 }) => {
   const { clusterHash } = useClusterPageParams();
-  const { cluster, isLiquidated } = useClusterState(clusterHash!, {
-    isLiquidated: { watch: true },
-  });
+  const cluster = useCluster(clusterHash!);
+  const isLiquidated = useIsClusterLiquidated(clusterHash!, { watch: true });
 
   const { data: operators = [] } = useOperators(cluster.data?.operators ?? []);
 
@@ -34,7 +34,8 @@ export const ClusterHeader: FC<ComponentPropsWithoutRef<"div">> = ({
   const isLiquidatedCluster = Boolean(isLiquidated.data);
 
   const { address } = useAccount();
-  const isOwner = address?.toLowerCase() === cluster.data?.ownerAddress?.toLowerCase();
+  const isOwner =
+    address?.toLowerCase() === cluster.data?.ownerAddress?.toLowerCase();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -52,7 +53,9 @@ export const ClusterHeader: FC<ComponentPropsWithoutRef<"div">> = ({
 
       <div className="flex flex-1 items-center gap-5 min-w-0">
         <div className="flex items-center gap-2 min-w-0 overflow-hidden">
-          <Text variant="headline4" className="truncate">{clusterName || "Cluster"}</Text>
+          <Text variant="headline4" className="truncate">
+            {clusterName || "Cluster"}
+          </Text>
           {isOwner && (
             <button
               onClick={() => setIsDialogOpen(true)}
@@ -93,7 +96,12 @@ export const ClusterHeader: FC<ComponentPropsWithoutRef<"div">> = ({
           </Tooltip>
         </div>
       </div>
-      <ClusterNameDialog clusterId={clusterId} currentName={clusterName} isOpen={isDialogOpen} onOpenChange={setIsDialogOpen} />
+      <ClusterNameDialog
+        clusterId={clusterId}
+        currentName={clusterName}
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+      />
     </Card>
   );
 };

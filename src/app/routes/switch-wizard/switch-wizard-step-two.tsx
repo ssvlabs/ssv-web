@@ -1,5 +1,6 @@
 import { SwitchWizardStepTwo } from "@/components/wizard";
-import { useClusterState } from "@/hooks/cluster/use-cluster-state";
+import { useCluster } from "@/hooks/cluster/use-cluster";
+import { useClusterBalance } from "@/hooks/cluster/use-cluster-balance";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { useClusterRunway } from "@/hooks/cluster/use-cluster-runway";
 import { useOperators } from "@/hooks/operator/use-operators";
@@ -13,10 +14,8 @@ import type {
 export const SwitchWizardStepTwoRoute = () => {
   const navigate = useNavigate();
   const { clusterHash } = useClusterPageParams();
-  const { cluster, balanceSSV } = useClusterState(clusterHash!, {
-    isLiquidated: { enabled: false },
-    balance: { enabled: true },
-  });
+  const cluster = useCluster(clusterHash!);
+  const balance = useClusterBalance(clusterHash!);
   const location = useLocation();
   const stepState = location.state as SwitchWizardStepTwoState | null;
   const effectiveBalance = stepState?.effectiveBalance;
@@ -48,7 +47,7 @@ export const SwitchWizardStepTwoRoute = () => {
       validatorsAmount={cluster.data?.validatorCount ?? 1}
       effectiveBalance={effectiveBalance}
       currentRunwayDays={Number(clusterRunway?.runway) || 0}
-      ssvBalance={balanceSSV.data}
+      ssvBalance={balance.data}
     />
   );
 };

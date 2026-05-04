@@ -89,10 +89,13 @@ export const config = createConfig({
         },
       },
     ),
-    [hoodi.id]: http(undefined, {
-      batch: {
-        wait: 20,
+    [hoodi.id]: http(
+      "https://ethereum-hoodi-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
+      {
+        batch: {
+          wait: 20,
+        },
       },
-    }),
+    ),
   },
 });

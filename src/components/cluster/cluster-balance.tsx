@@ -25,7 +25,7 @@ export const ClusterBalance: EstimatedOperationalRunwayFC = ({
   const params = useClusterPageParams();
   const hash = clusterHash || params.clusterHash;
 
-  const { data: { eth: balance = 0n } = {} } = useClusterBalance(hash!);
+  const { data: balance = 0n } = useClusterBalance(hash!);
   const isWithdrawing = deltaBalance < 0n;
 
   return (

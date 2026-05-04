@@ -200,7 +200,7 @@ export type GetPaginatedClustersResponse = WithPagination<{
 
 export interface GetClusterResponse {
   type: string;
-  cluster: Cluster<{ operators: number[] }> | null;
+  cluster: Cluster | null;
 }
 
 export type Country = {

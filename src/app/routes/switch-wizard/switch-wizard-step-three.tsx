@@ -1,5 +1,6 @@
 import { SwitchWizardStepThree } from "@/components/wizard";
-import { useClusterState } from "@/hooks/cluster/use-cluster-state";
+import { useCluster } from "@/hooks/cluster/use-cluster";
+import { useClusterBalance } from "@/hooks/cluster/use-cluster-balance";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { useOperators } from "@/hooks/operator/use-operators";
 import { useEffect } from "react";
@@ -8,6 +9,8 @@ import type { SwitchWizardStepThreeState } from "@/components/wizard/switch-wiza
 import { useMigrateClusterToETH } from "@/lib/contract-interactions/hooks/setter";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { toSolidityCluster } from "@/lib/utils/cluster";
+import { bigintifyNumbers } from "@/lib/utils/bigint";
+import { getOperatorIds } from "@/lib/utils/operator";
 import { getCluster } from "@/api/cluster";
 import { retryPromiseUntilSuccess } from "@/lib/utils/promise";
 import { queryClient } from "@/lib/react-query";
@@ -16,9 +19,8 @@ import { getClusterQueryOptions } from "@/hooks/cluster/use-cluster";
 export const SwitchWizardStepThreeRoute = () => {
   const navigate = useNavigate();
   const { clusterHash } = useClusterPageParams();
-  const { cluster, balanceSSV } = useClusterState(clusterHash!, {
-    isLiquidated: { enabled: false },
-  });
+  const cluster = useCluster(clusterHash!);
+  const balance = useClusterBalance(clusterHash!);
   const migrate = useMigrateClusterToETH();
   const operatorsQuery = useOperators(cluster.data?.operators ?? []);
   const operators = operatorsQuery.data ?? [];
@@ -45,7 +47,9 @@ export const SwitchWizardStepThreeRoute = () => {
         const wasSSVCluster = !cluster.data.migrated;
         migrate.write({
           args: {
-            operatorIds: cluster.data?.operators.map((id) => BigInt(id)) ?? [],
+            operatorIds: bigintifyNumbers(
+              getOperatorIds(cluster.data?.operators ?? []),
+            ),
             cluster: toSolidityCluster(cluster.data),
           },
           value: totalDeposit,
@@ -85,7 +89,7 @@ export const SwitchWizardStepThreeRoute = () => {
       fundingSummary={fundingSummary}
       effectiveBalance={effectiveBalance}
       totalDeposit={totalDeposit}
-      withdrawSsvBalance={balanceSSV.data}
+      withdrawSsvBalance={balance.data}
       isSubmitting={migrate.isPending}
       isSubmitDisabled={!canSubmit}
     />

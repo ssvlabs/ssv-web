@@ -20,7 +20,7 @@ import { track } from "@/lib/analytics/mixpanel";
 import { setOptimisticData } from "@/lib/react-query";
 import { bigintifyNumbers } from "@/lib/utils/bigint";
 import { mergeClusterSnapshot, toSolidityCluster } from "@/lib/utils/cluster";
-import { sortNumbers } from "@/lib/utils/number";
+import { getOperatorIds } from "@/lib/utils/operator";
 import { add0x } from "@/lib/utils/strings";
 import type { Address } from "abitype";
 import { useState, type FC } from "react";
@@ -41,8 +41,8 @@ export const RemoveValidatorsConfirmation: FC = () => {
 
   const remove = async () => {
     const clusterData = toSolidityCluster(cluster.data);
-    const operatorIds = sortNumbers(
-      bigintifyNumbers(cluster.data?.operators ?? []),
+    const operatorIds = bigintifyNumbers(
+      getOperatorIds(cluster.data?.operators ?? []),
     );
 
     const options = withTransactionModal({

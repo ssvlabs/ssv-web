@@ -53,13 +53,13 @@ export const OperatorDetails: FCProps = ({
         src={operator.logo}
         isPrivate={operator.is_private}
       />
-      <div className="flex flex-col h-full justify-between">
-        <div className="flex gap-2 items-center">
+      <div className="flex flex-col h-full justify-between flex-1">
+        <div className="flex gap-2 items-center w-full">
           <Tooltip asChild content={isOverflowing ? operator.name : ""}>
             <Text
               ref={textRef}
               variant="body-2-medium"
-              className="text-gray-800 w-[179px] whitespace-nowrap overflow-hidden text-ellipsis"
+              className="text-gray-800 inline-flex flex-1 max-w-[179px] whitespace-nowrap overflow-hidden text-ellipsis"
             >
               {operator.name}
               {operator.verified_operator && !operator.is_deleted ? (

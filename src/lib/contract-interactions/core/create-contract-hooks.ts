@@ -1,5 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import type { UseReadContractParameters, UseReadContractReturnType } from "wagmi";
+import type {
+  UseReadContractParameters,
+  UseReadContractReturnType,
+} from "wagmi";
 import { useReadContract, useWriteContract } from "wagmi";
 import type { Abi, AbiFunction, Address, ExtractAbiFunctions } from "abitype";
 import { getChainId, type WriteContractErrorType } from "@wagmi/core";
@@ -19,9 +22,8 @@ import { config } from "@/wagmi/config";
 import { isUndefined } from "lodash-es";
 import type { UseQueryOptions } from "@/lib/react-query";
 import { isAddress } from "viem";
-import type { ContractFunctionName } from "viem";
+import type { ContractFunctionArgs, ContractFunctionName } from "viem";
 import type { Prettify } from "@/types/ts-utils";
-import { useInterval } from "react-use";
 
 type WriteParams<T extends AbiFunction> = {
   args: Prettify<AbiInputsToParams<T["inputs"]>>;
@@ -44,7 +46,10 @@ type WriteHookResult<T extends AbiFunction> = {
 };
 
 type WriteHooksObject<TAbi extends Abi> = {
-  [Fn in ExtractAbiFunctions<TAbi, "nonpayable" | "payable"> as `use${Capitalize<Fn["name"]>}`]: (args?: {
+  [Fn in ExtractAbiFunctions<
+    TAbi,
+    "nonpayable" | "payable"
+  > as `use${Capitalize<Fn["name"]>}`]: (args?: {
     chainId?: number;
     contract?: Address;
   }) => WriteHookResult<Fn & AbiFunction>;
@@ -62,27 +67,41 @@ const refetchInterval = 12000;
 type ReadFnName<TAbi extends Abi, TName extends string> = TName &
   ContractFunctionName<TAbi, "view" | "pure">;
 
+type ReadFnArgs<TAbi extends Abi, TName extends string> = ContractFunctionArgs<
+  TAbi,
+  "view" | "pure",
+  ReadFnName<TAbi, TName>
+>;
+
+type ReadFnData<
+  TAbi extends Abi,
+  TName extends string,
+> = UseReadContractReturnType<TAbi, ReadFnName<TAbi, TName>>["data"];
+
 type ReadHooksObject<TAbi extends Abi> = {
-  [Fn in ExtractAbiFunctions<TAbi, "view" | "pure"> as `use${Capitalize<Fn["name"]>}`]: Fn["inputs"] extends readonly []
-    ? (
+  [Fn in ExtractAbiFunctions<
+    TAbi,
+    "view" | "pure"
+  > as `use${Capitalize<Fn["name"]>}`]: Fn["inputs"] extends readonly []
+    ? <TData = ReadFnData<TAbi, Fn["name"]>>(
         options?: CustomQueryOptions &
-          UseQueryOptions<
-            UseReadContractReturnType<
-              TAbi,
-              ReadFnName<TAbi, Fn["name"]>
-            >["data"]
-          >,
-      ) => UseReadContractReturnType<TAbi, ReadFnName<TAbi, Fn["name"]>>
-    : (
+          UseQueryOptions<ReadFnData<TAbi, Fn["name"]>, Error, TData>,
+      ) => UseReadContractReturnType<
+        TAbi,
+        ReadFnName<TAbi, Fn["name"]>,
+        ReadFnArgs<TAbi, Fn["name"]>,
+        TData
+      >
+    : <TData = ReadFnData<TAbi, Fn["name"]>>(
         params: AbiInputsToParams<Fn["inputs"]>,
         options?: CustomQueryOptions &
-          UseQueryOptions<
-            UseReadContractReturnType<
-              TAbi,
-              ReadFnName<TAbi, Fn["name"]>
-            >["data"]
-          >,
-      ) => UseReadContractReturnType<TAbi, ReadFnName<TAbi, Fn["name"]>>;
+          UseQueryOptions<ReadFnData<TAbi, Fn["name"]>, Error, TData>,
+      ) => UseReadContractReturnType<
+        TAbi,
+        ReadFnName<TAbi, Fn["name"]>,
+        ReadFnArgs<TAbi, Fn["name"]>,
+        TData
+      >;
 };
 
 const capitalize = (str: string) => {
@@ -157,7 +176,8 @@ export function createContractHooks<
               ...queryOptions
             }: CustomQueryOptions = {},
           ) => {
-            const contractAddress = contract || defaultContractAddressGetter?.();
+            const contractAddress =
+              contract || defaultContractAddressGetter?.();
             const args = paramsToArray({ params, abiFunction });
             const query = useReadContract(
               toReadContractParams({
@@ -168,6 +188,7 @@ export function createContractHooks<
                 chainId,
                 query: {
                   ...queryOptions,
+                  refetchInterval: watch ? refetchInterval : undefined,
                   enabled:
                     (enabled ?? true) &&
                     !!contractAddress &&
@@ -175,7 +196,7 @@ export function createContractHooks<
                 },
               }),
             );
-            useInterval(() => query.refetch, watch ? refetchInterval : null);
+
             return query;
           }
         : ({
@@ -185,7 +206,8 @@ export function createContractHooks<
             contract = defaultContractAddressGetter?.(),
             ...queryOptions
           }: CustomQueryOptions = {}) => {
-            const contractAddress = contract || defaultContractAddressGetter?.();
+            const contractAddress =
+              contract || defaultContractAddressGetter?.();
             const query = useReadContract(
               toReadContractParams({
                 abi,
@@ -194,11 +216,11 @@ export function createContractHooks<
                 chainId,
                 query: {
                   ...queryOptions,
+                  refetchInterval: watch ? refetchInterval : undefined,
                   enabled: enabled && !!contractAddress,
                 },
               }),
             );
-            useInterval(() => query.refetch, watch ? refetchInterval : null);
             return query;
           };
 

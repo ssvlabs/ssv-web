@@ -13,6 +13,7 @@ import { boolify } from "@/lib/utils/boolean";
 import { useChainId } from "wagmi";
 import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import { useAccount } from "@/hooks/account/use-account";
+import { seedClusterCache } from "@/hooks/cluster/seed-cluster-cache";
 
 export const getPaginatedAccountClustersQueryOptions = (
   account?: Address,
@@ -33,13 +34,16 @@ export const getPaginatedAccountClustersQueryOptions = (
       orderBy,
       chainId,
     ],
-    queryFn: () =>
-      getPaginatedAccountClusters({
+    queryFn: async () => {
+      const response = await getPaginatedAccountClusters({
         account: account!,
         page: page,
         perPage,
         ordering: orderBy,
-      }),
+      });
+      response.clusters.forEach(seedClusterCache);
+      return response;
+    },
     enabled: boolify(account) && enabled(options?.enabled),
   });
 };

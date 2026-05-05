@@ -155,6 +155,7 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
             colorScheme="primary"
             className="px-5"
             size="sm"
+            disabled={!resolvedCluster.validatorCount}
           >
             <Span variant="body-3-semibold" className="text-primary-500">
               Switch to ETH

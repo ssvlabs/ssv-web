@@ -37,6 +37,7 @@ export const Cluster: FC = () => {
   );
 
   const isMigrated = cluster.data?.migrated;
+  const hasNoValidators = cluster.data?.validatorCount === 0;
 
   const isLoadingBalance = isMigrated
     ? balanceETH.isLoading
@@ -124,6 +125,7 @@ export const Cluster: FC = () => {
                   to={`/switch-wizard/${clusterHash}`}
                   state={{ from }}
                   size="xl"
+                  disabled={hasNoValidators}
                 >
                   Switch to ETH
                 </Button>
@@ -152,6 +154,7 @@ export const Cluster: FC = () => {
                     state={{ from }}
                     size="xl"
                     variant="default"
+                    disabled={hasNoValidators}
                   >
                     Switch to ETH
                   </Button>

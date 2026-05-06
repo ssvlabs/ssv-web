@@ -326,7 +326,7 @@ export const DockerInstructions: FC<DockerInstructionsProps> = ({
                         });
                         field.onChange(e);
                       }}
-                      className="pr-1.5 bg-white"
+                      className="pr-1.5 bg-white autofill:shadow-[inset_0_0_0_1000px_white] autofill:[-webkit-text-fill-color:inherit]"
                       rightSlot={
                         <Button
                           disabled={!isAddress(field.value)}
@@ -356,10 +356,11 @@ export const DockerInstructions: FC<DockerInstructionsProps> = ({
           </div>
 
           {canGenerateCMD && (
-            <div className="space-y-2 pt-3">
-              <div className="flex justify-between">
-                <Text className="text-base text-gray-700 font-semibold">
-                  3. Initiate the DKG ceremony with the following command
+            <div className="flex flex-col gap-4 p-5 rounded-2xl bg-gray-100">
+              <div className="flex items-center gap-3">
+                <StepBadge step={3} />
+                <Text className="flex-1 text-base font-semibold text-gray-700">
+                  Initiate the DKG ceremony with the following command
                 </Text>
                 <div className="flex gap-1">
                   <Button
@@ -427,6 +428,18 @@ export const DockerInstructions: FC<DockerInstructionsProps> = ({
                   )}
                 </Button>
               </div>
+              <Text variant="body-3-medium">
+                Experiencing issues initiating the ceremony? Explore solutions
+                in the{" "}
+                <Button
+                  as="a"
+                  href="https://docs.ssv.network/developers/tools/ssv-dkg-client/troubleshooting"
+                  variant="link"
+                  target="_blank"
+                >
+                  troubleshooting guide.
+                </Button>
+              </Text>
             </div>
           )}
 

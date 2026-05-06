@@ -8,7 +8,43 @@ import {
   UintNumberType,
   ByteListType,
 } from "@chainsafe/ssz";
+import { isVersionGTE } from "@/lib/utils/version";
+import { DKG_VERSIONS } from "@/lib/utils/keyshares";
+
 export const DEFAULT_AMOUNT = 32000000000;
+
+/**
+ * Builds the value placed in the SSZ `WithdrawalCredentials` field of a
+ * resign/reshare message. Format depends on the DKG client protocol version:
+ *
+ * - `< 3.1.0` (pre-Pectra): raw 20-byte address.
+ * - `>= 3.1.0`: full 32-byte credentials = `0x01||0x00*11||addr` (regular) or
+ *   `0x02||0x00*11||addr` (compounding, EIP-7251).
+ *
+ * Must match exactly what the DKG client/operators reconstruct, otherwise
+ * EOA signature recovery fails on the operator side.
+ */
+export const toWithdrawalCredentials = (
+  address: Address,
+  version: string | undefined,
+  compounding: boolean,
+): `0x${string}` => {
+  const isEip7251 = isVersionGTE(version, DKG_VERSIONS.COMPOUNDING_MIN);
+
+  if (!isEip7251) {
+    if (compounding) {
+      throw new Error(
+        `Compounding requires DKG version >= ${DKG_VERSIONS.COMPOUNDING_MIN}, got ${version ?? "unknown"}`,
+      );
+    }
+    return address;
+  }
+
+  const prefix = compounding ? "02" : "01";
+  const padding = "00".repeat(11);
+  const addrNoPrefix = address.slice(2).toLowerCase();
+  return `0x${prefix}${padding}${addrNoPrefix}` as `0x${string}`;
+};
 const NETWORKS = {
   MAINNET: 1,
   HOODI: 560048,

@@ -151,7 +151,7 @@ type GenerateSSVKeysDockerCMDParams = {
   proofsString?: string;
   version?: string;
   compounding?: boolean;
-  effectiveBalanceGwei?: bigint;
+  effectiveBalanceGwei?: bigint | string;
 };
 
 export const generateSSVKeysDockerCMD = ({

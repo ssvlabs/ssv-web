@@ -23,6 +23,7 @@ import { ReshareSteps } from "@/lib/utils/dkg.ts";
 import { useGetWithdrawCredentials } from "@/hooks/operator/useGetWithdrawCredentials.ts";
 import { cn } from "@/lib/utils/tw.ts";
 import { parseGwei } from "viem";
+import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 
 const COMPOUNDING_TOOLTIP =
   "The DKG clients of the selected operators do not support generating compounding validators";
@@ -42,6 +43,7 @@ type Props = {
     ownerAddress: Address | string;
     withdrawAddress: Address | string;
     signature: string;
+    effectiveBalance: bigint;
   }>;
   submit: (e?: React.BaseSyntheticEvent) => Promise<void>;
   currentStep: ReshareSteps;
@@ -50,10 +52,6 @@ type Props = {
   isLoading: boolean;
   activateStep: (step: ReshareSteps, callback?: () => void) => void;
   setIsOpenModal: (isOpenModal: boolean) => void;
-  tab: ReshareTab;
-  setTab: (tab: ReshareTab) => void;
-  effectiveBalance: bigint;
-  setEffectiveBalance: (value: bigint) => void;
   supportsCompounding: boolean;
 };
 
@@ -66,12 +64,16 @@ const SignatureStep = ({
   activateStep,
   isLoading,
   setIsOpenModal,
-  tab,
-  setTab,
-  effectiveBalance,
-  setEffectiveBalance,
   supportsCompounding,
 }: Props) => {
+  const ctx = useBulkActionContext();
+  const compounding = ctx.dkgReshareState.compounding && supportsCompounding;
+  const tab: ReshareTab = compounding ? "compounding" : "regular";
+  const setTab = (next: ReshareTab) => {
+    useBulkActionContext.state.dkgReshareState.compounding =
+      next === "compounding";
+  };
+
   const [isOwnerInputDisabled, setIsOwnerInputDisabled] = useState(true);
   const [isWithdrawalInputDisabled, setIsWithdrawalInputDisabled] = useState(
     !!form.watch().withdrawAddress,
@@ -86,7 +88,7 @@ const SignatureStep = ({
   const isSubmitButtonDisabled =
     !isOwnerInputDisabled || !isWithdrawalInputDisabled;
 
-  const isCompounding = tab === "compounding" && supportsCompounding;
+  const isCompounding = compounding;
   const helperText = isCompounding
     ? "Maximum effective balance of 2048 ETH. Only whole numbers can be entered."
     : "Maximum effective balance of 32 ETH";
@@ -241,31 +243,42 @@ const SignatureStep = ({
                     Select how many validators to generate
                   </Text>
                 </div>
-                <FormItem>
-                  <Text className="text-xs font-semibold text-gray-500 leading-5">
-                    Effective Balance
-                  </Text>
-                  <BigNumberInput
-                    max={MAX_EFFECTIVE_BALANCE_GWEI}
-                    decimals={9}
-                    displayDecimals={0}
-                    className="bg-white"
-                    value={effectiveBalance}
-                    onChange={setEffectiveBalance}
-                    rightSlot={
-                      <div className="flex items-center gap-1 pr-2">
-                        <img
-                          alt="ETH"
-                          src="/images/networks/dark.svg"
-                          className="size-5"
+                <FormField
+                  control={form.control}
+                  name="effectiveBalance"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Text className="text-xs font-semibold text-gray-500 leading-5">
+                        Effective Balance
+                      </Text>
+                      <FormControl>
+                        <BigNumberInput
+                          max={MAX_EFFECTIVE_BALANCE_GWEI}
+                          decimals={9}
+                          displayDecimals={0}
+                          className="bg-white"
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          rightSlot={
+                            <div className="flex items-center gap-1 pr-2">
+                              <img
+                                alt="ETH"
+                                src="/images/networks/dark.svg"
+                                className="size-5"
+                              />
+                              <Text className="text-base font-medium text-gray-800">
+                                ETH
+                              </Text>
+                            </div>
+                          }
                         />
-                        <Text className="text-base font-medium text-gray-800">
-                          ETH
-                        </Text>
-                      </div>
-                    }
-                  />
-                </FormItem>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             )}
             {!withdrawAddress.isLoading &&

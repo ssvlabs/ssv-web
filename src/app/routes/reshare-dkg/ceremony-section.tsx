@@ -56,6 +56,8 @@ const CeremonySection = ({
     ...context.dkgReshareState.newOperators,
   ]);
 
+  const { compounding, effectiveBalanceGwei } = context.dkgReshareState;
+
   const cmd = useChainedQuery({
     queryKey: stringifyBigints([
       "docker-cmd",
@@ -68,6 +70,8 @@ const CeremonySection = ({
       signatures,
       isReshare,
       cliVersion,
+      compounding,
+      effectiveBalanceGwei,
     ]),
     queryFn: async () => {
       const proofsString =
@@ -92,6 +96,8 @@ const CeremonySection = ({
           os: context.dkgReshareState.selectedOs,
           proofsString,
           version: cliVersion,
+          compounding,
+          effectiveBalanceGwei,
         }),
       );
     },
@@ -160,7 +166,7 @@ const CeremonySection = ({
                   </div>
                 )}
                 <div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between pb-2">
                     <Text className="text-gray-500 text-[14px]">
                       Ceremony Command
                     </Text>

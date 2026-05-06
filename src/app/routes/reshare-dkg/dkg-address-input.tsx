@@ -16,6 +16,7 @@ export const DkgAddressInput = ({
       ownerAddress: Address | string;
       withdrawAddress: Address | string;
       signature: string;
+      effectiveBalance: bigint;
     },
     "ownerAddress" | "withdrawAddress" | "signature"
   >;
@@ -29,7 +30,7 @@ export const DkgAddressInput = ({
     {...field}
     disabled={isInputDisabled}
     value={value}
-    className="pr-1.5"
+    className="pr-1.5 bg-gray-50"
     rightSlot={
       acceptedButtonLabel && (
         <Button

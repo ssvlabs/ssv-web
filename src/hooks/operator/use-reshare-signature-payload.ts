@@ -15,10 +15,12 @@ export const useReshareSignaturePayload = ({
   ownerAddress,
   withdrawAddress,
   cliVersion,
+  effectiveBalanceGwei,
 }: {
   ownerAddress: Address;
   withdrawAddress: Address;
   cliVersion: string | undefined;
+  effectiveBalanceGwei: bigint;
 }) => {
   const { proofsQuery } = useReshareDkg();
   const context = useBulkActionContext();
@@ -27,7 +29,7 @@ export const useReshareSignaturePayload = ({
   const getSignature = async () => {
     const nonce = await getOwnerNonce(ownerAddress);
     const chainId = FORKS[getChainId(config)];
-    const { compounding, effectiveBalanceGwei } = context.dkgReshareState;
+    const { compounding } = context.dkgReshareState;
     const amount = compounding ? Number(effectiveBalanceGwei) : DEFAULT_AMOUNT;
     const withdrawalCredentials = toWithdrawalCredentials(
       withdrawAddress,

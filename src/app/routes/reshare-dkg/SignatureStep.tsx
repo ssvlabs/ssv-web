@@ -258,7 +258,9 @@ const SignatureStep = ({
                           displayDecimals={0}
                           className="bg-white"
                           value={field.value}
-                          onChange={field.onChange}
+                          onChange={(value) =>
+                            form.setValue("effectiveBalance", value)
+                          }
                           onBlur={field.onBlur}
                           name={field.name}
                           rightSlot={

@@ -103,14 +103,12 @@ const ReshareDkg = () => {
       supportsCompounding;
   }, [supportsCompounding]);
 
+  const watched = form.watch();
   const { getSignature, isLoading } = useReshareSignaturePayload({
-    ...(form.watch() as {
-      ownerAddress: Address;
-      withdrawAddress: Address;
-      signature: string;
-      effectiveBalance: bigint;
-    }),
+    ownerAddress: watched.ownerAddress as Address,
+    withdrawAddress: watched.withdrawAddress as Address,
     cliVersion,
+    effectiveBalanceGwei: watched.effectiveBalance,
   });
   const isMultiSign = isContractWallet();
 

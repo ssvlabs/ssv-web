@@ -7,28 +7,30 @@ import {
 } from "@/components/operator/operator-details";
 import type { BadgeVariants } from "@/components/ui/badge";
 import { Badge } from "@/components/ui/badge";
-import type { OperatorDKGHealthResponse } from "@/hooks/operator/use-operator-dkg-health";
+import type { EnrichedOperatorDKGHealthResponse } from "@/hooks/operator/use-operator-dkg-health";
 
-type Props = {
-  operators: OperatorDetailsProps["operator"][];
-  health: OperatorDKGHealthResponse[];
-  isMultiSigFlow?: boolean;
-};
+const withVersion = (text: string, version?: string) =>
+  version ? `${text} (${version})` : text;
 
-const getBadgeInfo = (
-  healthData: OperatorDKGHealthResponse,
-  isMultiSigFlow?: boolean,
+export const getBadgeInfo = (
+  healthData: EnrichedOperatorDKGHealthResponse,
+  isMultiSigFlow: boolean | undefined,
+  showVersion: boolean,
 ): { variant: BadgeVariants["variant"]; text: string } => {
+  const versionSuffix = showVersion
+    ? `${healthData.version || `N/A`}`
+    : undefined;
+
   if (healthData.isMismatchId) {
     return {
       variant: "error" as BadgeVariants["variant"],
       text: "ID/IP Mismatch",
     };
   }
-  if (healthData.isOutdated) {
+  if (healthData.isOutdated || healthData.isMismatchVersion) {
     return {
       variant: "warning" as BadgeVariants["variant"],
-      text: "DKG Outdated",
+      text: withVersion("DKG Outdated", versionSuffix),
     };
   }
   if (isMultiSigFlow) {
@@ -41,7 +43,7 @@ const getBadgeInfo = (
     if (healthData.isHealthy) {
       return {
         variant: "success" as BadgeVariants["variant"],
-        text: "DKG Enabled",
+        text: withVersion("DKG Enabled", versionSuffix),
       };
     }
     return {
@@ -51,13 +53,26 @@ const getBadgeInfo = (
   }
 
   return healthData.isHealthy
-    ? { variant: "success", text: "DKG Enabled" }
+    ? { variant: "success", text: withVersion("DKG Enabled", versionSuffix) }
     : { variant: "error", text: "DKG Disabled" };
+};
+type Props = {
+  operators: OperatorDetailsProps["operator"][];
+  health: EnrichedOperatorDKGHealthResponse[];
+  hasVersionMismatch?: boolean;
+  isMultiSigFlow?: boolean;
 };
 
 export const UnhealthyOperatorsList: FC<
   ComponentPropsWithRef<"div"> & Props
-> = ({ className, operators, health, isMultiSigFlow, ...props }) => {
+> = ({
+  className,
+  operators,
+  health,
+  hasVersionMismatch = false,
+  isMultiSigFlow,
+  ...props
+}) => {
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
       <Alert variant="error">
@@ -73,8 +88,9 @@ export const UnhealthyOperatorsList: FC<
           );
 
           const { variant: badgeVariant, text: badgeText } = getBadgeInfo(
-            healthData || ({} as OperatorDKGHealthResponse),
+            healthData || ({} as EnrichedOperatorDKGHealthResponse),
             isMultiSigFlow,
+            hasVersionMismatch,
           );
 
           return (

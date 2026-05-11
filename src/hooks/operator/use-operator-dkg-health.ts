@@ -8,7 +8,7 @@ import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import { useChainId } from "wagmi";
 import { useMemo } from "react";
 import { DKG_VERSIONS } from "@/lib/utils/keyshares";
-import { isVersionGTE } from "@/lib/utils/version";
+import { isVersionEqual, isVersionGTE, maxVersion } from "@/lib/utils/version";
 
 export type OperatorDKGHealthResponse = {
   id: string;
@@ -18,6 +18,10 @@ export type OperatorDKGHealthResponse = {
   isEthClientConnected: boolean;
   isMismatchId: boolean;
   version?: string;
+};
+
+export type EnrichedOperatorDKGHealthResponse = OperatorDKGHealthResponse & {
+  isMismatchVersion?: boolean;
 };
 
 export const getOperatorsDKGHealthQueryOptions = (
@@ -56,7 +60,33 @@ export const useOperatorsDKGHealth = (
     }),
   );
 
-  const data = query.data;
+  const enrichedData = useMemo<
+    EnrichedOperatorDKGHealthResponse[] | undefined
+  >(() => {
+    if (!query.data) return undefined;
+    const definedVersions = query.data
+      .map(({ version }) => version)
+      .filter(Boolean);
+
+    const highestVersion = maxVersion(
+      definedVersions.filter(Boolean) as string[],
+    );
+
+    return query.data.map((item) => ({
+      ...item,
+      isMismatchVersion:
+        item.version && highestVersion
+          ? !isVersionEqual(item.version, highestVersion)
+          : false,
+    })) satisfies EnrichedOperatorDKGHealthResponse[];
+  }, [query.data]);
+
+  const data = enrichedData;
+
+  const hasVersionMismatch = useMemo(
+    () => (data ?? []).some(({ isMismatchVersion }) => isMismatchVersion),
+    [data],
+  );
 
   const supportsCompounding = useMemo(
     () =>
@@ -95,10 +125,12 @@ export const useOperatorsDKGHealth = (
 
   return {
     ...query,
+    data,
     supportsCompounding,
     hasOutdatedOperators,
     areAllOperatorsOutdated,
     hasUnhealthyOperators,
+    hasVersionMismatch,
     cliVersion,
   };
 };

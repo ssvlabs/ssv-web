@@ -34,9 +34,10 @@ export const DistributeOffline: FC = () => {
     enabled: isNew,
   });
 
-  const hasIssuedOperator = health.hasOutdatedOperators
-    ? health.hasUnhealthyOperators || !health.areAllOperatorsOutdated
-    : health.hasUnhealthyOperators;
+  const hasIssuedOperator =
+    (health.hasOutdatedOperators
+      ? health.hasUnhealthyOperators || !health.areAllOperatorsOutdated
+      : health.hasUnhealthyOperators) || health.hasVersionMismatch;
 
   return (
     <Container size="lg" variant="vertical" className="py-6">
@@ -67,6 +68,7 @@ export const DistributeOffline: FC = () => {
             <UnhealthyOperatorsList
               operators={operators.data ?? []}
               health={health.data ?? []}
+              hasVersionMismatch={health.hasVersionMismatch}
             />
             {!inCluster && (
               <Button

@@ -34,3 +34,29 @@ export const isVersionLTE = (
   if (b !== y) return b < y;
   return c <= z;
 };
+
+export const isVersionLT = (v: string | undefined, target: string): boolean => {
+  if (!v) return false;
+  const [a, b, c] = parseVersion(v);
+  const [x, y, z] = parseVersion(target);
+  if (a !== x) return a < x;
+  if (b !== y) return b < y;
+  return c < z;
+};
+
+export const isVersionEqual = (
+  v: string | undefined,
+  target: string,
+): boolean => {
+  if (!v) return false;
+  const [a, b, c] = parseVersion(v);
+  const [x, y, z] = parseVersion(target);
+  return a === x && b === y && c === z;
+};
+
+export const maxVersion = (versions: string[]): string | null => {
+  if (versions.length === 0) return null;
+  return versions.reduce((max, version) => {
+    return isVersionGTE(version, max) ? version : max;
+  });
+};

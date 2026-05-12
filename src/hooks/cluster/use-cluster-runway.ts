@@ -5,7 +5,6 @@ import { bigintMax } from "@/lib/utils/bigint";
 import { calculateRunway } from "@/lib/utils/cluster";
 import { useNetworkFee, useNetworkFeeSSV } from "@/hooks/use-ssv-network-fee";
 import { sumOperatorsFee } from "@/lib/utils/operator";
-import { useOperators } from "@/hooks/operator/use-operators";
 
 const getDeltaEffectiveBalance = (options: Options) => {
   if ("deltaValidators" in options)
@@ -18,7 +17,7 @@ const getDeltaEffectiveBalance = (options: Options) => {
 type Options = {
   deltaBalance?: bigint;
   watch?: boolean;
-  forceMode?: "eth" | "ssv";
+  effectiveBalance?: bigint;
 } & ({ deltaValidators?: bigint } | { deltaEffectiveBalance?: bigint });
 
 export const useClusterRunway = (
@@ -37,13 +36,11 @@ export const useClusterRunway = (
 
   const cluster = useCluster(clusterHash, { watch: opts.watch });
   const balance = useClusterBalance(clusterHash!, { watch: opts.watch });
-  const operators = useOperators(cluster.data?.operators ?? []);
 
-  const isETH =
-    opts.forceMode === "eth" ||
-    ((!opts.forceMode && cluster.data?.migrated) ?? false);
-  const ethNetworkFee = useNetworkFee();
-  const ssvNetworkFee = useNetworkFeeSSV();
+  const isETH = cluster.data?.migrated ?? false;
+
+  const ethNetworkFee = useNetworkFee(isETH);
+  const ssvNetworkFee = useNetworkFeeSSV(!isETH);
 
   const {
     liquidationThresholdPeriod: { data: liquidationThresholdBlocks = 0n },
@@ -52,28 +49,29 @@ export const useClusterRunway = (
   } = isETH ? ethNetworkFee : ssvNetworkFee;
 
   const operatorFees = sumOperatorsFee(
-    operators.data ?? [],
+    cluster.data?.operators ?? [],
     isETH ? "eth" : "ssv",
   );
 
   const feesPerBlock = operatorFees + networkFee;
 
-  const effectiveBalance = isETH
-    ? bigintMax(
-        BigInt(cluster.data?.effectiveBalance ?? 0),
-        BigInt(cluster.data?.validatorCount ?? 1) * 32n,
-      )
-    : BigInt(cluster.data?.validatorCount ?? 1) * 32n;
+  const effectiveBalance =
+    opts.effectiveBalance ??
+    (isETH
+      ? bigintMax(
+          BigInt(cluster.data?.effectiveBalance ?? 0),
+          BigInt(cluster.data?.validatorCount ?? 1) * 32n,
+        )
+      : BigInt(cluster.data?.validatorCount ?? 1) * 32n);
 
   const isLoading =
     cluster.isLoading ||
     balance.isLoading ||
-    operators.isLoading ||
     ethNetworkFee.isLoading ||
     ssvNetworkFee.isLoading;
 
   const runway = calculateRunway({
-    balance: (isETH ? balance.data.eth : balance.data.ssv) || 0n,
+    balance: balance.data ?? 0n,
     feesPerBlock,
     effectiveBalance,
     deltaEffectiveBalance,

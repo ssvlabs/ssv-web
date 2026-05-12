@@ -1,8 +1,9 @@
 import { CopyBtn } from "@/components/ui/copy-btn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
+import { useCluster } from "@/hooks/cluster/use-cluster";
+import { useClusterEffectiveBalance } from "@/hooks/cluster/use-cluster-effective-balance";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
-import { useClusterState } from "@/hooks/cluster/use-cluster-state";
 import { formatEffectiveBalance } from "@/lib/utils/number";
 import { shortenClusterId } from "@/lib/utils/strings";
 import { cn } from "@/lib/utils/tw";
@@ -22,18 +23,12 @@ export const ClusterHeader: FC<ClusterHeaderProps> = ({
   ...props
 }) => {
   const { clusterHash } = useClusterPageParams();
-  const { cluster, effectiveBalance } = useClusterState(clusterHash!, {
-    effectiveBalance: { watch: true },
-  });
+  const cluster = useCluster(clusterHash!);
+  const effectiveBalance = useClusterEffectiveBalance(clusterHash!);
 
   const clusterId = cluster.data?.clusterId || "";
   const validatorCount = cluster.data?.validatorCount || 0;
-  // effectiveBalance.data is a number in ETH units, convert to bigint for formatting
-  const totalEffectiveBalance = effectiveBalance.data
-    ? BigInt(Math.floor(effectiveBalance.data))
-    : cluster.data?.effectiveBalance
-      ? BigInt(cluster.data.effectiveBalance)
-      : 0n;
+  const totalEffectiveBalance = effectiveBalance.data ?? 0n;
 
   const isLoading = cluster.isLoading || effectiveBalance.isLoading;
 

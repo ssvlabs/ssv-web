@@ -4,6 +4,7 @@ import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useMemo } from "react";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { sortNumbers } from "@/lib/utils/number";
+import { getOperatorIds } from "@/lib/utils/operator";
 import { useKeysharesSchemaValidation } from "@/hooks/keyshares/use-keyshares-schema-validation";
 import type { KeySharesItem } from "@ssv-labs/ssv-sdk/keys";
 import { getOSName } from "@/lib/utils/os";
@@ -105,7 +106,7 @@ export const useSelectedOperatorIds = () => {
   return useMemo(() => {
     return sortNumbers(
       inCluster
-        ? cluster.data?.operators ?? []
+        ? getOperatorIds(cluster.data?.operators ?? [])
         : hasSelectedOperators
           ? selectedOperatorsIds
           : shares?.[0].payload.operatorIds ?? [],

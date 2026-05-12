@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/form.tsx";
 import { useForm } from "react-hook-form";
 import type { Address } from "viem";
-import { getAddress, isAddress } from "viem";
+import { getAddress, isAddress, parseGwei } from "viem";
 import { Input } from "@/components/ui/input.tsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useReshareSignaturePayload } from "@/hooks/operator/use-reshare-signature-payload.ts";
 import { isContractWallet, useAccount } from "@/hooks/account/use-account.ts";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params.ts";
@@ -30,6 +30,7 @@ import { ReshareSteps } from "@/lib/utils/dkg.ts";
 import { useCopyToClipboard } from "react-use";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard.tsx";
 import type { ClusterSize } from "@/components/operator/operator-picker/operator-cluster-size-picker.tsx";
+import { useOperatorsDKGHealth } from "@/hooks/operator/use-operator-dkg-health.ts";
 
 const nextStepToMapping: Record<ReshareSteps, ReshareSteps> = {
   [ReshareSteps.Signature]: ReshareSteps.Resign,
@@ -39,6 +40,9 @@ const nextStepToMapping: Record<ReshareSteps, ReshareSteps> = {
 };
 
 const ethereumSignatureRegex = /^(0x([0-9a-fA-F]{130,}))+$/;
+
+const MIN_EFFECTIVE_BALANCE_GWEI = parseGwei("32");
+const MAX_EFFECTIVE_BALANCE_GWEI = parseGwei("2048");
 
 const addressValidationSchema = z
   .string()
@@ -54,6 +58,14 @@ const schema = z.object({
     .refine((value) => value === "" || ethereumSignatureRegex.test(value), {
       message: "Invalid format. Please enter a valid signature hash.",
     }),
+  effectiveBalance: z
+    .bigint()
+    .min(MIN_EFFECTIVE_BALANCE_GWEI, {
+      message: "Effective balance must be at least 32 ETH",
+    })
+    .max(MAX_EFFECTIVE_BALANCE_GWEI, {
+      message: "Effective balance cannot exceed 2048 ETH",
+    }),
 });
 
 const ReshareDkg = () => {
@@ -67,24 +79,37 @@ const ReshareDkg = () => {
     ownerAddress: Address | string;
     withdrawAddress: Address | string;
     signature: string;
+    effectiveBalance: bigint;
   }>({
     mode: "all",
     defaultValues: {
       ownerAddress: account.address,
       withdrawAddress: "",
       signature: "",
+      effectiveBalance: MIN_EFFECTIVE_BALANCE_GWEI,
     },
     resolver: zodResolver(schema),
   });
 
   const { clusterHash } = useClusterPageParams();
-  const { getSignature, isLoading } = useReshareSignaturePayload(
-    form.watch() as {
-      ownerAddress: Address;
-      withdrawAddress: Address;
-      signature: string;
-    },
-  );
+
+  const operators = context.dkgReshareState.newOperators.length
+    ? context.dkgReshareState.newOperators
+    : context.dkgReshareState.operators;
+  const { supportsCompounding, cliVersion } = useOperatorsDKGHealth(operators);
+
+  useEffect(() => {
+    useBulkActionContext.state.dkgReshareState.compounding =
+      supportsCompounding;
+  }, [supportsCompounding]);
+
+  const watched = form.watch();
+  const { getSignature, isLoading } = useReshareSignaturePayload({
+    ownerAddress: watched.ownerAddress as Address,
+    withdrawAddress: watched.withdrawAddress as Address,
+    cliVersion,
+    effectiveBalanceGwei: watched.effectiveBalance,
+  });
   const isMultiSign = isContractWallet();
 
   const nextStep = () => {
@@ -93,8 +118,11 @@ const ReshareDkg = () => {
 
   const [isOpenModal, setIsOpenModal] = useState(false);
 
-  const submit = form.handleSubmit(async () => {
-    if (form.watch().signature) {
+  const submit = form.handleSubmit(async (values) => {
+    useBulkActionContext.state.dkgReshareState.effectiveBalanceGwei =
+      values.effectiveBalance;
+
+    if (values.signature) {
       nextStep();
       setIsOpenModal(false);
       copy("");
@@ -151,6 +179,7 @@ const ReshareDkg = () => {
         isReshare={isReshare}
         setIsOpenModal={setIsOpenModal}
         submit={submit}
+        supportsCompounding={supportsCompounding}
       />
       <CeremonySection
         copyState={copyState}

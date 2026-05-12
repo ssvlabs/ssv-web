@@ -45,8 +45,8 @@ export const WithAllowance: WithAllowanceFC = ({
   const block = useBlockNumber({ watch: true });
   const tokenAddress =
     options?.token.address ?? ssvNetworkDetails?.tokenAddress;
-  const spenderAddress =
-    options?.spender ?? ssvNetworkDetails?.setterContractAddress;
+  const spenderAddress = (options?.spender ??
+    ssvNetworkDetails?.setterContractAddress)!;
   const approveContractAddress = (tokenAddress ??
     "0x0000000000000000000000000000000000000000") as Address;
 

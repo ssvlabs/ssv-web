@@ -113,7 +113,7 @@ export const ClusterTable: FCProps = ({
               content={
                 <>
                   Clusters represent a unique set of operators who operate your
-                  validators.{" "}
+                  validators and can be represented by ID or a name.{" "}
                   <Button
                     as={Link}
                     to={links.MORE_ON_CLUSTERS}
@@ -126,10 +126,10 @@ export const ClusterTable: FCProps = ({
               }
             >
               {renderSortableHeader({
-                type: "id",
+                type: "name",
                 title: (
                   <span className="flex gap-2 items-center">
-                    <span>Cluster ID</span>
+                    <span>Cluster</span>
                     <FaCircleInfo className="size-3 text-gray-500" />
                   </span>
                 ),

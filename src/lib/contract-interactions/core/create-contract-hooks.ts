@@ -1,6 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
-import type { UseReadContractReturnType } from "wagmi";
+import type {
+  UseReadContractParameters,
+  UseReadContractReturnType,
+} from "wagmi";
 import { useReadContract, useWriteContract } from "wagmi";
 import type { Abi, AbiFunction, Address, ExtractAbiFunctions } from "abitype";
 import { getChainId, type WriteContractErrorType } from "@wagmi/core";
@@ -20,8 +22,8 @@ import { config } from "@/wagmi/config";
 import { isUndefined } from "lodash-es";
 import type { UseQueryOptions } from "@/lib/react-query";
 import { isAddress } from "viem";
+import type { ContractFunctionArgs, ContractFunctionName } from "viem";
 import type { Prettify } from "@/types/ts-utils";
-import { useInterval } from "react-use";
 
 type WriteParams<T extends AbiFunction> = {
   args: Prettify<AbiInputsToParams<T["inputs"]>>;
@@ -43,12 +45,16 @@ type WriteHookResult<T extends AbiFunction> = {
   wait: ReturnType<typeof useWaitForTransactionReceipt>;
 };
 
-type WriteHooksObject<T extends AbiFunction[]> = {
-  [Fn in T[number] as `use${Capitalize<Fn["name"]>}`]: (args?: {
+type WriteHooksObject<TAbi extends Abi> = {
+  [Fn in ExtractAbiFunctions<
+    TAbi,
+    "nonpayable" | "payable"
+  > as `use${Capitalize<Fn["name"]>}`]: (args?: {
     chainId?: number;
     contract?: Address;
-  }) => WriteHookResult<Fn>;
+  }) => WriteHookResult<Fn & AbiFunction>;
 };
+
 type CustomQueryOptions = {
   chainId?: number;
   enabled?: boolean;
@@ -58,31 +64,86 @@ type CustomQueryOptions = {
 
 const refetchInterval = 12000;
 
-type ReadHooksObject<T extends AbiFunction[]> = {
-  [Fn in T[number] as `use${Capitalize<Fn["name"]>}`]: Fn["inputs"] extends readonly []
-    ? (
+type ReadFnName<TAbi extends Abi, TName extends string> = TName &
+  ContractFunctionName<TAbi, "view" | "pure">;
+
+type ReadFnArgs<TAbi extends Abi, TName extends string> = ContractFunctionArgs<
+  TAbi,
+  "view" | "pure",
+  ReadFnName<TAbi, TName>
+>;
+
+type ReadFnData<
+  TAbi extends Abi,
+  TName extends string,
+> = UseReadContractReturnType<TAbi, ReadFnName<TAbi, TName>>["data"];
+
+type ReadHooksObject<TAbi extends Abi> = {
+  [Fn in ExtractAbiFunctions<
+    TAbi,
+    "view" | "pure"
+  > as `use${Capitalize<Fn["name"]>}`]: Fn["inputs"] extends readonly []
+    ? <TData = ReadFnData<TAbi, Fn["name"]>>(
         options?: CustomQueryOptions &
-          //@ts-expect-error - Fn["name"] is not a valid ContractFunctionName
-          UseQueryOptions<UseReadContractReturnType<T, Fn["name"]>["data"]>,
-        //@ts-expect-error - Fn["name"] is not a valid ContractFunctionName
-      ) => UseReadContractReturnType<T, Fn["name"]>
-    : (
+          UseQueryOptions<ReadFnData<TAbi, Fn["name"]>, Error, TData>,
+      ) => UseReadContractReturnType<
+        TAbi,
+        ReadFnName<TAbi, Fn["name"]>,
+        ReadFnArgs<TAbi, Fn["name"]>,
+        TData
+      >
+    : <TData = ReadFnData<TAbi, Fn["name"]>>(
         params: AbiInputsToParams<Fn["inputs"]>,
         options?: CustomQueryOptions &
-          //@ts-expect-error - Fn["name"] is not a valid ContractFunctionName
-          UseQueryOptions<UseReadContractReturnType<T, Fn["name"]>["data"]>,
-        //@ts-expect-error - Fn["name"] is not a valid ContractFunctionName
-      ) => UseReadContractReturnType<T, Fn["name"]>;
+          UseQueryOptions<ReadFnData<TAbi, Fn["name"]>, Error, TData>,
+      ) => UseReadContractReturnType<
+        TAbi,
+        ReadFnName<TAbi, Fn["name"]>,
+        ReadFnArgs<TAbi, Fn["name"]>,
+        TData
+      >;
 };
 
 const capitalize = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
+
+/**
+ * Two boundary helpers that cast only at the dynamic↔static-generic seam.
+ * The factory iterates ABI entries at runtime (string functionName / unknown args),
+ * while wagmi requires statically-known ContractFunctionName<TAbi> generics.
+ * Isolating the casts here keeps all hook construction logic above cast-free.
+ */
+function toReadContractParams<TAbi extends Abi>(params: {
+  abi: TAbi;
+  address: Address | undefined;
+  functionName: string;
+  args?: readonly unknown[];
+  chainId: number;
+  query: Record<string, unknown>;
+}): UseReadContractParameters {
+  return params as UseReadContractParameters;
+}
+
+type WriteContractParams = Parameters<
+  ReturnType<typeof useWriteContract>["writeContractAsync"]
+>[0];
+
+function toWriteContractParams<TAbi extends Abi>(params: {
+  abi: TAbi;
+  address: Address | undefined;
+  functionName: string;
+  chainId?: number;
+  args?: readonly unknown[];
+  value?: bigint;
+}): WriteContractParams {
+  return params as WriteContractParams;
+}
+
 export function createContractHooks<
   T extends Abi,
   DefaultContractAddressGetter extends () => Address | undefined,
 >(abi: T, defaultContractAddressGetter?: DefaultContractAddressGetter) {
-  // Filter write functions from ABI
   const writeFunctions = abi.filter(
     (item) =>
       item.type === "function" &&
@@ -96,173 +157,171 @@ export function createContractHooks<
       (item.stateMutability === "view" || item.stateMutability === "pure"),
   ) as AbiFunction[];
 
-  const hooks = {};
+  // Object.fromEntries: the cast is on the result of the full transformation,
+  // not on an empty accumulator that is later mutated (which TypeScript cannot verify).
+  const readHooks = Object.fromEntries(
+    readFunctions.map((fn) => {
+      const functionName = fn.name;
+      const hasInputs = Boolean(fn.inputs?.length);
+      const abiFunction = extractAbiFunction(abi, functionName);
 
-  readFunctions.forEach((fn) => {
-    const hookName = `use${capitalize(fn.name)}`;
-    const functionName = fn.name;
-    const hasInputs = Boolean(fn.inputs?.length);
-    const abiFunction = extractAbiFunction(abi, functionName);
+      const hookFn = hasInputs
+        ? (
+            params: AbiInputsToParams<typeof fn.inputs>,
+            {
+              enabled = true,
+              watch = false,
+              chainId = getChainId(config),
+              contract = defaultContractAddressGetter?.(),
+              ...queryOptions
+            }: CustomQueryOptions = {},
+          ) => {
+            const contractAddress =
+              contract || defaultContractAddressGetter?.();
+            const args = paramsToArray({ params, abiFunction });
+            const query = useReadContract(
+              toReadContractParams({
+                abi,
+                address: contractAddress,
+                functionName,
+                args: args as readonly unknown[],
+                chainId,
+                query: {
+                  ...queryOptions,
+                  refetchInterval: watch ? refetchInterval : undefined,
+                  enabled:
+                    (enabled ?? true) &&
+                    !!contractAddress &&
+                    args?.every((arg) => !isUndefined(arg)),
+                },
+              }),
+            );
 
-    if (hasInputs) {
-      //@ts-expect-error - TODO: fix this
-      hooks[hookName] = (
-        params: AbiInputsToParams<typeof fn.inputs>,
-        {
-          enabled = true,
-          watch = false,
-          chainId = getChainId(config),
-          contract = defaultContractAddressGetter?.(),
-          ...queryOptions
-        }: CustomQueryOptions = {},
-      ) => {
-        const contractAddress = contract || defaultContractAddressGetter?.();
+            return query;
+          }
+        : ({
+            enabled = true,
+            watch = false,
+            chainId = getChainId(config),
+            contract = defaultContractAddressGetter?.(),
+            ...queryOptions
+          }: CustomQueryOptions = {}) => {
+            const contractAddress =
+              contract || defaultContractAddressGetter?.();
+            const query = useReadContract(
+              toReadContractParams({
+                abi,
+                address: contractAddress,
+                functionName,
+                chainId,
+                query: {
+                  ...queryOptions,
+                  refetchInterval: watch ? refetchInterval : undefined,
+                  enabled: enabled && !!contractAddress,
+                },
+              }),
+            );
+            return query;
+          };
 
-        const args = paramsToArray({ params, abiFunction });
-        const query = useReadContract({
-          abi,
-          address: contractAddress,
-          functionName: functionName as string,
-          args: args as readonly unknown[],
-          chainId: chainId,
-          query: {
-            ...queryOptions,
-            enabled:
-              (enabled ?? true) &&
-              !!contractAddress &&
-              args?.every((arg) => !isUndefined(arg)),
-          },
-        } as any);
+      return [`use${capitalize(functionName)}`, hookFn];
+    }),
+  ) as ReadHooksObject<T>;
 
-        useInterval(() => query.refetch, watch ? refetchInterval : null);
+  const writeHooks = Object.fromEntries(
+    writeFunctions.map((fn) => {
+      const hookName = `use${capitalize(fn.name)}`;
 
-        return query;
-      };
-    } else {
-      // Create hook function for functions without parameters
-      //@ts-expect-error - TODO: fix this
-      hooks[hookName] = ({
-        enabled = true,
-        watch = false,
+      const hookFn = ({
         chainId = getChainId(config),
         contract = defaultContractAddressGetter?.(),
-        ...queryOptions
       }: CustomQueryOptions = {}) => {
-        const contractAddress = contract || defaultContractAddressGetter?.();
+        const isValidContract = isAddress(contract ?? "");
+        if (!isValidContract) {
+          throw new Error("Invalid contract address at hook: " + hookName);
+        }
+        const waitForTx = useWaitForTransactionReceipt([hookName, contract]);
+        const functionName = fn.name;
 
-        const query = useReadContract({
-          abi,
-          address: contractAddress,
-          functionName: functionName as string,
-          chainId: chainId,
-          query: {
-            ...queryOptions,
-            enabled: enabled && !!contractAddress,
-          },
-        } as any);
+        const abiFunction = useMemo(
+          () => extractAbiFunction(abi, functionName),
+          [functionName],
+        );
 
-        useInterval(() => query.refetch, watch ? refetchInterval : null);
+        const mutation = useWriteContract();
 
-        return query;
-      };
-    }
-  });
+        const write = (params?: WriteParams<AbiFunction>) => {
+          params?.options?.onInitiated?.();
+          return mutation
+            .writeContractAsync(
+              toWriteContractParams({
+                abi,
+                address: contract,
+                functionName,
+                chainId,
+                args: params?.args
+                  ? paramsToArray({ params: params.args, abiFunction })
+                  : undefined,
+                value: params?.value,
+              }),
+              {
+                onSuccess: (hash) => params?.options?.onConfirmed?.(hash),
+                onError: (error: WriteContractErrorType) =>
+                  params?.options?.onError?.(error),
+              },
+            )
+            .then((hash) =>
+              waitForTx.mutateAsync(hash, {
+                onSuccess: async (receipt) => {
+                  await wait(1);
+                  return params?.options?.onMined?.(receipt);
+                },
+                onError: async (error: Error) => {
+                  await wait(1);
+                  return params?.options?.onError?.(
+                    error as WriteContractErrorType,
+                  );
+                },
+              }),
+            );
+        };
 
-  writeFunctions.forEach((fn) => {
-    const hookName = "use" + capitalize(fn.name);
-    const hookFn = ({
-      chainId = getChainId(config),
-      contract = defaultContractAddressGetter?.(),
-    }: CustomQueryOptions = {}) => {
-      const isValidContract = isAddress(contract ?? "");
-      if (!isValidContract) {
-        throw new Error("Invalid contract address at hook: " + hookName);
-      }
-      const waitForTx = useWaitForTransactionReceipt([hookName, contract]);
-      const functionName = fn.name;
-
-      const abiFunction = useMemo(
-        () => extractAbiFunction(abi, functionName),
-        [functionName],
-      );
-
-      const mutation = useWriteContract();
-
-      const write = (params?: WriteParams<any>) => {
-        params?.options?.onInitiated?.();
-
-        return mutation
-          .writeContractAsync(
-            // @ts-expect-error - TODO: fix this
-            {
+        const send = (params?: WriteParams<AbiFunction>) => {
+          params?.options?.onInitiated?.();
+          return mutation.writeContractAsync(
+            toWriteContractParams({
               abi,
               address: contract,
               functionName,
-              chainId,
               args: params?.args
                 ? paramsToArray({ params: params.args, abiFunction })
                 : undefined,
               value: params?.value,
-            },
+            }),
             {
               onSuccess: (hash) => params?.options?.onConfirmed?.(hash),
-              onError: (error) => params?.options?.onError?.(error),
+              onError: (error: WriteContractErrorType) =>
+                params?.options?.onError?.(error),
             },
-          )
-          .then((hash) =>
-            waitForTx.mutateAsync(hash, {
-              onSuccess: async (receipt) => {
-                await wait(1);
-                return params?.options?.onMined?.(receipt);
-              },
-              onError: async (error) => {
-                await wait(1);
-                return params?.options?.onError?.(error as any);
-              },
-            }),
           );
+        };
+
+        return {
+          error: mutation.error || waitForTx.error,
+          isSuccess: waitForTx.isSuccess,
+          isPending: mutation.isPending || waitForTx.isPending,
+          mutation,
+          write,
+          send,
+          wait: waitForTx,
+        };
       };
 
-      const send = (params?: WriteParams<any>) => {
-        params?.options?.onInitiated?.();
+      return [hookName, hookFn];
+    }),
+  ) as WriteHooksObject<T>;
 
-        return mutation.writeContractAsync(
-          // @ts-expect-error - TODO: fix this
-          {
-            abi,
-            address: contract,
-            functionName,
-            args: params?.args
-              ? paramsToArray({ params: params.args, abiFunction })
-              : undefined,
-            value: params?.value,
-          },
-          {
-            onSuccess: (hash) => params?.options?.onConfirmed?.(hash),
-            onError: (error) =>
-              params?.options?.onError?.(error as WriteContractErrorType),
-          },
-        );
-      };
-
-      return {
-        error: mutation.error || waitForTx.error,
-        isSuccess: waitForTx.isSuccess,
-        isPending: mutation.isPending || waitForTx.isPending,
-        mutation,
-        write,
-        send,
-        wait: waitForTx,
-      };
-    };
-
-    //@ts-expect-error - TODO: fix this
-    hooks[hookName] = hookFn;
-  });
-  return hooks as WriteHooksObject<
-    //@ts-ignore
-    ExtractAbiFunctions<T, "nonpayable" | "payable">[]
-  > &
-    //@ts-ignore
-    ReadHooksObject<ExtractAbiFunctions<T, "view" | "pure">[]>;
+  // satisfies verifies the merged shape against both mapped types.
+  return { ...readHooks, ...writeHooks } satisfies WriteHooksObject<T> &
+    ReadHooksObject<T>;
 }

@@ -49,14 +49,19 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
           <Text>Public Key</Text>,
           <Tooltip
             asChild
-            content="Refers to the validators status in the SSV network (not beacon chain), and reflects whether its operators are consistently performing their duties (according to the last 2 epochs)"
+            content="Validator's status within the SSV network, primarily based on operator performance over the last 2 epochs, with additional context from its Beacon chain state."
           >
             <div className="flex w-fit gap-2 items-center">
               <Text>Status</Text>
               <FaCircleInfo className="size-3 text-gray-500" />
             </div>
           </Tooltip>,
-          <Text>Effective Balance</Text>,
+          <Tooltip asChild content="Each validator's effective balance according to the beacon chain. Operational runway is calculated from the cluster effective balance reported by the oracles.">
+            <div className="flex items-center gap-1.5">
+              <Text>Effective Balance</Text>
+              <FaCircleInfo className="size-3 text-gray-500" />
+            </div>
+          </Tooltip>,
           null,
         ]}
         items={validators}

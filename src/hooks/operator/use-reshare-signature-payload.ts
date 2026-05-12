@@ -7,15 +7,20 @@ import type { MessageData } from "@/lib/utils/dkg.ts";
 import { FORKS } from "@/lib/utils/dkg.ts";
 import { DEFAULT_AMOUNT } from "@/lib/utils/dkg.ts";
 import { getSignaturePayload } from "@/lib/utils/dkg.ts";
+import { toWithdrawalCredentials } from "@/lib/utils/dkg.ts";
 import { useSignMessage } from "wagmi";
 import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
 
 export const useReshareSignaturePayload = ({
   ownerAddress,
   withdrawAddress,
+  cliVersion,
+  effectiveBalanceGwei,
 }: {
   ownerAddress: Address;
   withdrawAddress: Address;
+  cliVersion: string | undefined;
+  effectiveBalanceGwei: bigint;
 }) => {
   const { proofsQuery } = useReshareDkg();
   const context = useBulkActionContext();
@@ -24,16 +29,23 @@ export const useReshareSignaturePayload = ({
   const getSignature = async () => {
     const nonce = await getOwnerNonce(ownerAddress);
     const chainId = FORKS[getChainId(config)];
+    const { compounding } = context.dkgReshareState;
+    const amount = compounding ? Number(effectiveBalanceGwei) : DEFAULT_AMOUNT;
+    const withdrawalCredentials = toWithdrawalCredentials(
+      withdrawAddress,
+      cliVersion,
+      compounding,
+    );
     const payload = (proofsQuery.data?.validators || []).map(
       ({ publicKey, proofs }, index: number) => {
         const messageData: MessageData = {
           publicKey,
           oldOperators: context.dkgReshareState.operators,
           chainId,
-          withdrawalCredentials: withdrawAddress,
+          withdrawalCredentials,
           ownerAddress,
           nonce: nonce + index,
-          amount: DEFAULT_AMOUNT,
+          amount,
         };
         if (context.dkgReshareState.newOperators.length) {
           messageData.newOperators = context.dkgReshareState.newOperators;
@@ -44,6 +56,7 @@ export const useReshareSignaturePayload = ({
         };
       },
     );
+
     return sign.signMessageAsync({
       message: getSignaturePayload(payload),
     });

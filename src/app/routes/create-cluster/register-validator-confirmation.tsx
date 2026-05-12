@@ -62,7 +62,7 @@ export const RegisterValidatorConfirmation: FC = () => {
   });
 
   const clusterRunway = useClusterRunway(clusterHash, {
-    deltaValidators: BigInt(shares.length),
+    deltaEffectiveBalance: effectiveBalance,
     deltaBalance: depositAmount,
   });
 

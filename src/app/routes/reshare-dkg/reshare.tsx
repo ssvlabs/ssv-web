@@ -19,15 +19,21 @@ const Reshare = () => {
     ? context.dkgReshareState.newOperators
     : context.dkgReshareState.operators;
   const health = useOperatorsDKGHealth(operators);
-  const reshareAccepted = isContractWallet()
-    ? health.data?.every(
-        ({ isHealthy, isEthClientConnected, isOutdated, isMismatchId }) =>
-          isHealthy && isEthClientConnected && !isOutdated && !isMismatchId,
-      )
-    : health.data?.every(
-        ({ isHealthy, isMismatchId, isOutdated }) =>
-          isHealthy && !isMismatchId && !isOutdated,
-      );
+
+  const operatorsHealthy =
+    !health.hasVersionMismatch &&
+    (isContractWallet()
+      ? health.data?.every(
+          ({ isHealthy, isEthClientConnected, isOutdated, isMismatchId }) =>
+            isHealthy && isEthClientConnected && !isOutdated && !isMismatchId,
+        )
+      : health.data?.every(
+          ({ isHealthy, isMismatchId, isOutdated }) =>
+            isHealthy && !isMismatchId && !isOutdated,
+        ));
+
+  const reshareAccepted = operatorsHealthy && Boolean(health.cliVersion);
+
   const { clusterHash } = useClusterPageParams();
 
   if (health.isLoading) {

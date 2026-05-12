@@ -11,20 +11,39 @@ import {
 } from "@/components/ui/form.tsx";
 import { Tooltip } from "@/components/ui/tooltip.tsx";
 import { Button } from "@/components/ui/button.tsx";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs.tsx";
+import { BigNumberInput } from "@/components/ui/number-input.tsx";
 import { FaCircleInfo } from "react-icons/fa6";
 import { DkgAddressInput } from "@/app/routes/reshare-dkg/dkg-address-input.tsx";
 import { shortenAddress } from "@/lib/utils/strings.ts";
 import type { UseFormReturn } from "react-hook-form";
 import type { Address } from "abitype";
-import React, { useState } from "react";
+import React, { useState, type FC } from "react";
 import { ReshareSteps } from "@/lib/utils/dkg.ts";
 import { useGetWithdrawCredentials } from "@/hooks/operator/useGetWithdrawCredentials.ts";
+import { cn } from "@/lib/utils/tw.ts";
+import { parseGwei } from "viem";
+import { useBulkActionContext } from "@/guard/bulk-action-guard.tsx";
+
+const COMPOUNDING_TOOLTIP =
+  "The DKG clients of the selected operators do not support generating compounding validators";
+
+export const MAX_EFFECTIVE_BALANCE_GWEI = parseGwei("2048");
+
+export type ReshareTab = "compounding" | "regular";
+
+const StepBadge: FC<{ step: number }> = ({ step }) => (
+  <div className="size-7 flex items-center justify-center rounded-lg bg-white border border-gray-300 shrink-0">
+    <Text className="text-xs font-medium text-gray-600 leading-5">{step}</Text>
+  </div>
+);
 
 type Props = {
   form: UseFormReturn<{
     ownerAddress: Address | string;
     withdrawAddress: Address | string;
     signature: string;
+    effectiveBalance: bigint;
   }>;
   submit: (e?: React.BaseSyntheticEvent) => Promise<void>;
   currentStep: ReshareSteps;
@@ -33,6 +52,7 @@ type Props = {
   isLoading: boolean;
   activateStep: (step: ReshareSteps, callback?: () => void) => void;
   setIsOpenModal: (isOpenModal: boolean) => void;
+  supportsCompounding: boolean;
 };
 
 const SignatureStep = ({
@@ -44,7 +64,16 @@ const SignatureStep = ({
   activateStep,
   isLoading,
   setIsOpenModal,
+  supportsCompounding,
 }: Props) => {
+  const ctx = useBulkActionContext();
+  const compounding = ctx.dkgReshareState.compounding && supportsCompounding;
+  const tab: ReshareTab = compounding ? "compounding" : "regular";
+  const setTab = (next: ReshareTab) => {
+    useBulkActionContext.state.dkgReshareState.compounding =
+      next === "compounding";
+  };
+
   const [isOwnerInputDisabled, setIsOwnerInputDisabled] = useState(true);
   const [isWithdrawalInputDisabled, setIsWithdrawalInputDisabled] = useState(
     !!form.watch().withdrawAddress,
@@ -58,6 +87,11 @@ const SignatureStep = ({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const isSubmitButtonDisabled =
     !isOwnerInputDisabled || !isWithdrawalInputDisabled;
+
+  const isCompounding = compounding;
+  const helperText = isCompounding
+    ? "Maximum effective balance of 2048 ETH. Only whole numbers can be entered."
+    : "Maximum effective balance of 32 ETH";
 
   return (
     <Form {...form}>
@@ -158,38 +192,136 @@ const SignatureStep = ({
                 )}
               />
             )}
-            {!withdrawAddress.isLoading &&
-              !withdrawAddress.data?.withdraw_credentials && (
+            <div className="flex flex-col gap-3">
+              <Tabs
+                value={tab}
+                onValueChange={(value) => setTab(value as ReshareTab)}
+                className="w-full"
+              >
+                <TabsList className="w-full h-14 rounded-xl bg-gray-200 border border-gray-300 p-1 gap-1">
+                  <Tooltip
+                    triggerProps={{
+                      className: cn("flex-1", {
+                        "cursor-not-allowed": !supportsCompounding,
+                      }),
+                    }}
+                    content={
+                      !supportsCompounding ? COMPOUNDING_TOOLTIP : undefined
+                    }
+                  >
+                    <TabsTrigger
+                      value="compounding"
+                      disabled={!supportsCompounding}
+                      className={cn(
+                        "flex-1 h-full rounded-lg text-base font-semibold text-gray-500",
+                        "data-[state=active]:bg-white data-[state=active]:text-gray-700 data-[state=active]:shadow-sm",
+                        "disabled:opacity-50 disabled:pointer-events-none",
+                      )}
+                    >
+                      Compounding
+                    </TabsTrigger>
+                  </Tooltip>
+                  <TabsTrigger
+                    value="regular"
+                    className={cn(
+                      "flex-1 h-full rounded-lg text-base font-semibold text-gray-500",
+                      "data-[state=active]:bg-white data-[state=active]:text-gray-700 data-[state=active]:shadow-sm",
+                    )}
+                  >
+                    Regular Withdrawals
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              <Text variant="body-3-medium">{helperText}</Text>
+            </div>
+
+            {isCompounding && (
+              <div className="flex flex-col gap-4 p-5 rounded-2xl bg-gray-100">
+                <div className="flex items-center gap-3">
+                  <StepBadge step={1} />
+                  <Text className="text-sm font-semibold text-gray-700 leading-5">
+                    Select how many validators to generate
+                  </Text>
+                </div>
                 <FormField
                   control={form.control}
-                  name="withdrawAddress"
+                  name="effectiveBalance"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Set Withdrawal Address</FormLabel>
+                      <Text className="text-xs font-semibold text-gray-500 leading-5">
+                        Effective Balance
+                      </Text>
                       <FormControl>
-                        <DkgAddressInput
-                          field={field}
-                          isAcceptedButtonDisabled={
-                            !!form.formState.errors.withdrawAddress ||
-                            (!isMultiSign && isLoading) ||
-                            !field.value
-                          }
-                          isInputDisabled={
-                            field.disabled ||
-                            (!isMultiSign && isLoading) ||
-                            isWithdrawalInputDisabled
-                          }
-                          acceptedButtonLabel={
-                            isWithdrawalInputDisabled ? "Change" : "Confirm"
-                          }
-                          setIsInputDisabled={setIsWithdrawalInputDisabled}
+                        <BigNumberInput
+                          max={MAX_EFFECTIVE_BALANCE_GWEI}
+                          decimals={9}
+                          displayDecimals={0}
+                          className="bg-white"
                           value={field.value}
+                          onChange={(value) =>
+                            form.setValue("effectiveBalance", value)
+                          }
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          rightSlot={
+                            <div className="flex items-center gap-1 pr-2">
+                              <img
+                                alt="ETH"
+                                src="/images/networks/dark.svg"
+                                className="size-5"
+                              />
+                              <Text className="text-base font-medium text-gray-800">
+                                ETH
+                              </Text>
+                            </div>
+                          }
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+              </div>
+            )}
+            {!withdrawAddress.isLoading &&
+              !withdrawAddress.data?.withdraw_credentials && (
+                <div className="flex flex-col gap-4 p-5 rounded-2xl bg-gray-100">
+                  <div className="flex items-center gap-3">
+                    <StepBadge step={isCompounding ? 2 : 1} />
+                    <Text className="text-base font-semibold text-gray-700 leading-6">
+                      Set Withdrawal Address
+                    </Text>
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="withdrawAddress"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <DkgAddressInput
+                            field={field}
+                            isAcceptedButtonDisabled={
+                              !!form.formState.errors.withdrawAddress ||
+                              (!isMultiSign && isLoading) ||
+                              !field.value
+                            }
+                            isInputDisabled={
+                              field.disabled ||
+                              (!isMultiSign && isLoading) ||
+                              isWithdrawalInputDisabled
+                            }
+                            acceptedButtonLabel={
+                              isWithdrawalInputDisabled ? "Change" : "Confirm"
+                            }
+                            setIsInputDisabled={setIsWithdrawalInputDisabled}
+                            value={field.value}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               )}
             <div className="flex flex-row justify-between gap-1.5 w-full">
               <Button

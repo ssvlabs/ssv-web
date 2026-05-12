@@ -13,6 +13,7 @@ import { boolify } from "@/lib/utils/boolean";
 import { useChainId } from "wagmi";
 import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import { useAccount } from "@/hooks/account/use-account";
+import { seedClusterCache } from "@/hooks/cluster/seed-cluster-cache";
 
 export const getPaginatedAccountClustersQueryOptions = (
   account?: Address,
@@ -33,13 +34,16 @@ export const getPaginatedAccountClustersQueryOptions = (
       orderBy,
       chainId,
     ],
-    queryFn: () =>
-      getPaginatedAccountClusters({
+    queryFn: async () => {
+      const response = await getPaginatedAccountClusters({
         account: account!,
         page: page,
         perPage,
         ordering: orderBy,
-      }),
+      });
+      response.clusters.forEach(seedClusterCache);
+      return response;
+    },
     enabled: boolify(account) && enabled(options?.enabled),
   });
 };
@@ -69,11 +73,20 @@ export const usePaginatedAccountClusters = (
   );
 
   const setPage = (page: number) => {
-    setSearchParams((prev) => ({ ...prev, page: String(page) }));
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set("page", String(page));
+      return next;
+    });
   };
 
   const setOrderBy = (orderBy: `${OrderBy}:${Sort}`) => {
-    setSearchParams((prev) => ({ ...prev, orderBy, page: "1" }));
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set("orderBy", orderBy);
+      next.set("page", "1");
+      return next;
+    });
   };
 
   if (query.data?.pagination && page > query.data.pagination.pages) {

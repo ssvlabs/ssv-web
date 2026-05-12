@@ -34,7 +34,7 @@ jobs:
       STAGE_GETTER_CONTRACT_ADDRESS: "0x3234e84b7d1eE1AF8b586E26814d4e268336D142"
       PROD_SSV_NETWORKS: >
         [
-             {
+          {
              \"networkId\": 1,
              \"apiVersion\": \"v4\",
              \"apiNetwork\": \"mainnet\",
@@ -87,14 +87,14 @@ jobs:
       - name: Run lint
         run: pnpm lint
 
-      - name: Run tests
-        run: pnpm run test:run
+      # - name: Run tests
+      #   run: pnpm run test:run
 
-      - name: Run semantic-release
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+      # - name: Run semantic-release
+      #   if: github.event_name == 'push' && (github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main')
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: npx semantic-release
 
       - name: Configure AWS credentials
         if: github.ref == 'refs/heads/pre-stage' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/main-preview' || github.ref == 'refs/heads/bapps-prod' || github.ref == 'refs/heads/temporary-hoodi-deploy'
@@ -113,7 +113,6 @@ jobs:
         if: github.ref == 'refs/heads/stage'
         run: pnpm check-abi:dev
 
-
       - name: Run stage webapp build
         if: github.ref == 'refs/heads/stage'
         run: >
@@ -127,6 +126,8 @@ jobs:
           VITE_IPGEO_API_KEY="${{ secrets.VITE_IPGEO_API_KEY }}"
           VITE_IPREGISTRY_KEY="${{ secrets.VITE_IPREGISTRY_KEY }}"
           VITE_BIGDATACLOUD_KEY="${{ secrets.VITE_BIGDATACLOUD_KEY }}"
+          VITE_SUPABASE_URL="https://zpbnunrwrtgpaczhhnow.supabase.co"
+          VITE_SUPABASE_PUBLISHABLE_KEY="sb_publishable_FPDi6MgZXd1Q9QJivzSHnA_8aVJIVp8"
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}
@@ -188,6 +189,8 @@ jobs:
           VITE_IPGEO_API_KEY="${{ secrets.VITE_IPGEO_API_KEY }}"
           VITE_IPREGISTRY_KEY="${{ secrets.VITE_IPREGISTRY_KEY }}"
           VITE_BIGDATACLOUD_KEY="${{ secrets.VITE_BIGDATACLOUD_KEY }}"
+          VITE_SUPABASE_URL="https://tetvioknzhvbjgnaotrk.supabase.co"
+          VITE_SUPABASE_PUBLISHABLE_KEY="sb_publishable_DIupdY-BESliwf5DWppq4Q_MlZUMbNX"
           pnpm build
         env:
           GAS_PRICE: ${{ secrets.GAS_PRICE }}

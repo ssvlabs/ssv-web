@@ -5,9 +5,12 @@ import { Container } from "@/components/ui/container";
 import { Spacer } from "@/components/ui/spacer";
 import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
+import { useCluster } from "@/hooks/cluster/use-cluster";
+import { useClusterEffectiveBalance } from "@/hooks/cluster/use-cluster-effective-balance";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
-import { useClusterState } from "@/hooks/cluster/use-cluster-state";
+import { useIsClusterLiquidated } from "@/hooks/cluster/use-is-cluster-liquidated";
 import { useOperatorsUsability } from "@/hooks/keyshares/use-operators-usability";
+import { getOperatorIds } from "@/lib/utils/operator";
 import { PlusIcon } from "lucide-react";
 import { type FC, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
@@ -26,24 +29,34 @@ export const MigratedCluster: FC = () => {
   const isProjected = activeTab === "projected";
 
   const { clusterHash } = useClusterPageParams();
-  const { cluster, isLiquidated } = useClusterState(clusterHash!, {
-    balance: { watch: true },
-    isLiquidated: { watch: true },
-  });
+  const cluster = useCluster(clusterHash!);
+  const isLiquidated = useIsClusterLiquidated(clusterHash!, { watch: true });
+  const effectiveBalance = useClusterEffectiveBalance(clusterHash!);
 
   const { data: effectiveBalanceBreakdown } =
     useClusterEffectiveBalanceBreakdown(clusterHash!);
 
-  const hasProjected = (effectiveBalanceBreakdown?.pending ?? 0) > 0;
+  const currentEffectiveBalance = Number(effectiveBalance.data ?? 0);
 
-  const currentEffectiveBalance = Number(cluster.data?.effectiveBalance ?? 0);
-  const projectedEffectiveBalance = Number(
-    currentEffectiveBalance + (effectiveBalanceBreakdown?.pending ?? 0),
-  );
+  const totalBreakdownBalance =
+    (effectiveBalanceBreakdown?.deposited ?? 0) +
+    (effectiveBalanceBreakdown?.exited ?? 0) +
+    (effectiveBalanceBreakdown?.exiting ?? 0) +
+    (effectiveBalanceBreakdown?.notDeposited ?? 0) +
+    (effectiveBalanceBreakdown?.pending ?? 0) +
+    (effectiveBalanceBreakdown?.slashed ?? 0);
+
+  const hasProjected =
+    (effectiveBalanceBreakdown?.pending ?? 0) > 0 &&
+    totalBreakdownBalance !== currentEffectiveBalance;
+
+  const projectedEffectiveBalance = hasProjected
+    ? totalBreakdownBalance
+    : currentEffectiveBalance;
 
   const operatorsUsability = useOperatorsUsability({
     account: account.address!,
-    operatorIds: cluster.data?.operators ?? [],
+    operatorIds: getOperatorIds(cluster.data?.operators ?? []),
   });
 
   const getTooltipContent = () => {
@@ -80,9 +93,8 @@ export const MigratedCluster: FC = () => {
               clusterHash={clusterHash!}
               isLiquidated={Boolean(isLiquidated.data)}
               isProjected={hasProjected && isProjected}
-              deltaEffectiveBalance={BigInt(
-                effectiveBalanceBreakdown?.pending ?? 0,
-              )}
+              effectiveBalance={BigInt(currentEffectiveBalance)}
+              projectedEffectiveBalance={BigInt(projectedEffectiveBalance)}
             />
           </div>
           <Card className="flex-[2] h-full p-6">

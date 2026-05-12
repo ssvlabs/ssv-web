@@ -1,9 +1,10 @@
 import { createGuard } from "@/guard/create-guard";
-import { isFrom } from "@/lib/utils/router";
 import { add0x } from "@/lib/utils/strings";
 import type { Operator } from "@/types/api.ts";
 import { createFileSetter } from "@/lib/utils/valtio.ts";
 import { getOSName } from "@/lib/utils/os.ts";
+import { parseGwei } from "viem";
+import { isFrom } from "@/lib/utils/router";
 
 export const [BulkActionGuard, useBulkActionContext] = createGuard(
   {
@@ -20,6 +21,8 @@ export const [BulkActionGuard, useBulkActionContext] = createGuard(
       proofFiles: createFileSetter(),
       selectedValidatorsCount: 0,
       selectedOs: getOSName(),
+      compounding: true,
+      effectiveBalanceGwei: parseGwei("32"),
     },
   },
   {

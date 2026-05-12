@@ -572,4 +572,110 @@ describe("createContractHooks", () => {
       });
     });
   });
+
+  describe("Read hook structure", () => {
+    it("should return query shape for hook without params", () => {
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      const result = hooks.useTotalSupply();
+
+      expect(result).toHaveProperty("data");
+      expect(result).toHaveProperty("isLoading");
+      expect(result).toHaveProperty("error");
+    });
+
+    it("should call useReadContract with correct functionName for no-param hook", async () => {
+      const { useReadContract } = await import("wagmi");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useTotalSupply();
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({ functionName: "totalSupply" }),
+      );
+    });
+
+    it("should call useReadContract with correct abi", async () => {
+      const { useReadContract } = await import("wagmi");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useTotalSupply();
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({ abi: testAbi }),
+      );
+    });
+
+    it("should call useReadContract with default contract address", async () => {
+      const { useReadContract } = await import("wagmi");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useTotalSupply();
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({ address: DEFAULT_CONTRACT }),
+      );
+    });
+
+    it("should use custom contract address when provided", async () => {
+      const { useReadContract } = await import("wagmi");
+      const customContract: Address =
+        "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useTotalSupply({ contract: customContract });
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({ address: customContract }),
+      );
+    });
+
+    it("should disable query when enabled: false", async () => {
+      const { useReadContract } = await import("wagmi");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useTotalSupply({ enabled: false });
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: expect.objectContaining({ enabled: false }),
+        }),
+      );
+    });
+
+    it("should return query shape for hook with params", () => {
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      const result = hooks.useBalanceOf({ owner: DEFAULT_CONTRACT });
+
+      expect(result).toHaveProperty("data");
+      expect(result).toHaveProperty("isLoading");
+      expect(result).toHaveProperty("error");
+    });
+
+    it("should call useReadContract with correct functionName for param hook", async () => {
+      const { useReadContract } = await import("wagmi");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useBalanceOf({ owner: DEFAULT_CONTRACT });
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({ functionName: "balanceOf" }),
+      );
+    });
+
+    it("should call useReadContract with mapped args for param hook", async () => {
+      const { useReadContract } = await import("wagmi");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useBalanceOf({ owner: DEFAULT_CONTRACT });
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({ args: [DEFAULT_CONTRACT] }),
+      );
+    });
+
+    it("should disable query when arg is undefined", async () => {
+      const { useReadContract } = await import("wagmi");
+      const hooks = createContractHooks(testAbi, defaultContractGetter);
+      hooks.useBalanceOf({ owner: undefined as unknown as Address });
+
+      expect(vi.mocked(useReadContract)).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: expect.objectContaining({ enabled: false }),
+        }),
+      );
+    });
+  });
 });

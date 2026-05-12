@@ -6,7 +6,6 @@ import { SsvLoader } from "@/components/ui/ssv-loader.tsx";
 import { TransactionModal } from "@/components/ui/transaction-modal";
 import { useAccount } from "@/hooks/account/use-account";
 import { useAccountState } from "@/hooks/account/use-account-state.ts";
-import { useMaintenance } from "@/hooks/app/use-maintenance";
 import { useBlockNavigationOnPendingTx } from "@/hooks/use-block-navigation-on-pending-tx";
 import { useIdentify } from "@/lib/analytics/mixpanel/useIdentify";
 import { useTrackPageViews } from "@/lib/analytics/mixpanel/useTrackPageViews";
@@ -20,6 +19,7 @@ import { useLocationState } from "@/app/routes/router.tsx";
 
 import { matchPath } from "react-router-dom";
 import { EthFundingMigrationBanner } from "@/components/banners/eth-funding-migration-banner.tsx";
+import { useMaintenance } from "@/lib/supabase";
 
 export const DashboardLayout: FC<ComponentPropsWithRef<"div">> = ({
   children,

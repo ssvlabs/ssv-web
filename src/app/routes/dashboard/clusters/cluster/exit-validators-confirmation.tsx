@@ -17,6 +17,7 @@ import { getOperatorIds } from "@/lib/utils/operator";
 import type { Address } from "abitype";
 import { useState, type FC } from "react";
 import { useNavigate } from "react-router-dom";
+import { applyOptimisticClusterUpdate } from "@/lib/utils/react-query/cluster-optimistic-update";
 
 export const ExitValidatorsConfirmation: FC = () => {
   const navigate = useNavigate();
@@ -38,10 +39,13 @@ export const ExitValidatorsConfirmation: FC = () => {
     );
 
     const options = withTransactionModal({
-      onMined: () => {
+      onMined: ({ events }) => {
         track("Exit Validator", {
           validators_amount: selectedPublicKeys.length,
         });
+
+        applyOptimisticClusterUpdate(cluster.data!.clusterId, events);
+
         return () => navigate(`../success`);
       },
     });

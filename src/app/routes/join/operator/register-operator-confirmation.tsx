@@ -68,7 +68,7 @@ export const RegisterOperatorConfirmation: FC = () => {
             id: Number(event?.args.operatorId),
             owner_address: event?.args.owner,
             public_key: event?.args.publicKey,
-            fee: event?.args.fee.toString(),
+            eth_fee: event?.args.fee.toString(),
             is_private: isPrivate,
           });
 

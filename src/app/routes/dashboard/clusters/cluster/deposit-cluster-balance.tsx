@@ -19,18 +19,14 @@ import { Text } from "@/components/ui/text";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
 import { Divider } from "@/components/ui/divider";
 import { isBigIntChanged } from "@/lib/utils/bigint";
-import { mergeClusterSnapshot } from "@/lib/utils/cluster";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { setOptimisticData } from "@/lib/react-query";
 import { useDepositClusterBalance } from "@/hooks/cluster/use-deposit-cluster-balance";
 import { useNavigate } from "react-router-dom";
-import {
-  getClusterQueryOptions,
-  useCluster,
-} from "@/hooks/cluster/use-cluster";
+import { useCluster } from "@/hooks/cluster/use-cluster";
 import { formatSSV } from "@/lib/utils/number";
 import { useBalance } from "wagmi";
 import { useAccount } from "@/hooks/account/use-account";
+import { applyOptimisticClusterUpdate } from "@/lib/utils/react-query/cluster-optimistic-update";
 
 const schema = z.object({
   value: z.bigint().positive(),
@@ -61,21 +57,7 @@ export const DepositClusterBalance: FC = () => {
       value,
       withTransactionModal({
         onMined: async ({ events }) => {
-          const event = events.find((e) => e.eventName === "ClusterDeposited");
-
-          event &&
-            setOptimisticData(
-              getClusterQueryOptions(params.clusterHash!).queryKey,
-              (cluster) => {
-                if (!cluster) return cluster;
-
-                return mergeClusterSnapshot(cluster, event.args.cluster, {
-                  isLiquidated: Boolean(
-                    events.find((e) => e.eventName === "ClusterLiquidated"),
-                  ),
-                });
-              },
-            );
+          applyOptimisticClusterUpdate(params.clusterHash!, events);
 
           return () => navigate("..");
         },

@@ -5,20 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
+import { useOperator } from "@/hooks/operator/use-operator";
 import {
-  getOperatorQueryOptions,
-  useOperator,
-} from "@/hooks/operator/use-operator";
+  useSetOperatorsPrivateUnchecked,
+  useSetOperatorsPublicUnchecked,
+} from "@/lib/contract-interactions/hooks/setter";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
-import { useSetOperatorsPrivateUnchecked } from "@/lib/contract-interactions/hooks/setter";
-import { useSetOperatorsPublicUnchecked } from "@/lib/contract-interactions/hooks/setter";
-import { useQueryClient } from "@tanstack/react-query";
+import { applyOptimisticOperatorUpdate } from "@/lib/utils/react-query/operator-optimistic-update";
 import type { FC } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const OperatorStatus: FC = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   const { data: operator } = useOperator();
   const isFeeZero = !Number(operator?.fee);
@@ -39,13 +37,8 @@ export const OperatorStatus: FC = () => {
         operatorIds: [BigInt(operator.id)],
       },
       options: withTransactionModal({
-        onMined: () => {
-          const queryKey = getOperatorQueryOptions(operator.id).queryKey;
-          queryClient.cancelQueries({ queryKey });
-          queryClient.setQueryData(queryKey, (data) => {
-            if (!data) return data;
-            return { ...data, is_private: !operator.is_private };
-          });
+        onMined: ({ events }) => {
+          applyOptimisticOperatorUpdate(operator.id, events);
           return () => navigate("..");
         },
       }),

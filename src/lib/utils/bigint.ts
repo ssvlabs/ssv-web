@@ -40,10 +40,7 @@ export const isBigIntChanged = (
   return bigintAbs(a - b) > tolerance;
 };
 
-export const roundOperatorFee = (
-  fee: bigint,
-  precision = 10_000_000n,
-): bigint => {
+export const roundOperatorFee = (fee: bigint, precision = 100_000n): bigint => {
   return bigintRound(fee, precision);
 };
 

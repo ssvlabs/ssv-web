@@ -51,9 +51,8 @@ export const searchOperators = (params: SearchOperatorsParams) => {
 };
 
 export const getOperators = (params: Partial<OperatorsSearchSchema>) => {
-  return api.get<OperatorsSearchResponse>(
-    endpoint("operators", operatorSearchParamsSerializer(params)),
-  );
+  const url = endpoint("operators", operatorSearchParamsSerializer(params));
+  return api.get<OperatorsSearchResponse>(url);
 };
 
 type GetAccountOperatorsParams = {

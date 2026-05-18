@@ -4,7 +4,6 @@ import {
   validatorsSearchParamsSerializer,
   type ValidatorsSearchSchema,
 } from "@/lib/search-parsers/validators-search-parsers";
-import { getDefaultClusterData, toSolidityCluster } from "@/lib/utils/cluster";
 import { add0x } from "@/lib/utils/strings";
 import { mapBeaconChainStatus } from "@/lib/utils/validator-status-mapping";
 import type {
@@ -17,18 +16,13 @@ import { formatGwei, type Hex } from "viem";
 
 export const getCluster = (hash: string) => {
   return api
-    .get<GetClusterResponse>(endpoint("clusters", hash))
+    .get<GetClusterResponse>(
+      endpoint("clusters", hash, "?operatorDetails=true"),
+    )
     .then((res) => res.cluster);
 };
 
-export const getClusterData = (hash: string) =>
-  getCluster(hash)
-    .then((cluster) =>
-      cluster ? toSolidityCluster(cluster) : getDefaultClusterData(),
-    )
-    .catch(() => getDefaultClusterData());
-
-export type OrderBy = "id" | "validatorCount" | "effectiveBalance";
+export type OrderBy = "id" | "name" | "validatorCount" | "effectiveBalance";
 export type Sort = "asc" | "desc";
 
 export type GetPaginatedAccountClusters = {
@@ -92,6 +86,13 @@ export const getPaginatedClusterValidators = (
       })),
       pagination: response.pagination,
     }));
+};
+
+export const updateClusterName = (
+  clusterId: string,
+  payload: { name: string; signature: string },
+) => {
+  return api.put(endpoint(`clusters/${clusterId}/metadata`), payload);
 };
 
 export const getClusterTotalEffectiveBalance = (clusterHash: string) => {

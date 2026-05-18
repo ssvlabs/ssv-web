@@ -55,7 +55,7 @@ export const OperationalRunwayCard: FC<OperationalRunwayCardProps> = ({
     deltaEffectiveBalance: isProjected ? deltaEffectiveBalance : undefined,
   });
 
-  const totalBalance = balance.data.eth;
+  const totalBalance = balance.data;
   const liquidationCollateral =
     fundingCost.data?.subtotal.liquidationCollateral ?? 0n;
 

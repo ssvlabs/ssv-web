@@ -100,8 +100,7 @@ export const RegisterValidatorConfirmation: FC = () => {
             .catch(() => false),
         );
 
-        if (!accountClusters.clusters.length)
-          await accountClusters.query.refetch();
+        accountClusters.query.refetch();
 
         await queryClient.refetchQueries({
           queryKey: getClusterQueryOptions(clusterHash).queryKey,

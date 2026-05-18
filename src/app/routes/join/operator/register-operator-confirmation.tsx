@@ -12,7 +12,7 @@ import { getOperatorQueryOptions } from "@/hooks/operator/use-operator";
 import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitForTransactionReceipt";
 import { useRegisterOperator } from "@/lib/contract-interactions/hooks/setter";
 import { queryClient } from "@/lib/react-query";
-import { bigintMin } from "@/lib/utils/bigint";
+import { bigintMin, roundOperatorFee } from "@/lib/utils/bigint";
 import { formatBigintInput, ms } from "@/lib/utils/number";
 import { createDefaultOperator } from "@/lib/utils/operator";
 import { shortenAddress } from "@/lib/utils/strings";
@@ -39,7 +39,10 @@ export const RegisterOperatorConfirmation: FC = () => {
   const submit = () => {
     const createOperatorArgs = {
       setPrivate: isPrivate,
-      fee: bigintMin(yearlyFee / globals.BLOCKS_PER_YEAR, maxFee),
+      fee: bigintMin(
+        roundOperatorFee(yearlyFee / globals.BLOCKS_PER_YEAR),
+        maxFee,
+      ),
       publicKey: encodeAbiParameters(parseAbiParameters("string"), [publicKey]),
     };
 
@@ -65,7 +68,7 @@ export const RegisterOperatorConfirmation: FC = () => {
             id: Number(event?.args.operatorId),
             owner_address: event?.args.owner,
             public_key: event?.args.publicKey,
-            fee: event?.args.fee.toString(),
+            eth_fee: event?.args.fee.toString(),
             is_private: isPrivate,
           });
 

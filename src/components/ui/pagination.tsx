@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils/tw";
 import type { ButtonProps } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
 import type { To } from "react-router-dom";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { createSerializer, parseAsInteger } from "nuqs";
 import type { Pagination as IPagination } from "@/types/api";
 
 const PaginationContainer = ({
@@ -111,12 +112,9 @@ const Pagination: React.FC<React.ComponentProps<"nav"> & PaginationProps> = ({
   pagination,
   ...props
 }) => {
-  const [searchParams] = useSearchParams();
-  const buildSearch = (page: number) => {
-    const next = new URLSearchParams(searchParams);
-    next.set("page", String(page));
-    return `?${next.toString()}`;
-  };
+  const { search } = useLocation();
+  const serialize = createSerializer({ page: parseAsInteger });
+  const buildSearch = (page: number) => serialize(search, { page });
 
   return (
     <PaginationContainer className={cn(className)} {...props}>

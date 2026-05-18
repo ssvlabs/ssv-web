@@ -39,11 +39,10 @@ export const useAccount = () => {
   });
 
   const acceptedTerms = useQuery({
-    queryKey: [accountAddress, account.chainId],
-    queryFn: () =>
-      accountAddress &&
-      account.chainId === 1 &&
-      acceptTermsAndConditions(accountAddress),
+    staleTime: Infinity,
+    queryKey: ["terms", accountAddress],
+    enabled: !!accountAddress && account.chainId === 1,
+    queryFn: () => acceptTermsAndConditions(accountAddress!),
   });
 
   return useMemo(

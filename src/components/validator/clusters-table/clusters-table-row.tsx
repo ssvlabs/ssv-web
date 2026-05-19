@@ -57,6 +57,7 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
         "bg-warning-200": runway.data?.isAtRisk,
         "bg-error-50": isLiquidated,
       })}
+      data-testid={`cluster-row-${cluster.clusterId}`}
       {...props}
     >
       <TableCell>

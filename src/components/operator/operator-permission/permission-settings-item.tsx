@@ -36,6 +36,9 @@ export const PermissionSettingsItem: FCProps = ({
         },
         className,
       )}
+      role={route ? "button" : undefined}
+      aria-label={route && typeof title === "string" ? title : undefined}
+      tabIndex={route ? 0 : undefined}
       onClick={route ? () => navigate(route) : undefined}
       {...props}
     >

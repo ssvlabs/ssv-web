@@ -107,6 +107,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
               htmlFor={item.public_key}
               key={index}
               clickable
+              data-testid={`bulk-validator-row-${item.public_key}`}
             >
               <TableCell className="flex gap-2 items-center">
                 <Checkbox

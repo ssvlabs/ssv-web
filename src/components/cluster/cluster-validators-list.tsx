@@ -66,7 +66,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
         ]}
         items={validators}
         renderRow={({ index, item }) => (
-          <TableRow key={index}>
+          <TableRow key={index} data-testid={`validator-row-${item.public_key}`}>
             <TableCell className="flex gap-2 items-center">
               <Text variant="body-3-medium">
                 {shortenAddress(add0x(item.public_key))}
@@ -90,7 +90,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
               {cluster.data && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <IconButton>
+                    <IconButton aria-label="Validator actions">
                       <HiOutlineCog />
                     </IconButton>
                   </DropdownMenuTrigger>

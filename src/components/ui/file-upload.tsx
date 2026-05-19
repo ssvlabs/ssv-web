@@ -399,7 +399,7 @@ export const JSONFileUploader = ({
       value={files}
       onValueChange={onValueChange}
     >
-      <FileInput className="h-64 flex flex-col items-center justify-center bg-gray-100 border border-gray-300 rounded-xl">
+      <FileInput data-testid="json-file-uploader" className="h-64 flex flex-col items-center justify-center bg-gray-100 border border-gray-300 rounded-xl">
         <div className="flex flex-col items-center gap-4">
           {isLoading ? (
             <div className="size-12">

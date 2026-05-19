@@ -94,6 +94,7 @@ export const OperatorPickerItem: FCProps = ({
           },
           className,
         )}
+        data-testid={`operator-picker-item-${operator.id}`}
         {...props}
       >
         <TableCell>

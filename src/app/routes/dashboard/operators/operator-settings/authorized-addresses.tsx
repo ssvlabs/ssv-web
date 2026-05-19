@@ -135,6 +135,7 @@ export const AuthorizedAddresses = () => {
                       <FormControl>
                         <Input
                           {...field}
+                          aria-label="Authorized address"
                           onPaste={handlePaste(index)}
                           rightSlot={
                             <Button

@@ -35,12 +35,18 @@ export const MultisigTransactionModal: FCProps = () => {
       };
   return (
     <Dialog isOpen={isOpen}>
-      <DialogContent className="flex bg-gray-50 flex-col gap-8 max-w-[424px] font-medium ">
+      <DialogContent
+        data-testid="multisig-transaction-modal"
+        className="flex bg-gray-50 flex-col gap-8 max-w-[424px] font-medium "
+      >
         <div className="flex flex-col gap-3">
-          <DialogTitle>
+          <DialogTitle data-testid="multisig-transaction-modal-title">
             <Text variant="headline4">Transaction Initiated</Text>
           </DialogTitle>
-          <Text variant="body-2-medium">
+          <Text
+            data-testid="multisig-transaction-modal-description"
+            variant="body-2-medium"
+          >
             Your transaction has been successfully initiated within the
             multi-sig wallet and is now pending approval from other
             participants.
@@ -50,7 +56,12 @@ export const MultisigTransactionModal: FCProps = () => {
           </Text>
         </div>
         <img src="/images/ssv-loader.svg" className="size-28 mx-auto" />
-        <Button {...(buttonProps as ButtonProps)}>Close</Button>
+        <Button
+          data-testid="multisig-transaction-modal-close-btn"
+          {...(buttonProps as ButtonProps)}
+        >
+          Close
+        </Button>
       </DialogContent>
     </Dialog>
   );

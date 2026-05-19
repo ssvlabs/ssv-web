@@ -307,6 +307,7 @@ export const FileUploaderItem = forwardRef<
       </div>
       <button
         type="button"
+        data-testid={`file-uploader-item-${index}-remove-btn`}
         className={cn(
           "absolute",
           direction === "rtl" ? "top-1 left-1" : "top-1 right-1",
@@ -399,7 +400,10 @@ export const JSONFileUploader = ({
       value={files}
       onValueChange={onValueChange}
     >
-      <FileInput className="h-64 flex flex-col items-center justify-center bg-gray-100 border border-gray-300 rounded-xl">
+      <FileInput
+        data-testid="json-file-uploader-dropzone"
+        className="h-64 flex flex-col items-center justify-center bg-gray-100 border border-gray-300 rounded-xl"
+      >
         <div className="flex flex-col items-center gap-4">
           {isLoading ? (
             <div className="size-12">
@@ -414,11 +418,19 @@ export const JSONFileUploader = ({
             />
           )}
           {isLoading && loadingText ? (
-            <Text variant="body-2-medium" className="text-gray-500">
+            <Text
+              data-testid="json-file-uploader-loading"
+              variant="body-2-medium"
+              className="text-gray-500"
+            >
               {loadingText}
             </Text>
           ) : !files.length ? (
-            <Text variant="body-2-medium" className="text-gray-500">
+            <Text
+              data-testid="json-file-uploader-empty-prompt"
+              variant="body-2-medium"
+              className="text-gray-500"
+            >
               Drag and drop files or{" "}
               <Span className="text-primary-500">browse</Span>
             </Text>
@@ -426,6 +438,7 @@ export const JSONFileUploader = ({
             <>
               {isError && error ? (
                 <Text
+                  data-testid="json-file-uploader-error"
                   variant="body-2-medium"
                   className="text-red-500 text-center max-w-96"
                 >
@@ -437,6 +450,7 @@ export const JSONFileUploader = ({
                     files.length > 0 &&
                     files.map((file, i) => (
                       <Text
+                        data-testid={`json-file-uploader-file-${i}-name`}
                         variant="body-2-medium"
                         className={cn("text-success-500", {
                           "text-error-500": isError,
@@ -451,6 +465,7 @@ export const JSONFileUploader = ({
               )}
 
               <Button
+                data-testid="json-file-uploader-remove-btn"
                 variant="link"
                 onClick={(ev) => {
                   ev.preventDefault();

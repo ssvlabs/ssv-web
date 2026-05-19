@@ -5,12 +5,15 @@ import { IconButton } from "@/components/ui/button.tsx";
 const ExpandButton = ({
   setIsOpen,
   isOpen,
+  "data-testid": testId,
 }: {
   setIsOpen: (isOpen: boolean) => void;
   isOpen: boolean;
+  "data-testid"?: string;
 }) => {
   return (
     <IconButton
+      data-testid={testId}
       variant="ghost"
       className="size-9 p-[2px] hover:bg-primary-100 hover:text-primary-500"
       onClick={(ev) => {

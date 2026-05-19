@@ -8,7 +8,6 @@ import { Divider } from "@/components/ui/divider";
 import { Text } from "@/components/ui/text";
 import { FaCircleInfo } from "react-icons/fa6";
 import { Tooltip } from "@/components/ui/tooltip";
-import { useOperatorState } from "@/hooks/operator/use-operator-state";
 import {
   formatOperatorETHFee,
   formatSSV,
@@ -18,6 +17,7 @@ import { CircleX } from "lucide-react";
 import { OperatorStatusBadge } from "@/components/operator/operator-status-badge";
 import { FaEthereum } from "react-icons/fa";
 import { getYearlyFee } from "@/lib/utils/operator";
+import { useOperator } from "@/hooks/operator/use-operator";
 
 export type OperatorStatCardProps = {
   operatorId: OperatorID;
@@ -35,19 +35,19 @@ export const OperatorStatCard: OperatorStatCardFC = ({
   isClusterMigrated = true,
   ...props
 }) => {
-  const operatorState = useOperatorState(operatorId);
+  const operator = useOperator(operatorId);
 
   const fee = getYearlyFee(
     isClusterMigrated
-      ? BigInt(operatorState.data?.operator?.eth_fee ?? 0n)
-      : BigInt(operatorState.data?.operator?.fee ?? 0n),
+      ? BigInt(operator.data?.eth_fee ?? 0n)
+      : BigInt(operator.data?.fee ?? 0n),
   );
 
   const displayFee = isClusterMigrated
     ? formatOperatorETHFee(fee)
     : formatSSV(fee);
 
-  if (operatorState.isLoading)
+  if (operator.isLoading)
     return (
       <Card
         className={cn(
@@ -63,7 +63,7 @@ export const OperatorStatCard: OperatorStatCardFC = ({
       </Card>
     );
 
-  if (operatorState.isError || !operatorState.data)
+  if (operator.isError || !operator.data)
     return (
       <Card
         className={cn(
@@ -79,17 +79,13 @@ export const OperatorStatCard: OperatorStatCardFC = ({
       </Card>
     );
 
-  const { operator } = operatorState.data;
-
   return (
     <Card
-      variant={
-        operatorState.data?.operator?.is_deleted ? "disabled" : "default"
-      }
+      variant={operator.data?.is_deleted ? "disabled" : "default"}
       className={cn("flex flex-col p-6 gap-4", className)}
       {...props}
     >
-      <OperatorDetails operator={operator} />
+      <OperatorDetails operator={operator.data} className="w-full" />
       <Divider />
       <div className="grid grid-cols-[auto_auto_auto] gap-1 gap-x-3 items-center">
         <Tooltip content="Is the operator performing duties for the majority of its validators for the last 2 epochs.">
@@ -117,10 +113,10 @@ export const OperatorStatCard: OperatorStatCardFC = ({
           </div>
         </Tooltip>
         <div className="flex justify-start">
-          <OperatorStatusBadge size="xs" status={operator.status} />
+          <OperatorStatusBadge size="xs" status={operator.data.status} />
         </div>
         <Text variant="body-3-medium" className="text-gray-800 text-right">
-          {percentageFormatter.format(operator.performance["30d"])}
+          {percentageFormatter.format(operator.data.performance["30d"])}
         </Text>
         <div className="flex items-center justify-end gap-0.5">
           {isClusterMigrated ? (

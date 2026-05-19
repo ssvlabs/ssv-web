@@ -13,10 +13,11 @@ import { withTransactionModal } from "@/lib/contract-interactions/utils/useWaitF
 import { useBulkExitValidator } from "@/lib/contract-interactions/hooks/setter";
 import { useExitValidator } from "@/lib/contract-interactions/hooks/setter";
 import { bigintifyNumbers } from "@/lib/utils/bigint";
-import { sortNumbers } from "@/lib/utils/number";
+import { getOperatorIds } from "@/lib/utils/operator";
 import type { Address } from "abitype";
 import { useState, type FC } from "react";
 import { useNavigate } from "react-router-dom";
+import { applyOptimisticClusterUpdate } from "@/lib/utils/react-query/cluster-optimistic-update";
 
 export const ExitValidatorsConfirmation: FC = () => {
   const navigate = useNavigate();
@@ -33,15 +34,18 @@ export const ExitValidatorsConfirmation: FC = () => {
   const isPending = exitValidator.isPending || bulkExitValidators.isPending;
 
   const exit = async () => {
-    const operatorIds = sortNumbers(
-      bigintifyNumbers(cluster.data?.operators ?? []),
+    const operatorIds = bigintifyNumbers(
+      getOperatorIds(cluster.data?.operators ?? []),
     );
 
     const options = withTransactionModal({
-      onMined: () => {
+      onMined: ({ events }) => {
         track("Exit Validator", {
           validators_amount: selectedPublicKeys.length,
         });
+
+        applyOptimisticClusterUpdate(cluster.data!.clusterId, events);
+
         return () => navigate(`../success`);
       },
     });

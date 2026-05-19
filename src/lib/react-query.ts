@@ -21,10 +21,13 @@ const storageKey = "ssv:query-client-offline-cache";
 const versionKey = "ssv:web-app-version";
 
 const prevVersion = window.localStorage.getItem(versionKey);
-console.log("prevVersion:", prevVersion);
-if (prevVersion !== APP_VERSION) {
+if (prevVersion !== "random-version-so-we-can-clear-the-cache") {
   window.localStorage.removeItem(storageKey);
-  window.localStorage.setItem(versionKey, APP_VERSION);
+  window.localStorage.setItem(
+    versionKey,
+    "random-version-so-we-can-clear-the-cache",
+  );
+  console.log("cleared cache");
 }
 
 export const queryConfig = {

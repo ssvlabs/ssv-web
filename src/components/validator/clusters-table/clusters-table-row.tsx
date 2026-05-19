@@ -59,7 +59,11 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
       })}
       {...props}
     >
-      <TableCell>{shortenClusterId(cluster.clusterId)}</TableCell>
+      <TableCell>
+        <div className="max-w-[88px] truncate">
+          {resolvedCluster.name || shortenClusterId(cluster.clusterId)}
+        </div>
+      </TableCell>
       <TableCell>
         <div className="flex gap-[2px]">
           {cluster.operators.map((o) => {
@@ -107,12 +111,12 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
         {isSsvCluster ? (
           <div className="flex items-center gap-1 text-gray-800 font-medium">
             <img src="/images/ssvIcons/icon.svg" className="size-5" />{" "}
-            {formatSSV(balance.data?.ssv ?? 0n)}
+            {formatSSV(balance.data)}
           </div>
         ) : (
           <div className="flex items-center gap-1 text-gray-800 font-medium">
             <img src="/images/networks/dark.svg" className="size-5" />{" "}
-            {formatETH(balance.data?.eth ?? 0n)}
+            {formatETH(balance.data)}
           </div>
         )}
       </TableCell>
@@ -130,9 +134,7 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
           <Badge size="sm" variant="error">
             Liquidated
           </Badge>
-        ) : isLoadingRunway ? (
-          <Skeleton className="h-7 w-24" />
-        ) : (
+        ) : isLoadingRunway ? null : (
           <>
             {runway.data?.isAtRisk && (
               <Badge size="sm" variant="warning">

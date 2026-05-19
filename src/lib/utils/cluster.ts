@@ -1,7 +1,12 @@
 import { globals } from "@/config";
-import { bigintMax, stringifyBigints } from "@/lib/utils/bigint";
+import {
+  bigintifyNumbers,
+  bigintMax,
+  stringifyBigints,
+} from "@/lib/utils/bigint";
 import { effectiveBalanceToVUnits } from "@/lib/utils/keystore";
 import { numberFormatter, sortNumbers } from "@/lib/utils/number";
+import { getOperatorIds } from "@/lib/utils/operator";
 import { add0x } from "@/lib/utils/strings";
 import type {
   Cluster,
@@ -11,7 +16,7 @@ import type {
 } from "@/types/api";
 import type { Address } from "abitype";
 import { isNumber, merge } from "lodash-es";
-import { encodePacked, keccak256 } from "viem";
+import { encodePacked, keccak256, zeroAddress } from "viem";
 
 export const createClusterHash = (
   account: Address,
@@ -46,7 +51,7 @@ export const getDefaultClusterData = (
   );
 
 export const toSolidityCluster = (
-  cluster?: Partial<Cluster<{ operators: number[] }>> | null,
+  cluster?: Partial<Cluster> | null,
 ): SolidityCluster => ({
   active: cluster?.active ?? true,
   balance: cluster?.migrated
@@ -57,12 +62,20 @@ export const toSolidityCluster = (
   validatorCount: cluster?.validatorCount ?? 0,
 });
 
+/**
+ * Builds the `{ clusterOwner, cluster, operatorIds }` snapshot used as input
+ * for SSVNetworkViews contract calls (e.g. `getBalance`, `getEffectiveBalance`,
+ * `isLiquidated`).
+ *
+ * The owner is read directly from `cluster.ownerAddress` — these contract
+ * calls are owner-scoped, and the cluster always carries its own owner.
+ */
 export const toSolidityClusterSnapshot = (
-  cluster?: Partial<Cluster<{ operators: number[] }>> | null,
+  cluster?: Partial<Cluster> | null,
 ) => ({
-  clusterOwner: cluster?.ownerAddress ?? "",
+  clusterOwner: (cluster?.ownerAddress ?? zeroAddress) as Address,
   cluster: toSolidityCluster(cluster),
-  operatorIds: cluster?.operators?.map((id) => BigInt(id)) ?? [],
+  operatorIds: bigintifyNumbers(getOperatorIds(cluster?.operators ?? [])),
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

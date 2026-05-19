@@ -2,6 +2,8 @@ import { useDeposit } from "@/lib/contract-interactions/hooks/setter";
 import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useAccount } from "@/hooks/account/use-account";
 import { toSolidityCluster } from "@/lib/utils/cluster";
+import { bigintifyNumbers } from "@/lib/utils/bigint";
+import { getOperatorIds } from "@/lib/utils/operator";
 
 export const useDepositClusterBalance = (hash: string) => {
   const account = useAccount();
@@ -23,8 +25,9 @@ export const useDepositClusterBalance = (hash: string) => {
       args: {
         ...params,
         clusterOwner: account.address!,
-        operatorIds:
-          cluster.data?.operators.map((id) => BigInt(id)) ?? ([] as bigint[]),
+        operatorIds: bigintifyNumbers(
+          getOperatorIds(cluster.data?.operators ?? []),
+        ),
         cluster: toSolidityCluster(cluster.data),
       },
       value,

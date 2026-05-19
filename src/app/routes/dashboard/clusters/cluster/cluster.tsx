@@ -12,9 +12,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Spacer } from "@/components/ui/spacer";
 import { Text } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
+import { useCluster } from "@/hooks/cluster/use-cluster";
+import { useClusterBalance } from "@/hooks/cluster/use-cluster-balance";
 import { useClusterPageParams } from "@/hooks/cluster/use-cluster-page-params";
-import { useClusterState } from "@/hooks/cluster/use-cluster-state";
+import { useIsClusterLiquidated } from "@/hooks/cluster/use-is-cluster-liquidated";
 import { useOperatorsUsability } from "@/hooks/keyshares/use-operators-usability";
+import { getOperatorIds } from "@/lib/utils/operator";
 import { PlusIcon } from "lucide-react";
 import type { FC } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -28,24 +31,16 @@ export const Cluster: FC = () => {
   const location = useLocation();
   const from = `${location.pathname}${location.search}${location.hash}`;
 
-  const { cluster, isLiquidated, balanceSSV, balanceETH } = useClusterState(
-    clusterHash!,
-    {
-      balance: { watch: true },
-      isLiquidated: { watch: true },
-    },
-  );
+  const cluster = useCluster(clusterHash!);
+  const isLiquidated = useIsClusterLiquidated(clusterHash!, { watch: true });
+  const balance = useClusterBalance(clusterHash!, { watch: true });
 
   const isMigrated = cluster.data?.migrated;
   const hasNoValidators = cluster.data?.validatorCount === 0;
 
-  const isLoadingBalance = isMigrated
-    ? balanceETH.isLoading
-    : balanceSSV.isLoading;
-
   const operatorsUsability = useOperatorsUsability({
     account: account.address!,
-    operatorIds: cluster.data?.operators ?? [],
+    operatorIds: getOperatorIds(cluster.data?.operators ?? []),
   });
 
   const getTooltipContent = () => {
@@ -70,12 +65,12 @@ export const Cluster: FC = () => {
       />
       <Container variant="vertical" size="xl" className="min-h-full py-6">
         <div className="grid grid-cols-4 gap-6 w-full">
-          {cluster.data?.operators.map((operatorId) => (
+          {cluster.data?.operators.map((operator) => (
             <OperatorStatCard
               isClusterMigrated={isMigrated}
-              key={operatorId}
+              key={operator.id}
               className="w-full"
-              operatorId={operatorId}
+              operatorId={operator.id}
             />
           ))}
         </div>
@@ -88,21 +83,16 @@ export const Cluster: FC = () => {
                 </Text>
                 {isLiquidated.data && <Badge variant="error">Liquidated</Badge>}
               </div>
-              {isLoadingBalance ? (
+              {balance.isLoading ? (
                 <Skeleton className="h-10 w-24 my-1" />
               ) : (
-                <BalanceDisplay
-                  amount={BigInt(
-                    isMigrated ? balanceETH.data || 0n : balanceSSV.data || 0n,
-                  )}
-                  token={isMigrated ? "ETH" : "SSV"}
-                />
+                <BalanceDisplay amount={balance.data} token={balance.token} />
               )}
             </div>
             {Boolean(cluster.data?.validatorCount) && (
               <>
                 <Divider />
-                {isLoadingBalance ? (
+                {balance.isLoading ? (
                   <div className="space-y-1">
                     <Skeleton className="h-6 w-[208px] " />
                     <Skeleton className="h-7 w-24 " />

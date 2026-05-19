@@ -22,9 +22,8 @@ import { config } from "@/wagmi/config";
 import { isUndefined } from "lodash-es";
 import type { UseQueryOptions } from "@/lib/react-query";
 import { isAddress } from "viem";
-import type { ContractFunctionName } from "viem";
+import type { ContractFunctionArgs, ContractFunctionName } from "viem";
 import type { Prettify } from "@/types/ts-utils";
-import { useInterval } from "react-use";
 
 type WriteParams<T extends AbiFunction> = {
   args: Prettify<AbiInputsToParams<T["inputs"]>>;
@@ -68,30 +67,41 @@ const refetchInterval = 12000;
 type ReadFnName<TAbi extends Abi, TName extends string> = TName &
   ContractFunctionName<TAbi, "view" | "pure">;
 
+type ReadFnArgs<TAbi extends Abi, TName extends string> = ContractFunctionArgs<
+  TAbi,
+  "view" | "pure",
+  ReadFnName<TAbi, TName>
+>;
+
+type ReadFnData<
+  TAbi extends Abi,
+  TName extends string,
+> = UseReadContractReturnType<TAbi, ReadFnName<TAbi, TName>>["data"];
+
 type ReadHooksObject<TAbi extends Abi> = {
   [Fn in ExtractAbiFunctions<
     TAbi,
     "view" | "pure"
   > as `use${Capitalize<Fn["name"]>}`]: Fn["inputs"] extends readonly []
-    ? (
+    ? <TData = ReadFnData<TAbi, Fn["name"]>>(
         options?: CustomQueryOptions &
-          UseQueryOptions<
-            UseReadContractReturnType<
-              TAbi,
-              ReadFnName<TAbi, Fn["name"]>
-            >["data"]
-          >,
-      ) => UseReadContractReturnType<TAbi, ReadFnName<TAbi, Fn["name"]>>
-    : (
+          UseQueryOptions<ReadFnData<TAbi, Fn["name"]>, Error, TData>,
+      ) => UseReadContractReturnType<
+        TAbi,
+        ReadFnName<TAbi, Fn["name"]>,
+        ReadFnArgs<TAbi, Fn["name"]>,
+        TData
+      >
+    : <TData = ReadFnData<TAbi, Fn["name"]>>(
         params: AbiInputsToParams<Fn["inputs"]>,
         options?: CustomQueryOptions &
-          UseQueryOptions<
-            UseReadContractReturnType<
-              TAbi,
-              ReadFnName<TAbi, Fn["name"]>
-            >["data"]
-          >,
-      ) => UseReadContractReturnType<TAbi, ReadFnName<TAbi, Fn["name"]>>;
+          UseQueryOptions<ReadFnData<TAbi, Fn["name"]>, Error, TData>,
+      ) => UseReadContractReturnType<
+        TAbi,
+        ReadFnName<TAbi, Fn["name"]>,
+        ReadFnArgs<TAbi, Fn["name"]>,
+        TData
+      >;
 };
 
 const capitalize = (str: string) => {
@@ -178,6 +188,7 @@ export function createContractHooks<
                 chainId,
                 query: {
                   ...queryOptions,
+                  refetchInterval: watch ? refetchInterval : undefined,
                   enabled:
                     (enabled ?? true) &&
                     !!contractAddress &&
@@ -185,7 +196,7 @@ export function createContractHooks<
                 },
               }),
             );
-            useInterval(() => query.refetch, watch ? refetchInterval : null);
+
             return query;
           }
         : ({
@@ -205,11 +216,11 @@ export function createContractHooks<
                 chainId,
                 query: {
                   ...queryOptions,
+                  refetchInterval: watch ? refetchInterval : undefined,
                   enabled: enabled && !!contractAddress,
                 },
               }),
             );
-            useInterval(() => query.refetch, watch ? refetchInterval : null);
             return query;
           };
 

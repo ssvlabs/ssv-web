@@ -1,7 +1,6 @@
 import { useOperators } from "@/hooks/operator/use-operators";
 import { useGetValidatorsPerOperatorLimit } from "@/lib/contract-interactions/hooks/getter";
 import type { UseQueryOptions } from "@/lib/react-query";
-import { combineQueryStatus } from "@/lib/react-query";
 import { ms } from "@/lib/utils/number";
 import { canAccountUseOperator } from "@/lib/utils/operator";
 import type { Operator } from "@/types/api";
@@ -10,7 +9,6 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { Address } from "abitype";
 import { useChainId } from "wagmi";
 import { useLocalStorage } from "react-use";
-import { useMemo } from "react";
 
 type Props = {
   account: Address;
@@ -32,7 +30,7 @@ type Result = {
 
 export const useOperatorsUsability = (
   { account, operatorIds, additionalValidators = 0 }: Props,
-  options: UseQueryOptions<Record<number, boolean>> = { enabled: true },
+  { enabled = true, ...options }: UseQueryOptions<Result> = {},
 ) => {
   const { data: maxValidators = 0 } = useGetValidatorsPerOperatorLimit();
   const operators = useOperators(operatorIds, {
@@ -42,7 +40,7 @@ export const useOperatorsUsability = (
   const chainId = useChainId();
   const [skipValidation] = useLocalStorage("skipValidatorsMaxCount", false);
 
-  const canUse = useQuery({
+  return useQuery({
     staleTime: ms(12, "seconds"),
     gcTime: ms(12, "seconds"),
     queryKey: [
@@ -56,30 +54,20 @@ export const useOperatorsUsability = (
       const result = await Promise.all(
         operators.data!.map(
           async (operator) =>
-            [operator, await canAccountUseOperator(account, operator)] as const,
+            [
+              operator.id,
+              await canAccountUseOperator(account, operator),
+            ] as const,
         ),
       );
 
-      return result.reduce(
-        (acc, [operator, canUse]) => {
-          acc[operator.id] = canUse;
-          return acc;
-        },
-        {} as Record<number, boolean>,
-      );
-    },
-    ...options,
-    enabled: Boolean(operators.data && options.enabled),
-  });
+      const usabilityMap = Object.fromEntries(result);
 
-  const queryStatus = combineQueryStatus(canUse, operators);
-  const data = useMemo(
-    () =>
-      operators.data?.reduce(
+      return operators.data!.reduce(
         (acc, operator) => {
           const hasExceededValidatorsLimit =
             !skipValidation && operator?.validators_count >= maxValidators;
-          const isUsable = canUse.data?.[operator.id] ?? false;
+          const isUsable = usabilityMap[operator.id] ?? false;
 
           const willExceedValidatorsLimit =
             !skipValidation &&
@@ -117,18 +105,9 @@ export const useOperatorsUsability = (
           maxAddableValidators: Infinity,
           hasDeletedOperators: false,
         } as Result,
-      ),
-    [
-      additionalValidators,
-      canUse.data,
-      maxValidators,
-      operators.data,
-      skipValidation,
-    ],
-  );
-
-  return {
-    ...queryStatus,
-    data: queryStatus.isSuccess ? data : undefined,
-  };
+      );
+    },
+    ...options,
+    enabled: Boolean(operators.data && enabled),
+  });
 };

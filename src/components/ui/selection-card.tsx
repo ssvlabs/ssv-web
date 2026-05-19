@@ -25,6 +25,9 @@ export const SelectionCard: React.FC<SelectionCardProps> = ({
 }) => {
   return (
     <div
+      role="radio"
+      aria-checked={selected}
+      aria-label={title}
       aria-selected={selected}
       className={cn(
         "flex-1 p-5 rounded-xl flex flex-col justify-center items-center cursor-pointer",

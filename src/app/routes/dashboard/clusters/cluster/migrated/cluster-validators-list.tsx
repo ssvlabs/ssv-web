@@ -38,7 +38,10 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
   const isSsvCluster = !cluster.data?.migrated;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div
+      data-testid="dashboard-cluster-validators-list"
+      className="flex flex-col gap-4"
+    >
       <ValidatorsSearchAndFilters />
       <VirtualizedInfinityTable
         gridTemplateColumns="220px minmax(200px, auto) 120px"
@@ -59,24 +62,46 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
         ]}
         items={validators}
         renderRow={({ index, item }) => (
-          <TableRow key={index}>
+          <TableRow
+            data-testid="dashboard-cluster-validators-row"
+            data-testid-index={index}
+            data-testid-entity={item.public_key}
+            key={index}
+          >
             <TableCell className="flex gap-2 items-center">
-              <Text variant="body-2-medium">
+              <Text
+                data-testid="dashboard-cluster-validators-row-pubkey"
+                variant="body-2-medium"
+              >
                 {shortenAddress(add0x(item.public_key))}
               </Text>
-              <CopyBtn variant="subtle" text={item.public_key} />
+              <CopyBtn
+                data-testid="dashboard-cluster-validators-row-pubkey-copy-btn"
+                variant="subtle"
+                text={item.public_key}
+              />
             </TableCell>
             <TableCell>
-              <ValidatorStatusBadge size="sm" status={item.displayedStatus} />
+              <ValidatorStatusBadge
+                data-testid="dashboard-cluster-validators-row-status"
+                size="sm"
+                status={item.displayedStatus}
+              />
             </TableCell>
             <TableCell className="flex gap-0.5 justify-end">
-              <SsvExplorerBtn validatorId={item.public_key} />
-              <BeaconchainBtn validatorId={item.public_key} />
+              <SsvExplorerBtn
+                data-testid="dashboard-cluster-validators-row-explorer-btn"
+                validatorId={item.public_key}
+              />
+              <BeaconchainBtn
+                data-testid="dashboard-cluster-validators-row-beaconchain-btn"
+                validatorId={item.public_key}
+              />
 
               {cluster.data && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <IconButton>
+                    <IconButton data-testid="dashboard-cluster-validators-row-actions-trigger">
                       <HiOutlineCog />
                     </IconButton>
                   </DropdownMenuTrigger>
@@ -86,7 +111,10 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                       target="_blank"
                       className={cn({ "pointer-events-none": isSsvCluster })}
                     >
-                      <DropdownMenuItem disabled={isSsvCluster}>
+                      <DropdownMenuItem
+                        data-testid="dashboard-cluster-validators-row-change-operators-item"
+                        disabled={isSsvCluster}
+                      >
                         <TbRefresh className="size-4" />
                         <span>Change Operators</span>
                         <Spacer />
@@ -94,6 +122,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                       </DropdownMenuItem>
                     </a>
                     <DropdownMenuItem
+                      data-testid="dashboard-cluster-validators-row-remove-item"
                       onClick={() => {
                         useBulkActionContext.state.selectedPublicKeys = [
                           item.public_key,
@@ -115,6 +144,7 @@ export const ClusterValidatorsList: FC<ComponentPropsWithoutRef<"div">> = ({
                       }
                     >
                       <DropdownMenuItem
+                        data-testid="dashboard-cluster-validators-row-exit-item"
                         disabled={cluster.data?.isLiquidated}
                         onClick={() => {
                           useBulkActionContext.state.selectedPublicKeys = [

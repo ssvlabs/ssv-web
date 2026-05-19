@@ -24,6 +24,7 @@ import { Link, useLocation } from "react-router-dom";
 
 export type ClustersTableRowProps = {
   cluster: Cluster;
+  rowIndex?: number;
 };
 
 type FCProps = FC<
@@ -31,7 +32,12 @@ type FCProps = FC<
     ClustersTableRowProps
 >;
 
-export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
+export const ClustersTableRow: FCProps = ({
+  cluster,
+  rowIndex,
+  className,
+  ...props
+}) => {
   const location = useLocation();
   const from = `${location.pathname}${location.search}${location.hash}`;
 
@@ -53,18 +59,21 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
   return (
     <TableRow
       key={cluster.id}
+      data-testid="dashboard-clusters-table-row"
+      data-testid-index={rowIndex}
+      data-testid-entity={cluster.clusterId}
       className={cn("cursor-pointer", className, {
         "bg-warning-200": runway.data?.isAtRisk,
         "bg-error-50": isLiquidated,
       })}
       {...props}
     >
-      <TableCell>
+      <TableCell data-testid="dashboard-clusters-table-row-name">
         <div className="max-w-[88px] truncate">
           {resolvedCluster.name || shortenClusterId(cluster.clusterId)}
         </div>
       </TableCell>
-      <TableCell>
+      <TableCell data-testid="dashboard-clusters-table-row-operators">
         <div className="flex gap-[2px]">
           {cluster.operators.map((o) => {
             const Cmp: FC = () => {
@@ -100,14 +109,16 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
           })}
         </div>
       </TableCell>
-      <TableCell>{resolvedCluster.validatorCount}</TableCell>
-      <TableCell>
+      <TableCell data-testid="dashboard-clusters-table-row-validators-count">
+        {resolvedCluster.validatorCount}
+      </TableCell>
+      <TableCell data-testid="dashboard-clusters-table-row-effective-balance">
         <div className="flex items-center gap-1 text-gray-800 font-medium">
           <img src="/images/networks/dark.svg" className="size-5" />{" "}
           {formatEffectiveBalance(BigInt(effectiveBalance))}
         </div>
       </TableCell>
-      <TableCell>
+      <TableCell data-testid="dashboard-clusters-table-row-balance">
         {isSsvCluster ? (
           <div className="flex items-center gap-1 text-gray-800 font-medium">
             <img src="/images/ssvIcons/icon.svg" className="size-5" />{" "}
@@ -120,7 +131,7 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
           </div>
         )}
       </TableCell>
-      <TableCell>
+      <TableCell data-testid="dashboard-clusters-table-row-runway">
         {isLoadingRunway ? (
           <Skeleton className="h-5 w-14" />
         ) : resolvedCluster.validatorCount > 0 ? (
@@ -129,15 +140,26 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
           "-"
         )}
       </TableCell>
-      <TableCell className="whitespace-nowrap">
+      <TableCell
+        data-testid="dashboard-clusters-table-row-status"
+        className="whitespace-nowrap"
+      >
         {isLiquidated ? (
-          <Badge size="sm" variant="error">
+          <Badge
+            data-testid="dashboard-clusters-table-row-liquidated-badge"
+            size="sm"
+            variant="error"
+          >
             Liquidated
           </Badge>
         ) : isLoadingRunway ? null : (
           <>
             {runway.data?.isAtRisk && (
-              <Badge size="sm" variant="warning">
+              <Badge
+                data-testid="dashboard-clusters-table-row-low-runway-badge"
+                size="sm"
+                variant="warning"
+              >
                 Low runway
               </Badge>
             )}
@@ -147,6 +169,7 @@ export const ClustersTableRow: FCProps = ({ cluster, className, ...props }) => {
       <TableCell>
         {isSsvCluster && (
           <Button
+            data-testid="dashboard-clusters-table-row-switch-to-eth-btn"
             as={Link}
             to={`/switch-wizard/${cluster.clusterId}`}
             state={{ from }}

@@ -97,8 +97,15 @@ export const FeeRecipientAddress: FC<ComponentPropsWithoutRef<"div">> = () => {
   });
 
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn by="history" />
+    <Container
+      data-testid="dashboard-fee-recipient-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn
+        data-testid="dashboard-fee-recipient-back-btn"
+        by="history"
+      />
       <Form {...form}>
         <Card as="form" onSubmit={submit}>
           <CardHeader
@@ -108,6 +115,7 @@ export const FeeRecipientAddress: FC<ComponentPropsWithoutRef<"div">> = () => {
                 Enter an Ethereum address that will receive all of your
                 validators block proposal rewards.{" "}
                 <Button
+                  data-testid="dashboard-fee-recipient-proposal-rewards-link"
                   as={Link}
                   variant="link"
                   to="https://docs.ssv.network/stakers/validators/validator-rewards/"
@@ -121,7 +129,7 @@ export const FeeRecipientAddress: FC<ComponentPropsWithoutRef<"div">> = () => {
           />
 
           <Alert variant="warning">
-            <AlertDescription>
+            <AlertDescription data-testid="dashboard-fee-recipient-warning">
               Standard rewards from performing other duties will remain to be
               credited to your validators balance on the Beacon Chain.
             </AlertDescription>
@@ -131,19 +139,23 @@ export const FeeRecipientAddress: FC<ComponentPropsWithoutRef<"div">> = () => {
             name="feeRecipientAddress"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Fee Recipient Address</FormLabel>
+                <FormLabel data-testid="dashboard-fee-recipient-address-label">
+                  Fee Recipient Address
+                </FormLabel>
                 <FormControl>
                   <Input
+                    data-testid="dashboard-fee-recipient-address-input"
                     isLoading={ssvAccount.isLoading}
                     disabled={ssvAccount.isLoading}
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage data-testid="dashboard-fee-recipient-address-error" />
               </FormItem>
             )}
           />
           <Button
+            data-testid="dashboard-fee-recipient-update-btn"
             type="submit"
             size="xl"
             isLoading={setFeeRecipient.isPending}

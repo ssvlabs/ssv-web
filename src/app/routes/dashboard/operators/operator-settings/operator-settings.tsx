@@ -20,9 +20,17 @@ export const OperatorSettings: FC<ComponentPropsWithoutRef<"div">> = () => {
   );
 
   return (
-    <Container variant="vertical" className="mt-6" size="lg">
-      <NavigateBackBtn>{operator?.name}</NavigateBackBtn>
+    <Container
+      data-testid="dashboard-operator-settings-page"
+      variant="vertical"
+      className="mt-6"
+      size="lg"
+    >
+      <NavigateBackBtn data-testid="dashboard-operator-settings-back-btn">
+        {operator?.name}
+      </NavigateBackBtn>
       <Card
+        data-testid="dashboard-operator-settings-card"
         variant="unstyled"
         className="not-last:border-b not-last:border-gray-100 overflow-hidden"
       >

@@ -46,12 +46,22 @@ export const OperatorStatus: FC = () => {
   };
 
   return (
-    <Container variant="vertical" size="lg" className="py-6">
-      <NavigateBackBtn />
+    <Container
+      data-testid="dashboard-operator-status-page"
+      variant="vertical"
+      size="lg"
+      className="py-6"
+    >
+      <NavigateBackBtn data-testid="dashboard-operator-status-back-btn" />
       <Card>
         <div className="flex flex-col gap-8 w-full">
           <div className="flex flex-col gap-4">
-            <h1 className="text-xl font-bold">Operator Status</h1>
+            <h1
+              data-testid="dashboard-operator-status-title"
+              className="text-xl font-bold"
+            >
+              Operator Status
+            </h1>
             <div className="flex flex-col gap-3 font-medium text-sm text-gray-700">
               <p>
                 Control validator access by switching between public and private
@@ -87,6 +97,7 @@ export const OperatorStatus: FC = () => {
             </Alert>
           )}
           <Button
+            data-testid="dashboard-operator-status-toggle-btn"
             disabled={isFeeZero && operator?.is_private}
             size="xl"
             className="w-full"

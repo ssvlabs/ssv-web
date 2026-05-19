@@ -9,7 +9,11 @@ import { Link } from "react-router-dom";
 export const OperatorFeeUpdated: FC = () => {
   const state = useUpdateOperatorFeeContext();
   return (
-    <Container variant="vertical" className="py-6">
+    <Container
+      data-testid="dashboard-fee-updated-page"
+      variant="vertical"
+      className="py-6"
+    >
       <Card>
         <CardHeader
           title="Update Fee"
@@ -19,7 +23,12 @@ export const OperatorFeeUpdated: FC = () => {
           previousFee={state.previousYearlyFee}
           newFee={state.newYearlyFee}
         />
-        <Button as={Link} to="/operators" size="xl">
+        <Button
+          data-testid="dashboard-fee-updated-back-to-account-btn"
+          as={Link}
+          to="/operators"
+          size="xl"
+        >
           Back To My Account
         </Button>
       </Card>

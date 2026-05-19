@@ -109,13 +109,24 @@ export const ClusterNameDialog = ({
 
   return (
     <Dialog isOpen={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="w-[648px] max-w-[648px] gap-6 p-8">
-        <DialogClose className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors">
+      <DialogContent
+        data-testid="cluster-name-dialog"
+        className="w-[648px] max-w-[648px] gap-6 p-8"
+      >
+        <DialogClose
+          data-testid="cluster-name-dialog-close-btn"
+          className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors"
+        >
           <FaXmark className="size-4" />
         </DialogClose>
         <DialogHeader className="gap-3">
-          <DialogTitle>Cluster name</DialogTitle>
-          <p className="text-sm text-gray-700">
+          <DialogTitle data-testid="cluster-name-dialog-title">
+            Cluster name
+          </DialogTitle>
+          <p
+            data-testid="cluster-name-dialog-description"
+            className="text-sm text-gray-700"
+          >
             Set a display name for this cluster
           </p>
         </DialogHeader>
@@ -129,6 +140,7 @@ export const ClusterNameDialog = ({
                   <FormControl>
                     <div className="relative">
                       <Input
+                        data-testid="cluster-name-dialog-name-input"
                         placeholder="Cluster"
                         {...field}
                         onChange={(e) => {
@@ -146,6 +158,7 @@ export const ClusterNameDialog = ({
                       {field.value && (
                         <button
                           type="button"
+                          data-testid="cluster-name-dialog-clear-btn"
                           onClick={() => form.setValue("name", "", { shouldValidate: true, shouldDirty: true })}
                           className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 hover:text-gray-600 transition-colors"
                         >
@@ -156,9 +169,16 @@ export const ClusterNameDialog = ({
                   </FormControl>
                   {form.formState.dirtyFields.name &&
                     field.value.length > 0 &&
-                    !apiError && <FormMessage />}
+                    !apiError && (
+                      <FormMessage data-testid="cluster-name-dialog-name-error" />
+                    )}
                   {apiError && (
-                    <p className="text-sm text-error-500">{apiError}</p>
+                    <p
+                      data-testid="cluster-name-dialog-api-error"
+                      className="text-sm text-error-500"
+                    >
+                      {apiError}
+                    </p>
                   )}
                 </FormItem>
               )}
@@ -168,6 +188,7 @@ export const ClusterNameDialog = ({
               const isRemove = !!currentName && value === "";
               return (
                 <Button
+                  data-testid="cluster-name-dialog-submit-btn"
                   type="submit"
                   size="xl"
                   variant={isRemove ? "secondary" : "default"}

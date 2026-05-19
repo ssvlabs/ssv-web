@@ -115,19 +115,30 @@ export const WithdrawClusterBalance: FC = () => {
   });
 
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn />
+    <Container
+      data-testid="dashboard-cluster-withdraw-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn data-testid="dashboard-cluster-withdraw-back-btn" />
       <Card className="w-full gap-2">
         <Text variant="headline4" className="text-gray-500">
           Available Balance
         </Text>
-        <Text variant="headline1">
+        <Text
+          data-testid="dashboard-cluster-withdraw-available-balance"
+          variant="headline1"
+        >
           {formatSSV(clusterBalance)} {symbol}
         </Text>
       </Card>
       <Form {...form}>
         <Card as="form" className="w-full" onSubmit={submit}>
-          <Text variant="headline4" className="text-gray-500">
+          <Text
+            data-testid="dashboard-cluster-withdraw-title"
+            variant="headline4"
+            className="text-gray-500"
+          >
             Withdraw
           </Text>
           <FormField
@@ -146,6 +157,7 @@ export const WithdrawClusterBalance: FC = () => {
                       <div className="flex flex-col pl-6 pr-5 py-4 gap-3 rounded-xl border border-gray-300 bg-gray-200">
                         <div className="flex h-14 items-center gap-5">
                           <input
+                            data-testid="dashboard-cluster-withdraw-amount-input"
                             placeholder="0"
                             className="w-full h-full border outline-none flex-1 text-[28px] font-medium border-none bg-transparent"
                             {...props}
@@ -154,6 +166,7 @@ export const WithdrawClusterBalance: FC = () => {
                           />
                           {!isSsvCluster && (
                             <Button
+                              data-testid="dashboard-cluster-withdraw-max-btn"
                               size="lg"
                               variant="secondary"
                               className="font-semibold px-4"
@@ -192,13 +205,17 @@ export const WithdrawClusterBalance: FC = () => {
 
           {isSsvCluster && (
             <Alert variant="warning">
-              <AlertDescription className="flex flex-col gap-4">
+              <AlertDescription
+                data-testid="dashboard-cluster-withdraw-liquidation-warning"
+                className="flex flex-col gap-4"
+              >
                 <p>
                   Withdrawing from an SSV cluster is full-withdrawal only
                   (partial withdrawals aren't allowed). Proceeding will withdraw
                   the entire cluster balance and liquidate your cluster, which
                   will result in inactivation (
                   <Button
+                    data-testid="dashboard-cluster-withdraw-penalties-link"
                     variant="link"
                     as="a"
                     target="_blank"
@@ -210,6 +227,7 @@ export const WithdrawClusterBalance: FC = () => {
                   the network.
                 </p>
                 <Button
+                  data-testid="dashboard-cluster-withdraw-liquidation-docs-link"
                   variant="link"
                   as="a"
                   target="_blank"
@@ -224,6 +242,7 @@ export const WithdrawClusterBalance: FC = () => {
           {showRiskCheckbox && (
             <label className="flex items-center gap-2" id="understand">
               <Checkbox
+                data-testid="dashboard-cluster-withdraw-agreement-checkbox"
                 checked={hasAgreed}
                 id="understand"
                 className="border border-gray-500"
@@ -237,6 +256,7 @@ export const WithdrawClusterBalance: FC = () => {
             </label>
           )}
           <Button
+            data-testid="dashboard-cluster-withdraw-submit-btn"
             type="submit"
             size="xl"
             disabled={!isChanged || disabled}

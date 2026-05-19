@@ -69,20 +69,28 @@ export const OperationalRunwayCard: FC<OperationalRunwayCardProps> = ({
     (fundingCost.data?.subtotal.networkCost ?? 0n);
 
   return (
-    <Card className="w-full flex-1 p-6 gap-6">
+    <Card
+      data-testid="dashboard-operational-runway-card"
+      className="w-full flex-1 p-6 gap-6"
+    >
       <div className="flex items-center justify-between">
         <Tooltip
           className="max-w-[336px]"
           content="Estimated amount of days the cluster balance is sufficient to run all its validators"
         >
           <div className="flex items-center gap-1">
-            <Text variant="headline4" className="text-gray-500">
+            <Text
+              data-testid="dashboard-operational-runway-label"
+              variant="headline4"
+              className="text-gray-500"
+            >
               Est. Operational Runway
             </Text>
             <FaCircleInfo className="size-4 text-gray-500" />
           </div>
         </Tooltip>
         <Text
+          data-testid="dashboard-operational-runway-days"
           variant="headline4"
           className={cn(isProjected ? "text-primary-500" : "text-gray-700")}
         >
@@ -210,15 +218,31 @@ export const OperationalRunwayCard: FC<OperationalRunwayCardProps> = ({
         runway={runway?.runway ?? 0n}
       />
       {isLiquidated ? (
-        <Button as={Link} to="reactivate-balance" size="xl">
+        <Button
+          data-testid="dashboard-operational-runway-reactivate-btn"
+          as={Link}
+          to="reactivate-balance"
+          size="xl"
+        >
           Reactivate Cluster
         </Button>
       ) : (
         <div className="flex gap-3 [&>*]:flex-1 pt-2">
-          <Button as={Link} to="deposit" size="xl">
+          <Button
+            data-testid="dashboard-operational-runway-deposit-btn"
+            as={Link}
+            to="deposit"
+            size="xl"
+          >
             Deposit
           </Button>
-          <Button as={Link} to="withdraw" size="xl" variant="secondary">
+          <Button
+            data-testid="dashboard-operational-runway-withdraw-btn"
+            as={Link}
+            to="withdraw"
+            size="xl"
+            variant="secondary"
+          >
             Withdraw
           </Button>
         </div>

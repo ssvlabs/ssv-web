@@ -117,8 +117,13 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
       });
   };
   return (
-    <Container variant="vertical" className={cn(className, "py-6")} {...props}>
-      <NavigateBackBtn />
+    <Container
+      data-testid="dashboard-operator-metadata-page"
+      variant="vertical"
+      className={cn(className, "py-6")}
+      {...props}
+    >
+      <NavigateBackBtn data-testid="dashboard-operator-metadata-back-btn" />
       <Form {...form}>
         <Card as="form" className="w-full" onSubmit={form.handleSubmit(submit)}>
           <FormField
@@ -128,7 +133,11 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
               <FormItem>
                 <FormLabel>Operator name</FormLabel>
                 <FormControl>
-                  <Input placeholder="" {...field} />
+                  <Input
+                    data-testid="dashboard-operator-metadata-name-input"
+                    placeholder=""
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -167,7 +176,11 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Description" {...field} />
+                  <Textarea
+                    data-testid="dashboard-operator-metadata-description-input"
+                    placeholder="Description"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -180,7 +193,11 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
               <FormItem>
                 <FormLabel>Cloud Provider</FormLabel>
                 <FormControl>
-                  <Input placeholder="AWS, Azure, Google Cloud..." {...field} />
+                  <Input
+                    data-testid="dashboard-operator-metadata-setup-provider-input"
+                    placeholder="AWS, Azure, Google Cloud..."
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -306,7 +323,11 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
               <FormItem>
                 <FormLabel>Website Link</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your Website Link" {...field} />
+                  <Input
+                    data-testid="dashboard-operator-metadata-website-input"
+                    placeholder="Enter your Website Link"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -320,7 +341,11 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
                 <FormItem>
                   <FormLabel>Twitter</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your Twitter Link" {...field} />
+                    <Input
+                      data-testid="dashboard-operator-metadata-twitter-input"
+                      placeholder="Enter your Twitter Link"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -335,7 +360,11 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
               <FormItem>
                 <FormLabel>Linkedin</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your Linkedin Link" {...field} />
+                  <Input
+                    data-testid="dashboard-operator-metadata-linkedin-input"
+                    placeholder="Enter your Linkedin Link"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -355,13 +384,18 @@ export const OperatorMetadata: FC<ComponentPropsWithoutRef<"div">> = ({
                   </FormLabel>
                 </Tooltip>
                 <FormControl>
-                  <Input placeholder="Enter your Website Link" {...field} />
+                  <Input
+                    data-testid="dashboard-operator-metadata-dkg-address-input"
+                    placeholder="Enter your Website Link"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <Button
+            data-testid="dashboard-operator-metadata-submit-btn"
             size="xl"
             isLoading={sign.isPending}
             type="submit"

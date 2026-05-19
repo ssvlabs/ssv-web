@@ -34,34 +34,38 @@ export const ClusterOperatorsTable: ClusterOperatorsTableFC = ({
 }) => {
   return (
     <Table
+      data-testid="dashboard-cluster-operators-table"
       gridTemplateColumns={GRID_COLUMNS}
       className={cn(className)}
       {...props}
     >
       <TableHeader>
-        <TableCell>
+        <TableCell data-testid="dashboard-cluster-operators-table-header-name">
           <Text variant="caption-medium" className="text-gray-500">
             Name
           </Text>
         </TableCell>
-        <TableCell>
+        <TableCell data-testid="dashboard-cluster-operators-table-header-status">
           <Text variant="caption-medium" className="text-gray-500">
             Status
           </Text>
         </TableCell>
-        <TableCell>
+        <TableCell data-testid="dashboard-cluster-operators-table-header-performance">
           <Text variant="caption-medium" className="text-gray-500">
             30D
           </Text>
         </TableCell>
-        <TableCell className="justify-end">
+        <TableCell
+          data-testid="dashboard-cluster-operators-table-header-fee"
+          className="justify-end"
+        >
           <Text variant="caption-medium" className="text-gray-500">
             1Y Fee
           </Text>
         </TableCell>
       </TableHeader>
-      {operators.map((operator) => (
-        <OperatorRow key={operator.id} operator={operator} />
+      {operators.map((operator, index) => (
+        <OperatorRow key={operator.id} operator={operator} rowIndex={index} />
       ))}
     </Table>
   );
@@ -69,7 +73,10 @@ export const ClusterOperatorsTable: ClusterOperatorsTableFC = ({
 
 ClusterOperatorsTable.displayName = "ClusterOperatorsTable";
 
-const OperatorRow: FC<{ operator: Operator }> = ({ operator }) => {
+const OperatorRow: FC<{ operator: Operator; rowIndex: number }> = ({
+  operator,
+  rowIndex,
+}) => {
   const isInactive = operator.is_active < 1;
   const yearlyFee = getYearlyFee(BigInt(operator.eth_fee), {
     format: true,
@@ -77,7 +84,12 @@ const OperatorRow: FC<{ operator: Operator }> = ({ operator }) => {
   });
 
   return (
-    <TableRow className="items-center h-[60px]">
+    <TableRow
+      data-testid="dashboard-cluster-operators-table-row"
+      data-testid-index={rowIndex}
+      data-testid-entity={operator.id}
+      className="items-center h-[60px]"
+    >
       <TableCell>
         <div className="flex items-center gap-3 min-w-0">
           <OperatorAvatar
@@ -88,6 +100,7 @@ const OperatorRow: FC<{ operator: Operator }> = ({ operator }) => {
           <div className="flex flex-col gap-0.5 min-w-0">
             <div className="flex items-center gap-1.5 h-3">
               <Text
+                data-testid="dashboard-cluster-operators-table-row-name"
                 variant="body-3-medium"
                 className="truncate"
                 title={operator.name}
@@ -95,28 +108,48 @@ const OperatorRow: FC<{ operator: Operator }> = ({ operator }) => {
                 {operator.name}
               </Text>
               {operator.type === "verified_operator" && (
-                <VerifiedSVG className="size-3.5 shrink-0" />
+                <VerifiedSVG
+                  data-testid="dashboard-cluster-operators-table-row-verified-icon"
+                  className="size-3.5 shrink-0"
+                />
               )}
-              <SsvExplorerBtn operatorId={operator.id} />
+              <SsvExplorerBtn
+                data-testid="dashboard-cluster-operators-table-row-explorer-btn"
+                operatorId={operator.id}
+              />
             </div>
             <div className="flex items-center gap-1">
-              <Text variant="caption-medium" className="text-gray-500">
+              <Text
+                data-testid="dashboard-cluster-operators-table-row-id"
+                variant="caption-medium"
+                className="text-gray-500"
+              >
                 ID: {operator.id}
               </Text>
-              <CopyBtn text={operator.id.toString()} />
+              <CopyBtn
+                data-testid="dashboard-cluster-operators-table-row-id-copy-btn"
+                text={operator.id.toString()}
+              />
             </div>
           </div>
         </div>
       </TableCell>
       <TableCell>
-        <OperatorStatusBadge size="xs" status={operator.status} />
+        <OperatorStatusBadge
+          data-testid="dashboard-cluster-operators-table-row-status"
+          size="xs"
+          status={operator.status}
+        />
       </TableCell>
       <TableCell
         className={cn({
           "text-error-500": isInactive,
         })}
       >
-        <Text variant="body-3-medium">
+        <Text
+          data-testid="dashboard-cluster-operators-table-row-performance"
+          variant="body-3-medium"
+        >
           {percentageFormatter.format(operator.performance["30d"])}
         </Text>
       </TableCell>
@@ -127,7 +160,12 @@ const OperatorRow: FC<{ operator: Operator }> = ({ operator }) => {
             src="/images/networks/dark.svg"
             className="size-5"
           />
-          <Text variant="body-3-medium">{yearlyFee}</Text>
+          <Text
+            data-testid="dashboard-cluster-operators-table-row-fee"
+            variant="body-3-medium"
+          >
+            {yearlyFee}
+          </Text>
         </div>
       </TableCell>
     </TableRow>

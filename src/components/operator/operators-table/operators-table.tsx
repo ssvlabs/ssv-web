@@ -78,22 +78,48 @@ export const OperatorsTable: FCProps = ({
     );
   };
   return (
-    <div className="flex flex-col w-full">
+    <div
+      data-testid="dashboard-operators-table"
+      className="flex flex-col w-full"
+    >
       <Table
         className={cn(className, "w-full rounded-t-xl overflow-hidden")}
         {...props}
       >
         <TableHeader>
-          <TableHead>Operator name</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>{renderSortableHeader({ type: "performance30d", title: "30D Performance" })}</TableHead>
-          <TableHead>Balance (ETH | SSV)</TableHead>
-          <TableHead>Yearly Fee (ETH | SSV)</TableHead>
-          <TableHead>{renderSortableHeader({ type: "validatorsCount", title: "Validators" })}</TableHead>
-          <TableHead>{renderSortableHeader({ type: "effectiveBalance", title: "Total ETH Managed" })}</TableHead>
+          <TableHead data-testid="dashboard-operators-table-header-name">
+            Operator name
+          </TableHead>
+          <TableHead data-testid="dashboard-operators-table-header-status">
+            Status
+          </TableHead>
+          <TableHead data-testid="dashboard-operators-table-header-performance">
+            {renderSortableHeader({
+              type: "performance30d",
+              title: "30D Performance",
+            })}
+          </TableHead>
+          <TableHead data-testid="dashboard-operators-table-header-balance">
+            Balance (ETH | SSV)
+          </TableHead>
+          <TableHead data-testid="dashboard-operators-table-header-yearly-fee">
+            Yearly Fee (ETH | SSV)
+          </TableHead>
+          <TableHead data-testid="dashboard-operators-table-header-validators">
+            {renderSortableHeader({
+              type: "validatorsCount",
+              title: "Validators",
+            })}
+          </TableHead>
+          <TableHead data-testid="dashboard-operators-table-header-effective-balance">
+            {renderSortableHeader({
+              type: "effectiveBalance",
+              title: "Total ETH Managed",
+            })}
+          </TableHead>
         </TableHeader>
         <TableBody>
-          {operators.map((operator) => {
+          {operators.map((operator, index) => {
             const { queryKey } = getOperatorQueryOptions(operator.id);
             const cachedOperator = queryClient.getQueryData(queryKey);
             if (cachedOperator?.is_deleted) return null;
@@ -102,6 +128,7 @@ export const OperatorsTable: FCProps = ({
               <OperatorTableRow
                 key={operator.id}
                 operator={operator}
+                rowIndex={index}
                 onClick={() => {
                   return onOperatorClick(operator);
                 }}

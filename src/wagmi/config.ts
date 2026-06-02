@@ -70,32 +70,28 @@ const connectors = connectorsForWallets(
   },
 );
 
+const defaultRpcUrls: Record<number, string> = {
+  [mainnet.id]:
+    "https://ethereum-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
+  [hoodi.id]:
+    "https://ethereum-hoodi-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
+};
+
+const getRpcUrl = (chainId: number): string =>
+  localStorage.getItem(`customRpcUrl_${chainId}`) ?? defaultRpcUrls[chainId];
+
 export const mainnet_private_rpc_client = createPublicClient({
   chain: mainnet,
-  transport: http(
-    "https://ethereum-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
-  ),
+  transport: http(getRpcUrl(mainnet.id)),
 });
 
 export const config = createConfig({
   chains: chains as [Chain, ...Chain[]],
   connectors: connectors,
-  transports: {
-    [mainnet.id]: http(
-      "https://ethereum-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
-      {
-        batch: {
-          wait: 20,
-        },
-      },
-    ),
-    [hoodi.id]: http(
-      "https://ethereum-hoodi-rpc.publicnode.com/d8a2cc6e7483872e917d7899f9403d738b001c80e37d66834f4e40e9efb54a27",
-      {
-        batch: {
-          wait: 20,
-        },
-      },
-    ),
-  },
+  transports: Object.fromEntries(
+    chains.map((chain) => [
+      chain.id,
+      http(getRpcUrl(chain.id), { batch: { wait: 20 } }),
+    ]),
+  ),
 });

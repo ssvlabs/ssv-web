@@ -106,18 +106,7 @@ jobs:
       - name: Set stage SSV networks config
         if: github.ref == 'refs/heads/stage'
         run: |
-          echo 'STAGE_SSV_NETWORKS=[ {
-             \"networkId\": 1,
-             \"apiVersion\": \"v4\",
-             \"apiNetwork\": \"mainnet\",
-             \"api\": \"https://api.ssv.network/api\",
-             \"explorerUrl\": \"https://explorer.ssv.network\",
-             \"insufficientBalanceUrl\": \"https://coinmarketcap.com/currencies/ssv-network/#Markets\",
-             \"googleTagSecret\": \"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}\",
-             \"tokenAddress\": \"0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54\",
-             \"setterContractAddress\": \"0xDD9BC35aE942eF0cFa76930954a156B3fF30a4E1\",
-             \"getterContractAddress\": \"0xafE830B6Ee262ba11cce5F32fDCd760FFE6a66e4\"
-          },{"networkId":560048,"apiVersion":"v4","apiNetwork":"hoodi","api":"https://api.stage.ops.ssvlabsinternal.com/api","explorerUrl":"https://explorer.stage.ssv.network","insufficientBalanceUrl":"https://faucet.stage.ssv.network","googleTagSecret":"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}","tokenAddress":"0x746c33ccc28b1363c35c09badaf41b2ffa7e6d56","setterContractAddress":"${{ env.STAGE_SETTER_CONTRACT_ADDRESS }}","getterContractAddress":"${{ env.STAGE_GETTER_CONTRACT_ADDRESS }}"}]' >> $GITHUB_ENV
+          echo 'STAGE_SSV_NETWORKS=[{"networkId":1,"apiVersion":"v4","apiNetwork":"mainnet","api":"https://api.ssv.network/api","explorerUrl":"https://explorer.ssv.network","insufficientBalanceUrl":"https://coinmarketcap.com/currencies/ssv-network/#Markets","googleTagSecret":"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}","tokenAddress":"0x9D65fF81a3c488d585bBfb0Bfe3c7707c7917f54","setterContractAddress":"0xDD9BC35aE942eF0cFa76930954a156B3fF30a4E1","getterContractAddress":"0xafE830B6Ee262ba11cce5F32fDCd760FFE6a66e4"},{"networkId":560048,"apiVersion":"v4","apiNetwork":"hoodi","api":"https://api.stage.ops.ssvlabsinternal.com/api","explorerUrl":"https://explorer.stage.ssv.network","insufficientBalanceUrl":"https://faucet.stage.ssv.network","googleTagSecret":"${{ secrets.STAGE_GOOGLE_TAG_SECRET }}","tokenAddress":"0x746c33ccc28b1363c35c09badaf41b2ffa7e6d56","setterContractAddress":"${{ env.STAGE_SETTER_CONTRACT_ADDRESS }}","getterContractAddress":"${{ env.STAGE_GETTER_CONTRACT_ADDRESS }}"}]' >> $GITHUB_ENV
 
       - name: Check ABI compatibility (stage)
         if: github.ref == 'refs/heads/stage'

@@ -16,11 +16,23 @@ export const SlashingWarning: FC = () => {
   const { shares } = useRegisterValidatorContext();
 
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn by="history" />
+    <Container
+      data-testid="create-cluster-slashing-warning-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn
+        data-testid="create-cluster-slashing-warning-back-btn"
+        by="history"
+      />
       <Card className="font-medium">
         <div className="space-y-2">
-          <Text variant="headline4">Slashing Warning</Text>
+          <Text
+            data-testid="create-cluster-slashing-warning-title"
+            variant="headline4"
+          >
+            Slashing Warning
+          </Text>
           {shares.length === 1 && (
             <>
               <Text className="font-semibold text-sm text-gray-500 w-fit">
@@ -49,6 +61,7 @@ export const SlashingWarning: FC = () => {
         </Text>
         <label htmlFor="agree-1" className="flex gap-3">
           <Checkbox
+            data-testid="create-cluster-slashing-warning-agreement-checkbox"
             checked={agree1}
             id="agree-1"
             className="mt-1"
@@ -59,7 +72,13 @@ export const SlashingWarning: FC = () => {
             setups will cause slashing to my validator
           </Text>
         </label>
-        <Button as={Link} to="../confirmation" size="xl" disabled={!agree1}>
+        <Button
+          data-testid="create-cluster-slashing-warning-next-btn"
+          as={Link}
+          to="../confirmation"
+          size="xl"
+          disabled={!agree1}
+        >
           Next
         </Button>
       </Card>

@@ -120,14 +120,23 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
 
   return (
     <Container
+      data-testid="create-cluster-upload-keyshares-page"
       variant="vertical"
       size={validators.data?.sharesWithStatuses?.length ? "xl" : "default"}
       className="h-full py-6"
     >
-      <NavigateBackBtn by="history" />
+      <NavigateBackBtn
+        data-testid="create-cluster-upload-keyshares-back-btn"
+        by="history"
+      />
       <div className="flex gap-6 w-full">
         <Card className="flex-1 h-fit" {...props}>
-          <Text variant="headline4">Enter KeyShares File</Text>
+          <Text
+            data-testid="create-cluster-upload-keyshares-title"
+            variant="headline4"
+          >
+            Enter KeyShares File
+          </Text>
           <JSONFileUploader
             files={context.keysharesFile.files ?? []}
             onValueChange={(files) => {
@@ -217,6 +226,7 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
               </Text>
               <div className="flex items-center gap-1 justify-between">
                 <Button
+                  data-testid="create-cluster-upload-keyshares-decrement-btn"
                   disabled={context.selectedValidatorsCount <= 1}
                   variant="secondary"
                   onClick={() =>
@@ -229,6 +239,7 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
                   -
                 </Button>
                 <Input
+                  data-testid="create-cluster-upload-keyshares-count-input"
                   className="w-16 px-0"
                   inputProps={{ className: "text-center" }}
                   value={context.selectedValidatorsCount}
@@ -245,6 +256,7 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
                   }}
                 />
                 <Button
+                  data-testid="create-cluster-upload-keyshares-increment-btn"
                   disabled={context.selectedValidatorsCount === maxAddable}
                   onClick={() =>
                     (state.selectedValidatorsCount = Math.min(
@@ -288,6 +300,7 @@ export const UploadKeyshares: FCProps = ({ ...props }) => {
               selectedAmount={context.selectedValidatorsCount}
             />
             <Button
+              data-testid="create-cluster-upload-keyshares-next-btn"
               isLoading={cluster.isLoading}
               size="xl"
               onClick={submit}

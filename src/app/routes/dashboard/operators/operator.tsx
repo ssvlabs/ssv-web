@@ -36,11 +36,16 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
       <Helmet>
         <title>SSV {operator.data?.name ?? ""}</title>
       </Helmet>
-      <div className="flex flex-col h-full gap-6 pb-6">
+      <div
+        data-testid="dashboard-operator-page"
+        className="flex flex-col h-full gap-6 pb-6"
+      >
         <div className="bg-gray-100 w-full h-[208px] pb-6">
           <Container size="xl" variant="vertical" className="pt-6">
             <div className="flex w-full items-center justify-between">
-              <NavigateBackBtn>Operator Details</NavigateBackBtn>
+              <NavigateBackBtn data-testid="dashboard-operator-back-btn">
+                Operator Details
+              </NavigateBackBtn>
               <OperatorSettingsBtn />
             </div>
             <div className="flex items-start flex-1 gap-20">
@@ -65,7 +70,10 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                 <Text variant="body-3-medium" className="text-gray-500">
                   Validators
                 </Text>
-                <Text variant="body-2-medium">
+                <Text
+                  data-testid="dashboard-operator-validators-count"
+                  variant="body-2-medium"
+                >
                   {operator.data.validators_count}
                 </Text>
               </div>
@@ -73,7 +81,10 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                 <Text variant="body-3-medium" className="text-gray-500">
                   30D Performance
                 </Text>
-                <Text variant="body-2-medium">
+                <Text
+                  data-testid="dashboard-operator-performance"
+                  variant="body-2-medium"
+                >
                   {percentageFormatter.format(operator.data.performance["30d"])}
                 </Text>
               </div>
@@ -87,7 +98,10 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                     src="/images/networks/dark.svg"
                     className="size-5"
                   />
-                  <Text variant="body-2-medium">
+                  <Text
+                    data-testid="dashboard-operator-effective-balance"
+                    variant="body-2-medium"
+                  >
                     {operator.data.effective_balance} ETH
                   </Text>
                 </div>
@@ -97,19 +111,34 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
         </div>
         <Container variant="horizontal" size="xl" {...props} className="h-full">
           <div className="flex items-stretch gap-6 flex-col flex-1">
-            <Card className="w-full">
-              <Text variant="headline4" className="text-gray-500">
+            <Card data-testid="dashboard-operator-balance-card" className="w-full">
+              <Text
+                data-testid="dashboard-operator-balance-label"
+                variant="headline4"
+                className="text-gray-500"
+              >
                 Balance
               </Text>
               <div className="flex flex-col gap-4">
-                <BalanceDisplay amount={balanceEth} token="ETH" />
-                {yearlyFeeSSV !== 0n && !operator.data.migrated && <BalanceDisplay amount={balanceSSV} token="SSV" />}
+                <BalanceDisplay
+                  data-testid="dashboard-operator-balance-eth"
+                  amount={balanceEth}
+                  token="ETH"
+                />
+                {yearlyFeeSSV !== 0n && !operator.data.migrated && (
+                  <BalanceDisplay
+                    data-testid="dashboard-operator-balance-ssv"
+                    amount={balanceSSV}
+                    token="SSV"
+                  />
+                )}
               </div>
               <Tooltip
                 asChild
                 content={!hasBalance ? "No balance to withdraw" : undefined}
               >
                 <Button
+                  data-testid="dashboard-operator-withdraw-btn"
                   as={Link}
                   to="withdraw"
                   variant="default"
@@ -120,17 +149,29 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                 </Button>
               </Tooltip>
             </Card>
-            <Card className="w-full">
+            <Card data-testid="dashboard-operator-fee-card" className="w-full">
               <div className="flex w-full justify-between items-center">
-                <Text variant="headline4" className="text-gray-500">
+                <Text
+                  data-testid="dashboard-operator-fee-label"
+                  variant="headline4"
+                  className="text-gray-500"
+                >
                   Annual Fee
                 </Text>
                 <IncreaseOperatorFeeStatusBadge />
               </div>
               <div className="flex flex-col gap-4">
-                <BalanceDisplay amount={yearlyFeeEth} token="ETH" />
+                <BalanceDisplay
+                  data-testid="dashboard-operator-yearly-fee-eth"
+                  amount={yearlyFeeEth}
+                  token="ETH"
+                />
                 {yearlyFeeSSV > 0 && (
-                  <BalanceDisplay amount={yearlyFeeSSV} token="SSV" />
+                  <BalanceDisplay
+                    data-testid="dashboard-operator-yearly-fee-ssv"
+                    amount={yearlyFeeSSV}
+                    token="SSV"
+                  />
                 )}
               </div>
               <Tooltip
@@ -153,6 +194,7 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                 }
               >
                 <Button
+                  data-testid="dashboard-operator-update-fee-btn"
                   as={Link}
                   disabled={feeEth.isLoading || feeEth.data === 0n}
                   to="fee/update"
@@ -164,8 +206,15 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
               </Tooltip>
             </Card>
           </div>
-          <Card className="flex-[2] h-full max-h-[800px] overflow-auto">
-            <Text variant="headline4" className="text-gray-500">
+          <Card
+            data-testid="dashboard-operator-validators-card"
+            className="flex-[2] h-full max-h-[800px] overflow-auto"
+          >
+            <Text
+              data-testid="dashboard-operator-validators-label"
+              variant="headline4"
+              className="text-gray-500"
+            >
               Validators
             </Text>
             <OperatorValidatorsList />

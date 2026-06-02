@@ -55,9 +55,13 @@ export const BatchTransactionModal: FC<BatchTransactionModalProps> = () => {
 
   return (
     <Dialog isOpen={state.value !== "idle"}>
-      <DialogContent className="max-w-[520px] gap-5">
+      <DialogContent
+        data-testid="batch-transaction-modal"
+        className="max-w-[520px] gap-5"
+      >
         <DialogHeader className="flex-row items-center justify-between">
           <DialogTitle
+            data-testid="batch-transaction-modal-title"
             className={textVariants({
               variant: "body-1-bold",
               className: "text-gray-800",
@@ -67,6 +71,7 @@ export const BatchTransactionModal: FC<BatchTransactionModalProps> = () => {
           </DialogTitle>
           {state.matches("failed") && (
             <DialogClose
+              data-testid="batch-transaction-modal-close-btn"
               className="text-gray-900"
               onClick={() => send({ type: "cancel" })}
             >
@@ -136,6 +141,7 @@ export const BatchTransactionModal: FC<BatchTransactionModalProps> = () => {
         <DialogFooter className="block">
           <Collapse isOpened={state.matches("failed")}>
             <Button
+              data-testid="batch-transaction-modal-retry-btn"
               size="lg"
               className="w-full"
               variant="default"

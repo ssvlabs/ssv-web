@@ -17,10 +17,21 @@ export const Operators: FC<ComponentPropsWithoutRef<"div">> = () => {
         <title>SSV My Operators</title>
       </Helmet>
 
-      <Container variant="vertical" size="xl" className="py-6">
+      <Container
+        data-testid="dashboard-operators-page"
+        variant="vertical"
+        size="xl"
+        className="py-6"
+      >
         <div className="flex justify-between w-full gap-3">
           <DashboardPicker />
-          <Button size="lg" as={Link} className="px-10" to="/join/operator">
+          <Button
+            data-testid="dashboard-operators-add-operator-btn"
+            size="lg"
+            as={Link}
+            className="px-10"
+            to="/join/operator"
+          >
             Add Operator
           </Button>
         </div>

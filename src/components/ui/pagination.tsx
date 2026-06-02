@@ -15,6 +15,7 @@ const PaginationContainer = ({
   <nav
     role="navigation"
     aria-label="pagination"
+    data-testid="pagination-nav"
     className={cn("mx-auto flex w-full justify-center", className)}
     {...props}
   />
@@ -72,7 +73,11 @@ PaginationLink.displayName = "PaginationLink";
 const PaginationPrevious = ({
   ...props
 }: React.ComponentProps<typeof PaginationLink>) => (
-  <PaginationLink aria-label="Go to previous page" {...props}>
+  <PaginationLink
+    aria-label="Go to previous page"
+    data-testid="pagination-prev-btn"
+    {...props}
+  >
     <ChevronLeft className="size-4" />
   </PaginationLink>
 );
@@ -81,7 +86,11 @@ PaginationPrevious.displayName = "PaginationPrevious";
 const PaginationNext = ({
   ...props
 }: React.ComponentProps<typeof PaginationLink>) => (
-  <PaginationLink aria-label="Go to next page" {...props}>
+  <PaginationLink
+    aria-label="Go to next page"
+    data-testid="pagination-next-btn"
+    {...props}
+  >
     <ChevronRight className="size-4" />
   </PaginationLink>
 );
@@ -93,6 +102,7 @@ const PaginationEllipsis = ({
 }: React.ComponentProps<"span">) => (
   <span
     aria-hidden
+    data-testid="pagination-ellipsis"
     className={cn("flex h-9 w-9 items-center justify-center", className)}
     {...props}
   >
@@ -132,6 +142,7 @@ const Pagination: React.FC<React.ComponentProps<"nav"> & PaginationProps> = ({
             <PaginationLink
               to={{ search: buildSearch(i + 1) }}
               isActive={i + 1 === pagination.page}
+              data-testid={`pagination-page-${i + 1}-btn`}
             >
               {i + 1}
             </PaginationLink>

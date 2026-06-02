@@ -71,20 +71,38 @@ export const WithdrawOperatorBalance: FC<ComponentPropsWithoutRef<"div">> = ({
   };
 
   return (
-    <Container variant="vertical" className={cn(className, "py-6")} {...props}>
+    <Container
+      data-testid="dashboard-withdraw-operator-page"
+      variant="vertical"
+      className={cn(className, "py-6")}
+      {...props}
+    >
       <Helmet>
         <title>Withdraw {operator?.name ?? ""}</title>
       </Helmet>
-      <NavigateBackBtn>{operator?.name}</NavigateBackBtn>
+      <NavigateBackBtn data-testid="dashboard-withdraw-operator-back-btn">
+        {operator?.name}
+      </NavigateBackBtn>
       <Card className="w-full">
         <Text variant="headline4" className="text-gray-500">
           Available Balance
         </Text>
         <div className="flex flex-col gap-4">
-          <BalanceDisplay amount={balanceEth} token="ETH" />
-          {hasSSVBalance && <BalanceDisplay amount={balanceSSV} token="SSV" />}
+          <BalanceDisplay
+            data-testid="dashboard-withdraw-operator-balance-eth"
+            amount={balanceEth}
+            token="ETH"
+          />
+          {hasSSVBalance && (
+            <BalanceDisplay
+              data-testid="dashboard-withdraw-operator-balance-ssv"
+              amount={balanceSSV}
+              token="SSV"
+            />
+          )}
         </div>
         <Button
+          data-testid="dashboard-withdraw-operator-submit-btn"
           disabled={!hasBalance}
           isActionBtn
           isLoading={withdraw.isPending}

@@ -18,13 +18,21 @@ export const EthFeesBanner: FC = () => {
   };
 
   return (
-    <div className="bg-orange-400 flex items-center justify-center px-5 py-4 relative w-full">
+    <div
+      data-testid="eth-fees-banner"
+      className="bg-orange-400 flex items-center justify-center px-5 py-4 relative w-full"
+    >
       <div className="flex-1 flex items-center justify-center">
-        <Text variant="body-2-medium" className="text-white text-center">
-          ETH fees are now active. A default ETH fee has been applied to your operators. You may update this fee at any time in your dashboard. <Link className={"text-[#7F35BA] underline"} target={"_blank"} to={'http://docs.ssv.network/operators/operator-onboarding/'}>Read more.</Link>
+        <Text
+          data-testid="eth-fees-banner-message"
+          variant="body-2-medium"
+          className="text-white text-center"
+        >
+          ETH fees are now active. A default ETH fee has been applied to your operators. You may update this fee at any time in your dashboard. <Link data-testid="eth-fees-banner-read-more-link" className={"text-[#7F35BA] underline"} target={"_blank"} to={'http://docs.ssv.network/operators/operator-onboarding/'}>Read more.</Link>
         </Text>
       </div>
       <button
+        data-testid="eth-fees-banner-dismiss-btn"
         onClick={handleDismiss}
         className="absolute right-5 top-1/2 -translate-y-1/2 text-white hover:opacity-80 transition-opacity"
         aria-label="Dismiss banner"

@@ -35,6 +35,7 @@ export const SwitchWizardStepTwoAndHalf = ({
 
   return (
     <Container
+      data-testid="switch-wizard-step-two-and-half-page"
       variant="vertical"
       className="py-6"
       backButtonLabel={backButtonLabel}
@@ -47,7 +48,12 @@ export const SwitchWizardStepTwoAndHalf = ({
         className="w-full flex flex-col gap-6 p-8 bg-white rounded-2xl"
       >
         <div className="flex flex-col gap-4 items-start">
-          <Text variant="headline4">Cluster Balances and Fees</Text>
+          <Text
+            data-testid="switch-wizard-step-two-and-half-title"
+            variant="headline4"
+          >
+            Cluster Balances and Fees
+          </Text>
           <Text variant="body-2-medium" className="text-gray-700">
             Your cluster's runway is determined by your deposited balance and
             the operator and network fees accrued over time. These fees scale
@@ -90,6 +96,7 @@ export const SwitchWizardStepTwoAndHalf = ({
             className="flex gap-3 items-start cursor-pointer"
           >
             <Checkbox
+              data-testid="switch-wizard-step-two-and-half-fees-checkbox"
               id={feesAcknowledgedId}
               checked={feesAcknowledged}
               onCheckedChange={(checked) =>
@@ -110,6 +117,7 @@ export const SwitchWizardStepTwoAndHalf = ({
             className="flex gap-3 items-start cursor-pointer"
           >
             <Checkbox
+              data-testid="switch-wizard-step-two-and-half-liquidation-checkbox"
               id={liquidationAcknowledgedId}
               checked={liquidationAcknowledged}
               onCheckedChange={(checked) =>
@@ -128,6 +136,7 @@ export const SwitchWizardStepTwoAndHalf = ({
         </div>
 
         <Button
+          data-testid="switch-wizard-step-two-and-half-next-btn"
           size="xl"
           width="full"
           onClick={handleNext}

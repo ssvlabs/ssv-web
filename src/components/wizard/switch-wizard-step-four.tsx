@@ -22,7 +22,11 @@ export const SwitchWizardStepFour: FC<SwitchWizardStepFourProps> = ({
   clusterPath,
 }) => {
   return (
-    <Container variant="vertical" className="py-6">
+    <Container
+      data-testid="switch-wizard-step-four-page"
+      variant="vertical"
+      className="py-6"
+    >
       <Card
         variant="unstyled"
         className="relative w-full overflow-hidden rounded-2xl bg-white p-8"
@@ -35,7 +39,10 @@ export const SwitchWizardStepFour: FC<SwitchWizardStepFourProps> = ({
 
         <div className="relative z-10 flex flex-col gap-6">
           <div className="flex flex-col gap-4 items-start">
-            <Text variant="headline4">
+            <Text
+              data-testid="switch-wizard-step-four-title"
+              variant="headline4"
+            >
               Cluster Successfully Migrated to ETH Fees
             </Text>
             <Text variant="body-2-medium" className="text-gray-700">
@@ -103,6 +110,7 @@ export const SwitchWizardStepFour: FC<SwitchWizardStepFourProps> = ({
 
           {clusterPath ? (
             <Button
+              data-testid="switch-wizard-step-four-manage-cluster-btn"
               as={Link}
               to={clusterPath}
               size="xl"
@@ -112,7 +120,13 @@ export const SwitchWizardStepFour: FC<SwitchWizardStepFourProps> = ({
               Manage Cluster
             </Button>
           ) : (
-            <Button size="xl" width="full" className="font-semibold" disabled>
+            <Button
+              data-testid="switch-wizard-step-four-manage-cluster-btn-disabled"
+              size="xl"
+              width="full"
+              className="font-semibold"
+              disabled
+            >
               Manage Cluster
             </Button>
           )}

@@ -15,7 +15,7 @@ export const Join: FC<ComponentPropsWithoutRef<"div">> = ({
     return <Navigate to={accountRoutePath ?? "/my-account"} replace />;
   }
   return (
-    <Container variant="vertical" className="py-6">
+    <Container data-testid="join-page" variant="vertical" className="py-6">
       <Card className={cn(className)} {...props}>
         <CardHeader
           title="Join the SSV Network"
@@ -24,6 +24,7 @@ export const Join: FC<ComponentPropsWithoutRef<"div">> = ({
         <div className="flex gap-3">
           <div className="flex-1 flex gap-2 flex-col items-center">
             <Button
+              data-testid="join-distribute-validators-btn"
               as={Link}
               to="validator"
               size="xl"
@@ -35,6 +36,7 @@ export const Join: FC<ComponentPropsWithoutRef<"div">> = ({
           </div>
           <div className="flex-1 flex gap-2 flex-col items-center">
             <Button
+              data-testid="join-as-operator-btn"
               as={Link}
               to="operator"
               variant="secondary"

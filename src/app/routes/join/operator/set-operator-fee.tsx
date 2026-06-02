@@ -101,8 +101,15 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
   useFocus("#register-operator-fee", { select: true });
 
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn by="history" />
+    <Container
+      data-testid="join-set-operator-fee-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn
+        data-testid="join-set-operator-fee-back-btn"
+        by="history"
+      />
       <Form {...form}>
         <Card as="form" onSubmit={submit}>
           <CardHeader
@@ -159,6 +166,7 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
                 </Tooltip>
                 <FormControl>
                   <BigNumberInput
+                    data-testid="join-set-operator-fee-input"
                     displayDecimals={7}
                     id="register-operator-fee"
                     value={field.value}
@@ -210,6 +218,7 @@ export const SetOperatorFee: FC<ComponentPropsWithoutRef<"div">> = () => {
             )}
           />
           <Button
+            data-testid="join-set-operator-fee-next-btn"
             type="submit"
             size="xl"
             disabled={Boolean(form.formState.errors.yearlyFee)}

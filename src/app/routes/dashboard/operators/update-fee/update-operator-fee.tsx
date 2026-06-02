@@ -102,8 +102,17 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
   const isChanged = isBigIntChanged(form.watch("yearlyFee"), operatorYearlyFee);
 
   return (
-    <Container variant="vertical" className={cn(className, "py-6")} {...props}>
-      <NavigateBackBtn by="path" to="../.." />
+    <Container
+      data-testid="dashboard-update-fee-page"
+      variant="vertical"
+      className={cn(className, "py-6")}
+      {...props}
+    >
+      <NavigateBackBtn
+        data-testid="dashboard-update-fee-back-btn"
+        by="path"
+        to="../.."
+      />
       <Form {...form}>
         <Card as="form" className="w-full" onSubmit={submit}>
           <CardHeader
@@ -124,12 +133,14 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
                       <div className="flex flex-col pl-6 pr-5 py-4 gap-3 rounded-xl border border-gray-300 bg-gray-200">
                         <div className="flex h-14 items-center gap-5">
                           <input
+                            data-testid="dashboard-update-fee-yearly-fee-input"
                             placeholder="0"
                             className="w-full h-full border outline-none flex-1 text-[28px] font-medium border-none bg-transparent"
                             {...props}
                             ref={ref}
                           />
                           <Button
+                            data-testid="dashboard-update-fee-max-btn"
                             size="lg"
                             variant="secondary"
                             className="font-semibold px-4"
@@ -187,6 +198,7 @@ export const UpdateOperatorFee: FC<ComponentPropsWithoutRef<"div">> = ({
             </Alert>
           )}
           <Button
+            data-testid="dashboard-update-fee-next-btn"
             size="xl"
             type="submit"
             isLoading={isLoading}

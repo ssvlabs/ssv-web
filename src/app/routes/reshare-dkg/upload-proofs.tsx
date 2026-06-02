@@ -52,6 +52,7 @@ const UploadProofs = () => {
   }, [proofsQuery.isLoading, proofsQuery.isSuccess]);
   return (
     <Container
+      data-testid="reshare-upload-proofs-page"
       variant="vertical"
       size="lg"
       className="p-6 font-medium w-[1096px]"
@@ -143,7 +144,12 @@ const UploadProofs = () => {
                   ))}
                 </div>
               </div>
-              <Button onClick={nextStep}>Next</Button>
+              <Button
+                data-testid="reshare-upload-proofs-next-btn"
+                onClick={nextStep}
+              >
+                Next
+              </Button>
             </div>
           )}
         </Card>

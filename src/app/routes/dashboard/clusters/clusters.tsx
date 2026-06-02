@@ -22,11 +22,17 @@ export const Clusters: FC<ComponentPropsWithoutRef<"div">> = () => {
         <title>SSV My Clusters</title>
       </Helmet>
 
-      <Container variant="vertical" size="xl" className="py-6">
+      <Container
+        data-testid="dashboard-clusters-page"
+        variant="vertical"
+        size="xl"
+        className="py-6"
+      >
         <div className="flex justify-between w-full gap-3">
           <DashboardPicker />
           <Spacer />
           <Button
+            data-testid="dashboard-clusters-fee-address-btn"
             size="lg"
             variant="secondary"
             as={Link}
@@ -35,7 +41,13 @@ export const Clusters: FC<ComponentPropsWithoutRef<"div">> = () => {
           >
             Fee Address <FiEdit3 />
           </Button>
-          <Button size="lg" className="px-10" as={Link} to="/join/validator">
+          <Button
+            data-testid="dashboard-clusters-add-cluster-btn"
+            size="lg"
+            className="px-10"
+            as={Link}
+            to="/join/validator"
+          >
             Add Cluster
           </Button>
         </div>

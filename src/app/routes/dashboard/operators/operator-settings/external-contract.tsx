@@ -148,9 +148,14 @@ export const ExternalContract: FC = () => {
   });
 
   return (
-    <Container variant="vertical" size="lg" className="py-6">
+    <Container
+      data-testid="dashboard-external-contract-page"
+      variant="vertical"
+      size="lg"
+      className="py-6"
+    >
       <Form {...form}>
-        <NavigateBackBtn />
+        <NavigateBackBtn data-testid="dashboard-external-contract-back-btn" />
         <Card>
           <form className="flex flex-col gap-8 w-full" onSubmit={submit}>
             <div className="flex flex-col gap-2">
@@ -198,11 +203,13 @@ export const ExternalContract: FC = () => {
                 <FormItem>
                   <FormControl>
                     <Input
+                      data-testid="dashboard-external-contract-input"
                       {...field}
                       placeholder="0xCONT...RACT"
                       rightSlot={
                         field.value && (
                           <Button
+                            data-testid="dashboard-external-contract-clear-btn"
                             variant="ghost"
                             size="icon"
                             onClick={() => field.onChange("")}
@@ -227,6 +234,7 @@ export const ExternalContract: FC = () => {
             {isChanged && (
               <div className="flex gap-3">
                 <Button
+                  data-testid="dashboard-external-contract-cancel-btn"
                   type="button"
                   disabled={isPending}
                   size="xl"
@@ -237,6 +245,7 @@ export const ExternalContract: FC = () => {
                   Cancel
                 </Button>
                 <Button
+                  data-testid="dashboard-external-contract-save-btn"
                   type="submit"
                   disabled={hasErrors}
                   isLoading={isPending}

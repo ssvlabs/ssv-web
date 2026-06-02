@@ -167,6 +167,7 @@ const SignatureStep = ({
                     </FormLabel>
                     <FormControl>
                       <DkgAddressInput
+                        data-testid="reshare-dkg-owner-address-input"
                         field={field}
                         isAcceptedButtonDisabled={
                           !!form.formState.errors.ownerAddress ||
@@ -210,6 +211,7 @@ const SignatureStep = ({
                     }
                   >
                     <TabsTrigger
+                      data-testid="reshare-dkg-compounding-tab"
                       value="compounding"
                       disabled={!supportsCompounding}
                       className={cn(
@@ -222,6 +224,7 @@ const SignatureStep = ({
                     </TabsTrigger>
                   </Tooltip>
                   <TabsTrigger
+                    data-testid="reshare-dkg-regular-withdrawals-tab"
                     value="regular"
                     className={cn(
                       "flex-1 h-full rounded-lg text-base font-semibold text-gray-500",
@@ -253,6 +256,7 @@ const SignatureStep = ({
                       </Text>
                       <FormControl>
                         <BigNumberInput
+                          data-testid="reshare-dkg-effective-balance-input"
                           max={MAX_EFFECTIVE_BALANCE_GWEI}
                           decimals={9}
                           displayDecimals={0}
@@ -299,6 +303,7 @@ const SignatureStep = ({
                       <FormItem>
                         <FormControl>
                           <DkgAddressInput
+                            data-testid="reshare-dkg-withdraw-address-input"
                             field={field}
                             isAcceptedButtonDisabled={
                               !!form.formState.errors.withdrawAddress ||
@@ -325,6 +330,7 @@ const SignatureStep = ({
               )}
             <div className="flex flex-row justify-between gap-1.5 w-full">
               <Button
+                data-testid="reshare-dkg-sign-btn"
                 type="submit"
                 size="xl"
                 variant={isSubmitted && isMultiSign ? "secondary" : "default"}
@@ -341,6 +347,7 @@ const SignatureStep = ({
               </Button>
               {isMultiSign && (
                 <Button
+                  data-testid="reshare-dkg-have-signatures-btn"
                   onClick={() => setIsOpenModal(true)}
                   className={"w-full"}
                   size="xl"

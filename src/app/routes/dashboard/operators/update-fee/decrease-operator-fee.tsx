@@ -50,8 +50,12 @@ export const DecreaseOperatorFee: FC = () => {
   };
 
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn />
+    <Container
+      data-testid="dashboard-decrease-fee-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn data-testid="dashboard-decrease-fee-back-btn" />
       <Card>
         <CardHeader
           title="Update Fee"
@@ -94,6 +98,7 @@ export const DecreaseOperatorFee: FC = () => {
           </Alert>
         )}
         <Button
+          data-testid="dashboard-decrease-fee-submit-btn"
           size="xl"
           isLoading={reduceOperatorFee.isPending}
           onClick={submit}

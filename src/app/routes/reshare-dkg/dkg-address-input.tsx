@@ -10,6 +10,7 @@ export const DkgAddressInput = ({
   setIsInputDisabled,
   isAcceptedButtonDisabled,
   acceptedButtonLabel,
+  "data-testid": testId,
 }: {
   field: ControllerRenderProps<
     {
@@ -25,8 +26,10 @@ export const DkgAddressInput = ({
   value: string;
   acceptedButtonLabel?: string;
   setIsInputDisabled: (isDisabled: boolean) => void;
+  "data-testid"?: string;
 }) => (
   <Input
+    data-testid={testId}
     {...field}
     disabled={isInputDisabled}
     value={value}
@@ -34,6 +37,7 @@ export const DkgAddressInput = ({
     rightSlot={
       acceptedButtonLabel && (
         <Button
+          data-testid={testId ? `${testId}-accept-btn` : undefined}
           size="sm"
           className="border-none text-primary-500 hover:bg-transparent hover:text-primary-500"
           variant={isInputDisabled ? "outline" : "secondary"}

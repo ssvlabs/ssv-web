@@ -41,10 +41,12 @@ export const ClusterHeader: FC<ComponentPropsWithoutRef<"div">> = ({
 
   return (
     <Card
+      data-testid="dashboard-migrated-cluster-header"
       className={cn("flex flex-row items-center gap-3 p-6 w-full", className)}
       {...props}
     >
       <Link
+        data-testid="dashboard-migrated-cluster-header-back-link"
         to="/clusters"
         className="flex items-center justify-center rounded-[6px] bg-gray-100 p-1.5"
       >
@@ -53,11 +55,16 @@ export const ClusterHeader: FC<ComponentPropsWithoutRef<"div">> = ({
 
       <div className="flex flex-1 items-center gap-5 min-w-0">
         <div className="flex items-center gap-2 min-w-0 overflow-hidden">
-          <Text variant="headline4" className="truncate">
+          <Text
+            data-testid="dashboard-migrated-cluster-header-name"
+            variant="headline4"
+            className="truncate"
+          >
             {clusterName || "Cluster"}
           </Text>
           {isOwner && (
             <button
+              data-testid="dashboard-migrated-cluster-header-edit-name-btn"
               onClick={() => setIsDialogOpen(true)}
               className="shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
             >
@@ -72,16 +79,24 @@ export const ClusterHeader: FC<ComponentPropsWithoutRef<"div">> = ({
               ID:
             </Text>
             <Text
+              data-testid="dashboard-migrated-cluster-header-id"
               variant="body-3-medium"
               className="font-robotoMono text-gray-700"
             >
               {shortenClusterId(clusterId)}
             </Text>
-            <CopyBtn text={clusterId} />
+            <CopyBtn
+              data-testid="dashboard-migrated-cluster-header-id-copy-btn"
+              text={clusterId}
+            />
           </div>
 
           {isLiquidatedCluster && (
-            <Badge variant="error" size="xs">
+            <Badge
+              data-testid="dashboard-migrated-cluster-header-liquidated-badge"
+              variant="error"
+              size="xs"
+            >
               Liquidated
             </Badge>
           )}

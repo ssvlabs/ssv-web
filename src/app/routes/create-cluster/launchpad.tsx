@@ -9,10 +9,22 @@ import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
 export const Launchpad: FC = () => {
   const links = useLinks();
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn by="history" />
+    <Container
+      data-testid="create-cluster-launchpad-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn
+        data-testid="create-cluster-launchpad-back-btn"
+        by="history"
+      />
       <Card className="w-full">
-        <Text variant="headline4">Visit Ethereum Launchpad</Text>
+        <Text
+          data-testid="create-cluster-launchpad-title"
+          variant="headline4"
+        >
+          Visit Ethereum Launchpad
+        </Text>
         <div className="space-y-2">
           <Text variant="body-2-medium">
             You must have an active validator before running it on the SSV
@@ -32,7 +44,13 @@ export const Launchpad: FC = () => {
           className="h-[150px] mx-auto my-4"
           alt="rhino"
         />
-        <Button as="a" href={links.launchpad} target="_blank" size="xl">
+        <Button
+          data-testid="create-cluster-launchpad-visit-btn"
+          as="a"
+          href={links.launchpad}
+          target="_blank"
+          size="xl"
+        >
           Visit Ethereum Launchpad
         </Button>
       </Card>

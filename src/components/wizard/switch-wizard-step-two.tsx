@@ -177,6 +177,7 @@ export const SwitchWizardStepTwo = ({
 
   return (
     <Container
+      data-testid="switch-wizard-step-two-page"
       variant="vertical"
       className="py-6"
       backButtonLabel={backButtonLabel}
@@ -192,7 +193,10 @@ export const SwitchWizardStepTwo = ({
           className="w-full flex flex-col gap-5 p-8 bg-white rounded-2xl"
         >
           <div className="flex flex-col gap-4 items-start">
-            <Text variant="headline4">
+            <Text
+              data-testid="switch-wizard-step-two-title"
+              variant="headline4"
+            >
               Select your validator funding period
             </Text>
             <Text variant="body-2-medium" className="text-gray-700">
@@ -429,6 +433,7 @@ export const SwitchWizardStepTwo = ({
           </div>
 
           <Button
+            data-testid="switch-wizard-step-two-next-btn"
             size="xl"
             width="full"
             type="submit"

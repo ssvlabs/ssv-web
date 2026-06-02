@@ -66,11 +66,19 @@ export const DepositClusterBalance: FC = () => {
   });
 
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn />
+    <Container
+      data-testid="dashboard-cluster-deposit-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn data-testid="dashboard-cluster-deposit-back-btn" />
       <Form {...form}>
         <Card as="form" className="w-full" onSubmit={submit}>
-          <Text variant="headline4" className="text-gray-500">
+          <Text
+            data-testid="dashboard-cluster-deposit-title"
+            variant="headline4"
+            className="text-gray-500"
+          >
             Deposit
           </Text>
           <FormField
@@ -110,6 +118,7 @@ export const DepositClusterBalance: FC = () => {
                       <div className="flex flex-col pl-6 pr-5 py-4 gap-3 rounded-xl border border-gray-300 bg-gray-200">
                         <div className="flex h-14 items-center gap-5">
                           <input
+                            data-testid="dashboard-cluster-deposit-amount-input"
                             placeholder="0"
                             className="w-full h-full border outline-none flex-1 text-[28px] font-medium border-none bg-transparent"
                             {...props}
@@ -120,6 +129,7 @@ export const DepositClusterBalance: FC = () => {
                         <Divider />
                         <div className="flex justify-end">
                           <Text
+                            data-testid="dashboard-cluster-deposit-wallet-balance"
                             variant="body-2-medium"
                             className="text-gray-500"
                           >
@@ -144,6 +154,7 @@ export const DepositClusterBalance: FC = () => {
           )}
 
           <Button
+            data-testid="dashboard-cluster-deposit-submit-btn"
             type="submit"
             size="xl"
             disabled={!isChanged}

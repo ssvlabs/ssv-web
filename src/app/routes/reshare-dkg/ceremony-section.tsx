@@ -172,6 +172,7 @@ const CeremonySection = ({
                     </Text>
                     <div className="flex gap-1">
                       <Button
+                        data-testid="reshare-dkg-ceremony-os-windows-btn"
                         size="sm"
                         onClick={() =>
                           (useBulkActionContext.state.dkgReshareState.selectedOs =
@@ -185,6 +186,7 @@ const CeremonySection = ({
                         Windows
                       </Button>
                       <Button
+                        data-testid="reshare-dkg-ceremony-os-mac-btn"
                         size="sm"
                         className="font-bold text-xs h-auto py-1 px-4"
                         onClick={() =>
@@ -196,6 +198,7 @@ const CeremonySection = ({
                         MacOS
                       </Button>
                       <Button
+                        data-testid="reshare-dkg-ceremony-os-linux-btn"
                         size="sm"
                         className="font-bold text-xs h-auto py-1 px-4"
                         onClick={() =>
@@ -215,6 +218,7 @@ const CeremonySection = ({
                       {cmd.isLoading ? <Spinner /> : cmd.data}
                     </Text>
                     <Button
+                      data-testid="reshare-dkg-ceremony-copy-cmd-btn"
                       size="sm"
                       className="h-8"
                       variant={copyState.value ? "success" : "secondary"}
@@ -258,7 +262,12 @@ const CeremonySection = ({
         }
       />
       {isEnabled && (
-        <Button size="xl" disabled={!copyState.value} onClick={nextStep}>
+        <Button
+          data-testid="reshare-dkg-ceremony-initiated-btn"
+          size="xl"
+          disabled={!copyState.value}
+          onClick={nextStep}
+        >
           DKG Ceremony Initiated
         </Button>
       )}

@@ -93,11 +93,15 @@ export const RemoveValidatorsConfirmation: FC = () => {
 
   return (
     <Container
+      data-testid="dashboard-cluster-remove-confirmation-page"
       variant="vertical"
       size="xl"
       className="p-6 font-medium w-[1096px]"
     >
-      <NavigateBackBtn by="history" />
+      <NavigateBackBtn
+        data-testid="dashboard-cluster-remove-back-btn"
+        by="history"
+      />
       <div className="flex w-full gap-6">
         <Card className="flex-[1.7]">
           <CardHeader
@@ -109,13 +113,14 @@ export const RemoveValidatorsConfirmation: FC = () => {
             network and does not exit your validator from the Beacon Chain.
           </Text>
           <Alert variant="warning">
-            <AlertDescription>
+            <AlertDescription data-testid="dashboard-cluster-remove-warning">
               To avoid slashing, it is advised to wait at least 2 epochs prior
               to running the validator on an alternative service.
             </AlertDescription>
           </Alert>
           <label htmlFor="agree-1" className="flex gap-3">
             <Checkbox
+              data-testid="dashboard-cluster-remove-agreement-checkbox"
               checked={agree1}
               id="agree-1"
               className="mt-1"
@@ -127,6 +132,7 @@ export const RemoveValidatorsConfirmation: FC = () => {
             </Text>
           </label>
           <Button
+            data-testid="dashboard-cluster-remove-submit-btn"
             size="xl"
             disabled={!agree1}
             onClick={remove}

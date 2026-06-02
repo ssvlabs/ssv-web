@@ -56,6 +56,7 @@ const Reshare = () => {
     <ReshareDkg />
   ) : (
     <Container
+      data-testid="reshare-unhealthy-operators-page"
       size="lg"
       variant="vertical"
       className="py-6"
@@ -63,7 +64,10 @@ const Reshare = () => {
       navigateRoutePath={`/clusters/${clusterHash}/reshare/select-operators`}
     >
       <Card className="w-full">
-        <Text variant="headline4">
+        <Text
+          data-testid="reshare-unhealthy-operators-title"
+          variant="headline4"
+        >
           Pick the cluster of network operators to run your validator
         </Text>
         <UnhealthyOperatorsList
@@ -73,6 +77,7 @@ const Reshare = () => {
         />
 
         <Button
+          data-testid="reshare-unhealthy-operators-change-btn"
           as={Link}
           to="../select-operators?has_dkg_address=true"
           size="xl"

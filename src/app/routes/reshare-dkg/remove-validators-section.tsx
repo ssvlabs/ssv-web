@@ -60,11 +60,20 @@ const RemoveValidatorsSection = ({
             className={"w-full"}
             target="_blank"
           >
-            <Button size="xl" className={"w-full"} variant={"secondary"}>
+            <Button
+              data-testid="reshare-dkg-remove-validators-link-btn"
+              size="xl"
+              className={"w-full"}
+              variant={"secondary"}
+            >
               Remove Selected Validators <FaExternalLinkAlt />
             </Button>
           </a>
-          <Button size="xl" onClick={nextStep}>
+          <Button
+            data-testid="reshare-dkg-remove-validators-confirm-btn"
+            size="xl"
+            onClick={nextStep}
+          >
             My Validator Has Been Removed
           </Button>
         </div>

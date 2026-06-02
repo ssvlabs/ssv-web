@@ -16,24 +16,30 @@ export const Compliance: FC = () => {
 
   return (
     <Container
+      data-testid="compliance-page"
       variant="vertical"
       className="max-w-screen-2xl w-full p-6 items-center h-full"
     >
       <div className="flex flex-1 justify-center items-center flex-col">
         <img src="/images/complianceRobot.svg" alt="Maintenance" className="w-40" />
-        <Text variant="headline2" className="text-gray-700 mt-16">
+        <Text
+          data-testid="compliance-title"
+          variant="headline2"
+          className="text-gray-700 mt-16"
+        >
           Website not available
         </Text>
         <div className="flex flex-col gap-2 text-center mt-7">
-          <Text variant="body-2-semibold">
+          <Text data-testid="compliance-location" variant="body-2-semibold">
             We noticed you are located in {compliance.data}
           </Text>
-          <Text variant="body-2-medium">
+          <Text data-testid="compliance-description" variant="body-2-medium">
             Please note that the website{" "}
             <span className="text-primary-500">{window.location.host}</span> is
             not available in your country
           </Text>
           <Button
+            data-testid="compliance-learn-more-link"
             className="mt-2"
             variant="link"
             as="a"

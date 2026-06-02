@@ -109,8 +109,15 @@ export const GenerateKeySharesOnline: FCProps = () => {
   };
 
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn by="history" />
+    <Container
+      data-testid="create-cluster-generate-online-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn
+        data-testid="create-cluster-generate-online-back-btn"
+        by="history"
+      />
       <Card className="flex flex-col w-full">
         <CardHeader
           title="Enter Validator Key"
@@ -146,6 +153,7 @@ export const GenerateKeySharesOnline: FCProps = () => {
                   </FormLabel>
                   <FormControl>
                     <Input
+                      data-testid="create-cluster-generate-online-password-input"
                       {...field}
                       disabled={status !== "validator-not-registered"}
                       type="password"
@@ -175,6 +183,7 @@ export const GenerateKeySharesOnline: FCProps = () => {
               </AlertDescription>
             </Alert>
             <Button
+              data-testid="create-cluster-generate-online-submit-btn"
               size="xl"
               type="submit"
               disabled={

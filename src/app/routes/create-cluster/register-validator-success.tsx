@@ -28,9 +28,18 @@ export const RegisterValidatorSuccess: FC = () => {
   if (!operatorIds.length) return <Navigate to="/clusters" />;
 
   return (
-    <Container variant="vertical" className="py-6">
+    <Container
+      data-testid="create-cluster-register-success-page"
+      variant="vertical"
+      className="py-6"
+    >
       <Card>
-        <Text variant="headline4">Welcome to the SSV Network!</Text>
+        <Text
+          data-testid="create-cluster-register-success-title"
+          variant="headline4"
+        >
+          Welcome to the SSV Network!
+        </Text>
         <Text variant="body-2-medium">
           Your new validator is managed by the following cluster:
         </Text>
@@ -77,7 +86,12 @@ export const RegisterValidatorSuccess: FC = () => {
           Your cluster operators have been notified and will start your
           validator operation instantly.
         </Text>
-        <Button as={Link} to={`/clusters/${clusterHash}`} size="xl">
+        <Button
+          data-testid="create-cluster-register-success-manage-cluster-btn"
+          as={Link}
+          to={`/clusters/${clusterHash}`}
+          size="xl"
+        >
           Manage Cluster
         </Button>
       </Card>

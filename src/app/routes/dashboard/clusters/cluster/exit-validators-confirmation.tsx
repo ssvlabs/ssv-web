@@ -71,18 +71,25 @@ export const ExitValidatorsConfirmation: FC = () => {
 
   return (
     <Container
+      data-testid="dashboard-cluster-exit-confirmation-page"
       variant="vertical"
       size="xl"
       className="p-6 font-medium w-[1096px]"
     >
-      <NavigateBackBtn by="history" />
+      <NavigateBackBtn
+        data-testid="dashboard-cluster-exit-back-btn"
+        by="history"
+      />
       <div className="flex w-full gap-6">
         <Card className="flex-[1.7]">
           <CardHeader
             title="Exit validators"
             description="Exiting your validator signals to the network that you wish to permanently cease your validator's participation in the Beacon Chain and retrieve your 32 ETH stake principal."
           />
-          <Text className="text-gray-600">
+          <Text
+            data-testid="dashboard-cluster-exit-queue-info"
+            className="text-gray-600"
+          >
             Initiating an exit places your validator in the exit queue. The
             duration in the queue depends on the number of validators already
             waiting. During this period, your validator must remain active, so
@@ -90,13 +97,14 @@ export const ExitValidatorsConfirmation: FC = () => {
             registered with the SSV network until it has fully exited.
           </Text>
           <Alert variant="warning">
-            <AlertDescription>
+            <AlertDescription data-testid="dashboard-cluster-exit-warning">
               Exiting your validator from the Beacon Chain is permanent and
               cannot be reversed, preventing any future reactivation.
             </AlertDescription>
           </Alert>
           <label htmlFor="agree-1" className="flex gap-3">
             <Checkbox
+              data-testid="dashboard-cluster-exit-agree-1-checkbox"
               checked={agree1}
               id="agree-1"
               className="mt-1"
@@ -109,6 +117,7 @@ export const ExitValidatorsConfirmation: FC = () => {
           </label>
           <label htmlFor="agree-2" className="flex gap-3">
             <Checkbox
+              data-testid="dashboard-cluster-exit-agree-2-checkbox"
               checked={agree2}
               id="agree-2"
               className="mt-1"
@@ -122,6 +131,7 @@ export const ExitValidatorsConfirmation: FC = () => {
           </label>
           <label htmlFor="agree-3" className="flex gap-3">
             <Checkbox
+              data-testid="dashboard-cluster-exit-agree-3-checkbox"
               checked={agree3}
               id="agree-3"
               className="mt-1"
@@ -134,6 +144,7 @@ export const ExitValidatorsConfirmation: FC = () => {
             </Text>
           </label>
           <Button
+            data-testid="dashboard-cluster-exit-submit-btn"
             size="xl"
             disabled={!agree1 || !agree2 || !agree3}
             onClick={exit}

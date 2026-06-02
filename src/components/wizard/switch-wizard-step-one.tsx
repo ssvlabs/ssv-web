@@ -23,6 +23,7 @@ export const SwitchWizardStepOne = ({
 }: SwitchWizardStepOneProps) => {
   return (
     <Container
+      data-testid="switch-wizard-step-one-page"
       variant="vertical"
       className="py-6"
       backButtonLabel={backButtonLabel}
@@ -34,7 +35,12 @@ export const SwitchWizardStepOne = ({
         className="w-full flex flex-col gap-5 p-8 bg-white rounded-2xl"
       >
         <div className="flex flex-col gap-4 items-start">
-          <Text variant="headline4">Switch Cluster to ETH Fees</Text>
+          <Text
+            data-testid="switch-wizard-step-one-title"
+            variant="headline4"
+          >
+            Switch Cluster to ETH Fees
+          </Text>
           <Text variant="body-2-medium" className="text-gray-700 leading-6">
             You are about to migrate your cluster from SSV-denominated payments
             to ETH-based operator and network fees.
@@ -47,7 +53,10 @@ export const SwitchWizardStepOne = ({
         </div>
 
         <Alert variant="warning" className="flex gap-3 items-center px-4 py-3">
-          <AlertDescription className="text-sm font-medium text-gray-800">
+          <AlertDescription
+            data-testid="switch-wizard-step-one-warning"
+            className="text-sm font-medium text-gray-800"
+          >
             Once you switch, this change is permanent and cannot be reversed.
           </AlertDescription>
         </Alert>
@@ -55,6 +64,7 @@ export const SwitchWizardStepOne = ({
         <OperatorFeeComparison operators={operators} />
 
         <Button
+          data-testid="switch-wizard-step-one-next-btn"
           variant="default"
           size="lg"
           width="full"

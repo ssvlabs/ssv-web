@@ -19,9 +19,13 @@ export const DashboardPicker: DashboardPickerFC = ({ ...props }) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger data-testid="dashboard-picker-trigger">
         <div className="flex items-center gap-2">
-          <Text variant="headline3" {...props}>
+          <Text
+            data-testid="dashboard-picker-label"
+            variant="headline3"
+            {...props}
+          >
             {isOperators
               ? "Operators"
               : isValidators
@@ -33,10 +37,20 @@ export const DashboardPicker: DashboardPickerFC = ({ ...props }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem asChild defaultChecked={isValidators} className="">
-          <Link to="/clusters">Validator Clusters</Link>
+          <Link
+            data-testid="dashboard-picker-item-clusters"
+            to="/clusters"
+          >
+            Validator Clusters
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild defaultChecked={isOperators}>
-          <Link to="/operators">Operators</Link>
+          <Link
+            data-testid="dashboard-picker-item-operators"
+            to="/operators"
+          >
+            Operators
+          </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

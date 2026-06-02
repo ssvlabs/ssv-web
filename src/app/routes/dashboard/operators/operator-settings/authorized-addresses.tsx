@@ -76,18 +76,31 @@ export const AuthorizedAddresses = () => {
         onCancel={unsavedChangesBlocker.reset}
       />
       <PastingLimitExceededModal />
-      <Container variant="vertical" size="lg" className="max-h-full py-10">
+      <Container
+        data-testid="dashboard-authorized-addresses-page"
+        variant="vertical"
+        size="lg"
+        className="max-h-full py-10"
+      >
         <Form {...addManager.form}>
-          <NavigateBackBtn />
+          <NavigateBackBtn data-testid="dashboard-authorized-addresses-back-btn" />
           <Card as="form" onSubmit={submit} className="w-full h overflow-auto">
             <div className="flex flex-col gap-2">
               <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold">Authorized Addresses</h2>
+                <h2
+                  data-testid="dashboard-authorized-addresses-title"
+                  className="text-xl font-bold"
+                >
+                  Authorized Addresses
+                </h2>
                 <Tooltip
                   asChild
                   content="The maximum number of addresses for whitelist is 500"
                 >
-                  <Badge variant="primary">
+                  <Badge
+                    data-testid="dashboard-authorized-addresses-count-badge"
+                    variant="primary"
+                  >
                     {totalAddresses} of 500 Addresses
                   </Badge>
                 </Tooltip>
@@ -134,10 +147,12 @@ export const AuthorizedAddresses = () => {
                     <FormItem>
                       <FormControl>
                         <Input
+                          data-testid={`dashboard-authorized-addresses-input-${index}`}
                           {...field}
                           onPaste={handlePaste(index)}
                           rightSlot={
                             <Button
+                              data-testid={`dashboard-authorized-addresses-remove-${index}-btn`}
                               variant="ghost"
                               size="icon"
                               onClick={() =>
@@ -168,6 +183,7 @@ export const AuthorizedAddresses = () => {
                   }
                 >
                   <button
+                    data-testid="dashboard-authorized-addresses-add-btn"
                     disabled={isAddBtnDisabled}
                     type="button"
                     className="sticky bottom-0 outline outline-[8px] outline-gray-50 bg-gray-50 h-12 w-full text-center border border-gray-400 border-dashed rounded-lg text-gray-500 font-medium"
@@ -182,6 +198,7 @@ export const AuthorizedAddresses = () => {
             {mode !== "view" && (
               <div className="flex gap-3 w-full">
                 <Button
+                  data-testid="dashboard-authorized-addresses-cancel-btn"
                   type="button"
                   className="flex-1"
                   size="xl"
@@ -192,6 +209,7 @@ export const AuthorizedAddresses = () => {
                   Cancel
                 </Button>
                 <Button
+                  data-testid="dashboard-authorized-addresses-submit-btn"
                   className="flex-1"
                   size="xl"
                   type="submit"

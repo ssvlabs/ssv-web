@@ -40,14 +40,27 @@ export const DistributeOffline: FC = () => {
       : health.hasUnhealthyOperators) || health.hasVersionMismatch;
 
   return (
-    <Container size="lg" variant="vertical" className="py-6">
-      <NavigateBackBtn by="path" to="../distribution-method" />
+    <Container
+      data-testid="create-cluster-distribute-offline-page"
+      size="lg"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn
+        data-testid="create-cluster-distribute-offline-back-btn"
+        by="path"
+        to="../distribution-method"
+      />
       <Card className="w-full">
-        <Text variant="headline4">
+        <Text
+          data-testid="create-cluster-distribute-offline-title"
+          variant="headline4"
+        >
           How do you want to generate your keyshares?
         </Text>
         <div className="flex gap-6">
           <SelectionCard
+            data-testid="create-cluster-distribute-offline-cli-card"
             icon={<Cmd />}
             title="Command Line Interface"
             description="Generate from Existing Key"
@@ -55,6 +68,7 @@ export const DistributeOffline: FC = () => {
             onClick={() => setSelectedOption("existing")}
           />
           <SelectionCard
+            data-testid="create-cluster-distribute-offline-dkg-card"
             icon={<Dkg />}
             title="DKG"
             description="Generate from New Key"
@@ -72,6 +86,7 @@ export const DistributeOffline: FC = () => {
             />
             {!inCluster && (
               <Button
+                data-testid="create-cluster-distribute-offline-change-operators-btn"
                 as={Link}
                 to="../select-operators?has_dkg_address=true"
                 size="xl"

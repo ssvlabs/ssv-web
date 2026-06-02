@@ -18,6 +18,7 @@ export const Maintenance: FC = () => {
 
   return (
     <Container
+      data-testid="maintenance-page"
       variant="vertical"
       className="max-w-screen-2xl w-full p-6 items-center h-full"
     >
@@ -29,16 +30,24 @@ export const Maintenance: FC = () => {
       </div>
       <div className="flex flex-1 justify-center items-center flex-col">
         <img src="/images/maintenance.svg" alt="Maintenance" className="w-40" />
-        <Text variant="headline2" className="text-gray-700 mt-16">
+        <Text
+          data-testid="maintenance-title"
+          variant="headline2"
+          className="text-gray-700 mt-16"
+        >
           The site is currently down for maintenance
         </Text>
         <div className="flex flex-col gap-2 text-center mt-7">
-          <Text variant="body-1-medium">
+          <Text data-testid="maintenance-description" variant="body-1-medium">
             We'll be back up and running again shortly
           </Text>
-          <Text variant="body-3-medium" className="text-gray-600">
+          <Text
+            variant="body-3-medium"
+            className="text-gray-600"
+          >
             You can reach us on{" "}
             <Button
+              data-testid="maintenance-discord-link"
               variant="link"
               as="a"
               href={links.ssv.discord}

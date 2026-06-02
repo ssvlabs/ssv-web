@@ -10,6 +10,7 @@ import { useOperatorEarningsAndFees } from "@/hooks/operator/use-operator-earnin
 
 export type OperatorTableRowProps = {
   operator: Operator;
+  rowIndex?: number;
 };
 
 type FCProps = FC<
@@ -19,6 +20,7 @@ type FCProps = FC<
 
 export const OperatorTableRow: FCProps = ({
   operator: _operator,
+  rowIndex,
   className,
   ...props
 }) => {
@@ -31,19 +33,25 @@ export const OperatorTableRow: FCProps = ({
   return (
     <TableRow
       key={operator.id}
+      data-testid="dashboard-operators-table-row"
+      data-testid-index={rowIndex}
+      data-testid-entity={operator.id}
       className={cn("cursor-pointer max-h-7", className)}
       {...props}
     >
-      <TableCell className="font-medium">
+      <TableCell
+        data-testid="dashboard-operators-table-row-name"
+        className="font-medium"
+      >
         <OperatorDetails operator={operator} />
       </TableCell>
-      <TableCell>
+      <TableCell data-testid="dashboard-operators-table-row-status">
         <OperatorStatusBadge size="sm" status={operator.status} />
       </TableCell>
-      <TableCell>
+      <TableCell data-testid="dashboard-operators-table-row-performance">
         {percentageFormatter.format(operator.performance["30d"])}
       </TableCell>
-      <TableCell>
+      <TableCell data-testid="dashboard-operators-table-row-balance">
         <div className="flex items-center gap-2 w-max">
           <div className="flex items-center gap-1 text-gray-800 font-medium">
             <img
@@ -51,7 +59,9 @@ export const OperatorTableRow: FCProps = ({
               src="/images/networks/dark.svg"
               className="size-5"
             />{" "}
-            <span>{formatETH(balanceEth)}</span>
+            <span data-testid="dashboard-operators-table-row-balance-eth">
+              {formatETH(balanceEth)}
+            </span>
           </div>
           {balanceSSV > 0 && (
             <div className="flex items-center gap-1 text-gray-800 font-medium">
@@ -61,12 +71,14 @@ export const OperatorTableRow: FCProps = ({
                 src="/images/ssvIcons/icon.svg"
                 className="size-5"
               />{" "}
-              {formatSSV(balanceSSV)}
+              <span data-testid="dashboard-operators-table-row-balance-ssv">
+                {formatSSV(balanceSSV)}
+              </span>
             </div>
           )}
         </div>
       </TableCell>
-      <TableCell>
+      <TableCell data-testid="dashboard-operators-table-row-yearly-fee">
         <div className="flex items-center gap-2 w-max">
           <div className="flex items-center gap-1 text-gray-800 font-medium">
             <img
@@ -74,7 +86,9 @@ export const OperatorTableRow: FCProps = ({
               src="/images/networks/dark.svg"
               className="size-5"
             />{" "}
-            {formatETH(yearlyFeeEth)}
+            <span data-testid="dashboard-operators-table-row-yearly-fee-eth">
+              {formatETH(yearlyFeeEth)}
+            </span>
           </div>
           {yearlyFeeSSV > 0 && (
             <div className="flex items-center gap-1 text-gray-800 font-medium">
@@ -84,13 +98,17 @@ export const OperatorTableRow: FCProps = ({
                 src="/images/ssvIcons/icon.svg"
                 className="size-5"
               />{" "}
-              {formatSSV(yearlyFeeSSV)}
+              <span data-testid="dashboard-operators-table-row-yearly-fee-ssv">
+                {formatSSV(yearlyFeeSSV)}
+              </span>
             </div>
           )}
         </div>
       </TableCell>
-      <TableCell>{operator.validators_count}</TableCell>
-      <TableCell>
+      <TableCell data-testid="dashboard-operators-table-row-validators-count">
+        {operator.validators_count}
+      </TableCell>
+      <TableCell data-testid="dashboard-operators-table-row-effective-balance">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 text-gray-800 font-medium">
             <img

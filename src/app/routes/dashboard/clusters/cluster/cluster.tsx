@@ -62,8 +62,16 @@ export const Cluster: FC = () => {
         backRoutePath="/clusters"
         backButtonLabel="Cluster Details"
       />
-      <Container variant="vertical" size="xl" className="min-h-full py-6">
-        <div className="grid grid-cols-4 gap-6 w-full">
+      <Container
+        data-testid="dashboard-cluster-page"
+        variant="vertical"
+        size="xl"
+        className="min-h-full py-6"
+      >
+        <div
+          data-testid="dashboard-cluster-operators-stats"
+          className="grid grid-cols-4 gap-6 w-full"
+        >
           {cluster.data?.operators.map((operator) => (
             <OperatorStatCard
               isClusterMigrated={isMigrated}
@@ -74,18 +82,33 @@ export const Cluster: FC = () => {
           ))}
         </div>
         <div className="flex flex-1 items-start gap-6 w-full">
-          <Card className="flex-[1]">
+          <Card data-testid="dashboard-cluster-balance-card" className="flex-[1]">
             <div className="flex flex-col gap-2 ">
               <div className="flex gap-2 items-center">
-                <Text variant="headline4" className="text-gray-500">
+                <Text
+                  data-testid="dashboard-cluster-balance-label"
+                  variant="headline4"
+                  className="text-gray-500"
+                >
                   Balance
                 </Text>
-                {isLiquidated.data && <Badge variant="error">Liquidated</Badge>}
+                {isLiquidated.data && (
+                  <Badge
+                    data-testid="dashboard-cluster-liquidated-badge"
+                    variant="error"
+                  >
+                    Liquidated
+                  </Badge>
+                )}
               </div>
               {balance.isLoading ? (
                 <Skeleton className="h-10 w-24 my-1" />
               ) : (
-                <BalanceDisplay amount={balance.data} token={balance.token} />
+                <BalanceDisplay
+                  data-testid="dashboard-cluster-balance-display"
+                  amount={balance.data}
+                  token={balance.token}
+                />
               )}
             </div>
             {Boolean(cluster.data?.validatorCount) && (
@@ -105,11 +128,17 @@ export const Cluster: FC = () => {
 
             {isLiquidated.data ? (
               isMigrated ? (
-                <Button as={Link} to="reactivate-balance" size="xl">
+                <Button
+                  data-testid="dashboard-cluster-reactivate-btn"
+                  as={Link}
+                  to="reactivate-balance"
+                  size="xl"
+                >
                   Reactivate Cluster
                 </Button>
               ) : (
                 <Button
+                  data-testid="dashboard-cluster-switch-to-eth-btn-liquidated"
                   as={Link}
                   to={`/switch-wizard/${clusterHash}`}
                   state={{ from }}
@@ -123,6 +152,7 @@ export const Cluster: FC = () => {
                 <div className="flex gap-6 [&>*]:flex-1">
                   <SwitchToEthMenuOptionTooltip asChild enabled={!isMigrated}>
                     <Button
+                      data-testid="dashboard-cluster-deposit-btn"
                       as={Link}
                       to="deposit"
                       size="xl"
@@ -131,12 +161,19 @@ export const Cluster: FC = () => {
                       Deposit
                     </Button>
                   </SwitchToEthMenuOptionTooltip>
-                  <Button as={Link} to="withdraw" size="xl" variant="secondary">
+                  <Button
+                    data-testid="dashboard-cluster-withdraw-btn"
+                    as={Link}
+                    to="withdraw"
+                    size="xl"
+                    variant="secondary"
+                  >
                     Withdraw
                   </Button>
                 </div>
                 {!isMigrated && (
                   <Button
+                    data-testid="dashboard-cluster-switch-to-eth-btn-live"
                     as={Link}
                     to={`/switch-wizard/${clusterHash}`}
                     state={{ from }}
@@ -149,12 +186,24 @@ export const Cluster: FC = () => {
               </div>
             )}
           </Card>
-          <Card className="flex-[2] h-full">
+          <Card
+            data-testid="dashboard-cluster-validators-card"
+            className="flex-[2] h-full"
+          >
             <div className="flex w-full gap-2 justify-between">
-              <Text variant="headline4" className="text-gray-500">
+              <Text
+                data-testid="dashboard-cluster-validators-label"
+                variant="headline4"
+                className="text-gray-500"
+              >
                 Validators
               </Text>
-              <Badge size="sm" variant="primary" className="h-fit">
+              <Badge
+                data-testid="dashboard-cluster-validators-count"
+                size="sm"
+                variant="primary"
+                className="h-fit"
+              >
                 {cluster.data?.validatorCount}
               </Badge>
               <Spacer />
@@ -164,6 +213,7 @@ export const Cluster: FC = () => {
               />
               <Tooltip content={getTooltipContent()}>
                 <Button
+                  data-testid="dashboard-cluster-add-validator-btn"
                   disabled={
                     operatorsUsability.isError ||
                     operatorsUsability.data?.hasExceededValidatorsLimit ||

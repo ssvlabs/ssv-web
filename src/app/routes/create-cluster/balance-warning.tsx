@@ -13,8 +13,15 @@ export const BalanceWarning: FC = () => {
   const [agree2, setAgree2] = useState(false);
 
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn by="history" />
+    <Container
+      data-testid="create-cluster-balance-warning-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn
+        data-testid="create-cluster-balance-warning-back-btn"
+        by="history"
+      />
       <Card>
         <CardHeader
           title="Cluster Balances and Fees"
@@ -50,6 +57,7 @@ export const BalanceWarning: FC = () => {
         <div className="flex flex-col gap-3">
           <label htmlFor="agree-1" className="flex gap-2 items-center">
             <Checkbox
+              data-testid="create-cluster-balance-warning-fees-checkbox"
               checked={agree1}
               id="agree-1"
               onCheckedChange={(checked: boolean) => setAgree1(checked)}
@@ -60,6 +68,7 @@ export const BalanceWarning: FC = () => {
           </label>
           <label htmlFor="agree-2" className="flex gap-2 items-center">
             <Checkbox
+              data-testid="create-cluster-balance-warning-liquidation-checkbox"
               checked={agree2}
               id="agree-2"
               onCheckedChange={(checked: boolean) => setAgree2(checked)}
@@ -70,6 +79,7 @@ export const BalanceWarning: FC = () => {
           </label>
         </div>
         <Button
+          data-testid="create-cluster-balance-warning-next-btn"
           as={Link}
           to="../slashing-warning"
           size="xl"

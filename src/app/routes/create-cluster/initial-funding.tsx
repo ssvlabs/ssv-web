@@ -125,11 +125,23 @@ export const InitialFunding: FCProps = ({ ...props }) => {
   }
 
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn by="history" />
+    <Container
+      data-testid="create-cluster-initial-funding-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn
+        data-testid="create-cluster-initial-funding-back-btn"
+        by="history"
+      />
       <Form {...form}>
         <Card as="form" onSubmit={submit} {...props}>
-          <Text variant="headline4">Select your validator funding period</Text>
+          <Text
+            data-testid="create-cluster-initial-funding-title"
+            variant="headline4"
+          >
+            Select your validator funding period
+          </Text>
           <Text variant="body-2-medium">
             The ETH amount you deposit will determine your validator operational
             runway (You can always manage it later by withdrawing or depositing
@@ -277,7 +289,11 @@ export const InitialFunding: FCProps = ({ ...props }) => {
             fundingDays={days}
             effectiveBalance={effectiveBalance}
           />
-          <Button size="xl" type="submit">
+          <Button
+            data-testid="create-cluster-initial-funding-next-btn"
+            size="xl"
+            type="submit"
+          >
             Next
           </Button>
         </Card>

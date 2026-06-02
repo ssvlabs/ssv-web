@@ -147,6 +147,7 @@ const ReshareDkg = () => {
 
   return (
     <Container
+      data-testid="reshare-dkg-page"
       variant="vertical"
       size="lg"
       className="py-5"
@@ -205,6 +206,7 @@ const ReshareDkg = () => {
         validators={reshareContext.proofsQuery.data?.validators || []}
       />
       <Card
+        data-testid="reshare-dkg-step-4-card"
         className={`border ${currentStep === ReshareSteps.Register ? "border-primary-500" : ""} w-full`}
       >
         <CardHeader
@@ -218,6 +220,7 @@ const ReshareDkg = () => {
         />
         {currentStep === ReshareSteps.Register && (
           <Button
+            data-testid="reshare-dkg-step-4-register-btn"
             size="xl"
             as={Link}
             to={
@@ -264,13 +267,17 @@ const ReshareDkg = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input {...field} />
+                          <Input
+                            data-testid="reshare-dkg-signature-modal-input"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <Button
+                    data-testid="reshare-dkg-signature-modal-submit-btn"
                     type="submit"
                     size="xl"
                     className={"w-full"}

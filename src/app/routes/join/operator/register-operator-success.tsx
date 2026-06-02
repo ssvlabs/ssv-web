@@ -21,7 +21,7 @@ export const RegisterOperatorSuccess: FC<
   }
 
   return (
-    <Container className="py-6">
+    <Container data-testid="join-register-operator-success-page" className="py-6">
       <Card className="relative overflow-hidden">
         <img
           src="/images/backgroundIcon/light.svg"
@@ -38,9 +38,22 @@ export const RegisterOperatorSuccess: FC<
           }
         />
         <div className="flex items-center gap-1">
-          <Text variant="body-1-medium">ID: {operatorId}</Text>
-          <CopyBtn className="size-8" text={operatorId} />
-          <SsvExplorerBtn className="size-8" operatorId={operatorId} />
+          <Text
+            data-testid="join-register-operator-success-id"
+            variant="body-1-medium"
+          >
+            ID: {operatorId}
+          </Text>
+          <CopyBtn
+            data-testid="join-register-operator-success-id-copy-btn"
+            className="size-8"
+            text={operatorId}
+          />
+          <SsvExplorerBtn
+            data-testid="join-register-operator-success-explorer-btn"
+            className="size-8"
+            operatorId={operatorId}
+          />
         </div>
         <Divider />
         <Text variant="body-2-semibold" className="text-gray-500">
@@ -48,6 +61,7 @@ export const RegisterOperatorSuccess: FC<
         </Text>
         <div className="p-4 py-8 border border-gray-300 rounded-lg">
           <Button
+            data-testid="join-register-operator-success-mev-link"
             variant="link"
             as={Link}
             to="https://docs.ssv.network/operators/operator-node/node-setup/configuring-mev/"
@@ -57,7 +71,12 @@ export const RegisterOperatorSuccess: FC<
           </Button>{" "}
           to propose MEV blocks for the validators you manage.
         </div>
-        <Button as={Link} size="xl" to={`/operators/${operatorId}`}>
+        <Button
+          data-testid="join-register-operator-success-manage-btn"
+          as={Link}
+          size="xl"
+          to={`/operators/${operatorId}`}
+        >
           Manage operator
         </Button>
       </Card>

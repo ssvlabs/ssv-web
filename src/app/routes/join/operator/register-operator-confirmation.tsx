@@ -94,8 +94,15 @@ export const RegisterOperatorConfirmation: FC = () => {
   useFocus("#register-operator-confirmation");
 
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn by="history" />
+    <Container
+      data-testid="join-register-operator-confirmation-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn
+        data-testid="join-register-operator-confirmation-back-btn"
+        by="history"
+      />
       <Card
         id="register-operator-confirmation"
         as="form"
@@ -111,7 +118,12 @@ export const RegisterOperatorConfirmation: FC = () => {
           submit();
         }}
       >
-        <Text variant="headline4">Transaction Details</Text>
+        <Text
+          data-testid="join-register-operator-confirmation-title"
+          variant="headline4"
+        >
+          Transaction Details
+        </Text>
 
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-center gap-4">
@@ -169,6 +181,7 @@ export const RegisterOperatorConfirmation: FC = () => {
           </div>
         </div>
         <Button
+          data-testid="join-register-operator-confirmation-submit-btn"
           type="submit"
           size="xl"
           isLoading={register.isPending}

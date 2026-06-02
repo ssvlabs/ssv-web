@@ -87,8 +87,14 @@ export const RegisterOperator: FC<ComponentPropsWithoutRef<"div">> = ({
   useFocus("#register-operator-public-key");
 
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn>Join the SSV Network Operators</NavigateBackBtn>
+    <Container
+      data-testid="join-register-operator-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn data-testid="join-register-operator-back-btn">
+        Join the SSV Network Operators
+      </NavigateBackBtn>
 
       <Form {...form}>
         <Card as="form" onSubmit={submit} className={cn(className)} {...props}>
@@ -109,7 +115,12 @@ export const RegisterOperator: FC<ComponentPropsWithoutRef<"div">> = ({
                   </FormLabel>
                 </Tooltip>
                 <FormControl>
-                  <Input disabled className="bg-gray-300" {...field} />
+                  <Input
+                    data-testid="join-register-operator-owner-input"
+                    disabled
+                    className="bg-gray-300"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -143,6 +154,7 @@ export const RegisterOperator: FC<ComponentPropsWithoutRef<"div">> = ({
 
                 <FormControl>
                   <Input
+                    data-testid="join-register-operator-pubkey-input"
                     id="register-operator-public-key"
                     {...field}
                     isLoading={fetchOperatorByPublicKey.isPending}
@@ -209,6 +221,7 @@ export const RegisterOperator: FC<ComponentPropsWithoutRef<"div">> = ({
                         isPrivate={form.watch("isPrivate")}
                       />
                       <Switch
+                        data-testid="join-register-operator-private-switch"
                         checked={form.watch("isPrivate")}
                         id="airplane-mode"
                         onCheckedChange={field.onChange}
@@ -221,6 +234,7 @@ export const RegisterOperator: FC<ComponentPropsWithoutRef<"div">> = ({
             />
           </div>
           <Button
+            data-testid="join-register-operator-submit-btn"
             size="xl"
             type="submit"
             disabled={!isEmpty(form.formState.errors)}

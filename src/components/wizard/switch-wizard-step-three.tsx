@@ -71,6 +71,7 @@ export const SwitchWizardStepThree = ({
 
   return (
     <Container
+      data-testid="switch-wizard-step-three-page"
       variant="vertical"
       className="py-6"
       backButtonLabel={backButtonLabel}
@@ -83,7 +84,12 @@ export const SwitchWizardStepThree = ({
         className="w-full flex flex-col gap-5 p-8 bg-white rounded-2xl"
       >
         <div className="flex justify-between w-full">
-          <Text variant="headline4">Transaction Details</Text>
+          <Text
+            data-testid="switch-wizard-step-three-title"
+            variant="headline4"
+          >
+            Transaction Details
+          </Text>
         </div>
 
         <div className="space-y-2">
@@ -211,6 +217,7 @@ export const SwitchWizardStepThree = ({
           className="flex gap-3 items-start cursor-pointer"
         >
           <Checkbox
+            data-testid="switch-wizard-step-three-acknowledge-checkbox"
             id={acknowledgeId}
             checked={isAcknowledged}
             onCheckedChange={(checked) => setIsAcknowledged(checked === true)}
@@ -229,6 +236,7 @@ export const SwitchWizardStepThree = ({
         </label>
 
         <Button
+          data-testid="switch-wizard-step-three-submit-btn"
           size="xl"
           width="full"
           onClick={handleSubmit}

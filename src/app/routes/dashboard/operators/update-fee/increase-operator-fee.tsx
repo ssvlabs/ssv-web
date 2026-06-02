@@ -90,6 +90,7 @@ export const IncreaseOperatorFee: FC = () => {
     if (isCanceled || status.isExpired)
       return (
         <Button
+          data-testid="dashboard-increase-fee-declare-new-btn"
           size="xl"
           isActionBtn
           onClick={() => {
@@ -105,6 +106,7 @@ export const IncreaseOperatorFee: FC = () => {
     if (status.isDeclaration)
       return (
         <Button
+          data-testid="dashboard-increase-fee-declare-btn"
           size="xl"
           isActionBtn
           onClick={declare}
@@ -118,6 +120,7 @@ export const IncreaseOperatorFee: FC = () => {
       return (
         <div className="flex gap-3">
           <Button
+            data-testid="dashboard-increase-fee-cancel-btn"
             size="xl"
             className="flex-1"
             variant="secondary"
@@ -128,6 +131,7 @@ export const IncreaseOperatorFee: FC = () => {
             Cancel
           </Button>
           <Button
+            data-testid="dashboard-increase-fee-execute-btn"
             size="xl"
             className="flex-1"
             disabled={status.isWaiting}
@@ -141,7 +145,12 @@ export const IncreaseOperatorFee: FC = () => {
     }
 
     return (
-      <Button as={Link} to="../.." size="xl">
+      <Button
+        data-testid="dashboard-increase-fee-back-to-account-btn"
+        as={Link}
+        to="../.."
+        size="xl"
+      >
         Back to my account
       </Button>
     );
@@ -199,8 +208,16 @@ export const IncreaseOperatorFee: FC = () => {
   };
 
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn by="path" to="../.." />
+    <Container
+      data-testid="dashboard-increase-fee-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn
+        data-testid="dashboard-increase-fee-back-btn"
+        by="path"
+        to="../.."
+      />
       <Card className="w-full gap-8">
         <CardHeader title="Update Fee" />
 

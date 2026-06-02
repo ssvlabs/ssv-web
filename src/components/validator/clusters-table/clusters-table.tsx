@@ -101,13 +101,13 @@ export const ClusterTable: FCProps = ({
   };
 
   return (
-    <div className="flex flex-col w-full">
+    <div data-testid="dashboard-clusters-table" className="flex flex-col w-full">
       <Table
         className={cn(className, "w-full rounded-t-xl overflow-hidden")}
         {...props}
       >
         <TableHeader>
-          <TableHead>
+          <TableHead data-testid="dashboard-clusters-table-header-cluster">
             <Tooltip
               asChild
               content={
@@ -115,6 +115,7 @@ export const ClusterTable: FCProps = ({
                   Clusters represent a unique set of operators who operate your
                   validators and can be represented by ID or a name.{" "}
                   <Button
+                    data-testid="dashboard-clusters-table-header-cluster-more-link"
                     as={Link}
                     to={links.MORE_ON_CLUSTERS}
                     target="_blank"
@@ -136,30 +137,37 @@ export const ClusterTable: FCProps = ({
               })}
             </Tooltip>
           </TableHead>
-          <TableHead>Operators</TableHead>
-          <TableHead>
+          <TableHead data-testid="dashboard-clusters-table-header-operators">
+            Operators
+          </TableHead>
+          <TableHead data-testid="dashboard-clusters-table-header-validators">
             {renderSortableHeader({
               type: "validatorCount",
               title: "Validators",
             })}
           </TableHead>
-          <TableHead>
+          <TableHead data-testid="dashboard-clusters-table-header-effective-balance">
             {renderSortableHeader({
               type: "effectiveBalance",
               title: "Total Effective Balance",
             })}
           </TableHead>
-          <TableHead>Cluster Balance</TableHead>
-          <TableHead>Operational Runway</TableHead>
+          <TableHead data-testid="dashboard-clusters-table-header-cluster-balance">
+            Cluster Balance
+          </TableHead>
+          <TableHead data-testid="dashboard-clusters-table-header-operational-runway">
+            Operational Runway
+          </TableHead>
           <TableHead />
           <TableHead />
         </TableHeader>
         <TableBody>
-          {clusters.map((cluster) => {
+          {clusters.map((cluster, index) => {
             return (
               <ClustersTableRow
                 key={cluster.id}
                 cluster={cluster}
+                rowIndex={index}
                 onClick={() => onClusterClick(cluster)}
               />
             );
@@ -169,13 +177,20 @@ export const ClusterTable: FCProps = ({
 
       <div className="bg-gray-50 w-full">{isLoading && <Loading />}</div>
       {isEmpty ? (
-        <div className="flex flex-col items-center justify-center gap-4 w-full bg-gray-50 py-16 rounded-b-2xl">
+        <div
+          data-testid="dashboard-clusters-empty-state"
+          className="flex flex-col items-center justify-center gap-4 w-full bg-gray-50 py-16 rounded-b-2xl"
+        >
           <LogoIcon className="size-20" />
           <div className="flex flex-col items-center gap-2">
-            <Text variant="body-2-medium">
+            <Text
+              data-testid="dashboard-clusters-empty-message"
+              variant="body-2-medium"
+            >
               You don't have any clusters yet.
             </Text>
             <Button
+              data-testid="dashboard-clusters-empty-create-btn"
               as={Link}
               to="/join/validator"
               size="lg"

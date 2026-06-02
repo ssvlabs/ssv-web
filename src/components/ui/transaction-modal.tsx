@@ -37,17 +37,28 @@ export const TransactionModal: FCProps = () => {
 
   return (
     <Dialog isOpen={isOpen}>
-      <DialogContent className="flex bg-gray-50 flex-col gap-8 max-w-[424px] font-medium ">
+      <DialogContent
+        data-testid="transaction-modal"
+        className="flex bg-gray-50 flex-col gap-8 max-w-[424px] font-medium "
+      >
         <div className="flex flex-col gap-3">
-          <DialogTitle>
+          <DialogTitle data-testid="transaction-modal-title">
             <Text variant="headline4">Sending Transaction</Text>
           </DialogTitle>
-          <Text variant="body-2-medium">{description}</Text>
+          <Text
+            data-testid="transaction-modal-description"
+            variant="body-2-medium"
+          >
+            {description}
+          </Text>
         </div>
         <img src={loaderSrc} className="size-28 mx-auto" />
         {isTwoStep && (
           <div className="flex  w-[244px] mx-auto">
-            <div className="flex flex-col items-center gap-1">
+            <div
+              data-testid="transaction-modal-pending-step"
+              className="flex flex-col items-center gap-1"
+            >
               <StepperDot
                 className=""
                 disabled={isIndexing}
@@ -64,7 +75,10 @@ export const TransactionModal: FCProps = () => {
               </Text>
             </div>
             <Divider className="flex-1 mt-3" />
-            <div className="flex flex-col items-center gap-1">
+            <div
+              data-testid="transaction-modal-indexing-step"
+              className="flex flex-col items-center gap-1"
+            >
               <StepperDot
                 disabled={isPending}
                 variant={isPending || isIndexing ? "active" : "done"}
@@ -91,15 +105,21 @@ export const TransactionModal: FCProps = () => {
             </Text>
             <div className="flex items-center h-[50px] px-5 pr-2 py-3 border border-gray-300 rounded-xl">
               <Text
+                data-testid="transaction-modal-tx-hash"
                 variant="body-2-medium"
                 className="flex-1 text-ellipsis overflow-hidden mr-3"
               >
                 {meta.hash}
               </Text>
-              <CopyBtn text={meta.hash} className="size-8" />
+              <CopyBtn
+                data-testid="transaction-modal-copy-tx-hash-btn"
+                text={meta.hash}
+                className="size-8"
+              />
             </div>
           </div>
           <Button
+            data-testid="transaction-modal-view-tx-link"
             as="a"
             target="_blank"
             variant="link"

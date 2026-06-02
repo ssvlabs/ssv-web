@@ -15,8 +15,13 @@ export const JoinOperatorPreparation: FC<ComponentPropsWithoutRef<"div">> = ({
   const { isNewAccount, accountRoutePath } = useAccountState();
 
   return (
-    <Container variant="vertical" className="py-6">
+    <Container
+      data-testid="join-operator-preparation-page"
+      variant="vertical"
+      className="py-6"
+    >
       <NavigateBackBtn
+        data-testid="join-operator-preparation-back-btn"
         to={(isNewAccount && accountRoutePath) || "/operators"}
       ></NavigateBackBtn>
       <Card className={cn(className)} {...props}>
@@ -27,6 +32,7 @@ export const JoinOperatorPreparation: FC<ComponentPropsWithoutRef<"div">> = ({
         <div className="flex gap-3">
           <div className="flex-1 flex gap-2 flex-col items-center">
             <Button
+              data-testid="join-operator-preparation-run-node-btn"
               variant="secondary"
               size="xl"
               className="w-full"
@@ -42,6 +48,7 @@ export const JoinOperatorPreparation: FC<ComponentPropsWithoutRef<"div">> = ({
           </div>
           <div className="flex-1 flex gap-2 flex-col items-center">
             <Button
+              data-testid="join-operator-preparation-register-btn"
               as={Link}
               to="register"
               variant="secondary"

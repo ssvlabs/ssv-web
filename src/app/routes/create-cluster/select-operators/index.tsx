@@ -155,6 +155,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
 
   return (
     <Container
+      data-testid="create-cluster-select-operators-page"
       variant="vertical"
       className="py-6 "
       size="xl"
@@ -162,10 +163,15 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
       navigateRoutePath={`/clusters/${clusterHash}/reshare`}
       onBackButtonClick={stepBack}
     >
-      {!reshareFlow.operators.length && <NavigateBackBtn />}
+      {!reshareFlow.operators.length && (
+        <NavigateBackBtn data-testid="create-cluster-select-operators-back-btn" />
+      )}
       <div className="flex items-stretch flex-1 gap-6 w-full">
         <Card className={cn(className, "flex flex-col flex-[2.2]")} {...props}>
-          <Text variant="headline4">
+          <Text
+            data-testid="create-cluster-select-operators-title"
+            variant="headline4"
+          >
             Pick the cluster of network operators to run your validator
           </Text>
           <OperatorClusterSizePicker
@@ -174,6 +180,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
           />
           <div className="flex gap-2">
             <SearchInput
+              data-testid="create-cluster-select-operators-search-input"
               value={search}
               onChange={(e) => setSearch(e.target.value as string)}
             />
@@ -278,6 +285,7 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
             </Alert>
           )}
           <Button
+            data-testid="create-cluster-select-operators-next-btn"
             size="xl"
             as={Link}
             isLoading={cluster.isLoading || operatorsUsability.isLoading}

@@ -23,8 +23,15 @@ type FCProps = FC<
 export const Preparation: FCProps = ({ className, ...props }) => {
   const { isNewAccount, accountRoutePath } = useAccountState();
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn to={(isNewAccount && accountRoutePath) || "/clusters"} />
+    <Container
+      data-testid="create-cluster-preparation-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn
+        data-testid="create-cluster-preparation-back-btn"
+        to={(isNewAccount && accountRoutePath) || "/clusters"}
+      />
       <Card className={cn(className)} {...props}>
         <CardHeader
           title="Run a Distributed Validator"
@@ -63,10 +70,21 @@ export const Preparation: FCProps = ({ className, ...props }) => {
           </div>
         </div>
         <div className="flex flex-col w-full gap-3">
-          <Button as={Link} to="select-operators" size="xl">
+          <Button
+            data-testid="create-cluster-preparation-generate-keyshares-btn"
+            as={Link}
+            to="select-operators"
+            size="xl"
+          >
             Generate new key shares
           </Button>
-          <Button as={Link} to="keyshares" size="xl" variant="secondary">
+          <Button
+            data-testid="create-cluster-preparation-have-keyshares-btn"
+            as={Link}
+            to="keyshares"
+            size="xl"
+            variant="secondary"
+          >
             I already have key shares
           </Button>
         </div>

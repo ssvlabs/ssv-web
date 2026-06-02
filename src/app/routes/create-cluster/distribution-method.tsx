@@ -27,8 +27,15 @@ export const DistributionMethod: FC<Props> = ({ variant = "create" }) => {
       : "/join/validator/select-operators";
 
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn to={prevPath} />
+    <Container
+      data-testid="create-cluster-distribution-method-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn
+        data-testid="create-cluster-distribution-method-back-btn"
+        to={prevPath}
+      />
       <Card className="font-medium">
         <CardHeader
           title="Generate Validator KeyShares"
@@ -50,7 +57,13 @@ export const DistributionMethod: FC<Props> = ({ variant = "create" }) => {
           <div className="flex [&>*]:flex-1 gap-3">
             {chain?.testnet && (
               <div className="flex flex-col gap-2">
-                <Button as={Link} to="../online" variant="secondary" size="xl">
+                <Button
+                  data-testid="create-cluster-distribution-method-online-btn"
+                  as={Link}
+                  to="../online"
+                  variant="secondary"
+                  size="xl"
+                >
                   Online
                 </Button>
                 {variant === "create" && (
@@ -64,7 +77,13 @@ export const DistributionMethod: FC<Props> = ({ variant = "create" }) => {
               </div>
             )}
             <div className="flex flex-col gap-2">
-              <Button as={Link} to="../offline" variant="secondary" size="xl">
+              <Button
+                data-testid="create-cluster-distribution-method-offline-btn"
+                as={Link}
+                to="../offline"
+                variant="secondary"
+                size="xl"
+              >
                 Offline
               </Button>
               {variant === "create" && (
@@ -79,6 +98,7 @@ export const DistributionMethod: FC<Props> = ({ variant = "create" }) => {
           </div>
           {variant === "add" && (
             <Button
+              data-testid="create-cluster-distribution-method-have-keyshares-btn"
               as={Link}
               to="../keyshares"
               variant="secondary"

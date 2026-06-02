@@ -35,8 +35,12 @@ export const RemoveOperator: FC = () => {
   const [accepted, setAccepted] = useState(false);
 
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn />
+    <Container
+      data-testid="dashboard-remove-operator-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn data-testid="dashboard-remove-operator-back-btn" />
       <Card>
         <CardHeader
           title="Remove Operator"
@@ -51,13 +55,14 @@ export const RemoveOperator: FC = () => {
           discoverable by other validators.
         </Text>
         <Alert variant="error">
-          <AlertDescription>
+          <AlertDescription data-testid="dashboard-remove-operator-warning">
             Please note that this process is irreversible and you would not be
             able to reactive this operator in the future.
           </AlertDescription>
         </Alert>
         <div className="flex gap-2">
           <Checkbox
+            data-testid="dashboard-remove-operator-agreement-checkbox"
             id="accept"
             checked={accepted}
             onCheckedChange={(checked: boolean) => setAccepted(checked)}
@@ -68,6 +73,7 @@ export const RemoveOperator: FC = () => {
           </Text>
         </div>
         <Button
+          data-testid="dashboard-remove-operator-submit-btn"
           variant="destructive"
           size="xl"
           onClick={remove}

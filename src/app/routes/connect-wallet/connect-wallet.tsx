@@ -14,16 +14,26 @@ export const ConnectWallet: FC<ComponentPropsWithoutRef<"div">> = () => {
   }
 
   return (
-    <Card className="max-w-[648px] mx-auto p-8 gap-8">
+    <Card
+      data-testid="connect-wallet-page"
+      className="max-w-[648px] mx-auto p-8 gap-8"
+    >
       <div className="flex flex-col gap-4">
-        <Text variant="headline1"> Welcome to SSV Network</Text>
-        <Text variant="body-2-medium" className="text-gray-700">
+        <Text data-testid="connect-wallet-title" variant="headline1">
+          {" "}
+          Welcome to SSV Network
+        </Text>
+        <Text
+          data-testid="connect-wallet-description"
+          variant="body-2-medium"
+          className="text-gray-700"
+        >
           Connect your wallet to run distributed validators, or join as an
           operator.
         </Text>
       </div>
       <img src={robotRocket} className="h-[274px] mx-auto" />
-      <ConnectWalletBtn size="xl" />
+      <ConnectWalletBtn data-testid="connect-wallet-btn" size="xl" />
     </Card>
   );
 };

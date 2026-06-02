@@ -77,7 +77,12 @@ export const MigratedCluster: FC = () => {
 
   return (
     <>
-      <Container variant="vertical" size="xl" className="min-h-full py-6">
+      <Container
+        data-testid="dashboard-migrated-cluster-page"
+        variant="vertical"
+        size="xl"
+        className="min-h-full py-6"
+      >
         <ClusterHeader />
         <div className="flex flex-1 items-start gap-6 w-full">
           <div className="flex flex-[1] flex-col gap-6 min-w-0">
@@ -101,6 +106,7 @@ export const MigratedCluster: FC = () => {
             <div className="flex w-full gap-2 justify-between">
               <div className="flex gap-3 items-center">
                 <Tab
+                  data-testid="dashboard-migrated-cluster-tab-validators"
                   as={Link}
                   to={`/clusters/${clusterHash}`}
                   count={cluster.data?.validatorCount}
@@ -109,6 +115,7 @@ export const MigratedCluster: FC = () => {
                   Validators
                 </Tab>
                 <Tab
+                  data-testid="dashboard-migrated-cluster-tab-operators"
                   as={Link}
                   to={`/clusters/${clusterHash}/operators`}
                   count={cluster.data?.operators.length}
@@ -124,6 +131,7 @@ export const MigratedCluster: FC = () => {
               />
               <Tooltip content={getTooltipContent()}>
                 <Button
+                  data-testid="dashboard-migrated-cluster-add-validator-btn"
                   disabled={
                     operatorsUsability.isError ||
                     operatorsUsability.data?.hasExceededValidatorsLimit ||

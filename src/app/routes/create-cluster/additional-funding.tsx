@@ -65,8 +65,15 @@ export const AdditionalFunding: FC = () => {
   });
 
   return (
-    <Container variant="vertical" className="p-6">
-      <NavigateBackBtn by="history" />
+    <Container
+      data-testid="create-cluster-additional-funding-page"
+      variant="vertical"
+      className="p-6"
+    >
+      <NavigateBackBtn
+        data-testid="create-cluster-additional-funding-back-btn"
+        by="history"
+      />
       <Form {...form}>
         <Card as="form" onSubmit={submit}>
           <CardHeader
@@ -103,6 +110,7 @@ export const AdditionalFunding: FC = () => {
                       >
                         <div className="flex gap-2">
                           <input
+                            data-testid="create-cluster-additional-funding-no-radio"
                             id="current-balance"
                             type="radio"
                             checked={!field.value}
@@ -124,6 +132,7 @@ export const AdditionalFunding: FC = () => {
                       >
                         <div className="flex gap-2">
                           <input
+                            data-testid="create-cluster-additional-funding-yes-radio"
                             id="top-up-balance"
                             type="radio"
                             checked={field.value}
@@ -146,6 +155,7 @@ export const AdditionalFunding: FC = () => {
                                   rightSlot={
                                     <div className="flex items-center gap-2">
                                       <Button
+                                        data-testid="create-cluster-additional-funding-max-btn"
                                         size="sm"
                                         className="h-auto py-1.5"
                                         variant="subtle"
@@ -184,6 +194,7 @@ export const AdditionalFunding: FC = () => {
             />
           </UnmountClosed>
           <Button
+            data-testid="create-cluster-additional-funding-next-btn"
             type="submit"
             size="xl"
             disabled={

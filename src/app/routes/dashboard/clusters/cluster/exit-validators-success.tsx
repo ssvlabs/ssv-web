@@ -13,6 +13,7 @@ export const ExitValidatorsSuccess: FC = () => {
   const { selectedPublicKeys } = useBulkActionContext();
   return (
     <Container
+      data-testid="dashboard-cluster-exit-success-page"
       variant="horizontal"
       size="xl"
       className="p-6 font-medium w-[1096px]"
@@ -23,7 +24,9 @@ export const ExitValidatorsSuccess: FC = () => {
           description="Your request to exit the validator has been successfully broadcasted to the network."
         />
         <Divider />
-        <Text variant="headline4">Next Steps</Text>
+        <Text data-testid="dashboard-cluster-exit-success-next-steps-heading" variant="headline4">
+          Next Steps
+        </Text>
         <Text variant="body-2-medium">
           1. <Span variant="body-2-bold">Monitor Validator</Span>: Keep track of
           your validator until it fully exits.
@@ -35,7 +38,12 @@ export const ExitValidatorsSuccess: FC = () => {
           Keep in mind that you will continue to incur operational fees until
           it's removed, regardless of the validator's state on the Beacon Chain.
         </Text>
-        <Button as={Link} to="../.." size="xl">
+        <Button
+          data-testid="dashboard-cluster-exit-success-go-to-cluster-btn"
+          as={Link}
+          to="../.."
+          size="xl"
+        >
           Go to Cluster Page
         </Button>
       </Card>

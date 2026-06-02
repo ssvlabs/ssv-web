@@ -55,16 +55,31 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
 
   // TODO: fetch validators to get status
   return (
-    <Container variant="vertical" size="lg" className="py-6 h-full">
-      <NavigateBackBtn to={`/clusters/${clusterHash}`} persistSearch />
+    <Container
+      data-testid={`dashboard-cluster-bulk-${type}-page`}
+      variant="vertical"
+      size="lg"
+      className="py-6 h-full"
+    >
+      <NavigateBackBtn
+        data-testid={`dashboard-cluster-bulk-${type}-back-btn`}
+        to={`/clusters/${clusterHash}`}
+        persistSearch
+      />
       <Card className="w-full flex-1 flex flex-col gap-4">
         <div className="flex justify-between">
-          <Text variant="headline4">
+          <Text
+            data-testid={`dashboard-cluster-bulk-${type}-title`}
+            variant="headline4"
+          >
             {type === "remove"
               ? "Select validators to Remove"
               : "Select validators to Exit"}
           </Text>
-          <Badge variant="primary">
+          <Badge
+            data-testid={`dashboard-cluster-bulk-${type}-selected-count`}
+            variant="primary"
+          >
             {selectedPublicKeys.length} of {totalValidators} selected
           </Badge>
         </div>
@@ -76,6 +91,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
           headers={[
             <div className="size-5">
               <Checkbox
+                data-testid={`dashboard-cluster-bulk-${type}-select-all-checkbox`}
                 checked={isAllChecked}
                 onClick={() => {
                   if (!isAllChecked) {
@@ -103,6 +119,9 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
           renderRow={({ index, item }) => (
             <TableRow
               as="label"
+              data-testid={`dashboard-cluster-bulk-${type}-row`}
+              data-testid-index={index}
+              data-testid-entity={item.public_key}
               className="select-none cursor-pointer"
               htmlFor={item.public_key}
               key={index}
@@ -110,6 +129,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
             >
               <TableCell className="flex gap-2 items-center">
                 <Checkbox
+                  data-testid={`dashboard-cluster-bulk-${type}-row-checkbox`}
                   id={item.public_key}
                   checked={selectedPublicKeys.includes(item.public_key)}
                   onCheckedChange={() =>
@@ -121,17 +141,32 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
                 />
               </TableCell>
               <TableCell className="flex gap-2 items-center">
-                <Text variant="body-2-medium">
+                <Text
+                  data-testid={`dashboard-cluster-bulk-${type}-row-pubkey`}
+                  variant="body-2-medium"
+                >
                   {shortenAddress(add0x(item.public_key))}
                 </Text>
-                <CopyBtn variant="subtle" text={item.public_key} />
+                <CopyBtn
+                  data-testid={`dashboard-cluster-bulk-${type}-row-pubkey-copy-btn`}
+                  variant="subtle"
+                  text={item.public_key}
+                />
               </TableCell>
               <TableCell>
-                <ValidatorStatusBadge size="sm" status={item.displayedStatus} />
+                <ValidatorStatusBadge
+                  data-testid={`dashboard-cluster-bulk-${type}-row-status`}
+                  size="sm"
+                  status={item.displayedStatus}
+                />
               </TableCell>
               <TableCell className="flex gap-1 justify-end">
-                <SsvExplorerBtn validatorId={item.public_key} />
+                <SsvExplorerBtn
+                  data-testid={`dashboard-cluster-bulk-${type}-row-explorer-btn`}
+                  validatorId={item.public_key}
+                />
                 <Button
+                  data-testid={`dashboard-cluster-bulk-${type}-row-beaconchain-btn`}
                   as="a"
                   size="icon"
                   className="size-7 text-gray-700"
@@ -146,6 +181,7 @@ export const Bulk: FC<{ type: "remove" | "exit" }> = ({ type }) => {
           )}
         />
         <Button
+          data-testid={`dashboard-cluster-bulk-${type}-next-btn`}
           as={Link}
           to={`/clusters/${clusterHash}/${type}/confirmation`}
           size="xl"

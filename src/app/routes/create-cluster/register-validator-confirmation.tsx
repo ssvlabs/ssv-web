@@ -143,13 +143,30 @@ export const RegisterValidatorConfirmation: FC = () => {
   };
 
   return (
-    <Container variant="vertical" className="py-6">
-      <NavigateBackBtn by="history" />
+    <Container
+      data-testid="create-cluster-register-confirmation-page"
+      variant="vertical"
+      className="py-6"
+    >
+      <NavigateBackBtn
+        data-testid="create-cluster-register-confirmation-back-btn"
+        by="history"
+      />
       <Card className="w-full">
         <div className="flex justify-between w-full">
-          <Text variant="headline4">Transaction Details</Text>
+          <Text
+            data-testid="create-cluster-register-confirmation-title"
+            variant="headline4"
+          >
+            Transaction Details
+          </Text>
           {isBulk && (
-            <Badge variant="success">{shares.length} Validators</Badge>
+            <Badge
+              data-testid="create-cluster-register-confirmation-validators-count-badge"
+              variant="success"
+            >
+              {shares.length} Validators
+            </Badge>
           )}
         </div>
         {shares.length === 1 && (
@@ -157,7 +174,11 @@ export const RegisterValidatorConfirmation: FC = () => {
             <Text variant="body-3-semibold" className="text-gray-500">
               Validator Public Key
             </Text>
-            <Input disabled value={shares[0].publicKey} />
+            <Input
+              data-testid="create-cluster-register-confirmation-pubkey-input"
+              disabled
+              value={shares[0].publicKey}
+            />
           </div>
         )}
         <div className="space-y-2">
@@ -196,6 +217,7 @@ export const RegisterValidatorConfirmation: FC = () => {
         )}
         {/*<WithAllowance size="xl" amount={depositAmount}>*/}
         <Button
+          data-testid="create-cluster-register-confirmation-submit-btn"
           size="xl"
           isLoading={isPending}
           isActionBtn

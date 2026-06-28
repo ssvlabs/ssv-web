@@ -5,7 +5,9 @@ import { merge } from "lodash-es";
 import _mixpanel from "mixpanel-browser";
 
 if (import.meta.env.VITE_MIXPANEL_TOKEN)
-  _mixpanel.init(import.meta.env.VITE_MIXPANEL_TOKEN);
+  _mixpanel.init(import.meta.env.VITE_MIXPANEL_TOKEN, {
+    api_host: "https://api-eu.mixpanel.com",
+  });
 
 const getNetworkName = () => {
   const chainId = getChainId(config);

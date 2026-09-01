@@ -19,15 +19,43 @@ import { IncreaseOperatorFeeStatusBadge } from "@/components/operator/increase-o
 import { OperatorValidatorsList } from "@/components/operator/operator-validators-list";
 import { OperatorStatusBadge } from "@/components/operator/operator-status-badge";
 import { useOperatorEarningsAndFees } from "@/hooks/operator/use-operator-earnings-and-fees";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const AmountSkeleton: FC<{ "data-testid"?: string }> = (props) => (
+  <div className="flex flex-col gap-2" {...props}>
+    <Skeleton className="h-7 w-32" />
+    <Skeleton className="h-4 w-16" />
+  </div>
+);
+
+const AmountUnavailable: FC<{ "data-testid"?: string }> = (props) => (
+  <div className="flex flex-col items-start gap-2" {...props}>
+    <Text variant="body-2-medium" className="text-error-500">
+      Couldn't read this value from the network.
+    </Text>
+    <Text variant="body-3-medium" className="text-gray-500">
+      It will appear once the connection recovers.
+    </Text>
+  </div>
+);
 
 export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
   const params = useOperatorPageParams();
   const operatorId = BigInt(params.operatorId!);
   const operator = useOperator(operatorId!);
-  const { feeEth, yearlyFeeEth, yearlyFeeSSV, balanceEth, balanceSSV } =
-    useOperatorEarningsAndFees(operatorId);
+  const {
+    feeEth,
+    yearlyFeeEth,
+    yearlyFeeSSV,
+    balanceEth,
+    balanceSSV,
+    earningsStatus,
+    feesStatus,
+  } = useOperatorEarningsAndFees(operatorId);
 
-  const hasBalance = balanceEth > 0n || balanceSSV > 0n;
+  const hasBalance =
+    earningsStatus.isSuccess && (balanceEth > 0n || balanceSSV > 0n);
+  const canUpdateFee = feesStatus.isSuccess && feeEth.data !== 0n;
 
   if (!operator.data) return null;
 
@@ -111,7 +139,10 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
         </div>
         <Container variant="horizontal" size="xl" {...props} className="h-full">
           <div className="flex items-stretch gap-6 flex-col flex-1">
-            <Card data-testid="dashboard-operator-balance-card" className="w-full">
+            <Card
+              data-testid="dashboard-operator-balance-card"
+              className="w-full"
+            >
               <Text
                 data-testid="dashboard-operator-balance-label"
                 variant="headline4"
@@ -119,23 +150,37 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
               >
                 Balance
               </Text>
-              <div className="flex flex-col gap-4">
-                <BalanceDisplay
-                  data-testid="dashboard-operator-balance-eth"
-                  amount={balanceEth}
-                  token="ETH"
-                />
-                {yearlyFeeSSV !== 0n && !operator.data.migrated && (
+              {earningsStatus.isUnavailable ? (
+                <AmountUnavailable data-testid="dashboard-operator-balance-error" />
+              ) : earningsStatus.isPending ? (
+                <AmountSkeleton data-testid="dashboard-operator-balance-loading" />
+              ) : (
+                <div className="flex flex-col gap-4">
                   <BalanceDisplay
-                    data-testid="dashboard-operator-balance-ssv"
-                    amount={balanceSSV}
-                    token="SSV"
+                    data-testid="dashboard-operator-balance-eth"
+                    amount={balanceEth}
+                    token="ETH"
                   />
-                )}
-              </div>
+                  {yearlyFeeSSV !== 0n && !operator.data.migrated && (
+                    <BalanceDisplay
+                      data-testid="dashboard-operator-balance-ssv"
+                      amount={balanceSSV}
+                      token="SSV"
+                    />
+                  )}
+                </div>
+              )}
               <Tooltip
                 asChild
-                content={!hasBalance ? "No balance to withdraw" : undefined}
+                content={
+                  earningsStatus.isUnavailable
+                    ? "Balance unavailable"
+                    : earningsStatus.isPending
+                      ? "Loading balance"
+                      : !hasBalance
+                        ? "No balance to withdraw"
+                        : undefined
+                }
               >
                 <Button
                   data-testid="dashboard-operator-withdraw-btn"
@@ -160,24 +205,34 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                 </Text>
                 <IncreaseOperatorFeeStatusBadge />
               </div>
-              <div className="flex flex-col gap-4">
-                <BalanceDisplay
-                  data-testid="dashboard-operator-yearly-fee-eth"
-                  amount={yearlyFeeEth}
-                  token="ETH"
-                />
-                {yearlyFeeSSV > 0 && (
+              {feesStatus.isUnavailable ? (
+                <AmountUnavailable data-testid="dashboard-operator-yearly-fee-error" />
+              ) : feesStatus.isPending ? (
+                <AmountSkeleton data-testid="dashboard-operator-yearly-fee-loading" />
+              ) : (
+                <div className="flex flex-col gap-4">
                   <BalanceDisplay
-                    data-testid="dashboard-operator-yearly-fee-ssv"
-                    amount={yearlyFeeSSV}
-                    token="SSV"
+                    data-testid="dashboard-operator-yearly-fee-eth"
+                    amount={yearlyFeeEth}
+                    token="ETH"
                   />
-                )}
-              </div>
+                  {yearlyFeeSSV > 0 && (
+                    <BalanceDisplay
+                      data-testid="dashboard-operator-yearly-fee-ssv"
+                      amount={yearlyFeeSSV}
+                      token="SSV"
+                    />
+                  )}
+                </div>
+              )}
               <Tooltip
                 asChild
                 content={
-                  feeEth.data === 0n ? (
+                  feesStatus.isUnavailable ? (
+                    "Fee unavailable"
+                  ) : feesStatus.isPending ? (
+                    "Loading fee"
+                  ) : feeEth.data === 0n ? (
                     <>
                       Operators with a fee of 0 cannot change their fee.{" "}
                       <Button
@@ -196,7 +251,7 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                 <Button
                   data-testid="dashboard-operator-update-fee-btn"
                   as={Link}
-                  disabled={feeEth.isLoading || feeEth.data === 0n}
+                  disabled={!canUpdateFee}
                   to="fee/update"
                   variant="secondary"
                   size="xl"

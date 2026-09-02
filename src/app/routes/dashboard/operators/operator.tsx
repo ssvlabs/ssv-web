@@ -19,15 +19,43 @@ import { IncreaseOperatorFeeStatusBadge } from "@/components/operator/increase-o
 import { OperatorValidatorsList } from "@/components/operator/operator-validators-list";
 import { OperatorStatusBadge } from "@/components/operator/operator-status-badge";
 import { useOperatorEarningsAndFees } from "@/hooks/operator/use-operator-earnings-and-fees";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const AmountSkeleton: FC = () => (
+  <div className="flex flex-col gap-2">
+    <Skeleton className="h-7 w-32" />
+    <Skeleton className="h-4 w-16" />
+  </div>
+);
+
+const AmountUnavailable: FC = () => (
+  <div className="flex flex-col items-start gap-2">
+    <Text variant="body-2-medium" className="text-error-500">
+      Couldn't read this value from the network.
+    </Text>
+    <Text variant="body-3-medium" className="text-gray-500">
+      It will appear once the connection recovers.
+    </Text>
+  </div>
+);
 
 export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
   const params = useOperatorPageParams();
   const operatorId = BigInt(params.operatorId!);
   const operator = useOperator(operatorId!);
-  const { feeEth, yearlyFeeEth, yearlyFeeSSV, balanceEth, balanceSSV } =
-    useOperatorEarningsAndFees(operatorId);
+  const {
+    feeEth,
+    yearlyFeeEth,
+    yearlyFeeSSV,
+    balanceEth,
+    balanceSSV,
+    earningsStatus,
+    feesStatus,
+  } = useOperatorEarningsAndFees(operatorId);
 
-  const hasBalance = balanceEth > 0n || balanceSSV > 0n;
+  const hasBalance =
+    earningsStatus.isSuccess && (balanceEth > 0n || balanceSSV > 0n);
+  const canUpdateFee = feesStatus.isSuccess && feeEth.data !== 0n;
 
   if (!operator.data) return null;
 
@@ -101,13 +129,29 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
               <Text variant="headline4" className="text-gray-500">
                 Balance
               </Text>
-              <div className="flex flex-col gap-4">
-                <BalanceDisplay amount={balanceEth} token="ETH" />
-                {yearlyFeeSSV !== 0n && !operator.data.migrated && <BalanceDisplay amount={balanceSSV} token="SSV" />}
-              </div>
+              {earningsStatus.isUnavailable ? (
+                <AmountUnavailable />
+              ) : earningsStatus.isPending ? (
+                <AmountSkeleton />
+              ) : (
+                <div className="flex flex-col gap-4">
+                  <BalanceDisplay amount={balanceEth} token="ETH" />
+                  {yearlyFeeSSV !== 0n && !operator.data.migrated && (
+                    <BalanceDisplay amount={balanceSSV} token="SSV" />
+                  )}
+                </div>
+              )}
               <Tooltip
                 asChild
-                content={!hasBalance ? "No balance to withdraw" : undefined}
+                content={
+                  earningsStatus.isUnavailable
+                    ? "Balance unavailable"
+                    : earningsStatus.isPending
+                      ? "Loading balance"
+                      : !hasBalance
+                        ? "No balance to withdraw"
+                        : undefined
+                }
               >
                 <Button
                   as={Link}
@@ -127,16 +171,26 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
                 </Text>
                 <IncreaseOperatorFeeStatusBadge />
               </div>
-              <div className="flex flex-col gap-4">
-                <BalanceDisplay amount={yearlyFeeEth} token="ETH" />
-                {yearlyFeeSSV > 0 && (
-                  <BalanceDisplay amount={yearlyFeeSSV} token="SSV" />
-                )}
-              </div>
+              {feesStatus.isUnavailable ? (
+                <AmountUnavailable />
+              ) : feesStatus.isPending ? (
+                <AmountSkeleton />
+              ) : (
+                <div className="flex flex-col gap-4">
+                  <BalanceDisplay amount={yearlyFeeEth} token="ETH" />
+                  {yearlyFeeSSV > 0 && (
+                    <BalanceDisplay amount={yearlyFeeSSV} token="SSV" />
+                  )}
+                </div>
+              )}
               <Tooltip
                 asChild
                 content={
-                  feeEth.data === 0n ? (
+                  feesStatus.isUnavailable ? (
+                    "Fee unavailable"
+                  ) : feesStatus.isPending ? (
+                    "Loading fee"
+                  ) : feeEth.data === 0n ? (
                     <>
                       Operators with a fee of 0 cannot change their fee.{" "}
                       <Button
@@ -154,7 +208,7 @@ export const Operator: FC<ComponentPropsWithoutRef<"div">> = ({ ...props }) => {
               >
                 <Button
                   as={Link}
-                  disabled={feeEth.isLoading || feeEth.data === 0n}
+                  disabled={!canUpdateFee}
                   to="fee/update"
                   variant="secondary"
                   size="xl"

@@ -7,22 +7,30 @@ import {
 } from "@/components/operator/operator-details";
 import type { BadgeVariants } from "@/components/ui/badge";
 import { Badge } from "@/components/ui/badge";
-import type { OperatorDKGHealthResponse } from "@/hooks/operator/use-operator-dkg-health";
+import type { EnrichedOperatorDKGHealthResponse } from "@/hooks/operator/use-operator-dkg-health";
 
 type Props = {
   operators: OperatorDetailsProps["operator"][];
-  health: OperatorDKGHealthResponse[];
+  health: EnrichedOperatorDKGHealthResponse[];
   isMultiSigFlow?: boolean;
 };
 
 const getBadgeInfo = (
-  healthData: OperatorDKGHealthResponse,
+  healthData: EnrichedOperatorDKGHealthResponse,
   isMultiSigFlow?: boolean,
 ): { variant: BadgeVariants["variant"]; text: string } => {
   if (healthData.isMismatchId) {
     return {
       variant: "error" as BadgeVariants["variant"],
       text: "ID/IP Mismatch",
+    };
+  }
+  // TEMPORARY: surfaces the reported version so the staker can tell the
+  // operator exactly what to upgrade. Remove with the version gate.
+  if (healthData.isBelowMinVersionForAddress) {
+    return {
+      variant: "warning" as BadgeVariants["variant"],
+      text: `DKG Outdated (${healthData.version})`,
     };
   }
   if (healthData.isOutdated) {
@@ -73,7 +81,7 @@ export const UnhealthyOperatorsList: FC<
           );
 
           const { variant: badgeVariant, text: badgeText } = getBadgeInfo(
-            healthData || ({} as OperatorDKGHealthResponse),
+            healthData || ({} as EnrichedOperatorDKGHealthResponse),
             isMultiSigFlow,
           );
 

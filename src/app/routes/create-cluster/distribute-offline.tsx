@@ -48,9 +48,12 @@ export const DistributeOffline: FC = () => {
   const hasUnhealthyOperators = health.data?.some(
     ({ isHealthy, isMismatchId }) => !isHealthy || isMismatchId,
   );
-  const hasIssuedOperator = hasOutdatedOperator
-    ? hasUnhealthyOperators || !isAllOperatorsAreOutdated
-    : hasUnhealthyOperators;
+  // TEMPORARY: the DKG ceremony command embeds each operator's endpoint, so an
+  // operator below the minimum version counts as an issue and blocks the flow.
+  const hasIssuedOperator =
+    (hasOutdatedOperator
+      ? hasUnhealthyOperators || !isAllOperatorsAreOutdated
+      : hasUnhealthyOperators) || health.hasOperatorsBelowMinVersionForAddress;
 
   return (
     <Container size="lg" variant="vertical" className="py-6">

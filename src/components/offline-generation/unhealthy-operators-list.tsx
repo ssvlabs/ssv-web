@@ -25,16 +25,12 @@ const getBadgeInfo = (
       text: "ID/IP Mismatch",
     };
   }
-  // TEMPORARY: distinct from the node's own `isOutdated` flag below — this is
-  // the UI-side minimum version gate. Surfaces the reported version so the
-  // staker can tell the operator exactly what to upgrade. Remove with the gate.
-  if (healthData.isBelowMinVersionForAddress) {
-    return {
-      variant: "warning" as BadgeVariants["variant"],
-      text: `Unsupported DKG Version (${healthData.version})`,
-    };
-  }
-  if (healthData.isOutdated) {
+  // `isOutdated` is set when the node answered without a health-check message
+  // at all — too old to speak the protocol. TEMPORARY: a node that does answer
+  // but reports below `MIN_VERSION_FOR_ADDRESS` is the same problem at a finer
+  // threshold, so it carries the same badge. Drop the second condition with the
+  // version gate.
+  if (healthData.isOutdated || healthData.isBelowMinVersionForAddress) {
     return {
       variant: "warning" as BadgeVariants["variant"],
       text: "DKG Outdated",

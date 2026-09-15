@@ -21,7 +21,14 @@ export enum KeysharesValidationErrors {
 
 export const DKG_VERSIONS = {
   OLD: "2.1.0",
-  NEW: "3.0.3",
+  // Image tag the ceremony command tells the initiator to pull. Kept in step
+  // with MIN_VERSION_FOR_ADDRESS so the initiator never runs an older client
+  // than the operators it is talking to.
+  NEW: "3.1.1",
+  // TEMPORARY: an operator's DKG endpoint is only usable once its node runs at
+  // least this version. Below it the address must not reach the user or be
+  // embedded in a ceremony command. Remove once every operator has upgraded.
+  MIN_VERSION_FOR_ADDRESS: "3.1.1",
 };
 
 export class KeysharesValidationError extends Error {

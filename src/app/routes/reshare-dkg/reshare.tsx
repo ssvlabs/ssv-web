@@ -19,7 +19,7 @@ const Reshare = () => {
     ? context.dkgReshareState.newOperators
     : context.dkgReshareState.operators;
   const health = useOperatorsDKGHealth(operators);
-  const reshareAccepted = isContractWallet()
+  const operatorsHealthy = isContractWallet()
     ? health.data?.every(
         ({ isHealthy, isEthClientConnected, isOutdated, isMismatchId }) =>
           isHealthy && isEthClientConnected && !isOutdated && !isMismatchId,
@@ -28,6 +28,11 @@ const Reshare = () => {
         ({ isHealthy, isMismatchId, isOutdated }) =>
           isHealthy && !isMismatchId && !isOutdated,
       );
+
+  // TEMPORARY: a reshare embeds every operator's DKG endpoint in the ceremony
+  // command, so block the flow while any node is below the minimum version.
+  const reshareAccepted =
+    operatorsHealthy && !health.hasOperatorsBelowMinVersionForAddress;
   const { clusterHash } = useClusterPageParams();
 
   if (health.isLoading) {

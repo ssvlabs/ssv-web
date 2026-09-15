@@ -7,16 +7,16 @@ import {
 } from "@/components/operator/operator-details";
 import type { BadgeVariants } from "@/components/ui/badge";
 import { Badge } from "@/components/ui/badge";
-import type { OperatorDKGHealthResponse } from "@/hooks/operator/use-operator-dkg-health";
+import type { EnrichedOperatorDKGHealthResponse } from "@/hooks/operator/use-operator-dkg-health";
 
 type Props = {
   operators: OperatorDetailsProps["operator"][];
-  health: OperatorDKGHealthResponse[];
+  health: EnrichedOperatorDKGHealthResponse[];
   isMultiSigFlow?: boolean;
 };
 
 const getBadgeInfo = (
-  healthData: OperatorDKGHealthResponse,
+  healthData: EnrichedOperatorDKGHealthResponse,
   isMultiSigFlow?: boolean,
 ): { variant: BadgeVariants["variant"]; text: string } => {
   if (healthData.isMismatchId) {
@@ -25,7 +25,12 @@ const getBadgeInfo = (
       text: "ID/IP Mismatch",
     };
   }
-  if (healthData.isOutdated) {
+  // `isOutdated` is set when the node answered without a health-check message
+  // at all — too old to speak the protocol. TEMPORARY: a node that does answer
+  // but reports below `MIN_VERSION_FOR_ADDRESS` is the same problem at a finer
+  // threshold, so it carries the same badge. Drop the second condition with the
+  // version gate.
+  if (healthData.isOutdated || healthData.isBelowMinVersionForAddress) {
     return {
       variant: "warning" as BadgeVariants["variant"],
       text: "DKG Outdated",
@@ -73,7 +78,7 @@ export const UnhealthyOperatorsList: FC<
           );
 
           const { variant: badgeVariant, text: badgeText } = getBadgeInfo(
-            healthData || ({} as OperatorDKGHealthResponse),
+            healthData || ({} as EnrichedOperatorDKGHealthResponse),
             isMultiSigFlow,
           );
 

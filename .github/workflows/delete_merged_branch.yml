@@ -7,12 +7,30 @@ on:
     branches:
       - pre-stage
 
+permissions: {}
+
 jobs:
   delete_branch:
-    if: github.event.pull_request.merged == true
+    # Same-repository PRs only: a fork PR's head.ref names a branch in the fork,
+    # and deleting that name here would delete an unrelated branch of this repo.
+    if: github.event.pull_request.merged == true && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Delete merged branch
-        run: gh api -X DELETE repos/${{ github.repository }}/git/refs/heads/${{ github.event.pull_request.head.ref }}
+        # The branch name is user-controlled: pass it through env, never ${{ }} in run.
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$HEAD_REF" =~ ^[A-Za-z0-9][A-Za-z0-9._/-]*$ ]]; then
+            echo "::warning::not deleting branch with unexpected name"
+            exit 0
+          fi
+          case "$HEAD_REF" in
+            main|stage|pre-stage) echo "not deleting long-lived branch $HEAD_REF"; exit 0 ;;
+          esac
+          gh api -X DELETE "repos/${REPO}/git/refs/heads/${HEAD_REF}"

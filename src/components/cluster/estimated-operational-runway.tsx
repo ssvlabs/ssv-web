@@ -10,6 +10,10 @@ import { bigintAbs } from "@/lib/utils/bigint";
 import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useIsClusterLiquidated } from "@/hooks/cluster/use-is-cluster-liquidated";
 import { humanizeFundingDuration } from "@/lib/utils/date";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const UNAVAILABLE_MESSAGE =
+  "Couldn't read this value from the network. It will appear once the connection recovers.";
 
 export type EstimatedOperationalRunwayProps = {
   clusterHash?: string;
@@ -37,11 +41,19 @@ export const EstimatedOperationalRunway: EstimatedOperationalRunwayFC = ({
   const cluster = useCluster(hash!);
   const isLiquidated = useIsClusterLiquidated(hash!, { watch: true });
 
-  const { data: clusterRunway } = useClusterRunway(hash!, {
+  const {
+    data: clusterRunway,
+    isUnavailable,
+    isPending,
+    isIdle,
+  } = useClusterRunway(hash!, {
     deltaBalance,
     deltaEffectiveBalance,
     watch: true,
   });
+  // `clusterRunway` is computed from defaulted inputs, so don't present it
+  // (or alerts derived from it) until the reads behind it have resolved.
+  const isReady = !isUnavailable && !isPending && !isIdle;
 
   return (
     <div className={cn(className, "flex flex-col gap-4")} {...props}>
@@ -57,30 +69,47 @@ export const EstimatedOperationalRunway: EstimatedOperationalRunwayFC = ({
             <FaCircleInfo className="size-3 text-gray-500" />
           </div>
         </Tooltip>
-        <div
-          className={cn("flex items-end gap-1", {
-            "text-error-500": clusterRunway?.isAtRisk,
-          })}
-        >
-          <Text className="font-medium text-2xl first-letter:capitalize">
-            {clusterRunway?.runway === 0n
-              ? "0"
-              : humanizeFundingDuration(Number(clusterRunway?.runway ?? 0))}
-          </Text>
-          {clusterRunway?.hasDelta && (
-            <Span
-              className={cn({
-                "text-error-500": clusterRunway.isDecreasing,
-                "text-success-500": clusterRunway.isIncreasing,
-              })}
+        {isUnavailable ? (
+          <Tooltip content={UNAVAILABLE_MESSAGE}>
+            <Text
+              as="span"
+              data-testid="estimated-operational-runway-unavailable"
+              className="w-fit font-medium text-2xl text-error-500"
             >
-              ({clusterRunway.isDecreasing ? "-" : "+"}
-              {bigintAbs(clusterRunway.deltaDays).toString()} days)
-            </Span>
-          )}
-        </div>
+              Unavailable
+            </Text>
+          </Tooltip>
+        ) : isPending ? (
+          <Skeleton
+            data-testid="estimated-operational-runway-loading"
+            className="h-8 w-32"
+          />
+        ) : (
+          <div
+            className={cn("flex items-end gap-1", {
+              "text-error-500": clusterRunway?.isAtRisk,
+            })}
+          >
+            <Text className="font-medium text-2xl first-letter:capitalize">
+              {clusterRunway?.runway === 0n
+                ? "0"
+                : humanizeFundingDuration(Number(clusterRunway?.runway ?? 0))}
+            </Text>
+            {clusterRunway?.hasDelta && (
+              <Span
+                className={cn({
+                  "text-error-500": clusterRunway.isDecreasing,
+                  "text-success-500": clusterRunway.isIncreasing,
+                })}
+              >
+                ({clusterRunway.isDecreasing ? "-" : "+"}
+                {bigintAbs(clusterRunway.deltaDays).toString()} days)
+              </Span>
+            )}
+          </div>
+        )}
       </div>
-      {withAlerts && (
+      {withAlerts && isReady && (
         <EstimatedOperationalRunwayAlert
           isLiquidated={isLiquidated.data ?? false}
           hasDeltaValidators={deltaEffectiveBalance !== 0n}

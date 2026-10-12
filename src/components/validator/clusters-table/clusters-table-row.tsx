@@ -22,6 +22,9 @@ import { merge } from "lodash-es";
 import type { ComponentPropsWithoutRef, FC } from "react";
 import { Link, useLocation } from "react-router-dom";
 
+const UNAVAILABLE_MESSAGE =
+  "Couldn't read this value from the network. It will appear once the connection recovers.";
+
 export type ClustersTableRowProps = {
   cluster: Cluster;
   rowIndex?: number;
@@ -45,7 +48,16 @@ export const ClustersTableRow: FCProps = ({
   const balance = useClusterBalance(cluster.clusterId);
   const runway = useClusterRunway(cluster.clusterId);
   const isLiquidated = apiCluster?.isLiquidated;
-  const isLoadingRunway = !isLiquidated && runway.isLoading;
+  // The runway is computed from defaulted inputs until its reads resolve, so
+  // don't show it (or the low-runway warning) before then. Liquidated rows
+  // keep today's behaviour.
+  const isRunwayUnavailable = !isLiquidated && runway.isUnavailable;
+  const isLoadingRunway =
+    !isLiquidated && !runway.isUnavailable && runway.isPending;
+  const isRunwayReady =
+    isLiquidated ||
+    (!runway.isUnavailable && !runway.isPending && !runway.isIdle);
+  const isAtRisk = isRunwayReady && runway.data?.isAtRisk;
 
   const resolvedCluster = merge({}, cluster, apiCluster);
 
@@ -63,7 +75,7 @@ export const ClustersTableRow: FCProps = ({
       data-testid-index={rowIndex}
       data-testid-entity={cluster.clusterId}
       className={cn("cursor-pointer", className, {
-        "bg-warning-200": runway.data?.isAtRisk,
+        "bg-warning-200": isAtRisk,
         "bg-error-50": isLiquidated,
       })}
       {...props}
@@ -132,9 +144,21 @@ export const ClustersTableRow: FCProps = ({
         )}
       </TableCell>
       <TableCell data-testid="dashboard-clusters-table-row-runway">
-        {isLoadingRunway ? (
-          <Skeleton className="h-5 w-14" />
-        ) : resolvedCluster.validatorCount > 0 ? (
+        {isRunwayUnavailable ? (
+          <Tooltip asChild content={UNAVAILABLE_MESSAGE}>
+            <Span
+              data-testid="dashboard-clusters-table-row-runway-unavailable"
+              className="text-error-500"
+            >
+              Unavailable
+            </Span>
+          </Tooltip>
+        ) : isLoadingRunway ? (
+          <Skeleton
+            data-testid="dashboard-clusters-table-row-runway-loading"
+            className="h-5 w-14"
+          />
+        ) : isRunwayReady && resolvedCluster.validatorCount > 0 ? (
           runway.data?.runwayDisplay
         ) : (
           "-"
@@ -152,9 +176,9 @@ export const ClustersTableRow: FCProps = ({
           >
             Liquidated
           </Badge>
-        ) : isLoadingRunway ? null : (
+        ) : !isRunwayReady ? null : (
           <>
-            {runway.data?.isAtRisk && (
+            {isAtRisk && (
               <Badge
                 data-testid="dashboard-clusters-table-row-low-runway-badge"
                 size="sm"

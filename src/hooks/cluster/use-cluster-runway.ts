@@ -5,6 +5,7 @@ import { bigintMax } from "@/lib/utils/bigint";
 import { calculateRunway } from "@/lib/utils/cluster";
 import { useNetworkFee, useNetworkFeeSSV } from "@/hooks/use-ssv-network-fee";
 import { sumOperatorsFee } from "@/lib/utils/operator";
+import { withUnavailable } from "@/lib/react-query";
 
 const getDeltaEffectiveBalance = (options: Options) => {
   if ("deltaValidators" in options)
@@ -70,6 +71,29 @@ export const useClusterRunway = (
     ethNetworkFee.isLoading ||
     ssvNetworkFee.isLoading;
 
+  // `data` below is computed from `?? 0n` defaults and the API balance
+  // snapshot, so it can't tell a real runway from a failed read. Only the
+  // active (ETH or SSV) param set counts; the inactive one is disabled.
+  // getBalance reverts for liquidated clusters, so its error is expected there
+  // and the runway keeps today's behaviour.
+  // Without the cluster itself (operators, migrated flag, EB) there is no
+  // runway to show either: unavailable when that read failed, idle when it is
+  // disabled (no hash).
+  const isClusterLiquidated = Boolean(cluster.data?.isLiquidated);
+  const clusterStatus = withUnavailable(cluster, [cluster]);
+  const balanceStatus = withUnavailable(balance, [balance]);
+  const networkStatus = isETH ? ethNetworkFee : ssvNetworkFee;
+  const isUnavailable =
+    (!cluster.data && clusterStatus.isUnavailable) ||
+    (!isClusterLiquidated && balanceStatus.isUnavailable) ||
+    networkStatus.isUnavailable;
+  const isPending =
+    !isUnavailable &&
+    (clusterStatus.isPending ||
+      balanceStatus.isPending ||
+      networkStatus.isPending);
+  const isIdle = !isUnavailable && !isPending && !cluster.data;
+
   const runway = calculateRunway({
     balance: balance.data ?? 0n,
     feesPerBlock,
@@ -80,5 +104,5 @@ export const useClusterRunway = (
     minimumLiquidationCollateral,
   });
 
-  return { data: runway, isLoading };
+  return { data: runway, isLoading, isUnavailable, isPending, isIdle };
 };

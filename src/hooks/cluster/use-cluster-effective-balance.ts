@@ -9,9 +9,10 @@ import { keepPreviousData } from "@tanstack/react-query";
  * `SSVNetworkViews.getEffectiveBalance(owner, operatorIds, cluster)`.
  *
  * Only meaningful for migrated (ETH) clusters — the contract call is disabled
- * for non-migrated clusters and for liquidated clusters. While the contract
- * call is in flight (or disabled), the hook falls back to the API field
- * `cluster.data.effectiveBalance`.
+ * for liquidated clusters. While the contract call is in flight, disabled or
+ * failing, `data` falls back to the API field `cluster.data.effectiveBalance`
+ * (0 until the cluster itself has loaded). The contract query's own status
+ * fields (isError, fetchStatus, …) are passed through unchanged.
  */
 export const useClusterEffectiveBalance = (
   hash: string,
@@ -24,10 +25,19 @@ export const useClusterEffectiveBalance = (
   const isLiquidated = useIsClusterLiquidated(hash, { watch });
   const snapshot = useClusterSnapshot(cluster.data);
 
-  return useGetEffectiveBalance(snapshot, {
+  const effectiveBalance = useGetEffectiveBalance(snapshot, {
     placeholderData: keepPreviousData,
-    select: (data) => BigInt(data ?? cluster.data?.effectiveBalance ?? 0),
+    // `select` only runs once the read has data, so the API fallback lives
+    // below rather than in here.
+    select: (data) => BigInt(data!),
+    retry: 2,
+    networkMode: "always",
     watch,
     enabled: Boolean(cluster.data && enabled && !isLiquidated.data),
   });
+
+  return {
+    ...effectiveBalance,
+    data: effectiveBalance.data ?? BigInt(cluster.data?.effectiveBalance ?? 0),
+  };
 };

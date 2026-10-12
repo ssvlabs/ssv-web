@@ -73,11 +73,12 @@ export const RegisterValidatorConfirmation: FC = () => {
 
   // In an existing cluster the funding days are the runway, which is computed
   // from defaulted inputs until its reads have resolved: don't show it before.
-  const isRunwayUnavailable = inCluster && clusterRunway.isUnavailable;
+  // Idle means the computed cluster isn't there to read, which never resolves
+  // on its own: show it as unavailable rather than an endless skeleton.
+  const isRunwayUnavailable =
+    inCluster && (clusterRunway.isUnavailable || clusterRunway.isIdle);
   const isRunwayLoading =
-    inCluster &&
-    !clusterRunway.isUnavailable &&
-    (clusterRunway.isPending || clusterRunway.isIdle);
+    inCluster && !isRunwayUnavailable && clusterRunway.isPending;
 
   const displayFundingDays = inCluster
     ? Number(clusterRunway.data?.runway ?? 0n)

@@ -14,7 +14,7 @@ import { useOperators } from "@/hooks/operator/use-operators";
 import { useFundingCostETH } from "@/hooks/use-compute-funding-cost";
 import { bigintMax } from "@/lib/utils/bigint";
 import { formatETH } from "@/lib/utils/number";
-import { withUnavailable } from "@/lib/react-query";
+import { useRefetchWhileUnavailable, withUnavailable } from "@/lib/react-query";
 import { EstimatedOperationalRunwayAlert } from "@/components/cluster/estimated-operational-runway-alert";
 
 type OperationalRunwayCardProps = {
@@ -78,6 +78,8 @@ export const OperationalRunwayCard: FC<OperationalRunwayCardProps> = ({
   // Fees are computed over `operators ?? []`, so a missing operators read
   // would silently drop the operator fee.
   const operatorsStatus = withUnavailable(operatorsQuery, [operatorsQuery]);
+  // useOperators has no `watch`: retry a failed read until it recovers.
+  useRefetchWhileUnavailable([operatorsQuery], operatorsStatus.isUnavailable);
   const feesState = toValueState(
     fundingCost.isUnavailable || operatorsStatus.isUnavailable,
     fundingCost.isLoading || operatorsStatus.isPending || !fundingCost.data,

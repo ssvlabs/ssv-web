@@ -5,7 +5,7 @@ import { bigintMax } from "@/lib/utils/bigint";
 import { calculateRunway } from "@/lib/utils/cluster";
 import { useNetworkFee, useNetworkFeeSSV } from "@/hooks/use-ssv-network-fee";
 import { sumOperatorsFee } from "@/lib/utils/operator";
-import { withUnavailable } from "@/lib/react-query";
+import { useRefetchWhileUnavailable, withUnavailable } from "@/lib/react-query";
 
 const getDeltaEffectiveBalance = (options: Options) => {
   if ("deltaValidators" in options)
@@ -93,6 +93,15 @@ export const useClusterRunway = (
       balanceStatus.isPending ||
       networkStatus.isPending);
   const isIdle = !isUnavailable && !isPending && !cluster.data;
+
+  // Callers without `watch` never refetch a failed cluster/balance read; the
+  // network params retry themselves in useNetworkFee / useNetworkFeeSSV.
+  // The balance read is disabled until the cluster is known (and reverts for
+  // liquidated clusters), so only retry it once there is a cluster to read.
+  useRefetchWhileUnavailable(
+    cluster.data && !isClusterLiquidated ? [cluster, balance] : [cluster],
+    isUnavailable,
+  );
 
   const runway = calculateRunway({
     balance: balance.data ?? 0n,

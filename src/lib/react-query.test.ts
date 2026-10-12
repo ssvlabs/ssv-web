@@ -78,4 +78,41 @@ describe("withUnavailable", () => {
     expect(status.isIdle).toBe(false);
     expect(status.isUnavailable).toBe(false);
   });
+
+  it("stays unavailable while a read with no data retries after an error", () => {
+    // query-core resets a data-less query to "pending" when it refetches.
+    const retrying = {
+      ...query("pending", "fetching"),
+      errorUpdatedAt: 2,
+      dataUpdatedAt: 0,
+    };
+    const status = statusOf(retrying);
+    expect(status.isUnavailable).toBe(true);
+    expect(status.isPending).toBe(false);
+    expect(status.isIdle).toBe(false);
+  });
+
+  it("is pending again once the last outcome was a success", () => {
+    const refetching = {
+      ...query("pending", "fetching"),
+      errorUpdatedAt: 1,
+      dataUpdatedAt: 2,
+    };
+    const status = statusOf(refetching);
+    expect(status.isUnavailable).toBe(false);
+    expect(status.isPending).toBe(true);
+  });
+
+  it("stays unavailable while a keepPreviousData read retries after an error", () => {
+    // A new key shows the previous key's data as placeholder "success".
+    const retrying = {
+      ...query("success", "fetching"),
+      isPlaceholderData: true,
+      errorUpdatedAt: 2,
+      dataUpdatedAt: 0,
+    };
+    const status = statusOf(retrying);
+    expect(status.isUnavailable).toBe(true);
+    expect(status.isPending).toBe(false);
+  });
 });

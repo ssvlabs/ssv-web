@@ -2,7 +2,11 @@ import { useGetOperatorEarnings } from "@/lib/contract-interactions/hooks/getter
 import { useGetOperatorEarningsSSV } from "@/lib/contract-interactions/hooks/getter";
 import { useGetOperatorFee } from "@/lib/contract-interactions/hooks/getter";
 import { useGetOperatorFeeSSV } from "@/lib/contract-interactions/hooks/getter";
-import { combineQueryStatus, withUnavailable } from "@/lib/react-query";
+import {
+  combineQueryStatus,
+  useRefetchWhileUnavailable,
+  withUnavailable,
+} from "@/lib/react-query";
 import { getYearlyFee } from "@/lib/utils/operator";
 
 export const useOperatorEarningsAndFees = (operatorId: bigint) => {
@@ -30,6 +34,11 @@ export const useOperatorEarningsAndFees = (operatorId: bigint) => {
     feeEth,
     feeSSV,
   ]);
+  // These reads have no `watch`: retry them until they recover.
+  useRefetchWhileUnavailable(
+    [earningsEth, earningsSSV, feeEth, feeSSV],
+    earningsStatus.isUnavailable || feesStatus.isUnavailable,
+  );
 
   return {
     earningsEth,

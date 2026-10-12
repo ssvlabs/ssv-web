@@ -6,7 +6,11 @@ import {
   useGetNetworkFee,
   useGetNetworkFeeSSV,
 } from "@/lib/contract-interactions/hooks/getter";
-import { combineQueryStatus, withUnavailable } from "@/lib/react-query";
+import {
+  combineQueryStatus,
+  useRefetchWhileUnavailable,
+  withUnavailable,
+} from "@/lib/react-query";
 
 export const useNetworkFee = (enabled: boolean = true) => {
   const ssvNetworkFee = useGetNetworkFee({ enabled });
@@ -23,10 +27,13 @@ export const useNetworkFee = (enabled: boolean = true) => {
     minimumLiquidationCollateral,
   ];
 
+  const status = withUnavailable(combineQueryStatus(...queries), queries);
+  useRefetchWhileUnavailable(queries, enabled && status.isUnavailable);
+
   return {
     // isLoading / isError / isSuccess as before, plus isPending / isPaused /
     // isUnavailable / isIdle (all reads disabled) from withUnavailable.
-    ...withUnavailable(combineQueryStatus(...queries), queries),
+    ...status,
     ssvNetworkFee,
     liquidationThresholdPeriod,
     minimumLiquidationCollateral,
@@ -48,10 +55,13 @@ export const useNetworkFeeSSV = (enabled: boolean = true) => {
     minimumLiquidationCollateral,
   ];
 
+  const status = withUnavailable(combineQueryStatus(...queries), queries);
+  useRefetchWhileUnavailable(queries, enabled && status.isUnavailable);
+
   return {
     // isLoading / isError / isSuccess as before, plus isPending / isPaused /
     // isUnavailable / isIdle (all reads disabled) from withUnavailable.
-    ...withUnavailable(combineQueryStatus(...queries), queries),
+    ...status,
     ssvNetworkFee,
     liquidationThresholdPeriod,
     minimumLiquidationCollateral,

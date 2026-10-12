@@ -2,6 +2,7 @@ import { useCluster } from "@/hooks/cluster/use-cluster";
 import { useClusterSnapshot } from "@/hooks/cluster/use-cluster-snapshot";
 import { useIsClusterLiquidated } from "@/hooks/cluster/use-is-cluster-liquidated";
 import { useGetEffectiveBalance } from "@/lib/contract-interactions/hooks/getter";
+import { bigintMax } from "@/lib/utils/bigint";
 import { keepPreviousData } from "@tanstack/react-query";
 
 /**
@@ -10,9 +11,10 @@ import { keepPreviousData } from "@tanstack/react-query";
  *
  * Only meaningful for migrated (ETH) clusters — the contract call is disabled
  * for liquidated clusters. While the contract call is in flight, disabled or
- * failing, `data` falls back to the API field `cluster.data.effectiveBalance`
- * (0 until the cluster itself has loaded). The contract query's own status
- * fields (isError, fetchStatus, …) are passed through unchanged.
+ * failing, `data` falls back to the API field `cluster.data.effectiveBalance`,
+ * floored at 32 ETH per validator like `useClusterRunway` (0 until the cluster
+ * itself has loaded). The contract query's own status fields (isError,
+ * fetchStatus, …) are passed through unchanged.
  */
 export const useClusterEffectiveBalance = (
   hash: string,
@@ -36,8 +38,15 @@ export const useClusterEffectiveBalance = (
     enabled: Boolean(cluster.data && enabled && !isLiquidated.data),
   });
 
+  // The API reports "0" until the indexer catches up (e.g. a freshly migrated
+  // cluster); calculateRunway would then price it as a single 32 ETH validator.
+  const apiEffectiveBalance = bigintMax(
+    BigInt(cluster.data?.effectiveBalance ?? 0),
+    BigInt(cluster.data?.validatorCount ?? 0) * 32n,
+  );
+
   return {
     ...effectiveBalance,
-    data: effectiveBalance.data ?? BigInt(cluster.data?.effectiveBalance ?? 0),
+    data: effectiveBalance.data ?? apiEffectiveBalance,
   };
 };

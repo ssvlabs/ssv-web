@@ -19,6 +19,8 @@ import { BigNumberInput } from "@/components/ui/number-input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/tw";
 import { Spacer } from "@/components/ui/spacer";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip } from "@/components/ui/tooltip";
 import type { Operator } from "@/types/api";
 import { currencyFormatter, formatETH } from "@/lib/utils/number";
 import { useRates } from "@/hooks/use-rates";
@@ -37,8 +39,17 @@ type SwitchWizardStepTwoProps = {
   validatorsAmount?: number;
   effectiveBalance?: bigint;
   currentRunwayDays?: number;
+  /**
+   * State of the reads behind `currentRunwayDays`. Until "ready", the days are
+   * not trusted: the "current runway" option shows a skeleton / Unavailable
+   * and can't be continued with.
+   */
+  currentRunwayStatus?: "ready" | "pending" | "unavailable";
   ssvBalance?: bigint;
 };
+
+const UNAVAILABLE_MESSAGE =
+  "Couldn't read this value from the network. It will appear once the connection recovers.";
 
 const schema = z.object({
   selected: z.enum(["current", "half-year", "year", "custom"]),
@@ -63,6 +74,7 @@ export const SwitchWizardStepTwo = ({
   operators = [],
   effectiveBalance,
   currentRunwayDays = 0,
+  currentRunwayStatus = "ready",
   ssvBalance,
 }: SwitchWizardStepTwoProps) => {
   const rates = useRates();
@@ -82,11 +94,16 @@ export const SwitchWizardStepTwo = ({
       form.setValue("selected", "half-year");
     }
   }, [form, hasSsvBalance, values.selected]);
+  const isCurrentRunwayReady = currentRunwayStatus === "ready";
+  const isCurrentRunwayBlocked =
+    values.selected === "current" && !isCurrentRunwayReady;
   const selectedDays =
     values.selected === "custom"
       ? values.custom
       : values.selected === "current"
-        ? currentRunwayDays
+        ? isCurrentRunwayReady
+          ? currentRunwayDays
+          : undefined
         : periods[values.selected];
 
   const weiPerEth = 10n ** 18n;
@@ -135,7 +152,9 @@ export const SwitchWizardStepTwo = ({
         }
       : null;
 
-  const currentCosts = mapQueryToCosts(currentCostsQuery.data);
+  const currentCosts = isCurrentRunwayReady
+    ? mapQueryToCosts(currentCostsQuery.data)
+    : null;
   const halfYearCosts = mapQueryToCosts(halfYearCostsQuery.data);
   const yearCosts = mapQueryToCosts(yearCostsQuery.data);
   const customCosts = mapQueryToCosts(customCostsQuery.data);
@@ -158,6 +177,7 @@ export const SwitchWizardStepTwo = ({
       : "";
 
   const submit = form.handleSubmit(() => {
+    if (selectedDays === undefined) return;
     onNext({
       fundingDays: selectedDays,
       effectiveBalance: effectiveBalanceWei,
@@ -224,14 +244,33 @@ export const SwitchWizardStepTwo = ({
                           <Text variant="body-2-semibold">
                             Use Current Runway
                           </Text>
-                          <Text
-                            variant="body-3-medium"
-                            className="text-gray-500"
-                          >
-                            {currentRunwayDays > 0
-                              ? `${currentRunwayDays} Days`
-                              : "-"}
-                          </Text>
+                          {currentRunwayStatus === "unavailable" ? (
+                            // asChild: no nested <button> inside the label.
+                            <Tooltip asChild content={UNAVAILABLE_MESSAGE}>
+                              <Text
+                                as="span"
+                                data-testid="switch-wizard-step-two-current-runway-unavailable"
+                                variant="body-3-medium"
+                                className="text-error-500"
+                              >
+                                Unavailable
+                              </Text>
+                            </Tooltip>
+                          ) : currentRunwayStatus === "pending" ? (
+                            <Skeleton
+                              data-testid="switch-wizard-step-two-current-runway-loading"
+                              className="h-5 w-16"
+                            />
+                          ) : (
+                            <Text
+                              variant="body-3-medium"
+                              className="text-gray-500"
+                            >
+                              {currentRunwayDays > 0
+                                ? `${currentRunwayDays} Days`
+                                : "-"}
+                            </Text>
+                          )}
                         </div>
                         <Spacer />
                         <div className="flex flex-col items-end">
@@ -353,7 +392,7 @@ export const SwitchWizardStepTwo = ({
                 variant="body-3-semibold"
                 className="text-gray-500 text-right"
               >
-                Fee ({selectedDays} Days)
+                Fee ({selectedDays ?? "-"} Days)
               </Text>
               <Text
                 variant="body-3-semibold"
@@ -438,6 +477,7 @@ export const SwitchWizardStepTwo = ({
             width="full"
             type="submit"
             className="font-semibold"
+            disabled={isCurrentRunwayBlocked}
           >
             Next
           </Button>

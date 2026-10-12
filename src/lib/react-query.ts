@@ -6,6 +6,7 @@ import { hashFn } from "@wagmi/core/query";
 import type {
   dataTagSymbol,
   DefaultOptions,
+  FetchStatus,
   Updater,
   UseMutationOptions,
   UseQueryOptions as DefaultUseQueryOptions,
@@ -149,6 +150,38 @@ export const combineQueryStatus = (
     isError: queries.some((query) => query.isError),
     isSuccess: queries.every((query) => query.isSuccess),
     error: queries.find((query) => query.isError)?.error ?? null,
+  };
+};
+
+type UnavailableQuery = { fetchStatus: FetchStatus; isPending: boolean };
+
+/**
+ * Adds `isPaused` / `isUnavailable` to a (combined) query status and narrows
+ * `isPending` to queries that are actually on their way to a result.
+ *
+ * - A read that cannot reach the RPC parks at fetchStatus "paused" and never
+ *   resolves to an error, so paused counts as unavailable too.
+ * - A disabled query sits at fetchStatus "idle" with status "pending" forever;
+ *   it counts as neither pending nor unavailable and is reported as `isIdle`.
+ *   `!isPending && !isUnavailable` is therefore not proof of a value: gate
+ *   rendered amounts on `isSuccess` (or check `isIdle`).
+ */
+export const withUnavailable = <
+  T extends { isError: boolean; isPending: boolean },
+>(
+  status: T,
+  queries: UnavailableQuery[],
+) => {
+  const isPaused = queries.some((query) => query.fetchStatus === "paused");
+  const hasActivePending = queries.some(
+    (query) => query.isPending && query.fetchStatus !== "idle",
+  );
+  return {
+    ...status,
+    isPaused,
+    isIdle: status.isPending && !hasActivePending && !isPaused,
+    isUnavailable: status.isError || isPaused,
+    isPending: status.isPending && hasActivePending && !isPaused,
   };
 };
 

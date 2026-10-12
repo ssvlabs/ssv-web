@@ -2,25 +2,8 @@ import { useGetOperatorEarnings } from "@/lib/contract-interactions/hooks/getter
 import { useGetOperatorEarningsSSV } from "@/lib/contract-interactions/hooks/getter";
 import { useGetOperatorFee } from "@/lib/contract-interactions/hooks/getter";
 import { useGetOperatorFeeSSV } from "@/lib/contract-interactions/hooks/getter";
-import { combineQueryStatus } from "@/lib/react-query";
+import { combineQueryStatus, withUnavailable } from "@/lib/react-query";
 import { getYearlyFee } from "@/lib/utils/operator";
-
-type FetchStatusOnly = { fetchStatus: "fetching" | "paused" | "idle" };
-
-// A read that cannot reach the RPC parks at fetchStatus "paused" and never
-// resolves to an error, so paused counts as unavailable too.
-const withUnavailable = <T extends { isError: boolean; isPending: boolean }>(
-  status: T,
-  queries: FetchStatusOnly[],
-) => {
-  const isPaused = queries.some((query) => query.fetchStatus === "paused");
-  return {
-    ...status,
-    isPaused,
-    isUnavailable: status.isError || isPaused,
-    isPending: status.isPending && !isPaused,
-  };
-};
 
 export const useOperatorEarningsAndFees = (operatorId: bigint) => {
   const queryOptions = { retry: 2, networkMode: "always" } as const;

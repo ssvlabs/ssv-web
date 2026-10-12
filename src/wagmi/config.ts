@@ -4,7 +4,7 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
-import { createPublicClient, http } from "viem";
+import { createPublicClient, fallback, http } from "viem";
 import { createConfig } from "wagmi";
 import { mainnet as mainnetBase } from "wagmi/chains";
 
@@ -80,18 +80,33 @@ const defaultRpcUrls: Record<number, string> = {
 const getRpcUrl = (chainId: number): string =>
   localStorage.getItem(`customRpcUrl_${chainId}`) ?? defaultRpcUrls[chainId];
 
+/**
+ * Primary RPC is the user's custom URL (if set) or our publicnode endpoint;
+ * the chain's default public RPC is the fallback, so a single endpoint outage
+ * doesn't take every on-chain read down. Identical URLs collapse into a single
+ * transport. `rank: false` keeps the primary first instead of re-ordering by
+ * latency. Every fallback retry walks both endpoints, so `retryCount: 1` keeps
+ * the worst case (both down) at roughly the old single-endpoint budget.
+ */
+const createRpcTransport = (chain: Chain) => {
+  const urls = [
+    ...new Set([getRpcUrl(chain.id), chain.rpcUrls.default.http[0]]),
+  ].filter(Boolean);
+  const transports = urls.map((url) => http(url, { batch: { wait: 20 } }));
+  return transports.length === 1
+    ? transports[0]
+    : fallback(transports, { rank: false, retryCount: 1 });
+};
+
 export const mainnet_private_rpc_client = createPublicClient({
   chain: mainnet,
-  transport: http(getRpcUrl(mainnet.id)),
+  transport: createRpcTransport(mainnet),
 });
 
 export const config = createConfig({
   chains: chains as [Chain, ...Chain[]],
   connectors: connectors,
   transports: Object.fromEntries(
-    chains.map((chain) => [
-      chain.id,
-      http(getRpcUrl(chain.id), { batch: { wait: 20 } }),
-    ]),
+    chains.map((chain) => [chain.id, createRpcTransport(chain)]),
   ),
 });

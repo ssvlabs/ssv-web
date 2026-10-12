@@ -72,11 +72,23 @@ export const WithdrawClusterBalance: FC = () => {
   });
 
   const isChanged = isBigIntChanged(0n, amount);
-  const isLiquidating = clusterRunway.data?.runway === 0n;
+  // The runway is computed from defaulted inputs while its reads are pending
+  // or failed, so it can't decide between withdraw and liquidate until ready.
+  // Known SSV clusters always take the withdraw-all & liquidate path
+  // regardless. Without the cluster read, `isSsvCluster` is only a default,
+  // so an unknown cluster is blocked too.
+  const isRunwayReady =
+    !clusterRunway.isUnavailable &&
+    !clusterRunway.isPending &&
+    !clusterRunway.isIdle;
+  const isKnownSsvCluster = Boolean(cluster.data) && isSsvCluster;
+  const isRunwayBlocked = !isKnownSsvCluster && !isRunwayReady;
+  const isLiquidating = isRunwayReady && clusterRunway.data?.runway === 0n;
   const shouldLiquidate = isSsvCluster || isLiquidating;
 
   const showRiskCheckbox =
-    isSsvCluster || (isChanged && clusterRunway.data?.isAtRisk);
+    isSsvCluster ||
+    (isChanged && isRunwayReady && clusterRunway.data?.isAtRisk);
   const disabled = showRiskCheckbox ? !hasAgreed : false;
 
   const submit = form.handleSubmit(async (values) => {
@@ -255,11 +267,31 @@ export const WithdrawClusterBalance: FC = () => {
               </Text>
             </label>
           )}
+          {isRunwayBlocked && clusterRunway.isPending && (
+            <Text
+              data-testid="dashboard-cluster-withdraw-runway-loading"
+              variant="body-3-medium"
+              className="text-gray-500"
+            >
+              Checking your cluster's runway before you can withdraw...
+            </Text>
+          )}
+          {isRunwayBlocked && !clusterRunway.isPending && (
+            <Text
+              data-testid="dashboard-cluster-withdraw-runway-unavailable"
+              variant="body-3-medium"
+              className="text-error-500"
+            >
+              Withdrawals are paused because your cluster's runway couldn't be
+              read from the network, so the liquidation risk of this withdrawal
+              is unknown. You can withdraw once the connection recovers.
+            </Text>
+          )}
           <Button
             data-testid="dashboard-cluster-withdraw-submit-btn"
             type="submit"
             size="xl"
-            disabled={!isChanged || disabled}
+            disabled={!isChanged || disabled || isRunwayBlocked}
             isLoading={liquidate.isPending || withdraw.isPending}
             variant={isLiquidating && !isSsvCluster ? "destructive" : "default"}
           >

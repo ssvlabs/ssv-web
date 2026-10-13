@@ -6,6 +6,7 @@ import { Text } from "@/components/ui/text";
 import { formatSSV } from "@/lib/utils/number";
 import { Divider } from "@/components/ui/divider";
 import { Spinner } from "@/components/ui/spinner";
+import { Tooltip } from "@/components/ui/tooltip";
 import { humanizeFundingDuration } from "@/lib/utils/date";
 
 export type ClusterFundingSummaryProps = UseFundingCostArgs;
@@ -28,6 +29,22 @@ export const ClusterFundingSummary: ClusterFundingSummaryFC = ({
     fundingDays,
     effectiveBalance,
   });
+
+  if (cost.isUnavailable) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Tooltip content="Couldn't read the network fees. The summary will appear once the connection recovers.">
+          <Text
+            data-testid="cluster-funding-summary-unavailable"
+            variant="body-2-medium"
+            className="text-error-500"
+          >
+            Unavailable
+          </Text>
+        </Tooltip>
+      </div>
+    );
+  }
 
   if (cost.isLoading) {
     return (

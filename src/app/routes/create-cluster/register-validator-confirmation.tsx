@@ -9,7 +9,9 @@ import { Container } from "@/components/ui/container";
 import { Divider } from "@/components/ui/divider";
 import { Input } from "@/components/ui/input";
 import { NavigateBackBtn } from "@/components/ui/navigate-back-btn";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
+import { Tooltip } from "@/components/ui/tooltip";
 // import { WithAllowance } from "@/components/with-allowance/with-allowance";
 import {
   useRegisterValidatorContext,
@@ -42,6 +44,9 @@ import type { Address } from "abitype";
 import type { FC } from "react";
 import { useNavigate } from "react-router-dom";
 
+const UNAVAILABLE_MESSAGE =
+  "Couldn't read this value from the network. It will appear once the connection recovers.";
+
 export const RegisterValidatorConfirmation: FC = () => {
   const inCluster = Boolean(useClusterPageParams().clusterHash);
 
@@ -65,6 +70,15 @@ export const RegisterValidatorConfirmation: FC = () => {
     deltaEffectiveBalance: effectiveBalance,
     deltaBalance: depositAmount,
   });
+
+  // In an existing cluster the funding days are the runway, which is computed
+  // from defaulted inputs until its reads have resolved: don't show it before.
+  // Idle means the computed cluster isn't there to read, which never resolves
+  // on its own: show it as unavailable rather than an endless skeleton.
+  const isRunwayUnavailable =
+    inCluster && (clusterRunway.isUnavailable || clusterRunway.isIdle);
+  const isRunwayLoading =
+    inCluster && !isRunwayUnavailable && clusterRunway.isPending;
 
   const displayFundingDays = inCluster
     ? Number(clusterRunway.data?.runway ?? 0n)
@@ -189,18 +203,38 @@ export const RegisterValidatorConfirmation: FC = () => {
             <div className="flex justify-between" key={operator.public_key}>
               <OperatorDetails operator={operator} />
               <div className="text-end space-y-1">
-                <Text variant="body-2-medium">
-                  {formatSSV(
-                    computeDailyAmount(
-                      BigInt(operator.eth_fee),
-                      displayFundingDays,
-                    ),
-                  )}{" "}
-                  ETH
-                </Text>
-                <Text variant="body-3-medium" className="text-gray-500">
-                  /{displayFundingDays} days
-                </Text>
+                {isRunwayUnavailable ? (
+                  <Tooltip content={UNAVAILABLE_MESSAGE}>
+                    <Text
+                      as="span"
+                      data-testid="create-cluster-register-confirmation-operator-fee-unavailable"
+                      variant="body-2-medium"
+                      className="text-error-500"
+                    >
+                      Unavailable
+                    </Text>
+                  </Tooltip>
+                ) : isRunwayLoading ? (
+                  <Skeleton
+                    data-testid="create-cluster-register-confirmation-operator-fee-loading"
+                    className="ml-auto h-11 w-24"
+                  />
+                ) : (
+                  <>
+                    <Text variant="body-2-medium">
+                      {formatSSV(
+                        computeDailyAmount(
+                          BigInt(operator.eth_fee),
+                          displayFundingDays,
+                        ),
+                      )}{" "}
+                      ETH
+                    </Text>
+                    <Text variant="body-3-medium" className="text-gray-500">
+                      /{displayFundingDays} days
+                    </Text>
+                  </>
+                )}
               </div>
             </div>
           ))}
@@ -221,6 +255,9 @@ export const RegisterValidatorConfirmation: FC = () => {
           size="xl"
           isLoading={isPending}
           isActionBtn
+          // Without the existing cluster's on-chain state the transaction
+          // would be sent with a zeroed cluster struct and revert.
+          disabled={isRunwayUnavailable || isRunwayLoading}
           onClick={handleRegisterValidator}
         >
           Register Validator

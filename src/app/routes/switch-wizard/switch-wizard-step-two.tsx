@@ -23,11 +23,14 @@ export const SwitchWizardStepTwoRoute = () => {
   const clusterRunway = useClusterRunway(clusterHash);
   // The runway is computed from defaulted inputs until its reads resolve, so
   // it must not seed the "current runway" funding period before then.
-  const currentRunwayStatus = clusterRunway.isUnavailable
-    ? "unavailable"
-    : clusterRunway.isPending || clusterRunway.isIdle
-      ? "pending"
-      : "ready";
+  // Idle means the cluster isn't there to read, which never resolves on its
+  // own: show it as unavailable rather than an endless skeleton.
+  const currentRunwayStatus =
+    clusterRunway.isUnavailable || clusterRunway.isIdle
+      ? "unavailable"
+      : clusterRunway.isPending
+        ? "pending"
+        : "ready";
 
   const operatorsQuery = useOperators(cluster.data?.operators ?? []);
   const operators = operatorsQuery.data ?? [];

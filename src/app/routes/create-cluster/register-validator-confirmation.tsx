@@ -255,6 +255,9 @@ export const RegisterValidatorConfirmation: FC = () => {
           size="xl"
           isLoading={isPending}
           isActionBtn
+          // Without the existing cluster's on-chain state the transaction
+          // would be sent with a zeroed cluster struct and revert.
+          disabled={isRunwayUnavailable || isRunwayLoading}
           onClick={handleRegisterValidator}
         >
           Register Validator

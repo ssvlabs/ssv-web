@@ -64,25 +64,36 @@ export const OperationalRunwayCard: FC<OperationalRunwayCardProps> = ({
   const runwayState = toValueState(
     runwayQuery.isUnavailable,
     runwayQuery.isPending,
+    runwayQuery.isIdle,
   );
 
   // getBalance reverts for liquidated clusters; keep showing the API value
   // there as before. Otherwise never show the API snapshot as the balance.
   // Same liquidation source as useClusterBalance / useClusterRunway (API).
   const balanceStatus = withUnavailable(balance, [balance]);
+  // The balance read is disabled (idle) until the cluster has loaded.
   const balanceState = toValueState(
     !cluster.data?.isLiquidated && balanceStatus.isUnavailable,
     balanceStatus.isPending,
+    balanceStatus.isIdle,
   );
 
   // Fees are computed over `operators ?? []`, so a missing operators read
-  // would silently drop the operator fee.
+  // would silently drop the operator fee. Without the cluster the operator
+  // list is `[]`, which useOperators resolves successfully: track the cluster
+  // read as well.
+  const clusterStatus = withUnavailable(cluster, [cluster]);
   const operatorsStatus = withUnavailable(operatorsQuery, [operatorsQuery]);
   // useOperators has no `watch`: retry a failed read until it recovers.
   useRefetchWhileUnavailable([operatorsQuery], operatorsStatus.isUnavailable);
   const feesState = toValueState(
-    fundingCost.isUnavailable || operatorsStatus.isUnavailable,
-    fundingCost.isLoading || operatorsStatus.isPending || !fundingCost.data,
+    fundingCost.isUnavailable ||
+      operatorsStatus.isUnavailable ||
+      (!cluster.data && clusterStatus.isUnavailable),
+    fundingCost.isLoading ||
+      operatorsStatus.isPending ||
+      !fundingCost.data ||
+      !cluster.data,
   );
 
   const operationalBalanceState = toValueState(
@@ -327,8 +338,14 @@ type ValueState = {
   isReady: boolean;
 };
 
-const toValueState = (isUnavailable: boolean, isPending: boolean) => {
-  const pending = !isUnavailable && isPending;
+// Idle (a read disabled until its input loads) counts as pending: the value
+// shown meanwhile is a fallback, not a read.
+const toValueState = (
+  isUnavailable: boolean,
+  isPending: boolean,
+  isIdle = false,
+) => {
+  const pending = !isUnavailable && (isPending || isIdle);
   return {
     isUnavailable,
     isPending: pending,

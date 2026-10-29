@@ -45,14 +45,12 @@ export type UseFundingCostArgs = {
   fundingDays: number;
   /** Effective balance in ETH (human-readable). Examples: 32n (1 validator), 64n (2 validators) */
   effectiveBalance: bigint;
-  ignoreRemovedOperators?: boolean;
 };
 
 export const useFundingCostETH = ({
   operators,
   fundingDays,
   effectiveBalance,
-  ignoreRemovedOperators = false,
 }: UseFundingCostArgs) => {
   const {
     isSuccess,
@@ -67,14 +65,17 @@ export const useFundingCostETH = ({
     gcTime: 0,
     queryKey: stringifyBigints([
       "fundingCost",
-      operators.map(op => ({ id: op.id, eth_fee: op.eth_fee, is_deleted: op.is_deleted })),
+      operators.map((op) => ({
+        id: op.id,
+        eth_fee: op.eth_fee,
+        is_deleted: op.is_deleted,
+      })),
       fundingDays,
       effectiveBalance,
-      ignoreRemovedOperators,
     ]),
     queryFn: async () =>
       computeFundingCost({
-        operatorsFee: sumOperatorsFee(operators, "eth", ignoreRemovedOperators),
+        operatorsFee: sumOperatorsFee(operators, "eth"),
         fundingDays,
         networkFee: ssvNetworkFee.data!,
         liquidationCollateralPeriod: liquidationThresholdPeriod.data!,

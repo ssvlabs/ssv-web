@@ -51,7 +51,7 @@ export const useMigrationCalculationData = ({
   // Calculate operator fees for the selected period (per 32 ETH validator)
   const operatorFees: OperatorFeeDisplay[] = operators.map((operator) => {
     const periodFee = computeDailyAmount(
-      getOperatorEthFee(operator, true),
+      getOperatorEthFee(operator),
       fundingDays,
     );
     return {

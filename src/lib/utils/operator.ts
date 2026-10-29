@@ -146,28 +146,29 @@ export const prepareOperatorsForShares = (
 
 export const isOperatorRemoved = (operator: Operator) => operator.is_deleted;
 
-export const getOperatorEthFee = (
-  operator: Operator,
-  ignoreRemoved = false,
-) => {
-  if (ignoreRemoved && isOperatorRemoved(operator)) return 0n;
-  return BigInt(operator.eth_fee);
-};
+/**
+ * A removed operator's fee is 0 on-chain. The API keeps returning its last
+ * fee, which is display-only and must never be summed into burn rates,
+ * runway or funding amounts.
+ */
+export const getOperatorEthFee = (operator: Operator) =>
+  isOperatorRemoved(operator) ? 0n : BigInt(operator.eth_fee || "0");
+
+export const getOperatorSsvFee = (operator: Operator) =>
+  isOperatorRemoved(operator) ? 0n : BigInt(operator.fee || "0");
 
 export const sumOperatorsFee = (
   operators: Operator[],
   by: "eth" | "ssv" = "eth",
-  ignoreRemovedForEth = false,
-) => {
-  return operators.reduce(
+) =>
+  operators.reduce(
     (acc, operator) =>
       acc +
       (by === "eth"
-        ? getOperatorEthFee(operator, ignoreRemovedForEth)
-        : BigInt(operator.fee)),
+        ? getOperatorEthFee(operator)
+        : getOperatorSsvFee(operator)),
     0n,
   );
-};
 
 export function getOperatorIds<T extends { id: number }[] | number[]>(
   operators: T,

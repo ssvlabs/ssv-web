@@ -16,7 +16,7 @@ import { SelectedOperators } from "@/components/operator/operator-picker/selecte
 import { useSearchOperators } from "@/hooks/use-search-operators";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRegisterValidatorContext } from "@/guard/register-validator-guard";
-import { getYearlyFee } from "@/lib/utils/operator";
+import { getYearlyFee, sumOperatorsFee } from "@/lib/utils/operator";
 import { formatSSV } from "@/lib/utils/number";
 import { Divider } from "@/components/ui/divider";
 import { SearchInput } from "@/components/ui/search-input";
@@ -107,11 +107,9 @@ export const SelectOperators: FCProps = ({ className, ...props }) => {
     enabled: Boolean(clusterHash),
   });
   const feeMode = currentCluster.data?.migrated === false ? "ssv" : "eth";
-  const feeField = feeMode === "eth" ? "eth_fee" : "fee";
   const feeDenomination = feeMode === "eth" ? "ETH" : "SSV";
-  const totalYearlyFee = selectedOperators.reduce(
-    (acc, operator) => acc + getYearlyFee(BigInt(operator[feeField] || "0")),
-    0n,
+  const totalYearlyFee = getYearlyFee(
+    sumOperatorsFee(selectedOperators, feeMode),
   );
 
   const isClusterExists =

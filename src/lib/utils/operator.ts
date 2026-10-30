@@ -146,28 +146,48 @@ export const prepareOperatorsForShares = (
 
 export const isOperatorRemoved = (operator: Operator) => operator.is_deleted;
 
-export const getOperatorEthFee = (
-  operator: Operator,
-  ignoreRemoved = false,
-) => {
-  if (ignoreRemoved && isOperatorRemoved(operator)) return 0n;
-  return BigInt(operator.eth_fee);
+const warnedMissingFees = new Set<string>();
+
+/**
+ * A missing fee counts as 0, which shortens burn rate and lengthens runway.
+ * Surface it (once per operator and field) instead of failing silently.
+ */
+const readFee = (operator: Operator, field: "fee" | "eth_fee") => {
+  const value = operator[field];
+  if (value) return BigInt(value);
+  const key = `${operator.id}:${field}`;
+  if (!warnedMissingFees.has(key)) {
+    warnedMissingFees.add(key);
+    console.warn(
+      `Operator ${operator.id} has no "${field}"; counting it as 0 (burn rate may be understated)`,
+    );
+  }
+  return 0n;
 };
+
+/**
+ * A removed operator's fee is 0 on-chain. The API keeps returning its last
+ * fee, which is display-only and must never be summed into burn rates,
+ * runway or funding amounts.
+ */
+export const getOperatorEthFee = (operator: Operator) =>
+  isOperatorRemoved(operator) ? 0n : readFee(operator, "eth_fee");
+
+export const getOperatorSsvFee = (operator: Operator) =>
+  isOperatorRemoved(operator) ? 0n : readFee(operator, "fee");
 
 export const sumOperatorsFee = (
   operators: Operator[],
   by: "eth" | "ssv" = "eth",
-  ignoreRemovedForEth = false,
-) => {
-  return operators.reduce(
+) =>
+  operators.reduce(
     (acc, operator) =>
       acc +
       (by === "eth"
-        ? getOperatorEthFee(operator, ignoreRemovedForEth)
-        : BigInt(operator.fee)),
+        ? getOperatorEthFee(operator)
+        : getOperatorSsvFee(operator)),
     0n,
   );
-};
 
 export function getOperatorIds<T extends { id: number }[] | number[]>(
   operators: T,

@@ -6,7 +6,7 @@ import { Divider } from "@/components/ui/divider.tsx";
 import { Text } from "@/components/ui/text.tsx";
 import { Collapse } from "react-collapse";
 import type { Operator } from "@/types/api.ts";
-import { getYearlyFee } from "@/lib/utils/operator.ts";
+import { getYearlyFee, sumOperatorsFee } from "@/lib/utils/operator.ts";
 import {
   bigintFormatter,
   currencyFormatter,
@@ -33,17 +33,8 @@ export const OperatorFeeComparison = ({
 
   // Calculate totals from operators
   const totals = useMemo(() => {
-    const totalYearlyFeeSSV = operators.reduce(
-      (sum, op) => sum + getYearlyFee(BigInt(op.fee || "0")),
-      0n,
-    );
-    const totalYearlyFeeETH = operators.reduce((sum, op) => {
-      const hasEthFee = ![undefined, null, "0", 0].includes(op.eth_fee);
-      if (hasEthFee) {
-        return sum + getYearlyFee(BigInt(op.eth_fee));
-      }
-      return sum;
-    }, 0n);
+    const totalYearlyFeeSSV = getYearlyFee(sumOperatorsFee(operators, "ssv"));
+    const totalYearlyFeeETH = getYearlyFee(sumOperatorsFee(operators, "eth"));
     const totalSSVFormatted = `${formatSSV(totalYearlyFeeSSV)} SSV`;
     const totalETHFormatted = `${formatETH(totalYearlyFeeETH)} ETH`;
 

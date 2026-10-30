@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { globals } from "@/config";
 import { calculateRunway } from "@/lib/utils/cluster";
 import {
@@ -86,5 +86,58 @@ describe("util:operator fee sums exclude removed operators (SSV-WEB-001)", () =>
       );
       expect(runwayFor(balance, sumOperatorsFee(ops, "ssv"))).toBe(100n);
     });
+  });
+});
+
+describe("util:operator warns when an active operator has no fee (SSV-WEB-001)", () => {
+  const spy = () => vi.spyOn(console, "warn").mockImplementation(() => {});
+  afterEach(() => vi.restoreAllMocks());
+
+  it("returns 0n and warns once for an active operator with a missing eth_fee", () => {
+    const warn = spy();
+    const op = createDefaultOperator({
+      id: 9001,
+      fee: "2000000",
+      eth_fee: undefined as unknown as string,
+    });
+    expect(getOperatorEthFee(op)).toBe(0n);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn.mock.calls[0][0]).toContain("9001");
+    expect(warn.mock.calls[0][0]).toContain("eth_fee");
+  });
+
+  it("does not warn again for the same operator and field", () => {
+    const warn = spy();
+    const op = createDefaultOperator({ id: 9002, fee: "", eth_fee: "1" });
+    expect(getOperatorSsvFee(op)).toBe(0n);
+    expect(getOperatorSsvFee(op)).toBe(0n);
+    expect(sumOperatorsFee([op], "ssv")).toBe(0n);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn.mock.calls[0][0]).toContain("fee");
+  });
+
+  it("does not warn for a removed operator with a missing fee", () => {
+    const warn = spy();
+    const op = createDefaultOperator({
+      id: 9003,
+      fee: "",
+      eth_fee: "",
+      is_deleted: true,
+    });
+    expect(getOperatorEthFee(op)).toBe(0n);
+    expect(getOperatorSsvFee(op)).toBe(0n);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("does not warn for an active operator with a valid fee", () => {
+    const warn = spy();
+    const op = createDefaultOperator({
+      id: 9004,
+      fee: "2000000",
+      eth_fee: "1000000000",
+    });
+    expect(getOperatorEthFee(op)).toBe(1_000_000_000n);
+    expect(getOperatorSsvFee(op)).toBe(2_000_000n);
+    expect(warn).not.toHaveBeenCalled();
   });
 });

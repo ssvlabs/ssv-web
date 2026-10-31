@@ -20,7 +20,17 @@ export const SwitchWizardStepTwoRoute = () => {
   const stepState = location.state as SwitchWizardStepTwoState | null;
   const effectiveBalance = stepState?.effectiveBalance;
   const from = typeof stepState?.from === "string" ? stepState.from : undefined;
-  const { data: clusterRunway } = useClusterRunway(clusterHash);
+  const clusterRunway = useClusterRunway(clusterHash);
+  // The runway is computed from defaulted inputs until its reads resolve, so
+  // it must not seed the "current runway" funding period before then.
+  // Idle means the cluster isn't there to read, which never resolves on its
+  // own: show it as unavailable rather than an endless skeleton.
+  const currentRunwayStatus =
+    clusterRunway.isUnavailable || clusterRunway.isIdle
+      ? "unavailable"
+      : clusterRunway.isPending
+        ? "pending"
+        : "ready";
 
   const operatorsQuery = useOperators(cluster.data?.operators ?? []);
   const operators = operatorsQuery.data ?? [];
@@ -46,7 +56,12 @@ export const SwitchWizardStepTwoRoute = () => {
       operators={operators}
       validatorsAmount={cluster.data?.validatorCount ?? 1}
       effectiveBalance={effectiveBalance}
-      currentRunwayDays={Number(clusterRunway?.runway) || 0}
+      currentRunwayDays={
+        currentRunwayStatus === "ready"
+          ? Number(clusterRunway.data.runway) || 0
+          : undefined
+      }
+      currentRunwayStatus={currentRunwayStatus}
       ssvBalance={balance.data}
     />
   );

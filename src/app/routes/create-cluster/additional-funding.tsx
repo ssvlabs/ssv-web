@@ -52,10 +52,20 @@ export const AdditionalFunding: FC = () => {
 
   const { depositAmount, topUp } = form.watch();
 
-  const { data: clusterRunway } = useClusterRunway(params.clusterHash!, {
+  const {
+    data: clusterRunway,
+    isUnavailable: isRunwayUnavailable,
+    isPending: isRunwayPending,
+    isIdle: isRunwayIdle,
+  } = useClusterRunway(params.clusterHash!, {
     deltaBalance: topUp ? depositAmount : 0n,
     deltaEffectiveBalance,
   });
+  // `clusterRunway` is computed from defaulted inputs until its reads have
+  // resolved, so neither the at-risk alert nor Next may rely on it before.
+  const isRunwayReady =
+    !isRunwayUnavailable && !isRunwayPending && !isRunwayIdle;
+  const isAtRisk = isRunwayReady && Boolean(clusterRunway?.isAtRisk);
 
   const submit = form.handleSubmit((data) => {
     useRegisterValidatorContext.state.depositAmount = data.topUp
@@ -184,10 +194,10 @@ export const AdditionalFunding: FC = () => {
               )}
             />
           </div>
-          <UnmountClosed isOpened={Boolean(clusterRunway?.isAtRisk)}>
+          <UnmountClosed isOpened={isAtRisk}>
             <EstimatedOperationalRunwayAlert
               isLiquidated={false}
-              isAtRisk={Boolean(clusterRunway?.isAtRisk)}
+              isAtRisk={isAtRisk}
               isWithdrawing={false}
               hasDeltaValidators={true}
               runway={clusterRunway?.runway || 0n}
@@ -199,7 +209,8 @@ export const AdditionalFunding: FC = () => {
             size="xl"
             disabled={
               (topUp && depositAmount === 0n) ||
-              (clusterRunway?.isAtRisk && clusterRunway?.runway < 1n)
+              !isRunwayReady ||
+              (isAtRisk && clusterRunway.runway < 1n)
             }
           >
             Next

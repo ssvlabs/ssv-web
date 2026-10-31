@@ -54,7 +54,8 @@ export const useFundingCostETH = ({
 }: UseFundingCostArgs) => {
   const {
     isSuccess,
-    isLoading,
+    isPending: isNetworkPending,
+    isUnavailable: isNetworkUnavailable,
     liquidationThresholdPeriod,
     minimumLiquidationCollateral,
     ssvNetworkFee,
@@ -83,10 +84,17 @@ export const useFundingCostETH = ({
         effectiveBalance,
       }),
     placeholderData: keepPreviousData,
+    // Pure local computation: never park it at "paused" while offline.
+    networkMode: "always",
     enabled: isSuccess,
   });
+  // When the network params can't be read, costQuery stays disabled (and
+  // pending) forever — surface that as unavailable instead of loading.
+  const isUnavailable = isNetworkUnavailable || costQuery.isError;
+
   return {
     ...costQuery,
-    isLoading: costQuery.isLoading || isLoading,
+    isLoading: !isUnavailable && (isNetworkPending || costQuery.isLoading),
+    isUnavailable,
   };
 };

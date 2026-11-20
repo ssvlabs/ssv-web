@@ -8,7 +8,7 @@ import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import { useChainId } from "wagmi";
 import { useMemo } from "react";
 import { DKG_VERSIONS } from "@/lib/utils/keyshares";
-import { isVersionLT } from "@/lib/utils/version";
+import { isBelowMinDkgVersion } from "@/lib/utils/version";
 
 export type OperatorDKGHealthResponse = {
   id: string;
@@ -17,15 +17,19 @@ export type OperatorDKGHealthResponse = {
   isOutdated: boolean;
   isEthClientConnected: boolean;
   isMismatchId: boolean;
-  /** Version reported by the DKG node; absent when the node did not answer. */
+  /**
+   * Version reported by the DKG node; `null` when the node did not answer or
+   * when the reported value isn't a well-formed version number.
+   */
   version?: string | null;
 };
 
 export type EnrichedOperatorDKGHealthResponse = OperatorDKGHealthResponse & {
   /**
    * TEMPORARY: the node answered, but with a version older than
-   * `DKG_VERSIONS.MIN_VERSION_FOR_ADDRESS`. Its `dkg_address` must be treated
-   * as unusable so it never reaches the user or a ceremony command.
+   * `DKG_VERSIONS.MIN_VERSION_FOR_ADDRESS` or with no usable version. Its
+   * `dkg_address` must be treated as unusable so it never reaches the user or
+   * a ceremony command.
    */
   isBelowMinVersionForAddress?: boolean;
 };
@@ -70,10 +74,11 @@ export const useOperatorsDKGHealth = (
     if (!query.data) return undefined;
     return query.data.map((item) => ({
       ...item,
-      // A node that never answered has no version and is already covered by
-      // `isOutdated`; only a reported-but-too-old version lands here.
-      isBelowMinVersionForAddress: isVersionLT(
-        item.version,
+      // A node that never answered is already covered by `isOutdated` or
+      // `isHealthy: false`; a node that answered lands here when its version is
+      // too old or missing.
+      isBelowMinVersionForAddress: isBelowMinDkgVersion(
+        item,
         DKG_VERSIONS.MIN_VERSION_FOR_ADDRESS,
       ),
     })) satisfies EnrichedOperatorDKGHealthResponse[];

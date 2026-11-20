@@ -26,3 +26,23 @@ export const isVersionLT = (
   if (b !== y) return b < y;
   return c < z;
 };
+
+/**
+ * Whether a DKG node's health check shows it below `minVersion`. A node that
+ * answered (healthy and not outdated) but has no usable version can't be shown
+ * to meet the minimum, so it counts as below it: ssv-api returns `version: null`
+ * for a reported version that isn't a well-formed version number. A node that
+ * never answered keeps `version: null` without being flagged here, because
+ * `isOutdated` or `isHealthy: false` already covers it.
+ */
+export const isBelowMinDkgVersion = (
+  {
+    isHealthy,
+    isOutdated,
+    version,
+  }: { isHealthy: boolean; isOutdated: boolean; version?: string | null },
+  minVersion: string,
+): boolean => {
+  if (!version) return isHealthy && !isOutdated;
+  return isVersionLT(version, minVersion);
+};

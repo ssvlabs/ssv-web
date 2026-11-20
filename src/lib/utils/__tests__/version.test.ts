@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { parseVersion, isVersionLT } from "@/lib/utils/version";
+import {
+  parseVersion,
+  isVersionLT,
+  isBelowMinDkgVersion,
+} from "@/lib/utils/version";
 
 // Kept in sync with `DKG_VERSIONS.MIN_VERSION_FOR_ADDRESS` by hand: importing
 // from `keyshares` pulls in the wagmi chain config, which needs a built
@@ -61,6 +65,64 @@ describe("util:version", () => {
       expect(isVersionLT(null, MIN)).toBe(false);
       expect(isVersionLT(undefined, MIN)).toBe(false);
       expect(isVersionLT("", MIN)).toBe(false);
+    });
+  });
+
+  describe("isBelowMinDkgVersion", () => {
+    const answered = { isHealthy: true, isOutdated: false };
+
+    it("compares the version of a node that answered", () => {
+      expect(
+        isBelowMinDkgVersion({ ...answered, version: "v3.1.1" }, MIN),
+      ).toBe(false);
+      expect(
+        isBelowMinDkgVersion({ ...answered, version: "v3.2.0" }, MIN),
+      ).toBe(false);
+      expect(
+        isBelowMinDkgVersion({ ...answered, version: "v3.0.3" }, MIN),
+      ).toBe(true);
+    });
+
+    // ssv-api returns `version: null` when the node reports something that
+    // isn't a well-formed version number ("dev", "latest", "3.1.1;id"). Such a
+    // node can't be shown to meet the minimum, so it must stay blocked.
+    it("flags a node that answered without a usable version", () => {
+      expect(isBelowMinDkgVersion({ ...answered, version: null }, MIN)).toBe(
+        true,
+      );
+      expect(
+        isBelowMinDkgVersion({ ...answered, version: undefined }, MIN),
+      ).toBe(true);
+      expect(isBelowMinDkgVersion({ ...answered, version: "" }, MIN)).toBe(
+        true,
+      );
+    });
+
+    // A node that never answered is already blocked and labeled by `isOutdated`
+    // or `isHealthy: false`; flagging it here would relabel an offline node as
+    // an outdated one in the unhealthy-operators list.
+    it("does not flag a node that never answered", () => {
+      expect(
+        isBelowMinDkgVersion(
+          { isHealthy: false, isOutdated: false, version: null },
+          MIN,
+        ),
+      ).toBe(false);
+      expect(
+        isBelowMinDkgVersion(
+          { isHealthy: true, isOutdated: true, version: null },
+          MIN,
+        ),
+      ).toBe(false);
+    });
+
+    it("still compares a reported version when the node is unhealthy", () => {
+      expect(
+        isBelowMinDkgVersion(
+          { isHealthy: false, isOutdated: false, version: "v3.0.3" },
+          MIN,
+        ),
+      ).toBe(true);
     });
   });
 });

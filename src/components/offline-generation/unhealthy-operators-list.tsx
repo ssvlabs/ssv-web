@@ -27,9 +27,9 @@ const getBadgeInfo = (
   }
   // `isOutdated` is set when the node answered without a health-check message
   // at all — too old to speak the protocol. TEMPORARY: a node that does answer
-  // but reports below `MIN_VERSION_FOR_ADDRESS` is the same problem at a finer
-  // threshold, so it carries the same badge. Drop the second condition with the
-  // version gate.
+  // but reports a version below `MIN_VERSION_FOR_ADDRESS`, or no usable
+  // version, is the same problem at a finer threshold, so it carries the same
+  // badge. Drop the second condition with the version gate.
   if (healthData.isOutdated || healthData.isBelowMinVersionForAddress) {
     return {
       variant: "warning" as BadgeVariants["variant"],

@@ -101,9 +101,9 @@ describe("util:version", () => {
       expect(flags({ ...answered, version: "v3.0.3" })).toMatchObject(BELOW);
     });
 
-    // ssv-api returns `version: null` for a value that isn't a well-formed
-    // version ("dev", "3.1.1;id"). The field comes from JSON, so a non-string
-    // must be flagged too, not thrown on.
+    // Once ssv-api validates versions, it returns `version: null` for a
+    // malformed one ("dev", "3.1.1;id"). The field comes from JSON, so a
+    // non-string must be flagged too, not thrown on.
     it.each([null, undefined, "", 311, {}])(
       "flags a node that answered with version %j as unknown",
       (version) => {
@@ -112,11 +112,15 @@ describe("util:version", () => {
     );
 
     // ssv-api couldn't decode the answer; the node keeps `isHealthy: true`.
-    it("flags an outdated node", () => {
-      expect(
-        flags({ isHealthy: true, isOutdated: true, version: null }),
-      ).toMatchObject(BELOW);
-    });
+    // Flagged by `isOutdated` alone, whatever the version says.
+    it.each([null, "v3.2.0"])(
+      "flags an outdated node with version %j",
+      (version) => {
+        expect(
+          flags({ isHealthy: true, isOutdated: true, version }),
+        ).toMatchObject(BELOW);
+      },
+    );
 
     // Blocked as unhealthy already; flagging it would show it as outdated
     // instead of disabled.

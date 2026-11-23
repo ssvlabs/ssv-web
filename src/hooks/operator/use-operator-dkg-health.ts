@@ -18,22 +18,25 @@ export type OperatorDKGHealthResponse = {
   isEthClientConnected: boolean;
   isMismatchId: boolean;
   /**
-   * Version the DKG node reported; `null` when it didn't answer, its answer
-   * couldn't be decoded, or ssv-api rejected the value as malformed.
+   * Version the DKG node reported; `null` when it didn't answer or its answer
+   * couldn't be decoded. Once ssv-api validates versions, also `null` for a
+   * malformed one.
    */
   version?: string | null;
 };
 
+// The flags are required so that a result that skipped
+// `withMinDkgVersionFlags` doesn't type-check.
 export type EnrichedOperatorDKGHealthResponse = OperatorDKGHealthResponse & {
   /**
-   * TEMPORARY: the node is below `DKG_VERSIONS.MIN_VERSION_FOR_ADDRESS` or
-   * answered without a usable version (see `withMinDkgVersionFlags`). Its
-   * `dkg_address` must be treated as unusable so it never reaches the user or
-   * a ceremony command.
+   * TEMPORARY: the node is outdated, below
+   * `DKG_VERSIONS.MIN_VERSION_FOR_ADDRESS`, or answered without a usable
+   * version (see `withMinDkgVersionFlags`). Its `dkg_address` must be treated
+   * as unusable so it never reaches the user or a ceremony command.
    */
-  isBelowMinVersionForAddress?: boolean;
+  isBelowMinVersionForAddress: boolean;
   /** TEMPORARY: see `withMinDkgVersionFlags`. */
-  isVersionUnknown?: boolean;
+  isVersionUnknown: boolean;
 };
 
 export const getOperatorsDKGHealthQueryOptions = (

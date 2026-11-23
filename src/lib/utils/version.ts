@@ -31,12 +31,11 @@ export const isVersionLT = (
  * TEMPORARY, for the DKG version gate. Adds to a DKG health-check result:
  *
  * - `isBelowMinVersionForAddress`: the node can't be shown to run `minVersion`
- *   or newer. It reported an older version, or it answered without a usable
- *   one: ssv-api returns `version: null` for a malformed version and for an
- *   answer it couldn't decode (`isOutdated`, which keeps `isHealthy: true`).
- *   A node with `isHealthy: false` and no version is left unflagged: it is
- *   blocked as unhealthy already, and flagging it would show it as outdated
- *   instead of disabled.
+ *   or newer. It is outdated (ssv-api couldn't decode its answer, and it keeps
+ *   `isHealthy: true`), it reported an older version, or it answered without a
+ *   usable one. Otherwise, a node with `isHealthy: false` and no version is
+ *   left unflagged: it is blocked as unhealthy already, and flagging it would
+ *   show it as outdated instead of disabled.
  * - `isVersionUnknown`: the node answered readably and with its own ID, but
  *   without a usable version.
  */
@@ -50,9 +49,9 @@ export const withMinDkgVersionFlags = <
   const version = typeof health.version === "string" ? health.version : "";
   return {
     ...health,
-    isBelowMinVersionForAddress: version
-      ? isVersionLT(version, minVersion)
-      : health.isHealthy,
+    isBelowMinVersionForAddress:
+      health.isOutdated ||
+      (version ? isVersionLT(version, minVersion) : health.isHealthy),
     isVersionUnknown: !version && health.isHealthy && !health.isOutdated,
   };
 };

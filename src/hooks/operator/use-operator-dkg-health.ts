@@ -8,7 +8,7 @@ import { getSSVNetworkDetails } from "@/hooks/use-ssv-network-details";
 import { useChainId } from "wagmi";
 import { useMemo } from "react";
 import { DKG_VERSIONS } from "@/lib/utils/keyshares";
-import { isBelowMinDkgVersion } from "@/lib/utils/version";
+import { withMinDkgVersionFlags } from "@/lib/utils/version";
 
 export type OperatorDKGHealthResponse = {
   id: string;
@@ -18,20 +18,22 @@ export type OperatorDKGHealthResponse = {
   isEthClientConnected: boolean;
   isMismatchId: boolean;
   /**
-   * Version reported by the DKG node; `null` when the node did not answer or
-   * when the reported value isn't a well-formed version number.
+   * Version the DKG node reported; `null` when it didn't answer, its answer
+   * couldn't be decoded, or ssv-api rejected the value as malformed.
    */
   version?: string | null;
 };
 
 export type EnrichedOperatorDKGHealthResponse = OperatorDKGHealthResponse & {
   /**
-   * TEMPORARY: the node answered, but with a version older than
-   * `DKG_VERSIONS.MIN_VERSION_FOR_ADDRESS` or with no usable version. Its
+   * TEMPORARY: the node is below `DKG_VERSIONS.MIN_VERSION_FOR_ADDRESS` or
+   * answered without a usable version (see `withMinDkgVersionFlags`). Its
    * `dkg_address` must be treated as unusable so it never reaches the user or
    * a ceremony command.
    */
   isBelowMinVersionForAddress?: boolean;
+  /** TEMPORARY: see `withMinDkgVersionFlags`. */
+  isVersionUnknown?: boolean;
 };
 
 export const getOperatorsDKGHealthQueryOptions = (
@@ -72,16 +74,9 @@ export const useOperatorsDKGHealth = (
 
   const data = useMemo<EnrichedOperatorDKGHealthResponse[] | undefined>(() => {
     if (!query.data) return undefined;
-    return query.data.map((item) => ({
-      ...item,
-      // A node that never answered is already covered by `isOutdated` or
-      // `isHealthy: false`; a node that answered lands here when its version is
-      // too old or missing.
-      isBelowMinVersionForAddress: isBelowMinDkgVersion(
-        item,
-        DKG_VERSIONS.MIN_VERSION_FOR_ADDRESS,
-      ),
-    })) satisfies EnrichedOperatorDKGHealthResponse[];
+    return query.data.map((item) =>
+      withMinDkgVersionFlags(item, DKG_VERSIONS.MIN_VERSION_FOR_ADDRESS),
+    ) satisfies EnrichedOperatorDKGHealthResponse[];
   }, [query.data]);
 
   // TEMPORARY: any operator below the minimum version blocks the DKG flows, so

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   parseVersion,
   isVersionLT,
-  isBelowMinDkgVersion,
+  withMinDkgVersionFlags,
 } from "@/lib/utils/version";
 
 // Kept in sync with `DKG_VERSIONS.MIN_VERSION_FOR_ADDRESS` by hand: importing
@@ -68,61 +68,68 @@ describe("util:version", () => {
     });
   });
 
-  describe("isBelowMinDkgVersion", () => {
+  describe("withMinDkgVersionFlags", () => {
     const answered = { isHealthy: true, isOutdated: false };
+    const flags = (health: Parameters<typeof withMinDkgVersionFlags>[0]) =>
+      withMinDkgVersionFlags(health, MIN);
+    const PASSES = {
+      isBelowMinVersionForAddress: false,
+      isVersionUnknown: false,
+    };
+    const BELOW = {
+      isBelowMinVersionForAddress: true,
+      isVersionUnknown: false,
+    };
+    const UNKNOWN = {
+      isBelowMinVersionForAddress: true,
+      isVersionUnknown: true,
+    };
+
+    it("keeps the health-check fields", () => {
+      const health = {
+        id: "1",
+        isMismatchId: false,
+        ...answered,
+        version: "v3.1.1",
+      };
+      expect(flags(health)).toEqual({ ...health, ...PASSES });
+    });
 
     it("compares the version of a node that answered", () => {
-      expect(
-        isBelowMinDkgVersion({ ...answered, version: "v3.1.1" }, MIN),
-      ).toBe(false);
-      expect(
-        isBelowMinDkgVersion({ ...answered, version: "v3.2.0" }, MIN),
-      ).toBe(false);
-      expect(
-        isBelowMinDkgVersion({ ...answered, version: "v3.0.3" }, MIN),
-      ).toBe(true);
+      expect(flags({ ...answered, version: "v3.1.1" })).toMatchObject(PASSES);
+      expect(flags({ ...answered, version: "v3.2.0" })).toMatchObject(PASSES);
+      expect(flags({ ...answered, version: "v3.0.3" })).toMatchObject(BELOW);
     });
 
-    // ssv-api returns `version: null` when the node reports something that
-    // isn't a well-formed version number ("dev", "latest", "3.1.1;id"). Such a
-    // node can't be shown to meet the minimum, so it must stay blocked.
-    it("flags a node that answered without a usable version", () => {
-      expect(isBelowMinDkgVersion({ ...answered, version: null }, MIN)).toBe(
-        true,
-      );
+    // ssv-api returns `version: null` for a value that isn't a well-formed
+    // version ("dev", "3.1.1;id"). The field comes from JSON, so a non-string
+    // must be flagged too, not thrown on.
+    it.each([null, undefined, "", 311, {}])(
+      "flags a node that answered with version %j as unknown",
+      (version) => {
+        expect(flags({ ...answered, version })).toMatchObject(UNKNOWN);
+      },
+    );
+
+    // ssv-api couldn't decode the answer; the node keeps `isHealthy: true`.
+    it("flags an outdated node", () => {
       expect(
-        isBelowMinDkgVersion({ ...answered, version: undefined }, MIN),
-      ).toBe(true);
-      expect(isBelowMinDkgVersion({ ...answered, version: "" }, MIN)).toBe(
-        true,
-      );
+        flags({ isHealthy: true, isOutdated: true, version: null }),
+      ).toMatchObject(BELOW);
     });
 
-    // A node that never answered is already blocked and labeled by `isOutdated`
-    // or `isHealthy: false`; flagging it here would relabel an offline node as
-    // an outdated one in the unhealthy-operators list.
-    it("does not flag a node that never answered", () => {
+    // Blocked as unhealthy already; flagging it would show it as outdated
+    // instead of disabled.
+    it("does not flag an unhealthy node without a version", () => {
       expect(
-        isBelowMinDkgVersion(
-          { isHealthy: false, isOutdated: false, version: null },
-          MIN,
-        ),
-      ).toBe(false);
-      expect(
-        isBelowMinDkgVersion(
-          { isHealthy: true, isOutdated: true, version: null },
-          MIN,
-        ),
-      ).toBe(false);
+        flags({ isHealthy: false, isOutdated: false, version: null }),
+      ).toMatchObject(PASSES);
     });
 
     it("still compares a reported version when the node is unhealthy", () => {
       expect(
-        isBelowMinDkgVersion(
-          { isHealthy: false, isOutdated: false, version: "v3.0.3" },
-          MIN,
-        ),
-      ).toBe(true);
+        flags({ isHealthy: false, isOutdated: false, version: "v3.0.3" }),
+      ).toMatchObject(BELOW);
     });
   });
 });

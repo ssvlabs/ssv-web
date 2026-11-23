@@ -28,21 +28,31 @@ export const isVersionLT = (
 };
 
 /**
- * Whether a DKG node's health check shows it below `minVersion`. A node that
- * answered (healthy and not outdated) but has no usable version can't be shown
- * to meet the minimum, so it counts as below it: ssv-api returns `version: null`
- * for a reported version that isn't a well-formed version number. A node that
- * never answered keeps `version: null` without being flagged here, because
- * `isOutdated` or `isHealthy: false` already covers it.
+ * TEMPORARY, for the DKG version gate. Adds to a DKG health-check result:
+ *
+ * - `isBelowMinVersionForAddress`: the node can't be shown to run `minVersion`
+ *   or newer. It reported an older version, or it answered without a usable
+ *   one: ssv-api returns `version: null` for a malformed version and for an
+ *   answer it couldn't decode (`isOutdated`, which keeps `isHealthy: true`).
+ *   A node with `isHealthy: false` and no version is left unflagged: it is
+ *   blocked as unhealthy already, and flagging it would show it as outdated
+ *   instead of disabled.
+ * - `isVersionUnknown`: the node answered readably and with its own ID, but
+ *   without a usable version.
  */
-export const isBelowMinDkgVersion = (
-  {
-    isHealthy,
-    isOutdated,
-    version,
-  }: { isHealthy: boolean; isOutdated: boolean; version?: string | null },
+export const withMinDkgVersionFlags = <
+  T extends { isHealthy: boolean; isOutdated: boolean; version?: unknown },
+>(
+  health: T,
   minVersion: string,
-): boolean => {
-  if (!version) return isHealthy && !isOutdated;
-  return isVersionLT(version, minVersion);
+) => {
+  // `version` comes from JSON, so its type isn't enforced at run time.
+  const version = typeof health.version === "string" ? health.version : "";
+  return {
+    ...health,
+    isBelowMinVersionForAddress: version
+      ? isVersionLT(version, minVersion)
+      : health.isHealthy,
+    isVersionUnknown: !version && health.isHealthy && !health.isOutdated,
+  };
 };

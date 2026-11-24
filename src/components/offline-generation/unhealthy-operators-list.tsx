@@ -25,15 +25,16 @@ const getBadgeInfo = (
       text: "ID/IP Mismatch",
     };
   }
-  // `isOutdated` is set when the node answered without a health-check message
-  // at all — too old to speak the protocol. TEMPORARY: a node that does answer
-  // but reports below `MIN_VERSION_FOR_ADDRESS` is the same problem at a finer
-  // threshold, so it carries the same badge. Drop the second condition with the
-  // version gate.
+  // `isOutdated`: ssv-api couldn't decode the node's answer, taken to mean it
+  // is too old to speak the health-check protocol. TEMPORARY: a node below
+  // `MIN_VERSION_FOR_ADDRESS` gets the same badge, or "DKG Version Unknown" if
+  // it answered without a usable version.
   if (healthData.isOutdated || healthData.isBelowMinVersionForAddress) {
     return {
       variant: "warning" as BadgeVariants["variant"],
-      text: "DKG Outdated",
+      text: healthData.isVersionUnknown
+        ? "DKG Version Unknown"
+        : "DKG Outdated",
     };
   }
   if (isMultiSigFlow) {

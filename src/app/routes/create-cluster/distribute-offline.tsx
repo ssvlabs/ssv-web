@@ -50,6 +50,8 @@ export const DistributeOffline: FC = () => {
   );
   // TEMPORARY: the DKG ceremony command embeds each operator's endpoint, so an
   // operator below the minimum version counts as an issue and blocks the flow.
+  // Outdated nodes count as below it, so until the gate is removed a set where
+  // every node is outdated is blocked rather than given the old-client command.
   const hasIssuedOperator =
     (hasOutdatedOperator
       ? hasUnhealthyOperators || !isAllOperatorsAreOutdated
